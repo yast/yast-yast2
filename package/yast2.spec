@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.150
+Version:        3.1.151
 Release:        0
 Url:            https://github.com/yast/yast-yast2
 
@@ -101,8 +101,8 @@ Conflicts:      yast2-mouse < 2.16.0
 Conflicts:      autoyast2-installation < 2.16.2
 # country_long.ycp and country.ycp moved to yast2
 Conflicts:      yast2-country < 2.16.3
-# DnsServerAPI moved to yast2.rpm (by mzugec)
-Conflicts:      yast2-dns-server < 2.17.0
+# SrvStatusComponent moved to yast2.rpm
+Conflicts:      yast2-dns-server < 3.1.17
 
 Provides:       yast2-lib-sequencer
 Obsoletes:      yast2-lib-sequencer
