@@ -11,12 +11,12 @@ def matches_id_and_text?(widget, id, text)
   return false unless widget.params.any? do |p|
     p.is_a?(Yast::Term) && p.value == :id && p.params.first =~ id
   end
-  return widget.params.any? {|p| p.is_a?(::String) && p =~ text }
+  widget.params.any? { |p| p.is_a?(::String) && p =~ text }
 end
 
 def widget_by_id_and_text(widgets, id, text)
   widgets.nested_find do |t|
-    matches_id_and_text?(t, /#{id}/, /#{Yast::_(text)}/)
+    matches_id_and_text?(t, /#{id}/, /#{Yast._(text)}/)
   end
 end
 
@@ -67,7 +67,7 @@ end
 
 module Yast
   extend Yast::I18n
-  Yast::textdomain "base"
+  Yast.textdomain "base"
 
   import "Service"
   import "UI"
@@ -107,12 +107,12 @@ module Yast
       end
 
       it "disables and unchecks the reload button for stopped services" do
-        expect(options_for(reload_service2).any? {|p| p == :disabled })
+        expect(options_for(reload_service2).any? { |p| p == :disabled })
         expect(reload_service2.params.last).to eq false
       end
 
       it "enables the reload button for stopped services" do
-        expect(options_for(reload_service1).none? {|p| p == :disabled })
+        expect(options_for(reload_service1).none? { |p| p == :disabled })
       end
     end
 

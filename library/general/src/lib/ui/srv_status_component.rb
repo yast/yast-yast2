@@ -102,12 +102,16 @@ module UI
       reload_service if service_running? && @reload
     end
 
+    # rubocop:disable Style/TrivialAccessors
+
     # Checks if the user requested the service to be enabled on boot
     #
     # @return [Boolean]
     def enabled?
       @enabled
     end
+
+    # rubocop:enable Style/TrivialAccessors
 
     # Content for the help
     def help
@@ -128,7 +132,7 @@ module UI
       )
     end
 
-    protected
+  protected
 
     attr_reader :id_prefix
 
