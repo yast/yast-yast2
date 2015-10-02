@@ -24,6 +24,10 @@ module UI
   # Component encapsulating the widgets for managing the status of services (both
   # currently and on system boot) and the behavior associated to those widgets
   #
+  # TODO: The API is experimental and subject to change. This component is only
+  # used by yast2-dns-server and should not be used by any other module until
+  # an upcoming refactoring, planned for SLE12-SP2.
+  #
   # As long as #handle_input is invoked in the event loop, the component will
   # handle interactive starting and stopping of the service on user demand. In
   # addition #reload can be used after saving the settings.
