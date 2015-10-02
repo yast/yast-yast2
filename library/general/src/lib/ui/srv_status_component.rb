@@ -26,7 +26,8 @@ module UI
   #
   # TODO: The API is experimental and subject to change. This component is only
   # used by yast2-dns-server and should not be used by any other module until
-  # an upcoming refactoring, planned for SLE12-SP2.
+  # an upcoming refactoring, planned for SLE12-SP2. To see some of the planned
+  # improvements, check https://github.com/yast/yast-yast2/pull/401
   #
   # As long as #handle_input is invoked in the event loop, the component will
   # handle interactive starting and stopping of the service on user demand. In
