@@ -62,7 +62,7 @@ module Yast
     # ************************************************************
     # system architecture
 
-    # Returns full architecture type (one of i386, sparc, sparc64, mips, mips64, ppc, ppc64, alpha, s390_32, s390_64, ia64, x86_64)
+    # Returns full architecture type (one of i386, sparc, sparc64, mips, mips64, ppc, ppc64, alpha, s390_32, s390_64, ia64, x86_64, aarch64)
     #
     # @return [String] architecture
     def architecture
@@ -178,7 +178,12 @@ module Yast
       architecture == "x86_64"
     end
 
-    # Returns general architecture type (one of sparc, mips, ppc, s390, i386, alpha, ia64, x86_64)
+    # true for all aarch64 (ARM64) architectures
+    def aarch64
+      architecture == "aarch64"
+    end
+
+    # Returns general architecture type (one of sparc, mips, ppc, s390, i386, alpha, ia64, x86_64, aarch64)
     #
     # @return [String] arch_short
     def arch_short
@@ -521,6 +526,7 @@ module Yast
     publish function: :s390, type: "boolean ()"
     publish function: :ia64, type: "boolean ()"
     publish function: :x86_64, type: "boolean ()"
+    publish function: :aarch64, type: "boolean ()"
     publish function: :arch_short, type: "string ()"
     publish function: :board_compatible, type: "string ()"
     publish function: :board_mac, type: "boolean ()"
