@@ -39,7 +39,6 @@ require "yast"
 module Yast
   class ModulesConfClass < Module
     def main
-
       Yast.import "Arch"
       Yast.import "Misc"
       Yast.import "Mode"
@@ -62,7 +61,6 @@ module Yast
 
       nil
     end
-
 
     # RunDepmod
     # runs /sbin/depmod
@@ -106,7 +104,6 @@ module Yast
       nil
     end
 
-
     # Save
     # save module names and arguments to /etc/modules.conf
     # @param [Boolean] force	boolean, force depmod run even if /etc/modules.conf is unchanged
@@ -147,9 +144,9 @@ module Yast
       nil
     end
 
-    publish :function => :ModuleArgs, :type => "void (string, string)"
-    publish :function => :RunDepmod, :type => "void (boolean)"
-    publish :function => :Save, :type => "void (boolean)"
+    publish function: :ModuleArgs, type: "void (string, string)"
+    publish function: :RunDepmod, type: "void (boolean)"
+    publish function: :Save, type: "void (boolean)"
   end
 
   ModulesConf = ModulesConfClass.new

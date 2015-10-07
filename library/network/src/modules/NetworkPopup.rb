@@ -59,24 +59,26 @@ module Yast
     # @param [Array<String>] items	a list of items
     # @param [String] selected	preselected a value in the list
     # @return		one item or nil
-    def ChooseItem(title, items, selected)
+    def ChooseItem(_title, items, selected)
       items = deep_copy(items)
       item = nil
 
-      _Items = Builtins.maplist(items) do |i|
+      items = Builtins.maplist(items) do |i|
         device_name = NetworkInterfaces.GetValue(i, "NAME")
-        if device_name == nil || device_name == ""
-          #TRANSLATORS: Informs that device name is not known
+        if device_name.nil? || device_name == ""
+          # TRANSLATORS: Informs that device name is not known
           device_name = _("Unknown device")
         end
         if Ops.greater_than(Builtins.size(device_name), 30)
           device_name = Ops.add(Builtins.substring(device_name, 0, 27), "...")
         end
-        ip_addr = NetworkInterfaces.GetValue(i, "BOOTPROTO") == "dhcp" ?
-          # TRANSLATORS: Informs that the IP address is assigned via DHCP
-          _("DHCP address") :
-          NetworkInterfaces.GetValue(i, "IPADDR")
-        if ip_addr == nil || ip_addr == ""
+        ip_addr = if NetworkInterfaces.GetValue(i, "BOOTPROTO") == "dhcp"
+                    # TRANSLATORS: Informs that the IP address is assigned via DHCP
+                    _("DHCP address")
+                  else
+                    NetworkInterfaces.GetValue(i, "IPADDR")
+                  end
+        if ip_addr.nil? || ip_addr == ""
           # TRANSLATORS: table item, informing that device has no IP address
           ip_addr = _("No IP address assigned")
         end
@@ -106,7 +108,7 @@ module Yast
                 _("Device ID"),
                 _("Connected")
               ),
-              _Items
+              items
             ),
             VSpacing(10)
           ),
@@ -127,9 +129,7 @@ module Yast
       UI.ChangeWidget(Id(:items), :CurrentItem, selected)
       UI.SetFocus(Id(:items))
       ret = nil
-      begin
-        ret = Convert.to_symbol(UI.UserInput)
-      end while ret != :cancel && ret != :ok
+      ret = UI.UserInput while ret != :cancel && ret != :ok
 
       if ret == :ok
         item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem))
@@ -148,12 +148,12 @@ module Yast
       items = deep_copy(items)
       item = nil
 
-      _Items = Builtins.maplist(items) { |i| Item(Id(i), i, i == selected) }
+      items = Builtins.maplist(items) { |i| Item(Id(i), i, i == selected) }
 
       UI.OpenDialog(
         VBox(
           HSpacing(40),
-          HBox(SelectionBox(Id(:items), title, _Items), VSpacing(10)),
+          HBox(SelectionBox(Id(:items), title, items), VSpacing(10)),
           ButtonBox(
             PushButton(
               Id(:ok),
@@ -170,9 +170,7 @@ module Yast
       )
       UI.SetFocus(Id(:items))
       ret = nil
-      begin
-        ret = Convert.to_symbol(UI.UserInput)
-      end while ret != :cancel && ret != :ok
+      ret = UI.UserInput while ret != :cancel && ret != :ok
 
       if ret == :ok
         item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem))
@@ -188,7 +186,7 @@ module Yast
     # @param [String] selected	preselected a value in the list
     # @return		a hostname or nil if "Cancel" was pressed
     def NFSServer(selected)
-      if @found_nfs_servers == nil
+      if @found_nfs_servers.nil?
         # label message
         UI.OpenDialog(Label(_("Scanning for hosts on this LAN...")))
         # #71064
@@ -200,7 +198,7 @@ module Yast
         ) { |s| s != "" }
         UI.CloseDialog
 
-        if @found_nfs_servers == nil
+        if @found_nfs_servers.nil?
           @found_nfs_servers = []
         else
           # sort list of servers
@@ -219,17 +217,17 @@ module Yast
     # @param [String] selected	preselect a value in the list
     # @return		a hostname or nil if "Cancel" was pressed
     def HostName(selected)
-      if @found_hosts == nil
+      if @found_hosts.nil?
         # label message
         UI.OpenDialog(Label(_("Scanning for hosts on this LAN...")))
         @found_hosts = Convert.convert(
           Builtins.sort(Convert.to_list(SCR.Read(path(".net.hostnames")))),
-          :from => "list",
-          :to   => "list <string>"
+          from: "list",
+          to:   "list <string>"
         )
         UI.CloseDialog
 
-        @found_hosts = [] if @found_hosts == nil
+        @found_hosts = [] if @found_hosts.nil?
       end
 
       # selection box label
@@ -246,21 +244,21 @@ module Yast
     def NFSExport(server, selected)
       dirs = Convert.convert(
         SCR.Read(path(".net.showexports"), server),
-        :from => "any",
-        :to   => "list <string>"
+        from: "any",
+        to:   "list <string>"
       )
 
-      dirs = [] if dirs == nil
+      dirs = [] if dirs.nil?
 
       # selection box label
       ret = ChooseItemSimple(_("&Exported Directories"), dirs, selected)
       ret
     end
 
-    publish :function => :ChooseItem, :type => "string (string, list <string>, string)"
-    publish :function => :NFSServer, :type => "string (string)"
-    publish :function => :HostName, :type => "string (string)"
-    publish :function => :NFSExport, :type => "string (string, string)"
+    publish function: :ChooseItem, type: "string (string, list <string>, string)"
+    publish function: :NFSServer, type: "string (string)"
+    publish function: :HostName, type: "string (string)"
+    publish function: :NFSExport, type: "string (string, string)"
   end
 
   NetworkPopup = NetworkPopupClass.new

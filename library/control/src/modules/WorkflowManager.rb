@@ -342,7 +342,7 @@ module Yast
     # @param [String] file_to filename
     # @return [String] final filename
     def StoreWorkflowFile(file_from, file_to)
-      if file_from == nil || file_from == "" || file_to == nil || file_to == ""
+      if file_from.nil? || file_from == "" || file_to.nil? || file_to == ""
         Builtins.y2error("Cannot copy '%1' to '%2'", file_from, file_to)
         return nil
       end
@@ -359,8 +359,8 @@ module Yast
         SCR.Execute(
           path(".target.bash_output"),
           Builtins.sformat(
-            "\n" +
-              "test -d '%1' || /bin/mkdir -p '%1';\n" +
+            "\n" \
+              "test -d '%1' || /bin/mkdir -p '%1';\n" \
               "/bin/cp -v '%2' '%3';\n",
             GetWorkflowDirectory(),
             String.Quote(file_from),
@@ -392,14 +392,14 @@ module Yast
     # @param [Fixnum] src_id with Source ID
     # @param [String] name with unique identification
     # @return [String] path to already cached workflow file, control file is downloaded if not yet chached
-    def GetCachedWorkflowFilename(type, src_id, name)
+    def GetCachedWorkflowFilename(type, src_id, _name)
       if type == :addon
         disk_filename = GenerateAdditionalControlFilePath(src_id, "")
 
         # A cached copy exists
         if FileUtils.Exists(disk_filename)
           Builtins.y2milestone("Using cached file %1", disk_filename)
-          return disk_filename 
+          return disk_filename
           # Trying to get the file from source
         else
           Builtins.y2milestone("File %1 not cached", disk_filename)
@@ -412,13 +412,13 @@ module Yast
           )
 
           # File exists
-          if use_filename != nil
-            return StoreWorkflowFile(use_filename, disk_filename) 
+          if !use_filename.nil?
+            return StoreWorkflowFile(use_filename, disk_filename)
             # No such file
           else
             return nil
           end
-        end 
+        end
 
         # New workflow types can be added here
       else
@@ -459,7 +459,7 @@ module Yast
         return false
       end
 
-      if used_filename != nil && used_filename != ""
+      if !used_filename.nil? && used_filename != ""
         @unmerged_changes = true
 
         @used_workflows = Builtins.add(@used_workflows, used_filename)
@@ -502,7 +502,7 @@ module Yast
         return false
       end
 
-      if used_filename != nil && used_filename != ""
+      if !used_filename.nil? && used_filename != ""
         @unmerged_changes = true
 
         @used_workflows = Builtins.filter(@used_workflows) do |one_workflow|
@@ -532,7 +532,7 @@ module Yast
 
     # Removes all xml and ycp files from directory where
     #
-    # TODO FIXME: this function seems to be unused, remove it?
+    # FIXME: this function seems to be unused, remove it?
     def CleanWorkflowsDirectory
       directory = GetWorkflowDirectory()
       Builtins.y2milestone(
@@ -545,9 +545,9 @@ module Yast
         cmd = Convert.to_map(
           SCR.Execute(
             path(".target.bash_ouptut"),
-            "\n" +
-              "cd '%1';\n" +
-              "test -x /bin/tar && /bin/tar -zcf workflows_backup.tgz *.xml *.ycp *.rb;\n" +
+            "\n" \
+              "cd '%1';\n" \
+              "test -x /bin/tar && /bin/tar -zcf workflows_backup.tgz *.xml *.ycp *.rb;\n" \
               "rm -rf *.xml *.ycp *.rb",
             String.Quote(directory)
           )
@@ -575,12 +575,12 @@ module Yast
       modules = Builtins.maplist(Ops.get_list(proposal, "proposal_modules", [])) do |m|
         if Ops.is_string?(m) && Convert.to_string(m) == old ||
             Ops.is_map?(m) &&
-              Ops.get_string(Convert.to_map(m), "name", "") == old
+                Ops.get_string(Convert.to_map(m), "name", "") == old
           found = true
 
           if Ops.is_map?(m)
             next Builtins.maplist(new) do |it|
-              Builtins.union(Convert.to_map(m), { "name" => it })
+              Builtins.union(Convert.to_map(m),  "name" => it)
             end
           else
             next deep_copy(new)
@@ -619,7 +619,6 @@ module Yast
       deep_copy(proposal)
     end
 
-
     # Merge add-on proposal to a base proposal
     #
     # @param [Hash] base with the current product proposal
@@ -657,7 +656,6 @@ module Yast
       appends = Ops.get_list(additional_control, "append_modules", [])
 
       if Ops.greater_than(Builtins.size(appends), 0)
-        as_map = false
         append2 = deep_copy(appends)
 
         if Ops.is_map?(Ops.get(base, ["proposal_modules", 0]))
@@ -729,7 +727,7 @@ module Yast
         if !found
           if arch_all_prop != {}
             Ops.set(arch_all_prop, "archs", arch)
-            proposal = MergeProposal(arch_all_prop, proposal, prod_name, domain) 
+            proposal = MergeProposal(arch_all_prop, proposal, prod_name, domain)
             # completly new proposal
           else
             Ops.set(proposal, "textdomain", domain)
@@ -785,14 +783,13 @@ module Yast
       deep_copy(workflow)
     end
 
-
     # Merge add-on workflow to a base workflow
     #
     # @param [Hash] base map the base product workflow
     # @param [Hash] addon map the workflow of the addon product
     # @param [String] prod_name a name of the add-on product
     # @return [Hash] merged workflows
-    def MergeWorkflow(base, addon, prod_name, domain)
+    def MergeWorkflow(base, addon, _prod_name, domain)
       base = deep_copy(base)
       addon = deep_copy(addon)
       # Merging - removing steps, settings
@@ -885,7 +882,7 @@ module Yast
         if !found
           if arch_all_wf != {}
             Ops.set(arch_all_wf, ["defaults", "archs"], arch)
-            workflow = MergeWorkflow(arch_all_wf, workflow, prod_name, domain) 
+            workflow = MergeWorkflow(arch_all_wf, workflow, prod_name, domain)
             # completly new workflow
           else
             Ops.set(workflow, "textdomain", domain)
@@ -921,20 +918,20 @@ module Yast
 
       @additional_finish_steps_before_chroot = Convert.convert(
         Builtins.merge(@additional_finish_steps_before_chroot, before_chroot),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
 
       @additional_finish_steps_after_chroot = Convert.convert(
         Builtins.merge(@additional_finish_steps_after_chroot, after_chroot),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
 
       @additional_finish_steps_before_umount = Convert.convert(
         Builtins.merge(@additional_finish_steps_before_umount, before_umount),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
 
       true
@@ -995,7 +992,6 @@ module Yast
 
       true
     end
-
 
     # Replace workflows for 2nd stage of installation
     #
@@ -1060,8 +1056,8 @@ module Yast
       )
       ProductControl.workflows = Convert.convert(
         Builtins.merge(ProductControl.workflows, workflows),
-        :from => "list",
-        :to   => "list <map>"
+        from: "list",
+        to:   "list <map>"
       )
 
       true
@@ -1102,7 +1098,7 @@ module Yast
 
     def IncorporateControlFileOptions(filename)
       update_file = XML.XMLToYCPFile(filename)
-      if update_file == nil
+      if update_file.nil?
         Builtins.y2error("Unable to read the %1 control file", filename)
         return false
       end
@@ -1133,7 +1129,7 @@ module Yast
     # @param [Hash] update_file a map containing update control file
     # @param
     # @return [Boolean] true on success
-    def UpdateProductInfo(update_file, filename)
+    def UpdateProductInfo(update_file, _filename)
       update_file = deep_copy(update_file)
       # merging all 'map <string, any>' type
       Builtins.foreach(["globals", "software", "partitioning", "network"]) do |section|
@@ -1141,8 +1137,8 @@ module Yast
         addon = Ops.get_map(update_file, section, {})
         sect = Convert.convert(
           Builtins.union(sect, addon),
-          :from => "map",
-          :to   => "map <string, any>"
+          from: "map",
+          to:   "map <string, any>"
         )
         ProductFeatures.SetSection(section, sect)
       end
@@ -1151,8 +1147,8 @@ module Yast
       addon_clone = Ops.get_list(update_file, "clone_modules", [])
       ProductControl.clone_modules = Convert.convert(
         Builtins.merge(ProductControl.clone_modules, addon_clone),
-        :from => "list",
-        :to   => "list <string>"
+        from: "list",
+        to:   "list <string>"
       )
 
       # merging texts
@@ -1175,7 +1171,7 @@ module Yast
 
       # if textdomain is different to the base one
       # we have to put it into the map
-      if update_file_textdomain != nil && update_file_textdomain != ""
+      if !update_file_textdomain.nil? && update_file_textdomain != ""
         update_file_texts = Builtins.mapmap(update_file_texts) do |text_ident, text_def|
           Ops.set(text_def, "textdomain", update_file_textdomain)
           { text_ident => text_def }
@@ -1184,8 +1180,8 @@ module Yast
 
       controlfile_texts = Convert.convert(
         Builtins.union(controlfile_texts, update_file_texts),
-        :from => "map",
-        :to   => "map <string, any>"
+        from: "map",
+        to:   "map <string, any>"
       )
       ProductFeatures.SetSection("texts", controlfile_texts)
 
@@ -1219,9 +1215,9 @@ module Yast
       name = Ops.get_string(update_file, "display_name", "")
 
       if !UpdateInstallation(
-          Ops.get_map(update_file, "update", {}),
-          name,
-          Ops.get_string(update_file, "textdomain", "control")
+        Ops.get_map(update_file, "update", {}),
+        name,
+        Ops.get_string(update_file, "textdomain", "control")
         )
         Builtins.y2error("Failed to update installation workflow")
         return false
@@ -1243,7 +1239,7 @@ module Yast
       end
 
       if !UpdateInstFinish(
-          Ops.get_map(update_file, ["update", "inst_finish"], {})
+        Ops.get_map(update_file, ["update", "inst_finish"], {})
         )
         Builtins.y2error("Adding inst_finish steps failed")
         return false
@@ -1260,7 +1256,7 @@ module Yast
     def GenerateWorkflowIdent(workflow_filename)
       file_md5sum = FileUtils.MD5sum(workflow_filename)
 
-      if file_md5sum == nil || file_md5sum == ""
+      if file_md5sum.nil? || file_md5sum == ""
         Builtins.y2error(
           "MD5 sum of file %1 is %2",
           workflow_filename,
@@ -1298,13 +1294,13 @@ module Yast
         # make sure that every workflow is merged only once
         # bugzilla #332436
         workflow_ident = GenerateWorkflowIdent(one_workflow)
-        if workflow_ident != nil &&
+        if !workflow_ident.nil? &&
             Builtins.contains(already_merged_workflows, workflow_ident)
           Builtins.y2milestone(
             "The very same workflow has been already merged, skipping..."
           )
           next
-        elsif workflow_ident != nil
+        elsif !workflow_ident.nil?
           already_merged_workflows = Builtins.add(
             already_merged_workflows,
             workflow_ident
@@ -1389,30 +1385,30 @@ module Yast
       }
     end
 
-    publish :variable => :additional_finish_steps_before_chroot, :type => "list <string>"
-    publish :variable => :additional_finish_steps_after_chroot, :type => "list <string>"
-    publish :variable => :additional_finish_steps_before_umount, :type => "list <string>"
-    publish :function => :GetAdditionalFinishSteps, :type => "list <string> (string)"
-    publish :function => :SetBaseWorkflow, :type => "void (boolean)"
-    publish :function => :PrepareProposals, :type => "list <map> (list <map>)"
-    publish :function => :PrepareSystemProposals, :type => "void ()"
-    publish :function => :PrepareWorkflows, :type => "list <map> (list <map>)"
-    publish :function => :PrepareSystemWorkflows, :type => "void ()"
-    publish :function => :ResetWorkflow, :type => "void ()"
-    publish :function => :GetCachedWorkflowFilename, :type => "string (symbol, integer, string)"
-    publish :function => :AddWorkflow, :type => "boolean (symbol, integer, string)"
-    publish :function => :RemoveWorkflow, :type => "boolean (symbol, integer, string)"
-    publish :function => :CleanWorkflowsDirectory, :type => "void ()"
-    publish :function => :WorkflowsRequiringRegistration, :type => "list <string> ()"
-    publish :function => :WorkflowRequiresRegistration, :type => "boolean (integer)"
-    publish :function => :IncorporateControlFileOptions, :type => "boolean (string)"
-    publish :function => :RedrawWizardSteps, :type => "boolean ()"
-    publish :function => :MergeWorkflows, :type => "boolean ()"
-    publish :function => :SomeWorkflowsWereChanged, :type => "boolean ()"
-    publish :function => :GetAllUsedControlFiles, :type => "list <string> ()"
-    publish :function => :SetAllUsedControlFiles, :type => "void (list <string>)"
-    publish :function => :HaveAdditionalWorkflows, :type => "boolean ()"
-    publish :function => :DumpCurrentSettings, :type => "map <string, any> ()"
+    publish variable: :additional_finish_steps_before_chroot, type: "list <string>"
+    publish variable: :additional_finish_steps_after_chroot, type: "list <string>"
+    publish variable: :additional_finish_steps_before_umount, type: "list <string>"
+    publish function: :GetAdditionalFinishSteps, type: "list <string> (string)"
+    publish function: :SetBaseWorkflow, type: "void (boolean)"
+    publish function: :PrepareProposals, type: "list <map> (list <map>)"
+    publish function: :PrepareSystemProposals, type: "void ()"
+    publish function: :PrepareWorkflows, type: "list <map> (list <map>)"
+    publish function: :PrepareSystemWorkflows, type: "void ()"
+    publish function: :ResetWorkflow, type: "void ()"
+    publish function: :GetCachedWorkflowFilename, type: "string (symbol, integer, string)"
+    publish function: :AddWorkflow, type: "boolean (symbol, integer, string)"
+    publish function: :RemoveWorkflow, type: "boolean (symbol, integer, string)"
+    publish function: :CleanWorkflowsDirectory, type: "void ()"
+    publish function: :WorkflowsRequiringRegistration, type: "list <string> ()"
+    publish function: :WorkflowRequiresRegistration, type: "boolean (integer)"
+    publish function: :IncorporateControlFileOptions, type: "boolean (string)"
+    publish function: :RedrawWizardSteps, type: "boolean ()"
+    publish function: :MergeWorkflows, type: "boolean ()"
+    publish function: :SomeWorkflowsWereChanged, type: "boolean ()"
+    publish function: :GetAllUsedControlFiles, type: "list <string> ()"
+    publish function: :SetAllUsedControlFiles, type: "void (list <string>)"
+    publish function: :HaveAdditionalWorkflows, type: "boolean ()"
+    publish function: :DumpCurrentSettings, type: "map <string, any> ()"
   end
 
   WorkflowManager = WorkflowManagerClass.new

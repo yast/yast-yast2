@@ -2,4 +2,4 @@
 # Makefile.am for xml/module
 #
 
-SUBDIRS = doc src testsuite
+SUBDIRS = doc src test testsuite

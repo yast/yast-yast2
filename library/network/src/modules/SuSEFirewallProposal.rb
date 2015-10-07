@@ -33,6 +33,8 @@ require "yast"
 
 module Yast
   class SuSEFirewallProposalClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -62,10 +64,6 @@ module Yast
       @vnc_service = "service:xorg-x11-server"
 
       @ssh_service = "service:sshd"
-
-      @iscsi_target_service = "service:iscsitarget"
-
-      @iscsi_target_fallback_ports = ["iscsi-target"]
     end
 
     # <!-- SuSEFirewall LOCAL VARIABLES //-->
@@ -160,7 +158,7 @@ module Yast
         # already known but not assigned
         next if Builtins.contains(last_known_interfaces, interface)
         # already configured in some zone
-        next if SuSEFirewall.GetZoneOfInterface(interface) != nil
+        next if !SuSEFirewall.GetZoneOfInterface(interface).nil?
         # any dial-up interfaces presented and the new one isn't dial-up
         if had_dialup_interfaces && !IsDialUpInterface(interface)
           AddWarning(
@@ -199,12 +197,12 @@ module Yast
     # @return [Boolean] if enabled
     def ServiceEnabled(service, zones)
       zones = deep_copy(zones)
-      if service == nil || service == ""
+      if service.nil? || service == ""
         Builtins.y2error("Ups, service: %1?", service)
         return false
       end
 
-      if zones == nil || zones == []
+      if zones.nil? || zones == []
         Builtins.y2error("Ups, zones: %1?", zones)
         return false
       end
@@ -232,23 +230,23 @@ module Yast
     # @param list <string> fallback TCP ports
     # @param [Array<String>] zones
     def EnableFallbackPorts(fallback_ports, zones)
-      fallback_ports = deep_copy(fallback_ports)
-      zones = deep_copy(zones)
-      Builtins.y2warning(
-        "Enabling fallback ports: %1 in zones: %2",
-        fallback_ports,
-        zones
-      )
+      known_zones = SuSEFirewall.GetKnownFirewallZones()
+      unknown_zones = zones - known_zones
+      raise "Unknown firewall zones #{unknown_zones}" unless unknown_zones.empty?
 
-      Builtins.foreach(zones) { |one_zone| Builtins.foreach(fallback_ports) do |one_port|
-        SuSEFirewall.AddService(one_port, "TCP", one_zone)
-      end }
+      log.info "Enabling fallback ports: #{fallback_ports} in zones: #{zones}"
+      zones.each do |one_zone|
+        fallback_ports.each do |one_port|
+          SuSEFirewall.AddService(one_port, "TCP", one_zone)
+        end
+      end
 
       nil
     end
 
     # Function opens service for network interfaces given as the third parameter.
     # Fallback ports are used if the given service is uknown.
+    # If interfaces are not assigned to any firewall zone, all zones will be used.
     #
     # @see OpenServiceOnNonDialUpInterfaces for more info.
     #
@@ -260,19 +258,15 @@ module Yast
       interfaces = deep_copy(interfaces)
       zones = SuSEFirewall.GetZonesOfInterfaces(interfaces)
 
-      if SuSEFirewallServices.IsKnownService(service)
-        Builtins.y2milestone(
-          "Opening service %1 on interfaces %2 (zones %3)",
-          service,
-          interfaces,
-          zones
-        )
-        SuSEFirewall.SetServicesForZones([service], zones, true)
-      end
+      # Interfaces might not be assigned to any zone yet, use all zones
+      zones = SuSEFirewall.GetKnownFirewallZones() if zones.empty?
 
-      if SuSEFirewallServices.IsKnownService(service) != true ||
-          ServiceEnabled(service, interfaces) != true
-        EnableFallbackPorts(fallback_ports, interfaces)
+      if SuSEFirewallServices.IsKnownService(service)
+        log.info "Opening service #{service} on interfaces #{interfaces} (zones #{zones})"
+        SuSEFirewall.SetServicesForZones([service], zones, true)
+      else
+        log.warn "Unknown service #{service}, enabling fallback ports"
+        EnableFallbackPorts(fallback_ports, zones)
       end
 
       nil
@@ -290,7 +284,7 @@ module Yast
       Builtins.foreach(SuSEFirewall.GetKnownFirewallZones) do |zone|
         # either service is supported
         if SuSEFirewall.IsServiceSupportedInZone(service, zone)
-          ret = true 
+          ret = true
           # or check for ports
         else
           all_ports = true
@@ -325,10 +319,10 @@ module Yast
 
       # Opening the service for non-dial-up interfaces
       if Ops.greater_than(Builtins.size(non_dial_up_interfaces), 0)
-        OpenServiceInInterfaces(service, fallback_ports, non_dial_up_interfaces) 
+        OpenServiceInInterfaces(service, fallback_ports, non_dial_up_interfaces)
         # Only dial-up network interfaces, there mustn't be any non-dial-up one
       elsif Ops.greater_than(Builtins.size(dial_up_interfaces), 0)
-        OpenServiceInInterfaces(service, fallback_ports, dial_up_interfaces) 
+        OpenServiceInInterfaces(service, fallback_ports, dial_up_interfaces)
         # No network interfaces are known
       elsif Builtins.size(@known_interfaces) == 0
         if SuSEFirewall.IsAnyNetworkInterfaceSupported == true
@@ -402,7 +396,7 @@ module Yast
         SetInterfacesToZone(dial_up_interfaces, "EXT")
         if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
           SuSEFirewall.SetServicesForZones([@ssh_service], ["INT", "EXT"], true)
-        end 
+        end
 
         # has non-dial-up and doesn't have dial-up interfaces
       elsif Ops.greater_than(Builtins.size(non_dup_interfaces), 0) &&
@@ -410,7 +404,7 @@ module Yast
         SetInterfacesToZone(non_dup_interfaces, "EXT")
         if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
           SuSEFirewall.SetServicesForZones([@ssh_service], ["EXT"], true)
-        end 
+        end
 
         # doesn't have non-dial-up and has dial-up interfaces
       elsif Builtins.size(non_dup_interfaces) == 0 &&
@@ -452,18 +446,7 @@ module Yast
         SuSEFirewall.AddXenSupport
       end
 
-      # BNC #766300 - Automatically propose opening iscsi-target port
-      # when installing with withiscsi=1
-      if Linuxrc.useiscsi
-        Builtins.y2milestone(
-          "iSCSI has been used during installation, opening %1 service",
-          @iscsi_target_service
-        )
-        OpenServiceOnNonDialUpInterfaces(
-          @iscsi_target_service,
-          @iscsi_target_fallback_ports
-        )
-      end
+      propose_iscsi if Linuxrc.useiscsi
 
       SetKnownInterfaces(SuSEFirewall.GetListOfKnownInterfaces)
 
@@ -532,7 +515,7 @@ module Yast
       if !GetChangedByUser()
         Builtins.y2milestone("Calling firewall configuration proposal")
         Reset()
-        ProposeFunctions() 
+        ProposeFunctions()
         # Changed - don't break user's configuration
       else
         Builtins.y2milestone("Calling firewall configuration update proposal")
@@ -576,17 +559,19 @@ module Yast
       output = Ops.add(
         Ops.add(
           Ops.add(output, "<li>"),
-          firewall_is_enabled ?
+          if firewall_is_enabled
             # TRANSLATORS: Proposal informative text "Firewall is enabled (disable)" with link around
             # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
             _(
               "Firewall is enabled (<a href=\"firewall--disable_firewall_in_proposal\">disable</a>)"
-            ) :
+            )
+          else
             # TRANSLATORS: Proposal informative text "Firewall is disabled (enable)" with link around
             # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
             _(
               "Firewall is disabled (<a href=\"firewall--enable_firewall_in_proposal\">enable</a>)"
             )
+          end
         ),
         "</li>\n"
       )
@@ -615,20 +600,22 @@ module Yast
           output = Ops.add(
             Ops.add(
               Ops.add(output, "<li>"),
-              is_ssh_enabled ?
+              if is_ssh_enabled
                 # TRANSLATORS: Network proposal informative text with link around
                 # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
                 _(
                   "SSH port is open (<a href=\"firewall--disable_ssh_in_proposal\">close</a>)"
-                ) :
+                )
+              else
                 # TRANSLATORS: Network proposal informative text with link around
                 # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
                 _(
                   "SSH port is blocked (<a href=\"firewall--enable_ssh_in_proposal\">open</a>)"
                 )
+              end
             ),
             "</li>\n"
-          ) 
+          )
 
           # No known interfaces, but 'any' is supported
           # and ssh is enabled there
@@ -676,7 +663,7 @@ module Yast
               )
             ) do |zone|
               if SuSEFirewall.IsServiceSupportedInZone(@vnc_service, zone) == true
-                is_vnc_enabled = true 
+                is_vnc_enabled = true
                 # checking also fallback ports
               else
                 set_vnc_enabled_to = true
@@ -697,17 +684,19 @@ module Yast
           output = Ops.add(
             Ops.add(
               Ops.add(output, "<li>"),
-              is_vnc_enabled ?
+              if is_vnc_enabled
                 # TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is enabled" with link around
                 # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
                 _(
                   "Remote Administration (VNC) ports are open (<a href=\"firewall--disable_vnc_in_proposal\">close</a>)"
-                ) :
+                )
+              else
                 # TRANSLATORS: Network proposal informative text "Remote Administration (VNC) is disabled" with link around
                 # IMPORTANT: Please, do not change the HTML link <a href="...">...</a>, only visible text
                 _(
                   "Remote Administration (VNC) ports are blocked (<a href=\"firewall--enable_vnc_in_proposal\">open</a>)"
                 )
+              end
             ),
             "</li>\n"
           )
@@ -731,11 +720,13 @@ module Yast
           output = Ops.add(
             Ops.add(
               Ops.add(output, "<li>"),
-              is_iscsi_enabled ?
+              if is_iscsi_enabled
                 # TRANSLATORS: Network proposal informative text
-                _("iSCSI Target ports are open") :
+                _("iSCSI Target ports are open")
+              else
                 # TRANSLATORS: Network proposal informative text
                 _("iSCSI Target ports are blocked")
+              end
             ),
             "</li>\n"
           )
@@ -768,14 +759,25 @@ module Yast
       { "output" => output, "warning" => warning }
     end
 
-    publish :function => :OpenServiceOnNonDialUpInterfaces, :type => "void (string, list <string>)"
-    publish :function => :SetChangedByUser, :type => "void (boolean)"
-    publish :function => :GetChangedByUser, :type => "boolean ()"
-    publish :function => :SetProposalInitialized, :type => "void (boolean)"
-    publish :function => :GetProposalInitialized, :type => "boolean ()"
-    publish :function => :Reset, :type => "void ()"
-    publish :function => :Propose, :type => "void ()"
-    publish :function => :ProposalSummary, :type => "map <string, string> ()"
+    # Proposes firewall settings for iSCSI
+    def propose_iscsi
+      log.info "iSCSI has been used during installation, proposing FW full_init_on_boot"
+
+      # bsc#916376: ports need to be open already during boot
+      SuSEFirewall.full_init_on_boot(true)
+
+      nil
+    end
+
+    publish function: :OpenServiceOnNonDialUpInterfaces, type: "void (string, list <string>)"
+    publish function: :SetChangedByUser, type: "void (boolean)"
+    publish function: :GetChangedByUser, type: "boolean ()"
+    publish function: :SetProposalInitialized, type: "void (boolean)"
+    publish function: :GetProposalInitialized, type: "boolean ()"
+    publish function: :Reset, type: "void ()"
+    publish function: :Propose, type: "void ()"
+    publish function: :ProposalSummary, type: "map <string, string> ()"
+    publish function: :propose_iscsi, type: "void ()"
   end
 
   SuSEFirewallProposal = SuSEFirewallProposalClass.new

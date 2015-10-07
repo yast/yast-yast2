@@ -32,7 +32,6 @@ require "yast"
 module Yast
   class DebugHooksClass < Module
     def main
-
       Yast.import "Popup"
       Yast.import "Directory"
 
@@ -55,8 +54,8 @@ module Yast
 
     def Checkpoint(filename, at_entry)
       if Ops.greater_or_equal(
-          WFM.Read(path(".local.size"), Ops.add("/tmp/", filename)),
-          0
+        WFM.Read(path(".local.size"), Ops.add("/tmp/", filename)),
+        0
         )
         if at_entry
           Popup.Message(Builtins.sformat("Entry: %1", filename))
@@ -66,7 +65,6 @@ module Yast
       end
       nil
     end
-
 
     # Execute Script
     # @param [String] script name
@@ -108,19 +106,19 @@ module Yast
       # do not run scripts twice
       if at_entry
         if Ops.greater_than(
-            WFM.Read(
-              path(".local.size"),
-              Builtins.sformat("%1/%2_pre.sh", @tmp_dir, filename)
-            ),
-            0
+          WFM.Read(
+            path(".local.size"),
+            Builtins.sformat("%1/%2_pre.sh", @tmp_dir, filename)
+          ),
+          0
           )
           ExecuteScript(Builtins.sformat("%1_pre.sh", filename), "shell")
         elsif Ops.greater_than(
-            WFM.Read(
-              path(".local.size"),
-              Builtins.sformat("%1/%2_pre.pl", @tmp_dir, filename)
-            ),
-            0
+          WFM.Read(
+            path(".local.size"),
+            Builtins.sformat("%1/%2_pre.pl", @tmp_dir, filename)
+          ),
+          0
           )
           ExecuteScript(Builtins.sformat("%1_pre.pl", filename), "perl")
         else
@@ -132,19 +130,19 @@ module Yast
         end
       else
         if Ops.greater_than(
-            WFM.Read(
-              path(".local.size"),
-              Builtins.sformat("%1/%2_post.sh", @tmp_dir, filename)
-            ),
-            0
+          WFM.Read(
+            path(".local.size"),
+            Builtins.sformat("%1/%2_post.sh", @tmp_dir, filename)
+          ),
+          0
           )
           ExecuteScript(Builtins.sformat("%1_post.sh", filename), "shell")
         elsif Ops.greater_than(
-            WFM.Read(
-              path(".local.size"),
-              Builtins.sformat("%1/%2_post.pl", @tmp_dir, filename)
-            ),
-            0
+          WFM.Read(
+            path(".local.size"),
+            Builtins.sformat("%1/%2_post.pl", @tmp_dir, filename)
+          ),
+          0
           )
           ExecuteScript(Builtins.sformat("%1_post.pl", filename), "perl")
         else
@@ -158,8 +156,8 @@ module Yast
       nil
     end
 
-    publish :function => :Checkpoint, :type => "void (string, boolean)"
-    publish :function => :Run, :type => "void (string, boolean)"
+    publish function: :Checkpoint, type: "void (string, boolean)"
+    publish function: :Run, type: "void (string, boolean)"
   end
 
   DebugHooks = DebugHooksClass.new

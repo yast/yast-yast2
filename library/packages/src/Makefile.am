@@ -19,6 +19,10 @@ yncludedir = @yncludedir@/packages
 ynclude_DATA = \
   include/packages/common.rb
 
-EXTRA_DIST = $(module_DATA) $(ynclude_DATA)
+ylibdir = "${yast2dir}/lib/packages"
+ylib_DATA = \
+  lib/packages/dummy_callbacks.rb
+
+EXTRA_DIST = $(module_DATA) $(ynclude_DATA) $(ylib_DATA)
 
 include $(top_srcdir)/Makefile.am.common

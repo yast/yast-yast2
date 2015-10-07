@@ -76,7 +76,7 @@ module Yast
     # Describe a valid MAC address
     # @return [String] description of a valid MAC address
     def ValidMAC
-      #describe valid MAC address
+      # describe valid MAC address
       _(
         "A valid MAC address consists of six pairs of hexadecimal\ndigits separated by colons."
       )
@@ -86,7 +86,7 @@ module Yast
     # @param [String] address MAC address
     # @return true if correct
     def CheckMAC(address)
-      return false if address == nil || address == ""
+      return false if address.nil? || address == ""
 
       regexp = "[0-9a-fA-F]{2,2}"
       regexp = Builtins.sformat("(%1:){5,5}%1", regexp)
@@ -94,16 +94,16 @@ module Yast
       Builtins.regexpmatch(address, regexp)
     end
 
-    publish :variable => :ValidChars, :type => "string"
-    publish :variable => :ValidChars4, :type => "string"
-    publish :variable => :ValidChars6, :type => "string"
-    publish :variable => :ValidCharsMAC, :type => "string"
-    publish :function => :Valid4, :type => "string ()"
-    publish :function => :Check4, :type => "boolean (string)"
-    publish :function => :Check6, :type => "boolean (string)"
-    publish :function => :Check, :type => "boolean (string)"
-    publish :function => :ValidMAC, :type => "string ()"
-    publish :function => :CheckMAC, :type => "boolean (string)"
+    publish variable: :ValidChars, type: "string"
+    publish variable: :ValidChars4, type: "string"
+    publish variable: :ValidChars6, type: "string"
+    publish variable: :ValidCharsMAC, type: "string"
+    publish function: :Valid4, type: "string ()"
+    publish function: :Check4, type: "boolean (string)"
+    publish function: :Check6, type: "boolean (string)"
+    publish function: :Check, type: "boolean (string)"
+    publish function: :ValidMAC, type: "string ()"
+    publish function: :CheckMAC, type: "boolean (string)"
   end
 
   Address = AddressClass.new

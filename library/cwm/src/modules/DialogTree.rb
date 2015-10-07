@@ -40,7 +40,6 @@ module Yast
       Yast.import "Label"
       Yast.import "Wizard"
 
-
       # local data
 
       # Currently selected item in the tree
@@ -67,7 +66,7 @@ module Yast
 
     # Init function of virtual DialogTree widget
     # @param [String] key string widget key
-    def DialogTreeInit(key)
+    def DialogTreeInit(_key)
       if UI.WidgetExists(Id(:wizardTree))
         UI.ChangeWidget(Id(:wizardTree), :CurrentItem, @selected_screen)
         UI.SetFocus(Id(:wizardTree))
@@ -82,7 +81,7 @@ module Yast
     # @param [String] key string widget key
     # @param [Hash] event map event that caused handler call
     # @return [Symbol] for wizard sequencer or nil
-    def DialogTreeHandle(key, event)
+    def DialogTreeHandle(_key, event)
       event = deep_copy(event)
       ret = Ops.get(event, "ID")
 
@@ -110,8 +109,6 @@ module Yast
         )
       }
     end
-
-
 
     # internal functions
 
@@ -141,9 +138,6 @@ module Yast
       # return widgets of the dialog for further usage
       deep_copy(w)
     end
-
-
-
 
     # Draw the dialog with the flat tree (only single level of the tree entries)
     # @param [Array<String>] ids_order a list of IDs in the same order as they are expected to be
@@ -206,9 +200,9 @@ module Yast
     def AdjustButtonsAny(buttons)
       buttons = deep_copy(buttons)
       buttons2 = Convert.convert(
-        Builtins.filter(buttons) { |k, v| Builtins.issubstring(k, "_button") },
-        :from => "map <string, any>",
-        :to   => "map <string, string>"
+        Builtins.filter(buttons) { |k, _v| Builtins.issubstring(k, "_button") },
+        from: "map <string, any>",
+        to:   "map <string, string>"
       )
       AdjustButtons(buttons2)
 
@@ -235,13 +229,13 @@ module Yast
       initial_screen = Ops.get_string(settings, "initial_screen", "")
       functions = Ops.get_map(settings, "functions", {})
 
-      initial_screen = "" if initial_screen == nil
-      Builtins.foreach(screens) do |k, v|
+      initial_screen = "" if initial_screen.nil?
+      Builtins.foreach(screens) do |k, _v|
         initial_screen = k if initial_screen == ""
       end if initial_screen == ""
 
       @selected_screen = initial_screen
-      ids = Builtins.maplist(screens) { |k, v| k }
+      ids = Builtins.maplist(screens) { |k, _v| k }
       extra_widget = GetVirtualDialogTreeWidget(ids)
 
       w = DrawScreen(
@@ -252,35 +246,35 @@ module Yast
       )
 
       ret = nil
-      while ret == nil
+      while ret.nil?
         CWM.SetValidationFailedHandler(
           fun_ref(method(:RestoreSelectedDialog), "void ()")
         )
         ret = CWM.Run(w, functions)
         CWM.SetValidationFailedHandler(nil)
         # switching scrren, dialog was validated and stored
-        if ret == :_cwm_internal_tree_handle
-          toEval = Convert.convert(
-            Ops.get(screens, [@selected_screen, "init"]),
-            :from => "any",
-            :to   => "symbol (string)"
+        next if ret != :_cwm_internal_tree_handle
+
+        toEval = Convert.convert(
+          Ops.get(screens, [@selected_screen, "init"]),
+          from: "any",
+          to:   "symbol (string)"
+        )
+        tab_init = nil
+        tab_init = toEval.call(@selected_screen) if !toEval.nil?
+        if tab_init.nil? # everything OK
+          w = DrawScreen(
+            Ops.get(screens, @selected_screen, {}),
+            widget_descr,
+            extra_widget,
+            false
           )
-          tab_init = nil
-          tab_init = toEval.call(@selected_screen) if toEval != nil
-          if tab_init == nil # everything OK
-            w = DrawScreen(
-              Ops.get(screens, @selected_screen, {}),
-              widget_descr,
-              extra_widget,
-              false
-            )
-            ret = nil
-          elsif tab_init == :refuse_display # do not display this screen
-            @selected_screen = @previous_screen
-            ret = nil # exit dialog
-          else
-            ret = tab_init
-          end
+          ret = nil
+        elsif tab_init == :refuse_display # do not display this screen
+          @selected_screen = @previous_screen
+          ret = nil # exit dialog
+        else
+          ret = tab_init
         end
       end
       ret
@@ -317,11 +311,11 @@ module Yast
       screens = Ops.get_map(settings, "screens", {})
       tree_handler = Convert.convert(
         Ops.get(settings, "tree_creator"),
-        :from => "any",
-        :to   => "list <map> ()"
+        from: "any",
+        to:   "list <map> ()"
       )
 
-      if tree_handler != nil
+      if !tree_handler.nil?
         ShowTree(tree_handler)
       else
         ShowFlat(ids_order, screens)
@@ -336,13 +330,13 @@ module Yast
       RunAndHide(settings)
     end
 
-    publish :function => :ShowFlat, :type => "void (list <string>, map <string, map <string, any>>)"
-    publish :function => :ShowTree, :type => "void (list <map> ())"
-    publish :function => :AdjustButtons, :type => "void (map <string, string>)"
-    publish :function => :AdjustButtonsAny, :type => "void (map <string, any>)"
-    publish :function => :Run, :type => "symbol (map <string, any>)"
-    publish :function => :RunAndHide, :type => "symbol (map <string, any>)"
-    publish :function => :ShowAndRun, :type => "symbol (map <string, any>)"
+    publish function: :ShowFlat, type: "void (list <string>, map <string, map <string, any>>)"
+    publish function: :ShowTree, type: "void (list <map> ())"
+    publish function: :AdjustButtons, type: "void (map <string, string>)"
+    publish function: :AdjustButtonsAny, type: "void (map <string, any>)"
+    publish function: :Run, type: "symbol (map <string, any>)"
+    publish function: :RunAndHide, type: "symbol (map <string, any>)"
+    publish function: :ShowAndRun, type: "symbol (map <string, any>)"
   end
 
   DialogTree = DialogTreeClass.new

@@ -37,6 +37,7 @@ module Yast
 
       Yast.import "IP"
       Yast.import "String"
+      Yast.import "FileUtils"
 
       # i18n characters in domain names are still not allowed
       #
@@ -44,15 +45,16 @@ module Yast
       @ValidChars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-"
       @ValidCharsDomain = Ops.add(@ValidChars, ".")
       @ValidCharsFQ = @ValidCharsDomain
+      @DefaultDomain = ""
     end
 
     # describe a valid domain name
     # @return description
     def ValidDomain
-      #Translators: dot: ".", hyphen: "-"
+      # Translators: dot: ".", hyphen: "-"
       _(
-        "A valid domain name consists of components separated by dots.\n" +
-          "Each component contains letters, digits, and hyphens. A hyphen may not\n" +
+        "A valid domain name consists of components separated by dots.\n" \
+          "Each component contains letters, digits, and hyphens. A hyphen may not\n" \
           "start or end a component and the last component may not begin with a digit."
       )
     end
@@ -60,7 +62,7 @@ module Yast
     # describe a valid host name
     # @return description
     def ValidHost
-      #Translators: hyphen: "-"
+      # Translators: hyphen: "-"
       _(
         "A valid host name consists of letters, digits, and hyphens.\nA host name may not begin or end with a hyphen.\n"
       )
@@ -78,7 +80,7 @@ module Yast
     # @param [String] host hostname
     # @return true if correct
     def Check(host)
-      if host == nil || host == "" || Ops.greater_than(Builtins.size(host), 63)
+      if host.nil? || host == "" || Ops.greater_than(Builtins.size(host), 63)
         return false
       end
       Builtins.regexpmatch(host, "^[[:alnum:]]([[:alnum:]-]*[[:alnum:]])?$")
@@ -88,7 +90,7 @@ module Yast
     # @param [String] domain domain name
     # @return true if correct
     def CheckDomain(domain)
-      return false if domain == nil || domain == ""
+      return false if domain.nil? || domain == ""
       # if "domain" contains "." character as last character remove it before validation (but it's valid)
       if Ops.greater_than(Builtins.size(domain), 1)
         if Builtins.substring(domain, Ops.subtract(Builtins.size(domain), 1), 1) == "."
@@ -112,12 +114,15 @@ module Yast
     end
 
     # Split FQ hostname to hostname and domain name
+    #
+    # If domain is not defined, returns empty string.
+    #
     # @param [String] fqhostname FQ hostname
-    # @return [Array] of hostname and domain name
+    # @return [Array] of hostname and domain name or empty in case of error
     # @example Hostname::SplitFQ("ftp.suse.cz") -> ["ftp", "suse.cz"]
-    # @example Hostname::SplitFQ("ftp") -> ["ftp"]
+    # @example Hostname::SplitFQ("ftp") -> ["ftp", ""]
     def SplitFQ(fqhostname)
-      if fqhostname == "" || fqhostname == nil
+      if fqhostname == "" || fqhostname.nil?
         Builtins.y2error("Bad FQ hostname: %1", fqhostname)
         return []
       end
@@ -126,13 +131,11 @@ module Yast
       dn = ""
 
       dot = Builtins.findfirstof(fqhostname, ".")
-      if dot != nil
+      if !dot.nil?
         hn = Builtins.substring(fqhostname, 0, dot)
         dn = Builtins.substring(fqhostname, Ops.add(dot, 1))
-        return [hn, dn]
       else
         hn = fqhostname
-        return [hn]
       end
 
       [hn, dn]
@@ -143,7 +146,7 @@ module Yast
     # @param [String] domain domain name
     # @return FQ hostname
     def MergeFQ(hostname, domain)
-      return hostname if domain == "" || domain == nil
+      return hostname if domain == "" || domain.nil?
       Ops.add(Ops.add(hostname, "."), domain)
     end
 
@@ -156,15 +159,16 @@ module Yast
       hostname_data = Convert.to_map(
         SCR.Execute(path(".target.bash_output"), "hostname --fqdn")
       )
-      if hostname_data == nil || Ops.get_integer(hostname_data, "exit", -1) != 0
-        fqhostname = {} !=
-          Convert.to_map(SCR.Read(path(".target.stat"), "/etc/HOSTNAME")) ?
-          Convert.to_string(SCR.Read(path(".target.string"), "/etc/HOSTNAME")) :
-          ""
+      if hostname_data.nil? || Ops.get_integer(hostname_data, "exit", -1) != 0
+        fqhostname = if FileUtils.Exists("/etc/hostname")
+                       SCR.Read(path(".target.string"), "/etc/hostname")
+                     else
+                       ""
+                     end
 
-        if fqhostname == "" || fqhostname == nil
-          #last resort (#429792)
-          fqhostname = "linux.site"
+        if fqhostname == "" || fqhostname.nil?
+          # last resort (#429792)
+          fqhostname = "linux.#{@DefaultDomain}"
         end
         Builtins.y2warning("Using fallback hostname %1", fqhostname)
       else
@@ -183,8 +187,8 @@ module Yast
       hostname = ""
       fqhostname = CurrentFQ()
 
-      #current FQDN is IP address - it happens, esp. in inst-sys :)
-      #so let's not cut it into pieces (#415109)
+      # current FQDN is IP address - it happens, esp. in inst-sys :)
+      # so let's not cut it into pieces (#415109)
       if IP.Check(fqhostname)
         hostname = fqhostname
       else
@@ -203,8 +207,8 @@ module Yast
       domain = ""
       fqhostname = CurrentFQ()
 
-      #the same as above, if FQDN is IP address
-      #let's claim domainname as empty (#415109)
+      # the same as above, if FQDN is IP address
+      # let's claim domainname as empty (#415109)
       if !IP.Check(fqhostname)
         data = SplitFQ(fqhostname)
 
@@ -217,20 +221,21 @@ module Yast
       domain
     end
 
-    publish :variable => :ValidChars, :type => "string"
-    publish :variable => :ValidCharsDomain, :type => "string"
-    publish :variable => :ValidCharsFQ, :type => "string"
-    publish :function => :ValidDomain, :type => "string ()"
-    publish :function => :ValidHost, :type => "string ()"
-    publish :function => :ValidFQ, :type => "string ()"
-    publish :function => :Check, :type => "boolean (string)"
-    publish :function => :CheckDomain, :type => "boolean (string)"
-    publish :function => :CheckFQ, :type => "boolean (string)"
-    publish :function => :SplitFQ, :type => "list <string> (string)"
-    publish :function => :MergeFQ, :type => "string (string, string)"
-    publish :function => :CurrentFQ, :type => "string ()"
-    publish :function => :CurrentHostname, :type => "string ()"
-    publish :function => :CurrentDomain, :type => "string ()"
+    publish variable: :ValidChars, type: "string"
+    publish variable: :ValidCharsDomain, type: "string"
+    publish variable: :ValidCharsFQ, type: "string"
+    publish variable: :DefaultDomain, type: "string"
+    publish function: :ValidDomain, type: "string ()"
+    publish function: :ValidHost, type: "string ()"
+    publish function: :ValidFQ, type: "string ()"
+    publish function: :Check, type: "boolean (string)"
+    publish function: :CheckDomain, type: "boolean (string)"
+    publish function: :CheckFQ, type: "boolean (string)"
+    publish function: :SplitFQ, type: "list <string> (string)"
+    publish function: :MergeFQ, type: "string (string, string)"
+    publish function: :CurrentFQ, type: "string ()"
+    publish function: :CurrentHostname, type: "string ()"
+    publish function: :CurrentDomain, type: "string ()"
   end
 
   Hostname = HostnameClass.new

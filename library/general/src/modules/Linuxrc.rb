@@ -31,6 +31,10 @@ require "yast"
 
 module Yast
   class LinuxrcClass < Module
+    # Disables filesystem snapshots (fate#317973)
+    # Possible values: all, post, pre, single
+    DISABLE_SNAPSHOTS = "disable_snapshots"
+
     def main
       Yast.import "Mode"
       Yast.import "Stage"
@@ -43,7 +47,7 @@ module Yast
     # routines for reading data from /etc/install.inf
 
     def ReadInstallInf
-      return if @install_inf != nil
+      return if !@install_inf.nil?
 
       @install_inf = {}
       # don't read anything if the file doesn't exist
@@ -52,7 +56,7 @@ module Yast
         return
       end
       entries = SCR.Dir(path(".etc.install_inf"))
-      if entries == nil
+      if entries.nil?
         Builtins.y2error("install.inf is empty")
         return
       end
@@ -84,13 +88,13 @@ module Yast
     # installation mode wrappers
 
     def manual
-      return @_manual if @_manual != nil
+      return @_manual if !@_manual.nil?
       @_manual = InstallInf("Manual") == "1"
       if !@_manual
         tmp = Convert.to_string(
           SCR.Read(path(".target.string"), "/proc/cmdline")
         )
-        if tmp != nil &&
+        if !tmp.nil? &&
             Builtins.contains(Builtins.splitstring(tmp, " \n"), "manual")
           @_manual = true
         end
@@ -100,12 +104,12 @@ module Yast
 
     # running via serial console
     def serial_console
-      InstallInf("Console") != nil
+      !InstallInf("Console").nil?
     end
 
     # braille mode ?
     def braille
-      InstallInf("Braille") != nil
+      !InstallInf("Braille").nil?
     end
 
     # vnc mode ?
@@ -114,7 +118,7 @@ module Yast
     end
     # remote X mode ?
     def display_ip
-      InstallInf("Display_IP") != nil
+      !InstallInf("Display_IP").nil?
     end
 
     # ssh mode ?
@@ -163,18 +167,18 @@ module Yast
       if Stage.initial && !Mode.test
         inst_if_file = "/etc/install.inf"
 
-        if root != nil && root != "" && root != "/"
+        if !root.nil? && root != "" && root != "/"
           if WFM.Read(path(".local.size"), inst_if_file) != -1
             Builtins.y2milestone("Copying %1 to %2", inst_if_file, root)
             if Convert.to_integer(
-                WFM.Execute(
-                  path(".local.bash"),
-                  Builtins.sformat(
-                    "grep -vi '^Sourcemounted' '%1' > %2/%1; chmod 0600 %2/%1",
-                    inst_if_file,
-                    root
-                  )
+              WFM.Execute(
+                path(".local.bash"),
+                Builtins.sformat(
+                  "grep -vi '^Sourcemounted' '%1' > %2/%1; chmod 0600 %2/%1",
+                  inst_if_file,
+                  root
                 )
+              )
               ) != 0
               Builtins.y2error(
                 "Cannot SaveInstallInf %1 to %2",
@@ -211,19 +215,53 @@ module Yast
       true
     end
 
-    publish :function => :ResetInstallInf, :type => "void ()"
-    publish :function => :InstallInf, :type => "string (string)"
-    publish :function => :manual, :type => "boolean ()"
-    publish :function => :serial_console, :type => "boolean ()"
-    publish :function => :braille, :type => "boolean ()"
-    publish :function => :vnc, :type => "boolean ()"
-    publish :function => :display_ip, :type => "boolean ()"
-    publish :function => :usessh, :type => "boolean ()"
-    publish :function => :useiscsi, :type => "boolean ()"
-    publish :function => :text, :type => "boolean ()"
-    publish :function => :WriteYaSTInf, :type => "void (map <string, string>)"
-    publish :function => :SaveInstallInf, :type => "boolean (string)"
-    publish :function => :keys, :type => "list <string> ()"
+    # Returns value of a given Linxurc key/feature defined on commandline
+    # and written into install.inf
+    #
+    # @param [String] key
+    # @return [String, nil] value of a given key or `nil` if not found
+    def value_for(feature_key)
+      ReadInstallInf()
+      feature_key = polish(feature_key)
+
+      # at first check the keys in install.inf
+      install_inf_key, install_inf_val = @install_inf.find { |k, _v| polish(k) == feature_key }
+      return install_inf_val if install_inf_key
+
+      # then check the command line
+      ret = nil
+      @install_inf.fetch("Cmdline", "").split.each do |cmdline_entry|
+        key, val = cmdline_entry.split("=", 2)
+        ret = val if polish(key) == feature_key
+      end
+
+      ret
+    end
+
+    publish function: :ResetInstallInf, type: "void ()"
+    publish function: :InstallInf, type: "string (string)"
+    publish function: :manual, type: "boolean ()"
+    publish function: :serial_console, type: "boolean ()"
+    publish function: :braille, type: "boolean ()"
+    publish function: :vnc, type: "boolean ()"
+    publish function: :display_ip, type: "boolean ()"
+    publish function: :usessh, type: "boolean ()"
+    publish function: :useiscsi, type: "boolean ()"
+    publish function: :text, type: "boolean ()"
+    publish function: :WriteYaSTInf, type: "void (map <string, string>)"
+    publish function: :SaveInstallInf, type: "boolean (string)"
+    publish function: :keys, type: "list <string> ()"
+    publish function: :value_for, type: "string (string)"
+
+  private
+
+    # Removes characters ignored by Linuxrc and turns all to downcase
+    #
+    # @param [String]
+    # @return [String]
+    def polish(key)
+      key.downcase.tr("-_\\.", "")
+    end
   end
 
   Linuxrc = LinuxrcClass.new

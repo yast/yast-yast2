@@ -62,7 +62,7 @@ module Yast
       Builtins.foreach(lparts) do |lpart|
         s = Builtins.find(lpart, ">")
         tag = Builtins.tolower(Builtins.substring(lpart, 0, s))
-        #*** Handle tags ****
+        # *** Handle tags ****
 
         # BR
         if tag == "br"
@@ -88,7 +88,7 @@ module Yast
           inli = false
           result = Ops.add(result, "\n")
         end
-        #*** Add the text ****
+        # *** Add the text ****
         if s != -1
           lpart = String.CutBlanks(Builtins.substring(lpart, Ops.add(s, 1)))
         end
@@ -136,8 +136,8 @@ module Yast
       end
     end
 
-    publish :function => :Rich2Plain, :type => "string (string)"
-    publish :function => :DetectRichText, :type => "symbol (string)"
+    publish function: :Rich2Plain, type: "string (string)"
+    publish function: :DetectRichText, type: "symbol (string)"
   end
 
   RichText = RichTextClass.new

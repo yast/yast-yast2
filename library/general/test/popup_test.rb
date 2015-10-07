@@ -2,12 +2,11 @@
 
 require_relative "test_helper"
 
-include Yast
-
 Yast.import "Popup"
 
-describe "Popup" do
+describe Yast::Popup do
   let(:ui) { double("Yast::UI") }
+  subject { Yast::Popup }
 
   before do
     # generic UI stubs for the progress dialog
@@ -24,18 +23,17 @@ describe "Popup" do
 
     it "opens a popup dialog and closes it at the end" do
       # just pass an empty block
-      Popup.Feedback("Label", "Message") {}
+      subject.Feedback("Label", "Message") {}
     end
 
     it "closes the popup even when an exception occurs in the block" do
       # raise an exception in the block
-      expect{Popup.Feedback("Label", "Message") { raise "TEST"}}.to raise_error(RuntimeError, "TEST")
+      expect { subject.Feedback("Label", "Message") { raise "TEST" } }.to raise_error(RuntimeError, "TEST")
     end
 
     it "raises exception when the block parameter is missing" do
       # no block passed
-      expect{Popup.Feedback("Label", "Message")}.to raise_error(LocalJumpError)
+      expect { subject.Feedback("Label", "Message") }.to raise_error
     end
   end
-
 end

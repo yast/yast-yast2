@@ -1,7 +1,7 @@
 #
 # spec file for package yast2
 #
-# Copyright (c) 2013-2014 SUSE LINUX Products GmbH, Nuernberg, Germany.
+# Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -17,21 +17,24 @@
 
 
 Name:           yast2
-Version:        3.1.115
+Version:        3.1.151
 Release:        0
-URL:            https://github.com/yast/yast-yast2
+Url:            https://github.com/yast/yast-yast2
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
 
-Group:          System/YaST
-License:        GPL-2.0
 Source1:        yast2-rpmlintrc
 
-BuildRequires:  perl-XML-Writer update-desktop-files yast2-perl-bindings yast2-testsuite
+BuildRequires:  perl-XML-Writer
+BuildRequires:  update-desktop-files
 BuildRequires:  yast2-devtools >= 3.1.10
+BuildRequires:  yast2-perl-bindings
+BuildRequires:  yast2-testsuite
 # Needed already in build time
-BuildRequires:  yast2-core >= 2.18.12 yast2-pkg-bindings >= 2.20.3 yast2-ycp-ui-bindings >= 2.18.4
+BuildRequires:  yast2-core >= 2.18.12
+BuildRequires:  yast2-pkg-bindings >= 2.20.3
+BuildRequires:  yast2-ycp-ui-bindings >= 3.1.8
 
 # Needed for tests
 BuildRequires:  grep
@@ -41,6 +44,8 @@ BuildRequires:  fdupes
 
 # For running RSpec tests during build
 BuildRequires:  rubygem(rspec)
+# To have Yast::CoreExt::AnsiString
+BuildRequires:  yast2-ruby-bindings >= 3.1.36
 
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq
@@ -48,19 +53,20 @@ PreReq:         %fillup_prereq
 # ag_ini section_private
 # ag_ini with (un)quoting support
 Requires:       yast2-core >= 2.23.0
-# Mod_UI
-# new UI::OpenContextMenu
-Requires:       yast2-ycp-ui-bindings >= 2.18.4
+# new UI::SetApplicationIcon
+Requires:       yast2-ycp-ui-bindings >= 3.1.8
 
 # changed StartPackage callback signature
 Requires:       yast2-pkg-bindings >= 2.20.3
-Requires:       yui_backend 
+Requires:       yui_backend
 # For Cron Agent, Module
 Requires:       perl-Config-Crontab
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
-Requires:       coreutils sysconfig >= 0.80.0
-Requires:       yast2-xml yast2-hardware-detection
+Requires:       coreutils
+Requires:       sysconfig >= 0.80.0
+Requires:       yast2-hardware-detection
+Requires:       yast2-xml
 # for SLPAPI.pm
 Requires:       yast2-perl-bindings
 # for ag_anyxml
@@ -95,29 +101,37 @@ Conflicts:      yast2-mouse < 2.16.0
 Conflicts:      autoyast2-installation < 2.16.2
 # country_long.ycp and country.ycp moved to yast2
 Conflicts:      yast2-country < 2.16.3
-# DnsServerAPI moved to yast2.rpm (by mzugec)
-Conflicts:      yast2-dns-server < 2.17.0
+# SrvStatusComponent moved to yast2.rpm
+Conflicts:      yast2-dns-server < 3.1.17
 
 Provides:       yast2-lib-sequencer
 Obsoletes:      yast2-lib-sequencer
-Provides:       yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
-Obsoletes:      yast2-lib-wizard yast2-lib-wizard-devel yast2-trans-wizard
-Provides:       yast2-trans-menu y2t_menu
-Obsoletes:      yast2-trans-menu y2t_menu
+Provides:       yast2-lib-wizard
+Provides:       yast2-lib-wizard-devel
+Provides:       yast2-trans-wizard
+Obsoletes:      yast2-lib-wizard
+Obsoletes:      yast2-lib-wizard-devel
+Obsoletes:      yast2-trans-wizard
+Provides:       y2t_menu
+Provides:       yast2-trans-menu
+Obsoletes:      y2t_menu
+Obsoletes:      yast2-trans-menu
 
 # moved here from another packages
-Provides:       yast2-installation:/usr/share/YaST2/modules/Installation.ycp
-Provides:       yast2-installation:/usr/share/YaST2/modules/Product.ycp
+Provides:       yast2-dns-server:/usr/share/YaST2/modules/DnsServerAPI.pm
 Provides:       yast2-installation:/usr/share/YaST2/modules/Hotplug.ycp
 Provides:       yast2-installation:/usr/share/YaST2/modules/HwStatus.ycp
+Provides:       yast2-installation:/usr/share/YaST2/modules/Installation.ycp
+Provides:       yast2-installation:/usr/share/YaST2/modules/Product.ycp
+Provides:       yast2-mail-aliases
 Provides:       yast2-network:/usr/share/YaST2/modules/Internet.ycp
 Provides:       yast2-packager:/usr/lib/YaST2/servers_non_y2/ag_anyxml
-Provides:       yast2-dns-server:/usr/share/YaST2/modules/DnsServerAPI.pm
-Provides:       yast2-mail-aliases
 
-Requires:       yast2-ruby-bindings >= 1.0.0
+Requires:       yast2-ruby-bindings >= 3.1.33
 
 Summary:        YaST2 - Main Package
+License:        GPL-2.0
+Group:          System/YaST
 
 %description
 This package contains scripts and data needed for SUSE Linux
@@ -125,14 +139,14 @@ installation with YaST2
 
 %package devel-doc
 Requires:       yast2 = %version
-Group:          System/YaST
 Provides:       yast2-lib-sequencer-devel
-Obsoletes:      yast2-lib-sequencer-devel
 Obsoletes:      yast2-devel
+Obsoletes:      yast2-lib-sequencer-devel
 Provides:       yast2-devel
 Requires:       yast2-core-devel
 
 Summary:        YaST2 - Development Scripts and Documentation
+Group:          System/YaST
 
 %description devel-doc
 This package contains scripts and data needed for a SUSE Linux
@@ -169,7 +183,6 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 # (the RPM package size is decreased just by few kilobytes
 # because of the compression)
 %fdupes -s %buildroot/%_prefix/share/doc/packages/yast2
-
 
 %post
 %{fillup_only -n yast2}

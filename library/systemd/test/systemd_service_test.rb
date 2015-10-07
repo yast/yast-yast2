@@ -3,7 +3,7 @@
 require_relative "test_helper"
 
 module Yast
-  import 'SystemdService'
+  import "SystemdService"
 
   describe SystemdService do
     include SystemdServiceStubs
@@ -23,23 +23,23 @@ module Yast
       end
 
       it "returns nil if the service unit does not exist" do
-        stub_services(:service=>'unknown')
-        service = SystemdService.find('unknown')
+        stub_services(service: "unknown")
+        service = SystemdService.find("unknown")
         expect(service).to be_nil
       end
     end
 
     describe ".find!" do
       it "returns the service unit object specified in parameter" do
-        service = SystemdService.find('sshd')
+        service = SystemdService.find("sshd")
         expect(service).to be_a(SystemdUnit)
         expect(service.unit_type).to eq("service")
         expect(service.unit_name).to eq("sshd")
       end
 
       it "raises SystemdServiceNotFound error if unit does not exist" do
-        stub_services(:service=>'unknown')
-        expect { SystemdService.find!('unknown') }.to raise_error(SystemdServiceNotFound)
+        stub_services(service: "unknown")
+        expect { SystemdService.find!("unknown") }.to raise_error(SystemdServiceNotFound)
       end
     end
 
@@ -48,7 +48,7 @@ module Yast
         services = SystemdService.all
         expect(services).to be_a(Array)
         expect(services).not_to be_empty
-        services.each {|s| expect(s.unit_type).to eq('service')}
+        services.each { |s| expect(s.unit_type).to eq("service") }
       end
     end
 
@@ -56,7 +56,7 @@ module Yast
       it "returns true if the service is running" do
         service = SystemdService.find "sshd"
         expect(service).to respond_to(:running?)
-        expect(service.running?).to be_true
+        expect(service.running?).to eq(true)
       end
     end
 
@@ -70,34 +70,34 @@ module Yast
 
     context "Start a service on the installation system" do
       it "starts a service with a specialized inst-sys helper if available" do
-        File.stub(:exist?).with('/bin/service_start').and_return(true)
+        allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
         service = SystemdService.find("sshd")
-        SCR.stub(:Execute).and_return({'stderr'=>'', 'stdout'=>'', 'exit'=>0})
+        allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
         expect(service).not_to receive(:command) # SystemdUnit#command
-        expect(service.start).to be_true
+        expect(service.start).to eq(true)
       end
     end
 
     context "Restart a service on the installation system" do
       it "restarts a service with a specialized inst-sys helper if available" do
-        SystemdServiceClass::Service.any_instance.stub(:sleep).and_return(1)
-        File.stub(:exist?).with('/bin/service_start').and_return(true)
+        allow_any_instance_of(SystemdServiceClass::Service).to receive(:sleep).and_return(1)
+        allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
         service = SystemdService.find("sshd")
-        SCR.stub(:Execute).and_return({'stderr'=>'', 'stdout'=>'', 'exit'=>0})
+        allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
         expect(service).to receive(:stop).ordered.and_call_original
         expect(service).to receive(:start).ordered.and_call_original
         expect(service).not_to receive(:command) # SystemdUnit#command
-        expect(service.restart).to be_true
+        expect(service.restart).to eq(true)
       end
     end
 
     context "Stop a service on the installation system" do
       it "stops a service with a specialized inst-sys helper" do
-        File.stub(:exist?).with('/bin/service_start').and_return(true)
+        allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
         service = SystemdService.find("sshd")
-        SCR.stub(:Execute).and_return({'stderr'=>'', 'stdout'=>'', 'exit'=>0})
+        allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
         expect(service).not_to receive(:command) # SystemdUnit#command
-        expect(service.stop).to be_true
+        expect(service.stop).to eq(true)
       end
     end
   end

@@ -22,8 +22,7 @@
 #
 # ***************************************************************************
 module Yast
-
-  #inject NetworkInterfaces accessor so we can modify Devices
+  # inject NetworkInterfaces accessor so we can modify Devices
   class NetworkInterfacesClass < Module
     attr_accessor :OriginalDevices
   end
@@ -55,11 +54,11 @@ module Yast
       Yast.import "NetworkInterfaces"
 
       DUMP("NetworkInterfaces::Read")
-      TEST(lambda { NetworkInterfaces.Read }, [@READ, {}, @EXEC], nil)
+      TEST(->() { NetworkInterfaces.Read }, [@READ, {}, @EXEC], nil)
       NetworkInterfaces.OriginalDevices = nil
 
       DUMP("NetworkInterfaces::Write")
-      TEST(lambda { NetworkInterfaces.Write("") }, [@READ], nil)
+      TEST(->() { NetworkInterfaces.Write("") }, [@READ], nil)
 
       nil
     end

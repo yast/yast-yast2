@@ -42,10 +42,6 @@ module Yast
       Yast.import "Popup"
       Yast.import "Wizard"
 
-
-
-
-
       # local store
 
       # List of items in the currently displayed dialog
@@ -100,7 +96,7 @@ module Yast
     # Set which item is to be selected
     # @param [String] selected string the item that is should be marked as selected
     def _SetSelectedItem(selected)
-      if selected != nil
+      if !selected.nil?
         UI.ChangeWidget(Id(:_hw_items), :CurrentItem, selected)
         UI.ChangeWidget(
           Id(:_hw_sum),
@@ -115,13 +111,13 @@ module Yast
     # Init function of the widget
     # Used when using the callback interface
     # @param [String] key strnig the widget key
-    def Init(key)
-      if @set_items_callback != nil
+    def Init(_key)
+      if !@set_items_callback.nil?
         @set_items_callback.call
       else
         Builtins.y2warning("No initialization callback")
       end
-      if @select_initial_item_callback != nil
+      if !@select_initial_item_callback.nil?
         @select_initial_item_callback.call
       else
         _SetSelectedItem(Ops.get_string(@current_items, [0, "id"]))
@@ -136,13 +132,13 @@ module Yast
     # @param [String] key strnig the widget key
     # @param [Hash] event map event to be handled
     # @return [Symbol] for wizard sequencer or nil
-    def Handle(key, event)
+    def Handle(_key, event)
       event = deep_copy(event)
       @last_event = deep_copy(event)
       current = Convert.to_string(UI.QueryWidget(Id(:_hw_items), :CurrentItem))
       if Ops.get(event, "ID") == :_hw_items
         descr = ""
-        if @get_item_descr_callback == nil
+        if @get_item_descr_callback.nil?
           descr = Ops.get(@descriptions, current, "")
         else
           descr = @get_item_descr_callback.call(current)
@@ -150,7 +146,7 @@ module Yast
         UI.ChangeWidget(Id(:_hw_sum), :Value, descr)
         return nil
       end
-      if @action_callback == nil
+      if @action_callback.nil?
         ret = Ops.get(event, "ID")
         if Ops.is_symbol?(ret)
           return Convert.to_symbol(ret)
@@ -161,7 +157,6 @@ module Yast
         return @action_callback.call(current, event)
       end
     end
-
 
     # internal functions
 
@@ -196,7 +191,7 @@ module Yast
       return Empty() if sz == 0
       if sz == 1
         id = Ops.get(actions, [0, 0])
-        if id == nil
+        if id.nil?
           Builtins.y2error("Unknown ID for button: %1", Ops.get(actions, 0))
           id = "nil"
         end
@@ -204,7 +199,7 @@ module Yast
       end
       items = Builtins.maplist(actions) do |i|
         id = Ops.get(i, 0)
-        if id == nil
+        if id.nil?
           Builtins.y2error("Unknown ID for button: %1", Ops.get(actions, 0))
           id = "nil"
         end
@@ -213,9 +208,6 @@ module Yast
       # menu button
       MenuButton(_("&Other"), items)
     end
-
-
-
 
     # CWM widget
 
@@ -245,7 +237,7 @@ module Yast
 
       handle_events = [:_hw_items, :add, :edit, :delete]
       extra_events = Builtins.maplist(actions) { |i| Ops.get(i, 1) }
-      extra_events = Builtins.filter(extra_events) { |i| i != nil }
+      extra_events = Builtins.filter(extra_events) { |i| !i.nil? }
       handle_events = Builtins.merge(handle_events, extra_events)
 
       ret = {
@@ -306,23 +298,23 @@ module Yast
       # callbacks
       @action_callback = Convert.convert(
         Ops.get(settings, "action_callback"),
-        :from => "any",
-        :to   => "symbol (string, map)"
+        from: "any",
+        to:   "symbol (string, map)"
       )
       @get_item_descr_callback = Convert.convert(
         Ops.get(settings, "item_descr_callback"),
-        :from => "any",
-        :to   => "string (string)"
+        from: "any",
+        to:   "string (string)"
       )
       @set_items_callback = Convert.convert(
         Ops.get(settings, "set_items_callback"),
-        :from => "any",
-        :to   => "void ()"
+        from: "any",
+        to:   "void ()"
       )
       @select_initial_item_callback = Convert.convert(
         Ops.get(settings, "set_initial_item_callback"),
-        :from => "any",
-        :to   => "void ()"
+        from: "any",
+        to:   "void ()"
       )
 
       # other variables
@@ -345,29 +337,23 @@ module Yast
 
       # now run the dialog via CWM with handler set
       CWM.ShowAndRun(
-        {
-          "widget_descr" => widget_descr,
-          "widget_names" => ["wizard_hw"],
-          "contents"     => VBox("wizard_hw"),
-          "caption"      => title,
-          "abort_button" => Ops.get_string(settings, "abort_button") do
-            Label.AbortButton
-          end,
-          "back_button"  => Ops.get_string(settings, "back_button") do
-            Label.BackButton
-          end,
-          "next_button"  => Ops.get_string(settings, "next_button") do
-            Label.NextButton
-          end
-        }
+
+        "widget_descr" => widget_descr,
+        "widget_names" => ["wizard_hw"],
+        "contents"     => VBox("wizard_hw"),
+        "caption"      => title,
+        "abort_button" => Ops.get_string(settings, "abort_button") do
+          Label.AbortButton
+        end,
+        "back_button"  => Ops.get_string(settings, "back_button") do
+          Label.BackButton
+        end,
+        "next_button"  => Ops.get_string(settings, "next_button") do
+          Label.NextButton
+        end
+
       )
     end
-
-
-
-
-
-
 
     # simple iface
 
@@ -400,7 +386,7 @@ module Yast
       # now create the dialog
       widget_descr = CreateWidget(headers, actions)
       Ops.set(widget_descr, "help", help) # to suppress error in log
-      w = CWM.CreateWidgets(["wizard_hw"], { "wizard_hw" => widget_descr })
+      w = CWM.CreateWidgets(["wizard_hw"],  "wizard_hw" => widget_descr)
       contents = Ops.get_term(w, [0, "widget"], VBox())
       Wizard.SetContents(title, contents, help, false, true)
 
@@ -415,7 +401,6 @@ module Yast
 
       nil
     end
-
 
     # Return the id of the currently selected item in the table
     # @note This is a stable API function
@@ -465,9 +450,9 @@ module Yast
     #  "selected" : string = ID of the selected item in the list box
     def WaitForEvent
       event = nil
-      while event == nil
+      while event.nil?
         event = UI.WaitForEvent
-        event = nil if Handle("wizard_hw", event) == nil
+        event = nil if Handle("wizard_hw", event).nil?
       end
       deep_copy(@dialog_ret)
     end
@@ -494,7 +479,7 @@ module Yast
       properties = deep_copy(properties)
       items = ""
 
-      if properties != nil && Ops.greater_than(Builtins.size(properties), 0)
+      if !properties.nil? && Ops.greater_than(Builtins.size(properties), 0)
         Builtins.foreach(properties) do |prop|
           items = Ops.add(Ops.add(Ops.add(items, "<LI>"), prop), "</LI>")
         end
@@ -502,7 +487,7 @@ module Yast
 
       ret = ""
 
-      if title != nil && title != ""
+      if !title.nil? && title != ""
         ret = Ops.add(Ops.add("<P><B>", title), "</B></P>")
       end
 
@@ -512,7 +497,6 @@ module Yast
 
       ret
     end
-
 
     # Get propertly list of an unconfigured device. Should be used together with
     # device name in CreateRichTextDescription() function.
@@ -529,17 +513,17 @@ module Yast
       ]
     end
 
-    publish :function => :CreateWidget, :type => "map <string, any> (list <string>, list <list>)"
-    publish :function => :RunHWDialog, :type => "symbol (map)"
-    publish :function => :CreateHWDialog, :type => "void (string, string, list <string>, list <list>)"
-    publish :function => :SetSelectedItem, :type => "void (string)"
-    publish :function => :SelectedItem, :type => "string ()"
-    publish :function => :SetRichDescription, :type => "void (string)"
-    publish :function => :SetContents, :type => "void (list <map <string, any>>)"
-    publish :function => :WaitForEvent, :type => "map <string, any> ()"
-    publish :function => :UserInput, :type => "map <string, any> ()"
-    publish :function => :CreateRichTextDescription, :type => "string (string, list <string>)"
-    publish :function => :UnconfiguredDevice, :type => "list <string> ()"
+    publish function: :CreateWidget, type: "map <string, any> (list <string>, list <list>)"
+    publish function: :RunHWDialog, type: "symbol (map)"
+    publish function: :CreateHWDialog, type: "void (string, string, list <string>, list <list>)"
+    publish function: :SetSelectedItem, type: "void (string)"
+    publish function: :SelectedItem, type: "string ()"
+    publish function: :SetRichDescription, type: "void (string)"
+    publish function: :SetContents, type: "void (list <map <string, any>>)"
+    publish function: :WaitForEvent, type: "map <string, any> ()"
+    publish function: :UserInput, type: "map <string, any> ()"
+    publish function: :CreateRichTextDescription, type: "string (string, list <string>)"
+    publish function: :UnconfiguredDevice, type: "list <string> ()"
   end
 
   WizardHW = WizardHWClass.new

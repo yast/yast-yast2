@@ -1,18 +1,12 @@
 #!/usr/bin/env rspec
 
-top_srcdir = File.expand_path("../../../..", __FILE__)
-inc_dirs = Dir.glob("#{top_srcdir}/library/*/src")
-ENV["Y2DIR"] = inc_dirs.join(":")
-
-require "yast"
+require_relative "test_helper"
 
 Yast.import "Mode"
 Yast.import "PackageSystem"
 Yast.import "Pkg"
 Yast.import "SuSEFirewall"
 Yast.import "Stage"
-
-FW_PACKAGE = "SuSEfirewall2"
 
 def reset_SuSEFirewallIsInstalled_cache
   Yast::SuSEFirewall.needed_packages_installed = nil
@@ -34,11 +28,11 @@ describe Yast::SuSEFirewall do
         expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
 
         # Selected
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
         # Not selected and not installed
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
         # Not selected, but installed
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
       end
     end
 
@@ -50,15 +44,15 @@ describe Yast::SuSEFirewall do
         # Value is cached
         expect(Yast::PackageSystem).to receive(:CheckAndInstallPackages).and_return(true, false).twice
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
 
         reset_SuSEFirewallIsInstalled_cache
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
       end
     end
 
@@ -70,15 +64,44 @@ describe Yast::SuSEFirewall do
         # Value is cached
         expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_false
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
 
         reset_SuSEFirewallIsInstalled_cache
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to be_true
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+      end
+    end
+  end
+
+  describe "#full_init_on_boot" do
+    it "sets whether SuSEfirewall2_init should do the full init on boot and returns the current state" do
+      expect(Yast::SuSEFirewall.full_init_on_boot(true)).to eq(true)
+      expect(Yast::SuSEFirewall.GetModified()).to eq(true)
+      expect(Yast::SuSEFirewall.full_init_on_boot(false)).to eq(false)
+      expect(Yast::SuSEFirewall.GetModified()).to eq(true)
+    end
+  end
+
+  describe "#SetSupportRoute" do
+    context "when enabling routing" do
+      it "sets FW_ROUTE and FW_STOP_KEEP_ROUTING_STATE to 'yes'" do
+        subject.SetSupportRoute(true)
+        settings = subject.Export
+        expect(settings["FW_ROUTE"]).to eq("yes")
+        expect(settings["FW_STOP_KEEP_ROUTING_STATE"]).to eq("yes")
+      end
+    end
+
+    context "when disabling routing" do
+      it "sets FW_ROUTE and FW_STOP_KEEP_ROUTING_STATE to 'no'" do
+        subject.SetSupportRoute(false)
+        settings = subject.Export
+        expect(settings["FW_ROUTE"]).to eq("no")
+        expect(settings["FW_STOP_KEEP_ROUTING_STATE"]).to eq("no")
       end
     end
   end

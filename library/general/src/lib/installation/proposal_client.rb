@@ -49,6 +49,23 @@ module Installation
   #
   # * main program calls each sub-module to write the settings to the system
   #
+  # ## The `Write` method
+  #
+  # In addition to the methods defined (and documented) in
+  # {Installation::ProposalClient}, there's a method called `Write` which will
+  # write the proposed (and probably modified) settings to the system.
+  #
+  # It is up to the proposal dispatcher how it remembers the settings. The
+  # errors must be reported using the Report:: module to have the possibility
+  # to control the behaviour from the main program.
+  #
+  # This `Write` method is optional. The dispatcher module is required to allow
+  # this method to be called without returning an error value if it is not
+  # there.
+  #
+  # #### Return Values
+  #
+  # Returns true, if the settings were written successfully.
   class ProposalClient < Yast::Client
     include Yast::Logger
 
@@ -56,7 +73,7 @@ module Installation
     # The only part needed in client rb file.
     # @return response from abstract methods
     def self.run
-      self.new.run
+      new.run
     end
 
     # Dispatches to abstract method based on passed Arguments to client
@@ -146,7 +163,25 @@ module Installation
     #     Help text for this module which appears in the standard dialog
     #     help (particular helps for modules sorted by presentation order).
     #
-    def make_proposal(attrs)
+    #   * **`"trigger"`** [Hash, nil] defines circumstances when the proposal
+    #     should be called again at the end. For instance, when partitioning or
+    #     software selection changes. Mandatory keys of the trigger are:
+    #       * **`"expect"`** [Hash] containing _string_ `class` and _string_
+    #         `method` that will be called and its result compared with `value`.
+    #       * **`"value"`** [Object] expected value, if evaluated code does not
+    #         match the `value`, proposal will be called again.
+    #
+    # @example Triggers definition
+    #     {
+    #       "trigger" => {
+    #         "expect" => {
+    #           "class"  => "Yast::Packages",
+    #           "method" => "CountSizeToBeDownloaded"
+    #         },
+    #         "value" => 88883333
+    #       }
+    #     }
+    def make_proposal(_attrs)
       raise NotImplementedError, "Calling abstract method 'make_proposal'"
     end
 
@@ -198,10 +233,9 @@ module Installation
     #     This module just caused a change of the installation language.
     #     This is only relevant for the "language" module.
     #
-    def ask_user(attrs)
+    def ask_user(_attrs)
       raise NotImplementedError, "Calling abstract method 'ask_user'"
     end
-
 
     # An abstract method to return human readable titles both for the RichText
     # (HTML) widget and for menu entries. It also specifies an ID which is used

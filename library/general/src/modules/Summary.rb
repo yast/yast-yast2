@@ -152,7 +152,6 @@ module Yast
       Ops.add(Ops.add(Ops.add(summary, "\n<li>"), item), "</li>")
     end
 
-
     # Add a simple section to an existing summary,
     # consisting of a header and one single item.
     #
@@ -169,16 +168,16 @@ module Yast
       summary
     end
 
-    publish :function => :NotConfigured, :type => "string ()"
-    publish :function => :DevicesList, :type => "string (list <string>)"
-    publish :function => :Device, :type => "string (string, string)"
-    publish :function => :AddHeader, :type => "string (string, string)"
-    publish :function => :AddLine, :type => "string (string, string)"
-    publish :function => :AddNewLine, :type => "string (string)"
-    publish :function => :OpenList, :type => "string (string)"
-    publish :function => :CloseList, :type => "string (string)"
-    publish :function => :AddListItem, :type => "string (string, string)"
-    publish :function => :AddSimpleSection, :type => "string (string, string, string)"
+    publish function: :NotConfigured, type: "string ()"
+    publish function: :DevicesList, type: "string (list <string>)"
+    publish function: :Device, type: "string (string, string)"
+    publish function: :AddHeader, type: "string (string, string)"
+    publish function: :AddLine, type: "string (string, string)"
+    publish function: :AddNewLine, type: "string (string)"
+    publish function: :OpenList, type: "string (string)"
+    publish function: :CloseList, type: "string (string)"
+    publish function: :AddListItem, type: "string (string, string)"
+    publish function: :AddSimpleSection, type: "string (string, string, string)"
   end
 
   Summary = SummaryClass.new

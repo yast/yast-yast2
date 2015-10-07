@@ -38,24 +38,24 @@ module Yast
     # @param [String] input input string
     # @return [String] Unescaped string
     def UnEscape(input)
-      input.gsub(/%([0-9A-Fa-f]{2})/) { $1.to_i(16).chr }.force_encoding(input.encoding)
+      input.gsub(/%([0-9A-Fa-f]{2})/) { Regexp.last_match[1].to_i(16).chr }.force_encoding(input.encoding)
     end
 
-    private
+  private
 
     def escape(input, safe_chars)
       return nil if input.nil?
       input.gsub(/[^#{safe_chars}]/) do |unicode_char|
         escaped = ""
-        unicode_char.each_byte {|b| escaped << sprintf("%%%02x", b) }
+        unicode_char.each_byte { |b| escaped << format("%%%02x", b) }
         escaped
       end
     end
 
-    publish :function => :EscapePassword, :type => "string (string)"
-    publish :function => :EscapePath,     :type => "string (string)"
-    publish :function => :EscapeQuery,    :type => "string (string)"
-    publish :function => :UnEscape,       :type => "string (string)"
+    publish function: :EscapePassword, type: "string (string)"
+    publish function: :EscapePath,     type: "string (string)"
+    publish function: :EscapeQuery,    type: "string (string)"
+    publish function: :UnEscape,       type: "string (string)"
   end
 
   URLRecode = URLRecodeClass.new

@@ -38,7 +38,6 @@ module Yast
 
       Yast.import "Mode"
 
-
       # Message after finishing installation and before the system
       # boots for the first time.
       #
@@ -55,7 +54,7 @@ module Yast
 
     def ReadAlternateFile(first, second)
       result = SCR.Read(path(".target.yast2"), [first, nil])
-      result = SCR.Read(path(".target.yast2"), second) if result == nil
+      result = SCR.Read(path(".target.yast2"), second) if result.nil?
       deep_copy(result)
     end
 
@@ -66,9 +65,6 @@ module Yast
 
     def hardware_name(hardware_entry)
       hardware_entry = deep_copy(hardware_entry)
-      sub_vendor = ""
-      sub_device = ""
-
       sub_vendor = Ops.get_string(hardware_entry, "sub_vendor", "")
       sub_device = Ops.get_string(hardware_entry, "sub_device", "")
 
@@ -82,7 +78,6 @@ module Yast
         )
       end
     end
-
 
     # @param [Hash] lmap	map	map of language codes and translations
     #				e.g. $[ "default" : "Defaultstring", "de" : "German....", ...]
@@ -126,8 +121,8 @@ module Yast
           Builtins.y2error("bad entry in rc_write()")
         else
           if !SCR.Write(
-              Ops.add(level, Ops.get_path(entry, 0, path("."))),
-              Ops.get_string(entry, 1, "")
+            Ops.add(level, Ops.get_path(entry, 0, path("."))),
+            Ops.get_string(entry, 1, "")
             )
             result = false
           end
@@ -135,8 +130,6 @@ module Yast
       end
       result
     end
-
-
 
     # MergeOptions
     # Merges "opt1=val1 opt2=val2 ..." and $["opta":"vala", ..."]
@@ -171,7 +164,6 @@ module Yast
       deep_copy(optmap)
     end
 
-
     # SysconfigRead()
     #
     # Try an SCR::Read(...) and return the result if successful.
@@ -187,7 +179,7 @@ module Yast
     def SysconfigRead(sysconfig_path, defaultv)
       local_ret = Convert.to_string(SCR.Read(sysconfig_path))
 
-      if local_ret == nil
+      if local_ret.nil?
         Builtins.y2warning(
           "Failed reading '%1', using default value",
           sysconfig_path
@@ -224,7 +216,6 @@ module Yast
       SCR.UnregisterAgent(custom_path)
       ret
     end
-
 
     # Runs a bash command with timeout.
     #
@@ -264,12 +255,12 @@ module Yast
       script_time_out = Ops.multiply(script_time_out, 1000)
 
       # while continuing is needed and while it is possible
-      while !timed_out
+      until timed_out
         running = Convert.to_boolean(
           SCR.Read(path(".process.running"), processID)
         )
         # debugging #165821
-        if Ops.modulo(time_spent, 100000) == 0
+        if Ops.modulo(time_spent, 100_000) == 0
           Builtins.y2milestone("running: %1", running)
           flag = "/tmp/SourceManagerTimeout"
           if SCR.Read(path(".target.size"), flag) != -1
@@ -349,20 +340,20 @@ module Yast
       dumb_log_command = Builtins.sformat(dumb_format, log_command)
       # explicit export in case TERM was not in the environment
       ret = RunCommandWithTimeout(dumb_command, dumb_log_command, seconds)
-      ret = {} if ret == nil
+      ret = {} if ret.nil?
       deep_copy(ret)
     end
 
-    publish :variable => :boot_msg, :type => "string"
-    publish :function => :ReadAlternateFile, :type => "any (string, string)"
-    publish :function => :hardware_name, :type => "string (map)"
-    publish :function => :translate, :type => "string (map, string)"
-    publish :function => :SysconfigWrite, :type => "boolean (path, list <list>)"
-    publish :function => :SplitOptions, :type => "map (string, map)"
-    publish :function => :SysconfigRead, :type => "string (path, string)"
-    publish :function => :CustomSysconfigRead, :type => "string (string, string, string)"
-    publish :function => :RunCommandWithTimeout, :type => "map (string, string, integer)"
-    publish :function => :RunDumbTimeout, :type => "map (string, string, integer)"
+    publish variable: :boot_msg, type: "string"
+    publish function: :ReadAlternateFile, type: "any (string, string)"
+    publish function: :hardware_name, type: "string (map)"
+    publish function: :translate, type: "string (map, string)"
+    publish function: :SysconfigWrite, type: "boolean (path, list <list>)"
+    publish function: :SplitOptions, type: "map (string, map)"
+    publish function: :SysconfigRead, type: "string (path, string)"
+    publish function: :CustomSysconfigRead, type: "string (string, string, string)"
+    publish function: :RunCommandWithTimeout, type: "map (string, string, integer)"
+    publish function: :RunDumbTimeout, type: "map (string, string, integer)"
   end
 
   Misc = MiscClass.new

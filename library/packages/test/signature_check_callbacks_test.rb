@@ -1,20 +1,14 @@
 #!/usr/bin/env rspec
 
-top_srcdir = File.expand_path("../../../..", __FILE__)
-inc_dirs = Dir.glob("#{top_srcdir}/library/*/src")
-ENV["Y2DIR"] = inc_dirs.join(":")
-
-require "yast"
+require_relative "test_helper"
 
 module Yast
-
   import "SignatureCheckCallbacks"
   import "Pkg"
   import "SignatureCheckDialogs"
 
   describe SignatureCheckCallbacks do
     describe "#import_gpg_key_or_disable" do
-
       # Values of repo_id and key are irrelevant for this test
       let(:repo_id) { 1 }
       let(:key) { {} }

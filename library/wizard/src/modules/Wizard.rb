@@ -48,12 +48,9 @@ module Yast
       # to setup correct &product; macro in UI
       @product_name = ""
 
-
-
       #
       # Screenshot Functions
       #
-
 
       # Currently used screenshot name.
       # Initially, it must match the UI default, "yast2"
@@ -65,11 +62,15 @@ module Yast
       # Handling of relnotes button when creating a wizard over existing one
       # Cannot be handled by libyui for NCurses
       @relnotes_button_label = ""
-      @relnotes_button_id = "";
+      @relnotes_button_id = ""
+
+      @icon_dir = File.join(Directory.themedir, "current", "icons",
+        "22x22", "apps")
+      @icon_name = "yast"
     end
 
     def haveFancyUI
-      if @have_fancy_ui_cache == nil
+      if @have_fancy_ui_cache.nil?
         ui_info = UI.GetDisplayInfo
 
         @have_fancy_ui_cache = UI.HasSpecialWidget(:Wizard) == true &&
@@ -88,7 +89,6 @@ module Yast
 
       @have_fancy_ui_cache
     end
-
 
     # Returns a button box with buttons "Back", "Abort", "Next"
     # @return a widget tree
@@ -126,7 +126,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Back", "Abort Installation", "Next"
     # @return a widget tree
     #
@@ -163,7 +162,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Back", "Next"
     # @return a widget tree
     #
@@ -187,7 +185,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Cancel", "Accept"
     # @return a widget tree
     #
@@ -202,7 +199,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Cancel", "OK"
     # @return a widget tree
     #
@@ -212,7 +208,6 @@ module Yast
         PushButton(Id(:ok), Opt(:key_F10, :default, :okButton), Label.OKButton)
       )
     end
-
 
     # Returns a button box with buttons "Abort", "Accept"
     # @return a widget tree
@@ -236,7 +231,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Abort Installation", "Accept"
     # @return a widget tree
     #
@@ -255,7 +249,6 @@ module Yast
       )
     end
 
-
     # Returns a button box with buttons "Abort", "Apply", "Finish"
     # @return a widget tree
     #
@@ -267,7 +260,6 @@ module Yast
         PushButton(Id(:finish, :okButton, :key_F10), Label.FinishButton)
       )
     end
-
 
     # Create a Generic Dialog
     #
@@ -307,7 +299,6 @@ module Yast
       )
     end
 
-
     # Create a Generic Tree Dialog
     #
     #
@@ -331,7 +322,7 @@ module Yast
           HWeight(
             30,
             ReplacePoint(
-              Id(:helpSpace), #`RichText(`id(`HelpText), "")
+              Id(:helpSpace), # `RichText(`id(`HelpText), "")
               Empty()
             )
           ),
@@ -362,7 +353,6 @@ module Yast
       )
     end
 
-
     # Check if the topmost dialog is a wizard dialog
     # (i.e. has a widget with `id(`WizardDialog) )
     #
@@ -372,7 +362,6 @@ module Yast
       UI.WidgetExists(Id(:WizardDialog)) == true ||
         UI.WidgetExists(:wizard) == true
     end
-
 
     # Open a popup dialog that displays a help text (rich text format).
     #
@@ -392,7 +381,6 @@ module Yast
       nil
     end
 
-
     # Returns a standard wizard dialog with buttons "Next", "Back", "Abort".
     #
     # @note This is a stable API function
@@ -402,7 +390,6 @@ module Yast
     def NextBackDialog
       GenericDialog(BackAbortNextButtonBox())
     end
-
 
     # Returns a standard wizard dialog with buttons "Cancel", "Accept"
     #
@@ -424,7 +411,6 @@ module Yast
       GenericDialog(CancelOKButtonBox())
     end
 
-
     # Open any wizard dialog.
     #
     # @note This is a stable API function
@@ -433,6 +419,8 @@ module Yast
     #
     def OpenDialog(dialog)
       dialog = deep_copy(dialog)
+
+      set_icon
       UI.OpenDialog(Opt(:wizardDialog), dialog)
       if ! @relnotes_button_id.empty?
         ShowReleaseNotesButton(@relnotes_button_label, @relnotes_button_id)
@@ -441,22 +429,18 @@ module Yast
       nil
     end
 
-
     # Open a dialog with buttons "Next", "Back", "Abort"
     # and set the keyboard focus to "Next".
     #
     def OpenNextBackDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            :back,
-            Label.BackButton,
-            :abort,
-            Label.AbortButton,
-            :next,
-            Label.NextButton
-          )
+        open_wizard_dialog(
+          :back,
+          Label.BackButton,
+          :abort,
+          Label.AbortButton,
+          :next,
+          Label.NextButton
         )
       else
         OpenDialog(NextBackDialog())
@@ -471,16 +455,13 @@ module Yast
     #
     def OpenAcceptDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            :no_back_button,
-            "",
-            :cancel,
-            Label.CancelButton,
-            :accept,
-            Label.AcceptButton
-          )
+        open_wizard_dialog(
+          :no_back_button,
+          "",
+          :cancel,
+          Label.CancelButton,
+          :accept,
+          Label.AcceptButton
         )
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
@@ -493,22 +474,18 @@ module Yast
       nil
     end
 
-
     # Open a dialog with "OK", "Cancel"
     # and set the keyboard focus to "OK".
     #
     def OpenOKDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            :no_back_button,
-            "",
-            :cancel,
-            Label.CancelButton,
-            :ok,
-            Label.OKButton
-          )
+        open_wizard_dialog(
+          :no_back_button,
+          "",
+          :cancel,
+          Label.CancelButton,
+          :ok,
+          Label.OKButton
         )
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
@@ -521,22 +498,18 @@ module Yast
       nil
     end
 
-
     # Open a dialog with "Accept", "Cancel"
     # and set the keyboard focus to "Accept".
     #
     def OpenAbortApplyFinishDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            :apply,
-            _("&Apply"),
-            :abort,
-            Label.AbortButton,
-            :finish,
-            Label.FinishButton
-          )
+        open_wizard_dialog(
+          :apply,
+          _("&Apply"),
+          :abort,
+          Label.AbortButton,
+          :finish,
+          Label.FinishButton
         )
       else
         OpenDialog(GenericDialog(AbortApplyFinishButtonBox()))
@@ -546,22 +519,18 @@ module Yast
       nil
     end
 
-
     # Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
     #
     def OpenAcceptStepsDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            Opt(:stepsEnabled),
-            :no_back_button,
-            "",
-            :cancel,
-            Label.CancelButton,
-            :accept,
-            Label.AcceptButton
-          )
+        open_wizard_dialog(
+          Opt(:stepsEnabled),
+          :no_back_button,
+          "",
+          :cancel,
+          Label.CancelButton,
+          :accept,
+          Label.AcceptButton
         )
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
@@ -573,22 +542,18 @@ module Yast
       nil
     end
 
-
     # Open a dialog with "Accept", "Cancel" that will also accept workflow steps.
     #
     def OpenAcceptAbortStepsDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            Opt(:stepsEnabled),
-            :no_back_button,
-            "",
-            :abort,
-            Label.AbortButton,
-            :accept,
-            Label.AcceptButton
-          )
+        open_wizard_dialog(
+          Opt(:stepsEnabled),
+          :no_back_button,
+          "",
+          :abort,
+          Label.AbortButton,
+          :accept,
+          Label.AcceptButton
         )
 
         # Don't let sloppy calls to Wizard::SetContents() disable this button by accident
@@ -600,22 +565,18 @@ module Yast
       nil
     end
 
-
     # Open a dialog with "Back", "Next", "Abort" that will also accept workflow steps.
     #
     def OpenNextBackStepsDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            Opt(:stepsEnabled),
-            :back,
-            Label.BackButton,
-            :abort,
-            Label.AbortButton,
-            :next,
-            Label.NextButton
-          )
+        open_wizard_dialog(
+          Opt(:stepsEnabled),
+          :back,
+          Label.BackButton,
+          :abort,
+          Label.AbortButton,
+          :next,
+          Label.NextButton
         )
       else
         OpenNextBackDialog()
@@ -623,24 +584,20 @@ module Yast
 
       nil
     end
-
 
     # Open a dialog with "Back", "Next", "Abort"
     # that has the title on the left, as wanted by
     # the installation visual design
     def OpenLeftTitleNextBackDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            Opt(:titleOnLeft),
-            :back,
-            Label.BackButton,
-            :abort,
-            Label.AbortButton,
-            :next,
-            Label.NextButton
-          )
+        open_wizard_dialog(
+          Opt(:titleOnLeft),
+          :back,
+          Label.BackButton,
+          :abort,
+          Label.AbortButton,
+          :next,
+          Label.NextButton
         )
       else
         OpenNextBackDialog()
@@ -648,8 +605,6 @@ module Yast
 
       nil
     end
-
-
 
     # Open a wizard dialog with simple layout
     #
@@ -672,17 +627,17 @@ module Yast
     def OpenCustomDialog(help_space_contents, button_box)
       help_space_contents = deep_copy(help_space_contents)
       button_box = deep_copy(button_box)
-      button_box = BackAbortNextButtonBox() if button_box == nil
+      button_box = BackAbortNextButtonBox() if button_box.nil?
 
+      set_icon
       UI.OpenDialog(Opt(:wizardDialog), GenericDialog(button_box))
 
-      if help_space_contents != nil
+      if !help_space_contents.nil?
         UI.ReplaceWidget(Id(:helpSpace), help_space_contents)
       end
 
       nil
     end
-
 
     # Replace the help widget for dialogs opened with Wizard::OpenCustomDialog().
     # @param [Yast::Term] contents Replace custom help with supplied contents
@@ -700,7 +655,6 @@ module Yast
       nil
     end
 
-
     # Close a wizard dialog.
     #
     # @note This is a stable API function
@@ -716,7 +670,6 @@ module Yast
 
       nil
     end
-
 
     # Substitute for UI::UserInput
     #
@@ -738,7 +691,6 @@ module Yast
       deep_copy(input)
     end
 
-
     # Substitute for UI::TimeoutUserInput
     #
     # Analogical to Wizard::UserInput.
@@ -754,7 +706,6 @@ module Yast
       deep_copy(input)
     end
 
-
     # Substitute for UI::WaitForEvent
     #
     # Analog to Wizard::UserInput.
@@ -767,7 +718,6 @@ module Yast
 
       deep_copy(input)
     end
-
 
     # Substitute for UI::WaitForEvent with timeout
     #
@@ -782,7 +732,6 @@ module Yast
       deep_copy(input)
     end
 
-
     # Set a new help text.
     # @param [String] help_text Help text
     # @example Wizard::SetHelpText("This is a help Text");
@@ -794,7 +743,6 @@ module Yast
 
       nil
     end
-
 
     # Replace the wizard help subwindow with a custom widget.
     #
@@ -815,7 +763,6 @@ module Yast
       nil
     end
 
-
     # Restore the wizard help subwindow.
     # @param [String] help_text Help text
     #
@@ -824,7 +771,6 @@ module Yast
 
       nil
     end
-
 
     # Create and open a typical installation wizard dialog.
     #
@@ -839,12 +785,6 @@ module Yast
 
       nil
     end
-
-
-
-
-
-
 
     # Set the contents of a wizard dialog and define if to move focus to next button
     #
@@ -890,11 +830,6 @@ module Yast
       nil
     end
 
-
-
-
-
-
     # Set the contents of a wizard dialog
     #
     # How the general framework for the installation wizard should
@@ -916,7 +851,6 @@ module Yast
 
       nil
     end
-
 
     # Clear the wizard contents.
     #
@@ -957,7 +891,6 @@ module Yast
       nil
     end
 
-
     # Set the dialog's "Back" button with a new label and a new ID
     #
     # @note This is a stable API function
@@ -980,7 +913,6 @@ module Yast
 
       nil
     end
-
 
     # Set the dialog's "Abort" button with a new label and a new ID
     #
@@ -1005,7 +937,6 @@ module Yast
       nil
     end
 
-
     # Hide the Wizard's "Next" button.
     # Restore it later with RestoreNextButton():
     #
@@ -1021,7 +952,6 @@ module Yast
 
       nil
     end
-
 
     # Hide the Wizard's "Back" button.
     # Restore it later with RestoreBackButton():
@@ -1045,16 +975,13 @@ module Yast
     #
     def OpenCancelOKDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            :back,
-            Label.BackButton,
-            :abort,
-            Label.CancelButton,
-            :next,
-            Label.OKButton
-          )
+        open_wizard_dialog(
+          :back,
+          Label.BackButton,
+          :abort,
+          Label.CancelButton,
+          :next,
+          Label.OKButton
         )
         HideBackButton()
       else
@@ -1064,8 +991,6 @@ module Yast
 
       nil
     end
-
-
 
     # Hide the Wizard's "Abort" button.
     # Restore it later with RestoreAbortButton():
@@ -1085,7 +1010,6 @@ module Yast
       nil
     end
 
-
     # Restore the wizard 'back' button.
     #
     # @see #HideBackButton
@@ -1096,7 +1020,6 @@ module Yast
 
       nil
     end
-
 
     # Restore the wizard 'next' button.
     #
@@ -1109,7 +1032,6 @@ module Yast
       nil
     end
 
-
     # Restore the wizard 'abort' button.
     #
     # @see #HideAbortButton
@@ -1120,12 +1042,6 @@ module Yast
 
       nil
     end
-
-
-
-
-
-
 
     # Set contents and Buttons of wizard dialog
     #
@@ -1167,7 +1083,6 @@ module Yast
       nil
     end
 
-
     # Sets the dialog title shown in the window manager's title bar.
     #
     # @param [String] titleText title of the dialog
@@ -1181,7 +1096,6 @@ module Yast
       nil
     end
 
-
     # Sets the wizard 'title' icon to the specified icon from the standard icon
     # directory.
     #
@@ -1193,10 +1107,9 @@ module Yast
     # @example
     #	SetTitleIcon ("yast-dns-server");
     #
-    def SetTitleIcon(icon_name)
+    def SetTitleIcon(_icon_name)
       nil
     end
-
 
     # Clear the wizard 'title' icon, i.e. replace it with nothing
     #
@@ -1206,8 +1119,6 @@ module Yast
     def ClearTitleIcon
       nil
     end
-
-
 
     # Sets the window title according to the name specified in a .desktop file got as parameter.
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
@@ -1237,8 +1148,6 @@ module Yast
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
     # Parameter file is realative to that directory without ".desktop" suffix.
     # Warning: There are no desktop files in inst-sys. Use "SetTitleIcon" instead.
-    # @note do nothing. Title icon do not provide additional value
-    # and is distracting
     #
     # @param [String] file Icon name
     # @return [Boolean] true on success
@@ -1249,16 +1158,25 @@ module Yast
     #	// Sets the icon.
     #	SetDesktopIcon ("lan")
     def SetDesktopIcon(file)
+      description = Desktop.ParseSingleDesktopFile(file)
+
+      return false unless description
+
+      icon = description["icon"]
+
+      return false unless icon
+
+      @icon_name = icon
+      set_icon
+
       true
     end
-
 
     # Convenience function to avoid 2 calls if application needs to set
     # both dialog title and icon from desktop file specified as parameter.
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
     # Parameter file is realative to that directory without ".desktop" suffix.
     # Warning: There are no desktop files in inst-sys.
-    # @deprecated Use SetDesktopTitle only as icon setting is removed
     #
     # @param [String] file desktop file name
     # @return [Boolean] true on success
@@ -1269,8 +1187,6 @@ module Yast
     #	// Sets the icon, sets the dialog title
     #	SetDialogTitleAndIcon ("lan")
     def SetDesktopTitleAndIcon(file)
-      result = true
-
       description = Desktop.ParseSingleDesktopFile(file)
 
       # fallback name for the dialog title
@@ -1279,9 +1195,10 @@ module Yast
       Builtins.y2debug("Set dialog title: %1", name)
       SetDialogTitle(name)
 
-      result && Builtins.haskey(description, "Name")
-    end
+      SetDesktopIcon(file)
 
+      Builtins.haskey(description, "Name")
+    end
 
     # PRIVATE - Replace the entire Wizard button box with a new one.
     # @param [Yast::Term] button_box Button Box term
@@ -1293,7 +1210,6 @@ module Yast
 
       nil
     end
-
 
     # Enable the wizard's "Abort" button.
     #
@@ -1308,7 +1224,6 @@ module Yast
       nil
     end
 
-
     # Disable the wizard's "Abort" button.
     #
     # @see #EnableAbortButton
@@ -1321,7 +1236,6 @@ module Yast
 
       nil
     end
-
 
     # Disable the wizard's "Next" (or "Accept") button.
     #
@@ -1342,7 +1256,6 @@ module Yast
       nil
     end
 
-
     # Enable the wizard's "Next" (or "Accept") button.
     #
     # @see #DisableNextButton
@@ -1359,7 +1272,6 @@ module Yast
 
       nil
     end
-
 
     # Disable the wizard's "Back" button.
     #
@@ -1387,7 +1299,6 @@ module Yast
       nil
     end
 
-
     # Disable the wizard's "Cancel" button.
     #
     # @see #EnableCancelButton
@@ -1401,7 +1312,6 @@ module Yast
       nil
     end
 
-
     # Enable the wizard's "Cancel" button.
     #
     # @see #DisableCancelButton
@@ -1414,7 +1324,6 @@ module Yast
 
       nil
     end
-
 
     # Returns whether the `Wizard widget is available.
     #
@@ -1454,7 +1363,6 @@ module Yast
       nil
     end
 
-
     # Hide the "Release Notes" button, if there is any
     #
     def HideReleaseNotesButton
@@ -1476,7 +1384,6 @@ module Yast
       nil
     end
 
-
     # Retranslate the wizard buttons.
     #
     # This will revert button labels and IDs
@@ -1486,9 +1393,11 @@ module Yast
     def RetranslateButtons
       if UI.WidgetExists(Id(:WizardDialog)) == true
         ReplaceButtonBox(
-          UI.WidgetExists(Id(:accept)) ?
-            AbortAcceptButtonBox() :
+          if UI.WidgetExists(Id(:accept))
+            AbortAcceptButtonBox()
+          else
             BackAbortNextButtonBox()
+          end
         ) # Qt wizard
       else
         UI.WizardCommand(term(:RetranslateInternalButtons))
@@ -1506,7 +1415,6 @@ module Yast
 
       nil
     end
-
 
     # Set the keyboard focus to the wizard's "Next" (or "Accept") button.
     #
@@ -1532,7 +1440,6 @@ module Yast
       nil
     end
 
-
     # Set a name for the current dialog:
     #
     # Declare a name for the current dialog to ease making screenshots.
@@ -1551,14 +1458,13 @@ module Yast
       nil
     end
 
-
     # Restore the screenshot name.
     #
     # If it does not match a SetScreenShotName, "yast2" is used
     # and a y2error logged.
     def RestoreScreenShotName
       @screenshot_name = Ops.get(@screenshot_name_stack, 0)
-      if @screenshot_name == nil
+      if @screenshot_name.nil?
         @screenshot_name = "yast2"
         Builtins.y2error(1, "No screenshot name to restore!")
       else
@@ -1567,8 +1473,6 @@ module Yast
 
       nil
     end
-
-
 
     #
     # Tree & Menu Wizard functions
@@ -1579,17 +1483,14 @@ module Yast
     #
     def OpenTreeNextBackDialog
       if haveFancyUI
-        UI.OpenDialog(
-          Opt(:wizardDialog),
-          Wizard(
-            Opt(:treeEnabled),
-            :back,
-            Label.BackButton,
-            :abort,
-            Label.AbortButton,
-            :next,
-            Label.NextButton
-          )
+        open_wizard_dialog(
+          Opt(:treeEnabled),
+          :back,
+          Label.BackButton,
+          :abort,
+          Label.AbortButton,
+          :next,
+          Label.NextButton
         )
       else
         OpenDialog(GenericTreeDialog(BackAbortNextButtonBox()))
@@ -1598,7 +1499,6 @@ module Yast
 
       nil
     end
-
 
     # Create and open a Tree wizard dialog.
     #
@@ -1609,7 +1509,6 @@ module Yast
       nil
     end
 
-
     # Add Tree Item to tree enabled Wizard
     # @param [Array<Hash>] Tree Tree Data
     # @param [String] parent Parent of this item
@@ -1617,35 +1516,34 @@ module Yast
     # @param [String] id Item ID
     # @return [Array<Hash>] Updated Tree Data
     #
-    def AddTreeItem(_Tree, parent, title, id)
-      _Tree = deep_copy(_Tree)
+    def AddTreeItem(tree, parent, title, id)
+      tree = deep_copy(tree)
       if haveFancyUI
         UI.WizardCommand(term(:AddTreeItem, parent, title, id))
       else
-        _Tree = Builtins.add(
-          _Tree,
-          { "parent" => parent, "title" => title, "id" => id }
+        tree = Builtins.add(
+          tree,
+          "parent" => parent, "title" => title, "id" => id
         )
       end
-      deep_copy(_Tree)
+      deep_copy(tree)
     end
-
 
     # Create the Tree Items
     # @param [Array<Hash>] Tree Tree data
     # @param [String] parent Parent of current Item
     # @return [Array] Tree Items
     #
-    def CreateTreeInternal(_Tree, parent)
-      _Tree = deep_copy(_Tree)
-      m = Builtins.filter(_Tree) do |c|
+    def CreateTreeInternal(tree, parent)
+      tree = deep_copy(tree)
+      m = Builtins.filter(tree) do |c|
         Ops.get_string(c, "parent", "") == parent
       end
       ccbak = nil # #38596, broken recursion for iterators
       mm = Builtins.maplist(m) do |cc|
-        _TreeEntry = Ops.get_string(cc, "id", "")
+        tree_entry = Ops.get_string(cc, "id", "")
         ccbak = deep_copy(cc)
-        items = CreateTreeInternal(_Tree, _TreeEntry)
+        items = CreateTreeInternal(tree, tree_entry)
         cc = deep_copy(ccbak)
         if Ops.greater_than(Builtins.size(items), 0)
           next Item(
@@ -1664,7 +1562,6 @@ module Yast
       deep_copy(mm)
     end
 
-
     # Query Tree Item
     # @return Tree Item
     def QueryTreeItem
@@ -1675,23 +1572,22 @@ module Yast
       end
     end
 
-
     # Create the tree in the dialog, replaces helpspace with new tree widget
     # @param [Array<Hash>] Tree Tree data
     # @param [String] title Tree title
     #
-    def CreateTree(_Tree, title)
-      _Tree = deep_copy(_Tree)
+    def CreateTree(tree, title)
+      tree = deep_copy(tree)
       if !haveFancyUI
         items = []
-        Builtins.foreach(_Tree) do |i|
+        Builtins.foreach(tree) do |i|
           if Ops.get_string(i, "parent", "") == ""
             items = Builtins.add(
               items,
               Item(
                 Id(Ops.get_string(i, "id", "")),
                 Ops.get_string(i, "title", ""),
-                CreateTreeInternal(_Tree, Ops.get_string(i, "id", ""))
+                CreateTreeInternal(tree, Ops.get_string(i, "id", ""))
               )
             )
           end
@@ -1709,7 +1605,6 @@ module Yast
       nil
     end
 
-
     # Select Tree item
     # @param [String] tree_item tree item
     def SelectTreeItem(tree_item)
@@ -1722,7 +1617,6 @@ module Yast
       nil
     end
 
-
     # Delete Tree items
     def DeleteTreeItems
       if haveFancyUI
@@ -1733,7 +1627,6 @@ module Yast
 
       nil
     end
-
 
     # Delete Menu items
     def DeleteMenus
@@ -1746,26 +1639,24 @@ module Yast
       nil
     end
 
-
     # Add Menu
     # @param [Array<Hash>] Menu  Menu data
     # @param [String] title Menu Title
     # @param [String] id Menu ID
     # @return [Array<Hash>] Updated Menu Data
     #
-    def AddMenu(_Menu, title, id)
-      _Menu = deep_copy(_Menu)
+    def AddMenu(menu, title, id)
+      menu = deep_copy(menu)
       if haveFancyUI
         UI.WizardCommand(term(:AddMenu, title, id))
       else
-        _Menu = Builtins.add(
-          _Menu,
-          { "type" => "Menu", "title" => title, "id" => id }
+        menu = Builtins.add(
+          menu,
+          "type" => "Menu", "title" => title, "id" => id
         )
       end
-      deep_copy(_Menu)
+      deep_copy(menu)
     end
-
 
     # Add Sub Menu
     # @param [Array<Hash>] Menu Menu data
@@ -1774,24 +1665,21 @@ module Yast
     # @param [String] id Menu ID
     # @return [Array<Hash>] Updated Menu Data
     #
-    def AddSubMenu(_Menu, parent_id, title, id)
-      _Menu = deep_copy(_Menu)
+    def AddSubMenu(menu, parent_id, title, id)
+      menu = deep_copy(menu)
       if haveFancyUI
         UI.WizardCommand(term(:AddSubMenu, parent_id, title, id))
       else
-        _Menu = Builtins.add(
-          _Menu,
-          {
-            "type"   => "SubMenu",
-            "parent" => parent_id,
-            "title"  => title,
-            "id"     => id
-          }
+        menu = Builtins.add(
+          menu,
+          "type"   => "SubMenu",
+          "parent" => parent_id,
+          "title"  => title,
+          "id"     => id
         )
       end
-      deep_copy(_Menu)
+      deep_copy(menu)
     end
-
 
     # Add Menu Entry
     # @param [Array<Hash>] Menu Menu data
@@ -1800,46 +1688,43 @@ module Yast
     # @param [String] id Menu ID
     # @return [Array<Hash>] Updated Menu Data
     #
-    def AddMenuEntry(_Menu, parent_id, title, id)
-      _Menu = deep_copy(_Menu)
+    def AddMenuEntry(menu, parent_id, title, id)
+      menu = deep_copy(menu)
       if haveFancyUI
         UI.WizardCommand(term(:AddMenuEntry, parent_id, title, id))
       else
-        _Menu = Builtins.add(
-          _Menu,
-          {
-            "type"   => "MenuEntry",
-            "parent" => parent_id,
-            "title"  => title,
-            "id"     => id
-          }
+        menu = Builtins.add(
+          menu,
+          "type"   => "MenuEntry",
+          "parent" => parent_id,
+          "title"  => title,
+          "id"     => id
         )
       end
-      deep_copy(_Menu)
+      deep_copy(menu)
     end
-
 
     # Create the Menu Items
     # @param [Array<Hash>] Menu Menu data
     # @param [String] parent Menu Parent
     # @return [Array] Menu Items
     #
-    def CreateMenuInternal(_Menu, parent)
-      _Menu = deep_copy(_Menu)
-      m = Builtins.filter(_Menu) do |c|
+    def CreateMenuInternal(menu, parent)
+      menu = deep_copy(menu)
+      m = Builtins.filter(menu) do |c|
         Ops.get_string(c, "parent", "") == parent
       end
 
       mm = Builtins.maplist(m) do |cc|
         if Ops.get_string(cc, "type", "") == "MenuEntry"
-          _MenuEntry = Ops.get_string(cc, "id", "")
-          next Item(Id(_MenuEntry), Ops.get_string(cc, "title", ""))
+          menu_entry = Ops.get_string(cc, "id", "")
+          next Item(Id(menu_entry), Ops.get_string(cc, "title", ""))
         elsif Ops.get_string(cc, "type", "") == "SubMenu"
-          _SubMenu = Ops.get_string(cc, "id", "")
+          sub_menu = Ops.get_string(cc, "id", "")
           next term(
             :menu,
             Ops.get_string(cc, "title", ""),
-            CreateMenuInternal(_Menu, _SubMenu)
+            CreateMenuInternal(menu, sub_menu)
           )
         end
       end
@@ -1847,18 +1732,17 @@ module Yast
       deep_copy(mm)
     end
 
-
     # Create the menu in the dialog
     # @param [Array<Hash>] Menu Menu data
     # @return [void]
     #
-    def CreateMenu(_Menu)
-      _Menu = deep_copy(_Menu)
+    def CreateMenu(menu)
+      menu = deep_copy(menu)
       if !haveFancyUI
         menu_term = HBox()
-        Builtins.foreach(_Menu) do |m|
+        Builtins.foreach(menu) do |m|
           if Ops.get_string(m, "type", "") == "Menu"
-            menu_items = CreateMenuInternal(_Menu, Ops.get_string(m, "id", ""))
+            menu_items = CreateMenuInternal(menu, Ops.get_string(m, "id", ""))
             Builtins.y2debug("menu_items: %1", menu_items)
             menu_term = Builtins.add(
               menu_term,
@@ -1872,7 +1756,6 @@ module Yast
       nil
     end
 
-
     # Set the product name for UI
     # @param [String] name the product name
     # @return [void]
@@ -1885,89 +1768,110 @@ module Yast
       nil
     end
 
-    publish :function => :BackAbortNextButtonBox, :type => "term ()"
-    publish :function => :BackAbortInstallationNextButtonBox, :type => "term ()"
-    publish :function => :BackNextButtonBox, :type => "term ()"
-    publish :function => :CancelAcceptButtonBox, :type => "term ()"
-    publish :function => :CancelOKButtonBox, :type => "term ()"
-    publish :function => :AbortAcceptButtonBox, :type => "term ()"
-    publish :function => :AbortInstallationAcceptButtonBox, :type => "term ()"
-    publish :function => :AbortApplyFinishButtonBox, :type => "term ()"
-    publish :function => :GenericDialog, :type => "term (term)"
-    publish :function => :GenericTreeDialog, :type => "term (term)"
-    publish :function => :IsWizardDialog, :type => "boolean ()"
-    publish :function => :ShowHelp, :type => "void (string)"
-    publish :function => :NextBackDialog, :type => "term ()"
-    publish :function => :AcceptDialog, :type => "term ()"
-    publish :function => :OKDialog, :type => "term ()"
-    publish :function => :OpenDialog, :type => "void (term)"
-    publish :function => :OpenNextBackDialog, :type => "void ()"
-    publish :function => :OpenAcceptDialog, :type => "void ()"
-    publish :function => :OpenOKDialog, :type => "void ()"
-    publish :function => :OpenAbortApplyFinishDialog, :type => "void ()"
-    publish :function => :OpenAcceptStepsDialog, :type => "void ()"
-    publish :function => :OpenAcceptAbortStepsDialog, :type => "void ()"
-    publish :function => :OpenNextBackStepsDialog, :type => "void ()"
-    publish :function => :OpenLeftTitleNextBackDialog, :type => "void ()"
-    publish :function => :OpenCustomDialog, :type => "void (term, term)"
-    publish :function => :ReplaceCustomHelp, :type => "void (term)"
-    publish :function => :CloseDialog, :type => "void ()"
-    publish :function => :UserInput, :type => "any ()"
-    publish :function => :TimeoutUserInput, :type => "any (integer)"
-    publish :function => :WaitForEvent, :type => "map ()"
-    publish :function => :TimeoutWaitForEvent, :type => "map (integer)"
-    publish :function => :SetHelpText, :type => "void (string)"
-    publish :function => :ReplaceHelp, :type => "void (term)"
-    publish :function => :RestoreHelp, :type => "void (string)"
-    publish :function => :CreateDialog, :type => "void ()"
-    publish :function => :SetContentsFocus, :type => "void (string, term, string, boolean, boolean, boolean)"
-    publish :function => :SetContents, :type => "void (string, term, string, boolean, boolean)"
-    publish :function => :ClearContents, :type => "void ()"
-    publish :function => :SetNextButton, :type => "void (any, string)"
-    publish :function => :SetBackButton, :type => "void (any, string)"
-    publish :function => :SetAbortButton, :type => "void (any, string)"
-    publish :function => :HideNextButton, :type => "void ()"
-    publish :function => :HideBackButton, :type => "void ()"
-    publish :function => :OpenCancelOKDialog, :type => "void ()"
-    publish :function => :HideAbortButton, :type => "void ()"
-    publish :function => :RestoreBackButton, :type => "void ()"
-    publish :function => :RestoreNextButton, :type => "void ()"
-    publish :function => :RestoreAbortButton, :type => "void ()"
-    publish :function => :SetContentsButtons, :type => "void (string, term, string, string, string)"
-    publish :function => :SetDialogTitle, :type => "void (string)"
-    publish :function => :SetTitleIcon, :type => "void (string)"
-    publish :function => :ClearTitleIcon, :type => "void ()"
-    publish :function => :SetDesktopTitle, :type => "boolean (string)"
-    publish :function => :SetDesktopIcon, :type => "boolean (string)"
-    publish :function => :SetDesktopTitleAndIcon, :type => "boolean (string)"
-    publish :function => :EnableAbortButton, :type => "void ()"
-    publish :function => :DisableAbortButton, :type => "void ()"
-    publish :function => :DisableNextButton, :type => "void ()"
-    publish :function => :EnableNextButton, :type => "void ()"
-    publish :function => :DisableBackButton, :type => "void ()"
-    publish :function => :EnableBackButton, :type => "void ()"
-    publish :function => :DisableCancelButton, :type => "void ()"
-    publish :function => :EnableCancelButton, :type => "void ()"
-    publish :function => :ShowReleaseNotesButton, :type => "void (string, string)"
-    publish :function => :HideReleaseNotesButton, :type => "void ()"
-    publish :function => :RetranslateButtons, :type => "void ()"
-    publish :function => :SetFocusToNextButton, :type => "void ()"
-    publish :function => :SetFocusToBackButton, :type => "void ()"
-    publish :function => :SetScreenShotName, :type => "void (string)"
-    publish :function => :RestoreScreenShotName, :type => "void ()"
-    publish :function => :OpenTreeNextBackDialog, :type => "void ()"
-    publish :function => :CreateTreeDialog, :type => "void ()"
-    publish :function => :AddTreeItem, :type => "list <map> (list <map>, string, string, string)"
-    publish :function => :QueryTreeItem, :type => "string ()"
-    publish :function => :CreateTree, :type => "void (list <map>, string)"
-    publish :function => :SelectTreeItem, :type => "void (string)"
-    publish :function => :DeleteTreeItems, :type => "void ()"
-    publish :function => :DeleteMenus, :type => "void ()"
-    publish :function => :AddMenu, :type => "list <map> (list <map>, string, string)"
-    publish :function => :AddSubMenu, :type => "list <map> (list <map>, string, string, string)"
-    publish :function => :AddMenuEntry, :type => "list <map> (list <map>, string, string, string)"
-    publish :function => :CreateMenu, :type => "void (list <map>)"
-    publish :function => :SetProductName, :type => "void (string)"
+    publish function: :BackAbortNextButtonBox, type: "term ()"
+    publish function: :BackAbortInstallationNextButtonBox, type: "term ()"
+    publish function: :BackNextButtonBox, type: "term ()"
+    publish function: :CancelAcceptButtonBox, type: "term ()"
+    publish function: :CancelOKButtonBox, type: "term ()"
+    publish function: :AbortAcceptButtonBox, type: "term ()"
+    publish function: :AbortInstallationAcceptButtonBox, type: "term ()"
+    publish function: :AbortApplyFinishButtonBox, type: "term ()"
+    publish function: :GenericDialog, type: "term (term)"
+    publish function: :GenericTreeDialog, type: "term (term)"
+    publish function: :IsWizardDialog, type: "boolean ()"
+    publish function: :ShowHelp, type: "void (string)"
+    publish function: :NextBackDialog, type: "term ()"
+    publish function: :AcceptDialog, type: "term ()"
+    publish function: :OKDialog, type: "term ()"
+    publish function: :OpenDialog, type: "void (term)"
+    publish function: :OpenNextBackDialog, type: "void ()"
+    publish function: :OpenAcceptDialog, type: "void ()"
+    publish function: :OpenOKDialog, type: "void ()"
+    publish function: :OpenAbortApplyFinishDialog, type: "void ()"
+    publish function: :OpenAcceptStepsDialog, type: "void ()"
+    publish function: :OpenAcceptAbortStepsDialog, type: "void ()"
+    publish function: :OpenNextBackStepsDialog, type: "void ()"
+    publish function: :OpenLeftTitleNextBackDialog, type: "void ()"
+    publish function: :OpenCustomDialog, type: "void (term, term)"
+    publish function: :ReplaceCustomHelp, type: "void (term)"
+    publish function: :CloseDialog, type: "void ()"
+    publish function: :UserInput, type: "any ()"
+    publish function: :TimeoutUserInput, type: "any (integer)"
+    publish function: :WaitForEvent, type: "map ()"
+    publish function: :TimeoutWaitForEvent, type: "map (integer)"
+    publish function: :SetHelpText, type: "void (string)"
+    publish function: :ReplaceHelp, type: "void (term)"
+    publish function: :RestoreHelp, type: "void (string)"
+    publish function: :CreateDialog, type: "void ()"
+    publish function: :SetContentsFocus, type: "void (string, term, string, boolean, boolean, boolean)"
+    publish function: :SetContents, type: "void (string, term, string, boolean, boolean)"
+    publish function: :ClearContents, type: "void ()"
+    publish function: :SetNextButton, type: "void (any, string)"
+    publish function: :SetBackButton, type: "void (any, string)"
+    publish function: :SetAbortButton, type: "void (any, string)"
+    publish function: :HideNextButton, type: "void ()"
+    publish function: :HideBackButton, type: "void ()"
+    publish function: :OpenCancelOKDialog, type: "void ()"
+    publish function: :HideAbortButton, type: "void ()"
+    publish function: :RestoreBackButton, type: "void ()"
+    publish function: :RestoreNextButton, type: "void ()"
+    publish function: :RestoreAbortButton, type: "void ()"
+    publish function: :SetContentsButtons, type: "void (string, term, string, string, string)"
+    publish function: :SetDialogTitle, type: "void (string)"
+    publish function: :SetTitleIcon, type: "void (string)"
+    publish function: :ClearTitleIcon, type: "void ()"
+    publish function: :SetDesktopTitle, type: "boolean (string)"
+    publish function: :SetDesktopIcon, type: "boolean (string)"
+    publish function: :SetDesktopTitleAndIcon, type: "boolean (string)"
+    publish function: :EnableAbortButton, type: "void ()"
+    publish function: :DisableAbortButton, type: "void ()"
+    publish function: :DisableNextButton, type: "void ()"
+    publish function: :EnableNextButton, type: "void ()"
+    publish function: :DisableBackButton, type: "void ()"
+    publish function: :EnableBackButton, type: "void ()"
+    publish function: :DisableCancelButton, type: "void ()"
+    publish function: :EnableCancelButton, type: "void ()"
+    publish function: :ShowReleaseNotesButton, type: "void (string, string)"
+    publish function: :HideReleaseNotesButton, type: "void ()"
+    publish function: :RetranslateButtons, type: "void ()"
+    publish function: :SetFocusToNextButton, type: "void ()"
+    publish function: :SetFocusToBackButton, type: "void ()"
+    publish function: :SetScreenShotName, type: "void (string)"
+    publish function: :RestoreScreenShotName, type: "void ()"
+    publish function: :OpenTreeNextBackDialog, type: "void ()"
+    publish function: :CreateTreeDialog, type: "void ()"
+    publish function: :AddTreeItem, type: "list <map> (list <map>, string, string, string)"
+    publish function: :QueryTreeItem, type: "string ()"
+    publish function: :CreateTree, type: "void (list <map>, string)"
+    publish function: :SelectTreeItem, type: "void (string)"
+    publish function: :DeleteTreeItems, type: "void ()"
+    publish function: :DeleteMenus, type: "void ()"
+    publish function: :AddMenu, type: "list <map> (list <map>, string, string)"
+    publish function: :AddSubMenu, type: "list <map> (list <map>, string, string, string)"
+    publish function: :AddMenuEntry, type: "list <map> (list <map>, string, string, string)"
+    publish function: :CreateMenu, type: "void (list <map>)"
+    publish function: :SetProductName, type: "void (string)"
+
+  protected
+
+    # Sets the icon and opens a wizard dialog with the content specified as
+    # arguments
+    def open_wizard_dialog(*args)
+      set_icon
+      UI.OpenDialog(
+        Opt(:wizardDialog),
+        Wizard(*args)
+      )
+    end
+
+    # Sets the application icon according to the value of @icon_name
+    #
+    # This should be called only immediately before opening a dialog; premature
+    # UI calls can interfere with the CommandLine mode.
+    def set_icon
+      icon_path = File.join(@icon_dir, "#{@icon_name}.png")
+      UI.SetApplicationIcon(icon_path)
+    end
   end
 
   Wizard = WizardClass.new

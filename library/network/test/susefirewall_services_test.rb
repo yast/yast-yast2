@@ -1,10 +1,6 @@
 #!/usr/bin/env rspec
 
-top_srcdir = File.expand_path("../../../..", __FILE__)
-inc_dirs = Dir.glob("#{top_srcdir}/library/*/src")
-ENV["Y2DIR"] = inc_dirs.join(":")
-
-require "yast"
+require_relative "test_helper"
 
 Yast.import "SuSEFirewallServices"
 Yast.import "SCR"
@@ -24,8 +20,8 @@ end
 describe Yast::SuSEFirewallServices do
   describe "#ServiceDefinedByPackage" do
     it "distinguishes whether service is defined by package" do
-      expect(Yast::SuSEFirewallServices.ServiceDefinedByPackage("service:dns-server")).to be_true
-      expect(Yast::SuSEFirewallServices.ServiceDefinedByPackage("dns-server")).to be_false
+      expect(Yast::SuSEFirewallServices.ServiceDefinedByPackage("service:dns-server")).to eq(true)
+      expect(Yast::SuSEFirewallServices.ServiceDefinedByPackage("dns-server")).to eq(false)
     end
   end
 
@@ -47,16 +43,16 @@ describe Yast::SuSEFirewallServices do
 
   describe "#service_details" do
     it "returns non-empty service definition" do
-      Yast::SuSEFirewallServices.stub(:all_services).and_return({
-        "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge({"tcp_ports" => ["a", "b"]}),
-        "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge({"udp_ports" => ["x", "y"]}),
-      })
+      allow(Yast::SuSEFirewallServices).to receive(:all_services).and_return(
+        "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("tcp_ports" => ["a", "b"]),
+        "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("udp_ports" => ["x", "y"])
+      )
       expect(Yast::SuSEFirewallServices.service_details("service:dns-server")).not_to be_nil
       expect(Yast::SuSEFirewallServices.service_details("service:dns-server")["tcp_ports"]).to eq(["a", "b"])
     end
 
     it "throws an exception SuSEFirewalServiceNotFound if service does not exist" do
-      Yast::SuSEFirewallServices.stub(:all_services).and_return({})
+      allow(Yast::SuSEFirewallServices).to receive(:all_services).and_return({})
       expect { Yast::SuSEFirewallServices.service_details("undefined_service") }.to raise_error(
         Yast::SuSEFirewalServiceNotFound, /undefined_service/
       )
@@ -68,12 +64,12 @@ describe Yast::SuSEFirewallServices do
       setup_data_dir
 
       # Listing services directly from test-dir
-      services_on_disk = Dir.entries(SERVICES_DATA_PATH).reject{
-        |s| Yast::SuSEFirewallServicesClass::IGNORED_SERVICES.include?(s)
-      }
-      services_on_disk.map!{
-        |s| Yast::SuSEFirewallServicesClass::DEFINED_BY_PKG_PREFIX + s
-      }
+      services_on_disk = Dir.entries(SERVICES_DATA_PATH).reject do |s|
+        Yast::SuSEFirewallServicesClass::IGNORED_SERVICES.include?(s)
+      end
+      services_on_disk.map! do |s|
+        Yast::SuSEFirewallServicesClass::DEFINED_BY_PKG_PREFIX + s
+      end
 
       services = Yast::SuSEFirewallServices.all_services
       expect(services.keys.sort).to eq(services_on_disk.sort)
@@ -86,14 +82,12 @@ describe Yast::SuSEFirewallServices do
     it "returns whether service exists" do
       setup_data_dir
 
-      expect(Yast::SuSEFirewallServices.IsKnownService("service:bind")).to be_true
-      expect(Yast::SuSEFirewallServices.IsKnownService("service:no-bind")).to be_false
+      expect(Yast::SuSEFirewallServices.IsKnownService("service:bind")).to eq(true)
+      expect(Yast::SuSEFirewallServices.IsKnownService("service:no-bind")).to eq(false)
     end
 
     it "does not throw an exception if service does not exist" do
-      expect {
-        expect(Yast::SuSEFirewallServices.IsKnownService("unknown-service"))
-      }.not_to raise_error
+      expect { Yast::SuSEFirewallServices.IsKnownService("unknown-service") }.not_to raise_error
     end
   end
 
@@ -148,11 +142,11 @@ describe Yast::SuSEFirewallServices do
       it "returns hash of ports and protocols required by a service" do
         service_details = Yast::SuSEFirewallServices.GetNeededPortsAndProtocols("service:special-service")
 
-        expect(service_details.is_a?(Hash)).to be_true
+        expect(service_details.is_a?(Hash)).to eq(true)
 
-        expect(service_details["tcp_ports"]).not_to       be_empty
-        expect(service_details["udp_ports"]).not_to       be_empty
-        expect(service_details["ip_protocols"]).not_to    be_empty
+        expect(service_details["tcp_ports"]).not_to be_empty
+        expect(service_details["udp_ports"]).not_to be_empty
+        expect(service_details["ip_protocols"]).not_to be_empty
         expect(service_details["broadcast_ports"]).not_to be_empty
 
         expect(service_details["rpc_ports"]).to be_empty
@@ -163,7 +157,7 @@ describe Yast::SuSEFirewallServices do
   describe "#SetNeededPortsAndProtocols" do
     it "sets and writes new settings to a service definition file" do
       setup_data_dir
-      Yast::SCR.stub(:Write).and_return true
+      allow(Yast::SCR).to receive(:Write).and_return true
 
       new_set_of_ports = ["new", "set", "of", "ports"]
 
@@ -171,7 +165,7 @@ describe Yast::SuSEFirewallServices do
       expect(service_definition["tcp_ports"]).not_to eq(new_set_of_ports)
       service_definition["tcp_ports"] = new_set_of_ports
 
-      expect(Yast::SuSEFirewallServices.SetNeededPortsAndProtocols("service:special-service", service_definition)).to be_true
+      expect(Yast::SuSEFirewallServices.SetNeededPortsAndProtocols("service:special-service", service_definition)).to eq(true)
       expect(Yast::SuSEFirewallServices.GetNeededPortsAndProtocols("service:special-service")).to eq(service_definition)
     end
   end
@@ -183,14 +177,14 @@ describe Yast::SuSEFirewallServices do
 
     describe "#GetModified" do
       it "returns the default Modified flag" do
-        expect(Yast::SuSEFirewallServices.GetModified()).to be_false
+        expect(Yast::SuSEFirewallServices.GetModified()).to eq(false)
       end
     end
 
     describe "#SetModified" do
       it "sets the Modified flag" do
         Yast::SuSEFirewallServices.SetModified
-        expect(Yast::SuSEFirewallServices.GetModified()).to be_true
+        expect(Yast::SuSEFirewallServices.GetModified()).to eq(true)
       end
     end
 
@@ -198,7 +192,7 @@ describe Yast::SuSEFirewallServices do
       it "resets the Modified flag to default" do
         Yast::SuSEFirewallServices.SetModified
         Yast::SuSEFirewallServices.ResetModified
-        expect(Yast::SuSEFirewallServices.GetModified()).to be_false
+        expect(Yast::SuSEFirewallServices.GetModified()).to eq(false)
       end
     end
   end
@@ -207,8 +201,7 @@ describe Yast::SuSEFirewallServices do
     it "returns hash of old services definitions for conversion" do
       old_services = Yast::SuSEFirewallServices.OLD_SERVICES
       expect(old_services.size).to be >= 1
-      expect(old_services.is_a?(Hash)).to be_true
+      expect(old_services.is_a?(Hash)).to eq(true)
     end
   end
-
 end

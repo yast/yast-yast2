@@ -27,7 +27,7 @@ describe ::Installation::ProposalClient do
   describe ".run" do
     it "raise ArgumentError exception if unknown first argument is passed" do
       allow(Yast::WFM).to receive(:Args).and_return(["Unknown", {}])
-      expect{::Installation::ProposalClient.run}.to raise_error(ArgumentError)
+      expect { ::Installation::ProposalClient.run }.to raise_error(ArgumentError)
     end
 
     context "first client argument is MakeProposal" do
@@ -40,14 +40,14 @@ describe ::Installation::ProposalClient do
       end
 
       it "passes argument hash to abstract method" do
-        test_params = { :a => :b, :c => :d }
+        test_params = { a: :b, c: :d }
         allow(Yast::WFM).to receive(:Args).and_return(["MakeProposal", test_params])
 
         expect(subject.run).to eq test_params
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::ProposalClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::ProposalClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -61,14 +61,14 @@ describe ::Installation::ProposalClient do
       end
 
       it "passes argument hash to abstract method" do
-        test_params = { :a => :b, :c => :d }
+        test_params = { a: :b, c: :d }
         allow(Yast::WFM).to receive(:Args).and_return(["AskUser", test_params])
 
         expect(subject.run).to eq test_params
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::ProposalClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::ProposalClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -82,7 +82,7 @@ describe ::Installation::ProposalClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect{::Installation::ProposalClient.run}.to raise_error(NotImplementedError)
+        expect { ::Installation::ProposalClient.run }.to raise_error(NotImplementedError)
       end
     end
   end

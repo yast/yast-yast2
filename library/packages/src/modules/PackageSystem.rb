@@ -63,7 +63,6 @@ module Yast
       # Has Pkg::SourceStartCache run?
       @source_initialized = false
 
-
       Yast.include self, "packages/common.rb"
 
       @_rpm_query_binary_initialized = false
@@ -173,9 +172,11 @@ module Yast
       licenses = Pkg.PkgGetLicensesToConfirm(toinstall)
       if Ops.greater_than(Builtins.size(licenses), 0)
         rt_licenses_l = Builtins.maplist(licenses) do |p, l|
-          Mode.commandline ?
-            Builtins.sformat("%1\n%2", p, l) :
+          if Mode.commandline
+            Builtins.sformat("%1\n%2", p, l)
+          else
             Builtins.sformat("<p><b>%1</b></p>\n%2", p, l)
+          end
         end
 
         accepted = false
@@ -209,7 +210,7 @@ module Yast
         end
 
         # mark licenses as confirmed
-        Builtins.foreach(licenses) { |p, l| Pkg.PkgMarkLicenseConfirmed(p) }
+        Builtins.foreach(licenses) { |p, _l| Pkg.PkgMarkLicenseConfirmed(p) }
         @last_op_canceled = false
       end
 
@@ -229,7 +230,7 @@ module Yast
         repomgmt = !Mode.installation
         # start the package selector
         ret = PackagesUI.RunPackageSelector(
-          { "enable_repo_mgr" => repomgmt, "mode" => :summaryMode }
+          "enable_repo_mgr" => repomgmt, "mode" => :summaryMode
         )
 
         Builtins.y2internal("Package selector returned: %1", ret)
@@ -242,10 +243,10 @@ module Yast
       any_to_install = Pkg.IsAnyResolvable(:package, :to_install) ||
         Pkg.IsAnyResolvable(:patch, :to_install)
 
-      #[int successful, list failed, list remaining, list srcremaining]
+      # [int successful, list failed, list remaining, list srcremaining]
       result = Pkg.PkgCommit(0)
       Builtins.y2debug("PkgCommit: %1", result)
-      if result == nil || Ops.get_list(result, 1, []) != []
+      if result.nil? || Ops.get_list(result, 1, []) != []
         Builtins.y2error(
           "Package commit failed: %1",
           Ops.get_list(result, 1, [])
@@ -290,7 +291,7 @@ module Yast
       solver_flags = Pkg.GetSolverFlags
 
       # do not install recommended packages for already installed packages (bnc#445476)
-      Pkg.SetSolverFlags({ "ignoreAlreadyRecommended" => true })
+      Pkg.SetSolverFlags("ignoreAlreadyRecommended" => true)
 
       ret = DoInstallAndRemoveInt(toinstall, toremove)
 
@@ -299,7 +300,6 @@ module Yast
 
       ret
     end
-
 
     # Is a package available?
     # @return true if yes (nil = no package source available)
@@ -319,10 +319,10 @@ module Yast
 
       # rpmqpack is a way faster
       if Ops.greater_than(
-          SCR.Read(path(".target.size"), "/usr/bin/rpmqpack"),
-          -1
+        SCR.Read(path(".target.size"), "/usr/bin/rpmqpack"),
+        -1
         )
-        @_rpm_query_binary = "/usr/bin/rpmqpack " 
+        @_rpm_query_binary = "/usr/bin/rpmqpack "
         # than rpm itself
       elsif Ops.greater_than(SCR.Read(path(".target.size"), "/bin/rpm"), -1)
         @_rpm_query_binary = "/bin/rpm -q "
@@ -348,7 +348,7 @@ module Yast
             path(".target.bash"),
             Ops.add("rpm -q --whatprovides ", package)
           )
-        ) 
+        )
       # return Pkg::IsProvided (package);
     end
 
@@ -417,8 +417,8 @@ module Yast
             success = Popup.ContinueCancel(
               # continue/cancel popup
               _(
-                "Installing required packages failed. If you continue\n" +
-                  "without installing required packages,\n" +
+                "Installing required packages failed. If you continue\n" \
+                  "without installing required packages,\n" \
                   "YaST may not work properly.\n"
               )
             )
@@ -474,7 +474,6 @@ module Yast
         Builtins.y2warning("RPM query failed, quering the package manager...")
       end
 
-
       EnsureTargetInit()
 
       provides = Pkg.PkgQueryProvides("kernel")
@@ -499,33 +498,33 @@ module Yast
       InstallAll(packs)
     end
 
-    publish :function => :Available, :type => "boolean (string)"
-    publish :function => :Installed, :type => "boolean (string)"
-    publish :function => :DoInstall, :type => "boolean (list <string>)"
-    publish :function => :DoRemove, :type => "boolean (list <string>)"
-    publish :function => :DoInstallAndRemove, :type => "boolean (list <string>, list <string>)"
-    publish :function => :AvailableAll, :type => "boolean (list <string>)"
-    publish :function => :AvailableAny, :type => "boolean (list <string>)"
-    publish :function => :InstalledAll, :type => "boolean (list <string>)"
-    publish :function => :InstalledAny, :type => "boolean (list <string>)"
-    publish :function => :InstallMsg, :type => "boolean (string, string)"
-    publish :function => :InstallAllMsg, :type => "boolean (list <string>, string)"
-    publish :function => :InstallAnyMsg, :type => "boolean (list <string>, string)"
-    publish :function => :RemoveMsg, :type => "boolean (string, string)"
-    publish :function => :RemoveAllMsg, :type => "boolean (list <string>, string)"
-    publish :function => :Install, :type => "boolean (string)"
-    publish :function => :InstallAll, :type => "boolean (list <string>)"
-    publish :function => :InstallAny, :type => "boolean (list <string>)"
-    publish :function => :Remove, :type => "boolean (string)"
-    publish :function => :RemoveAll, :type => "boolean (list <string>)"
-    publish :function => :LastOperationCanceled, :type => "boolean ()"
-    publish :function => :EnsureTargetInit, :type => "void ()"
-    publish :function => :EnsureSourceInit, :type => "void ()"
-    publish :function => :PackageInstalled, :type => "boolean (string)"
-    publish :function => :PackageAvailable, :type => "boolean (string)"
-    publish :function => :CheckAndInstallPackages, :type => "boolean (list <string>)"
-    publish :function => :CheckAndInstallPackagesInteractive, :type => "boolean (list <string>)"
-    publish :function => :InstallKernel, :type => "boolean (list <string>)"
+    publish function: :Available, type: "boolean (string)"
+    publish function: :Installed, type: "boolean (string)"
+    publish function: :DoInstall, type: "boolean (list <string>)"
+    publish function: :DoRemove, type: "boolean (list <string>)"
+    publish function: :DoInstallAndRemove, type: "boolean (list <string>, list <string>)"
+    publish function: :AvailableAll, type: "boolean (list <string>)"
+    publish function: :AvailableAny, type: "boolean (list <string>)"
+    publish function: :InstalledAll, type: "boolean (list <string>)"
+    publish function: :InstalledAny, type: "boolean (list <string>)"
+    publish function: :InstallMsg, type: "boolean (string, string)"
+    publish function: :InstallAllMsg, type: "boolean (list <string>, string)"
+    publish function: :InstallAnyMsg, type: "boolean (list <string>, string)"
+    publish function: :RemoveMsg, type: "boolean (string, string)"
+    publish function: :RemoveAllMsg, type: "boolean (list <string>, string)"
+    publish function: :Install, type: "boolean (string)"
+    publish function: :InstallAll, type: "boolean (list <string>)"
+    publish function: :InstallAny, type: "boolean (list <string>)"
+    publish function: :Remove, type: "boolean (string)"
+    publish function: :RemoveAll, type: "boolean (list <string>)"
+    publish function: :LastOperationCanceled, type: "boolean ()"
+    publish function: :EnsureTargetInit, type: "void ()"
+    publish function: :EnsureSourceInit, type: "void ()"
+    publish function: :PackageInstalled, type: "boolean (string)"
+    publish function: :PackageAvailable, type: "boolean (string)"
+    publish function: :CheckAndInstallPackages, type: "boolean (list <string>)"
+    publish function: :CheckAndInstallPackagesInteractive, type: "boolean (list <string>)"
+    publish function: :InstallKernel, type: "boolean (list <string>)"
   end
 
   PackageSystem = PackageSystemClass.new

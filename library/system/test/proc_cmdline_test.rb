@@ -1,40 +1,40 @@
 #!/usr/bin/env rspec
 
-top_srcdir = File.expand_path("../../../..", __FILE__)
-inc_dirs = Dir.glob("#{top_srcdir}/library/*/src")
-ENV["Y2DIR"] = inc_dirs.join(":")
-
-require "yast"
-
-Yast.import "SCR"
-
-DEFAULT_DATA_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "data")
-
-def set_root_path(directory)
-  root = File.join(DEFAULT_DATA_DIR, directory)
-  desc = Yast::WFM.SCROpen("chroot=#{root}:scr", false)
-  Yast::WFM.SCRSetDefault(desc)
-end
+require_relative "test_helper"
 
 describe "SCR" do
   describe ".proc.cmdline" do
     describe "Read" do
+      let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
       let(:expected_list) { %w(biosdevname=1 initrd=initrd install=hd:/// splash=silent) }
-      let(:read_list) { Yast::SCR.Read(Yast::Path.new(".proc.cmdline")).sort }
+      let(:read_list) { Yast::SCR.Read(path(".proc.cmdline")).sort }
 
-      it "parses correctly simple files" do
-        set_root_path("cmdline-simple")
-        expect(read_list).to eq(expected_list)
+      around do |example|
+        change_scr_root(File.join(data_dir, chroot), &example)
       end
 
-      it "parses correctly files with two separators" do
-        set_root_path("cmdline-twoseparators")
-        expect(read_list).to eq(expected_list)
+      context "processing a simple file" do
+        let(:chroot) { "cmdline-simple" }
+
+        it "parses it correctly" do
+          expect(read_list).to eq(expected_list)
+        end
       end
 
-      it "parses correctly files with several lines" do
-        set_root_path("cmdline-newlines")
-        expect(read_list).to eq(expected_list)
+      context "processing a file with two separators" do
+        let(:chroot) { "cmdline-twoseparators" }
+
+        it "parses it correctly" do
+          expect(read_list).to eq(expected_list)
+        end
+      end
+
+      context "processing a file with several lines" do
+        let(:chroot) { "cmdline-newlines" }
+
+        it "parses it correctly" do
+          expect(read_list).to eq(expected_list)
+        end
       end
     end
   end

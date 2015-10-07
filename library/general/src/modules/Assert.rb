@@ -21,12 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	Assert.ycp
-# Summary:	Assertions for test cases
-# Authors:	Martin Vidner <mvidner@suse.cz>
 require "yast"
 
 module Yast
+  # Provides assertions for old yast testsuite
+  # @deprecated use rspec tests instead
   class AssertClass < Module
     # @param [Object] expected expected value of test
     # @param [Object] actual   actual value of test
@@ -57,8 +56,8 @@ module Yast
       EqualMsg(expected, actual, fail_message)
     end
 
-    publish :function => :EqualMsg, :type => "boolean (any, any, string)"
-    publish :function => :Equal, :type => "boolean (any, any)"
+    publish function: :EqualMsg, type: "boolean (any, any, string)"
+    publish function: :Equal, type: "boolean (any, any)"
   end
 
   Assert = AssertClass.new

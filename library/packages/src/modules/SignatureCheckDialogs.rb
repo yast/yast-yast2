@@ -80,7 +80,7 @@ module Yast
     # @param boolean show again
     # @param [String] popup_url
     def SetShowThisPopup(popup_type, show_it, popup_url)
-      if popup_type == nil || show_it == nil
+      if popup_type.nil? || show_it.nil?
         Builtins.y2error(
           "Neither popup_type %1 nor show_it %2 can be nil!",
           popup_type,
@@ -95,7 +95,7 @@ module Yast
           "User decision to show dialog '%1' again is '%2'",
           popup_type,
           show_it
-        ) 
+        )
         # store only "don't show"
       else
         Builtins.y2milestone(
@@ -125,22 +125,22 @@ module Yast
     # @param [String] popup_url if any
     # @return [Boolean] show the dialog
     def GetShowThisPopup(popup_type, popup_url)
-      if popup_type == nil
+      if popup_type.nil?
         Builtins.y2error("popup_type %1 mustn't be nil!", popup_type)
         return true
       end
 
       # Read the current configuration from system configuration
       stored = DontShowAgain.GetShowQuestionAgain(
-        {
-          "q_type"  => "inst-source",
-          "q_ident" => popup_type,
-          "q_url"   => popup_url
-        }
+
+        "q_type"  => "inst-source",
+        "q_ident" => popup_type,
+        "q_url"   => popup_url
+
       )
 
       # Stored in the configuration
-      if stored != nil
+      if !stored.nil?
         return stored
       else
         # Unknown status, return default
@@ -154,7 +154,7 @@ module Yast
     # @param [String] popup_type dialog type
     # @param [Boolean] default_return
     def SetDefaultDialogReturn(popup_type, default_return, popup_url)
-      if popup_type == nil || default_return == nil
+      if popup_type.nil? || default_return.nil?
         Builtins.y2error(
           "Neither popup_type %1 nor default_return %2 can be nil!",
           popup_type,
@@ -186,18 +186,18 @@ module Yast
     # @param [String] popup_type dialog type
     # @boolean boolean default dialog return
     def GetDefaultDialogReturn(popup_type, popup_url)
-      if popup_type == nil
+      if popup_type.nil?
         Builtins.y2error("popup_type %1 mustn't be nil!", popup_type)
         return false
       end
 
       stored_return = Convert.to_boolean(
         DontShowAgain.GetDefaultReturn(
-          {
-            "q_type"  => "inst-source",
-            "q_ident" => popup_type,
-            "q_url"   => popup_url
-          }
+
+          "q_type"  => "inst-source",
+          "q_ident" => popup_type,
+          "q_url"   => popup_url
+
         )
       )
 
@@ -214,11 +214,11 @@ module Yast
         UI.QueryWidget(Id(dont_show_dialog_checkboxid), :Value)
       )
       # Widget doesn't exist
-      if dont_show_status == nil
+      if dont_show_status.nil?
         Builtins.y2warning(
           "No such UI widget with ID: %1",
           dont_show_dialog_checkboxid
-        ) 
+        )
         # Checkbox selected -> Don't show again
       elsif dont_show_status == true
         Builtins.y2debug(
@@ -231,7 +231,7 @@ module Yast
           dont_show_dialog_ident,
           default_return,
           dont_show_url
-        ) 
+        )
         # Checkbox not selected -> Show again
       else
         SetShowThisPopup(dont_show_dialog_ident, true, dont_show_url)
@@ -252,14 +252,14 @@ module Yast
         "CHECK_SIGNATURES=([[:alpha:]]+)",
         "\\1"
       )
-      if val == nil
+      if val.nil?
         val = Builtins.regexpsub(cmdline, "no_sig_check=([^[:digit:]]+)", "\\1")
-        if val != nil
+        if !val.nil?
           trans = { "0" => "yes", "1" => "yast", "2" => "no" }
           val = Ops.get(trans, val)
         end
       end
-      val = "yes" if val == nil
+      val = "yes" if val.nil?
       val
     end
 
@@ -267,7 +267,7 @@ module Yast
     # (or a kernel parameter for the 1st installation stage).
     # @return do checking?
     def CheckSignaturesInYaST
-      if @check_signatures == nil
+      if @check_signatures.nil?
         chs = nil
         if Stage.initial
           chs = CheckSignatures()
@@ -294,10 +294,10 @@ module Yast
       after_chars_counter = 0
       max_size = Builtins.size(whattosplit)
 
-      while true
+      loop do
         if Ops.greater_or_equal(
-            Ops.add(after_chars_counter, after_chars),
-            max_size
+          Ops.add(after_chars_counter, after_chars),
+          max_size
           )
           splittedstring = Ops.add(
             Ops.add(splittedstring, splittedstring == "" ? "" : delimiter),
@@ -322,7 +322,7 @@ module Yast
     # @return [Yast::Term] `Image(...) with margins
     def MessageIcon(msg_type)
       # lazy loading
-      if @has_local_image_support == nil
+      if @has_local_image_support.nil?
         ui_capabilities = UI.GetDisplayInfo
         @has_local_image_support = Ops.get_boolean(
           ui_capabilities,
@@ -333,7 +333,7 @@ module Yast
 
       # UI can show images
       if @has_local_image_support
-        if Ops.get(@msg_icons, msg_type) == nil
+        if Ops.get(@msg_icons, msg_type).nil?
           Builtins.y2warning("Message type %1 not defined", msg_type)
           return Empty()
         end
@@ -387,16 +387,16 @@ module Yast
       user_input = nil
       ret = nil
 
-      while true
+      loop do
         user_input = UI.UserInput
         # yes button
         if user_input == :yes
           ret = true
-          break 
+          break
           # no button
         elsif user_input == :no
           ret = false
-          break 
+          break
           # closing window uisng [x]
         elsif user_input == :cancel
           ret = nil
@@ -420,7 +420,7 @@ module Yast
       user_input = nil
       ret = nil
 
-      while true
+      loop do
         user_input = Convert.to_symbol(UI.UserInput)
         if Builtins.contains(list_of_accepted, user_input)
           ret = user_input
@@ -456,31 +456,33 @@ module Yast
       repo = Pkg.SourceGeneralData(repository)
 
       description_text = Builtins.sformat(
-        item_type == :package ?
+        if item_type == :package
           # popup question, %1 stands for the package name
           # %2 is a repository name
           # %3 is URL of the repository
           _(
-            "The package %1 from repository %2\n" +
-              "%3\n" +
-              "is not digitally signed. This means that the origin\n" +
-              "and integrity of the package cannot be verified. Installing the package\n" +
-              "may put the integrity of your system at risk.\n" +
-              "\n" +
+            "The package %1 from repository %2\n" \
+              "%3\n" \
+              "is not digitally signed. This means that the origin\n" \
+              "and integrity of the package cannot be verified. Installing the package\n" \
+              "may put the integrity of your system at risk.\n" \
+              "\n" \
               "Install it anyway?"
-          ) :
+          )
+        else
           # popup question, %1 stands for the filename
           # %2 is a repository name
           # %3 is URL of the repository
           _(
-            "The file %1 from repository %2\n" +
-              "%3\n" +
-              "is not digitally signed. The origin and integrity of the file\n" +
-              "cannot be verified. Using the file anyway puts the integrity of your \n" +
-              "system at risk.\n" +
-              "\n" +
+            "The file %1 from repository %2\n" \
+              "%3\n" \
+              "is not digitally signed. The origin and integrity of the file\n" \
+              "cannot be verified. Using the file anyway puts the integrity of your \n" \
+              "system at risk.\n" \
+              "\n" \
               "Use it anyway?\n"
-          ),
+          )
+        end,
         item_name,
         Ops.get_locale(repo, "name", _("Unknown")),
         Ops.get_locale(repo, "url", _("Unknown"))
@@ -494,9 +496,11 @@ module Yast
             # popup heading
             VCenter(
               Heading(
-                item_type == :package ?
-                  _("Unsigned Package") :
+                if item_type == :package
+                  _("Unsigned Package")
+                else
                   _("Unsigned File")
+                end
               )
             ),
             HStretch()
@@ -519,7 +523,7 @@ module Yast
 
       ret = WaitForYesNoCancelUserInput()
       # default value
-      ret = false if ret == nil
+      ret = false if ret.nil?
 
       # Store the don't show value, store the default return value
       HandleDoNotShowDialogAgain(
@@ -542,25 +546,27 @@ module Yast
     # @return [Boolean] use or don't use ('true' if 'yes')
     def UseItemWithNoChecksum(item_type, item_name, dont_show_dialog_ident)
       description_text = Builtins.sformat(
-        item_type == :package ?
+        if item_type == :package
           # popup question, %1 stands for the package name
           _(
-            "No checksum for package %1 was found in the repository.\n" +
-              "While the package is part of the signed repository, it is not contained \n" +
-              "in the list of checksums in this repository. Installing the package puts \n" +
-              "the integrity of your system at risk.\n" +
-              "\n" +
+            "No checksum for package %1 was found in the repository.\n" \
+              "While the package is part of the signed repository, it is not contained \n" \
+              "in the list of checksums in this repository. Installing the package puts \n" \
+              "the integrity of your system at risk.\n" \
+              "\n" \
               "Install it anyway?\n"
-          ) :
+          )
+        else
           # popup question, %1 stands for the filename
           _(
-            "No checksum for file %1 was found in the repository.\n" +
-              "This means that the file is part of the signed repository,\n" +
-              "but the list of checksums in this repository does not mention this file. Using the file\n" +
-              "may put the integrity of your system at risk.\n" +
-              "\n" +
+            "No checksum for file %1 was found in the repository.\n" \
+              "This means that the file is part of the signed repository,\n" \
+              "but the list of checksums in this repository does not mention this file. Using the file\n" \
+              "may put the integrity of your system at risk.\n" \
+              "\n" \
               "Use it anyway?"
-          ),
+          )
+        end,
         item_name
       )
 
@@ -591,7 +597,7 @@ module Yast
 
       ret = WaitForYesNoCancelUserInput()
       # default value
-      ret = false if ret == nil
+      ret = false if ret.nil?
 
       # Store the don't show value, store the default return value
       HandleDoNotShowDialogAgain(
@@ -616,37 +622,43 @@ module Yast
                 Builtins.sformat(_("ID: %1"), Ops.get_string(key, "id", "")),
                 "\n"
               ),
-              Ops.get_string(key, "fingerprint", "") == nil ||
-                Ops.get_string(key, "fingerprint", "") == "" ?
+              if Ops.get_string(key, "fingerprint", "").nil? ||
+                Ops.get_string(key, "fingerprint", "") == ""
                 # Part of the GnuPG key description in popup, %1 is a GnuPG key fingerprint
-                "" :
+                ""
+              else
                 Builtins.sformat(
                   _("Fingerprint: %1") + "\n",
                   StringSplitter(Ops.get_string(key, "fingerprint", ""), " ", 4)
                 )
+              end
             ),
             # Part of the GnuPG key description in popup, %1 is a GnuPG key name
             Builtins.sformat(_("Name: %1"), Ops.get_string(key, "name", ""))
           ),
-          Ops.get_string(key, "created", "") != "" ?
+          if Ops.get_string(key, "created", "") != ""
             Ops.add(
               "\n",
               Builtins.sformat(
                 _("Created: %1"),
                 Ops.get_string(key, "created", "")
               )
-            ) :
+            )
+          else
             ""
+          end
         ),
-        Ops.get_string(key, "expires", "") != "" ?
+        if Ops.get_string(key, "expires", "") != ""
           Ops.add(
             "\n",
             Builtins.sformat(
               _("Expires: %1"),
               Ops.get_string(key, "expires", "")
             )
-          ) :
+          )
+        else
           ""
+        end
       )
     end
 
@@ -667,8 +679,8 @@ module Yast
         )
       )
       if Ops.greater_than(
-          Builtins.size(Ops.get_string(key, "fingerprint", "")),
-          0
+        Builtins.size(Ops.get_string(key, "fingerprint", "")),
+        0
         )
         # GPG key property
         rt = Ops.add(
@@ -717,31 +729,33 @@ module Yast
       repo = Pkg.SourceGeneralData(repository)
 
       description_text = Builtins.sformat(
-        item_type == :package ?
+        if item_type == :package
           # popup question, %1 stands for the package name, %2 for the complete description of the GnuPG key (multiline)
           _(
-            "Package %1 from repository %2\n" +
-              "%3\n" +
-              "is signed with the following GnuPG key, but the integrity check failed: %4\n" +
-              "\n" +
-              "The package has been changed, either by accident or by an attacker,\n" +
-              "since the repository creator signed it. Installing it is a big risk\n" +
-              "for the integrity and security of your system.\n" +
-              "\n" +
+            "Package %1 from repository %2\n" \
+              "%3\n" \
+              "is signed with the following GnuPG key, but the integrity check failed: %4\n" \
+              "\n" \
+              "The package has been changed, either by accident or by an attacker,\n" \
+              "since the repository creator signed it. Installing it is a big risk\n" \
+              "for the integrity and security of your system.\n" \
+              "\n" \
               "Install it anyway?\n"
-          ) :
+          )
+        else
           # popup question, %1 stands for the filename, %2 for the complete description of the GnuPG key (multiline)
           _(
-            "File %1 from repository %2\n" +
-              "%3\n" +
-              "is signed with the following GnuPG key, but the integrity check failed: %4\n" +
-              "\n" +
-              "The file has been changed, either by accident or by an attacker,\n" +
-              "since the repository creator signed it. Using it is a big risk\n" +
-              "for the integrity and security of your system.\n" +
-              "\n" +
+            "File %1 from repository %2\n" \
+              "%3\n" \
+              "is signed with the following GnuPG key, but the integrity check failed: %4\n" \
+              "\n" \
+              "The file has been changed, either by accident or by an attacker,\n" \
+              "since the repository creator signed it. Using it is a big risk\n" \
+              "for the integrity and security of your system.\n" \
+              "\n" \
               "Use it anyway?\n"
-          ),
+          )
+        end,
         item_name,
         Ops.get_locale(repo, "name", _("Unknown")),
         Ops.get_locale(repo, "url", _("Unknown")),
@@ -764,7 +778,7 @@ module Yast
 
       ret = WaitForYesNoCancelUserInput()
       # default value
-      ret = false if ret == nil
+      ret = false if ret.nil?
 
       UI.CloseDialog
       ret
@@ -782,33 +796,37 @@ module Yast
     def ItemSignedWithUnknownSignature(item_type, item_name, key_id, dont_show_dialog_ident, repoid)
       repo_url = Ops.get_string(Pkg.SourceGeneralData(repoid), "url", "")
       description_text = Builtins.sformat(
-        item_type == :package ?
+        if item_type == :package
           # popup question, %1 stands for the package name, %2 for the complex multiline description of the GnuPG key
           _(
-            "The package %1 is digitally signed\n" +
-              "with the following unknown GnuPG key: %2.\n" +
-              "\n" +
-              "This means that a trust relationship to the creator of the package\n" +
-              "cannot be established. Installing the package may put the integrity\n" +
-              "of your system at risk.\n" +
-              "\n" +
+            "The package %1 is digitally signed\n" \
+              "with the following unknown GnuPG key: %2.\n" \
+              "\n" \
+              "This means that a trust relationship to the creator of the package\n" \
+              "cannot be established. Installing the package may put the integrity\n" \
+              "of your system at risk.\n" \
+              "\n" \
               "Install it anyway?"
-          ) :
+          )
+        else
           # popup question, %1 stands for the filename, %2 for the complex multiline description of the GnuPG key
           _(
-            "The file %1\n" +
-              "is digitally signed with the following unknown GnuPG key: %2.\n" +
-              "\n" +
-              "This means that a trust relationship to the creator of the file\n" +
-              "cannot be established. Using the file may put the integrity\n" +
-              "of your system at risk.\n" +
-              "\n" +
+            "The file %1\n" \
+              "is digitally signed with the following unknown GnuPG key: %2.\n" \
+              "\n" \
+              "This means that a trust relationship to the creator of the file\n" \
+              "cannot be established. Using the file may put the integrity\n" \
+              "of your system at risk.\n" \
+              "\n" \
               "Use it anyway?"
-          ),
-        # TODO use something like "%1 from %2" and make it translatable
-        repo_url != "" ?
-          Builtins.sformat("%1 (%2)", item_name, repo_url) :
-          item_name,
+          )
+        end,
+        # TODO: use something like "%1 from %2" and make it translatable
+        if repo_url != ""
+          Builtins.sformat("%1 (%2)", item_name, repo_url)
+        else
+          item_name
+        end,
         Ops.add(
           "\n",
           # Part of the GnuPG key description in popup, %1 is a GnuPG key ID
@@ -846,7 +864,7 @@ module Yast
       # But by now it only handles yes/no/cancel
       ret = WaitForYesNoCancelUserInput()
       # default value
-      ret = false if ret == nil
+      ret = false if ret.nil?
 
       # Store the don't show value, store the default return value
       HandleDoNotShowDialogAgain(
@@ -871,31 +889,33 @@ module Yast
     def ItemSignedWithPublicSignature(item_type, item_name, key)
       key = deep_copy(key)
       description_text = Builtins.sformat(
-        item_type == :package ?
+        if item_type == :package
           # popup question, %1 stands for the package name, %2 for the key ID, %3 for the key name
           _(
-            "The package %1 is digitally signed\n" +
-              "with key '%2 (%3)'.\n" +
-              "\n" +
-              "There is no trust relationship with the owner of the key.\n" +
-              "If you trust the owner, mark the key as trusted.\n" +
-              "\n" +
-              "Installing a package from an unknown repository puts\n" +
-              "the integrity of your system at risk. It is safest\n" +
+            "The package %1 is digitally signed\n" \
+              "with key '%2 (%3)'.\n" \
+              "\n" \
+              "There is no trust relationship with the owner of the key.\n" \
+              "If you trust the owner, mark the key as trusted.\n" \
+              "\n" \
+              "Installing a package from an unknown repository puts\n" \
+              "the integrity of your system at risk. It is safest\n" \
               "to skip the package.\n"
-          ) :
+          )
+        else
           # popup question, %1 stands for the filename, %2 for the key ID, %3 for the key name
           _(
-            "The file %1 is digitally signed\n" +
-              "with key '%2 (%3)'.\n" +
-              "\n" +
-              "There is no trust relationship with the owner of the key.\n" +
-              "If you trust the owner, mark the key as trusted.\n" +
-              "\n" +
-              "Installing a file from an unknown repository puts\n" +
-              "the integrity of your system at risk. It is safest\n" +
+            "The file %1 is digitally signed\n" \
+              "with key '%2 (%3)'.\n" \
+              "\n" \
+              "There is no trust relationship with the owner of the key.\n" \
+              "If you trust the owner, mark the key as trusted.\n" \
+              "\n" \
+              "Installing a file from an unknown repository puts\n" \
+              "the integrity of your system at risk. It is safest\n" \
               "to skip it.\n"
-          ),
+          )
+        end,
         item_name,
         Ops.get_string(key, "id", ""),
         Ops.get_string(key, "name", "")
@@ -951,16 +971,16 @@ module Yast
       key = deep_copy(key)
       # additional Richtext (HTML) warning text (kind of help), 1/2
       warning_text = _(
-        "<p>The owner of the key may distribute updates,\n" +
-          "packages, and package repositories that your system will trust and offer\n" +
-          "for installation and update without any further warning. In this way,\n" +
-          "importing the key into your keyring of trusted keys allows the key owner\n" +
+        "<p>The owner of the key may distribute updates,\n" \
+          "packages, and package repositories that your system will trust and offer\n" \
+          "for installation and update without any further warning. In this way,\n" \
+          "importing the key into your keyring of trusted keys allows the key owner\n" \
           "to have a certain amount of control over the software on your system.</p>"
       ) +
         # additional Richtext (HTML) warning text (kind of help), 2/2
         _(
-          "<p>A warning dialog opens for every package that\n" +
-            "is not signed by a trusted (imported) key. If you do not trust the key,\n" +
+          "<p>A warning dialog opens for every package that\n" \
+            "is not signed by a trusted (imported) key. If you do not trust the key,\n" \
             "the packages or repositories created by the owner of the key will not be used.</p>"
         )
 
@@ -969,8 +989,8 @@ module Yast
       # popup message - label, part 1, %1 stands for repository name, %2 for its URL
       dialog_text = Builtins.sformat(
         _(
-          "The following GnuPG key has been found in repository\n" +
-            "%1\n" +
+          "The following GnuPG key has been found in repository\n" \
+            "%1\n" \
             "(%2):"
         ),
         Ops.get_locale(repo, "name", _("Unknown")),
@@ -980,9 +1000,9 @@ module Yast
 
       # popup message - label, part 2
       dialog_text2 = _(
-        "You can choose to import it into your keyring of trusted\n" +
-          "public keys, meaning that you trust the owner of the key.\n" +
-          "You should be sure that you can trust the owner and that\n" +
+        "You can choose to import it into your keyring of trusted\n" \
+          "public keys, meaning that you trust the owner of the key.\n" \
+          "You should be sure that you can trust the owner and that\n" \
           "the key really belongs to that owner before importing it."
       )
 
@@ -1006,9 +1026,11 @@ module Yast
         Opt(:decorated),
         HBox(
           # left-side help
-          hide_help ?
-            Empty() :
-            HWeight(3, VBox(RichText(warning_text))),
+          if hide_help
+            Empty()
+          else
+            HWeight(3, VBox(RichText(warning_text)))
+          end,
           HSpacing(1.5),
           # dialog
           HWeight(
@@ -1054,7 +1076,6 @@ module Yast
       ret == :trust
     end
 
-
     def RunSimpleErrorPopup(heading, description_text, dont_show_dialog_ident, dont_show_dialog_param)
       UI.OpenDialog(
         Opt(:decorated),
@@ -1084,7 +1105,7 @@ module Yast
 
       ret = WaitForYesNoCancelUserInput()
       # default value
-      ret = false if ret == nil
+      ret = false if ret.nil?
 
       # Store the don't show value, store the default return value
       HandleDoNotShowDialogAgain(
@@ -1111,14 +1132,14 @@ module Yast
         # %3 is the current checksum (e.g. "803a8ff00d00c9075a1bd223a480bcf92d2481c1")
         Builtins.sformat(
           _(
-            "The expected checksum of file %1\n" +
-              "is %2,\n" +
-              "but the current checksum is %3.\n" +
-              "\n" +
-              "The file has been changed by accident or by an attacker\n" +
-              "since the repository creator signed it. Using it is a big risk\n" +
-              "for the integrity and security of your system.\n" +
-              "\n" +
+            "The expected checksum of file %1\n" \
+              "is %2,\n" \
+              "but the current checksum is %3.\n" \
+              "\n" \
+              "The file has been changed by accident or by an attacker\n" \
+              "since the repository creator signed it. Using it is a big risk\n" \
+              "for the integrity and security of your system.\n" \
+              "\n" \
               "Use it anyway?\n"
           ),
           filename,
@@ -1147,13 +1168,13 @@ module Yast
         # popup question, %1 stands for the filename, %2 is expected digest, %3 is the current digest
         Builtins.sformat(
           _(
-            "The checksum of file %1\n" +
-              "is %2,\n" +
-              "but the expected checksum is not known.\n" +
-              "\n" +
-              "This means that the origin and integrity of the file\n" +
-              "cannot be verified. Using the file puts the integrity of your system at risk.\n" +
-              "\n" +
+            "The checksum of file %1\n" \
+              "is %2,\n" \
+              "but the expected checksum is not known.\n" \
+              "\n" \
+              "This means that the origin and integrity of the file\n" \
+              "cannot be verified. Using the file puts the integrity of your system at risk.\n" \
+              "\n" \
               "Use it anyway?\n"
           ),
           filename,
@@ -1170,20 +1191,20 @@ module Yast
       )
     end
 
-    publish :function => :SetShowThisPopup, :type => "void (string, boolean, string)"
-    publish :function => :GetShowThisPopup, :type => "boolean (string, string)"
-    publish :function => :SetDefaultDialogReturn, :type => "void (string, boolean, string)"
-    publish :function => :GetDefaultDialogReturn, :type => "boolean (string, string)"
-    publish :function => :CheckSignatures, :type => "string ()"
-    publish :function => :CheckSignaturesInYaST, :type => "boolean ()"
-    publish :function => :UseUnsignedItem, :type => "boolean (symbol, string, string, integer)"
-    publish :function => :UseItemWithNoChecksum, :type => "boolean (symbol, string, string)"
-    publish :function => :UseCorruptedItem, :type => "boolean (symbol, string, map <string, any>, integer)"
-    publish :function => :ItemSignedWithUnknownSignature, :type => "boolean (symbol, string, string, string, integer)"
-    publish :function => :ItemSignedWithPublicSignature, :type => "symbol (symbol, string, map <string, any>)"
-    publish :function => :ImportGPGKeyIntoTrustedDialog, :type => "boolean (map <string, any>, integer)"
-    publish :function => :UseFileWithWrongDigest, :type => "boolean (string, string, string, string)"
-    publish :function => :UseFileWithUnknownDigest, :type => "boolean (string, string, string)"
+    publish function: :SetShowThisPopup, type: "void (string, boolean, string)"
+    publish function: :GetShowThisPopup, type: "boolean (string, string)"
+    publish function: :SetDefaultDialogReturn, type: "void (string, boolean, string)"
+    publish function: :GetDefaultDialogReturn, type: "boolean (string, string)"
+    publish function: :CheckSignatures, type: "string ()"
+    publish function: :CheckSignaturesInYaST, type: "boolean ()"
+    publish function: :UseUnsignedItem, type: "boolean (symbol, string, string, integer)"
+    publish function: :UseItemWithNoChecksum, type: "boolean (symbol, string, string)"
+    publish function: :UseCorruptedItem, type: "boolean (symbol, string, map <string, any>, integer)"
+    publish function: :ItemSignedWithUnknownSignature, type: "boolean (symbol, string, string, string, integer)"
+    publish function: :ItemSignedWithPublicSignature, type: "symbol (symbol, string, map <string, any>)"
+    publish function: :ImportGPGKeyIntoTrustedDialog, type: "boolean (map <string, any>, integer)"
+    publish function: :UseFileWithWrongDigest, type: "boolean (string, string, string, string)"
+    publish function: :UseFileWithUnknownDigest, type: "boolean (string, string, string)"
   end
 
   SignatureCheckDialogs = SignatureCheckDialogsClass.new

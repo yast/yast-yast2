@@ -2,7 +2,6 @@
 
 module_DATA = \
   modules/Linuxrc.rb \
-  modules/ConfigHistory.rb \
   modules/Message.rb \
   modules/Misc.rb \
   modules/Icon.rb \
@@ -19,7 +18,6 @@ module_DATA = \
   modules/Distro.rb \
   modules/XVersion.rb \
   modules/Summary.rb \
-  modules/Syslog.rb \
   modules/UIHelper.rb \
   modules/DontShowAgain.rb \
   modules/Report.rb \
@@ -87,6 +85,13 @@ ylib_DATA = \
   lib/installation/finish_client.rb \
   lib/installation/proposal_client.rb
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylib_DATA)
+ylib2dir = "${yast2dir}/lib/ui"
+ylib2_DATA = \
+  lib/ui/dialog.rb \
+  lib/ui/event_dispatcher.rb \
+  lib/ui/srv_status_component.rb
+
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylib_DATA) $(ylib2_DATA)
+
 
 include $(top_srcdir)/Makefile.am.common

@@ -33,7 +33,6 @@ require "yast"
 module Yast
   class ArchClass < Module
     def main
-
       # local variables
 
       @_architecture = nil
@@ -63,11 +62,11 @@ module Yast
     # ************************************************************
     # system architecture
 
-    # Returns full architecture type (one of i386, sparc, sparc64, mips, mips64, ppc, ppc64, alpha, s390_32, s390_64, ia64, x86_64, aarch64)
+    # Returns full architecture type (one of i386, sparc, sparc64, ppc, ppc64, alpha, s390_32, s390_64, ia64, x86_64, aarch64)
     #
     # @return [String] architecture
     def architecture
-      if @_architecture == nil
+      if @_architecture.nil?
         @_architecture = Convert.to_string(
           SCR.Read(path(".probe.architecture"))
         )
@@ -99,27 +98,6 @@ module Yast
     # @see #sparc64
     def sparc
       sparc32 || sparc64
-    end
-
-    # true for all 32bit mips architectures
-    # @see #mips
-    # @see #mips64
-    def mips32
-      architecture == "mips"
-    end
-
-    # true for all 64bit mips architectures
-    # @see #mips
-    # @see #mips32
-    def mips64
-      architecture == "mips64"
-    end
-
-    # true for all mips architectures (32 or 64 bit)
-    # @see #mips32
-    # @see #mips64
-    def mips
-      mips32 || mips64
     end
 
     # true for all 32bit ppc architectures
@@ -184,14 +162,12 @@ module Yast
       architecture == "aarch64"
     end
 
-    # Returns general architecture type (one of sparc, mips, ppc, s390, i386, alpha, ia64, x86_64, aarch64)
+    # Returns general architecture type (one of sparc, ppc, s390, i386, alpha, ia64, x86_64, aarch64)
     #
     # @return [String] arch_short
     def arch_short
       if sparc
         return "sparc"
-      elsif mips
-        return "mips"
       elsif ppc
         return "ppc"
       elsif s390
@@ -205,14 +181,14 @@ module Yast
     # general system board types (initialized in constructor)
 
     def board_compatible
-      if @_board_compatible == nil
+      if @_board_compatible.nil?
         @_checkgeneration = ""
         systemProbe = Convert.convert(
           SCR.Read(path(".probe.system")),
-          :from => "any",
-          :to   => "list <map>"
+          from: "any",
+          to:   "list <map>"
         )
-        systemProbe = [] if systemProbe == nil
+        systemProbe = [] if systemProbe.nil?
 
         Builtins.foreach(systemProbe) do |systemEntry|
           checksys = Ops.get_string(systemEntry, "system", "")
@@ -226,7 +202,10 @@ module Yast
         # Cell and Maple based boards have no CHRP in /proc/cpuinfo
         # Pegasos and Cell do have CHRP in /proc/cpuinfo, but Pegasos2 should no be handled as CHRP
         # Efika is handled like Pegasos for the time being
-        if ppc && (@_board_compatible == nil || @_board_compatible == "CHRP")
+        # Treat PowerNV as CHRP. It is harmless for now. Patch for hwinfo is sent but it is better to be safe
+        @_board_compatible = "CHRP" if @_board_compatible == "PowerNV"
+
+        if ppc && (@_board_compatible.nil? || @_board_compatible == "CHRP")
           device_type = Convert.to_map(
             SCR.Execute(
               path(".target.bash_output"),
@@ -247,11 +226,21 @@ module Yast
             model,
             device_type
           )
+          compatible = Convert.to_map(
+            SCR.Execute(
+              path(".target.bash_output"),
+              "echo -n `cat /proc/device-tree/compatible`",
+              {}
+            )
+          )
           # catch remaining IBM boards
           if Builtins.issubstring(
-              Ops.get_string(device_type, "stdout", ""),
-              "chrp"
-            )
+            Ops.get_string(device_type, "stdout", ""),
+            "chrp"
+       ) || Builtins.issubstring(
+         Ops.get_string(compatible, "stdout", ""),
+         "ibm,powernv"
+       )
             @_board_compatible = "CHRP"
           end
           # Maple has its own way of pretenting OF1275 compliance
@@ -278,7 +267,7 @@ module Yast
         end
         # avoid future re-probing if probing failed
         # also avoid passing nil outside the module
-        if fun_ref(method(:board_compatible), "string ()") == nil
+        if fun_ref(method(:board_compatible), "string ()").nil?
           @_board_compatible = ""
         end
       end
@@ -329,7 +318,6 @@ module Yast
       board_compatible == "wintel"
     end
 
-
     # ************************************************************
     # BIOS stuff
 
@@ -338,7 +326,7 @@ module Yast
     # @see #is_laptop
     # @return true if the system supports PCMCIA
     def has_pcmcia
-      if @_has_pcmcia == nil
+      if @_has_pcmcia.nil?
         @_has_pcmcia = Convert.to_boolean(SCR.Read(path(".probe.has_pcmcia")))
       end
       @_has_pcmcia
@@ -348,11 +336,11 @@ module Yast
     #
     # @return if the system is a laptop
     def is_laptop
-      if @_is_laptop == nil
+      if @_is_laptop.nil?
         system = Convert.convert(
           SCR.Read(path(".probe.system")),
-          :from => "any",
-          :to   => "list <map>"
+          from: "any",
+          to:   "list <map>"
         )
         formfactor = Ops.get_string(system, [0, "formfactor"], "")
         @_is_laptop = formfactor == "laptop"
@@ -367,7 +355,7 @@ module Yast
     # @deprecated
     # @return true if the system is UML
     def is_uml
-      if @_is_uml == nil
+      if @_is_uml.nil?
         @_is_uml = Convert.to_boolean(SCR.Read(path(".probe.is_uml")))
       end
       @_is_uml
@@ -378,7 +366,7 @@ module Yast
     # true if Xen kernel is running (dom0 or domU)
     # @return true if the Xen kernel is running
     def is_xen
-      if @_is_xen == nil
+      if @_is_xen.nil?
         # XEN kernel has /proc/xen directory
         stat = Convert.to_map(SCR.Read(path(".target.stat"), "/proc/xen"))
         Builtins.y2milestone("stat /proc/xen: %1", stat)
@@ -417,7 +405,7 @@ module Yast
     # @see #is_xen
     # @return true if the Xen kernel is running in dom0
     def is_xen0
-      if @_is_xen0 == nil
+      if @_is_xen0.nil?
         # dom0 Xen kernel has /proc/xen/xsd_port file
         stat = Convert.to_map(
           SCR.Read(path(".target.stat"), "/proc/xen/xsd_port")
@@ -446,7 +434,7 @@ module Yast
     #
     # @return true if we are running on KVM hypervisor
     def is_kvm
-      if @_is_kvm == nil
+      if @_is_kvm.nil?
         # KVM hypervisor has /dev/kvm file
         stat = Convert.to_map(SCR.Read(path(".target.stat"), "/dev/kvm"))
         Builtins.y2milestone("stat /dev/kvm: %1", stat)
@@ -475,7 +463,7 @@ module Yast
     #
     # @return true if running on multiprocessor board
     def has_smp
-      if @_has_smp == nil
+      if @_has_smp.nil?
         @_has_smp = Convert.to_boolean(SCR.Read(path(".probe.has_smp")))
       end
       if alpha
@@ -494,48 +482,42 @@ module Yast
     # @see #Installation::x11_setup_needed
     def x11_setup_needed
       # disable X11 setup after initial boot
-      return false if board_iseries || s390 || mips
+      return false if board_iseries || s390
       true
     end
 
-    publish :function => :architecture, :type => "string ()"
-    publish :function => :i386, :type => "boolean ()"
-    publish :function => :sparc32, :type => "boolean ()"
-    publish :function => :sparc64, :type => "boolean ()"
-    publish :function => :sparc, :type => "boolean ()"
-    publish :function => :mips32, :type => "boolean ()"
-    publish :function => :mips64, :type => "boolean ()"
-    publish :function => :mips, :type => "boolean ()"
-    publish :function => :ppc32, :type => "boolean ()"
-    publish :function => :ppc64, :type => "boolean ()"
-    publish :function => :ppc, :type => "boolean ()"
-    publish :function => :alpha, :type => "boolean ()"
-    publish :function => :s390_32, :type => "boolean ()"
-    publish :function => :s390_64, :type => "boolean ()"
-    publish :function => :s390, :type => "boolean ()"
-    publish :function => :ia64, :type => "boolean ()"
-    publish :function => :x86_64, :type => "boolean ()"
-    publish :function => :aarch64, :type => "boolean ()"
-    publish :function => :arch_short, :type => "string ()"
-    publish :function => :board_compatible, :type => "string ()"
-    publish :function => :board_mac, :type => "boolean ()"
-    publish :function => :board_mac_new, :type => "boolean ()"
-    publish :function => :board_mac_old, :type => "boolean ()"
-    publish :function => :board_chrp, :type => "boolean ()"
-    publish :function => :board_iseries, :type => "boolean ()"
-    publish :function => :board_prep, :type => "boolean ()"
-    publish :function => :board_pegasos, :type => "boolean ()"
-    publish :function => :board_wintel, :type => "boolean ()"
-    publish :function => :has_pcmcia, :type => "boolean ()"
-    publish :function => :is_laptop, :type => "boolean ()"
-    publish :function => :is_uml, :type => "boolean ()"
-    publish :function => :is_xen, :type => "boolean ()"
-    publish :function => :is_xen0, :type => "boolean ()"
-    publish :function => :is_xenU, :type => "boolean ()"
-    publish :function => :is_kvm, :type => "boolean ()"
-    publish :function => :setSMP, :type => "void (boolean)"
-    publish :function => :has_smp, :type => "boolean ()"
-    publish :function => :x11_setup_needed, :type => "boolean ()"
+    publish function: :architecture, type: "string ()"
+    publish function: :i386, type: "boolean ()"
+    publish function: :sparc32, type: "boolean ()"
+    publish function: :sparc64, type: "boolean ()"
+    publish function: :sparc, type: "boolean ()"
+    publish function: :ppc32, type: "boolean ()"
+    publish function: :ppc64, type: "boolean ()"
+    publish function: :ppc, type: "boolean ()"
+    publish function: :alpha, type: "boolean ()"
+    publish function: :s390_64, type: "boolean ()"
+    publish function: :s390, type: "boolean ()"
+    publish function: :ia64, type: "boolean ()"
+    publish function: :x86_64, type: "boolean ()"
+    publish function: :aarch64, type: "boolean ()"
+    publish function: :arch_short, type: "string ()"
+    publish function: :board_mac, type: "boolean ()"
+    publish function: :board_mac_new, type: "boolean ()"
+    publish function: :board_mac_old, type: "boolean ()"
+    publish function: :board_chrp, type: "boolean ()"
+    publish function: :board_iseries, type: "boolean ()"
+    publish function: :board_prep, type: "boolean ()"
+    publish function: :board_pegasos, type: "boolean ()"
+    publish function: :board_wintel, type: "boolean ()"
+    publish function: :has_pcmcia, type: "boolean ()"
+    publish function: :is_laptop, type: "boolean ()"
+    publish function: :is_uml, type: "boolean ()"
+    publish function: :is_xen, type: "boolean ()"
+    publish function: :is_xen0, type: "boolean ()"
+    publish function: :is_xenU, type: "boolean ()"
+    publish function: :is_kvm, type: "boolean ()"
+    publish function: :has_smp, type: "boolean ()"
+    publish function: :x11_setup_needed, type: "boolean ()"
   end
 
   Arch = ArchClass.new

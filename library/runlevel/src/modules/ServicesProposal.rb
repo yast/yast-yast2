@@ -61,14 +61,14 @@ module Yast
     #
     # @return [Array <String>] list of enabled services
     def enabled_services
-      @services.select{|service, status| status == :enabled}.keys
+      @services.select { |_service, status| status == :enabled }.keys
     end
 
     # Returns all services currently marked as disabled
     #
     # @return [Array <String>] list of disabled services
     def disabled_services
-      @services.select{|service, status| status == :disabled}.keys
+      @services.select { |_service, status| status == :disabled }.keys
     end
 
   private
@@ -76,9 +76,9 @@ module Yast
     # Checks the given service
     # Raises an exception in case of an error
     def check_service(service)
-      if service.nil? || service.empty?
-        raise ArgumentError, "Wrong service name '#{service.inspect}'"
-      end
+      return if service && !service.empty?
+
+      raise ArgumentError, "Wrong service name '#{service.inspect}'"
     end
   end
 

@@ -1,0 +1,7 @@
+Type   | #  | Pre # | Date                             | User | Cleanup | Description  | Userdata     
+-------+----+-------+----------------------------------+------+---------+--------------+--------------
+single | 0  |       |                                  | root |         | current      |              
+pre    | 1  |       | Wed 13 May 2015 04:14:14 PM WEST | root | number  | zypp(y2base) | important=no 
+pre    | 3  |       | Wed 13 May 2015 05:01:47 PM WEST | root | number  | zypp(zypper) | important=no 
+post   | 4  | 3     | Wed 13 May 2015 05:03:13 PM WEST | root | number  | zypp(zypper) | important=no 
+single | 5  |       | Wed 13 May 2015 05:11:25 PM WEST | root |         |              |              

@@ -42,7 +42,7 @@ module Installation
     # The only part needed in client rb file.
     # @return response from abstract methods
     def self.run
-      self.new.run
+      new.run
     end
 
     # Dispatches to abstract method based on passed arguments to client
@@ -60,7 +60,7 @@ module Installation
       end
     end
 
-    protected
+  protected
 
     # Write configuration.
     def write

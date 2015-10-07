@@ -31,6 +31,7 @@
 #
 # $Id$
 require "yast"
+require "cgi"
 
 module Yast
   class PackagesUIClass < Module
@@ -54,7 +55,7 @@ module Yast
 
     def SetPackageSummary(summary)
       summary = deep_copy(summary)
-      if summary == nil
+      if summary.nil?
         Builtins.y2error("Cannot set nil package summary!")
         return
       end
@@ -74,7 +75,7 @@ module Yast
 
     def SetPackageSummaryItem(name, value)
       value = deep_copy(value)
-      if name == nil || name == ""
+      if name.nil? || name == ""
         Builtins.y2error("Invalid item name: '%1'", name)
         return
       end
@@ -85,7 +86,6 @@ module Yast
 
       nil
     end
-
 
     #
     # Popup displays helptext
@@ -151,7 +151,7 @@ module Yast
           HSpacing(size_x),
           # dialog heading, %1 is package name
           Heading(Builtins.sformat(_("Confirm Package License: %1"), package)),
-          HBox(VSpacing(size_y), RichText(Id(:lic), license)),
+          HBox(VSpacing(size_y), RichText(Id(:lic), format_license(license))),
           VSpacing(1),
           HBox(
             PushButton(Id(:help), Label.HelpButton),
@@ -164,40 +164,40 @@ module Yast
         )
         UI.OpenDialog(popup)
         ui = nil
-        while ui == nil
+        while ui.nil?
           ui = Convert.to_symbol(UI.UserInput)
-          if ui == :help
-            ui = nil
+          next if ui != :help
 
-            # help text
-            help = _(
-              "<p><b><big>License Confirmation</big></b><br>\n" +
-                "The package in the headline of the dialog requires an explicit confirmation\n" +
-                "of acceptance of its license.\n" +
-                "If you reject the license of the package, the package will not be installed.\n" +
-                "<br>\n" +
-                "To accept the license of the package, click <b>I Agree</b>.\n" +
-                "To reject the license of the package, click <b>I Disagree</b></p>."
-            )
+          ui = nil
 
-            UI.OpenDialog(
-              HBox(
-                VSpacing(18),
-                VBox(
-                  HSpacing(70),
-                  RichText(help),
-                  HBox(
-                    HStretch(),
-                    # push button
-                    PushButton(Id(:close), Label.CloseButton),
-                    HStretch()
-                  )
+          # help text
+          help = _(
+            "<p><b><big>License Confirmation</big></b><br>\n" \
+              "The package in the headline of the dialog requires an explicit confirmation\n" \
+              "of acceptance of its license.\n" \
+              "If you reject the license of the package, the package will not be installed.\n" \
+              "<br>\n" \
+              "To accept the license of the package, click <b>I Agree</b>.\n" \
+              "To reject the license of the package, click <b>I Disagree</b></p>."
+          )
+
+          UI.OpenDialog(
+            HBox(
+              VSpacing(18),
+              VBox(
+                HSpacing(70),
+                RichText(help),
+                HBox(
+                  HStretch(),
+                  # push button
+                  PushButton(Id(:close), Label.CloseButton),
+                  HStretch()
                 )
               )
             )
-            UI.UserInput
-            UI.CloseDialog
-          end
+          )
+          UI.UserInput
+          UI.CloseDialog
         end
         UI.CloseDialog
         Builtins.y2milestone(
@@ -214,6 +214,23 @@ module Yast
       end
 
       ret
+    end
+
+    # format the license so it's displayed the same way as in the libyui-qt-pkg dialog,
+    # (see https://github.com/libyui/libyui-qt-pkg/blob/master/src/YQPkgObjList.cc#L1411
+    # https://github.com/libyui/libyui-qt-pkg/blob/master/src/YQPkgTextDialog.cc#L295 )
+    # @param [String] license the raw license text obtained from libzypp
+    # @return [String] formatted license for displaying in a RichText widget
+    def format_license(license)
+      # check the flag for a preformatted HTML
+      return license.dup if license.include?("<!-- DT:Rich -->")
+
+      ret = CGI.escapeHTML(license)
+
+      # two empty lines mean a new paragraph
+      ret.gsub!("\n\n", "</p><p>")
+
+      "<p>" + ret + "</p>"
     end
 
     # Run helper function, reads the display_support_status feature from the control file
@@ -259,11 +276,11 @@ module Yast
       mode = Ops.get_symbol(options, "mode")
 
       # set the defaults if the option is missing or nil
-      if display_support_status == nil
+      if display_support_status.nil?
         display_support_status = ReadSupportStatus()
       end
 
-      if enable_repo_mgr == nil
+      if enable_repo_mgr.nil?
         # disable repository management by default
         enable_repo_mgr = false
       end
@@ -277,13 +294,13 @@ module Yast
 
       widget_options = Opt()
 
-      widget_options = Builtins.add(widget_options, mode) if mode != nil
+      widget_options = Builtins.add(widget_options, mode) if !mode.nil?
 
-      if enable_repo_mgr != nil && enable_repo_mgr
+      if !enable_repo_mgr.nil? && enable_repo_mgr
         widget_options = Builtins.add(widget_options, :repoMgr)
       end
 
-      if display_support_status != nil && display_support_status
+      if !display_support_status.nil? && display_support_status
         widget_options = Builtins.add(widget_options, :confirmUnsupported)
       end
 
@@ -294,13 +311,11 @@ module Yast
 
       UI.OpenDialog(
         Opt(:defaultsize),
-        Ops.greater_or_equal(
-          # Note: size(`opt()) = 0 !!
-          Builtins.size(widget_options),
-          1
-        ) ?
-          PackageSelector(Id(:packages), widget_options, "") :
+        if widget_options.size > 0 # FIXME: add empty? method to Yast::Term
+          PackageSelector(Id(:packages), widget_options, "")
+        else
           PackageSelector(Id(:packages), "")
+        end
       )
 
       result = Convert.to_symbol(UI.RunPkgSelection(Id(:packages)))
@@ -310,7 +325,6 @@ module Yast
 
       result
     end
-
 
     # Start the pattern selection dialog. If the UI does not support the
     # PatternSelector, start the detailed selection with "patterns" as the
@@ -326,35 +340,34 @@ module Yast
         return RunPackageSelector({}) # Fallback: detailed selection
       end
 
-
       # Help text for software patterns / selections dialog
       help_text = _(
-        "<p>\n" +
-          "\t\t This dialog allows you to define this system's tasks and what software to install.\n" +
-          "\t\t Available tasks and software for this system are shown by category in the left\n" +
-          "\t\t column.  To view a description for an item, select it in the list.\n" +
+        "<p>\n" \
+          "\t\t This dialog allows you to define this system's tasks and what software to install.\n" \
+          "\t\t Available tasks and software for this system are shown by category in the left\n" \
+          "\t\t column.  To view a description for an item, select it in the list.\n" \
           "\t\t </p>"
       ) +
         _(
-          "<p>\n" +
-            "\t\t Change the status of an item by clicking its status icon\n" +
-            "\t\t or right-click any icon for a context menu.\n" +
-            "\t\t With the context menu, you can also change the status of all items.\n" +
+          "<p>\n" \
+            "\t\t Change the status of an item by clicking its status icon\n" \
+            "\t\t or right-click any icon for a context menu.\n" \
+            "\t\t With the context menu, you can also change the status of all items.\n" \
             "\t\t </p>"
         ) +
         _(
-          "<p>\n" +
-            "\t\t <b>Details</b> opens the detailed software package selection\n" +
-            "\t\t where you can view and select individual software packages.\n" +
+          "<p>\n" \
+            "\t\t <b>Details</b> opens the detailed software package selection\n" \
+            "\t\t where you can view and select individual software packages.\n" \
             "\t\t </p>"
         ) +
         _(
-          "<p>\n" +
-            "\t\t The disk usage display in the lower right corner shows the remaining disk space\n" +
-            "\t\t after all requested changes will have been performed.\n" +
-            "\t\t Hard disk partitions that are full or nearly full can degrade\n" +
-            "\t\t system performance and in some cases even cause serious problems.\n" +
-            "\t\t The system needs some available disk space to run properly.\n" +
+          "<p>\n" \
+            "\t\t The disk usage display in the lower right corner shows the remaining disk space\n" \
+            "\t\t after all requested changes will have been performed.\n" \
+            "\t\t Hard disk partitions that are full or nearly full can degrade\n" \
+            "\t\t system performance and in some cases even cause serious problems.\n" \
+            "\t\t The system needs some available disk space to run properly.\n" \
             "\t\t </p>"
         )
 
@@ -379,7 +392,7 @@ module Yast
       Wizard.SetDesktopIcon("sw_single")
 
       result = nil
-      begin
+      loop do
         result = Convert.to_symbol(UI.RunPkgSelection(Id(:patterns)))
         Builtins.y2milestone("Pattern selector returned %1", result)
 
@@ -392,7 +405,8 @@ module Yast
             result = nil
           end
         end
-      end until result == :cancel || result == :accept
+        break if result == :cancel || result == :accept
+      end
 
       Wizard.CloseDialog
 
@@ -424,9 +438,11 @@ module Yast
       if Builtins.haskey(summary, "success")
         ret = HTML.Para(
           HTML.Heading(
-            Ops.get_boolean(summary, "success", true) ?
-              _("Installation Successfully Finished") :
+            if Ops.get_boolean(summary, "success", true)
+              _("Installation Successfully Finished")
+            else
               _("Package Installation Failed")
+            end
           )
         )
       end
@@ -525,8 +541,8 @@ module Yast
       end
 
       if Ops.greater_than(
-          Builtins.size(Ops.get_list(summary, "remaining", [])),
-          0
+        Builtins.size(Ops.get_list(summary, "remaining", [])),
+        0
         )
         items = Builtins.add(
           items,
@@ -634,7 +650,6 @@ module Yast
       nil
     end
 
-
     def ShowInstallationSummaryMap(summary)
       summary_str = InstallationSummary(summary)
 
@@ -682,7 +697,7 @@ module Yast
       )
 
       result = nil
-      begin
+      loop do
         result = UI.UserInput
         Builtins.y2milestone("input: %1", result)
 
@@ -721,8 +736,8 @@ module Yast
           # close by WM
           result = :abort if result == :cancel
         end
-      end while Ops.is_string?(result) ||
-        !Builtins.contains([:next, :abort, :back], Convert.to_symbol(result))
+        break if [:next, :abort, :back].include?(result)
+      end
 
       Builtins.y2milestone("Installation Summary result: %1", result)
 
@@ -732,8 +747,8 @@ module Yast
       if result == :next && current_action != new_action
         if new_action != "summary"
           # disabling installation report dialog, inform the user how to enable it back
-          Popup.Message(_("If you want to show this report dialog again edit\n\n"+
-            "System > Yast2 > GUI > PKGMGR_ACTION_AT_EXIT\n\n" +
+          Popup.Message(_("If you want to show this report dialog again edit\n\n"\
+            "System > Yast2 > GUI > PKGMGR_ACTION_AT_EXIT\n\n" \
             "value in the YaST sysconfig editor."))
         end
 
@@ -759,17 +774,17 @@ module Yast
       ShowInstallationSummaryMap(@package_summary)
     end
 
-    publish :function => :GetPackageSummary, :type => "map <string, any> ()"
-    publish :function => :SetPackageSummary, :type => "void (map <string, any>)"
-    publish :function => :ResetPackageSummary, :type => "void ()"
-    publish :function => :SetPackageSummaryItem, :type => "void (string, any)"
-    publish :function => :DisplayHelpMsg, :type => "any (string, term, symbol, integer)"
-    publish :function => :ConfirmLicenses, :type => "boolean ()"
-    publish :function => :RunPackageSelector, :type => "symbol (map <string, any>)"
-    publish :function => :RunPatternSelector, :type => "symbol ()"
-    publish :function => :InstallationSummary, :type => "string (map <string, any>)"
-    publish :function => :ShowInstallationSummaryMap, :type => "symbol (map <string, any>)"
-    publish :function => :ShowInstallationSummary, :type => "symbol ()"
+    publish function: :GetPackageSummary, type: "map <string, any> ()"
+    publish function: :SetPackageSummary, type: "void (map <string, any>)"
+    publish function: :ResetPackageSummary, type: "void ()"
+    publish function: :SetPackageSummaryItem, type: "void (string, any)"
+    publish function: :DisplayHelpMsg, type: "any (string, term, symbol, integer)"
+    publish function: :ConfirmLicenses, type: "boolean ()"
+    publish function: :RunPackageSelector, type: "symbol (map <string, any>)"
+    publish function: :RunPatternSelector, type: "symbol ()"
+    publish function: :InstallationSummary, type: "string (map <string, any>)"
+    publish function: :ShowInstallationSummaryMap, type: "symbol (map <string, any>)"
+    publish function: :ShowInstallationSummary, type: "symbol ()"
   end
 
   PackagesUI = PackagesUIClass.new

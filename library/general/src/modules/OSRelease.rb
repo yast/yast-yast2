@@ -27,7 +27,6 @@
 require "yast"
 
 module Yast
-
   import "Misc"
   import "Stage"
   import "FileUtils"
@@ -60,7 +59,7 @@ module Yast
         log.info "Release file #{release_file} not found"
         raise(
           OSReleaseFileMissingError,
-          _("Release file %{file} not found") % { :file => release_file }
+          _("Release file %{file} not found") % { file: release_file }
         )
       end
 
@@ -91,11 +90,11 @@ module Yast
       )
     end
 
-    publish :function => :ReleaseInformation, :type => "string (string)"
-    publish :function => :ReleaseName, :type => "string ()"
-    publish :function => :ReleaseVersion, :type => "string ()"
+    publish function: :ReleaseInformation, type: "string (string)"
+    publish function: :ReleaseName, type: "string ()"
+    publish function: :ReleaseVersion, type: "string ()"
 
-    private
+  private
 
     # Make a nice name for a system out of the long name
     # @param [String] longname string the long product name

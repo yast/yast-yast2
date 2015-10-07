@@ -5,12 +5,15 @@ before_install:
     # disable rvm, use system Ruby
     - rvm reset
     - wget https://raw.githubusercontent.com/yast/yast-devtools/master/travis-tools/travis_setup.sh
-    - sh ./travis_setup.sh -p "rake yast2-core yast2-devtools yast2-testsuite yast2-ruby-bindings yast2 yast2-pkg-bindings" -g "rspec:2.14.1 yast-rake gettext"
+    - sh ./travis_setup.sh -p "rake yast2-core yast2-devtools yast2-testsuite yast2-ruby-bindings yast2 yast2-pkg-bindings" -g "rspec:3.3.0 yast-rake gettext simplecov coveralls rubocop:0.29.1"
 script:
-    - rake check:syntax
     - rake check:pot
-    - make -f Makefile.cvs
-    - make
-    - sudo make install
-    - make check
+    - rubocop
+    - make -s -f Makefile.cvs
+    - make -s
+    - sudo make -s install
+    # English messages, UTF-8, "C" locale for numeric formatting tests
+    - LC_ALL= LANG=en_US.UTF-8 LC_NUMERIC=C make -s check
+    # English messages, UTF-8, "C" locale for numeric formatting tests, enable test coverage report
+    - LC_ALL= LANG=en_US.UTF-8 LC_NUMERIC=C COVERAGE=1 rake test:unit
 

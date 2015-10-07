@@ -42,7 +42,7 @@ module Yast
       Yast.import "Netmask"
       Yast.import "IP"
 
-      #**
+      # **
       # Firewall Expert Rulezz
       #
       # ATTENTION: You have to call SuSEFirewall::Read() to read the configuration
@@ -165,15 +165,14 @@ module Yast
           "dport"    => Ops.get(rule_splitted, 2, ""),
           "sport"    => Ops.get(rule_splitted, 3, ""),
           # additional options if defined (offset 4 and more)
-          "options"  => Ops.greater_than(
-            options_entries_count,
-            0
-          ) ?
-            Builtins.mergestring(
-              Builtins.sublist(rule_splitted, 4, options_entries_count),
-              ","
-            ) :
-            ""
+          "options"  => if Ops.greater_than(options_entries_count, 0)
+                          Builtins.mergestring(
+                            Builtins.sublist(rule_splitted, 4, options_entries_count),
+                            ","
+                          )
+                        else
+                          ""
+                        end
         }
       end
 
@@ -266,7 +265,7 @@ module Yast
 
       # Get all current rules
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
-      if current_rules == nil
+      if current_rules.nil?
         Builtins.y2error(
           "Impossible to set new AcceptExpertRule for zone %1",
           zone
@@ -312,7 +311,7 @@ module Yast
       end
 
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
-      if current_rules == nil
+      if current_rules.nil?
         Builtins.y2error(
           "Impossible remove any AcceptExpertRule for zone %1",
           zone
@@ -361,7 +360,7 @@ module Yast
       end
 
       current_rules = SuSEFirewall.GetAcceptExpertRules(zone)
-      if current_rules == nil
+      if current_rules.nil?
         Builtins.y2error(
           "Impossible remove any AcceptExpertRule for zone %1",
           zone
@@ -370,7 +369,7 @@ module Yast
       end
 
       current_rules_list = Builtins.splitstring(current_rules, " \n")
-      if Ops.get(current_rules_list, rule_id) != nil
+      if !Ops.get(current_rules_list, rule_id).nil?
         current_rules_list = Builtins.remove(current_rules_list, rule_id)
         current_rules = Builtins.mergestring(current_rules_list, " ")
         SuSEFirewall.SetAcceptExpertRules(zone, current_rules)
@@ -384,13 +383,13 @@ module Yast
       end
     end
 
-    publish :function => :GetAllExpertRulesProtocols, :type => "list <string> ()"
-    publish :function => :IsValidNetwork, :type => "boolean (string)"
-    publish :function => :ValidNetwork, :type => "string ()"
-    publish :function => :GetListOfAcceptRules, :type => "list <map <string, string>> (string)"
-    publish :function => :AddNewAcceptRule, :type => "boolean (string, map <string, string>)"
-    publish :function => :RemoveAcceptRule, :type => "boolean (string, map <string, string>)"
-    publish :function => :DeleteRuleID, :type => "boolean (string, integer)"
+    publish function: :GetAllExpertRulesProtocols, type: "list <string> ()"
+    publish function: :IsValidNetwork, type: "boolean (string)"
+    publish function: :ValidNetwork, type: "string ()"
+    publish function: :GetListOfAcceptRules, type: "list <map <string, string>> (string)"
+    publish function: :AddNewAcceptRule, type: "boolean (string, map <string, string>)"
+    publish function: :RemoveAcceptRule, type: "boolean (string, map <string, string>)"
+    publish function: :DeleteRuleID, type: "boolean (string, integer)"
   end
 
   SuSEFirewallExpertRules = SuSEFirewallExpertRulesClass.new
