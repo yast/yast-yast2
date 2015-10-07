@@ -1121,7 +1121,6 @@ module Yast
       current_proposal_textdomain
     end
 
-
     # @param [String] stage
     # @param [String] mode
     # @param [String] proptype eg. "initial", "service", network"...
