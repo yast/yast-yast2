@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct  8 10:42:07 UTC 2015 - jreidinger@suse.com
+
+- Fix "stack level too deep" exception if cd-rom repository is
+  needed (bnc#945879)
+- 3.1.152
+
+-------------------------------------------------------------------
 Fri Oct  2 10:25:17 UTC 2015 - ancor@suse.com
 
 - UI component for services handling moved from yast2-dns-server
