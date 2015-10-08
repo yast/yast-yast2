@@ -3052,7 +3052,7 @@ module Yast
     def autoeject
       load_config unless @config
 
-      @config["automatic_eject"] || false
+      @config.fetch("automatic_eject", false)
     end
 
     def store_autoeject(value)
