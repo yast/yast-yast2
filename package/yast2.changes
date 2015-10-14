@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 14 15:28:37 UTC 2015 - mvidner@suse.com
+
+- Fixed clipped labels in Arabic on some widgets (bsc#880701).
+- 3.1.108.9
+
+-------------------------------------------------------------------
 Fri Sep 11 18:38:11 UTC 2015 - lslezak@suse.cz
 
 - Avoid too many snapshots created during the online migration
