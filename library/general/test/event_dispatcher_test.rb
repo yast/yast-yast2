@@ -37,6 +37,29 @@ class DispatcherTestDialog
   end
 end
 
+class DispatcherUserInputTestDialog
+  include Yast::UIShortcuts
+  include UI::EventDispatcher
+  Yast.import "UI"
+
+  def run
+    return nil unless Yast::UI.OpenDialog(
+      HBox(
+        PushButton(Id(:cancel), "Cancel")
+      )
+    )
+    begin
+      return event_loop
+    ensure
+      Yast::UI.CloseDialog
+    end
+  end
+
+  def user_input
+    Yast::UI.TimeoutUserInput(1000)
+  end
+end
+
 describe UI::EventDispatcher do
   subject { DispatcherTestDialog.new }
 
@@ -63,7 +86,15 @@ describe UI::EventDispatcher do
     it "raise exception if handler is not defined" do
       mock_ui_events(:unknown)
 
-      expect { subject.event_loop }.to raise_error
+      expect { subject.event_loop }.to raise_error(RuntimeError)
+    end
+
+    it "uses user_input to get input" do
+      dialog = DispatcherUserInputTestDialog.new
+      expect(Yast::UI).to receive(:TimeoutUserInput).with(1000).and_return(:cancel)
+      expect(Yast::UI).to_not receive(:UserInput)
+
+      dialog.event_loop
     end
   end
 

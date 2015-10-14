@@ -31,6 +31,7 @@
 #
 # $Id$
 require "yast"
+require "cgi"
 
 module Yast
   class PackagesUIClass < Module
@@ -150,7 +151,7 @@ module Yast
           HSpacing(size_x),
           # dialog heading, %1 is package name
           Heading(Builtins.sformat(_("Confirm Package License: %1"), package)),
-          HBox(VSpacing(size_y), RichText(Id(:lic), license)),
+          HBox(VSpacing(size_y), RichText(Id(:lic), format_license(license))),
           VSpacing(1),
           HBox(
             PushButton(Id(:help), Label.HelpButton),
@@ -213,6 +214,23 @@ module Yast
       end
 
       ret
+    end
+
+    # format the license so it's displayed the same way as in the libyui-qt-pkg dialog,
+    # (see https://github.com/libyui/libyui-qt-pkg/blob/master/src/YQPkgObjList.cc#L1411
+    # https://github.com/libyui/libyui-qt-pkg/blob/master/src/YQPkgTextDialog.cc#L295 )
+    # @param [String] license the raw license text obtained from libzypp
+    # @return [String] formatted license for displaying in a RichText widget
+    def format_license(license)
+      # check the flag for a preformatted HTML
+      return license.dup if license.include?("<!-- DT:Rich -->")
+
+      ret = CGI.escapeHTML(license)
+
+      # two empty lines mean a new paragraph
+      ret.gsub!("\n\n", "</p><p>")
+
+      "<p>" + ret + "</p>"
     end
 
     # Run helper function, reads the display_support_status feature from the control file

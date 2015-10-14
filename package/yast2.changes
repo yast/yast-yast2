@@ -1,4 +1,190 @@
 -------------------------------------------------------------------
+Thu Oct  8 10:42:07 UTC 2015 - jreidinger@suse.com
+
+- Fix "stack level too deep" exception if cd-rom repository is
+  needed (bnc#945879)
+- 3.1.152
+
+-------------------------------------------------------------------
+Fri Oct  2 10:25:17 UTC 2015 - ancor@suse.com
+
+- UI component for services handling moved from yast2-dns-server
+  to yast2 (fate#318771)
+- 3.1.151
+
+-------------------------------------------------------------------
+Wed Sep 30 13:22:50 UTC 2015 - lslezak@suse.cz
+
+- Properly format the package license in the confirmation dialog
+  to make it better readable (bsc#819311)
+- 3.1.150
+
+-------------------------------------------------------------------
+Fri Sep 11 18:38:11 UTC 2015 - lslezak@suse.cz
+
+- Avoid too many snapshots created during the online migration
+  (bsc#944019)
+
+-------------------------------------------------------------------
+Wed Aug 26 19:25:07 UTC 2015 - mfilka@suse.com
+
+- bnc#897129
+  - AutoYaST will no longer ignore firewall settings if
+    keep_install_network is enabled
+- 3.1.149
+-------------------------------------------------------------------
+Wed Aug 26 15:17:35 UTC 2015 - igonzalezsosa@suse.com
+
+- Add a Mode#auto method
+
+-------------------------------------------------------------------
+Wed Aug 26 15:09:06 CEST 2015 - schubi@suse.de
+
+- Checking cpuinfo_flags correctly while evaluating kernel packages
+  for i586. (bnc#943297)
+- 3.1.148
+
+-------------------------------------------------------------------
+Thu Aug 20 08:18:47 UTC 2015 - lslezak@suse.cz
+
+- "yast2" script - handle also the reboot flag the same way as
+  the installation script (bsc#942461)
+- 3.1.147
+
+-------------------------------------------------------------------
+Wed Aug 19 07:44:30 UTC 2015 - mfilka@suse.com
+
+- bnc#941881
+  - displays hostname / domain as set in /etc/hostnmae
+- 3.1.146 
+
+-------------------------------------------------------------------
+Mon Aug 10 07:37:45 UTC 2015 - mfilka@suse.com
+
+- bnc#916013
+  - keeps routing state when firewall is enabled/disabled
+- 3.1.145 
+
+-------------------------------------------------------------------
+Mon Aug  3 14:29:05 UTC 2015 - ancor@suse.com
+
+- Fixed a conflict between Wizard and CommandLine components that
+  was breaking the CLI for some modules (bnc#940341)
+- 3.1.144
+
+-------------------------------------------------------------------
+Tue Jul 28 10:50:05 UTC 2015 - ancor@suse.com
+
+- Properly display information about exceptions when running in
+  command line mode (bnc#939565).
+- Fixed a bug preventing Yast::CommandLine to be executed twice
+  in the same script.
+- 3.1.143
+
+-------------------------------------------------------------------
+Tue Jul 21 14:44:04 UTC 2015 - jreidinger@suse.com
+
+- Allow Dialog class to support alternative ways how to get user
+  input (needed for yast2-vnc module) (bnc#938944)
+- 3.1.142
+
+-------------------------------------------------------------------
+Fri Jul 17 08:28:41 UTC 2015 - igonzalezsosa@suse.com
+
+- Do not try to load snapper extension as it does not exists anymore
+  (bsc#938377).
+- 3.1.141
+
+-------------------------------------------------------------------
+Thu Jul  9 15:37:27 UTC 2015 - jreidinger@suse.com
+
+- do not crash if desktop file does not exist for setting icon
+  (bnc#937549)
+- 3.1.140
+
+-------------------------------------------------------------------
+Mon Jul  6 18:02:27 CEST 2015 - shundhammer@suse.de
+
+- Cleanup for snapshots made during installation (bnc#935923)
+- 3.1.139
+
+-------------------------------------------------------------------
+Wed Jul  1 13:46:26 UTC 2015 - jreidinger@suse.com
+
+- fix using desktop icon for yast(bnc#894220)
+- 3.1.138
+
+-------------------------------------------------------------------
+Tue Jun 30 14:08:54 UTC 2015 - mvidner@suse.com
+
+- Added /etc/sysconfig/yast2:PKGMGR_RECOMMENDED=yes to control
+  whether the YaST packager UI installs recommended dependencies
+  (boo#900853).
+- Removed /etc/sysconfig/yast2:PKGMGR_REEVALUATE_RECOMMENDED,
+  making the setting not persistent (boo#902394).
+- 3.1.137
+
+-------------------------------------------------------------------
+Mon Jun 29 07:35:21 UTC 2015 - mfilka@suse.com
+
+- bnc#858908
+  - use /etc/hostname instead of /etc/HOSTNAME
+- bnc#922765, bnc#923990
+  - do not propose TLD
+- 3.1.136
+
+-------------------------------------------------------------------
+Thu Jun 25 15:50:46 CEST 2015 - locilka@suse.com
+
+- Starting the Installer (YaST2.First-Stage) directly from yast2
+  startup script if we are in inst-sys (FATE#317637, bnc#877447)
+- 3.1.135
+
+-------------------------------------------------------------------
+Mon Jun 22 14:52:04 UTC 2015 - cwh@suse.com
+
+- bnc#922765
+  - changed default TLD from .site to .suse
+- 3.1.134 
+
+-------------------------------------------------------------------
+Thu Jun 18 14:08:32 UTC 2015 - ancor@suse.com
+
+- Changed implementaton of view_anymsg to rely more on standard
+  Yast mechanisms (bnc#935192)
+- 3.1.133
+
+-------------------------------------------------------------------
+Thu Jun 11 18:43:10 UTC 2015 - mfilka@suse.com
+
+- fate#318804
+  - dropped no longer used group from YaST Control Centre
+- 3.1.132
+
+-------------------------------------------------------------------
+Thu Jun 11 14:22:04 UTC 2015 - ancor@suse.com
+
+- Added new method Directory.find_data_file (needed for the
+  implementation of fate#318425)
+- Deprecated Directory.datadir and Directory.ydatadir
+- 3.1.131
+
+-------------------------------------------------------------------
+Thu Jun  4 12:04:32 UTC 2015 - igonzalezsosa@suse.com
+
+- Fix a typo when calling Linuxrc.value_for method
+- 3.1.130
+
+-------------------------------------------------------------------
+Tue Jun  2 16:42:43 CEST 2015 - locilka@suse.com
+
+- Implemented possibility to temporarily disable creating
+  snapshots via parameter on Linuxrc commandline:
+    disable_snapshots=(single|around|all)
+  or using their comma-separated combination (fate#317973)
+- 3.1.129
+
+-------------------------------------------------------------------
 Tue Jun  2 11:26:50 UTC 2015 - jreidinger@suse.com
 
 - reduce count of extending inst-sys with snapper for snapshotting

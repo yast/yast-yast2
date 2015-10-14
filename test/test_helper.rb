@@ -1,5 +1,13 @@
 root_location = File.expand_path("../../", __FILE__)
 inc_dirs = Dir.glob("#{root_location}/library/*/src")
+# Y2DIRs location needed for testing purpose
+ADDITIONAL_Y2DIRS = [
+  # Needed to test Y2DIR support in Yast::Directory
+  "#{root_location}/library/general/test",
+  # Needed to test Yast::CommandLine usage from a dummy client
+  "#{root_location}/library/commandline/test"
+]
+inc_dirs.concat(ADDITIONAL_Y2DIRS)
 ENV["Y2DIR"] = inc_dirs.join(":")
 
 require "yast"

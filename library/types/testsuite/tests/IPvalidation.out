@@ -1,3 +1,4 @@
+Read	.target.tmpdir "/tmp"
 Return	true
 Return	false
 Return	true

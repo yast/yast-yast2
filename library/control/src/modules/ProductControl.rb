@@ -1047,7 +1047,9 @@ module Yast
     # Get modules of current Workflow
     # @param [String] stage
     # @param [String] mode
-    # @return [Array<String>] modules
+    # @param [String] proptype eg. "initial", "service", network"...
+    # @return [Array<Array(String,Integer)>] modules,
+    #   pairs of ("foo_proposal", presentation_order)
     def getProposals(stage, mode, proptype)
       props = getMatchingProposal(stage, mode, proptype)
       unique_id = Ops.get_string(props, [0, "unique_id"], "")
@@ -1119,7 +1121,11 @@ module Yast
       current_proposal_textdomain
     end
 
-    # Return proposal Label
+    # @param [String] stage
+    # @param [String] mode
+    # @param [String] proptype eg. "initial", "service", network"...
+    # @return [Hash] one "proposal" element of control.rnc
+    #   where /label is not translated yet but //proposal_tab/label are.
     def getProposalProperties(stage, mode, proptype)
       got_proposals = getMatchingProposal(stage, mode, proptype)
       proposal = Ops.get(got_proposals, 0, {})

@@ -3,53 +3,78 @@
 require_relative "test_helper"
 
 Yast.import "PackageCallbacks"
+Yast.import "Mode"
+Yast.import "UI"
 
 describe Yast::PackageCallbacks do
   subject { Yast::PackageCallbacks }
 
   describe "#textmode" do
-    it "returns true if runned as CLI" do
-      mode = double(commandline: true)
-      stub_const("Yast::Mode", mode)
+    subject(:textmode) { Yast::PackageCallbacks.send(:textmode) }
 
-      expect(subject.send(:textmode)).to eq true
+    before do
+      allow(Yast::Mode).to receive(:commandline).and_return commandline
+      allow(Yast::UI).to receive(:GetDisplayInfo)
+        .and_return("TextMode" => display_textmode)
     end
 
-    it "returns true if running in TUI" do
-      ui = double(GetDisplayInfo: { "TextMode" => true })
-      stub_const("Yast::UI", ui)
+    context "running in CLI" do
+      let(:commandline) { true }
+      let(:display_textmode) { nil }
 
-      expect(subject.send(:textmode)).to eq true
+      it "returns true" do
+        expect(textmode).to eq true
+      end
     end
 
-    it "returns false in other cases" do
-      ui = double(GetDisplayInfo: { "TextMode" => false })
-      stub_const("Yast::UI", ui)
+    context "running in TUI" do
+      let(:commandline) { false }
+      let(:display_textmode) { true }
 
-      expect(subject.send(:textmode)).to eq false
+      it "returns true" do
+        expect(textmode).to eq true
+      end
+    end
+
+    context "in other cases" do
+      let(:commandline) { false }
+      let(:display_textmode) { false }
+
+      it "returns false" do
+        expect(textmode).to eq false
+      end
     end
   end
 
   describe "#display_width" do
-    it "returns 0 if runned as CLI" do
-      mode = double(commandline: true)
-      stub_const("Yast::Mode", mode)
-
-      expect(subject.send(:display_width)).to eq 0
+    before do
+      allow(Yast::Mode).to receive(:commandline).and_return commandline
     end
 
-    it "returns value from display info" do
-      ui = double(GetDisplayInfo: { "Width" => 480 })
-      stub_const("Yast::UI", ui)
+    context "running as CLI" do
+      let(:commandline) { true }
 
-      expect(subject.send(:display_width)).to eq 480
+      it "returns 0" do
+        expect(subject.send(:display_width)).to eq 0
+      end
     end
 
-    it "returns 0 if value missing in display info" do
-      ui = double(GetDisplayInfo: {})
-      stub_const("Yast::UI", ui)
+    context "running with full UI" do
+      let(:commandline) { false }
 
-      expect(subject.send(:display_width)).to eq 0
+      it "returns value from display info" do
+        ui = double(GetDisplayInfo: { "Width" => 480 })
+        stub_const("Yast::UI", ui)
+
+        expect(subject.send(:display_width)).to eq 480
+      end
+
+      it "returns 0 if value missing in display info" do
+        ui = double(GetDisplayInfo: {})
+        stub_const("Yast::UI", ui)
+
+        expect(subject.send(:display_width)).to eq 0
+      end
     end
   end
 
@@ -130,14 +155,14 @@ describe Yast::PackageCallbacks do
 
   describe "full_screen" do
     it "returns false if running in CLI" do
-      mode = double(commandline: true)
-      stub_const("Yast::Mode", mode)
+      allow(Yast::Mode).to receive(:commandline).and_return true
 
       expect(subject.send(:full_screen)).to eq false
     end
 
     # TODO: better description, but why it check this widget?
     it "returns if there is progress replace point" do
+      allow(Yast::Mode).to receive(:commandline).and_return false
       ui = double(WidgetExists: true)
       stub_const("Yast::UI", ui)
 

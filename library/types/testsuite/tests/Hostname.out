@@ -1,3 +1,4 @@
+Read	.target.tmpdir "/tmp"
 Dump	Hostname::Check
 Return	false
 Return	false
@@ -41,4 +42,4 @@ Return	true
 Dump	Hostname::SplitFQ
 Return	["ftp", "suse.cz"]
 Return	["123", "com"]
-Return	["beholder"]
+Return	["beholder", ""]

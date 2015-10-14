@@ -12,6 +12,8 @@ describe Yast2::FsSnapshot do
   FIND_IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | grep \"^root \" >/dev/null"
   LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list"
 
+  let(:dummy_snapshot) { double("snapshot") }
+
   before do
     # reset configured cache
     described_class.instance_variable_set("@configured", nil)
@@ -53,19 +55,6 @@ describe Yast2::FsSnapshot do
         allow(Yast::SCR).to receive(:Execute)
           .with(path(".target.bash_output"), FIND_IN_ROOT_CONFIG)
           .and_return("stdout" => "", "exit" => 0)
-
-        Yast.import "InstExtensionImage"
-        allow(Yast::InstExtensionImage).to receive(:with_extension) do |&block|
-          block.call
-        end
-      end
-
-      it "ensures snapper is available" do
-        expect(Yast::InstExtensionImage).to receive(:with_extension) do |&block|
-          block.call
-        end
-
-        described_class.configured?
       end
 
       it "detects snapper configuration in installation target dir" do
@@ -81,17 +70,22 @@ describe Yast2::FsSnapshot do
   describe ".create_single" do
     CREATE_SINGLE_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
       "--root-prefix=/ --snapshot-type single --description \"some-description\""
+    OPTION_CLEANUP_NUMBER = " --cleanup \"number\""
+    OPTION_IMPORTANT = " --userdata \"important=yes\""
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:single).and_return(create_snapshot)
     end
 
     context "when snapper is configured" do
       let(:configured) { true }
+      let(:create_snapshot) { true }
+      let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT }
 
       before do
         allow(Yast::SCR).to receive(:Execute)
-          .with(path(".target.bash_output"), CREATE_SINGLE_SNAPSHOT)
+          .with(path(".target.bash_output"), snapshot_command)
           .and_return(output)
       end
 
@@ -107,7 +101,6 @@ describe Yast2::FsSnapshot do
 
       context "when snapshot creation is successful" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
 
         it "returns the created snapshot" do
           expect(described_class).to receive(:find).with(2)
@@ -116,14 +109,60 @@ describe Yast2::FsSnapshot do
           expect(snapshot).to be(dummy_snapshot)
         end
       end
+
+      context "when a cleanup strategy is set" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_CLEANUP_NUMBER }
+
+        it "creates a snapshot with that strategy" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_single("some-description", cleanup: :number)
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
+
+      context "when a snapshot is important" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT }
+
+        it "creates a snapshot marked as important" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_single("some-description", important: true)
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
+
+      context "when it's both important and a cleanup strategy is set" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
+
+        it "creates a snapshot with that strategy that is marked as important" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_single("some-description", cleanup: :number, important: true)
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
     end
 
     context "when snapper is not configured" do
       let(:configured) { false }
+      let(:create_snapshot) { true }
 
       it "raises an exception" do
         expect { described_class.create_single("some-description") }
           .to raise_error(Yast2::SnapperNotConfigured)
+      end
+    end
+
+    context "when creating snapshots is disabled" do
+      let(:configured) { false }
+      let(:create_snapshot) { false }
+
+      it "returns nil" do
+        expect(described_class.create_single("some-description")).to eq(nil)
       end
     end
   end
@@ -134,14 +173,17 @@ describe Yast2::FsSnapshot do
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:around).and_return(create_snapshot)
     end
 
     context "when snapper is configured" do
       let(:configured) { true }
+      let(:create_snapshot) { true }
+      let(:snapshot_command) { CREATE_PRE_SNAPSHOT }
 
       before do
         allow(Yast::SCR).to receive(:Execute)
-          .with(path(".target.bash_output"), CREATE_PRE_SNAPSHOT)
+          .with(path(".target.bash_output"), snapshot_command)
           .and_return(output)
       end
 
@@ -157,7 +199,6 @@ describe Yast2::FsSnapshot do
 
       context "when snapshot creation is successful" do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
-        let(:dummy_snapshot) { double("snapshot") }
 
         it "returns the created snapshot" do
           expect(described_class).to receive(:find).with(2)
@@ -166,14 +207,60 @@ describe Yast2::FsSnapshot do
           expect(snapshot).to be(dummy_snapshot)
         end
       end
+
+      context "when a cleanup strategy is set" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_CLEANUP_NUMBER }
+
+        it "creates a pre snapshot with that strategy" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_pre("some-description", cleanup: :number)
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
+
+      context "when a snapshot is important" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_IMPORTANT }
+
+        it "creates a pre snapshot marked as important" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_pre("some-description", important: true)
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
+
+      context "when it's both important and a cleanup strategy is set" do
+        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
+
+        it "creates a pre snapshot with that strategy that is marked as important" do
+          expect(described_class).to receive(:find).with(2)
+            .and_return(dummy_snapshot)
+          snapshot = described_class.create_pre("some-description", important: true, cleanup: :number)
+          expect(snapshot).to be(dummy_snapshot)
+        end
+      end
     end
 
     context "when snapper is not configured" do
       let(:configured) { false }
+      let(:create_snapshot) { true }
 
       it "raises an exception" do
         expect { described_class.create_pre("some-description") }
           .to raise_error(Yast2::SnapperNotConfigured)
+      end
+    end
+
+    context "when creating snapshots is disabled" do
+      let(:configured) { false }
+      let(:create_snapshot) { false }
+
+      it "returns nil" do
+        expect(described_class.create_pre("some-description")).to eq(nil)
       end
     end
   end
@@ -185,13 +272,14 @@ describe Yast2::FsSnapshot do
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
+      allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:around).and_return(create_snapshot)
     end
 
     context "when snapper is configured" do
       let(:configured) { true }
+      let(:create_snapshot) { true }
 
       let(:pre_snapshot) { double("snapshot", snapshot_type: :pre, number: 2) }
-      let(:dummy_snapshot) { double("snapshot") }
       let(:snapshots) { [pre_snapshot] }
       let(:output) { { "stdout" => "3", "exit" => 0 } }
 
@@ -239,10 +327,20 @@ describe Yast2::FsSnapshot do
 
     context "when snapper is not configured" do
       let(:configured) { false }
+      let(:create_snapshot) { true }
 
       it "raises an exception" do
         expect { described_class.create_post("some-description", 1) }
           .to raise_error(Yast2::SnapperNotConfigured)
+      end
+    end
+
+    context "when creating snapshots is disabled" do
+      let(:configured) { false }
+      let(:create_snapshot) { false }
+
+      it "returns nil" do
+        expect(described_class.create_post("some-description", 999)).to eq(nil)
       end
     end
   end
@@ -372,41 +470,40 @@ describe Yast2::FsSnapshot do
     end
 
     context "when single value is defined on Linuxrc commandline" do
-      it "returns whether given snapshot is requested" do
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("around")
+      it "returns whether given snapshot type is allowed" do
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("around")
         expect(described_class.create_snapshot?(:around)).to eq(false)
         expect(described_class.create_snapshot?(:single)).to eq(true)
 
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("single")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("single")
         expect(described_class.create_snapshot?(:around)).to eq(true)
         expect(described_class.create_snapshot?(:single)).to eq(false)
 
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("all")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all")
         expect(described_class.create_snapshot?(:around)).to eq(false)
         expect(described_class.create_snapshot?(:single)).to eq(false)
       end
     end
 
     context "when more values are defined on Linuxrc commandline" do
-      it "returns whether given snapshot is not withing disabled snapshots" do
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("single,around")
+      it "returns whether given snapshot type is not within disabled snapshots types" do
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("single,around")
         expect(described_class.create_snapshot?(:around)).to eq(false)
         expect(described_class.create_snapshot?(:single)).to eq(false)
 
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("all,around")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all,around")
         expect(described_class.create_snapshot?(:around)).to eq(false)
         expect(described_class.create_snapshot?(:single)).to eq(false)
       end
     end
 
-
     context "when no value is defined on Linuxrc commandline" do
-      it "returns that any snapshots are requested" do
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return(nil)
+      it "returns that any snapshots are allowed" do
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return(nil)
         expect(described_class.create_snapshot?(:around)).to eq(true)
         expect(described_class.create_snapshot?(:single)).to eq(true)
 
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("")
         expect(described_class.create_snapshot?(:around)).to eq(true)
         expect(described_class.create_snapshot?(:single)).to eq(true)
       end
@@ -414,10 +511,9 @@ describe Yast2::FsSnapshot do
 
     context "when called with unsupported parameter value" do
       it "throws an ArgumentError exception" do
-        allow(Yast::Linuxrc).to receive(:get_value).with(/snapshot/).and_return("all")
+        allow(Yast::Linuxrc).to receive(:value_for).with(/snapshot/).and_return("all")
         expect { described_class.create_snapshot?(:some) }.to raise_error(ArgumentError, /:some/)
       end
     end
-
   end
 end

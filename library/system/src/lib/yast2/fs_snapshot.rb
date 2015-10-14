@@ -65,6 +65,9 @@ module Yast2
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list"
     VALID_LINE_REGEX = /\A\w+\s+\| \d+/
 
+    # Predefined snapshot cleanup strategies (the user can define custom ones, too)
+    CLEANUP_STRATEGY = { number: "number", timeline: "timeline" }
+
     attr_reader :number, :snapshot_type, :previous_number, :timestamp, :user,
       :cleanup_algo, :description
 
@@ -74,11 +77,10 @@ module Yast2
     def self.configured?
       return @configured unless @configured.nil?
 
-      out = with_snapper do
-        Yast::SCR.Execute(Yast::Path.new(".target.bash_output"),
-          format(FIND_CONFIG_CMD, root: target_root)
-        )
-      end
+      out = Yast::SCR.Execute(
+        Yast::Path.new(".target.bash_output"),
+        format(FIND_CONFIG_CMD, root: target_root)
+      )
 
       log.info("Checking if Snapper is configured: \"#{FIND_CONFIG_CMD}\" returned: #{out}")
       @configured = out["exit"] == 0
@@ -93,30 +95,35 @@ module Yast2
     # @param [Symbol] one of :around (for :post and :pre snapshots) or :single
     # @return [Boolean] if snapshot should be created
     def self.create_snapshot?(snapshot_type)
-      disable_snapshots = Yast::Linuxrc.get_value(Yast::LinuxrcClass::DISABLE_SNAPSHOTS)
+      disable_snapshots = Yast::Linuxrc.value_for(Yast::LinuxrcClass::DISABLE_SNAPSHOTS)
 
       # Feature is not defined on Linuxrc commandline
       return true if disable_snapshots.nil? || disable_snapshots.empty?
 
-      disable_snapshots = disable_snapshots.downcase.tr("-_.", "").split(",").map(&:to_sym)
+      disable_snapshots = disable_snapshots.downcase.tr("-_.", "").split(",")
 
       if [:around, :single].include?(snapshot_type)
-        return false if disable_snapshots.include?(:all)
-        return !disable_snapshots.include?(snapshot_type)
+        return false if disable_snapshots.include?("all")
+        return !disable_snapshots.include?(snapshot_type.to_s)
       else
         raise ArgumentError, "Unsupported snapshot type #{snapshot_type.inspect}, " \
-          << "supported are :around and :single"
+              "supported are :around and :single"
       end
     end
 
-    # Creates a new 'single' snapshot
+    # Creates a new 'single' snapshot unless disabled by user
     #
-    # @param description [String] Snapshot's description.
+    # @param description [String]  Snapshot's description.
+    # @param cleanup     [String]  Cleanup strategy (:number, :timeline, nil)
+    # @param important   [boolean] Add "important" to userdata?
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
-    def self.create_single(description)
-      create(:single, description)
+    # @see FsSnapshot.create_snapshot?
+    def self.create_single(description, cleanup: nil, important: false)
+      return nil unless create_snapshot?(:single)
+
+      create(:single, description, cleanup: cleanup, important: important)
     end
 
     # Creates a new 'pre' snapshot
@@ -125,30 +132,39 @@ module Yast2
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
-    def self.create_pre(description)
-      create(:pre, description)
+    # @see FsSnapshot.create_snapshot?
+    def self.create_pre(description, cleanup: nil, important: false)
+      return nil unless create_snapshot?(:around)
+
+      create(:pre, description, cleanup: cleanup, important: important)
     end
 
-    # Creates a new 'post' snapshot
+    # Creates a new 'post' snapshot unless disabled by user
     #
     # Each 'post' snapshot corresponds with a 'pre' one.
     #
-    # @param description     [String] Snapshot's description.
-    # @param previous_number [Fixnum] Number of the previous snapshot
+    # @param description     [String]  Snapshot's description.
+    # @param previous_number [Fixnum]  Number of the previous snapshot
+    # @param cleanup         [String]  Cleanup strategy (:number, :timeline, nil)
+    # @param important       [boolean] Add "important" to userdata?
     # @return [FsSnapshot] The created snapshot.
     #
     # @see FsSnapshot.create
-    def self.create_post(description, previous_number)
+    # @see FsSnapshot.create_snapshot?
+    def self.create_post(description, previous_number, cleanup: nil, important: false)
+      return nil unless create_snapshot?(:around)
+
       previous = find(previous_number)
+
       if previous
-        create(:post, description, previous)
+        create(:post, description, previous: previous, cleanup: cleanup, important: important)
       else
         log.error "Previous filesystem snapshot was not found"
         raise PreviousSnapshotNotFound
       end
     end
 
-    # Creates a new snapshot
+    # Creates a new snapshot unless disabled by user
     #
     # It raises an exception if Snapper is not configured or if snapshot
     # creation fails.
@@ -156,9 +172,11 @@ module Yast2
     # @param snapshot_type [Symbol]    Snapshot's type: :pre, :post or :single.
     # @param description   [String]    Snapshot's description.
     # @param previous      [FsSnashot] Previous snapshot.
+    # @param cleanup       [String]    Cleanup strategy (:number, :timeline, nil)
+    # @param important     [boolean]   Add "important" to userdata?
     # @return [FsSnapshot] The created snapshot if the operation was
     #                      successful.
-    def self.create(snapshot_type, description, previous = nil)
+    def self.create(snapshot_type, description, previous: nil, cleanup: nil, important: false)
       raise SnapperNotConfigured unless configured?
 
       cmd = format(CREATE_SNAPSHOT_CMD,
@@ -167,10 +185,15 @@ module Yast2
         description:   description
       )
       cmd << " --pre-num #{previous.number}" if previous
+      cmd << " --userdata \"important=yes\"" if important
 
-      out = with_snapper do
-        Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
+      if cleanup
+        strategy = CLEANUP_STRATEGY[cleanup]
+        cmd << " --cleanup \"#{strategy}\"" if strategy
       end
+
+      log.info("Executing: \"#{cmd}\"")
+      out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
 
       if out["exit"] == 0
         find(out["stdout"].to_i) # The CREATE_SNAPSHOT_CMD returns the number of the new snapshot.
@@ -190,17 +213,6 @@ module Yast2
     end
     private_class_method :non_switched_installation?
 
-    # ensures that for local SCR snapper is available in insts-sys
-    def self.with_snapper(&block)
-      return block.call unless non_switched_installation?
-
-      Yast.import "InstExtensionImage"
-      Yast::InstExtensionImage.with_extension("snapper") do
-        block.call
-      end
-    end
-    private_class_method :with_snapper
-
     # Gets target directory on which should snapper operate
     def self.target_root
       return "/" unless non_switched_installation?
@@ -219,12 +231,10 @@ module Yast2
     def self.all
       raise SnapperNotConfigured unless configured?
 
-      out = with_snapper do
-        Yast::SCR.Execute(
-          Yast::Path.new(".target.bash_output"),
-          format(LIST_SNAPSHOTS_CMD, root: target_root)
-        )
-      end
+      out = Yast::SCR.Execute(
+        Yast::Path.new(".target.bash_output"),
+        format(LIST_SNAPSHOTS_CMD, root: target_root)
+      )
       lines = out["stdout"].lines.grep(VALID_LINE_REGEX) # relevant lines from output.
       log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
       lines.each_with_object([]) do |line, snapshots|

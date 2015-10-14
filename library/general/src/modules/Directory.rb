@@ -54,6 +54,7 @@ module Yast
       @agentdir = Ops.add(@execcompdir, "/servers_non_y2")
 
       # Directory for data
+      # @deprecated since it does not honor Y2DIR. Use #find_data_file instead
       @datadir = Ops.add(@yast2dir, "/data")
       @ydatadir = @datadir
 
@@ -117,13 +118,24 @@ module Yast
       nil
     end
 
+    # Find an existing file in any of the YaST data directories
+    #
+    # @param relative_path [String] name of the file to find
+    # @return [String] full path of the file if it's found, nil otherwise
+    def find_data_file(relative_path)
+      possible_paths = Yast.y2paths.map { |p| File.join(p, "data", relative_path) }
+      possible_paths.find { |p| File.exist?(p) }
+    end
+
     publish variable: :bindir, type: "string"
     publish variable: :ybindir, type: "string"
     publish variable: :logdir, type: "string"
     publish variable: :vardir, type: "string"
     publish variable: :etcdir, type: "string"
     publish variable: :agentdir, type: "string"
+    # @deprecated since it does not honor Y2DIR. Use #find_data_file instead
     publish variable: :datadir, type: "string"
+    # @deprecated since it's an alias for the deprecated #datadir
     publish variable: :ydatadir, type: "string"
     publish variable: :schemadir, type: "string"
     publish variable: :includedir, type: "string"
