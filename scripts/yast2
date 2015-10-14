@@ -395,6 +395,8 @@ elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 
     if [ "$SELECTED_GUI" = "qt" ]; then
 	set_qt_home_dir
+        # work around clipped Arabic text, bsc#880701
+        export QT_HARFBUZZ=old
     fi
 
     # find which control center shell we want, if there is none we
