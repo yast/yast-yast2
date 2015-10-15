@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Oct 15 16:15:05 UTC 2015 - dmueller@suse.com
+
+- Add architecture support for AArch64
+- 3.1.108.9
+
+-------------------------------------------------------------------
 Fri Sep 11 18:38:11 UTC 2015 - lslezak@suse.cz
 
 - Avoid too many snapshots created during the online migration
