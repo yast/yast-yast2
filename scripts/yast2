@@ -397,6 +397,7 @@ elif [ "$SELECTED_GUI" = "qt" -o "$SELECTED_GUI" = "gtk" ]; then
 	set_qt_home_dir
 
         # Work around clipped Arabic text, bsc#880701
+        # Upstream bug: https://bugreports.qt.io/browse/QTBUG-41450
         # Locale check: first of the variables wins; man 7 locale
         case "${LC_ALL}${LC_MESSAGES}${LANG}" in
             ar*) export QT_HARFBUZZ=old ;;
