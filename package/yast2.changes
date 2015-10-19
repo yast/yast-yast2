@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Oct 22 08:24:58 UTC 2015 - mfilka@suse.com
+
+- bnc#946047
+  - use proper hostname / domain defaults when network is
+    configured by linuxrc
+- 3.1.154
+
+-------------------------------------------------------------------
 Wed Oct 21 07:29:59 UTC 2015 - igonzalezsosa@suse.com
 
 - Replace "Skip" with "Ignore" in the dialog that is shown when
