@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 19 13:22:31 UTC 2015 - mvidner@suse.com
+
+- Fixed clipped labels in Arabic on some widgets (bsc#880701).
+- 3.1.108.10
+
+-------------------------------------------------------------------
 Thu Oct 15 16:15:05 UTC 2015 - dmueller@suse.com
 
 - Add architecture support for AArch64
