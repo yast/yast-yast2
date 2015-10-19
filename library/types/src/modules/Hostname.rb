@@ -156,7 +156,7 @@ module Yast
     # See bnc#946047
     # Basicaly, linuxrc sometimes resolves IP when querying "hostname --fqdn"
     def invalid_hostname?(hostname)
-      return Mode.installation && IP.Check(hostname)
+      Mode.installation && IP.Check(hostname)
     end
 
     # Retrieve currently set fully qualified hostname
