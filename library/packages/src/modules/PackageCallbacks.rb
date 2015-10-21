@@ -253,7 +253,7 @@ module Yast
         button_box = ButtonBox(
           PushButton(Id(:abort), Opt(:cancelButton, :key_F9), Label.AbortButton),
           PushButton(Id(:retry), Opt(:customButton), Label.RetryButton),
-          PushButton(Id(:ignore), Opt(:okButton), Label.SkipButton)
+          PushButton(Id(:ignore), Opt(:okButton), Label.IgnoreButton)
             )
 
         if @showLongInfo
