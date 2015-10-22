@@ -38,6 +38,7 @@ module Yast
       Yast.import "IP"
       Yast.import "String"
       Yast.import "FileUtils"
+      Yast.import "Mode"
 
       # i18n characters in domain names are still not allowed
       #
@@ -159,7 +160,7 @@ module Yast
       hostname_data = Convert.to_map(
         SCR.Execute(path(".target.bash_output"), "hostname --fqdn")
       )
-      if hostname_data.nil? || Ops.get_integer(hostname_data, "exit", -1) != 0
+      if hostname_data.nil? || hostname_data["exit"] != 0 || invalid_hostname?(hostname_data["stdout"].to_s.strip)
         fqhostname = if FileUtils.Exists("/etc/hostname")
                        SCR.Read(path(".target.string"), "/etc/hostname")
                      else
@@ -236,6 +237,18 @@ module Yast
     publish function: :CurrentFQ, type: "string ()"
     publish function: :CurrentHostname, type: "string ()"
     publish function: :CurrentDomain, type: "string ()"
+
+  private
+
+    # It checks if the hostname cannot be used for setting default fqdn
+    #
+    # FIXME: Hotfix for bnc#946047. This should be dropped as part of fate#319639
+    # implementation
+    #
+    # Basicaly, linuxrc sometimes resolves IP when querying "hostname --fqdn"
+    def invalid_hostname?(hostname)
+      Mode.installation && IP.Check(hostname)
+    end
   end
 
   Hostname = HostnameClass.new
