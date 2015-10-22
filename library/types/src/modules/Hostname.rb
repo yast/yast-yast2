@@ -151,14 +151,6 @@ module Yast
       Ops.add(Ops.add(hostname, "."), domain)
     end
 
-    # It checks if the hostname cannot be used for setting default fqdn
-    #
-    # See bnc#946047
-    # Basicaly, linuxrc sometimes resolves IP when querying "hostname --fqdn"
-    def invalid_hostname?(hostname)
-      Mode.installation && IP.Check(hostname)
-    end
-
     # Retrieve currently set fully qualified hostname
     # (uses hostname --fqdn)
     # @return FQ hostname
@@ -245,6 +237,18 @@ module Yast
     publish function: :CurrentFQ, type: "string ()"
     publish function: :CurrentHostname, type: "string ()"
     publish function: :CurrentDomain, type: "string ()"
+
+  private
+
+    # It checks if the hostname cannot be used for setting default fqdn
+    #
+    # FIXME: Hotfix for bnc#946047. This should be dropped as part of fate#319639
+    # implementation
+    #
+    # Basicaly, linuxrc sometimes resolves IP when querying "hostname --fqdn"
+    def invalid_hostname?(hostname)
+      Mode.installation && IP.Check(hostname)
+    end
   end
 
   Hostname = HostnameClass.new
