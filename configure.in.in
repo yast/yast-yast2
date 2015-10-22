@@ -22,6 +22,5 @@ AC_MSG_RESULT([$IFCFG_DIR])
 
 ## and generate the output
 # also done via makefile
-AC_CONFIG_FILES(library/general/src/modules/Version.rb
-library/network/src/scrconf/network.scr)
+AC_CONFIG_FILES(library/network/src/scrconf/network.scr)
 @YAST2-OUTPUT@
