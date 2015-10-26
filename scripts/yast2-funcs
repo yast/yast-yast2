@@ -111,6 +111,21 @@ function set_qt_home_dir()
     fi
 }
 
+function set_qt_arabic_workaround()
+{
+    # Work around clipped Arabic text, bsc#880701
+    # FIXME: Upstream bug: https://bugreports.qt.io/browse/QTBUG-41450
+    # Locale check: first of the variables wins; man 7 locale
+    case "${LC_ALL}${LC_MESSAGES}${LANG}" in
+        ar*) export QT_HARFBUZZ=old ;;
+    esac
+}
+
+function set_qt_env()
+{
+    set_qt_home_dir
+    set_qt_arabic_workaround
+}
 
 function set_inst_qt_env()
 {
@@ -119,6 +134,7 @@ function set_inst_qt_env()
     export QT_HOME_DIR="/tmp/.qt/"
     mkdir -p /tmp/.qt
     [ -e /usr/share/desktop-data/qtrc ] && cp /usr/share/desktop-data/qtrc /tmp/.qt/
+    set_qt_arabic_workaround
 }
 
 

@@ -389,7 +389,7 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
     fi
 elif [ "$SELECTED_GUI" = "qt" ]; then
 
-    set_qt_home_dir
+    set_qt_env
 
     # find which control center shell we want, if there is none we
     # fall back to the built-in ycp menu
