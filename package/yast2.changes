@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov  4 20:19:10 UTC 2015 - lslezak@suse.cz
+
+- Fixed clipped dialog label (bsc#948381)
+- 3.1.156
+
+-------------------------------------------------------------------
 Fri Oct 23 11:52:35 UTC 2015 - mvidner@suse.com
 
 - Fixed clipped labels in Arabic on some widgets (bsc#880701).

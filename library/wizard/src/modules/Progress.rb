@@ -458,6 +458,7 @@ module Yast
 
       if !UI.WizardCommand(term(:SetDialogHeading, window_title))
         UI.ChangeWidget(Id(:title), :Value, window_title)
+        UI.RecalcLayout
       end
       Wizard.SetHelpText(help_text) if "" != help_text && nil != help_text
       Wizard.DisableBackButton
