@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 17 12:11:54 UTC 2015 - igonzalezsosa@suse.com
+
+- Add a default value for firewall setting FW_BOOT_INIT_FULL
+  (bsc#955400)
+- 3.1.108.11
+
+-------------------------------------------------------------------
 Mon Oct 19 13:22:31 UTC 2015 - mvidner@suse.com
 
 - Fixed clipped labels in Arabic on some widgets (bsc#880701).

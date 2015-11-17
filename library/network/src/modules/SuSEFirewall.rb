@@ -100,7 +100,8 @@ module Yast
         "FW_IGNORE_FW_BROADCAST_EXT" => "yes",
         "FW_IGNORE_FW_BROADCAST_INT" => "no",
         "FW_IGNORE_FW_BROADCAST_DMZ" => "no",
-        "FW_IPSEC_TRUST"             => "no"
+        "FW_IPSEC_TRUST"             => "no",
+        "FW_BOOT_FULL_INIT"          => "no"
       }
 
       # verbose_level -> if verbosity is more than 0, be verbose, starting in verbose mode
