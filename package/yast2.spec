@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.156
+Version:        3.1.157
 Release:        0
 Url:            https://github.com/yast/yast-yast2
 
@@ -73,8 +73,9 @@ Requires:       yast2-perl-bindings
 Requires:       perl-XML-Simple
 # for GPG.ycp
 Requires:       gpg2
-# for Punycode.ycp (bnc#651893)
-Requires:       bind-utils
+# for Punycode.rb (bnc#651893) - the idnconv tool is located in
+# different packages (SLE12/Leap-42.1: bind-utils, TW/Factory: idnkit)
+Requires:       idnkit
 # xdg-su in .desktops
 Recommends:     xdg-utils
 
