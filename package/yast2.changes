@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 23 15:23:51 UTC 2015 - lslezak@suse.cz
+
+- Fixed idnkit dependency to allow building YaST HEAD in SLE12
+- 3.1.158
+
+-------------------------------------------------------------------
 Fri Nov 20 13:28:38 UTC 2015 - lslezak@suse.cz
 
 - Fixed Puny code processing - the idnconv tool has been moved to
