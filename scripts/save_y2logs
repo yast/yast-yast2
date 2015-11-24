@@ -37,35 +37,32 @@ else
 	;;
 
     *.tar)
-	TARGET="$1"
 	COMPRESSION=
 	;;
 
     *.tgz|*.tar.gz)
-	TARGET="$1"
 	COMPRESSION=gzip
 	;;
 
-    *.tar.xz)
-	TARGET="$1"
+    *.txz|*.tar.xz)
 	COMPRESSION=xz
 	;;
 
     *.tar.bz2)
-	TARGET="$1"
 	COMPRESSION=bzip2
 	;;
 
     *)
 	echo "FATAL: argument is not a (compressed) tar file." >&2
-	echo "Use one of these suffixes: .tar .tgz .tar.gz .tar.xz .tar.bz2" >&2
+	echo "Use one of these suffixes: .tar .tgz .tar.gz .txz .tar.xz .tar.bz2" >&2
 	exit 4
   esac
+  TARGET="$1"
 fi
 
 # check for compression program
-if [ "$COMPRESSION" -a ! -x "/usr/bin/$COMPRESSION" ]; then
-  echo "FATAL: /usr/bin/$COMPRESSION not available" >&2
+if [ "$COMPRESSION" -a -z "$(type -p $COMPRESSION)" ]; then
+  echo "FATAL: $COMPRESSION not available" >&2
   exit 3
 fi
 
@@ -78,6 +75,11 @@ TMPDIR=`mktemp -d` || ( echo "FATAL: Failed to create a temporary directory" >&2
 if [ -x /bin/dmesg ]; then
   dmesg > $TMPDIR/dmesg
   LIST_TMP="$LIST_TMP dmesg"
+fi
+
+if [ -x /usr/bin/journalctl ]; then
+  journalctl --dmesg > $TMPDIR/journalctl-dmesg
+  LIST_TMP="$LIST_TMP journalctl-dmesg"
 fi
 
 # strip sensitive information
