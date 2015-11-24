@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 24 14:05:14 CET 2015 - snwint@suse.de
+
+- rewrite save_y2logs (and log linuxrc.log and wickedd.log)
+- 3.1.159
+
+-------------------------------------------------------------------
 Mon Nov 23 15:23:51 UTC 2015 - lslezak@suse.cz
 
 - Fixed idnkit dependency to allow building YaST HEAD in SLE12
