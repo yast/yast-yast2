@@ -5,6 +5,8 @@
 #
 # Author: Stefan Hundhammer <sh@suse.de>
 
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
 usage()
 {
     echo "Usage: ${0##*/} [ARCHIVE_NAME]" >&2
@@ -16,13 +18,13 @@ usage()
 
 if test -z "$1"; then
   # choose some good default
-  if [ -x /usr/bin/xz ] ; then
+  if [ "$(type -p xz)" ] ; then
     SUFFIX=.tar.xz
     COMPRESSION=xz
-  elif [ -x /usr/bin/gzip ] ; then
+  elif [ "$(type -p gzip)" ] ; then
     SUFFIX=.tar.gz
     COMPRESSION=gzip
-  elif [ -x /usr/bin/bzip2 ] ; then
+  elif [ "$(type -p bzip2)" ] ; then
     SUFFIX=.tar.bz2
     COMPRESSION=bzip2
   else
@@ -72,12 +74,12 @@ TMPDIR=`mktemp -d` || ( echo "FATAL: Failed to create a temporary directory" >&2
 # 1. gather some information in $TMPDIR
 
 # last kernel messages, if any
-if [ -x /bin/dmesg ]; then
+if [ "$(type -p dmesg)" ]; then
   dmesg > $TMPDIR/dmesg
   LIST_TMP="$LIST_TMP dmesg"
 fi
 
-if [ -x /usr/bin/journalctl ]; then
+if [ "$(type -p journalctl)" ]; then
   journalctl --dmesg > $TMPDIR/journalctl-dmesg
   LIST_TMP="$LIST_TMP journalctl-dmesg"
 fi
@@ -95,7 +97,7 @@ if [ -f /mnt/var/log/pbl.log ]; then
 fi
 
 # installed packages
-if [ -f /var/lib/rpm/Packages ]; then
+if [ -f /var/lib/rpm/Packages -a "$(type -p rpm)" ]; then
   rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}\t\t\t(%{VENDOR})\t%{DISTRIBUTION}\n' 2>/dev/null | sort >/$TMPDIR/rpm-qa
   LIST_TMP="$LIST_TMP rpm-qa"
 fi
