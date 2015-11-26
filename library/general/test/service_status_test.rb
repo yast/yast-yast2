@@ -50,6 +50,7 @@ class DummyService
   end
 
   def start; end
+
   def stop; end
 end
 

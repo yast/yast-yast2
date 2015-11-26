@@ -46,8 +46,11 @@ module UI
       @enabled = @service.enabled?
       @id_prefix = "_srv_status_#{@service.name}"
       textdomain "base"
-      @reload_label = (reload_label == :restart) ?
-        _("Restart After Saving Settings") : _("Reload After Saving Settings")
+      if reload_label == :restart
+        @reload_label = _("Restart After Saving Settings")
+      else
+        @reload_label = _("Reload After Saving Settings")
+      end
     end
 
     # @return [YaST::Term]
@@ -133,7 +136,7 @@ module UI
         "Un-check it to disable the service. "\
         "This does not affect the current status of the service in the already "\
         "running system.</p>\n"
-      ) % {reload_label: @reload_label}
+      ) % { reload_label: @reload_label }
     end
 
   protected
