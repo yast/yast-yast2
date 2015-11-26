@@ -10,7 +10,7 @@ TESTS = \
   os_release_test.rb \
   popup_test.rb \
   proposal_client_test.rb \
-  srv_status_component_test.rb \
+  service_status_test.rb \
   agents_test/proc_meminfo_agent_test.rb
 
 TEST_EXTENSIONS = .rb

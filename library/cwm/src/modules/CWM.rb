@@ -985,6 +985,21 @@ module Yast
       nil
     end
 
+    # Saves changes of all the widgets in the current dialog
+    #
+    # @param [Hash] event map event that triggered the saving
+    def save_current_widgets(event)
+      saveWidgets(@current_dialog_widgets, event)
+    end
+
+    # Validates all the widgets in the current dialog
+    #
+    # @param [Hash] event map event that caused validation
+    # @return [Boolean] true if everything is OK, false  if something is wrong
+    def validate_current_widgets(event)
+      validateWidgets(@current_dialog_widgets, event)
+    end
+
     publish function: :StringsOfTerm, type: "list <string> (term)"
     publish function: :ValidateBasicType, type: "boolean (any, string)"
     publish function: :ValidateValueType, type: "boolean (string, any, string)"

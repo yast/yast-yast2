@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Nov 26 08:47:31 UTC 2015 - ancor@suse.com
+
+- New methods CWM.save_current_widgets and
+  CWM.validate_current_widgets
+- Replaced UI::SrvStatusComponent with UI::ServiceStatus
+- 3.1.160
+
+-------------------------------------------------------------------
 Tue Nov 24 14:05:14 CET 2015 - snwint@suse.de
 
 - rewrite save_y2logs (and log linuxrc.log and wickedd.log)

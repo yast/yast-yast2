@@ -1,7 +1,7 @@
 #! /usr/bin/env rspec
 
 require_relative "test_helper"
-require "ui/srv_status_component"
+require "ui/service_status"
 
 # Some helpers to test the UI
 
@@ -34,24 +34,43 @@ def id_for(term)
   id.params.first
 end
 
-# Class using SrvStatusComponent
+class DummyService
+  attr_reader :name
+
+  def initialize(name)
+    @name = name
+  end
+
+  def enabled?
+    @name == "active"
+  end
+
+  def running?
+    @name == "active"
+  end
+
+  def start; end
+
+  def stop; end
+end
+
+# Class using ServiceStatus
 class DummyDialog
   include Yast::UIShortcuts
 
   attr_reader :enabled1, :enabled2, :srv1_component, :srv2_component
 
-  def initialize
-    @srv1_component = ::UI::SrvStatusComponent.new(
-      "service1",
-      enabled_callback: ->(e) { @enabled1 = e }
-    )
-    @srv2_component = ::UI::SrvStatusComponent.new("service2")
+  def initialize(service1, service2)
+    @srv1_component = ::UI::ServiceStatus.new(service1)
+    @srv2_component = ::UI::ServiceStatus.new(service2)
     @enabled1 = @srv1_component.enabled?
     @enabled2 = @srv2_component.enabled?
   end
 
   def handle_input(input)
-    @srv1_component.handle_input(input)
+    if @srv1_component.handle_input(input) == :enabled_changed
+      @enabled1 = @srv1_component.enabled?
+    end
     @srv2_component.handle_input(input)
   end
 
@@ -69,25 +88,20 @@ module Yast
   extend Yast::I18n
   Yast.textdomain "base"
 
-  import "Service"
   import "UI"
 
-  describe ::UI::SrvStatusComponent do
-    before do
-      allow(Yast::Service).to receive(:enabled?).with("service1").and_return true
-      allow(Yast::Service).to receive(:enabled?).with("service2").and_return false
-      allow(Yast::Service).to receive(:active?).with("service1").and_return true
-      allow(Yast::Service).to receive(:active?).with("service2").and_return false
-    end
+  describe ::UI::ServiceStatus do
+    let(:active) { DummyService.new("active") }
+    let(:inactive) { DummyService.new("inactive") }
 
-    let(:dialog) { DummyDialog.new }
+    let(:dialog) { DummyDialog.new(active, inactive) }
     let(:widgets) { dialog.content }
-    let(:stop_service1) { widget_by_id_and_text(widgets, "service1", "Stop now") }
-    let(:start_service2) { widget_by_id_and_text(widgets, "service2", "Start now") }
-    let(:reload_service1) { widget_by_id_and_text(widgets, "service1", "Reload After Saving Settings") }
-    let(:reload_service2) { widget_by_id_and_text(widgets, "service2", "Reload After Saving Settings") }
-    let(:enabled_service1) { widget_by_id_and_text(widgets, "service1", "Start During System Boot") }
-    let(:enabled_service2) { widget_by_id_and_text(widgets, "service2", "Start During System Boot") }
+    let(:stop_active) { widget_by_id_and_text(widgets, "active", "Stop now") }
+    let(:start_inactive) { widget_by_id_and_text(widgets, "inactive", "Start now") }
+    let(:reload_active) { widget_by_id_and_text(widgets, "active", "Reload After Saving Settings") }
+    let(:reload_inactive) { widget_by_id_and_text(widgets, "inactive", "Reload After Saving Settings") }
+    let(:enabled_active) { widget_by_id_and_text(widgets, "active", "Start During System Boot") }
+    let(:enabled_inactive) { widget_by_id_and_text(widgets, "inactive", "Start During System Boot") }
 
     describe "#initialize" do
       it "reads the initial enabled state from the system" do
@@ -98,38 +112,38 @@ module Yast
 
     describe "#widget" do
       it "includes all the UI elements" do
-        expect(stop_service1).not_to be_nil
-        expect(start_service2).not_to be_nil
-        expect(reload_service1).not_to be_nil
-        expect(reload_service2).not_to be_nil
-        expect(enabled_service1).not_to be_nil
-        expect(enabled_service2).not_to be_nil
+        expect(stop_active).not_to be_nil
+        expect(start_inactive).not_to be_nil
+        expect(reload_active).not_to be_nil
+        expect(reload_inactive).not_to be_nil
+        expect(enabled_active).not_to be_nil
+        expect(enabled_inactive).not_to be_nil
       end
 
       it "disables and unchecks the reload button for stopped services" do
-        expect(options_for(reload_service2).any? { |p| p == :disabled })
-        expect(reload_service2.params.last).to eq false
+        expect(options_for(reload_inactive).any? { |p| p == :disabled })
+        expect(reload_inactive.params.last).to eq false
       end
 
       it "enables the reload button for stopped services" do
-        expect(options_for(reload_service1).none? { |p| p == :disabled })
+        expect(options_for(reload_active).none? { |p| p == :disabled })
       end
     end
 
     describe "#handle_input" do
       it "stops the service on user request" do
-        expect(Yast::Service).to receive(:Stop).with("service1")
-        dialog.handle_input(id_for(stop_service1))
+        expect(active).to receive(:stop)
+        dialog.handle_input(id_for(stop_active))
       end
 
       it "starts the service on user request" do
-        expect(Yast::Service).to receive(:Start).with("service2")
-        dialog.handle_input(id_for(start_service2))
+        expect(inactive).to receive(:start)
+        dialog.handle_input(id_for(start_inactive))
       end
 
       it "triggers 'enabled_callback' if available" do
         allow(Yast::UI).to receive(:QueryWidget).and_return "new_value"
-        dialog.handle_input(id_for(enabled_service1))
+        dialog.handle_input(id_for(enabled_active))
 
         expect(dialog.enabled1).to eq "new_value"
       end
@@ -138,7 +152,7 @@ module Yast
         expect(dialog.srv1_component.enabled?).to eq true
 
         allow(Yast::UI).to receive(:QueryWidget).and_return false
-        dialog.handle_input(id_for(enabled_service1))
+        dialog.handle_input(id_for(enabled_active))
 
         expect(dialog.srv1_component.enabled?).to eq false
       end
