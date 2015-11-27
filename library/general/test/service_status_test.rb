@@ -63,13 +63,13 @@ class DummyDialog
   def initialize(service1, service2)
     @srv1_component = ::UI::ServiceStatus.new(service1)
     @srv2_component = ::UI::ServiceStatus.new(service2)
-    @enabled1 = @srv1_component.enabled?
-    @enabled2 = @srv2_component.enabled?
+    @enabled1 = @srv1_component.enabled_flag?
+    @enabled2 = @srv2_component.enabled_flag?
   end
 
   def handle_input(input)
-    if @srv1_component.handle_input(input) == :enabled_changed
-      @enabled1 = @srv1_component.enabled?
+    if @srv1_component.handle_input(input) == :enabled_flag
+      @enabled1 = @srv1_component.enabled_flag?
     end
     @srv2_component.handle_input(input)
   end
@@ -148,13 +148,13 @@ module Yast
         expect(dialog.enabled1).to eq "new_value"
       end
 
-      it "changes the result of #enabled? on user request" do
-        expect(dialog.srv1_component.enabled?).to eq true
+      it "changes the result of #enabled_flag? on user request" do
+        expect(dialog.srv1_component.enabled_flag?).to eq true
 
         allow(Yast::UI).to receive(:QueryWidget).and_return false
         dialog.handle_input(id_for(enabled_active))
 
-        expect(dialog.srv1_component.enabled?).to eq false
+        expect(dialog.srv1_component.enabled_flag?).to eq false
       end
     end
   end
