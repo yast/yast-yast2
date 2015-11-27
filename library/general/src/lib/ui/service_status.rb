@@ -25,6 +25,10 @@ module UI
   #
   # As long as #handle_input is invoked in the event loop, the widget will
   # handle interactive starting and stopping of the service on user demand.
+  #
+  # It also provides checkboxes (reload_flag and enabled_flag) for the user
+  # to specify whether the service must be reloaded/restarted after
+  # configuration changes and whether it must be enabled at boot time.
   class ServiceStatus
     include Yast::UIShortcuts
     include Yast::I18n
@@ -34,19 +38,24 @@ module UI
     #   #name, #start, #stop, #enabled?, #running?
     #   For systemd compliant services, just do
     #   Yast::SystemdService.find("name_of_the_service")
-    # @param reload [Boolean] Initial value for the "reload" checkbox.
+    #   Note that this widget will #start and #stop the service by itself but
+    #   the actions referenced by the flags (reloading and enabling/disabling)
+    #   are expected to be done by the caller, when the whole configuration is
+    #   written.
+    # @param reload_flag [Boolean] Initial value for the "reload" checkbox.
     #   Keep in mind it will always be displayed as unchecked if the service
     #   is not running, despite the real value.
-    # @param reload_label [Symbol] Type of label for the "reload" checkbox.
-    #   :restart means that the service will be restarted, not just reloaded.
-    def initialize(service, reload: true, reload_label: :reload)
+    # @param reload_flag_label [Symbol] Type of label for the "reload" checkbox.
+    #   :reload means the service will be reloaded.
+    #   :restart means the service will be restarted.
+    def initialize(service, reload_flag: true, reload_flag_label: :reload)
       @service = service
-      @reload = reload
+      @reload_flag = reload_flag
 
-      @enabled = @service.enabled?
+      @enabled_flag = @service.enabled?
       @id_prefix = "_srv_status_#{@service.name}"
       textdomain "base"
-      if reload_label == :restart
+      if reload_flag_label == :restart
         @reload_label = _("Restart After Saving Settings")
       else
         @reload_label = _("Reload After Saving Settings")
@@ -75,17 +84,17 @@ module UI
       when "#{id_prefix}_stop"
         @service.stop
         refresh
-        :stopped
+        :stop
       when "#{id_prefix}_start"
         @service.start
         refresh
-        :started
+        :start
       when "#{id_prefix}_reload"
-        @reload = Yast::UI.QueryWidget(Id(input), :Value)
-        :reload_changed
+        @reload_flag = Yast::UI.QueryWidget(Id(input), :Value)
+        :reload_flag
       when "#{id_prefix}_enabled"
-        @enabled = Yast::UI.QueryWidget(Id(input), :Value)
-        :enabled_changed
+        @enabled_flag = Yast::UI.QueryWidget(Id(input), :Value)
+        :enabled_flag
       else
         log.info "Input not handled by ServiceStatus: #{input}"
         :ignored
@@ -96,8 +105,8 @@ module UI
     # settings
     def refresh
       Yast::UI.ChangeWidget(Id("#{id_prefix}_reload"), :Enabled, @service.running?)
-      Yast::UI.ChangeWidget(Id("#{id_prefix}_reload"), :Value, @service.running? && @reload)
-      Yast::UI.ChangeWidget(Id("#{id_prefix}_enabled"), :Value, @enabled)
+      Yast::UI.ChangeWidget(Id("#{id_prefix}_reload"), :Value, @service.running? && @reload_flag)
+      Yast::UI.ChangeWidget(Id("#{id_prefix}_enabled"), :Value, @enabled_flag)
       Yast::UI.ReplaceWidget(Id("#{id_prefix}_status"), status_widget)
     end
 
@@ -106,15 +115,15 @@ module UI
     # Checks if the user requested the service to be enabled on boot
     #
     # @return [Boolean]
-    def enabled?
-      @enabled
+    def enabled_flag?
+      @enabled_flag
     end
 
     # Checks if the user requested the service to be reloaded when saving
     #
     # @return [Boolean]
-    def reload?
-      @reload
+    def reload_flag?
+      @reload_flag
     end
 
     # rubocop:enable Style/TrivialAccessors
@@ -161,7 +170,7 @@ module UI
           Id("#{id_prefix}_enabled"),
           Opt(:notify),
           _("Start During System Boot"),
-          @enabled
+          @enabled_flag
         )
       )
     end
@@ -175,7 +184,7 @@ module UI
           Id("#{id_prefix}_reload"),
           Opt(*opts),
           @reload_label,
-          @service.running? && @reload
+          @service.running? && @reload_flag
         )
       )
     end
