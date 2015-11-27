@@ -25,6 +25,10 @@ module UI
   #
   # As long as #handle_input is invoked in the event loop, the widget will
   # handle interactive starting and stopping of the service on user demand.
+  #
+  # It also provides checkboxes (reload_flag and enabled_flag) for the user
+  # to specify whether the service must be reloaded/restarted after
+  # configuration changes and whether it must be enabled at boot time.
   class ServiceStatus
     include Yast::UIShortcuts
     include Yast::I18n
@@ -34,6 +38,10 @@ module UI
     #   #name, #start, #stop, #enabled?, #running?
     #   For systemd compliant services, just do
     #   Yast::SystemdService.find("name_of_the_service")
+    #   Note that this widget will #start and #stop the service by itself but
+    #   the actions referenced by the flags (reloading and enabling/disabling)
+    #   are expected to be done by the caller, when the whole configuration is
+    #   written.
     # @param reload_flag [Boolean] Initial value for the "reload" checkbox.
     #   Keep in mind it will always be displayed as unchecked if the service
     #   is not running, despite the real value.
