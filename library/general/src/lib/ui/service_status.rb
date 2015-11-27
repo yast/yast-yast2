@@ -38,7 +38,8 @@ module UI
     #   Keep in mind it will always be displayed as unchecked if the service
     #   is not running, despite the real value.
     # @param reload_flag_label [Symbol] Type of label for the "reload" checkbox.
-    #   :restart means that the service will be restarted, not just reloaded.
+    #   :reload means the service will be reloaded.
+    #   :restart means the service will be restarted.
     def initialize(service, reload_flag: true, reload_flag_label: :reload)
       @service = service
       @reload_flag = reload_flag
