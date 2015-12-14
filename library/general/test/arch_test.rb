@@ -8,7 +8,7 @@ require "yast"
 
 describe Yast::Arch do
 
-  describe "DetectzKVM" do
+  describe ".is_zkvm" do
     before do
       # need to reset all initializeation of the module for individual
       # test cases which mock different hardware
@@ -17,7 +17,7 @@ describe Yast::Arch do
       load module_path
     end
 
-    it "zKVM on S/390" do
+    it "returns true if on s390 and in the zKVM environment" do
       allow(Yast::WFM).to receive(:Execute).and_return 0
       allow(Yast::SCR).to receive(:Read).and_return "s390_64"
 
@@ -26,7 +26,7 @@ describe Yast::Arch do
       expect(is_zkvm).to eq(true)
     end
 
-    it "zVM on S/390" do
+    it "returns false if on s390 and not in the zKVM environment" do
       allow(Yast::WFM).to receive(:Execute).and_return 1
       allow(Yast::SCR).to receive(:Read).and_return "s390_64"
 
@@ -35,7 +35,7 @@ describe Yast::Arch do
       expect(is_zkvm).to eq(false)
     end
 
-    it "x86_64" do
+    it "returns false on other architectures" do
       allow(Yast::WFM).to receive(:Execute).and_return 0
       allow(Yast::SCR).to receive(:Read).and_return "x86_64"
 
