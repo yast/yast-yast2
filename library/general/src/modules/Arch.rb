@@ -57,6 +57,9 @@ module Yast
 
       # KVM
       @_is_kvm = nil
+
+      # zKVM
+      @_is_zkvm = nil
     end
 
     # ************************************************************
@@ -446,6 +449,22 @@ module Yast
     end
 
     # ************************************************************
+    # zKVM stuff
+
+    # zKVM means KVM on IBM System z
+    # true if zKVM is running
+    #
+    # @return true if we are running on zKVM hypervisor
+    def is_zkvm
+      if @_is_zkvm.nil?
+        # using different check than on x86 as recommended by IBM
+        @_is_zkvm = s390 && Yast::WFM.Execute(".local.bash", "egrep 'Control Program: KVM' /proc/sysinfo") == 0
+      end
+
+      @_is_zkvm
+    end
+
+    # ************************************************************
     # SMP stuff
 
     # Set "Arch::has_smp ()". Since Alpha doesn't reliably probe smp,
@@ -516,6 +535,7 @@ module Yast
     publish function: :is_xen0, type: "boolean ()"
     publish function: :is_xenU, type: "boolean ()"
     publish function: :is_kvm, type: "boolean ()"
+    publish function: :is_zkvm, type: "boolean ()"
     publish function: :has_smp, type: "boolean ()"
     publish function: :x11_setup_needed, type: "boolean ()"
   end
