@@ -22,7 +22,7 @@
 
 require "yast"
 
-Yast.import "installation"
+Yast.import "Installation"
 
 module Yast2
   # Module provides file class that can be used for config_files_api gem.

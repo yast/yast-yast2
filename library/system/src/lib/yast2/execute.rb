@@ -23,7 +23,7 @@
 require "yast"
 require "cheetah"
 
-Yast.import "installation"
+Yast.import "Installation"
 
 module Yast2
   # Module for executing scripts/programs in safe way. Uses cheetah as backend,
