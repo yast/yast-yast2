@@ -24,7 +24,7 @@ require "yast"
 
 Yast.import "Installation"
 
-module Yast2
+module Yast
   # Module provides file class that can be used for config_files_api gem.
   class TargetFile
     # Reads file content with respect of changed root in installation.

@@ -46,14 +46,32 @@ module Yast2
           args.push(chroot: root)
         end
 
-        Cheetah.run(*args)
+        popup_error { Cheetah.run(*args) }
       end
 
       # Runs arguments without changed root.
       # @see Cheetah.run for parameters
       # @raise Cheetah::ExecutionFailed
       def locally(*args)
-        Cheetah.run(*args)
+        popup_error { Cheetah.run(*args) }
+      end
+
+    private
+      def popup_error(&block)
+        block.call
+      rescue Cheetah::ExecutionFailed => e
+        Yast.import "Report"
+        Yast::Report.Error(
+          _(
+            "Running command \"%{command}\" failed.\n"\
+            "Exit code: %{exitcode}\n"\
+            "Error output: %{stderr}"
+          ) % {
+            command: e.commands.inspect,
+            exitcode: e.status.exitstatus,
+            stderr: e.stderr
+          }
+        )
       end
     end
   end
