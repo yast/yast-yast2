@@ -41,7 +41,7 @@ module Yast
       root = "/"
       root = Yast::Installation.destdir if Yast::WFM.scr_chrooted?
 
-      File.join(root, path)
+      ::File.join(root, path)
     end
     private_class_method :final_path
   end
