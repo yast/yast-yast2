@@ -63,7 +63,7 @@ module Yast
         Yast.import "Report"
         Yast::Report.Error(
           _(
-            "Running command \"%{command}\" failed.\n"\
+            "Execution of command \"%{command}\" failed.\n"\
             "Exit code: %{exitcode}\n"\
             "Error output: %{stderr}"
           ) % {
