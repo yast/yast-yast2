@@ -25,7 +25,7 @@ require "cheetah"
 
 Yast.import "Installation"
 
-module Yast2
+module Yast
   # Module for executing scripts/programs in safe way. Uses cheetah as backend,
   # but adds support for chrooting in installation.
   class Execute
