@@ -57,6 +57,7 @@ module Yast
       end
 
     private
+
       def popup_error(&block)
         block.call
       rescue Cheetah::ExecutionFailed => e
@@ -67,9 +68,9 @@ module Yast
             "Exit code: %{exitcode}\n"\
             "Error output: %{stderr}"
           ) % {
-            command: e.commands.inspect,
+            command:  e.commands.inspect,
             exitcode: e.status.exitstatus,
-            stderr: e.stderr
+            stderr:   e.stderr
           }
         )
       end
