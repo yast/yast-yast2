@@ -397,7 +397,7 @@ module Yast
       Builtins.foreach(widgets) do |w|
         @processed_widget = deep_copy(w)
         toEval = Convert.convert(
-          Ops.get(w, "clean_up"),
+          Ops.get(w, "cleanup"),
           from: "any",
           to:   "void (string)"
         )
@@ -462,6 +462,7 @@ module Yast
           if key != "label" ||
               Ops.get(v, "widget") != :radio_buttons &&
                   Ops.get(v, "widget") != :custom &&
+                  Ops.get(v, "widget") != :rich_text &&
                   Ops.get(v, "widget") != :func
             ret = ValidateValueContents(key, Ops.get(v, key), k) && ret
           end
@@ -905,9 +906,18 @@ module Yast
     end
 
     # Display the dialog and run its event loop
-    # @param [Hash{String => Object}] settings a map of all settings needed to run the dialog
+    # @param [Hash<String, Object>] settings a map of all settings needed to run the dialog
+    # @option settings [AbstractWidget] "widgets" list of widgets used in CWM,
+    #   it is auto added to `"widget_names"` and `"widget_descr"`
     def ShowAndRun(settings)
       settings = deep_copy(settings)
+      if settings["widgets"]
+        widgets = settings["widgets"]
+        settings["widget_names"] ||= []
+        settings["widget_names"] += widgets.map(&:widget_id)
+        settings["widget_descr"] ||= {}
+        settings["widget_descr"] = Hash(widgets.map { |w| [ w.widget_id, w.description ] })
+      end
       widget_descr = Ops.get_map(settings, "widget_descr", {})
       contents = Ops.get_term(settings, "contents", VBox())
       widget_names = Convert.convert(
