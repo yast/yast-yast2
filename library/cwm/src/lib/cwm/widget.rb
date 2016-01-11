@@ -108,9 +108,6 @@ module CWM
   # helpers for easier set/obtain value of widget for widgets where value is
   # obtained by :Value symbol
   module ValueBasedWidget
-
-  protected
-
     def value
       Yast::UI.QueryWidget(Id(widget_id), :Value)
     end
@@ -161,8 +158,6 @@ module CWM
       }.merge(super)
     end
 
-  protected
-
     def checked?
       value
     end
@@ -209,7 +204,7 @@ module CWM
     end
   end
 
-  class SelectionBoxWidget < AbstractionWidget
+  class SelectionBoxWidget < AbstractWidget
     # description for selectionbox additionally support `items` method.
     # `items` method have to return array of string pairs, where first value is
     # item id and second is item label.
@@ -235,7 +230,6 @@ module CWM
       res.merge(super)
     end
 
-  protected
     def value
       Yast::UI.QueryWidget(Id(widget_id), :CurrentItem)
     end
@@ -245,7 +239,7 @@ module CWM
     end
   end
 
-  class MultiSelectionBoxWidget < AbstractionWidget
+  class MultiSelectionBoxWidget < AbstractWidget
     # description for multiselectionbox additionally support `items` method.
     # `items` method have to return array of string pairs, where first value is
     # item id and second is item label.
@@ -271,7 +265,6 @@ module CWM
       res.merge(super)
     end
 
-  protected
     def values
       Yast::UI.QueryWidget(Id(widget_id), :SelectedItems)
     end
@@ -281,7 +274,7 @@ module CWM
     end
   end
 
-  class IntField < AbstractionWidget
+  class IntField < AbstractWidget
     include ValueBasedWidget
 
     # description for combobox additionally support `minimum` and `maximum` methods.
@@ -304,7 +297,7 @@ module CWM
         "widget"        => :intfield,
       }
       res["minimum"] = minimum if respond_to?(:minimum)
-      res["maximum"] = minimum if respond_to?(:maximum)
+      res["maximum"] = maximum if respond_to?(:maximum)
 
       res.merge(super)
     end
@@ -336,7 +329,6 @@ module CWM
       res.merge(super)
     end
 
-  protected
     def value
       Yast::UI.QueryWidget(Id(widget_id), :CurrentButton)
     end
@@ -347,27 +339,10 @@ module CWM
   end
 
   class PushButtonWidget < AbstractWidget
-    # @param [Symbol] id is used as widget id
-    # @yield block runned after button is clicked
-    def initialize(id, &block)
-      self.widget_id = id
-      @block = block
-    end
-
     def description
       {
         "widget"        => :push_button
       }.merge(super)
-    end
-
-  private
-
-    def handle(widget, event)
-      return if event["ID"] != widget
-
-      @block.call
-
-      nil
     end
   end
 
