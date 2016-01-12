@@ -2236,7 +2236,7 @@ store
 
     See: fallback\_functions in ShowAndRun
 
-clean\_up
+cleanup
 
 :   Function that cleans up widgets. The parameter is the id of
     the widget. All widgets are cleaned up before the dialog ends, after
