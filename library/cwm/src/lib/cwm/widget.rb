@@ -12,6 +12,11 @@ module CWM
     # @return [String] id used for widget
     attr_accessor :widget_id
 
+    # defines widget type for CWM usage
+    def self.widget_type=(val)
+      define_method(:widget_type) { val }
+    end
+
     # generates description for CWM with widget. Description is auto filled from defined methods.
     #
     # methods used to generate description:
@@ -29,6 +34,9 @@ module CWM
     # @raise [RuntimeError] if required method is not implemented or widget id not set.
     def description
       raise "Widget '#{self.class}' does set its widget ID" if widget_id.nil?
+      if !respond_to?(:widget_type)
+        raise "Widget '#{self.class}' does set its widget type"
+      end
 
       res = {}
 
@@ -47,6 +55,7 @@ module CWM
       res["handle"] = handle_method if respond_to?(:handle)
       res["store"] = store_method if respond_to?(:store)
       res["cleanup"] = cleanup_method if respond_to?(:cleanup)
+      res["widget"] = widget_type
 
       res
     end
@@ -108,13 +117,13 @@ module CWM
   #     end
   #   end
   class CustomWidget < AbstractWidget
+    self.widget_type = :custom
     # custom witget without content do not make sense
     abstract_method :content
 
     def description
       {
-        "custom_widget" => content,
-        "widget"        => :custom
+        "custom_widget" => content
       }.merge(super)
     end
   end
@@ -128,14 +137,10 @@ module CWM
   #     "widgets" => [widget]
   #   )
   class EmptyWidget < AbstractWidget
+    self.widget_type = :empty
+
     def initialize(id)
       self.widget_id = id
-    end
-
-    def description
-      {
-        "widget" => :empty
-      }.merge(super)
     end
   end
 
@@ -148,6 +153,30 @@ module CWM
 
     def value=(val)
       Yast::UI.ChangeWidget(Id(widget_id), :Value, val)
+    end
+  end
+
+  # helper to define items used by widgets that offer selection from list of
+  # values.
+  module ItemsSelection
+    # items are defined as list of pair, where first one is id and second
+    # one is user visible value
+    # @return [Array<Array<String>>]
+    # @example items method in widget
+    #   def items
+    #     [
+    #       [ "Canada", _("Canada")],
+    #       [ "USA", _("United States of America")],
+    #       [ "North Pole", _("Really cold place")],
+    #     ]
+    #   end
+    def items
+    end
+
+    def description
+       {
+         "items" => items
+       }.merge(super)
     end
   end
 
@@ -173,42 +202,30 @@ module CWM
   #     end
   #   end
   class InputFieldWidget < AbstractWidget
+    self.widget_type = :inputfield
+
     include ValueBasedWidget
     abstract_method :label
-
-    def description
-      {
-        "widget" => :inputfield
-      }.merge(super)
-    end
   end
 
   # Represents password widget. `label` method is mandatary
   #
   # @see InputFieldWidget for example of child
   class PasswordWidget < AbstractWidget
+    self.widget_type = :password
+
     include ValueBasedWidget
     abstract_method :label
-
-    def description
-      {
-        "widget" => :password
-      }.merge(super)
-    end
   end
 
   # Represents password widget. `label` method is mandatary
   #
   # @see InputFieldWidget for example of child
   class CheckboxWidget < AbstractWidget
+    self.widget_type = :checkbox
+
     include ValueBasedWidget
     abstract_method :label
-
-    def description
-      {
-        "widget" => :checkbox
-      }.merge(super)
-    end
 
     # @return [Boolean] true if widget is checked
     def checked?
@@ -261,48 +278,21 @@ module CWM
   #     end
   #   end
   class ComboBoxWidget < AbstractWidget
+    self.widget_type = :combobox
+
     include ValueBasedWidget
+    include ItemsSelection
     abstract_method :label
-
-    # description for combobox additionally support `items` method.
-    # `items` method have to return array of string pairs, where first value is
-    # item id and second is item label.
-    def description
-      res = {
-        "widget" => :combobox
-      }
-      res["items"] = items if respond_to?(:items)
-
-      res.merge(super)
-    end
   end
 
   # Widget representing selection box to select value.
   #
   # @see {ComboBoxWidget} for child example
   class SelectionBoxWidget < AbstractWidget
+    self.widget_type = :selection_box
+
+    include ItemsSelection
     abstract_method :label
-
-    # description for selectionbox additionally support `items` method.
-    # `items` method have to return array of string pairs, where first value is
-    # item id and second is item label.
-    # @example items method
-    #   def items
-    #     [
-    #       [ "Canada", _("Canada")],
-    #       [ "USA", _("United States of America")],
-    #       [ "North Pole", _("Really cold place")],
-    #     ]
-    #   end
-    #
-    def description
-      res = {
-        "widget" => :selection_box
-      }
-      res["items"] = items if respond_to?(:items)
-
-      res.merge(super)
-    end
 
     def value
       Yast::UI.QueryWidget(Id(widget_id), :CurrentItem)
@@ -317,28 +307,10 @@ module CWM
   #
   # @see {ComboBoxWidget} for child example
   class MultiSelectionBoxWidget < AbstractWidget
+    self.widget_type = :multi_selection_box
+
+    include ItemsSelection
     abstract_method :label
-
-    # description for multiselectionbox additionally support `items` method.
-    # `items` method have to return array of string pairs, where first value is
-    # item id and second is item label.
-    # @example items method
-    #   def items
-    #     [
-    #       [ "Canada", _("Canada")],
-    #       [ "USA", _("United States of America")],
-    #       [ "North Pole", _("Really cold place")],
-    #     ]
-    #   end
-    #
-    def description
-      res = {
-        "widget" => :multi_selection_box
-      }
-      res["items"] = items if respond_to?(:items)
-
-      res.merge(super)
-    end
 
     # @return [Array<String>] return ids of selected items
     def value
@@ -357,6 +329,8 @@ module CWM
   #
   # @see InputFieldWidget for example of child
   class IntField < AbstractWidget
+    self.widget_type = :intfield
+
     include ValueBasedWidget
     abstract_method :label
 
@@ -372,9 +346,8 @@ module CWM
     #   end
     #
     def description
-      res = {
-        "widget" => :intfield
-      }
+      res = {}
+
       res["minimum"] = minimum if respond_to?(:minimum)
       res["maximum"] = maximum if respond_to?(:maximum)
 
@@ -386,28 +359,10 @@ module CWM
   #
   # @see {ComboBoxWidget} for child example
   class RadioButtonsWidget < AbstractWidget
+    self.widget_type = :radio_buttons
+
+    include ItemsSelection
     abstract_method :label
-
-    # description for radio buttons additionally support `items` method.
-    # `items` method have to return array of string pairs, where first value is
-    # radio button id and second is button label.
-    # @example items method
-    #   def items
-    #     [
-    #       [ "Canada", _("Canada")],
-    #       [ "USA", _("United States of America")],
-    #       [ "North Pole", _("Really cold place")],
-    #     ]
-    #   end
-    #
-    def description
-      res = {
-        "widget" => :radio_buttons
-      }
-      res["items"] = items if respond_to?(:items)
-
-      res.merge(super)
-    end
 
     def value
       Yast::UI.QueryWidget(Id(widget_id), :CurrentButton)
@@ -439,60 +394,30 @@ module CWM
   #     end
   #   end
   class PushButtonWidget < AbstractWidget
-    def description
-      {
-        "widget" => :push_button
-      }.merge(super)
-    end
+    self.widget_type = :push_button
   end
 
   # Widget representing menu button with its submenu
   class MenuButtonWidget < AbstractWidget
+    self.widget_type = :menu_button
+
+    include ItemsSelection
     abstract_method :label
-
-    # description for menu button additionally support `items` method.
-    # `items` method have to return array of string pairs, where first value is
-    # menu item id and second is menu item label.
-    # @example items method
-    #   def items
-    #     [
-    #       [ "Canada", _("Canada")],
-    #       [ "USA", _("United States of America")],
-    #       [ "North Pole", _("Really cold place")],
-    #     ]
-    #   end
-    #
-    def description
-      res = {
-        "widget" => :menu_button
-      }
-      res["items"] = items if respond_to?(:items)
-
-      res.merge(super)
-    end
   end
 
   # Multiline text widget
   # @note label method is required and used as default value (TODO: incosistent with similar richtext in CWM itself)
   class MultiLineEditWidget < AbstractWidget
+    self.widget_type = :multi_line_edit
+
     include ValueBasedWidget
     abstract_method :label
-
-    def description
-      {
-        "widget" => :multi_line_edit
-      }.merge(super)
-    end
   end
 
   # Rich text widget supporting some highlighting
   class RichTextWidget < AbstractWidget
-    include ValueBasedWidget
+    self.widget_type = :richtext
 
-    def description
-      {
-        "widget" => :richtext
-      }.merge(super)
-    end
+    include ValueBasedWidget
   end
 end
