@@ -174,9 +174,9 @@ module CWM
     end
 
     def description
-       {
-         "items" => items
-       }.merge(super)
+      {
+        "items" => items
+      }.merge(super)
     end
   end
 

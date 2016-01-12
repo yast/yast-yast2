@@ -3,12 +3,10 @@ inc_dirs = Dir.glob("#{root_location}/library/*/src")
 
 ENV["Y2DIR"] = inc_dirs.join(":")
 
-#fake adding load path as client already have yast loaded
+# fake adding load path as client already have yast loaded
 inc_dirs.each do |dir|
   lib_dir = File.join(dir, "lib")
-  if File.exists? lib_dir
-    $LOAD_PATH.unshift lib_dir
-  end
+  $LOAD_PATH.unshift lib_dir if File.exist? lib_dir
 end
 
 require "yast"

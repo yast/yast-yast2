@@ -387,7 +387,7 @@ module Yast
         "custom_widget"     => widget,
         "init"              => fun_ref(method(:InitWrapper), "void (string)"),
         "store"             => fun_ref(method(:Store), "void (string, map)"),
-        "cleanup"          => fun_ref(method(:CleanUp), "void (string)"),
+        "cleanup"           => fun_ref(method(:CleanUp), "void (string)"),
         "handle"            => fun_ref(
           method(:HandleWrapper),
           "symbol (string, map)"

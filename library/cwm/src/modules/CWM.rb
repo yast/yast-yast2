@@ -916,7 +916,7 @@ module Yast
         settings["widget_names"] ||= []
         settings["widget_names"] += widgets.map(&:widget_id)
         settings["widget_descr"] ||= {}
-        settings["widget_descr"] = Hash[widgets.map { |w| [ w.widget_id, w.description ] }]
+        settings["widget_descr"] = Hash[widgets.map { |w| [w.widget_id, w.description] }]
       end
       widget_descr = Ops.get_map(settings, "widget_descr", {})
       contents = Ops.get_term(settings, "contents", VBox())

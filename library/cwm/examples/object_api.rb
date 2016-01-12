@@ -61,22 +61,22 @@ module Yast
       lucky_number_widget = LuckyNumberWidget.new
       button_widget = GenerateButton.new(lucky_number_widget)
 
-      widgets = [ lucky_number_widget, button_widget ]
+      widgets = [lucky_number_widget, button_widget]
 
       content = HBox(
         button_widget.widget_id,
-        lucky_number_widget.widget_id,
+        lucky_number_widget.widget_id
       )
 
       Yast::Wizard.CreateDialog
-      CWM.ShowAndRun({
+      CWM.ShowAndRun(
         "contents" => content,
         "caption"  => _("Lucky number"),
         "widgets"  => widgets
-      })
+      )
       Yast::Wizard.CloseDialog
 
-      return lucky_number_widget.result
+      lucky_number_widget.result
     end
   end
 end
