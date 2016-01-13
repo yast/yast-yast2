@@ -1,3 +1,5 @@
+# Simple example to demonstrate object API for CWM
+
 require_relative "example_helper"
 
 require "cwm/widget"
@@ -21,14 +23,6 @@ class LuckyNumberWidget < CWM::IntField
   def store(_widget, _event)
     @result = value
   end
-
-  def handle(widget, _event)
-    return if widget != widget_id
-
-    Yast::Builtins.y2milestone("int handle called")
-
-    nil
-  end
 end
 
 class GenerateButton < CWM::PushButtonWidget
@@ -41,8 +35,8 @@ class GenerateButton < CWM::PushButtonWidget
     _("Generate Lucky Number")
   end
 
-  def handle(widget, _event)
-    return if widget != widget_id
+  def handle(widget, event)
+    return unless my_event?(widget, event)
 
     Yast::Builtins.y2milestone("handle called")
     @lucky_number.value = rand(1000)

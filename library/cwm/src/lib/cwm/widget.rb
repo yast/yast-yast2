@@ -77,6 +77,11 @@ module CWM
 
   protected
 
+    # helper to check if event is invoked by this widget
+    def my_event?(widget, event)
+      return widget == event["ID"]
+    end
+
     # shortcut from Yast namespace to avoid including whole namespace
     # TODO: kill converts in CWM module, to avoid this workaround for funrefs
     def fun_ref(*args)

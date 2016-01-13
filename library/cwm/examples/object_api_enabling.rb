@@ -1,3 +1,5 @@
+# This example is here to demonstrate how can be widgets easily enabled/disabled from other widgets
+
 require_relative "example_helper"
 
 require "cwm/widget"
@@ -23,7 +25,7 @@ class LuckyNumberWidget < CWM::IntField
   end
 
   def handle(widget, event)
-    return if widget != event["ID"]
+    return unless my_event?(widget, event)
 
     Yast::Builtins.y2milestone("int handle called")
 
@@ -47,7 +49,7 @@ class EnableButton < CWM::PushButtonWidget
   end
 
   def handle(widget, event)
-    return if widget != event["ID"]
+    return unless my_event?(widget, event)
 
     Yast::Builtins.y2milestone("enable handle called")
     @lucky_number.enable
@@ -73,7 +75,7 @@ class DisableButton < CWM::PushButtonWidget
   end
 
   def handle(widget, event)
-    return if widget != event["ID"]
+    return unless my_event?(widget, event)
 
     Yast::Builtins.y2milestone("disable handle called")
     @lucky_number.disable
