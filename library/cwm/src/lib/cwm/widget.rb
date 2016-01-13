@@ -60,6 +60,21 @@ module CWM
       res
     end
 
+    # gets if widget is open for modification
+    def enabled?
+      Yast::UI.QueryWidget(Id(widget_id), :Enabled)
+    end
+
+    # Opens widget for modification
+    def enable
+      Yast::UI.ChangeWidget(Id(widget_id), :Enabled, true)
+    end
+
+    # Closes widget for modification
+    def disable
+      Yast::UI.ChangeWidget(Id(widget_id), :Enabled, false)
+    end
+
   protected
 
     # shortcut from Yast namespace to avoid including whole namespace
@@ -177,6 +192,13 @@ module CWM
       {
         "items" => items
       }.merge(super)
+    end
+
+    # change list of items offered in widget. Format is same as in {#items}
+    def change_items(items_list)
+      val = items_list.map { |i| Item(Id(i[0]), i[1]) }
+
+      Yast::UI.ChangeWidget(Id(widget_id), :Items, val)
     end
   end
 
