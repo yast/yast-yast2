@@ -25,8 +25,6 @@ class LuckyNumberWidget < CWM::IntField
   end
 
   def handle(widget, event)
-    return unless my_event?(widget, event)
-
     Yast::Builtins.y2milestone("int handle called")
 
     nil
@@ -52,8 +50,6 @@ class EnableButton < CWM::PushButtonWidget
   end
 
   def handle(widget, event)
-    return unless my_event?(widget, event)
-
     Yast::Builtins.y2milestone("enable handle called")
     @lucky_number_widget.enable
     @disable_button.enable
@@ -78,8 +74,6 @@ class DisableButton < CWM::PushButtonWidget
   end
 
   def handle(widget, event)
-    return unless my_event?(widget, event)
-
     Yast::Builtins.y2milestone("disable handle called")
     @lucky_number_widget.disable
     @enable_button.enable

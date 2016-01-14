@@ -36,8 +36,6 @@ class GenerateButton < CWM::PushButtonWidget
   end
 
   def handle(widget, event)
-    return unless my_event?(widget, event)
-
     Yast::Builtins.y2milestone("handle called")
     @lucky_number_widget.value = rand(1000)
 

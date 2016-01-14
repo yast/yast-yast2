@@ -65,6 +65,13 @@ module CWM
 
     # @return [String] id used for widget
     attr_accessor :widget_id
+    attr_writer   :handle_all_events
+
+    # specify if widget handle all raised events or only its own
+    # By default only own values are handled
+    def handle_all_events
+      @handle_all_events.nil? ? false : @handle_all_events
+    end
 
     # defines widget type for CWM usage
     def self.widget_type=(val)
@@ -105,6 +112,7 @@ module CWM
         res["validate_function"] = validate_method
         res["validate_type"] = :function
       end
+      res["handle_events"] = [widget_id] unless handle_all_events
       res["init"] = init_method if respond_to?(:init)
       res["handle"] = handle_method if respond_to?(:handle)
       res["store"] = store_method if respond_to?(:store)
@@ -196,9 +204,29 @@ module CWM
     abstract_method :contents
 
     def description
-      super.merge(
-        "custom_widget" => contents
-      )
+      res = {"custom_widget" => contents}
+
+      res["handle_events"] = ids_in_contents unless handle_all_events
+
+      super.merge(res)
+    end
+
+  private
+
+    def ids_in_contents
+      find_ids(contents) << widget_id
+    end
+
+    def find_ids(term)
+      term.each_with_object([]) do |arg, res|
+        next unless arg.is_a? Yast::Term
+
+        if arg.value == :id
+          res << arg.params[0]
+        else
+          res.concat(find_ids(arg))
+        end
+      end
     end
   end
 
