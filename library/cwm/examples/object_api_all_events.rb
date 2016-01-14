@@ -20,11 +20,11 @@ class DisplayWidget < CWM::InputFieldWidget
     _("Lucky number")
   end
 
-  def init(_widget)
+  def init
     self.value = "let's start"
   end
 
-  def store(_widget, _event)
+  def store
     @result = value
   end
 
@@ -32,7 +32,7 @@ class DisplayWidget < CWM::InputFieldWidget
     [:notify]
   end
 
-  def handle(widget, event)
+  def handle(event)
     return if event["ID"].to_s.start_with?("_") # underscored events is internal CWM events
     self.value = event["ID"]
 

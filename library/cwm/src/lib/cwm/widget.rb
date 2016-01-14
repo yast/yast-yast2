@@ -152,24 +152,54 @@ module CWM
 
   private
 
+    # @note all methods here use wrappers to modify required parameters as CWM
+    # have not so nice callbacks API
     def init_method
-      fun_ref(method(:init), "void (string)")
+      fun_ref(method(:init_wrapper), "void (string)")
+    end
+
+    def init_wrapper(_widget)
+      init
     end
 
     def handle_method
-      fun_ref(method(:handle), "symbol (string, map)")
+      fun_ref(method(:handle_wrapper), "symbol (string, map)")
+    end
+
+    # allows both variant of handle. with event map and without.
+    # with map it make sense when handle_all_events is true, otherwise
+    # map is not needed
+    def handle_wrapper(_widget, event)
+      m = method(:handle)
+      if m.arity == 0
+        m.call
+      else
+        m.call(event)
+      end
     end
 
     def store_method
-      fun_ref(method(:store), "void (string, map)")
+      fun_ref(method(:store_wrapper), "void (string, map)")
+    end
+
+    def store_wrapper(_widget, _event)
+      store
     end
 
     def cleanup_method
-      fun_ref(method(:cleanup), "void (string)")
+      fun_ref(method(:cleanup_wrapper), "void (string)")
+    end
+
+    def cleanup_wrapper(_widget)
+      cleanup
     end
 
     def validate_method
-      fun_ref(method(:validate), "boolean (string, map)")
+      fun_ref(method(:validate_wrapper), "boolean (string, map)")
+    end
+
+    def validate_wrapper(_widget, _event)
+      validate
     end
   end
 

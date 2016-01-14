@@ -20,7 +20,7 @@ class LuckyNumberWidget < CWM::IntField
     _("Lucky number")
   end
 
-  def store(_widget, _event)
+  def store
     @result = value
   end
 end
@@ -35,7 +35,7 @@ class GenerateButton < CWM::PushButtonWidget
     _("Generate Lucky Number")
   end
 
-  def handle(widget, event)
+  def handle
     Yast::Builtins.y2milestone("handle called")
     @lucky_number_widget.value = rand(1000)
 
