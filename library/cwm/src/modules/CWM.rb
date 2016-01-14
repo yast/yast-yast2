@@ -917,7 +917,7 @@ module Yast
     def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil)
       widgets = widgets_in_contents(contents)
       options = {
-        "contents" => widgets_contents(contents),
+        "contents"     => widgets_contents(contents),
         "widget_names" => widgets.map(&:widget_id),
         "widget_descr" => Hash[widgets.map { |w| [w.widget_id, w.description] }]
       }
@@ -1075,7 +1075,7 @@ module Yast
     def widgets_contents(contents)
       res = contents.clone
 
-      (0..contents.size-1).each do |index|
+      (0..(res.size - 1)).each do |index|
         case contents[index]
         when ::CWM::AbstractWidget then res[index] = res[index].widget_id
         when Yast::Term then res[index] = widgets_contents(res[index])

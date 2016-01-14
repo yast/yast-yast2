@@ -65,7 +65,7 @@ module CWM
 
     # @return [String] id used for widget
     attr_accessor :widget_id
-    attr_writer   :handle_all_events
+    attr_writer :handle_all_events
 
     # specify if widget handle all raised events or only its own
     # By default only own values are handled
@@ -142,8 +142,8 @@ module CWM
   protected
 
     # helper to check if event is invoked by this widget
-    def my_event?(widget, event)
-      return widget == event["ID"]
+    def my_event?(event)
+      widget_id == event["ID"]
     end
 
     # shortcut from Yast namespace to avoid including whole namespace
@@ -236,7 +236,7 @@ module CWM
     abstract_method :contents
 
     def description
-      res = {"custom_widget" => contents}
+      res = { "custom_widget" => contents }
 
       res["handle_events"] = ids_in_contents unless handle_all_events
 
