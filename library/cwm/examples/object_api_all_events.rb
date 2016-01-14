@@ -68,23 +68,15 @@ module Yast
       textdomain "example"
 
       display_widget = DisplayWidget.new
-      first_button = FirstButton.new
-      second_button = SecondButton.new
-
-      widgets = [display_widget, first_button, second_button]
 
       contents = HBox(
-        first_button.widget_id,
-        display_widget.widget_id,
-        second_button.widget_id
+        FirstButton.new,
+        display_widget,
+        SecondButton.new
       )
 
       Yast::Wizard.CreateDialog
-      CWM.ShowAndRun(
-        "contents" => contents,
-        "caption"  => _("Lucky number"),
-        "widgets"  => widgets
-      )
+      CWM.show(contents, caption: _("Lucky button"))
       Yast::Wizard.CloseDialog
 
       display_widget.result

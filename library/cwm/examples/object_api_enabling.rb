@@ -90,20 +90,14 @@ module Yast
       disable_button_widget.enable_button = enable_button_widget
       enable_button_widget.disable_button = disable_button_widget
 
-      widgets = [lucky_number_widget, enable_button_widget, disable_button_widget]
-
-      content = HBox(
-        enable_button_widget.widget_id,
-        disable_button_widget.widget_id,
-        lucky_number_widget.widget_id
+      contents = HBox(
+        enable_button_widget,
+        disable_button_widget,
+        lucky_number_widget
       )
 
       Yast::Wizard.CreateDialog
-      CWM.ShowAndRun(
-        "contents" => content,
-        "caption"  => _("Lucky number"),
-        "widgets"  => widgets
-      )
+      CWM.show(contents, caption: _("Lucky number"))
       Yast::Wizard.CloseDialog
 
       lucky_number_widget.result

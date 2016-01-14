@@ -85,13 +85,15 @@ module CWM
     # - `#help` [String] to get translated help text for widget
     # - `#label` [String] to get translated label text for widget
     # - `#opt` [Array<Symbol>] to get options passed to widget like `[:hstretch, :vstretch]`
-    # - `#validate` [Boolean (String, Hash)] validate widget value, arguments are
-    #   widget key and event map causing validation, for other validation types, overwrite description
-    # - `#init` [nil (String)] initialize widget. like its value. Parameter is widget id
-    # - `#handle` [Symbol,nil (String, Hash)] handle widget changed value or press.
-    #   return value is usually nil, returning symbol can be used to send different event
-    # - `#store` [nil (String, Hash)] store widget value after user confirm dialog
-    # - `#cleanup` [nil (String)] cleanup after widget is destroyed
+    # - `#validate` [Boolean ()] validate widget value. Returns false if validation failed.
+    # - `#init` [nil ()] initialize widget like e.g. set initial value
+    # - `#handle` [Symbol,nil (String?)] handle widget changed value or press.
+    #   return value is usually nil, returning symbol can be used to send different event.
+    #   It support varient with parameter specified and without. If parameter is specified,
+    #   gets event Hash including "ID" key with value that specify widget ID that cause event.
+    #   It is mainly useful if handle_all_events is set to true to distinguish which event caused it.
+    # - `#store` [nil ()] store widget value after user confirm dialog
+    # - `#cleanup` [nil ()] cleanup after widget is destroyed
     # @raise [RuntimeError] if required method is not implemented or widget id not set.
     def description
       raise "Widget '#{self.class}' does set its widget ID" if widget_id.nil?
