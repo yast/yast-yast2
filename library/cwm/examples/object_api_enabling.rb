@@ -13,7 +13,7 @@ class LuckyNumberWidget < CWM::IntField
   def initialize
     @minimum = 0
     @maximum = 1000
-    self.widget_id = "lucky_number"
+    self.widget_id = "lucky_number_widget"
   end
 
   def label
@@ -34,10 +34,13 @@ class LuckyNumberWidget < CWM::IntField
 end
 
 class EnableButton < CWM::PushButtonWidget
-  def initialize(lucky_number, disable_button)
+  def initialize(lucky_number_widget)
     self.widget_id = "enable"
-    @lucky_number = lucky_number
-    @disable_button = disable_button
+    @lucky_number_widget = lucky_number_widget
+  end
+
+  def disable_button=(val)
+    @disable_button = val
   end
 
   def label
@@ -52,7 +55,7 @@ class EnableButton < CWM::PushButtonWidget
     return unless my_event?(widget, event)
 
     Yast::Builtins.y2milestone("enable handle called")
-    @lucky_number.enable
+    @lucky_number_widget.enable
     @disable_button.enable
     disable
 
@@ -61,9 +64,9 @@ class EnableButton < CWM::PushButtonWidget
 end
 
 class DisableButton < CWM::PushButtonWidget
-  def initialize(lucky_number)
+  def initialize(lucky_number_widget)
     self.widget_id = "disable"
-    @lucky_number = lucky_number
+    @lucky_number_widget = lucky_number_widget
   end
 
   def enable_button=(val)
@@ -78,7 +81,7 @@ class DisableButton < CWM::PushButtonWidget
     return unless my_event?(widget, event)
 
     Yast::Builtins.y2milestone("disable handle called")
-    @lucky_number.disable
+    @lucky_number_widget.disable
     @enable_button.enable
     disable
 
@@ -95,8 +98,9 @@ module Yast
 
       lucky_number_widget = LuckyNumberWidget.new
       disable_button_widget = DisableButton.new(lucky_number_widget)
-      enable_button_widget = EnableButton.new(lucky_number_widget, disable_button_widget)
+      enable_button_widget = EnableButton.new(lucky_number_widget)
       disable_button_widget.enable_button = enable_button_widget
+      enable_button_widget.disable_button = disable_button_widget
 
       widgets = [lucky_number_widget, enable_button_widget, disable_button_widget]
 

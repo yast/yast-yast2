@@ -26,9 +26,9 @@ class LuckyNumberWidget < CWM::IntField
 end
 
 class GenerateButton < CWM::PushButtonWidget
-  def initialize(lucky_number)
+  def initialize(lucky_number_widget)
     self.widget_id = "generate"
-    @lucky_number = lucky_number
+    @lucky_number_widget = lucky_number_widget
   end
 
   def label
@@ -39,7 +39,7 @@ class GenerateButton < CWM::PushButtonWidget
     return unless my_event?(widget, event)
 
     Yast::Builtins.y2milestone("handle called")
-    @lucky_number.value = rand(1000)
+    @lucky_number_widget.value = rand(1000)
 
     nil
   end
@@ -57,14 +57,14 @@ module Yast
 
       widgets = [lucky_number_widget, button_widget]
 
-      content = HBox(
+      contents = HBox(
         button_widget.widget_id,
         lucky_number_widget.widget_id
       )
 
       Yast::Wizard.CreateDialog
       CWM.ShowAndRun(
-        "contents" => content,
+        "contents" => contents,
         "caption"  => _("Lucky number"),
         "widgets"  => widgets
       )

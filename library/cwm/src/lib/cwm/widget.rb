@@ -5,6 +5,60 @@ require "abstract_method"
 module CWM
   # Represent base for any widget used in CWM. It can be passed as "widget" argument. For more
   # details about usage see {CWM.ShowAndRun}
+  #
+  # For using widgets design decision is to use subclassing. Reason is to have better separeated
+  # and easily reusable code. Opposite approach is to use instancing of existing classes, but
+  # especially with storing and initializing widgets it can be quite complex. Consider e.g.
+  # instancing of InputField like:
+  #
+  # ```
+  #   widget = InputField.new(
+  #     label: _("My label"),
+  #     help: _("blablbalba" \
+  #       "blablabla" \
+  #       "blablabla"
+  #     ),
+  #     init: Proc.new do |widget|
+  #       ...
+  #     end,
+  #     store: Proc.new do |widget, event|
+  #       ...
+  #     end,
+  #     validate: Proc.new do |widget, event|
+  #       ....
+  #     end
+  #   )
+  # ```
+  #
+  # For this example current subclassing approach looks like
+  # ```
+  #   class MyWidget < CWM::InputField
+  #     def label
+  #       _("My label")
+  #     end
+  #
+  #     def help
+  #       _("blablbalba" \
+  #         "blablabla" \
+  #         "blablabla"
+  #     end
+  #
+  #     def init(widget)
+  #       ...
+  #     end
+  #
+  #     def store(widget, event)
+  #       ...
+  #     end
+  #
+  #     def validate(widget, event)
+  #       ....
+  #     end
+  #   end
+  #  # and usage in dialog
+  #  widget = MyWidget.new
+  # ```
+  #
   class AbstractWidget
     include Yast::UIShortcuts
     include Yast::I18n
@@ -121,7 +175,7 @@ module CWM
   #       self.widget_id = "my_widget"
   #     end
   #
-  #     def content
+  #     def contents
   #       HBox(
   #         PushButton(Id(:reset), _("Reset")),
   #         PushButton(Id(:undo), _("Undo"))
@@ -138,13 +192,13 @@ module CWM
   #   end
   class CustomWidget < AbstractWidget
     self.widget_type = :custom
-    # custom witget without content do not make sense
-    abstract_method :content
+    # custom witget without contents do not make sense
+    abstract_method :contents
 
     def description
-      {
-        "custom_widget" => content
-      }.merge(super)
+      super.merge(
+        "custom_widget" => contents
+      )
     end
   end
 
@@ -153,7 +207,7 @@ module CWM
   # @example empty widget usage
   #   widget = CWM::EmptyWidget("replace_point")
   #   CWM.ShowAndRun(
-  #     "content" => VBox(widget.widget_id),
+  #     "contents" => VBox(widget.widget_id),
   #     "widgets" => [widget]
   #   )
   class EmptyWidget < AbstractWidget
@@ -191,12 +245,13 @@ module CWM
     #     ]
     #   end
     def items
+      []
     end
 
     def description
-      {
+      super.merge(
         "items" => items
-      }.merge(super)
+      )
     end
 
     # change list of items offered in widget. Format is same as in {#items}
@@ -378,7 +433,7 @@ module CWM
       res["minimum"] = minimum if respond_to?(:minimum)
       res["maximum"] = maximum if respond_to?(:maximum)
 
-      res.merge(super)
+      super.merge(res)
     end
   end
 
