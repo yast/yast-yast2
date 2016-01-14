@@ -169,8 +169,8 @@ module CWM
     end
 
     # allows both variant of handle. with event map and without.
-    # with map it make sense when handle_all_events is true, otherwise
-    # map is not needed
+    # with map it make sense when handle_all_events is true or in custom widgets
+    # with multiple elements, that generate events, otherwise map is not needed
     def handle_wrapper(_widget, event)
       m = method(:handle)
       if m.arity == 0

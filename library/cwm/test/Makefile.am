@@ -1,5 +1,5 @@
 TESTS = \
-  widgets_test.rb \
+	widgets_test.rb
 
 TEST_EXTENSIONS = .rb
 RB_LOG_COMPILER = rspec
