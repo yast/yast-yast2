@@ -10,6 +10,11 @@ module_DATA = \
   modules/CWMTab.rb \
   modules/TablePopup.rb
 
-EXTRA_DIST = $(module_DATA)
+ylibdir = @ylibdir@/cwm
+ylib_DATA = \
+  lib/cwm/widget.rb
+
+
+EXTRA_DIST = $(module_DATA) $(ylib_DATA)
 
 include $(top_srcdir)/Makefile.am.common
