@@ -1,3 +1,5 @@
+#!/usr/bin/rspec --format doc
+
 require_relative "test_helper"
 
 require "cwm/widget"
