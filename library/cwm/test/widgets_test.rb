@@ -66,7 +66,7 @@ describe CWM::AbstractWidget do
       end
     end
 
-    it "returns hash with \"help\" key and #help result value" do
+    it "returns hash with \"help\" key and #help result as value" do
       expect(THelp.new.cwm_definition["help"]).to eq "helpful string"
     end
 
@@ -76,6 +76,76 @@ describe CWM::AbstractWidget do
 
     it "returns hash with \"no_help\" key if no help method specified" do
       expect(TNoHelp.new.cwm_definition).to be_key("no_help")
+    end
+
+    class TLabel < CWM::AbstractWidget
+      self.widget_type = :empty
+      def label
+        "helpful string"
+      end
+    end
+
+    it "returns hash with \"label\" key and #label result as value" do
+      expect(TLabel.new.cwm_definition["label"]).to eq "helpful string"
+    end
+
+    class TOpt < CWM::AbstractWidget
+      self.widget_type = :empty
+      def opt
+        [:notify]
+      end
+    end
+
+    it "returns hash with \"opt\" key and #opt result as value" do
+      expect(TOpt.new.cwm_definition["opt"]).to eq [:notify]
+    end
+
+    class TOpt < CWM::AbstractWidget
+      self.widget_type = :empty
+      def opt
+        [:notify]
+      end
+    end
+
+    it "returns hash with \"opt\" key and #opt result as value" do
+      expect(TOpt.new.cwm_definition["opt"]).to eq [:notify]
+    end
+
+    class TWidget < CWM::AbstractWidget
+      self.widget_type = :empty
+    end
+
+    it "returns hash with \"widget\" key and #widget_type result as value" do
+      expect(TWidget.new.cwm_definition["widget"]).to eq :empty
+    end
+
+    context "handle_all_events set to false" do
+      class THandleEvents < CWM::AbstractWidget
+        self.widget_type = :empty
+
+        def initialize
+          self.widget_id = "test"
+          self.handle_all_events = false
+        end
+      end
+
+      it "returns hash with \"handle_events\" key and array with #widget_id result as value" do
+        expect(THandleEvents.new.cwm_definition["handle_events"]).to eq ["test"]
+      end
+    end
+
+    context "handle_all_events set to true" do
+      class TNotHandleEvents < CWM::AbstractWidget
+        self.widget_type = :empty
+
+        def initialize
+          self.handle_all_events = true
+        end
+      end
+
+      it "returns hash without \"handle_events\" key" do
+        expect(TNotHandleEvents.new.cwm_definition).to_not be_key("handle_events")
+      end
     end
   end
 end
