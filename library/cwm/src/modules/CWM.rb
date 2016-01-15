@@ -919,7 +919,7 @@ module Yast
       options = {
         "contents"     => widgets_contents(contents),
         "widget_names" => widgets.map(&:widget_id),
-        "widget_descr" => Hash[widgets.map { |w| [w.widget_id, w.description] }]
+        "widget_descr" => Hash[widgets.map { |w| [w.widget_id, w.cwm_definition] }]
       }
       options["caption"] = caption if caption
       options["back_button"] = back_button if back_button
@@ -940,7 +940,7 @@ module Yast
         settings["widget_names"] ||= []
         settings["widget_names"] += widgets.map(&:widget_id)
         settings["widget_descr"] ||= {}
-        settings["widget_descr"] = Hash[widgets.map { |w| [w.widget_id, w.description] }]
+        settings["widget_descr"] = Hash[widgets.map { |w| [w.widget_id, w.cwm_definition] }]
       end
       widget_descr = Ops.get_map(settings, "widget_descr", {})
       contents = Ops.get_term(settings, "contents", VBox())

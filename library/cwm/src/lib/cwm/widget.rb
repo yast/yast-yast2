@@ -82,9 +82,9 @@ module CWM
       define_method(:widget_type) { val }
     end
 
-    # generates description for CWM with widget. Description is auto filled from defined methods.
+    # generates widget definition for CWM. Definition is constructed from defined methods.
     #
-    # methods used to generate description:
+    # methods used to generate result:
     #
     # - `#help` [String] to get translated help text for widget
     # - `#label` [String] to get translated label text for widget
@@ -99,7 +99,7 @@ module CWM
     # - `#store` [nil ()] store widget value after user confirm dialog
     # - `#cleanup` [nil ()] cleanup after widget is destroyed
     # @raise [RuntimeError] if required method is not implemented or widget id not set.
-    def description
+    def cwm_definition
       if !respond_to?(:widget_type)
         raise "Widget '#{self.class}' does set its widget type"
       end
@@ -238,7 +238,7 @@ module CWM
     # custom witget without contents do not make sense
     abstract_method :contents
 
-    def description
+    def cwm_definition
       res = { "custom_widget" => contents }
 
       res["handle_events"] = ids_in_contents unless handle_all_events
@@ -311,7 +311,7 @@ module CWM
       []
     end
 
-    def description
+    def cwm_definition
       super.merge(
         "items" => items
       )
@@ -470,7 +470,7 @@ module CWM
 
   # Represents integer field widget. `label` method is mandatary. It supports
   # additional `minimum` and `maximum` method for limiting selection.
-  # @see #{.description} method for minimum and maximum example
+  # @see #{.cwm_definition} method for minimum and maximum example
   #
   # @see InputFieldWidget for example of child
   class IntField < AbstractWidget
@@ -479,7 +479,7 @@ module CWM
     include ValueBasedWidget
     abstract_method :label
 
-    # description for combobox additionally support `minimum` and `maximum` methods.
+    # definition for combobox additionally support `minimum` and `maximum` methods.
     # Both methods have to FixNum, where it is limited by C signed int range (-2**30 to 2**31-1).
     # @example minimum and maximum methods
     #   def minimum
@@ -490,7 +490,7 @@ module CWM
     #     200
     #   end
     #
-    def description
+    def cwm_definition
       res = {}
 
       res["minimum"] = minimum if respond_to?(:minimum)
