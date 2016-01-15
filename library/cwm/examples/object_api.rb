@@ -13,7 +13,6 @@ class LuckyNumberWidget < CWM::IntField
   def initialize
     @minimum = 0
     @maximum = 1000
-    self.widget_id = "lucky_number"
   end
 
   def label
@@ -27,7 +26,6 @@ end
 
 class GenerateButton < CWM::PushButtonWidget
   def initialize(lucky_number_widget)
-    self.widget_id = "generate"
     @lucky_number_widget = lucky_number_widget
   end
 

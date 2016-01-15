@@ -43,15 +43,15 @@ module CWM
   #         "blablabla"
   #     end
   #
-  #     def init(widget)
+  #     def init
   #       ...
   #     end
   #
-  #     def store(widget, event)
+  #     def store
   #       ...
   #     end
   #
-  #     def validate(widget, event)
+  #     def validate
   #       ....
   #     end
   #   end
@@ -64,13 +64,17 @@ module CWM
     include Yast::I18n
 
     # @return [String] id used for widget
-    attr_accessor :widget_id
+    attr_writer :widget_id
     attr_writer :handle_all_events
 
     # specify if widget handle all raised events or only its own
     # By default only own values are handled
     def handle_all_events
       @handle_all_events.nil? ? false : @handle_all_events
+    end
+
+    def widget_id
+      @widget_id || self.class.to_s
     end
 
     # defines widget type for CWM usage
@@ -96,7 +100,6 @@ module CWM
     # - `#cleanup` [nil ()] cleanup after widget is destroyed
     # @raise [RuntimeError] if required method is not implemented or widget id not set.
     def description
-      raise "Widget '#{self.class}' does set its widget ID" if widget_id.nil?
       if !respond_to?(:widget_type)
         raise "Widget '#{self.class}' does set its widget type"
       end
