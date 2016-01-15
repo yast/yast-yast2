@@ -24,7 +24,7 @@ class LuckyNumberWidget < CWM::IntField
   end
 end
 
-class GenerateButton < CWM::PushButtonWidget
+class GenerateButton < CWM::PushButton
   def initialize(lucky_number_widget)
     @lucky_number_widget = lucky_number_widget
   end

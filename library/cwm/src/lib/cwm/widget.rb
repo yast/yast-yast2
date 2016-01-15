@@ -4,7 +4,7 @@ require "abstract_method"
 
 module CWM
   # Represent base for any widget used in CWM. It can be passed as "widget" argument. For more
-  # details about usage see {CWM.ShowAndRun}
+  # details about usage see {Yast::CWM.show}
   #
   # For using widgets design decision is to use subclassing. Reason is to have better separeated
   # and easily reusable code. Opposite approach is to use instancing of existing classes, but
@@ -214,10 +214,6 @@ module CWM
   #
   # @example custom widget child
   #   class MyWidget < CWM::CustomWidget
-  #     def initialize
-  #       self.widget_id = "my_widget"
-  #     end
-  #
   #     def contents
   #       HBox(
   #         PushButton(Id(:reset), _("Reset")),
@@ -268,12 +264,8 @@ module CWM
   # Empty widget useful mainly as place holder for replacement or for catching global events
   #
   # @example empty widget usage
-  #   widget = CWM::EmptyWidget("replace_point")
-  #   CWM.ShowAndRun(
-  #     "contents" => VBox(widget.widget_id),
-  #     "widgets" => [widget]
-  #   )
-  class EmptyWidget < AbstractWidget
+  #   CWM.show(VBox(CWM::Empty.new("replace_point")))
+  class Empty < AbstractWidget
     self.widget_type = :empty
 
     def initialize(id)
@@ -330,7 +322,6 @@ module CWM
   # @example input field widget child
   #   class MyWidget < CWM::InputFieldWidget
   #     def initialize(myconfig)
-  #       self.widget_id = "my_widget"
   #       @config = myconfig
   #     end
   #
@@ -346,7 +337,7 @@ module CWM
   #       @config.value = value
   #     end
   #   end
-  class InputFieldWidget < AbstractWidget
+  class InputField < AbstractWidget
     self.widget_type = :inputfield
 
     include ValueBasedWidget
@@ -356,7 +347,7 @@ module CWM
   # Represents password widget. `label` method is mandatary
   #
   # @see InputFieldWidget for example of child
-  class PasswordWidget < AbstractWidget
+  class Password < AbstractWidget
     self.widget_type = :password
 
     include ValueBasedWidget
@@ -366,7 +357,7 @@ module CWM
   # Represents password widget. `label` method is mandatary
   #
   # @see InputFieldWidget for example of child
-  class CheckboxWidget < AbstractWidget
+  class Checkbox < AbstractWidget
     self.widget_type = :checkbox
 
     include ValueBasedWidget
@@ -374,12 +365,12 @@ module CWM
 
     # @return [Boolean] true if widget is checked
     def checked?
-      value
+      value == true
     end
 
     # @return [Boolean] true if widget is unchecked
     def unchecked?
-      !value
+      value == false # explicit check as value can be also nil, which means disabled
     end
 
     # checks given widget
@@ -396,9 +387,8 @@ module CWM
   # Widget representing combobox to select value.
   #
   # @example combobox widget child
-  #   class MyWidget < CWM::InputFieldWidget
+  #   class MyWidget < CWM::InputField
   #     def initialize(myconfig)
-  #       self.widget_id = "my_widget"
   #       @config = myconfig
   #     end
   #
@@ -422,7 +412,7 @@ module CWM
   #       ]
   #     end
   #   end
-  class ComboBoxWidget < AbstractWidget
+  class ComboBox < AbstractWidget
     self.widget_type = :combobox
 
     include ValueBasedWidget
@@ -432,8 +422,8 @@ module CWM
 
   # Widget representing selection box to select value.
   #
-  # @see {ComboBoxWidget} for child example
-  class SelectionBoxWidget < AbstractWidget
+  # @see {ComboBox} for child example
+  class SelectionBox < AbstractWidget
     self.widget_type = :selection_box
 
     include ItemsSelection
@@ -450,8 +440,8 @@ module CWM
 
   # Widget representing multi selection box to select more values.
   #
-  # @see {ComboBoxWidget} for child example
-  class MultiSelectionBoxWidget < AbstractWidget
+  # @see {ComboBox} for child example
+  class MultiSelectionBox < AbstractWidget
     self.widget_type = :multi_selection_box
 
     include ItemsSelection
@@ -472,7 +462,7 @@ module CWM
   # additional `minimum` and `maximum` method for limiting selection.
   # @see #{.cwm_definition} method for minimum and maximum example
   #
-  # @see InputFieldWidget for example of child
+  # @see InputField for example of child
   class IntField < AbstractWidget
     self.widget_type = :intfield
 
@@ -502,8 +492,8 @@ module CWM
 
   # Widget representing selection of value via radio buttons.
   #
-  # @see {ComboBoxWidget} for child example
-  class RadioButtonsWidget < AbstractWidget
+  # @see {ComboBox} for child example
+  class RadioButtons < AbstractWidget
     self.widget_type = :radio_buttons
 
     include ItemsSelection
@@ -521,11 +511,7 @@ module CWM
   # Widget representing button.
   #
   # @example push button widget child
-  #   class MyEvilWidget < CWM::PushButtonWidget
-  #     def initialize
-  #       self.widget_id = "my_evil_widget"
-  #     end
-  #
+  #   class MyEvilWidget < CWM::PushButton
   #     def label
   #       _("Win lottery by clicking this.")
   #     end
@@ -538,12 +524,12 @@ module CWM
   #       nil
   #     end
   #   end
-  class PushButtonWidget < AbstractWidget
+  class PushButton < AbstractWidget
     self.widget_type = :push_button
   end
 
   # Widget representing menu button with its submenu
-  class MenuButtonWidget < AbstractWidget
+  class MenuButton < AbstractWidget
     self.widget_type = :menu_button
 
     include ItemsSelection
@@ -552,7 +538,7 @@ module CWM
 
   # Multiline text widget
   # @note label method is required and used as default value (TODO: incosistent with similar richtext in CWM itself)
-  class MultiLineEditWidget < AbstractWidget
+  class MultiLineEdit < AbstractWidget
     self.widget_type = :multi_line_edit
 
     include ValueBasedWidget
@@ -560,7 +546,7 @@ module CWM
   end
 
   # Rich text widget supporting some highlighting
-  class RichTextWidget < AbstractWidget
+  class RichText < AbstractWidget
     self.widget_type = :richtext
 
     include ValueBasedWidget

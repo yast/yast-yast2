@@ -24,7 +24,7 @@ class LuckyNumberWidget < CWM::IntField
   end
 end
 
-class EnableButton < CWM::PushButtonWidget
+class EnableButton < CWM::PushButton
   def initialize(lucky_number_widget)
     @lucky_number_widget = lucky_number_widget
   end
@@ -51,7 +51,7 @@ class EnableButton < CWM::PushButtonWidget
   end
 end
 
-class DisableButton < CWM::PushButtonWidget
+class DisableButton < CWM::PushButton
   def initialize(lucky_number_widget)
     @lucky_number_widget = lucky_number_widget
   end

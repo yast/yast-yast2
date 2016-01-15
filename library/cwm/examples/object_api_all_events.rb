@@ -7,7 +7,7 @@ require "cwm/widget"
 Yast.import "CWM"
 Yast.import "Wizard"
 
-class DisplayWidget < CWM::InputFieldWidget
+class DisplayWidget < CWM::InputField
   attr_reader :result
 
   def initialize
@@ -40,7 +40,7 @@ class DisplayWidget < CWM::InputFieldWidget
   end
 end
 
-class FirstButton < CWM::PushButtonWidget
+class FirstButton < CWM::PushButton
   def initialize
     self.widget_id = "first button"
   end
@@ -50,7 +50,7 @@ class FirstButton < CWM::PushButtonWidget
   end
 end
 
-class SecondButton < CWM::PushButtonWidget
+class SecondButton < CWM::PushButton
   def initialize
     self.widget_id = "second button"
   end
