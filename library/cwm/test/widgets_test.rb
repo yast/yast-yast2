@@ -56,7 +56,7 @@ describe CWM::AbstractWidget do
     class TNoWidgetType < CWM::AbstractWidget; end
 
     it "raises exception if widget type in child is not specified" do
-      expect{TNoWidgetType.new.description}.to raise_error(RuntimeError)
+      expect{TNoWidgetType.new.cwm_definition}.to raise_error(RuntimeError)
     end
 
     class THelp < CWM::AbstractWidget
@@ -67,7 +67,7 @@ describe CWM::AbstractWidget do
     end
 
     it "returns hash with \"help\" key and #help result value" do
-      expect(THelp.new.description["help"]).to eq "helpful string"
+      expect(THelp.new.cwm_definition["help"]).to eq "helpful string"
     end
 
     class TNoHelp < CWM::AbstractWidget
@@ -75,7 +75,7 @@ describe CWM::AbstractWidget do
     end
 
     it "returns hash with \"no_help\" key if no help method specified" do
-      expect(TNoHelp.new.description).to be_key("no_help")
+      expect(TNoHelp.new.cwm_definition).to be_key("no_help")
     end
   end
 end
@@ -99,7 +99,7 @@ describe CWM::CustomWidget do
       subject { CustomTestWidget.new }
 
       it "adds to description to handle only ids in contents and widget_id" do
-        expect(subject.description["handle_events"]).to eq [:first, "second", "test_widget"]
+        expect(subject.cwm_definition["handle_events"]).to eq [:first, "second", "test_widget"]
       end
     end
   end
