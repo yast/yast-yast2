@@ -1,4 +1,4 @@
-#!/usr/bin/rspec --format doc
+#!/usr/bin/env rspec --format doc
 
 require_relative "test_helper"
 
