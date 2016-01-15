@@ -56,7 +56,7 @@ describe CWM::AbstractWidget do
     class TNoWidgetType < CWM::AbstractWidget; end
 
     it "raises exception if widget type in child is not specified" do
-      expect{TNoWidgetType.new.cwm_definition}.to raise_error(RuntimeError)
+      expect { TNoWidgetType.new.cwm_definition }.to raise_error(RuntimeError)
     end
 
     class THelp < CWM::AbstractWidget
