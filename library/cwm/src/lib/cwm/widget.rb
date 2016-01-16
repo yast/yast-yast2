@@ -2,43 +2,43 @@ require "yast"
 
 require "abstract_method"
 
+# Common Widget Manipulation.
+# An object-oriented API for the YCP-era {Yast::CWMClass}.
 module CWM
-  # Represent base for any widget used in CWM. It can be passed as "widget" argument. For more
-  # details about usage see {Yast::CWM.show}
+  # Represent base for any widget used in CWM. It can be passed as "widget"
+  # argument. For more details about usage see {Yast::CWM.show}
   #
-  # For using widgets design decision is to use subclassing. Reason is to have better separeated
-  # and easily reusable code. Opposite approach is to use instancing of existing classes, but
-  # especially with storing and initializing widgets it can be quite complex. Consider e.g.
-  # instancing of InputField like:
+  # For using widgets, a design decision is to use *subclasses*. The reason
+  # is to have better separeated and easily reusable code. The opposite
+  # approach is to use *instances* of existing classes, but especially with
+  # storing and initializing widgets it can be quite complex.
   #
-  # ```
+  # @example InputField with instances
   #   widget = InputField.new(
   #     label: _("My label"),
-  #     help: _("blablbalba" \
+  #     help: _("blablabla" \
   #       "blablabla" \
   #       "blablabla"
   #     ),
-  #     init: Proc.new do |widget|
+  #     init: Proc.new do
   #       ...
   #     end,
-  #     store: Proc.new do |widget, event|
+  #     store: Proc.new do
   #       ...
   #     end,
-  #     validate: Proc.new do |widget, event|
+  #     validate: Proc.new do
   #       ....
   #     end
   #   )
-  # ```
   #
-  # For this example current subclassing approach looks like
-  # ```
+  # @example InputFieldwith subclasses
   #   class MyWidget < CWM::InputField
   #     def label
   #       _("My label")
   #     end
   #
   #     def help
-  #       _("blablbalba" \
+  #       _("blablabla" \
   #         "blablabla" \
   #         "blablabla"
   #     end
@@ -55,50 +55,88 @@ module CWM
   #       ....
   #     end
   #   end
-  #  # and usage in dialog
-  #  widget = MyWidget.new
-  # ```
   #
+  #   widget = MyWidget.new
   class AbstractWidget
     include Yast::UIShortcuts
     include Yast::I18n
 
-    # @return [String] id used for widget
-    attr_writer :widget_id
-    attr_writer :handle_all_events
-
-    # specify if widget handle all raised events or only its own
-    # By default only own values are handled
+    # By default, {#handle} has no argument and it is called
+    # only for events of its own widget.
+    # If true, {#handle}(event) is called for events of any widget.
+    # @return [Boolean]
     def handle_all_events
       @handle_all_events.nil? ? false : @handle_all_events
     end
+    attr_writer :handle_all_events
 
+    # @return [String] An ID, unique within a dialog, used for the widget.
+    #   By default, the class name is used.
     def widget_id
       @widget_id || self.class.to_s
     end
+    attr_writer :widget_id
 
-    # defines widget type for CWM usage
-    def self.widget_type=(val)
-      define_method(:widget_type) { val }
+    # Declare widget type for {Yast::CWMClass}.
+    # Your derived widgets will not need to do this.
+    # @param type [Symbol]
+    # @return [void]
+    def self.widget_type=(type)
+      define_method(:widget_type) { type }
     end
 
-    # generates widget definition for CWM. Definition is constructed from defined methods.
-    #
-    # methods used to generate result:
-    #
-    # - `#help` [String] to get translated help text for widget
-    # - `#label` [String] to get translated label text for widget
-    # - `#opt` [Array<Symbol>] to get options passed to widget like `[:hstretch, :vstretch]`
-    # - `#validate` [Boolean ()] validate widget value. Returns false if validation failed.
-    # - `#init` [nil ()] initialize widget like e.g. set initial value
-    # - `#handle` [Symbol,nil (String?)] handle widget changed value or press.
-    #   return value is usually nil, returning symbol can be used to send different event.
-    #   It support varient with parameter specified and without. If parameter is specified,
-    #   gets event Hash including "ID" key with value that specify widget ID that cause event.
-    #   It is mainly useful if handle_all_events is set to true to distinguish which event caused it.
-    # - `#store` [nil ()] store widget value after user confirm dialog
-    # - `#cleanup` [nil ()] cleanup after widget is destroyed
-    # @raise [RuntimeError] if required method is not implemented or widget id not set.
+    # The following methods are only documented but not defined
+    # because we do not want to accidentally override the subtle defaults
+    # used by Yast::CWMClass.
+
+    # @!method help
+    #   @return [String] translated help text for the widget
+
+    # @!method label
+    #   Derived classes must override this method to specify a label.
+    #   @return [String] translated label text for the widget
+
+    # @!method opt
+    #   @return [Array<Symbol>] options passed to widget
+    #     like `[:hstretch, :vstretch]`
+
+    # @!method init
+    #   Initialize the widget: set initial value
+    #   @return [void]
+
+    # @!method handle(*args)
+    # @overload handle
+    #   Process an event generated by this widget. This method is invoked
+    #   if {#handle_all_events} is `false`.
+    #   @return [nil,Symbol] what to return from the dialog,
+    #     or `nil` to continue processing
+    # @overload handle(event)
+    #   Process an event generated a widget. This method is invoked
+    #   if {#handle_all_events} is `true`.
+    #   @param event [Hash] see CWMClass
+    #   @return [nil,Symbol] what to return from the dialog,
+    #     or `nil` to continue processing
+
+    # @!method validate
+    #   Validate widgets before ending the loop and storing.
+    #   @return [Boolean] validate widget value.
+    #     If it fails (`false`) the dialog will not return yet.
+
+    # @!method store
+    #   Store the widget value for further processing
+    #   @return [void]
+
+    # @!method cleanup
+    #   Clean up after the widget is destroyed
+    #   @return [void]
+
+    # Generate widget definition for {Yast::CWMClass}.
+    # It refers to
+    # {#help}, {#label}, {#opt}
+    # {#validate}, {#init}, {#handle}, {#store}, {#cleanup}.
+    # @return [Hash{String => Object}]
+    # @raise [RuntimeError] if a required method is not implemented
+    #   or widget_type is not set.
     def cwm_definition
       if !respond_to?(:widget_type)
         raise "Widget '#{self.class}' does set its widget type"
@@ -127,30 +165,34 @@ module CWM
       res
     end
 
-    # gets if widget is open for modification
+    # @return [Boolean] Is widget open for interaction?
     def enabled?
       Yast::UI.QueryWidget(Id(widget_id), :Enabled)
     end
 
-    # Opens widget for modification
+    # Opens widget for interaction
+    # @return [void]
     def enable
       Yast::UI.ChangeWidget(Id(widget_id), :Enabled, true)
     end
 
-    # Closes widget for modification
+    # Closes widget for interaction
+    # @return [void]
     def disable
       Yast::UI.ChangeWidget(Id(widget_id), :Enabled, false)
     end
 
   protected
 
-    # helper to check if event is invoked by this widget
+    # A helper to check if an event is invoked by this widget
+    # @param event [Hash] a UI event
     def my_event?(event)
       widget_id == event["ID"]
     end
 
     # shortcut from Yast namespace to avoid including whole namespace
-    # TODO: kill converts in CWM module, to avoid this workaround for funrefs
+    # @todo kill converts in CWM module, to avoid this workaround for funrefs
+    # @return [Yast::FunRef]
     def fun_ref(*args)
       Yast::FunRef.new(*args)
     end
@@ -163,7 +205,7 @@ module CWM
       fun_ref(method(:init_wrapper), "void (string)")
     end
 
-    def init_wrapper(_widget)
+    def init_wrapper(_widget_id)
       init
     end
 
@@ -174,7 +216,7 @@ module CWM
     # allows both variant of handle. with event map and without.
     # with map it make sense when handle_all_events is true or in custom widgets
     # with multiple elements, that generate events, otherwise map is not needed
-    def handle_wrapper(_widget, event)
+    def handle_wrapper(_widget_id, event)
       m = method(:handle)
       if m.arity == 0
         m.call
@@ -187,7 +229,7 @@ module CWM
       fun_ref(method(:store_wrapper), "void (string, map)")
     end
 
-    def store_wrapper(_widget, _event)
+    def store_wrapper(_widget_id, _event)
       store
     end
 
@@ -195,7 +237,7 @@ module CWM
       fun_ref(method(:cleanup_wrapper), "void (string)")
     end
 
-    def cleanup_wrapper(_widget)
+    def cleanup_wrapper(_widget_id)
       cleanup
     end
 
@@ -203,7 +245,7 @@ module CWM
       fun_ref(method(:validate_wrapper), "boolean (string, map)")
     end
 
-    def validate_wrapper(_widget, _event)
+    def validate_wrapper(_widget_id, _event)
       validate
     end
   end
@@ -329,11 +371,11 @@ module CWM
   #       _("The best widget ever is:")
   #     end
   #
-  #     def init(_widget)
+  #     def init
   #       self.value = @config.value
   #     end
   #
-  #     def store(_widget, _event)
+  #     def store
   #       @config.value = value
   #     end
   #   end
@@ -396,11 +438,11 @@ module CWM
   #       _("Choose carefully:")
   #     end
   #
-  #     def init(_widget)
+  #     def init
   #       self.value = @config.value
   #     end
   #
-  #     def store(_widget, _event)
+  #     def store
   #       @config.value = value
   #     end
   #
