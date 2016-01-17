@@ -250,12 +250,16 @@ module CWM
     end
   end
 
-  # Represents custom widget, that have its UI content defined in method content.
-  # Useful mainly when specialized widget including more subwidget should be
+  # A custom widget that has its UI content defined in the method {#contents}.
+  # Useful mainly when a specialized widget including more subwidgets should be
   # reusable at more places.
   #
   # @example custom widget child
   #   class MyWidget < CWM::CustomWidget
+  #     def initialize
+  #       self.handle_all_events = true
+  #     end
+  #
   #     def contents
   #       HBox(
   #         PushButton(Id(:reset), _("Reset")),
@@ -263,17 +267,21 @@ module CWM
   #       )
   #     end
   #
-  #     def handle(widget, event)
+  #     def handle(event)
   #       case event["ID"]
   #       when :reset then ...
   #       when :undo then ...
   #       else ...
   #       end
+  #       nil
   #     end
   #   end
   class CustomWidget < AbstractWidget
     self.widget_type = :custom
-    # custom witget without contents do not make sense
+
+    # @!method contents
+    #   Must be defined by subclasses
+    #   @return [Yast::Term] a UI term; {AbstractWidget} are not allowed inside
     abstract_method :contents
 
     def cwm_definition
@@ -303,36 +311,43 @@ module CWM
     end
   end
 
-  # Empty widget useful mainly as place holder for replacement or for catching global events
+  # An empty widget useful mainly as placeholder for replacement
+  # or for catching global events
   #
   # @example empty widget usage
   #   CWM.show(VBox(CWM::Empty.new("replace_point")))
   class Empty < AbstractWidget
     self.widget_type = :empty
 
+    # @param id [String] widget ID
     def initialize(id)
       self.widget_id = id
     end
   end
 
-  # helpers for easier set/obtain value of widget for widgets where value is
-  # obtained by :Value symbol
+  # A mix-in for widgets using the :Value property
   module ValueBasedWidget
+    # Get widget value
+    # @return [Object] a value according to specific widget type
     def value
       Yast::UI.QueryWidget(Id(widget_id), :Value)
     end
 
+    # Set widget value
+    # @param val [Object] a value according to specific widget type
+    # @return [void]
     def value=(val)
       Yast::UI.ChangeWidget(Id(widget_id), :Value, val)
     end
   end
 
-  # helper to define items used by widgets that offer selection from list of
-  # values.
+  # A mix-in to define items used by widgets
+  # that offer a selection from a list of values.
   module ItemsSelection
-    # items are defined as list of pair, where first one is id and second
-    # one is user visible value
-    # @return [Array<Array<String>>]
+    # Items are defined as a list of pairs, where
+    # the first one is the ID and
+    # the second one is the user visible value
+    # @return [Array<Array(String,String)>]
     # @example items method in widget
     #   def items
     #     [
@@ -351,7 +366,10 @@ module CWM
       )
     end
 
-    # change list of items offered in widget. Format is same as in {#items}
+    # Change the list of items offered in widget.
+    # The format is the same as in {#items}
+    # @param items_list [Array<Array(String,String)>] new items
+    # @return [void]
     def change_items(items_list)
       val = items_list.map { |i| Item(Id(i[0]), i[1]) }
 
@@ -359,10 +377,11 @@ module CWM
     end
   end
 
-  # Represents input field widget. `label` method is mandatory.
+  # An input field widget.
+  # The {#label} method is mandatory.
   #
   # @example input field widget child
-  #   class MyWidget < CWM::InputFieldWidget
+  #   class MyWidget < CWM::InputField
   #     def initialize(myconfig)
   #       @config = myconfig
   #     end
@@ -386,9 +405,10 @@ module CWM
     abstract_method :label
   end
 
-  # Represents password widget. `label` method is mandatary
+  # A Password widget.
+  # The {#label} method is mandatory.
   #
-  # @see InputFieldWidget for example of child
+  # @see InputField for example of child
   class Password < AbstractWidget
     self.widget_type = :password
 
@@ -396,40 +416,47 @@ module CWM
     abstract_method :label
   end
 
-  # Represents password widget. `label` method is mandatary
+  # A CheckBox widget.
+  # The {#label} method is mandatory.
   #
-  # @see InputFieldWidget for example of child
+  # @see InputField for example of child
+  # @FIXME rename to CheckBox
   class Checkbox < AbstractWidget
     self.widget_type = :checkbox
 
     include ValueBasedWidget
     abstract_method :label
 
-    # @return [Boolean] true if widget is checked
+    # @return [Boolean] true if the box is checked
     def checked?
       value == true
     end
 
-    # @return [Boolean] true if widget is unchecked
+    # @return [Boolean] true if the box is unchecked
     def unchecked?
-      value == false # explicit check as value can be also nil, which means disabled
+      # explicit check as the value can be also nil,
+      # which is shown as a grayed-out box, with "indeterminate" meaning
+      value == false
     end
 
-    # checks given widget
+    # Checks the box
+    # @return [void]
     def check
       self.value = true
     end
 
-    # Unchecks given widget
+    # Unchecks the box
+    # @return [void]
     def uncheck
       self.value = false
     end
   end
 
-  # Widget representing combobox to select value.
+  # A Combo box to select a value.
+  # The {#label} method is mandatory.
   #
   # @example combobox widget child
-  #   class MyWidget < CWM::InputField
+  #   class MyWidget < CWM::ComboBox
   #     def initialize(myconfig)
   #       @config = myconfig
   #     end
@@ -463,24 +490,28 @@ module CWM
   end
 
   # Widget representing selection box to select value.
+  # The {#label} method is mandatory.
   #
-  # @see {ComboBox} for child example
+  # @see ComboBox for child example
   class SelectionBox < AbstractWidget
     self.widget_type = :selection_box
 
     include ItemsSelection
     abstract_method :label
 
+    # @return [String] ID of the selected item
     def value
       Yast::UI.QueryWidget(Id(widget_id), :CurrentItem)
     end
 
+    # @param val [String] ID of the selected item
     def value=(val)
       Yast::UI.ChangeWidget(Id(widget_id), :CurrentItem, val)
     end
   end
 
-  # Widget representing multi selection box to select more values.
+  # A multi-selection box to select more values.
+  # The {#label} method is mandatory.
   #
   # @see {ComboBox} for child example
   class MultiSelectionBox < AbstractWidget
@@ -489,20 +520,22 @@ module CWM
     include ItemsSelection
     abstract_method :label
 
-    # @return [Array<String>] return ids of selected items
+    # @return [Array<String>] return IDs of selected items
     def value
       Yast::UI.QueryWidget(Id(widget_id), :SelectedItems)
     end
 
-    # @param [Array<String>] val array of ids for newly selected items
+    # @param val [Array<String>] IDs of newly selected items
     def value=(val)
       Yast::UI.ChangeWidget(Id(widget_id), :SelectedItems, val)
     end
   end
 
-  # Represents integer field widget. `label` method is mandatary. It supports
-  # additional `minimum` and `maximum` method for limiting selection.
-  # @see #{.cwm_definition} method for minimum and maximum example
+  # An integer field widget.
+  # The {#label} method is mandatory.
+  # It supports optional {#minimum} and {#maximum} methods
+  # for limiting the range.
+  # See {#cwm_definition} method for minimum and maximum example
   #
   # @see InputField for example of child
   class IntField < AbstractWidget
@@ -511,8 +544,14 @@ module CWM
     include ValueBasedWidget
     abstract_method :label
 
-    # definition for combobox additionally support `minimum` and `maximum` methods.
-    # Both methods have to FixNum, where it is limited by C signed int range (-2**30 to 2**31-1).
+    # @!method minimum
+    #   @return [Fixnum] limited by C signed int range (-2**30 to 2**31-1).
+
+    # @!method maximum
+    #   @return [Fixnum] limited by C signed int range (-2**30 to 2**31-1).
+
+    # The definition for IntField additionally supports
+    # `minimum` and `maximum` methods.
     # @example minimum and maximum methods
     #   def minimum
     #     50
@@ -521,7 +560,6 @@ module CWM
     #   def maximum
     #     200
     #   end
-    #
     def cwm_definition
       res = {}
 
@@ -532,7 +570,8 @@ module CWM
     end
   end
 
-  # Widget representing selection of value via radio buttons.
+  # A selection of a value via radio buttons.
+  # The {#label} method is mandatory.
   #
   # @see {ComboBox} for child example
   class RadioButtons < AbstractWidget
@@ -555,14 +594,11 @@ module CWM
   # @example push button widget child
   #   class MyEvilWidget < CWM::PushButton
   #     def label
-  #       _("Win lottery by clicking this.")
+  #       _("Win the lottery by clicking this.")
   #     end
   #
-  #     def handle(widget, _event)
-  #       return if widget != widget_id
-  #
+  #     def handle
   #       Virus.install
-  #
   #       nil
   #     end
   #   end
