@@ -420,8 +420,7 @@ module CWM
   # The {#label} method is mandatory.
   #
   # @see InputField for example of child
-  # @FIXME rename to CheckBox
-  class Checkbox < AbstractWidget
+  class CheckBox < AbstractWidget
     self.widget_type = :checkbox
 
     include ValueBasedWidget
