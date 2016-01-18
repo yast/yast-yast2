@@ -603,6 +603,8 @@ module CWM
   #   end
   class PushButton < AbstractWidget
     self.widget_type = :push_button
+
+    abstract_method :label
   end
 
   # Widget representing menu button with its submenu

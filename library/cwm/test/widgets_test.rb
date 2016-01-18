@@ -147,6 +147,56 @@ describe CWM::AbstractWidget do
         expect(TNotHandleEvents.new.cwm_definition).to_not be_key("handle_events")
       end
     end
+
+    class TInit < CWM::AbstractWidget
+      self.widget_type = :empty
+      def init
+      end
+    end
+
+    it "returns hash with key init when init method defined" do
+      expect(TInit.new.cwm_definition).to be_key("init")
+    end
+
+    class THandle1 < CWM::AbstractWidget
+      self.widget_type = :empty
+      def handle
+      end
+    end
+
+    it "returns hash with key handle when handle without parameter defined" do
+      expect(THandle1.new.cwm_definition).to be_key("handle")
+    end
+
+    class THandle2 < CWM::AbstractWidget
+      self.widget_type = :empty
+      def handle(event)
+      end
+    end
+
+    it "returns hash with key handle when handle with parameter defined" do
+      expect(THandle2.new.cwm_definition).to be_key("handle")
+    end
+
+    class TStore < CWM::AbstractWidget
+      self.widget_type = :empty
+      def store
+      end
+    end
+
+    it "returns hash with key store when store method defined" do
+      expect(TStore.new.cwm_definition).to be_key("store")
+    end
+
+    class TCleanup < CWM::AbstractWidget
+      self.widget_type = :empty
+      def cleanup
+      end
+    end
+
+    it "returns hash with key cleanup when cleanup method defined" do
+      expect(TCleanup.new.cwm_definition).to be_key("cleanup")
+    end
   end
 end
 
