@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.163
+Version:        3.1.164
 Release:        0
 Url:            https://github.com/yast/yast-yast2
 
@@ -44,6 +44,8 @@ BuildRequires:  fdupes
 
 # For running RSpec tests during build
 BuildRequires:  rubygem(rspec)
+# for defining abstract methods in libraries
+BuildRequires:  rubygem(abstract_method)
 # To have Yast::CoreExt::AnsiString
 BuildRequires:  yast2-ruby-bindings >= 3.1.36
 
@@ -53,6 +55,8 @@ PreReq:         %fillup_prereq
 # ag_ini section_private
 # ag_ini with (un)quoting support
 Requires:       yast2-core >= 2.23.0
+# for defining abstract methods in libraries
+Requires:  rubygem(abstract_method)
 # new UI::SetApplicationIcon
 Requires:       yast2-ycp-ui-bindings >= 3.1.8
 

@@ -387,7 +387,7 @@ saved after the event loop unless `back or `abort is returned.</para>
 </varlistentry>
 
 <varlistentry>
-<term>clean_up</term>
+<term>cleanup</term>
 <listitem>
 <para>Function that cleans up widgets. The parameter is the id of the
 widget. All widgets are cleaned up before the dialog ends, after they (would)

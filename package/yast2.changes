@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Jan 18 09:18:53 UTC 2016 - jreidinger@suse.com
+
+- Added CWM::AbstractWidget.
+- Added CWM.show method working with AbstractWidgets kids
+- Added few basic CWM widgets for easier CWM.show usage
+- 3.1.164
+
+-------------------------------------------------------------------
 Tue Jan 12 13:43:04 UTC 2016 - jsrain@suse.cz
 
 - fixed semantics of SCR call for zKVM detection (bsc#961485)
