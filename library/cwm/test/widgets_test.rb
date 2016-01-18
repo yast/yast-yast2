@@ -170,7 +170,7 @@ describe CWM::AbstractWidget do
 
     class THandle2 < CWM::AbstractWidget
       self.widget_type = :empty
-      def handle(event)
+      def handle(_event)
       end
     end
 
