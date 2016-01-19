@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Mon Jan 18 09:18:53 UTC 2016 - jreidinger@suse.com
+
+- Added CWM::AbstractWidget.
+- Added CWM.show method working with AbstractWidgets kids
+- Added few basic CWM widgets for easier CWM.show usage
+- 3.1.164
+
+-------------------------------------------------------------------
+Tue Jan 12 13:43:04 UTC 2016 - jsrain@suse.cz
+
+- fixed semantics of SCR call for zKVM detection (bsc#961485)
+- 3.1.163
+
+-------------------------------------------------------------------
 Fri Dec 11 08:53:27 UTC 2015 - jsrain@suse.cz
 
 - added detection of zKVM to Arch.rb (for proper fix of bsc#956736)

@@ -30,6 +30,8 @@
 #
 require "yast"
 
+require "cwm/widget"
+
 module Yast
   class CWMClass < Module
     def main
@@ -397,7 +399,7 @@ module Yast
       Builtins.foreach(widgets) do |w|
         @processed_widget = deep_copy(w)
         toEval = Convert.convert(
-          Ops.get(w, "clean_up"),
+          Ops.get(w, "cleanup"),
           from: "any",
           to:   "void (string)"
         )
@@ -462,6 +464,7 @@ module Yast
           if key != "label" ||
               Ops.get(v, "widget") != :radio_buttons &&
                   Ops.get(v, "widget") != :custom &&
+                  Ops.get(v, "widget") != :rich_text &&
                   Ops.get(v, "widget") != :func
             ret = ValidateValueContents(key, Ops.get(v, key), k) && ret
           end
@@ -904,10 +907,41 @@ module Yast
       nil
     end
 
+    # Display the dialog and run its event loop using new widget API
+    # @param [Yast::Term] contents is UI term including instances of CWM::AbstractWidget
+    # @param [String] caption of dialog
+    # @param [String] back_button label for dialog back button
+    # @param [String] next_button label for dialog next button
+    # @param [String] abort_button label for dialog abort button
+    # @return [Symbol] wizard sequencer symbol
+    def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil)
+      widgets = widgets_in_contents(contents)
+      options = {
+        "contents"     => widgets_contents(contents),
+        "widget_names" => widgets.map(&:widget_id),
+        "widget_descr" => Hash[widgets.map { |w| [w.widget_id, w.cwm_definition] }]
+      }
+      options["caption"] = caption if caption
+      options["back_button"] = back_button if back_button
+      options["next_button"] = next_button if next_button
+      options["abort_button"] = abort_button if abort_button
+
+      ShowAndRun(options)
+    end
+
     # Display the dialog and run its event loop
-    # @param [Hash{String => Object}] settings a map of all settings needed to run the dialog
+    # @param [Hash<String, Object>] settings a map of all settings needed to run the dialog
+    # @option settings [AbstractWidget] "widgets" list of widgets used in CWM,
+    #   it is auto added to `"widget_names"` and `"widget_descr"`
     def ShowAndRun(settings)
       settings = deep_copy(settings)
+      if settings["widgets"]
+        widgets = settings["widgets"]
+        settings["widget_names"] ||= []
+        settings["widget_names"] += widgets.map(&:widget_id)
+        settings["widget_descr"] ||= {}
+        settings["widget_descr"] = Hash[widgets.map { |w| [w.widget_id, w.cwm_definition] }]
+      end
       widget_descr = Ops.get_map(settings, "widget_descr", {})
       contents = Ops.get_term(settings, "contents", VBox())
       widget_names = Convert.convert(
@@ -1026,6 +1060,30 @@ module Yast
     publish function: :ShowAndRunOrig, type: "symbol (list <string>, map <string, map <string, any>>, term, string, string, string, map)"
     publish function: :InitNull, type: "void (string)"
     publish function: :StoreNull, type: "void (string, map)"
+
+  private
+
+    def widgets_in_contents(contents)
+      contents.each_with_object([]) do |arg, res|
+        case arg
+        when ::CWM::AbstractWidget then res << arg
+        when Yast::Term then res.concat(widgets_in_contents(arg))
+        end
+      end
+    end
+
+    def widgets_contents(contents)
+      res = contents.clone
+
+      (0..(res.size - 1)).each do |index|
+        case contents[index]
+        when ::CWM::AbstractWidget then res[index] = res[index].widget_id
+        when Yast::Term then res[index] = widgets_contents(res[index])
+        end
+      end
+
+      res
+    end
   end
 
   CWM = CWMClass.new

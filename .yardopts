@@ -1,1 +1,1 @@
---no-private --markup markdown --protected library/*/src/**/*.rb --readme README.md --output-dir ./doc/autodocs
+--no-private --markup markdown --protected library/*/src/**/*.rb --readme README.md --output-dir ./doc/autodocs - library/cwm/doc/CWM.md

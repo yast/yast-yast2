@@ -458,7 +458,7 @@ module Yast
     def is_zkvm
       if @_is_zkvm.nil?
         # using different check than on x86 as recommended by IBM
-        @_is_zkvm = s390 && Yast::WFM.Execute(".local.bash", "egrep 'Control Program: KVM' /proc/sysinfo") == 0
+        @_is_zkvm = s390 && Yast::WFM.Execute(path(".local.bash"), "egrep 'Control Program: KVM' /proc/sysinfo") == 0
       end
 
       @_is_zkvm
