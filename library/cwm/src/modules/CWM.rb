@@ -135,6 +135,10 @@ module Yast
             [Convert.to_string(arg), "widget"],
             VBox()
           )
+          s = Builtins.symbolof(arg)
+          if Builtins.contains(@ContainerWidgets, s)
+            arg = ProcessTerm(arg, widgets)
+          end
         end
         ret = Builtins.add(ret, arg)
         index = Ops.add(index, 1)
@@ -1061,11 +1065,10 @@ module Yast
     publish function: :InitNull, type: "void (string)"
     publish function: :StoreNull, type: "void (string, map)"
 
-  private
-
     def widgets_in_contents(contents)
       contents.each_with_object([]) do |arg, res|
         case arg
+        when ::CWM::CustomWidget then res.concat(arg.nested_widgets) << arg
         when ::CWM::AbstractWidget then res << arg
         when Yast::Term then res.concat(widgets_in_contents(arg))
         end

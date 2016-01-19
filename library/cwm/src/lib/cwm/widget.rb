@@ -285,14 +285,27 @@ module CWM
     abstract_method :contents
 
     def cwm_definition
-      res = { "custom_widget" => contents }
+      res = { "custom_widget" => cwm_contents }
 
       res["handle_events"] = ids_in_contents unless handle_all_events
 
       super.merge(res)
     end
 
+    # Returns all nested widgets used in contents
+    def nested_widgets
+      Yast.import "CWM"
+
+      Yast::CWM.widgets_in_contents(contents)
+    end
+
   private
+
+    def cwm_contents
+      Yast.import "CWM"
+
+      Yast::CWM.widgets_contents(contents)
+    end
 
     def ids_in_contents
       find_ids(contents) << widget_id
