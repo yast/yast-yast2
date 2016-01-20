@@ -50,7 +50,7 @@ class LuckyNumberGenerator < CWM::CustomWidget
   end
 
   def result
-    lucky_number_widget.value
+    lucky_number_widget.result
   end
 
 private
