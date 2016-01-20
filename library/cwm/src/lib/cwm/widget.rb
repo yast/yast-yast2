@@ -654,7 +654,7 @@ module CWM
 
     def cwm_definition
       super.merge(
-        "widgets" => cwm_widgets,
+        "widgets"       => cwm_widgets,
         "custom_widget" => Yast::CWM.PrepareDialog(cwm_contents, cwm_widgets)
       )
     end
@@ -666,7 +666,7 @@ module CWM
 
       widgets = nested_widgets
       names = widgets.map(&:widget_id)
-      definition = Hash[widgets.map { |w| [ w.widget_id, w.cwm_definition ] }]
+      definition = Hash[widgets.map { |w| [w.widget_id, w.cwm_definition] }]
       @cwm_widgets = Yast::CWM.CreateWidgets(names, definition)
     end
 
@@ -740,12 +740,12 @@ module CWM
 
     # validates current tab
     def validate
-      Yast::CWM.validateWidgets(@current_tab.cwm_definition["widgets"], {"ID" => @current_tab.widget_id})
+      Yast::CWM.validateWidgets(@current_tab.cwm_definition["widgets"], "ID" => @current_tab.widget_id)
     end
 
     # stores tab with given id
     def store_tab(tab_id)
-      Yast::CWM.saveWidgets(tab_for_id(tab_id).cwm_definition["widgets"], {"ID" => tab_id})
+      Yast::CWM.saveWidgets(tab_for_id(tab_id).cwm_definition["widgets"], "ID" => tab_id)
     end
 
   protected
@@ -799,10 +799,9 @@ module CWM
         end
         DumbTab(Id(widget_id), panes, replace_point)
       else
-        tabbar = HBox()
         tabbar = tab_order.each_with_object(HBox()) do |tab, res|
           tab = tab_for_id(tab)
-          tabbar << PushButton(Id(tab.widget_id), tab.label)
+          res << PushButton(Id(tab.widget_id), tab.label)
         end
         VBox(Left(tabbar), Frame("", replace_point))
       end
