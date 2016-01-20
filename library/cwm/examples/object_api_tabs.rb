@@ -58,7 +58,7 @@ class LuckyNumberTab < ::CWM::Tab
   end
 
   def result
-    lucky_number_widget.value
+    lucky_number_widget.result
   end
 
   def label
@@ -108,6 +108,10 @@ class TrueLoveSelector < ::CWM::RadioButtons
   def store
     @chosen = value
   end
+
+  def result
+    @chosen
+  end
 end
 
 class TrueLoveTab < ::CWM::Tab
@@ -121,6 +125,10 @@ class TrueLoveTab < ::CWM::Tab
     _("True Love")
   end
 
+  def result
+    true_love_selector.result
+  end
+
 private
 
   def true_love_selector
@@ -132,6 +140,7 @@ module Yast
   class ExampleDialog
     include Yast::I18n
     include Yast::UIShortcuts
+    include Yast::Logger
 
     def run
       textdomain "example"
@@ -146,6 +155,8 @@ module Yast
       Yast::Wizard.CreateDialog
       CWM.show(contents, caption: _("Tabs example"))
       Yast::Wizard.CloseDialog
+
+      log.info "Lucky number: #{lucky_number_tab.result}, true love: #{true_love_tab.result}"
     end
   end
 end
