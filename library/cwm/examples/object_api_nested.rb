@@ -68,6 +68,7 @@ module Yast
   class ExampleDialog
     include Yast::I18n
     include Yast::UIShortcuts
+    include Yast::Logger
     def run
       textdomain "example"
 
@@ -79,7 +80,7 @@ module Yast
       CWM.show(contents, caption: _("Lucky number"))
       Yast::Wizard.CloseDialog
 
-      generate_widget.result
+      log.info "The result is #{generate_widget.result}"
     end
   end
 end
