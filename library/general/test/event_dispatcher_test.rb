@@ -9,21 +9,6 @@ class DispatcherTestDialog
   include UI::EventDispatcher
   Yast.import "UI"
 
-  def run
-    return nil unless Yast::UI.OpenDialog(
-      HBox(
-        PushButton(Id(:again), "Again"),
-        PushButton(Id(:ok), "OK"),
-        PushButton(Id(:cancel), "Cancel")
-      )
-    )
-    begin
-      return event_loop
-    ensure
-      Yast::UI.CloseDialog
-    end
-  end
-
   def ok_handler
     finish_dialog(true)
   end
@@ -41,19 +26,6 @@ class DispatcherUserInputTestDialog
   include Yast::UIShortcuts
   include UI::EventDispatcher
   Yast.import "UI"
-
-  def run
-    return nil unless Yast::UI.OpenDialog(
-      HBox(
-        PushButton(Id(:cancel), "Cancel")
-      )
-    )
-    begin
-      return event_loop
-    ensure
-      Yast::UI.CloseDialog
-    end
-  end
 
   def user_input
     Yast::UI.TimeoutUserInput(1000)
