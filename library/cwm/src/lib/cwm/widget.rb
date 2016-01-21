@@ -301,6 +301,8 @@ module CWM
 
   protected
 
+    # return contents converted to format understandable by CWM module
+    # Basically it replace instance of AbstractWidget by its widget_id
     def cwm_contents
       Yast.import "CWM"
 
@@ -647,10 +649,13 @@ module CWM
   # Tab widget, usefull only with {CWM::Tabs}
   # @see tabs example for usage
   class Tab < CustomWidget
+    # @return [Boolean] is this the initially selected tab
     attr_accessor :initial
 
-    # content of tab, can contain another widgets
+    # @return [Yast::Term] contents of the tab, can contain {AbstractWidget}s
     abstract_method :contents
+    # @return [String] label defines name of tab header
+    abstract_method :label
 
     def cwm_definition
       super.merge(
@@ -672,14 +677,6 @@ module CWM
 
   protected
 
-    # defines name of tab header
-    # It is recommended to rewrite it
-    def label
-      textdomain "base"
-
-      _("Tab")
-    end
-
     # help that is result of used widget helps.
     # If overwritting, do not forget to use `super`, otherwise widget helps will
     # be missing
@@ -698,15 +695,9 @@ module CWM
       self.handle_all_events = true
     end
 
-    # gets visual order of tabs
-    # This default implementation returns same order as passed to constructor
-    def tab_order
-      @tabs.map(&:widget_id)
-    end
-
     # initializes tabs, show tab which is initial
     def init
-      switch_tab(initial_tab)
+      switch_tab(initial_tab_id)
     end
 
     def handle(event)
@@ -743,12 +734,18 @@ module CWM
       Yast::CWM.validateWidgets(@current_tab.cwm_definition["widgets"], "ID" => @current_tab.widget_id)
     end
 
+  protected
+
+    # gets visual order of tabs
+    # This default implementation returns same order as passed to constructor
+    def tab_order
+      @tabs.map(&:widget_id)
+    end
+
     # stores tab with given id
     def store_tab(tab_id)
       Yast::CWM.saveWidgets(tab_for_id(tab_id).cwm_definition["widgets"], "ID" => tab_id)
     end
-
-  protected
 
     # switch to target tab
     def switch_tab(tab_id)
@@ -783,19 +780,17 @@ module CWM
 
     # gets id of initial tab
     # This default implementation returns first tab from {#tabs} method
-    def initial_tab
+    def initial_tab_id
       initial = @tabs.find(&:initial)
 
       (initial || @tabs.first).widget_id
     end
 
     def contents
-      textdomain "base"
-
       if Yast::UI.HasSpecialWidget(:DumbTab)
         panes = tab_order.map do |tab_id|
           tab = tab_for_id(tab_id)
-          Item(Id(tab.widget_id), tab.label, tab.widget_id == initial_tab)
+          Item(Id(tab.widget_id), tab.label, tab.widget_id == initial_tab_id)
         end
         DumbTab(Id(widget_id), panes, replace_point)
       else
