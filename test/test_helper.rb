@@ -28,7 +28,9 @@ end
 
 if ENV["COVERAGE"]
   require "simplecov"
-  SimpleCov.start
+  SimpleCov.start do
+    add_filter "/test/"
+  end
   # for coverage we need to load all ruby files
   Dir["#{root_location}/library/*/src/{module,lib}/**/*.rb"].each { |f| require_relative f }
   # use coveralls for on-line code coverage reporting at Travis CI
