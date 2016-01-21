@@ -100,17 +100,6 @@ describe CWM::AbstractWidget do
       expect(TOpt.new.cwm_definition["opt"]).to eq [:notify]
     end
 
-    class TOpt < CWM::AbstractWidget
-      self.widget_type = :empty
-      def opt
-        [:notify]
-      end
-    end
-
-    it "returns hash with \"opt\" key and #opt result as value" do
-      expect(TOpt.new.cwm_definition["opt"]).to eq [:notify]
-    end
-
     class TWidget < CWM::AbstractWidget
       self.widget_type = :empty
     end
