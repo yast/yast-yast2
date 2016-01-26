@@ -41,6 +41,10 @@ module UI
   #       "Foo"
   #     end
   #
+  #     def help_text
+  #       "<p>Set the value for foo here.</p>
+  #     end
+  #
   #     def next_handler
   #       Yast::Bar.foo = Yast::UI.QueryWidget(Id(:foo), :Value)
   #       super
@@ -57,6 +61,7 @@ module UI
       Yast.import "Wizard"
       Yast.import "GetInstArgs"
       Yast.import "Popup"
+      @_test_mode_flag = false
     end
 
     # Handler for the 'accept' event
@@ -119,9 +124,13 @@ module UI
         log.info "This is an InstallationDialog, ignoring #dialog_options"
       end
 
-      Yast::Wizard.CreateDialog if Yast::Mode.normal # allow manual testing
+      # Allow manual testing
+      if !Yast::Wizard.IsWizardDialog
+        @_test_mode_flag = true
+        Yast::Wizard.CreateDialog
+      end
+
       Yast::Wizard.SetTitleIcon(title_icon) if title_icon
-      # dialog caption
       Yast::Wizard.SetContents(
         dialog_title,
         dialog_content,
@@ -133,7 +142,9 @@ module UI
     end
 
     def close_dialog
-      Yast::Wizard.CloseDialog if Yast::Mode.normal
+      return unless @_test_mode_flag
+      @_test_mode_flag = false
+      Yast::Wizard.CloseDialog
     end
   end
 end
