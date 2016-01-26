@@ -88,6 +88,7 @@ ylib_DATA = \
 ylib2dir = "${yast2dir}/lib/ui"
 ylib2_DATA = \
   lib/ui/dialog.rb \
+  lib/ui/installation_dialog.rb \
   lib/ui/event_dispatcher.rb \
   lib/ui/service_status.rb
 
