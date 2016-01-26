@@ -61,7 +61,7 @@ module UI
       Yast.import "Wizard"
       Yast.import "GetInstArgs"
       Yast.import "Popup"
-      @_test_mode_flag = false
+      @_wizard_opened = false
     end
 
     # Handler for the 'accept' event
@@ -126,7 +126,7 @@ module UI
 
       # Allow manual testing
       if !Yast::Wizard.IsWizardDialog
-        @_test_mode_flag = true
+        @_wizard_opened = true
         Yast::Wizard.CreateDialog
       end
 
@@ -142,8 +142,8 @@ module UI
     end
 
     def close_dialog
-      return unless @_test_mode_flag
-      @_test_mode_flag = false
+      return unless @_wizard_opened
+      @_wizard_opened = false
       Yast::Wizard.CloseDialog
     end
   end
