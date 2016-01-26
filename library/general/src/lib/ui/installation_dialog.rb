@@ -97,7 +97,7 @@ module UI
   protected
 
     # Optional title icon
-    # 
+    #
     # @return [String] name of the icon to use
     def title_icon
     end
