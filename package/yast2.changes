@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 26 16:10:38 UTC 2016 - jreidinger@suse.com
+
+- Allow CWM to specify which events do not cause storing of widget
+  content ( needed for FATE#317701)
+- 3.1.168
+
+-------------------------------------------------------------------
 Tue Jan 26 09:18:44 UTC 2016 - ancor@suse.com
 
 - Added UI::InstallationDialog as specialization of UI::Dialog
