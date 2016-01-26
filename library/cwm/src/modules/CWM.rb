@@ -779,8 +779,8 @@ module Yast
     # @param [Array<Hash{String => Object>}] widgets list of widget maps
     # @param [Hash] functions map initialize/save/handle fallbacks if not specified
     #   with the widgets.
-    # @param [Array<Object>] skip_store_for list of events that is cause to not store widgets
-    #   Useful mainly for non-standard redraw of widgets without storing like :reset or :redraw
+    # @param [Array<Object>] skip_store_for list of events for which the value of the widget will not be stored
+    #   Useful mainly for non-standard redraw of widgets, like :reset or :redraw
     # @return [Symbol] wizard sequencer symbol
     def Run(widgets, functions, skip_store_for: [])
       widgets = deep_copy(widgets)
@@ -919,9 +919,9 @@ module Yast
     # @param [String] back_button label for dialog back button
     # @param [String] next_button label for dialog next button
     # @param [String] abort_button label for dialog abort button
-    # @param [Array] skip_store_for list of events that skip storring of widgets.
-    #   Useful mainly when some widget return event that skip storring like
-    #   "reset" button or redrawing without storing
+    # @param [Array] skip_store_for list of events for which the value of the widget will not be stored.
+    #   Useful mainly when some widget returns an event that should not trigger the storing,
+    #   like a reset button or a redrawing
     # @return [Symbol] wizard sequencer symbol
     def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil, skip_store_for: [])
       widgets = widgets_in_contents(contents)
