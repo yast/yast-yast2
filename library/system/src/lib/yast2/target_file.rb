@@ -27,7 +27,9 @@ require "cfa/base_model"
 Yast.import "Installation"
 
 module Yast
-  # Module provides file class that can be used for config_files_api gem.
+  # A file handler suitable for CFA::BaseModel (from config_files_api.gem)
+  # that respects Yast::Installation.destdir. When this class is `require`d,
+  # it is assigned to CFA::BaseModel.default_file_handler.
   class TargetFile
     # Reads file content with respect of changed root in installation.
     def self.read(path)
