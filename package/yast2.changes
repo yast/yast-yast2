@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jan 27 14:53:37 UTC 2016 - jreidinger@suse.com
+
+- Added Yast::Execute, a class to run programs with Cheetah
+- Added Yast::TargetFile, a handler suitable for CFA::BaseModel
+- Both respect Yast::Installation.destdir ( needed for FATE#317701)
+- 3.1.169
+
+-------------------------------------------------------------------
 Tue Jan 26 16:10:38 UTC 2016 - jreidinger@suse.com
 
 - Allow CWM to specify which events do not cause storing of widget
