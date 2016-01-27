@@ -46,6 +46,11 @@ BuildRequires:  fdupes
 BuildRequires:  rubygem(rspec)
 # for defining abstract methods in libraries
 BuildRequires:  rubygem(abstract_method)
+# for running scripts
+BuildRequires:  rubygem(cheetah)
+# for file access using augeas
+BuildRequires:  rubygem(cfa)
+
 # To have Yast::CoreExt::AnsiString
 BuildRequires:  yast2-ruby-bindings >= 3.1.36
 
@@ -57,6 +62,10 @@ PreReq:         %fillup_prereq
 Requires:       yast2-core >= 2.23.0
 # for defining abstract methods in libraries
 Requires:  rubygem(abstract_method)
+# for running scripts
+Requires:  rubygem(cheetah)
+# for file access using augeas
+Requires:  rubygem(cfa)
 # new UI::SetApplicationIcon
 Requires:       yast2-ycp-ui-bindings >= 3.1.8
 

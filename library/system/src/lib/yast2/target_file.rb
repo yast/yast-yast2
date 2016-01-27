@@ -22,6 +22,8 @@
 
 require "yast"
 
+require "cfa/base_model"
+
 Yast.import "Installation"
 
 module Yast
@@ -46,3 +48,5 @@ module Yast
     private_class_method :final_path
   end
 end
+
+CFA::BaseModel.default_file_handler = Yast::TargetFile
