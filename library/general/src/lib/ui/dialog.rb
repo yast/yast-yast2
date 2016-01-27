@@ -52,7 +52,7 @@ module UI
       begin
         event_loop
       ensure
-        Yast::UI.CloseDialog
+        close_dialog
       end
     end
 
@@ -65,6 +65,10 @@ module UI
       else
         Yast::UI.OpenDialog(dialog_content)
       end
+    end
+
+    def close_dialog
+      Yast::UI.CloseDialog
     end
 
     # Optional abstract method to specify options for dialog.

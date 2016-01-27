@@ -135,6 +135,10 @@ module Yast
             [Convert.to_string(arg), "widget"],
             VBox()
           )
+          s = Builtins.symbolof(arg)
+          if Builtins.contains(@ContainerWidgets, s)
+            arg = ProcessTerm(arg, widgets)
+          end
         end
         ret = Builtins.add(ret, arg)
         index = Ops.add(index, 1)
@@ -775,8 +779,10 @@ module Yast
     # @param [Array<Hash{String => Object>}] widgets list of widget maps
     # @param [Hash] functions map initialize/save/handle fallbacks if not specified
     #   with the widgets.
+    # @param [Array<Object>] skip_store_for list of events for which the value of the widget will not be stored
+    #   Useful mainly for non-standard redraw of widgets, like :reset or :redraw
     # @return [Symbol] wizard sequencer symbol
-    def Run(widgets, functions)
+    def Run(widgets, functions, skip_store_for: [])
       widgets = deep_copy(widgets)
       functions = deep_copy(functions)
       widgets = mergeFunctions(widgets, functions)
@@ -849,7 +855,7 @@ module Yast
           next
         end
       end
-      saveWidgets(widgets, event_descr) if save
+      saveWidgets(widgets, event_descr) if save && !skip_store_for.include?(ret)
       cleanupWidgets(widgets)
       PopSettings()
       Convert.to_symbol(ret)
@@ -913,8 +919,11 @@ module Yast
     # @param [String] back_button label for dialog back button
     # @param [String] next_button label for dialog next button
     # @param [String] abort_button label for dialog abort button
+    # @param [Array] skip_store_for list of events for which the value of the widget will not be stored.
+    #   Useful mainly when some widget returns an event that should not trigger the storing,
+    #   like a reset button or a redrawing
     # @return [Symbol] wizard sequencer symbol
-    def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil)
+    def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil, skip_store_for: [])
       widgets = widgets_in_contents(contents)
       options = {
         "contents"     => widgets_contents(contents),
@@ -925,6 +934,7 @@ module Yast
       options["back_button"] = back_button if back_button
       options["next_button"] = next_button if next_button
       options["abort_button"] = abort_button if abort_button
+      options["skip_store_for"] = skip_store_for
 
       ShowAndRun(options)
     end
@@ -969,7 +979,9 @@ module Yast
       )
       AdjustButtons(next_button, back_button, abort_button, nil)
       DisableButtons(Ops.get_list(settings, "disable_buttons", []))
-      Run(w, fallback)
+
+      skip_store_for = settings["skip_store_for"] || []
+      Run(w, fallback, skip_store_for: skip_store_for)
     end
 
     # Display the dialog and run its event loop
@@ -1061,11 +1073,10 @@ module Yast
     publish function: :InitNull, type: "void (string)"
     publish function: :StoreNull, type: "void (string, map)"
 
-  private
-
     def widgets_in_contents(contents)
       contents.each_with_object([]) do |arg, res|
         case arg
+        when ::CWM::CustomWidget then res.concat(arg.nested_widgets) << arg
         when ::CWM::AbstractWidget then res << arg
         when Yast::Term then res.concat(widgets_in_contents(arg))
         end
