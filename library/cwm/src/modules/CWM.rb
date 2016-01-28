@@ -118,11 +118,18 @@ module Yast
       ret = Builtins.toterm(
         Builtins.substring(Builtins.sformat("%1", Builtins.symbolof(t)), 1)
       )
+      id_frame = false
       index = 0
       current = Builtins.symbolof(t)
       while Ops.less_than(index, args)
         arg = Ops.get(t, index)
+        # FIXME: still there is a problem for frames without label
         if current == :Frame && index == 0 # no action
+          # frame can have id and also label, so mark if id is used
+          id_frame = true if arg.is_a?(Yast::Term) && arg.value == :id
+          Builtins.y2debug("Leaving untouched %1", arg)
+        elsif current == :Frame && index == 1 && id_frame && arg.is_a?(::String) # no action
+          id_frame = false
           Builtins.y2debug("Leaving untouched %1", arg)
         elsif Ops.is_term?(arg) && !arg.nil? # recurse
           s = Builtins.symbolof(Convert.to_term(arg))

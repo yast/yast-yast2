@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 28 12:16:28 UTC 2016 - jreidinger@suse.com
+
+- fix string processing for frames in CWM causing crash in
+  yast2-network (bnc#963966)
+- 3.1.170
+
+-------------------------------------------------------------------
 Wed Jan 27 14:53:37 UTC 2016 - jreidinger@suse.com
 
 - Added Yast::Execute, a class to run programs with Cheetah
