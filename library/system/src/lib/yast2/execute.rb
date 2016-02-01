@@ -32,50 +32,50 @@ module Yast
     # use y2log by default
     Cheetah.default_options = { logger: Y2Logger.instance }
 
-    class << self
-      include Yast::I18n
-      # Runs arguments with respect of changed root in installation.
-      # @see Cheetah.run for parameters
-      # @raise Cheetah::ExecutionFailed
-      def on_target(*args)
-        root = "/"
-        root = Yast::Installation.destdir if Yast::WFM.scr_chrooted?
+    extend Yast::I18n
+    textdomain "base"
 
-        if args.last.is_a? ::Hash
-          args.last[:chroot] = root
-        else
-          args.push(chroot: root)
-        end
+    # Runs arguments with respect of changed root in installation.
+    # @see Cheetah.run for parameters
+    # @raise Cheetah::ExecutionFailed
+    def self.on_target(*args)
+      root = "/"
+      root = Yast::Installation.destdir if Yast::WFM.scr_chrooted?
 
-        popup_error { Cheetah.run(*args) }
+      if args.last.is_a? ::Hash
+        args.last[:chroot] = root
+      else
+        args.push(chroot: root)
       end
 
-      # Runs arguments without changed root.
-      # @see Cheetah.run for parameters
-      # @raise Cheetah::ExecutionFailed
-      def locally(*args)
-        popup_error { Cheetah.run(*args) }
-      end
-
-    private
-
-      def popup_error(&block)
-        block.call
-      rescue Cheetah::ExecutionFailed => e
-        Yast.import "Report"
-        textdomain "base"
-        Yast::Report.Error(
-          _(
-            "Execution of command \"%{command}\" failed.\n"\
-            "Exit code: %{exitcode}\n"\
-            "Error output: %{stderr}"
-          ) % {
-            command:  e.commands.inspect,
-            exitcode: e.status.exitstatus,
-            stderr:   e.stderr
-          }
-        )
-      end
+      popup_error { Cheetah.run(*args) }
     end
+
+    # Runs arguments without changed root.
+    # @see Cheetah.run for parameters
+    # @raise Cheetah::ExecutionFailed
+    def self.locally(*args)
+      popup_error { Cheetah.run(*args) }
+    end
+
+    def self.popup_error(&block)
+      block.call
+    rescue Cheetah::ExecutionFailed => e
+      Yast.import "Report"
+      textdomain "base"
+      Yast::Report.Error(
+        _(
+          "Execution of command \"%{command}\" failed.\n"\
+          "Exit code: %{exitcode}\n"\
+          "Error output: %{stderr}"
+        ) % {
+          command:  e.commands.inspect,
+          exitcode: e.status.exitstatus,
+          stderr:   e.stderr
+        }
+      )
+    end
+
+    private_class_method :popup_error
   end
 end
