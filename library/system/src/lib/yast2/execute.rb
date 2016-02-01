@@ -62,7 +62,7 @@ module Yast
       block.call
     rescue Cheetah::ExecutionFailed => e
       Yast.import "Report"
-      textdomain "base"
+
       Yast::Report.Error(
         _(
           "Execution of command \"%{command}\" failed.\n"\
