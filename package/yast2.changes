@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb  1 15:31:07 UTC 2016 - jreidinger@suse.com
+
+- Yast::Execute do not crash for missing '_' method (found during
+  FATE#317701)
+- 3.1.172
+
+-------------------------------------------------------------------
 Mon Feb  1 08:31:17 UTC 2016 - jreidinger@suse.com
 
 - fix packaging of TargetFile and Execute classes (FATE#317701)
