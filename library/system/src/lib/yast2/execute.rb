@@ -33,6 +33,7 @@ module Yast
     Cheetah.default_options = { logger: Y2Logger.instance }
 
     class << self
+      include Yast::I18n
       # Runs arguments with respect of changed root in installation.
       # @see Cheetah.run for parameters
       # @raise Cheetah::ExecutionFailed
@@ -40,7 +41,7 @@ module Yast
         root = "/"
         root = Yast::Installation.destdir if Yast::WFM.scr_chrooted?
 
-        if args.last.is_a? Hash
+        if args.last.is_a? ::Hash
           args.last[:chroot] = root
         else
           args.push(chroot: root)
@@ -62,6 +63,7 @@ module Yast
         block.call
       rescue Cheetah::ExecutionFailed => e
         Yast.import "Report"
+        textdomain "base"
         Yast::Report.Error(
           _(
             "Execution of command \"%{command}\" failed.\n"\
