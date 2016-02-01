@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  1 08:31:17 UTC 2016 - jreidinger@suse.com
+
+- fix packaging of TargetFile and Execute classes (FATE#317701)
+- 3.1.171
+
+-------------------------------------------------------------------
 Thu Jan 28 12:16:28 UTC 2016 - jreidinger@suse.com
 
 - fix string processing for frames in CWM causing crash in
