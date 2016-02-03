@@ -30,6 +30,7 @@ module Yast
   # Presents them one ifcfg at a time through the {#Current} hash.
   class NetworkInterfacesClass < Module
     Yast.import "String"
+    include Logger
 
     # A single character used to separate alias id
     ALIAS_SEPARATOR = "#".freeze
@@ -236,21 +237,21 @@ module Yast
 
     # Detects a subtype of Ethernet device type according /sys or /proc content
     def GetEthTypeFromSysfs(dev)
-      sys_dir_path = Builtins.sformat("/sys/class/net/%1/", dev)
+      sys_dir_path = "/sys/class/net/#{dev}/"
 
-      if FileUtils.Exists(Ops.add(sys_dir_path, "wireless"))
+      if FileUtils.Exists("#{sys_dir_path}wireless")
         "wlan"
-      elsif FileUtils.Exists(Ops.add(sys_dir_path, "phy80211"))
+      elsif FileUtils.Exists("#{sys_dir_path}phy80211")
         "wlan"
-      elsif FileUtils.Exists(Ops.add(sys_dir_path, "bridge"))
+      elsif FileUtils.Exists("#{sys_dir_path}bridge")
         "br"
-      elsif FileUtils.Exists(Ops.add(sys_dir_path, "bonding"))
+      elsif FileUtils.Exists("#{sys_dir_path}bonding")
         "bond"
-      elsif FileUtils.Exists(Ops.add(sys_dir_path, "tun_flags"))
+      elsif FileUtils.Exists("#{sys_dir_path}tun_flags")
         "tap"
-      elsif FileUtils.Exists(Ops.add("/proc/net/vlan/", dev))
+      elsif FileUtils.Exists("/proc/net/vlan/#{dev}")
         "vlan"
-      elsif FileUtils.Exists(Ops.add("/sys/devices/virtual/net/", dev)) &&
+      elsif FileUtils.Exists("/sys/devices/virtual/net/#{dev}") &&
           Builtins.regexpmatch(dev, "dummy.*")
         "dummy"
       else
@@ -596,30 +597,22 @@ module Yast
       ifcfg = deep_copy(ifcfg)
       return nil if ifcfg.nil?
 
-      ip_and_prefix = Builtins.splitstring(
-        Ops.get_string(ifcfg, "IPADDR", ""),
-        "/"
-      )
-      ipaddr = Ops.get(ip_and_prefix, 0, "")
-      return deep_copy(ifcfg) if ipaddr == "" # DHCP or inconsistent
+      ipaddr, prefixlen = ifcfg["IPADDR"].to_s.split("/")
 
-      prefixlen = Ops.get(ip_and_prefix, 1, "")
-      prefixlen = Ops.get_string(ifcfg, "PREFIXLEN", "") if prefixlen == ""
+      return ifcfg if ipaddr.to_s == "" # DHCP or inconsistent
 
-      if prefixlen == ""
-        prefixlen = Builtins.tostring(
-          Netmask.ToBits(Ops.get_string(ifcfg, "NETMASK", ""))
-        )
-      end
+      prefixlen = ifcfg["PREFIXLEN"].to_s if prefixlen.to_s == ""
+
+      prefixlen = Netmask.ToBits(ifcfg["NETMASK"].to_s).to_s if prefixlen == ""
 
       # Now we have ipaddr and prefixlen
       # Let's compute the rest
       netmask = ""
-      netmask = Netmask.FromBits(Builtins.tointeger(prefixlen)) if IP.Check4(ipaddr)
+      netmask = Netmask.FromBits(prefixlen.to_i) if IP.Check4(ipaddr)
 
-      Ops.set(ifcfg, "IPADDR", ipaddr)
-      Ops.set(ifcfg, "PREFIXLEN", prefixlen)
-      Ops.set(ifcfg, "NETMASK", netmask)
+      ifcfg["IPADDR"] = ipaddr
+      ifcfg["PREFIXLEN"] = prefixlen
+      ifcfg["NETMASK"] = netmask
 
       ifcfg
     end
@@ -678,6 +671,40 @@ module Yast
       deep_copy(out)
     end
 
+    # Get current sysconfig configured interfaces
+    #
+    # @param [String] regex to filter by
+    # @return [Array] of ifcfg names
+
+    def get_devices(devregex = "[~]")
+      allfiles = SCR.Dir(path(".network.section"))
+      allfiles = [] if allfiles.nil?
+      if devregex.nil? || devregex.empty?
+        devices = allfiles
+      else
+        devices = Builtins.filter(allfiles) do |file|
+          !Builtins.regexpmatch(file, devregex)
+        end
+      end
+      Builtins.y2debug("devices=%1", devices)
+      devices
+    end
+
+    # Canonicalize IPADDR and STARTMODE of given config
+    # and nested _aliases
+    # @return
+    def canonicalize_config(config)
+      # canonicalize, #46885
+      caliases = config["_aliases"].tap do |h|
+        h.map do |a, c|
+          h[a] = CanonicalizeIP(c)
+        end
+      end
+      config["_aliases"] = caliases if caliases != {} # unconditionally?
+      config = CanonicalizeIP(config)
+      CanonicalizeStartmode(config)
+    end
+
     # Variables which could be suffixed and thus duplicated
     LOCALS = [
       "IPADDR",
@@ -690,7 +717,37 @@ module Yast
       "IP_OPTIONS"
     ].freeze
 
-    # Read devices from files
+    def generate_config(pth, values)
+      config = { "_aliases" => {} }
+      values.each do |val|
+        item = SCR.Read(Builtins.topath("#{pth}.#{val}"))
+        log.debug("item=#{item}")
+        next if item.nil?
+        # No underscore '_' -> global
+        # Also temporarily standard globals
+        if (!val.include? "_") || (LOCALS.include?(val))
+          config[val] = item
+          next
+        end
+
+        # Try to strip _suffix
+        # @example "IP_OPTIONS_1".rpartition("_") => ["IP_OPTIONS", "_", "1"]
+        v, _j, s = val.rpartition("_")
+        log.info("#{val}:#{v}:#{s}")
+        # Global
+        if !LOCALS.include?(v)
+          config[val] = item
+        else
+          config["_aliases"] ||= {}
+          config["_aliases"][s] ||= {}
+          config["_aliases"][s][v] = item
+        end
+      end
+      log.info("config=#{ConcealSecrets1(config)}")
+      canonicalize_config(config)
+    end
+
+    # Read devices from files and cache it
     # @return true if sucess
     def Read
       return true if @initialized == true
@@ -698,71 +755,35 @@ module Yast
       @Devices = {}
 
       # preparation
-      allfiles = SCR.Dir(path(".network.section"))
-      allfiles = [] if allfiles.nil?
-      devices = Builtins.filter(allfiles) do |file|
-        !Builtins.regexpmatch(file, "[~]")
-      end
-      Builtins.y2debug("devices=%1", devices)
+      devices = get_devices
 
       # Read devices
-      Builtins.maplist(devices) do |d|
-        pth = Ops.add(Ops.add(".network.value.\"", d), "\"")
-        Builtins.y2debug("pth=%1", pth)
+      devices.each do |d|
+        pth = ".network.value.\"#{d}\""
+        log.debug("pth=#{pth}")
         values = SCR.Dir(Builtins.topath(pth))
-        Builtins.y2debug("values=%1", values)
-        config = {}
-        Builtins.maplist(values) do |val|
-          item = Convert.to_string(
-            SCR.Read(Builtins.topath(Ops.add(Ops.add(pth, "."), val)))
-          )
-          Builtins.y2debug("item=%1", item)
-          next if item.nil?
-          # No underscore '_' -> global
-          # Also temporarily standard globals
-          if Ops.less_than(Builtins.find(val, "_"), 0) ||
-              LOCALS.include?(val)
-            Ops.set(config, val, item)
-            next
-          end
-          # Try to strip _suffix
-          v = Builtins.substring(val, 0, Builtins.findlastof(val, "_"))
-          s = Builtins.substring(val, Builtins.findlastof(val, "_"))
-          s = Builtins.substring(s, 1) if Ops.greater_than(Builtins.size(s), 1)
-          Builtins.y2milestone("%1:%2:%3", val, v, s)
-          # Global
-          if !LOCALS.include?(v)
-            Ops.set(config, val, item)
-          else
-            aliases = Ops.get_map(config, "_aliases", {})
-            suf = Ops.get_map(aliases, s, {})
-            Ops.set(suf, v, item)
-            Ops.set(aliases, s, suf)
-            Ops.set(config, "_aliases", aliases)
-          end
-        end
-        Builtins.y2milestone("config=%1", ConcealSecrets1(config))
-        # canonicalize, #46885
-        caliases = Builtins.mapmap(Ops.get_map(config, "_aliases", {})) do |a, c|
-          { a => CanonicalizeIP(c) }
-        end
-        config["_aliases"] = caliases if caliases != {}
-        config = CanonicalizeIP(config)
-        config = CanonicalizeStartmode(config)
-        config = filter_interfacetype(config)
+        log.debug("values=#{values}")
+
+        config = generate_config(pth, values)
 
         devtype = GetTypeFromIfcfg(config)
         devtype = GetType(d) if devtype.nil?
-
-        dev = @Devices[devtype] || {}
-        dev[d] = config
-        @Devices[devtype] = dev
+        @Devices[devtype] ||= {}
+        @Devices[devtype][d] = config
       end
-      Builtins.y2debug("Devices=%1", @Devices)
+      log.debug("Devices=#{@Devices}")
 
       @OriginalDevices = deep_copy(@Devices)
       @initialized = true
-      true
+    end
+
+    def Reset
+      @Devices = {}
+      @OriginalDevices = {}
+      @Current = {}
+      @initialized = false
+      @stack = {}
+      @Name = ""
     end
 
     # re-read all settings again from system
