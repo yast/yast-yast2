@@ -252,7 +252,7 @@ module Yast
       elsif FileUtils.Exists("/proc/net/vlan/#{dev}")
         "vlan"
       elsif FileUtils.Exists("/sys/devices/virtual/net/#{dev}") &&
-          Builtins.regexpmatch(dev, "dummy.*")
+          dev =~ /dummy.*/
         "dummy"
       else
         "eth"
@@ -677,23 +677,20 @@ module Yast
     # @return [Array] of ifcfg names
 
     def get_devices(devregex = "[~]")
-      allfiles = SCR.Dir(path(".network.section"))
-      allfiles = [] if allfiles.nil?
+      allfiles = SCR.Dir(path(".network.section")) || []
       if devregex.nil? || devregex.empty?
         devices = allfiles
       else
-        devices = Builtins.filter(allfiles) do |file|
-          !Builtins.regexpmatch(file, devregex)
-        end
+        devices = allfiles.select {|file| file !~ /#{devregex}/ }
       end
-      Builtins.y2debug("devices=%1", devices)
+      log.debug "devices=#{devices}"
       devices
     end
 
     # Canonicalize IPADDR and STARTMODE of given config
     # and nested _aliases
     # @return
-    def canonicalize_config(config)
+    def canonicalize_config!(config)
       # canonicalize, #46885
       caliases = config["_aliases"].tap do |h|
         h.map do |a, c|
@@ -702,7 +699,7 @@ module Yast
       end
       config["_aliases"] = caliases if caliases != {} # unconditionally?
       config = CanonicalizeIP(config)
-      CanonicalizeStartmode(config)
+      config = CanonicalizeStartmode(config)
     end
 
     # Variables which could be suffixed and thus duplicated
@@ -725,7 +722,7 @@ module Yast
         next if item.nil?
         # No underscore '_' -> global
         # Also temporarily standard globals
-        if (!val.include? "_") || (LOCALS.include?(val))
+        if !val.include?("_") || LOCALS.include?(val)
           config[val] = item
           next
         end
@@ -744,7 +741,13 @@ module Yast
         end
       end
       log.info("config=#{ConcealSecrets1(config)}")
-      canonicalize_config(config)
+      canonicalize_config!(config)
+    end
+
+    def set_devtype_config(device,config)
+      devtype = GetTypeFromIfcfg(config) || GetType(device)
+      @Devices[devtype] ||= {}
+      @Devices[devtype][device] = config
     end
 
     # Read devices from files and cache it
@@ -761,15 +764,13 @@ module Yast
       devices.each do |d|
         pth = ".network.value.\"#{d}\""
         log.debug("pth=#{pth}")
+
         values = SCR.Dir(Builtins.topath(pth))
         log.debug("values=#{values}")
 
         config = generate_config(pth, values)
 
-        devtype = GetTypeFromIfcfg(config)
-        devtype = GetType(d) if devtype.nil?
-        @Devices[devtype] ||= {}
-        @Devices[devtype][d] = config
+        set_devtype_config(d, config)
       end
       log.debug("Devices=#{@Devices}")
 
