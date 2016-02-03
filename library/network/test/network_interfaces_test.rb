@@ -8,7 +8,7 @@ describe Yast::NetworkInterfaces do
 
   subject { Yast::NetworkInterfaces }
 
-  context "#CanonicalizeIP" do
+  describe "#CanonicalizeIP" do
     context "Handling IPv6 address" do
       it "Sets ipaddr, prefix and empty mask" do
         NetworkStubs::IPV6_IFCFG.each do |ipv6_ifcfg|
@@ -29,7 +29,7 @@ describe Yast::NetworkInterfaces do
 
   end
 
-  context "#Read" do
+  describe "#Read" do
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
     # Defined in test/data/etc/sysconfig/ifcfg-*
     let(:devices) { ["arc5", "bond0", "br1", "em1", "eth0", "eth1", "vlan3"] }
@@ -52,7 +52,7 @@ describe Yast::NetworkInterfaces do
     end
 
     it "canonicalizes readed config" do
-      expect(subject).to receive(:canonicalize_config)
+      expect(subject).to receive(:canonicalize_config!)
         .exactly(devices.size).times.and_call_original
       subject.Read
       expect(subject.GetIP("eth0")).to eql(["192.168.0.200", "192.168.20.100"])

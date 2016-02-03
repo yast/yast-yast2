@@ -681,7 +681,7 @@ module Yast
       if devregex.nil? || devregex.empty?
         devices = allfiles
       else
-        devices = allfiles.select {|file| file !~ /#{devregex}/ }
+        devices = allfiles.select { |file| file !~ /#{devregex}/ }
       end
       log.debug "devices=#{devices}"
       devices
@@ -699,7 +699,7 @@ module Yast
       end
       config["_aliases"] = caliases if caliases != {} # unconditionally?
       config = CanonicalizeIP(config)
-      config = CanonicalizeStartmode(config)
+      CanonicalizeStartmode(config)
     end
 
     # Variables which could be suffixed and thus duplicated
@@ -744,7 +744,7 @@ module Yast
       canonicalize_config!(config)
     end
 
-    def set_devtype_config(device,config)
+    def set_devtype_config(device, config)
       devtype = GetTypeFromIfcfg(config) || GetType(device)
       @Devices[devtype] ||= {}
       @Devices[devtype][device] = config

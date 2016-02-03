@@ -106,7 +106,7 @@ module Yast
 
     end
 
-    describe "#canonicalize_config" do
+    describe "#canonicalize_config!" do
       let(:in_config) do
         {
           "IPADDR"    => "10.0.0.1/8",
@@ -114,7 +114,10 @@ module Yast
           "STARTMODE" => "on",
           "_aliases"  => {
             "0" => {
-              "IPADDR" => "192.168.0.1/24"
+              "IPADDR"    => "192.168.0.1/24",
+              "NETMASK"   => "255.255.0.0",
+              "PREFIXLEN" => "8"
+
             }
           }
         }
@@ -137,7 +140,7 @@ module Yast
       end
 
       it "returns the given config with canonicalized addresses" do
-        expect(subject.canonicalize_config(in_config)).to eql(out_config)
+        expect(subject.canonicalize_config!(in_config)).to eql(out_config)
       end
     end
 
