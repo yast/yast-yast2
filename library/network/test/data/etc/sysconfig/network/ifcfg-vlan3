@@ -1,0 +1,3 @@
+BOOTPROTO=dhcp
+STARTMODE=manual
+ETHERDEVICE=eth0

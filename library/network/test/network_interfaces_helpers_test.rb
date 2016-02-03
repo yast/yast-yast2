@@ -71,5 +71,96 @@ module Yast
         expect(NetworkInterfaces.filter_interfacetype("INTERFACETYPE" => "dummy")).to include "INTERFACETYPE"
       end
     end
+
+    describe "#get_devices" do
+      let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+      # MOCKED IN test/data/etc/sysconfig/ifcfg*
+      let(:devices) do
+        ["arc5", "bond0", "br1", "em1", "eth0", "eth1", "tr~", "vlan3"]
+      end
+
+      around do |example|
+        change_scr_root(data_dir, &example)
+      end
+
+      before do
+        subject.Reset
+        expect(subject.Read).to eql(true)
+      end
+
+      it "returns an array of configured interfaces filtered by regexp" do
+        expect(subject.get_devices("1")).not_to include "em1", "eth1", "br1"
+      end
+
+      it "filters with <[~]> by default" do
+        expect(subject.get_devices).not_to include "tr~"
+      end
+
+      it "returns an empty array with <.> argument" do
+        expect(subject.get_devices(".")).to eql []
+      end
+
+      it "returns all devices filtering with <''>" do
+        expect(subject.get_devices("")).to eql devices
+      end
+
+    end
+
+    describe "#canonicalize_config" do
+      let(:in_config) do
+        {
+          "IPADDR"    => "10.0.0.1/8",
+          "other"     => "data",
+          "STARTMODE" => "on",
+          "_aliases"  => {
+            "0" => {
+              "IPADDR" => "192.168.0.1/24"
+            }
+          }
+        }
+      end
+      let(:out_config) do
+        {
+          "IPADDR"    => "10.0.0.1",
+          "PREFIXLEN" => "8",
+          "NETMASK"   => "255.0.0.0",
+          "other"     => "data",
+          "STARTMODE" => "auto",
+          "_aliases"  => {
+            "0" => {
+              "IPADDR"    => "192.168.0.1",
+              "PREFIXLEN" => "24",
+              "NETMASK"   => "255.255.255.0"
+            }
+          }
+        }
+      end
+
+      it "returns the given config with canonicalized addresses" do
+        expect(subject.canonicalize_config(in_config)).to eql(out_config)
+      end
+    end
+
+    describe "#GetEthTypeFromSysfs" do
+      let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+
+      # MOCKED IN test/data/etc/sysconfig/ifcfg*
+      #
+      around do |example|
+        change_scr_root(data_dir, &example)
+      end
+
+      it "returns eth if not match any sysfs entry" do
+        expect(subject.GetEthTypeFromSysfs("missing_dev")).to eql("eth")
+      end
+
+      NetworkStubs::MOCKUP_SYSFS_INTERFACES.each do |dev, v|
+        it "returns <#{v[:eth_type]}> for <#{dev}> if <#{v[:sysfs]} exists" do
+          allow(FileUtils).to receive(:Exists).with(anything).and_return false
+          allow(FileUtils).to receive(:Exists).with(v[:sysfs].to_s).and_return true
+          expect(subject.GetEthTypeFromSysfs(dev.to_s)).to eql(v[:eth_type])
+        end
+      end
+    end
   end
 end

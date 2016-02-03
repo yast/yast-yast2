@@ -1,5 +1,6 @@
 TESTS = \
   load_ipv6_cfg_test.rb \
+  network_interfaces_test.rb \
   network_interfaces_helpers_test.rb \
   network_service_test.rb \
   susefirewall_proposal_test.rb \
