@@ -38,7 +38,7 @@ module Yast
       Yast.import "IP"
       Yast.import "String"
       Yast.import "FileUtils"
-      Yast.import "Mode"
+      Yast.import "Stage"
 
       # i18n characters in domain names are still not allowed
       #
@@ -247,7 +247,7 @@ module Yast
     #
     # Basicaly, linuxrc sometimes resolves IP when querying "hostname --fqdn"
     def invalid_hostname?(hostname)
-      Mode.installation && IP.Check(hostname)
+      Stage.initial && IP.Check(hostname)
     end
   end
 
