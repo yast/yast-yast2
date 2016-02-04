@@ -105,4 +105,81 @@ describe Yast::SuSEFirewall do
       end
     end
   end
+
+  describe "#Read" do
+    before { subject.main }
+
+    let(:package_installed) { true }
+    let(:config_exists) { true }
+
+    before do
+      allow(Yast::FileUtils).to receive(:Exists)
+        .with(Yast::SuSEFirewallClass::CONFIG_FILE)
+        .and_return(package_installed)
+      allow(subject).to receive(:SuSEFirewallIsInstalled)
+        .and_return(config_exists)
+    end
+
+    context "when configuration does not exist" do
+      let(:config_exists) { false }
+
+      it "empties firewall config and returns false" do
+        expect(subject.Read).to eql(false)
+        expect(subject.GetStartService).to eq(false)
+        expect(subject.GetEnableService).to eq(false)
+      end
+    end
+
+    context "when the package is not installed" do
+      let(:package_installed) { false }
+
+      it "empties firewall config and returns false" do
+        expect(subject.Read).to eql(false)
+        expect(subject.GetStartService).to eq(false)
+        expect(subject.GetEnableService).to eq(false)
+      end
+    end
+
+    context "when packages and config file are available" do
+      before do
+        allow(subject).to receive(:ConvertToServicesDefinedByPackages)
+        allow(Yast::NetworkInterfaces).to receive(:Read)
+      end
+
+      around do |example|
+        old_mode = Yast::Mode.mode
+        Yast::Mode.SetMode(mode)
+        example.run
+        Yast::Mode.SetMode(old_mode)
+      end
+
+      context "during autoinstallation mode" do
+        let(:mode) { "autoinstallation" }
+
+        it "reads the default configuration" do
+          expect(subject).to receive(:ReadDefaultConfiguration)
+          expect(subject.Read).to eql(true)
+        end
+      end
+
+      context "during normal mode" do
+        let(:mode) { "normal" }
+
+        it "reads the default configuration" do
+          expect(subject).to receive(:ReadCurrentConfiguration)
+          expect(subject.Read).to eql(true)
+        end
+      end
+
+      context "during installation mode" do
+        let(:mode) { "installation" }
+
+        it "reads the default configuration" do
+          expect(subject).to receive(:ReadCurrentConfiguration)
+          expect(subject.Read).to eql(true)
+        end
+      end
+
+    end
+  end
 end
