@@ -2510,14 +2510,7 @@ module Yast
 
       Progress.NextStage if have_progress
 
-      # get default configuration for autoinstallation
-      # if (Mode::installation() || Mode::autoinst()) {
-      if Mode.autoinst
-        ReadDefaultConfiguration()
-        # read current configuration for another cases
-      else
-        ReadCurrentConfiguration()
-      end
+      ReadCurrentConfiguration()
 
       Progress.NextStage if have_progress
 
