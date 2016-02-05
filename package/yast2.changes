@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Feb  5 08:21:00 UTC 2016 - mfilka@suse.com
+
+- bsc#960040
+  - put valid hostname into AY profile generated at the end of
+    installation
+- 3.1.155.2
+
+-------------------------------------------------------------------
 Tue Nov 17 12:11:54 UTC 2015 - igonzalezsosa@suse.com
 
 - Add a default value for firewall setting FW_BOOT_INIT_FULL
