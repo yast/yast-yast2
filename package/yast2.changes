@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Feb  5 12:35:38 UTC 2016 - kanderssen@suse.com
+
+- SuSEFirewall module reads system configuration during
+  autoinstallation. It behaves in the same way than
+  regular installation or normal operation (bsc#963585)
+- Add a read_and_import method to SuSEFirewall module.
+- 3.1.155.3
+
+-------------------------------------------------------------------
 Fri Feb  5 08:21:00 UTC 2016 - mfilka@suse.com
 
 - bsc#960040

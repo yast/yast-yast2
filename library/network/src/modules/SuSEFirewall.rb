@@ -1462,6 +1462,12 @@ module Yast
       nil
     end
 
+    # Function to import and merge SuSEFirewall configuration
+    def read_and_import(settings)
+      Read()
+      Import(@SETTINGS.merge(settings))
+    end
+
     # Function returns if the interface is in zone.
     #
     # @param [String] interface
@@ -2510,14 +2516,7 @@ module Yast
 
       Progress.NextStage if have_progress
 
-      # get default configuration for autoinstallation
-      # if (Mode::installation() || Mode::autoinst()) {
-      if Mode.autoinst
-        ReadDefaultConfiguration()
-        # read current configuration for another cases
-      else
-        ReadCurrentConfiguration()
-      end
+      ReadCurrentConfiguration()
 
       Progress.NextStage if have_progress
 
@@ -3832,6 +3831,7 @@ module Yast
     publish function: :IsStarted, type: "boolean ()"
     publish function: :Export, type: "map <string, any> ()"
     publish function: :Import, type: "void (map <string, any>)"
+    publish function: :read_and_import, type: "void (map <string, any>)"
     publish function: :IsInterfaceInZone, type: "boolean (string, string)"
     publish function: :GetZoneOfInterface, type: "string (string)"
     publish function: :GetZonesOfInterfaces, type: "list <string> (list <string>)"
