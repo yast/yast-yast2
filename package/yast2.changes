@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Feb  5 07:31:35 UTC 2016 - mfilka@suse.com
+
+- bsc#960040
+  - put valid hostname into AY profile generated at the end of
+    installation
+- 3.1.173
+
+-------------------------------------------------------------------
 Mon Feb  1 15:31:07 UTC 2016 - jreidinger@suse.com
 
 - Yast::Execute do not crash for missing '_' method (found during
