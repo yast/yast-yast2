@@ -163,7 +163,7 @@ module Yast
         fqhostname = SCR.Read(path(".target.string"), "/etc/hostname") || ""
         fqhostname = "linux.#{@DefaultDomain}" if fqhostname.empty?
       else
-        fqhostname = hostname_data["stdout"] || ""
+        fqhostname = hostname_data["stdout"]
       end
 
       fqhostname = String.FirstChunk(fqhostname, "\n")
