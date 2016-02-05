@@ -148,6 +148,19 @@ describe Yast::SuSEFirewall do
         expect(subject.GetEnableService).to eq(false)
       end
     end
+
+    context "when configuration was already read" do
+      before do
+        allow(subject).to receive(:ConvertToServicesDefinedByPackages)
+        allow(Yast::NetworkInterfaces).to receive(:Read)
+        subject.Read
+      end
+
+      it "does not read it again" do
+        expect(Yast::NetworkInterfaces).to_not receive(:Read)
+        subject.Read
+      end
+    end
   end
 
   describe "#Import" do
