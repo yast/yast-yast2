@@ -1454,18 +1454,13 @@ module Yast
     #
     # @param	map <string, any> with configuration
     def Import(import_settings)
-      @SETTINGS = deep_copy(import_settings)
+      Read()
+      @SETTINGS.merge!(import_settings || {})
       @configuration_has_been_read = true
 
       SetModified()
 
       nil
-    end
-
-    # Function to import and merge SuSEFirewall configuration
-    def read_and_import(settings)
-      Read()
-      Import(@SETTINGS.merge(settings))
     end
 
     # Function returns if the interface is in zone.

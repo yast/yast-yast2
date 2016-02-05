@@ -148,6 +148,19 @@ describe Yast::SuSEFirewall do
         expect(subject.GetEnableService).to eq(false)
       end
     end
+
+    context "when configuration was already read" do
+      before do
+        allow(subject).to receive(:ConvertToServicesDefinedByPackages)
+        allow(Yast::NetworkInterfaces).to receive(:Read)
+        subject.Read
+      end
+
+      it "does not read it again" do
+        expect(Yast::NetworkInterfaces).to_not receive(:Read)
+        subject.Read
+      end
+    end
   end
 
   describe "#Import" do
@@ -165,42 +178,28 @@ describe Yast::SuSEFirewall do
       end
 
       context "when a setting is not given" do
-        it "removes that setting from the configuration" do
+        it "leaves that setting untouched" do
           subject.Import("enable_firewall" => true)
-          expect(subject.GetStartService).to eq(false)
+          expect(subject.GetStartService).to eq(true) # Untouched setting
           expect(subject.GetEnableService).to eq(true)
         end
       end
 
       context "when nil is passed" do
-        it "removes all settings" do
+        it "leaves settings untouched" do
           subject.Import(nil)
-          expect(subject.GetStartService).to eq(false)
+          expect(subject.GetStartService).to eq(true)
           expect(subject.GetEnableService).to eq(false)
         end
       end
 
       context "when an empty hash is passed" do
-        it "removes all settings" do
+        it "leaves settings untouched" do
           subject.Import({})
-          expect(subject.GetStartService).to eq(false)
+          expect(subject.GetStartService).to eq(true)
           expect(subject.GetEnableService).to eq(false)
         end
       end
-    end
-  end
-
-  describe "#read_and_import" do
-    before do
-      subject.main
-      subject.Import("start_firewall" => true)
-    end
-
-    it "reads and merge given values into the current settings" do
-      expect(subject).to receive(:Read)
-      subject.read_and_import("enable_firewall" => true)
-      expect(subject.GetStartService).to eq(true)
-      expect(subject.GetEnableService).to eq(true)
     end
   end
 end
