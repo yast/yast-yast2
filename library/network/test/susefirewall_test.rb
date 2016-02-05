@@ -148,7 +148,6 @@ describe Yast::SuSEFirewall do
         expect(subject.GetEnableService).to eq(false)
       end
     end
-
   end
 
   describe "#Import" do
