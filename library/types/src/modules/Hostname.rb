@@ -155,30 +155,20 @@ module Yast
     # (uses hostname --fqdn)
     # @return FQ hostname
     def CurrentFQ
-      fqhostname = ""
+      hostname_data = SCR.Execute(path(".target.bash_output"), "hostname --fqdn")
 
-      hostname_data = Convert.to_map(
-        SCR.Execute(path(".target.bash_output"), "hostname --fqdn")
-      )
       if hostname_data.nil? || hostname_data["exit"] != 0 || invalid_hostname?(hostname_data["stdout"].to_s.strip)
-        fqhostname = if FileUtils.Exists("/etc/hostname")
-                       SCR.Read(path(".target.string"), "/etc/hostname")
-                     else
-                       ""
-                     end
+        Builtins.y2warning("Using fallback hostname")
 
-        if fqhostname == "" || fqhostname.nil?
-          # last resort (#429792)
-          fqhostname = "linux.#{@DefaultDomain}"
-        end
-        Builtins.y2warning("Using fallback hostname %1", fqhostname)
+        fqhostname = SCR.Read(path(".target.string"), "/etc/hostname") || ""
+        fqhostname = "linux.#{@DefaultDomain}" if fqhostname.empty?
       else
-        fqhostname = Ops.get_string(hostname_data, "stdout", "")
+        fqhostname = hostname_data["stdout"] || ""
       end
 
       fqhostname = String.FirstChunk(fqhostname, "\n")
 
-      Builtins.y2debug("Current FQDN: %1", fqhostname)
+      Builtins.y2milestone("Current FQDN: %1", fqhostname)
       fqhostname
     end
 
