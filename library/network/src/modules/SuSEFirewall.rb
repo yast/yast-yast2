@@ -1454,7 +1454,8 @@ module Yast
     #
     # @param	map <string, any> with configuration
     def Import(import_settings)
-      @SETTINGS = deep_copy(import_settings)
+      Read()
+      @SETTINGS.merge!(import_settings || {})
       @configuration_has_been_read = true
 
       SetModified()
@@ -2510,14 +2511,7 @@ module Yast
 
       Progress.NextStage if have_progress
 
-      # get default configuration for autoinstallation
-      # if (Mode::installation() || Mode::autoinst()) {
-      if Mode.autoinst
-        ReadDefaultConfiguration()
-        # read current configuration for another cases
-      else
-        ReadCurrentConfiguration()
-      end
+      ReadCurrentConfiguration()
 
       Progress.NextStage if have_progress
 
@@ -3832,6 +3826,7 @@ module Yast
     publish function: :IsStarted, type: "boolean ()"
     publish function: :Export, type: "map <string, any> ()"
     publish function: :Import, type: "void (map <string, any>)"
+    publish function: :read_and_import, type: "void (map <string, any>)"
     publish function: :IsInterfaceInZone, type: "boolean (string, string)"
     publish function: :GetZoneOfInterface, type: "string (string)"
     publish function: :GetZonesOfInterfaces, type: "list <string> (list <string>)"

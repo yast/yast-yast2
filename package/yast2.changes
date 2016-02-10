@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Thu Feb  5 12:35:38 UTC 2016 - kanderssen@suse.com
+
+- SuSEFirewall module reads system configuration during
+  autoinstallation. It behaves in the same way as
+  regular installation or normal operation (bsc#963585)
+- AutoYaST settings for SuSEFirewall will be merged
+  with the existing configuration (instead of being fully
+  overwritten).
+- Add a read_and_import method to SuSEFirewall module.
+- 3.1.174
+
+-------------------------------------------------------------------
 Fri Feb  5 07:31:35 UTC 2016 - mfilka@suse.com
 
 - bsc#960040
