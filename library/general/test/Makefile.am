@@ -12,6 +12,7 @@ TESTS = \
   proposal_client_test.rb \
   service_status_test.rb \
 	multi_messages_dialog_test.rb \
+	report_test.rb \
   agents_test/proc_meminfo_agent_test.rb
 
 TEST_EXTENSIONS = .rb

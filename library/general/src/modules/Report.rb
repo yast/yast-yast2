@@ -39,6 +39,8 @@ module Yast
   # @TODO not all methods respect all environment, feel free to open issue with
   #   method that doesn't respect it.
   class ReportClass < Module
+    include Logger
+
     def main
       textdomain "base"
 
@@ -450,6 +452,24 @@ module Yast
       end
 
       @messages = Builtins.add(@messages, message_string)
+
+      nil
+    end
+
+    # Store multiple messages and display them (if needed)
+    #
+    # It uses a MultiMessagesDialog to display all messages.
+    #
+    # @param [String] title    Dialog's title
+    # @param [Array]  messages Messages to display. Each element should respond to
+    #                          #title and #body methods.
+    # @see UI::MultiMessagesDialog
+    def multi_messages(title, messages)
+      log.info "Report multiple messages: #{messages}" if @log_messages
+      if @display_messages
+        Popup.multi_messages(title, messages)
+      end
+      @messages += messages.map { |m| "#{m.title}: #{m.body}" }
 
       nil
     end
