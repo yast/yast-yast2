@@ -46,7 +46,7 @@ describe Yast::Popup do
 
     it "shows a multi-messages dialog" do
       expect(UI::MultiMessagesDialog).to receive(:new)
-        .with("Some title", [message], min_height: nil, min_width: nil, timeout: 0)
+        .with("Some title", [message], min_height: nil, min_width: nil, timeout: false)
         .and_return(dialog)
       expect(dialog).to receive(:run)
       subject.multi_messages("Some title", [message])

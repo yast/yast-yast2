@@ -24,7 +24,7 @@ describe Yast::Report do
       before { Yast::Report.DisplayMessages(true, 0) }
 
       it "shows a popup" do
-        expect(Yast::Popup).to receive(:multi_messages).with("Installation", messages, timeout: 0)
+        expect(Yast::Popup).to receive(:multi_messages).with("Installation", messages, timeout: false)
         report.multi_messages("Installation", messages)
       end
     end

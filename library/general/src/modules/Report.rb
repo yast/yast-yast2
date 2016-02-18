@@ -467,7 +467,8 @@ module Yast
     def multi_messages(title, messages)
       log.info "Report multiple messages: #{messages}" if @log_messages
       if @display_messages
-        Popup.multi_messages(title, messages, timeout: @timeout_messages)
+        timeout = @timeout_messages > 0 ? @timeout_messages : false
+        Popup.multi_messages(title, messages, timeout: timeout)
       end
       @messages += messages.map { |m| "#{m.title}: #{m.body}" }
 

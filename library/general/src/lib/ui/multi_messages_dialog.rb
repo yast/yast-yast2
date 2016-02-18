@@ -25,7 +25,7 @@ module UI
     #                             respond to #title and #body methods.
     # @param min_height [Integer] Minimal dialog's height.
     # @param min_width  [Integer] Minimal dialog's width.
-    def initialize(headline, messages, min_height: nil, min_width: nil, timeout: 0)
+    def initialize(headline, messages, min_height: nil, min_width: nil, timeout: false)
       super()
       textdomain "yast"
       @messages = messages
@@ -54,7 +54,7 @@ module UI
             ReplacePoint(Id(:body), message_body_ui)
           ),
           VSpacing(0.3),
-          timeout.zero? ? Empty() : Label(Id(:timer), @remaining_time.to_s),
+          timed? ? Label(Id(:timer), @remaining_time.to_s) : Empty(),
           # Footer buttons
           buttons_ui
         )
@@ -119,7 +119,7 @@ module UI
     #
     # Disable timeout counter
     def stop_handler
-      @timeout = 0
+      @timeout = false
       Yast::UI.ChangeWidget(Id(:stop), :Enabled, false)
     end
 
@@ -141,7 +141,7 @@ module UI
     #
     # @return [true,false] True if the dialog is timed; false otherwise.
     def timed?
-      timeout != 0
+      timeout.is_a?(Integer)
     end
 
     private

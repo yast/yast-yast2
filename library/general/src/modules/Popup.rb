@@ -1921,7 +1921,7 @@ module Yast
     # @param [Integer] timeout  Timeout in seconds
     #
     # @see UI::MultiMessagesDialog
-    def multi_messages(title, messages, min_height: nil, min_width: nil, timeout: 0)
+    def multi_messages(title, messages, min_height: nil, min_width: nil, timeout: false)
       ::UI::MultiMessagesDialog.new(title, messages, min_height: min_height, min_width: min_width, timeout: timeout).run
     end
 
