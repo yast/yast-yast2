@@ -23,6 +23,13 @@ describe UI::MultiMessagesDialog do
       dialog.run
     end
 
+    it "by default does not show a 'stop' button" do
+      expect(dialog).to_not receive(:PushButton).with(Id(:stop), Yast::Label.StopButton)
+        .and_call_original
+      expect(Yast::UI).to receive(:UserInput).and_return(:close)
+      dialog.run
+    end
+
     describe "given more than one message" do
       it "'next' button is 'enabled'" do
         expect(dialog).to receive(:PushButton).with(Id(:next), Opt(:enabled), Yast::Label.NextButton)
@@ -32,13 +39,24 @@ describe UI::MultiMessagesDialog do
       end
     end
 
-    describe "given only one message" do
+    context "given only one message" do
       let(:messages) { [DummyMessage.new("Title", "Body")] }
 
       it "disables the 'next' button" do
         expect(dialog).to receive(:PushButton).with(Id(:next), Opt(:disabled), Yast::Label.NextButton)
           .and_call_original
         expect(Yast::UI).to receive(:UserInput).and_return(:close)
+        dialog.run
+      end
+    end
+
+    context "given a timeout" do
+      subject(:dialog) { described_class.new("some title", messages, timeout: 3) }
+
+      it "shows an 'stop' button" do
+        allow(Yast::UI).to receive(:TimeoutUserInput).and_return(:timeout)
+        expect(dialog).to receive(:PushButton).with(Id(:stop), Yast::Label.StopButton)
+          .and_call_original
         dialog.run
       end
     end
@@ -134,6 +152,39 @@ describe UI::MultiMessagesDialog do
     it "closes the dialog with :close value" do
       expect(subject).to receive(:finish_dialog).with(:close)
       subject.close_handler
+    end
+  end
+
+  describe "#timeout_handler" do
+    subject(:dialog) { described_class.new("some title", messages, timeout: timeout) }
+
+    context "when the dialogs timeout is reached" do
+      let(:timeout) { 1 }
+
+      it "closes the dialog with :timeout value" do
+        allow(Yast::UI).to receive(:TimeoutUserInput).and_return(:timeout)
+        expect(dialog).to receive(:finish_dialog).with(:timeout)
+        dialog.timeout_handler
+      end
+    end
+
+    context "when the dialogs timeout is not reached yet" do
+      let(:timeout) { 2 }
+
+      it "updates the timer" do
+        allow(Yast::UI).to receive(:TimeoutUserInput).and_return(:timeout)
+        expect(Yast::UI).to receive(:ChangeWidget).with(Id(:timer), :Value, "1")
+          .and_call_original
+        dialog.timeout_handler
+      end
+    end
+  end
+
+  describe "#stop_handler" do
+    subject(:dialog) { described_class.new("some title", messages, timeout: 5) }
+
+    it "sets the dialog as 'non-timed'" do
+      expect { dialog.stop_handler }.to change { dialog.timed? }.from(true).to(false)
     end
   end
 

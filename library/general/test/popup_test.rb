@@ -46,10 +46,20 @@ describe Yast::Popup do
 
     it "shows a multi-messages dialog" do
       expect(UI::MultiMessagesDialog).to receive(:new)
-        .with("Some title", [message], min_height: nil, min_width: nil)
+        .with("Some title", [message], min_height: nil, min_width: nil, timeout: 0)
         .and_return(dialog)
       expect(dialog).to receive(:run)
       subject.multi_messages("Some title", [message])
+    end
+
+    context "when a timeout is specified" do
+      it "shows a multi-messages dialog with the given timeout" do
+        expect(UI::MultiMessagesDialog).to receive(:new)
+          .with("Some title", [message], min_height: nil, min_width: nil, timeout: 5)
+          .and_return(dialog)
+        expect(dialog).to receive(:run)
+        subject.multi_messages("Some title", [message], timeout: 5)
+      end
     end
   end
 end

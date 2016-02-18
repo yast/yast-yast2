@@ -24,7 +24,7 @@ describe Yast::Report do
       before { Yast::Report.DisplayMessages(true, 0) }
 
       it "shows a popup" do
-        expect(Yast::Popup).to receive(:multi_messages).with("Installation", messages)
+        expect(Yast::Popup).to receive(:multi_messages).with("Installation", messages, timeout: 0)
         report.multi_messages("Installation", messages)
       end
     end
@@ -34,6 +34,15 @@ describe Yast::Report do
 
       it "does not show a popup" do
         expect(Yast::Popup).to_not receive(:multi_messages)
+        report.multi_messages("Installation", messages)
+      end
+    end
+
+    context "if a timeout for messages is set" do
+      before { Yast::Report.DisplayMessages(true, 5) }
+
+      it "does shows a popup with a timeout" do
+        expect(Yast::Popup).to receive(:multi_messages).with("Installation", messages, timeout: 5)
         report.multi_messages("Installation", messages)
       end
     end
