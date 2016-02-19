@@ -194,8 +194,14 @@ module UI
     #
     # @return [Yast::Term] UI content for dialog
     def message_body_ui
+      title =
+        if messages.size > 1
+          format(_("%s (%d out of %d)"), current_message.title, @position + 1, total)
+        else
+          current_message.title
+        end
       Frame(
-        format(_("%s (%d out of %d)"), current_message.title, @position + 1, total),
+        title,
         RichText(current_message.body)
       )
     end
@@ -222,11 +228,15 @@ module UI
     def buttons_ui
       buttons = [
         PushButton(Id(:close), Yast::Label.CloseButton),
-        HStretch(),
-        PushButton(Id(:back), Opt(:disabled), Yast::Label.BackButton),
-        HStretch(),
-        PushButton(Id(:next), Opt(last_message? ? :disabled : :enabled), Yast::Label.NextButton)
       ]
+      if messages.size > 1
+        buttons += [
+          HStretch(),
+          PushButton(Id(:back), Opt(:disabled), Yast::Label.BackButton),
+          HStretch(),
+          PushButton(Id(:next), Opt(last_message? ? :disabled : :enabled), Yast::Label.NextButton)
+        ]
+      end
       if timed?
         buttons.insert(2, PushButton(Id(:stop), Yast::Label.StopButton), HStretch())
       end

@@ -42,9 +42,9 @@ describe UI::MultiMessagesDialog do
     context "given only one message" do
       let(:messages) { [DummyMessage.new("Title", "Body")] }
 
-      it "disables the 'next' button" do
-        expect(dialog).to receive(:PushButton).with(Id(:next), Opt(:disabled), Yast::Label.NextButton)
-          .and_call_original
+      it "does not show 'next' and 'back' buttons" do
+        expect(dialog).to_not receive(:PushButton).with(Id(:next), any_args)
+        expect(dialog).to_not receive(:PushButton).with(Id(:back), any_args)
         expect(Yast::UI).to receive(:UserInput).and_return(:close)
         dialog.run
       end
