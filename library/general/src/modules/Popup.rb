@@ -36,6 +36,7 @@
 # <br>
 # See also <a href="../wizard/README.popups">README.popups</a>
 require "yast"
+require "ui/multi_messages_dialog"
 
 module Yast
   class PopupClass < Module
@@ -1911,6 +1912,17 @@ module Yast
       ShowText(headline, text)
 
       nil
+    end
+
+    # Show a multi-messages dialog.
+    #
+    # @param [String]  title    Dialog's title
+    # @param [Array]   messages Messages to be shown
+    # @param [Integer] timeout  Timeout in seconds
+    #
+    # @see UI::MultiMessagesDialog
+    def multi_messages(title, messages, min_height: nil, min_width: nil, timeout: false)
+      ::UI::MultiMessagesDialog.new(title, messages, min_height: min_height, min_width: min_width, timeout: timeout).run
     end
 
     publish variable: :switch_to_richtext, type: "boolean"
