@@ -70,6 +70,7 @@ module UI
     def next_handler
       return false if last_message?
       move_to(@position + 1)
+      stop_timer if timed?
       true
     end
 
@@ -115,12 +116,19 @@ module UI
       end
     end
 
-    # Stop timer
+    # Stop handler
     #
     # Disable timeout counter
     def stop_handler
-      @timeout = false
+      stop_timer
       Yast::UI.ChangeWidget(Id(:stop), :Enabled, false)
+    end
+
+    # Stop timer
+    #
+    # Stop the timer countdown.
+    def stop_timer
+      @timeout = false
     end
 
     # User input handling

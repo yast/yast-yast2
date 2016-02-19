@@ -101,6 +101,15 @@ describe UI::MultiMessagesDialog do
         dialog.next_handler
       end
     end
+
+    context "when a timeout was specified" do
+      subject(:dialog) { described_class.new("some title", messages, timeout: 5) }
+
+      it "stops the timer" do
+        expect { dialog.next_handler }.to change { dialog.timed? }.from(true).to(false)
+        dialog.next_handler
+      end
+    end
   end
 
   describe "#back_handler" do
