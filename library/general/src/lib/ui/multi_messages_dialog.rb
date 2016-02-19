@@ -50,9 +50,7 @@ module UI
           # Header
           Heading(headline),
           # Interval
-          VBox(
-            ReplacePoint(Id(:body), message_body_ui)
-          ),
+          ReplacePoint(Id(:body), message_body_ui),
           VSpacing(0.3),
           timed? ? Label(Id(:timer), @remaining_time.to_s) : Empty(),
           # Footer buttons
@@ -208,10 +206,7 @@ module UI
         else
           current_message.title
         end
-      Frame(
-        title,
-        RichText(current_message.body)
-      )
+      VBox(Label(title), RichText(current_message.body))
     end
 
     # Determines whether the current is the first message
