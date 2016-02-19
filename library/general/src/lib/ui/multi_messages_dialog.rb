@@ -152,7 +152,7 @@ module UI
       timeout.is_a?(Integer)
     end
 
-    private
+  private
 
     # Dialog options
     #
@@ -234,9 +234,7 @@ module UI
     #
     # @return [Yast::Term] UI content for dialog
     def buttons_ui
-      buttons = [
-        PushButton(Id(:close), Yast::Label.CloseButton),
-      ]
+      buttons = [PushButton(Id(:close), Yast::Label.CloseButton)]
       if messages.size > 1
         buttons += [
           HStretch(),
