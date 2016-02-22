@@ -74,7 +74,7 @@ describe Yast::Report do
 
     include_examples "logging", :LongMessage, "milestone"
     include_examples "display", :LongMessage
-    include_examples "timeouts", :LongError
+    include_examples "timeouts", :LongMessage
 
     it "stores the message" do
       subject.LongMessage("Message")
@@ -94,7 +94,7 @@ describe Yast::Report do
 
     include_examples "logging", :LongWarning, "warning"
     include_examples "display", :LongWarning
-    include_examples "timeouts", :LongError
+    include_examples "timeouts", :LongWarning
 
     it "stores the message" do
       subject.LongWarning("Message")
