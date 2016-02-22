@@ -40,8 +40,8 @@ describe Yast::Popup do
   describe ".Message" do
     before { allow(ui).to receive(:OpenDialog) }
 
-    it "shows a popup with escaped tags" do
-      expect(subject).to receive(:RichText).with("&lt;h1&gt;Title&lt;/h1&gt;")
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
       subject.Message("<h1>Title</h1>")
     end
   end
@@ -49,8 +49,8 @@ describe Yast::Popup do
   describe ".Warning" do
     before { allow(ui).to receive(:OpenDialog) }
 
-    it "shows a popup with escaped tags" do
-      expect(subject).to receive(:RichText).with("&lt;h1&gt;Title&lt;/h1&gt;")
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
       subject.Warning("<h1>Title</h1>")
     end
   end
@@ -58,8 +58,8 @@ describe Yast::Popup do
   describe ".Error" do
     before { allow(ui).to receive(:OpenDialog) }
 
-    it "shows a popup with escaped tags" do
-      expect(subject).to receive(:RichText).with("&lt;h1&gt;Title&lt;/h1&gt;")
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
       subject.Error("<h1>Title</h1>")
     end
   end
