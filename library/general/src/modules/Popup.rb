@@ -74,6 +74,8 @@ module Yast
       button_box = deep_copy(button_box)
       content = Empty()
 
+      body = richtext ? message : convert_to_plaintext(message)
+
       rt = VWeight(
         1,
         VBox(
@@ -82,12 +84,7 @@ module Yast
             VSpacing(height),
             # display the message in the widget "as is":
             # escape all tags, replace new lines by <br> tag
-            RichText(
-              Builtins.mergestring(
-                Builtins.splitstring(String.EscapeTags(message), "\n"),
-                "<br>"
-              )
-            )
+            RichText(body)
           )
         )
       )
@@ -98,7 +95,7 @@ module Yast
           VBox(
             Left(Heading(headline)),
             VSpacing(0.2),
-            richtext ? rt : Left(Label(message)),
+            richtext ? rt : Left(Label(body)),
             VSpacing(0.2),
             !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
           )
@@ -107,7 +104,7 @@ module Yast
         content = VBox(
           VSpacing(0.4),
           VBox(
-            richtext ? rt : VCenter(Label(message)),
+            richtext ? rt : VCenter(Label(body)),
             VSpacing(0.2),
             !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
           )
@@ -1912,6 +1909,20 @@ module Yast
 
       nil
     end
+
+  private
+
+    # Adapt a message to be shown as plaintext in a Richtext widget
+    #
+    # * Escape tags
+    # * Replace "\n" by "<br>"
+    #
+    # @param [String] message Message to be converted
+    # @return [String] Converted message
+    def convert_to_plaintext(message)
+      String.EscapeTags(message).split("\n").join("<br>")
+    end
+
 
     publish variable: :switch_to_richtext, type: "boolean"
     publish variable: :too_many_lines, type: "integer"
