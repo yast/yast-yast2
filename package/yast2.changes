@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 22 05:39:05 UTC 2016 - igonzalezsosa@suse.com
+
+- Add support for showing update messages from libzypp
+  (related to bsc#943805)
+- 3.1.175
+
+-------------------------------------------------------------------
 Thu Feb  5 12:35:38 UTC 2016 - kanderssen@suse.com
 
 - SuSEFirewall module reads system configuration during
