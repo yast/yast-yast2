@@ -39,7 +39,7 @@ describe Yast::PackagesUI do
     end
 
     it "opens a popup containing update messages" do
-      expect(Yast::Popup).to receive(:LongMessage)
+      expect(Yast::Report).to receive(:LongMessage)
         .with(%r{<h2>mariadb</h2>})
       packages_ui.show_update_messages(result)
     end
@@ -48,7 +48,7 @@ describe Yast::PackagesUI do
       let(:result) { [0, [], [], [], []] }
 
       it "does not open a popup" do
-        expect(Yast::Popup).to_not receive(:LongMessage)
+        expect(Yast::Report).to_not receive(:LongMessage)
         packages_ui.show_update_messages(result)
       end
     end

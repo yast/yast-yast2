@@ -9,6 +9,7 @@ module Packages
     extend Yast::I18n
 
     def initialize(commit_results)
+      Yast.import "String"
       textdomain "base"
       @commit_results = commit_results
     end
@@ -28,8 +29,9 @@ module Packages
     #
     # @return [String] Message converted to richtext
     def message_to_richtext(message)
-      location = format(_("This message will be available at %s"), message.installation_path)
-      "<h2>#{message.solvable}</h2><p><em>#{location}</em></p>" \
+      location = format(_("This message will be available at %s"),
+        Yast::String.EscapeTags(message.installation_path))
+      "<h2>#{Yast::String.EscapeTags(message.solvable)}</h2><p><em>#{location}</em></p>" \
         "<br>#{message.text.strip.gsub("\n", "<br>")}"
     end
   end

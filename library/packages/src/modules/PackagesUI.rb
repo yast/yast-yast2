@@ -784,13 +784,10 @@ module Yast
     # @param [Array] result Result from package commit (as it comes from PkgCommit)
     def show_update_messages(result)
       commit_result = ::Packages::CommitResult.from_result(result)
-      if commit_result.update_messages.empty?
-        false
-      else
-        view = ::Packages::UpdateMessagesView.new(commit_result.update_messages)
-        Report.LongMessage(view.richtext)
-        true
-      end
+      return false if commit_result.update_messages.empty?
+      view = ::Packages::UpdateMessagesView.new(commit_result.update_messages)
+      Report.LongMessage(view.richtext)
+      true
     end
 
     publish function: :GetPackageSummary, type: "map <string, any> ()"
