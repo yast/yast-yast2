@@ -1,9 +1,43 @@
 require "packages/update_message"
 
 module Packages
+  # Commit results coming from libzypp
   class CommitResult
-    # Commit results coming from libzypp
     attr_reader :committed, :successful, :failed, :remaining, :srcremaining, :update_messages
+
+    class << self
+      # Construct an instance taking as input the Pkg.Commit or Pkg.PkgCommit output
+      #
+      # Pkg.Commit and Pkg.PkcCommit return an array with the following
+      # elements: [successful, failed, remaining, srcremaining, update_messages].
+      #
+      # @param result [Array] Result as returned by Pkg.Commit and Pkg.PkgCommit
+      def from_result(result)
+        messages = build_update_messages(result[4])
+        new(result[0], result[1], result[2], result[3], messages)
+      end
+
+      # Convert an array of hash into an array of UpdateMessage objects
+      #
+      # Each hash contains the following keys/values:
+      #
+      # * solvable:         solvable name (usually package names).
+      # * text:             message text.
+      # * installationPath: path to the libzypp's file containing the message
+      #                     after installation.
+      # * currentPath:      path to the libzypp's file containing the message
+      #                     currently. It will differ from installationPath
+      #                     when running inst-sys.
+      #
+      # @param messages [Array<Hash>] Hash representing a message from libzypp.
+      # @return [Array<Packager::UpdateMessage>] List of update messages
+      def build_update_messages(messages)
+        messages.map do |msg|
+          Packages::UpdateMessage.new(msg["solvable"], msg["text"],
+            msg["installationPath"], msg["currentPath"])
+        end
+      end
+    end
 
     # Constructor
     #
@@ -21,40 +55,6 @@ module Packages
       @remaining = remaining
       @srcremaining = srcremaining
       @update_messages = update_messages
-    end
-
-    # Construct an instance taking as input the Pkg.Commit or Pkg.PkgCommit output
-    #
-    # Pkg.Commit and Pkg.PkcCommit return an array with the following
-    # elements: [successful, failed, remaining, srcremaining, update_messages].
-    #
-    # @param result [Array] Result as returned by Pkg.Commit and Pkg.PkgCommit
-    def self.from_result(result)
-      messages = build_update_messages(result[4])
-      new(result[0], result[1], result[2], result[3], messages)
-    end
-
-    private
-
-    # Convert an array of hash into an array of UpdateMessage objects
-    #
-    # Each hash contains the following keys/values:
-    #
-    # * solvable:         solvable name (usually package names).
-    # * text:             message text.
-    # * installationPath: path to the libzypp's file containing the message
-    #                     after installation.
-    # * currentPath:      path to the libzypp's file containing the message
-    #                     currently. It will differ from installationPath
-    #                     when running inst-sys.
-    #
-    # @param messages [Array<Hash>] Hash representing a message from libzypp.
-    # @return [Array<Packager::UpdateMessage>] List of update messages
-    def self.build_update_messages(messages)
-      messages.map do |msg|
-        Packages::UpdateMessage.new(msg["solvable"], msg["text"],
-                                    msg["installationPath"], msg["currentPath"])
-      end
     end
   end
 end

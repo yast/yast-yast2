@@ -1923,7 +1923,6 @@ module Yast
       String.EscapeTags(message).split("\n").join("<br>")
     end
 
-
     publish variable: :switch_to_richtext, type: "boolean"
     publish variable: :too_many_lines, type: "integer"
     publish function: :NoHeadline, type: "string ()"

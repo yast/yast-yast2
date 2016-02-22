@@ -1,6 +1,9 @@
 require "yast"
 
 module Packages
+  # This class converts a set of commit results into string representations.
+  #
+  # At this time, richtext is the only provided conversion.
   class UpdateMessagesView
     include Yast::I18n
     extend Yast::I18n

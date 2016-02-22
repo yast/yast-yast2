@@ -13,7 +13,7 @@ describe Yast::Report do
     let(:log) { true }
 
     before do
-      subject.DisplayMessages(show, timeout) 
+      subject.DisplayMessages(show, timeout)
       subject.LogMessages(log)
     end
 
@@ -137,7 +137,7 @@ describe Yast::Report do
     let(:log) { true }
 
     before do
-      subject.DisplayErrors(show, timeout) 
+      subject.DisplayErrors(show, timeout)
       subject.LogErrors(log)
     end
 
