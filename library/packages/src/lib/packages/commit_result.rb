@@ -13,7 +13,7 @@ module Packages
       #
       # @param result [Array] Result as returned by Pkg.Commit and Pkg.PkgCommit
       def from_result(result)
-        messages = build_update_messages(result[4])
+        messages = build_update_messages(result[4] || [])
         new(result[0], result[1], result[2], result[3], messages)
       end
 
@@ -51,10 +51,10 @@ module Packages
     # @see build_update_messages
     def initialize(successful, failed, remaining, srcremaining, update_messages)
       @successful = successful
-      @failed = failed
-      @remaining = remaining
-      @srcremaining = srcremaining
-      @update_messages = update_messages
+      @failed = failed || []
+      @remaining = remaining || []
+      @srcremaining = srcremaining || []
+      @update_messages = update_messages || []
     end
   end
 end

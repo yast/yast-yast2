@@ -28,5 +28,18 @@ describe Packages::CommitResult do
       expect(result.update_messages)
         .to eq([Packages::UpdateMessage.new(message["solvable"], message["text"], message["installationPath"], message["currentPath"])])
     end
+
+    context "when result is a failure" do
+      let(:old_result) { [-1] }
+
+      it "builds a new instance from Pkg.Commit/Pkg.PkgCommit return value" do
+        result = Packages::CommitResult.from_result(old_result)
+        expect(result.successful).to eq(-1)
+        expect(result.failed).to be_empty
+        expect(result.remaining).to be_empty
+        expect(result.srcremaining).to be_empty
+        expect(result.update_messages).to be_empty
+      end
+    end
   end
 end

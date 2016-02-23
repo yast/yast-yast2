@@ -52,5 +52,23 @@ describe Yast::PackagesUI do
         packages_ui.show_update_messages(result)
       end
     end
+
+    context "when commit failed" do
+      let(:result) { [-1] }
+
+      it "does not open a popup" do
+        expect(Yast::Report).to_not receive(:LongMessage)
+        packages_ui.show_update_messages(result)
+      end
+    end
+
+    context "when nil is passed" do
+      let(:result) { nil }
+
+      it "does not open a popup" do
+        expect(Yast::Report).to_not receive(:LongMessage)
+        packages_ui.show_update_messages(result)
+      end
+    end
   end
 end
