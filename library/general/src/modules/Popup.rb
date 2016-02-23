@@ -80,14 +80,7 @@ module Yast
           HSpacing(width),
           HBox(
             VSpacing(height),
-            # display the message in the widget "as is":
-            # escape all tags, replace new lines by <br> tag
-            RichText(
-              Builtins.mergestring(
-                Builtins.splitstring(String.EscapeTags(message), "\n"),
-                "<br>"
-              )
-            )
+            RichText(message)
           )
         )
       )

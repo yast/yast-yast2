@@ -32,6 +32,8 @@
 # $Id$
 require "yast"
 require "cgi"
+require "packages/commit_result"
+require "packages/update_messages_view"
 
 module Yast
   class PackagesUIClass < Module
@@ -45,6 +47,7 @@ module Yast
       Yast.import "HTML"
       Yast.import "String"
       Yast.import "Popup"
+      Yast.import "Report"
 
       @package_summary = {}
     end
@@ -772,6 +775,20 @@ module Yast
 
     def ShowInstallationSummary
       ShowInstallationSummaryMap(@package_summary)
+    end
+
+    # Show messages coming from libzypp about installed packages
+    #
+    # This messages are retrieved from libzypp.
+    #
+    # @param [Array] result Result from package commit (as it comes from PkgCommit)
+    def show_update_messages(result)
+      return false if result.nil?
+      commit_result = ::Packages::CommitResult.from_result(result)
+      return false if commit_result.update_messages.empty?
+      view = ::Packages::UpdateMessagesView.new(commit_result.update_messages)
+      Report.LongMessage(view.richtext)
+      true
     end
 
     publish function: :GetPackageSummary, type: "map <string, any> ()"

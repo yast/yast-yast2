@@ -36,4 +36,263 @@ describe Yast::Popup do
       expect { subject.Feedback("Label", "Message") }.to raise_error
     end
   end
+
+  describe ".Message" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.Message("<h1>Title</h1>")
+    end
+  end
+
+  describe ".Warning" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.Warning("<h1>Title</h1>")
+    end
+  end
+
+  describe ".Error" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.Error("<h1>Title</h1>")
+    end
+  end
+
+  #
+  # LongMessage
+  #
+  describe ".LongMessage" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.LongMessage("<h1>Title</h1>")
+    end
+  end
+
+  describe ".LongMessageGeometry" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.LongMessage("<h1>Title</h1>")
+    end
+
+    it "sets dialog width and height" do
+      allow(subject).to receive(:HSpacing)
+      allow(subject).to receive(:VSpacing)
+      expect(subject).to receive(:HSpacing).with(30)
+      expect(subject).to receive(:VSpacing).with(40)
+      subject.LongMessageGeometry("Title", 30, 40)
+    end
+  end
+
+  describe ".TimedLongMessage" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.TimedLongMessage("<h1>Title</h1>", 1)
+    end
+  end
+
+  describe ".TimedLongMessageGeometry" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.TimedLongMessageGeometry("<h1>Title</h1>", 1, 30, 40)
+    end
+
+    it "sets dialog width and height" do
+      allow(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:HSpacing)
+      allow(subject).to receive(:VSpacing)
+      expect(subject).to receive(:HSpacing).with(30)
+      expect(subject).to receive(:VSpacing).with(40)
+      subject.TimedLongMessageGeometry("Title", 1, 30, 40)
+    end
+  end
+
+  #
+  # LongWarning
+  #
+  describe ".LongWarning" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.LongWarning("<h1>Title</h1>")
+    end
+  end
+
+  describe ".LongWarningGeometry" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.LongWarningGeometry("<h1>Title</h1>", 30, 40)
+    end
+
+    it "sets dialog width and height" do
+      allow(subject).to receive(:HSpacing)
+      allow(subject).to receive(:VSpacing)
+      expect(subject).to receive(:HSpacing).with(30)
+      expect(subject).to receive(:VSpacing).with(40)
+      subject.LongWarningGeometry("Title", 30, 40)
+    end
+  end
+
+  describe ".TimedLongWarning" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.TimedLongWarning("<h1>Title</h1>", 1)
+    end
+  end
+
+  describe ".TimedLongWarningGeometry" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.TimedLongWarningGeometry("<h1>Title</h1>", 1, 30, 40)
+    end
+
+    it "sets dialog width and height" do
+      allow(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:HSpacing)
+      allow(subject).to receive(:VSpacing)
+      expect(subject).to receive(:HSpacing).with(30)
+      expect(subject).to receive(:VSpacing).with(40)
+      subject.TimedLongWarningGeometry("Title", 1, 30, 40)
+    end
+  end
+
+  #
+  # LongError
+  #
+  describe ".LongError" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.LongError("<h1>Title</h1>")
+    end
+  end
+
+  describe ".LongErrorGeometry" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.LongErrorGeometry("<h1>Title</h1>", 30, 40)
+    end
+
+    it "sets dialog width and height" do
+      allow(subject).to receive(:HSpacing)
+      allow(subject).to receive(:VSpacing)
+      expect(subject).to receive(:HSpacing).with(30)
+      expect(subject).to receive(:VSpacing).with(40)
+      subject.LongErrorGeometry("Title", 30, 40)
+    end
+  end
+
+  describe ".TimedLongError" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.TimedLongError("<h1>Title</h1>", 1)
+    end
+  end
+
+  describe ".TimedLongErrorGeometry" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.TimedLongErrorGeometry("<h1>Title</h1>", 1, 30, 40)
+    end
+
+    it "sets dialog width and height" do
+      allow(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:HSpacing)
+      allow(subject).to receive(:VSpacing)
+      expect(subject).to receive(:HSpacing).with(30)
+      expect(subject).to receive(:VSpacing).with(40)
+      subject.TimedLongErrorGeometry("Title", 1, 30, 40)
+    end
+  end
+
+  #
+  # TimedLongNotify
+  #
+  describe ".LongNotify" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.LongNotify("<h1>Title</h1>")
+    end
+  end
+
+  describe ".LongNotifyGeometry" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.LongNotifyGeometry("<h1>Title</h1>", 30, 40)
+    end
+
+    it "sets dialog width and height" do
+      allow(subject).to receive(:HSpacing)
+      allow(subject).to receive(:VSpacing)
+      expect(subject).to receive(:HSpacing).with(30)
+      expect(subject).to receive(:VSpacing).with(40)
+      subject.LongNotifyGeometry("Title", 30, 40)
+    end
+  end
+
+  describe ".TimedLongNotify" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.TimedLongNotify("<h1>Title</h1>", 1)
+    end
+  end
+
+  describe ".TimedLongNotifyGeometry" do
+    before { allow(ui).to receive(:OpenDialog) }
+
+    it "shows a popup without escaping tags" do
+      expect(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:RichText).with("<h1>Title</h1>")
+      subject.TimedLongNotifyGeometry("<h1>Title</h1>", 1, 30, 40)
+    end
+
+    it "sets dialog width and height" do
+      allow(ui).to receive(:TimeoutUserInput)
+      allow(subject).to receive(:HSpacing)
+      allow(subject).to receive(:VSpacing)
+      expect(subject).to receive(:HSpacing).with(30)
+      expect(subject).to receive(:VSpacing).with(40)
+      subject.TimedLongNotifyGeometry("Title", 1, 30, 40)
+    end
+  end
 end
