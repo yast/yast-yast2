@@ -39,13 +39,13 @@ describe "Yast::PackageSystem" do
           "solvable"         => "dummy-package",
           "text"             => "Some dummy text.",
           "installationPath" => "/var/adm/update-message/dummy-package-1.0",
-          "currentPath"      => "/var/adm/update-message/dummy-package-1.0",
+          "currentPath"      => "/var/adm/update-message/dummy-package-1.0"
         }
       end
 
       it "shows the update messages" do
         expect(Yast::PackagesUI).to receive(:show_update_messages).with(result)
-        expect(system.DoInstallAndRemove(['pkg1'], ['pkg2'])).to eq(true)
+        expect(system.DoInstallAndRemove(["pkg1"], ["pkg2"])).to eq(true)
       end
     end
   end
