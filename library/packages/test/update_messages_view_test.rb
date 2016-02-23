@@ -16,7 +16,7 @@ describe Packages::UpdateMessagesView do
 
   describe "#richtext" do
     it "concatenates information of all messages in a richtext string" do
-      expect(view.richtext).to match(/message 1.*message 2/)
+      expect(view.richtext).to match(/message 1.*message 2/m)
     end
   end
 end
