@@ -9,10 +9,15 @@ Yast.import "SuSEFirewall"
 Yast.import "Stage"
 
 def reset_SuSEFirewallIsInstalled_cache
-  Yast::SuSEFirewall.needed_packages_installed = nil
+  FakeFirewall.needed_packages_installed = nil
 end
 
-describe Yast::SuSEFirewall do
+# Instantiate an SF2 object
+FakeFirewall = Yast::FirewallClass.create(:sf2)
+FakeFirewall.main
+
+describe FakeFirewall do
+
   describe "#SuSEFirewallIsInstalled" do
     before(:each) do
       reset_SuSEFirewallIsInstalled_cache
@@ -28,11 +33,11 @@ describe Yast::SuSEFirewall do
         expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
 
         # Selected
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(subject.SuSEFirewallIsInstalled).to eq(true)
         # Not selected and not installed
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(subject.SuSEFirewallIsInstalled).to eq(false)
         # Not selected, but installed
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(subject.SuSEFirewallIsInstalled).to eq(true)
       end
     end
 
@@ -44,15 +49,15 @@ describe Yast::SuSEFirewall do
         # Value is cached
         expect(Yast::PackageSystem).to receive(:CheckAndInstallPackages).and_return(true, false).twice
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(subject.SuSEFirewallIsInstalled).to eq(true)
+        expect(subject.SuSEFirewallIsInstalled).to eq(true)
+        expect(subject.SuSEFirewallIsInstalled).to eq(true)
 
         reset_SuSEFirewallIsInstalled_cache
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(subject.SuSEFirewallIsInstalled).to eq(false)
+        expect(subject.SuSEFirewallIsInstalled).to eq(false)
+        expect(subject.SuSEFirewallIsInstalled).to eq(false)
       end
     end
 
@@ -64,25 +69,25 @@ describe Yast::SuSEFirewall do
         # Value is cached
         expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(false)
+        expect(subject.SuSEFirewallIsInstalled).to eq(false)
+        expect(subject.SuSEFirewallIsInstalled).to eq(false)
+        expect(subject.SuSEFirewallIsInstalled).to eq(false)
 
         reset_SuSEFirewallIsInstalled_cache
 
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
-        expect(Yast::SuSEFirewall.SuSEFirewallIsInstalled).to eq(true)
+        expect(subject.SuSEFirewallIsInstalled).to eq(true)
+        expect(subject.SuSEFirewallIsInstalled).to eq(true)
+        expect(subject.SuSEFirewallIsInstalled).to eq(true)
       end
     end
   end
 
   describe "#full_init_on_boot" do
     it "sets whether SuSEfirewall2_init should do the full init on boot and returns the current state" do
-      expect(Yast::SuSEFirewall.full_init_on_boot(true)).to eq(true)
-      expect(Yast::SuSEFirewall.GetModified()).to eq(true)
-      expect(Yast::SuSEFirewall.full_init_on_boot(false)).to eq(false)
-      expect(Yast::SuSEFirewall.GetModified()).to eq(true)
+      expect(subject.full_init_on_boot(true)).to eq(true)
+      expect(subject.GetModified()).to eq(true)
+      expect(subject.full_init_on_boot(false)).to eq(false)
+      expect(subject.GetModified()).to eq(true)
     end
   end
 
