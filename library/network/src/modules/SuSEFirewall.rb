@@ -277,6 +277,15 @@ module Yast
       end
     end
 
+    # Function returns list of known firewall zones (shortnames)
+    #
+    # @return	[Array<String>] of firewall zones
+    #
+    # @example GetKnownFirewallZones() -> ["DMZ", "EXT", "INT"]
+    def GetKnownFirewallZones
+      deep_copy(@known_firewall_zones)
+    end
+
     # Create appropriate firewall instance based on factors such as which backends
     # are available and/or running/selected.
     #
@@ -330,6 +339,7 @@ module Yast
   # firewalld.
   class SuSEFirewalldClass < FirewallClass
     include Firewalld
+    require "set"
     attr_reader :special_all_interface_zone
 
     # Valid attributes for firewalld zones
@@ -343,6 +353,15 @@ module Yast
     # {enable,start}_firewall are "inherited" from SF2 so we can't use symbols
     # there without having to change all the SF2 callers.
     @@key_settings = ["enable_firewall", "logging", "start_firewall"]
+
+    EMPTY_ZONE = {
+      interfaces: [],
+      masquerade: false,
+      modified:   Set.new,
+      ports:      [],
+      protocols:  [],
+      services:   []
+    }
 
     # We need that for the tests. Nothing else should access the API
     # directly
@@ -359,9 +378,17 @@ module Yast
       @FIREWALL_PACKAGE = "firewalld"
       # firewall settings map
       @SETTINGS = {}
+      # list of known firewall zones
+      @known_firewall_zones = ["block", "dmz", "drop", "external", "home",
+                               "internal", "public", "trusted", "work"]
+
       # Zone which works with the special_all_interface_string string. In our case,
       # we don't want to deal with this just yet. FIXME
       @special_all_interface_zone = ""
+
+      # Initialize the @SETTINGS hash
+      @@key_settings.each { |x| @SETTINGS[x] = nil }
+      GetKnownFirewallZones().each { |zone| @SETTINGS[zone] = deep_copy(EMPTY_ZONE) }
     end
 
     # Function which attempts to convert a sf2_service name to a firewalld
@@ -393,6 +420,7 @@ module Yast
     publish variable: :firewall_service, type: "string", private: true
     publish variable: :FIREWALL_PACKAGE, type: "const string"
     publish variable: :SETTINGS, type: "map <string, any>", private: true
+    publish variable: :known_firewall_zones, type: "list <string>", private: true
     publish variable: :special_all_interface_zone, type: "string"
     publish function: :GetStartService, type: "boolean ()"
     publish function: :SetStartService, type: "void (boolean)"
@@ -404,6 +432,7 @@ module Yast
     publish function: :DisableServices, type: "boolean ()"
     publish function: :IsEnabled, type: "boolean ()"
     publish function: :IsStarted, type: "boolean ()"
+    publish function: :GetKnownFirewallZones, type: "list <string> ()"
   end
 
   # ----------------------------------------------------------------------------
@@ -657,15 +686,6 @@ module Yast
       @modified = false
 
       nil
-    end
-
-    # Function returns list of known firewall zones (shortnames)
-    #
-    # @return	[Array<String>] of firewall zones
-    #
-    # @example GetKnownFirewallZones() -> ["DMZ", "EXT", "INT"]
-    def GetKnownFirewallZones
-      deep_copy(@known_firewall_zones)
     end
 
     # Report the error, warning, message only once.
