@@ -429,6 +429,30 @@ module Yast
       @modified || SuSEFirewallServices.GetModified
     end
 
+    # By default Firewall packages are just checked whether they are installed.
+    # With this function, you can change the behavior to also offer installing
+    # the packages.
+    #
+    # @param [Boolean] new_status, 'true' if packages should be offered for installation
+    def SetInstallPackagesIfMissing(new_status)
+      if new_status.nil?
+        Builtins.y2error("Wrong value: %1", new_status)
+        return
+      end
+
+      @check_and_install_package = new_status
+
+      if @check_and_install_package
+        Builtins.y2milestone("Firewall packages will installed if missing")
+      else
+        Builtins.y2milestone(
+          "Firewall packages will not be installed even if missing"
+        )
+      end
+
+      nil
+    end
+
     # Function returns list of maps of known interfaces.
     #
     # **Structure:**
@@ -733,6 +757,10 @@ module Yast
 
       # Are needed packages installed?
       @needed_packages_installed = nil
+
+      # bnc #388773
+      # By default needed packages are just checked, not installed
+      @check_and_install_package = false
 
     end
 
@@ -1328,6 +1356,7 @@ module Yast
     publish variable: :special_all_interface_zone, type: "string"
     publish variable: :zone_names, type: "map <string, string>", private: true
     publish variable: :needed_packages_installed, type: "boolean"
+    publish variable: :check_and_install_package, type: "boolean", private: true
     publish function: :GetStartService, type: "boolean ()"
     publish function: :SetStartService, type: "void (boolean)"
     publish function: :GetEnableService, type: "boolean ()"
@@ -1366,6 +1395,7 @@ module Yast
     publish function: :SetServices, type: "boolean (list <string>, list <string>, boolean)"
     publish function: :SetServicesForZones, type: "boolean (list <string>, list <string>, boolean)"
     publish function: :SuSEFirewallIsInstalled, type: "boolean ()"
+    publish function: :SetInstallPackagesIfMissing, type: "void (boolean)"
   end
 
   # ----------------------------------------------------------------------------
@@ -2369,30 +2399,6 @@ module Yast
         else
           Builtins.y2error("Unknown key '%1'", key)
         end
-      end
-
-      nil
-    end
-
-    # By default SuSEfirewall2 packages are just checked whether they are installed.
-    # With this function, you can change the behavior to also offer installing
-    # the packages.
-    #
-    # @param [Boolean] new_status, 'true' if packages should be offered for installation
-    def SetInstallPackagesIfMissing(new_status)
-      if new_status.nil?
-        Builtins.y2error("Wrong value: %1", new_status)
-        return
-      end
-
-      @check_and_install_package = new_status
-
-      if @check_and_install_package
-        Builtins.y2milestone("SuSEfirewall2 packages will installed if missing")
-      else
-        Builtins.y2milestone(
-          "SuSEfirewall2 packages will not be installed even if missing"
-        )
       end
 
       nil
