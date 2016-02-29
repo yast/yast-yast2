@@ -2397,7 +2397,7 @@ module Yast
       firewall_zones = GetZonesOfInterfacesWithAnyFeatureSupported(interfaces)
       if Builtins.size(firewall_zones) == 0
         Builtins.y2error(
-          "Interfaces '%1' are not in any group if interfaces",
+          "Interfaces '%1' are not in any group of interfaces",
           interfaces
         )
         return false
