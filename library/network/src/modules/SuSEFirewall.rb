@@ -837,6 +837,28 @@ module Yast
       false
     end
 
+    # Function returns true if service is supported (allowed) in zone. Service must be defined
+    # already be defined.
+    #
+    # @see YCP Module SuSEFirewallServices
+    # @param [String] service id
+    # @param [String] zone
+    # @return	[Boolean] if supported
+    #
+    # @example
+    #	// All ports defined by dns-server service in SuSEFirewallServices module
+    #	// are enabled in the respective zone
+    #	IsServiceSupportedInZone ("dns-server", "external") -> true
+    def IsServiceSupportedInZone(service, zone)
+      return nil if !IsKnownZone(zone)
+
+      # We may have more than one FirewallD service per SF2 service
+      sf2_to_firewalld_service(service).each do |s|
+        return false if !in_zone_attr?(zone, :services, s)
+      end
+
+      true
+    end
     # Function returns list of known interfaces in requested zone.
     # Special strings like 'any' or 'auto' and unknown interfaces are removed from list.
     #
@@ -1015,6 +1037,7 @@ module Yast
     publish function: :IsAnyNetworkInterfaceSupported, type: "boolean ()"
     publish function: :GetInterfacesInZone, type: "list <string> (string)"
     publish function: :GetInterfacesInZoneSupportingAnyFeature, type: "list <string> (string)"
+    publish function: :IsServiceSupportedInZone, type: "boolean (string, string)"
   end
 
   # ----------------------------------------------------------------------------
