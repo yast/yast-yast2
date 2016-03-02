@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.175
+Version:        3.1.176
 Release:        0
 Url:            https://github.com/yast/yast-yast2
 
@@ -43,13 +43,13 @@ BuildRequires:  grep
 BuildRequires:  fdupes
 
 # For running RSpec tests during build
-BuildRequires:  rubygem(rspec)
+BuildRequires:  rubygem(%rb_default_ruby_abi:rspec)
 # for defining abstract methods in libraries
-BuildRequires:  rubygem(abstract_method)
+BuildRequires:  rubygem(%rb_default_ruby_abi:abstract_method)
 # for running scripts
-BuildRequires:  rubygem(cheetah)
+BuildRequires:  rubygem(%rb_default_ruby_abi:cheetah)
 # for file access using augeas
-BuildRequires:  rubygem(cfa)
+BuildRequires:  rubygem(%rb_default_ruby_abi:cfa)
 
 # To have Yast::CoreExt::AnsiString
 BuildRequires:  yast2-ruby-bindings >= 3.1.36
@@ -61,11 +61,11 @@ PreReq:         %fillup_prereq
 # ag_ini with (un)quoting support
 Requires:       yast2-core >= 2.23.0
 # for defining abstract methods in libraries
-Requires:  rubygem(abstract_method)
+Requires:  rubygem(%rb_default_ruby_abi:abstract_method)
 # for running scripts
-Requires:  rubygem(cheetah)
+Requires:  rubygem(%rb_default_ruby_abi:cheetah)
 # for file access using augeas
-Requires:  rubygem(cfa)
+Requires:  rubygem(%rb_default_ruby_abi:cfa)
 # new UI::SetApplicationIcon
 Requires:       yast2-ycp-ui-bindings >= 3.1.8
 
