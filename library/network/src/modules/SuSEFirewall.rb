@@ -419,6 +419,62 @@ module Yast
       end
     end
 
+    # Function for getting exported SuSEFirewall configuration
+    #
+    # @return	[Hash{String => Object}] with configuration
+    def Export
+      deep_copy(@SETTINGS)
+    end
+
+    # Function for setting SuSEFirewall configuration from input
+    #
+    # @param	map <string, any> with configuration
+    def Import(import_settings)
+      Read()
+      import_settings = deep_copy(import_settings)
+      # Sanitize it
+      import_settings.keys.each do |k|
+        if !GetKnownFirewallZones().include?(k) && !@@key_settings.include?(k)
+          Builtins.y2warning("Removing invalid key: %1 from imported settings", k)
+          import_settings.delete(k)
+        else
+          import_settings[k].keys.each do |v|
+            if !@@zone_attributes.include?(v)
+              Builtins.y2warning("Removing invalid value: %1 from key %2", v, k)
+              import_settings[k].delete(v)
+            end
+          end if import_settings[k].is_a?(Hash)
+        end
+      end
+
+      # Ruby's merge will probably not work since we have nested hashes
+      @SETTINGS.keys.each do |key|
+        next unless import_settings.include?(key)
+        if import_settings[key].class == Hash
+          # Merge them
+          @SETTINGS[key].merge!(import_settings[key])
+        else
+          @SETTINGS[key] = import_settings[key]
+        end
+      end
+
+      # Merge missing attributes
+      @SETTINGS.keys.each do |key|
+        next unless GetKnownFirewallZones().include?(key)
+        # is this a zone?
+        @SETTINGS[key] = EMPTY_ZONE.merge(@SETTINGS[key])
+        # Everything may have been modified
+        @SETTINGS[key][:modified] = [:interfaces, :masquerade, :ports, :protocols, :services]
+      end
+
+      # Tests mock the read method so read the NetworkInterface list again
+      NetworkInterfaces.Read if !@configuration_has_been_read
+
+      SetModified()
+
+      nil
+    end
+
     def Read
       # Do not read it again and again
       # to avoid overwritting live configuration.
@@ -745,6 +801,8 @@ module Yast
     publish function: :WriteConfiguration, type: "boolean ()"
     publish function: :WriteOnly, type: "boolean ()"
     publish function: :Write, type: "boolean ()"
+    publish function: :Export, type: "map <string, any> ()"
+    publish function: :Import, type: "void (map <string, any>)"
   end
 
   # ----------------------------------------------------------------------------
