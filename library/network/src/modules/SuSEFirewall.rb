@@ -407,6 +407,14 @@ module Yast
       deep_copy(known_interfaces)
     end
 
+    # Function returns list of all known interfaces.
+    #
+    # @return	[Array<String>] of interfaces
+    # @example GetListOfKnownInterfaces() -> ["eth1", "eth2", "modem0", "dsl5"]
+    def GetListOfKnownInterfaces
+      GetAllKnownInterfaces().map { |i| i["id"] }
+    end
+
     # Function returns list of zones of requested interfaces
     #
     # @param [Array<String>] interfaces
@@ -1077,6 +1085,7 @@ module Yast
     publish function: :GetInterfacesInZoneSupportingAnyFeature, type: "list <string> (string)"
     publish function: :IsServiceSupportedInZone, type: "boolean (string, string)"
     publish function: :GetServices, type: "map <string, map <string, boolean>> (list <string>)"
+    publish function: :GetListOfKnownInterfaces, type: "list <string> ()"
   end
 
   # ----------------------------------------------------------------------------
@@ -2441,23 +2450,6 @@ module Yast
       end
 
       deep_copy(dial_up_interfaces)
-    end
-
-    # Function returns list of all known interfaces.
-    #
-    # @return	[Array<String>] of interfaces
-    # @example GetListOfKnownInterfaces() -> ["eth1", "eth2", "modem0", "dsl5"]
-    def GetListOfKnownInterfaces
-      interfaces = []
-
-      Builtins.foreach(GetAllKnownInterfaces()) do |interface_map|
-        interfaces = Builtins.add(
-          interfaces,
-          Ops.get_string(interface_map, "id", "")
-        )
-      end
-
-      deep_copy(interfaces)
     end
 
     # Function removes interface from defined zone.
