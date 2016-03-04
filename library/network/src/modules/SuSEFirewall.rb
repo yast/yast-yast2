@@ -965,6 +965,21 @@ module Yast
       nil
     end
 
+    # Function returns list of zones of requested interfaces.
+    # Special string 'any' in 'EXT' zone is supported.
+    #
+    # @param [Array<String>] interfaces
+    # @return	[Array<String>] firewall zones
+    #
+    # @example
+    #	GetZonesOfInterfaces (["eth1","eth4"]) -> ["EXT"]
+    def GetZonesOfInterfacesWithAnyFeatureSupported(interfaces)
+      interfaces = deep_copy(interfaces)
+      zones = []
+      interfaces.each { |interface| zones << GetZoneOfInterface(interface) }
+      zones
+    end
+
     # Function returns whether the feature 'any' network interface is supported.
     # This is a SF2 specific construct. For firewalld, we simply return false.
     # We may decide to change this in the future.
@@ -1210,6 +1225,7 @@ module Yast
     publish function: :SetModified, type: "void ()"
     publish function: :ResetModified, type: "void ()"
     publish function: :GetModified, type: "boolean ()"
+    publish function: :GetZonesOfInterfacesWithAnyFeatureSupported, type: "list <string> (list <string>)"
   end
 
   # ----------------------------------------------------------------------------
