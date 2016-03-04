@@ -1155,9 +1155,63 @@ module Yast
     # @example GetInterfacesInZone ("external") -> ["eth4", "eth5"]
     def GetInterfacesInZone(zone)
       return [] unless IsKnownZone(zone)
-      deep_copy(get_zone_attr(zone, :interfaces))
+      known_interfaces_now = GetListOfKnownInterfaces()
+      get_zone_attr(zone, :interfaces).find_all { |i| known_interfaces_now.include?(i) }
     end
 
+    # Function removes interface from defined zone.
+    #
+    # @param [String] interface
+    # @param [String] zone
+    # @example RemoveInterfaceFromZone ("modem0", "EXT")
+    def RemoveInterfaceFromZone(interface, zone)
+      return nil if !IsKnownZone(zone)
+
+      SetModified()
+
+      Builtins.y2milestone(
+        "Removing interface '%1' from '%2' zone.",
+        interface,
+        zone
+      )
+
+      del_from_zone_attr(zone, :interfaces, interface)
+      add_zone_modified(zone, :interfaces)
+
+      nil
+    end
+
+    # Functions adds interface into defined zone.
+    # All appearances of interface in other zones are removed.
+    #
+    # @param [String] interface
+    # @param [String] zone
+    # @example AddInterfaceIntoZone ("eth5", "DMZ")
+    def AddInterfaceIntoZone(interface, zone)
+      return nil if !IsKnownZone(zone)
+
+      SetModified()
+
+      current_zone = GetZoneOfInterface(interface)
+
+      # removing all appearances of interface in zones, excepting current_zone==new_zone
+      while !current_zone.nil? && current_zone != zone
+        # interface is in any zone already, removing it at first
+        RemoveInterfaceFromZone(interface, current_zone) if current_zone != zone
+        current_zone = GetZoneOfInterface(interface)
+      end
+
+      Builtins.y2milestone(
+        "Adding interface '%1' into '%2' zone.",
+        interface,
+        zone
+      )
+
+      add_to_zone_attr(zone, :interfaces, interface)
+      add_zone_modified(zone, :interfaces)
+
+      nil
+    end
     # Function returns list of known interfaces in requested zone.
     # In the firewalld case, we don't support the special 'any' string.
     # Thus, interfaces not in a zone will not be included.
@@ -1314,7 +1368,8 @@ module Yast
     # @example
     #	GetSpecialInterfacesInZone("EXT") -> ["any", "unknown-1", "wrong-3"]
     def GetSpecialInterfacesInZone(zone)
-      []
+      known_interfaces_now = GetListOfKnownInterfaces()
+      get_zone_attr(zone, :interfaces).reject { |i| known_interfaces_now.include?(i) }
     end
 
     # Function removes special string from defined zone. For firewalld we
@@ -1323,7 +1378,7 @@ module Yast
     # @param [String] interface
     # @param [String] zone
     def RemoveSpecialInterfaceFromZone(interface, zone)
-     nil
+      RemoveInterfaceFromZone(interface, zone)
     end
 
     # Functions adds special string into defined zone. For firewalld we
@@ -1332,7 +1387,7 @@ module Yast
     # @param [String] interface
     # @param [String] zone
     def AddSpecialInterfaceIntoZone(interface, zone)
-      nil
+      AddInterfaceIntoZone(interface, zone)
     end
 
   private
@@ -1514,6 +1569,8 @@ module Yast
     publish function: :GetSpecialInterfacesInZone, type: "list <string> (string)"
     publish function: :RemoveSpecialInterfaceFromZone, type: "void (string, string)"
     publish function: :AddSpecialInterfaceIntoZone, type: "void (string, string)"
+    publish function: :RemoveInterfaceFromZone, type: "void (string, string)"
+    publish function: :AddInterfaceIntoZone, type: "void (string, string)"
   end
 
   # ----------------------------------------------------------------------------
