@@ -43,6 +43,9 @@ module Yast
       # See defaults map below for sample contents
       @features = nil
 
+      # See SetOverlay and ClearOverlay
+      @backup_features = nil
+
       # Default values for features
       # two-level map, section_name -> [ feature -> value ]
       @defaults = {
@@ -316,6 +319,32 @@ module Yast
       @features = deep_copy(import_settings)
 
       nil
+    end
+
+    # Overlay, or override, some features.
+    # The intended use is to use SetOverlay to apply some features
+    # specified by a system role (FATE#317481).
+    # Clear would be called only when coming Back
+    # to the role selection dialog (and then SetOverlay with a different one)
+    # @param features [Hash{String => Hash{String => Object}}] in the same
+    #   format as `@features` or `@defaults`
+    # @return void
+    def SetOverlay(features)
+      @backup_features = deep_copy(@features)
+
+      features.each do |section_name, section|
+        section.each do |k, v|
+          SetFeature(section_name, k, v)
+        end
+      end
+    end
+
+    # Remove a `@features` overlay; does nothing if SetOverlay was never called.
+    # @see SetOverlay
+    # @return void
+    def ClearOverlay
+      return if @backup_features.nil?
+      @features = deep_copy(@backup_features)
     end
 
     publish function: :GetStringFeature, type: "string (string, string)"
