@@ -1390,6 +1390,99 @@ module Yast
       AddInterfaceIntoZone(interface, zone)
     end
 
+    # Function returns actual state of logging.
+    # @ note There is no 1-1 matching between SF2 and FirewallD when
+    # @ note it comes to logging. We need to be backwards compatible and
+    # @ note so we use the following conventions:
+    # @ note ACCEPT -> FirewallD can't log accepted packets so we always return
+    # @ note false.
+    # @ note DROP -> We map "all" to "ALL", "broadcast, multicast or unicast"
+    # @ note to "CRIT" and "off" to "NONE".
+    # @ note As a result of which, this method has little value in FirewallD
+    # @param [String] rule definition 'ACCEPT' or 'DROP'
+    # @return	[String] 'ALL' or 'NONE'
+    #
+    def GetLoggingSettings(rule)
+      return false if rule == "ACCEPT"
+      if rule == "DROP"
+        drop_rule = @SETTINGS["logging"]
+        case drop_rule
+        when "off"
+          return "NONE"
+        when "broadcast", "multicast", "unicast"
+          return "CRIT"
+        when "all"
+          return "ALL"
+        end
+      else
+        Builtins.y2error("Possible rules are only 'ACCEPT' or 'DROP'")
+      end
+    end
+
+    # Function sets state of logging.
+    # @note Similar restrictions to GetLoggingSettings apply
+    # @param [String] rule definition 'ACCEPT' or 'DROP'
+    # @param	string new logging state 'ALL', 'CRIT', or 'NONE'
+    def SetLoggingSettings(rule, state)
+      return nil if rule == "ACCEPT"
+      if rule == "DROP"
+        drop_rule = state.downcase
+        case drop_rule
+        when "none"
+          @SETTINGS["logging"] = "off"
+        when "crit"
+          # Choosing unicast since it's likely to be the most common case
+          @SETTINGS["logging"] = "unicast"
+        when "all"
+          @SETTINGS["logging"] = "all"
+        end
+      else
+        Builtins.y2error("Possible rules are only 'ACCEPT' or 'DROP'")
+      end
+
+      SetModified()
+
+      nil
+    end
+
+    # Function returns yes/no - ingoring broadcast for zone
+    #
+    # @param [String] unused
+    # @return	[String] "yes" or "no"
+    #
+    # @example
+    #	// Does not log ignored broadcast packets
+    #	GetIgnoreLoggingBroadcast () -> "yes"
+    def GetIgnoreLoggingBroadcast(_zone)
+      return "no" if @SETTINGS["logging"] == "broadcast"
+      "yes"
+    end
+
+    # Function sets yes/no - ingoring broadcast for zone
+    # @note Since Firewalld only accepts a single packet type to log,
+    # @note we simply disable logging if broadcast logging is not desirable.
+    # @note If you used SetIgnoreLoggingBroadcast is your code, make sure you
+    # @note use SetLoggingSettings afterwards to enable the type of logging you
+    # @note want.
+    #
+    # @param [String] unused
+    # @param	string ignore 'yes' or 'no'
+    #
+    # @example
+    #	// Do not log broadcast packetes from DMZ
+    #	SetIgnoreLoggingBroadcast ("DMZ", "yes")
+    def SetIgnoreLoggingBroadcast(_zone = nil, bcast)
+      bcast = bcast.downcase == "no" ? "broadcast" : "off"
+
+      return nil if @SETTINGS["logging"] == bcast
+
+      SetModified()
+
+      @SETTINGS["logging"] = bcast.downcase
+
+      nil
+    end
+
   private
 
     def set_zone_modified(zone, zone_params)
@@ -1571,6 +1664,10 @@ module Yast
     publish function: :AddSpecialInterfaceIntoZone, type: "void (string, string)"
     publish function: :RemoveInterfaceFromZone, type: "void (string, string)"
     publish function: :AddInterfaceIntoZone, type: "void (string, string)"
+    publish function: :GetLoggingSettings, type: "string (string)"
+    publish function: :SetLoggingSettings, type: "void (string, string)"
+    publish function: :GetIgnoreLoggingBroadcast, type: "string (string)"
+    publish function: :SetIgnoreLoggingBroadcast, type: "void (string, string)"
   end
 
   # ----------------------------------------------------------------------------
