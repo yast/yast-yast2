@@ -26,20 +26,10 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 65
 
-# Configuration parameters: EnforcedStyle, SupportedStyles.
-# JR: I personally think that having this variable on class level is much more readable
-# and easier to recognize that access visibility changed
-Style/AccessModifierIndentation:
-  EnforcedStyle: outdent
-
 Style/AccessorMethodName:
   # keep backward compatibility, but do not allow new code to be non-ruby style
   Exclude:
     - library/systemd/src/modules/systemd_target.rb
-
-# Keep non-ascii comments as it contains e.g. examples for Punycode
-Style/AsciiComments:
-  Enabled: false
 
 # UI_ID module is not camel case
 Style/ClassAndModuleCamelCase:
@@ -49,10 +39,6 @@ Style/ClassAndModuleCamelCase:
 Style/Documentation:
   Include:
     - "library/*/src/lib/**/*.rb"
-
-# keep double negation as conversion to boolean
-Style/DoubleNegation:
-  Enabled: false
 
 Style/FileName:
   Include:
