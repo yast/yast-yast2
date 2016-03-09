@@ -9,51 +9,55 @@ Yast.import "SCR"
 SERVICES_DATA_PATH = File.join(
   File.expand_path(File.dirname(__FILE__)),
   "data",
-  Yast::SuSEFirewallServicesClass::SERVICES_DIR
+  Yast::SuSEFirewall2ServicesClass::SERVICES_DIR
 )
 
 # Adjusts SuSEFirewallServices to read data from test-directory
 def setup_data_dir
-  stub_const("Yast::SuSEFirewallServicesClass::SERVICES_DIR", SERVICES_DATA_PATH)
+  stub_const("Yast::SuSEFirewall2ServicesClass::SERVICES_DIR", SERVICES_DATA_PATH)
 end
 
-describe Yast::SuSEFirewallServices do
+FakeFirewallServices = Yast::SuSEFirewallServicesClass.create(:sf2)
+FakeFirewallServices.main
+
+describe FakeFirewallServices do
+
   describe "#ServiceDefinedByPackage" do
     it "distinguishes whether service is defined by package" do
-      expect(Yast::SuSEFirewallServices.ServiceDefinedByPackage("service:dns-server")).to eq(true)
-      expect(Yast::SuSEFirewallServices.ServiceDefinedByPackage("dns-server")).to eq(false)
+      expect(subject.ServiceDefinedByPackage("service:dns-server")).to eq(true)
+      expect(subject.ServiceDefinedByPackage("dns-server")).to eq(false)
     end
   end
 
   describe "#GetFilenameFromServiceDefinedByPackage" do
     it "returns a file name (service name) taken from the service name if service is defined by package" do
-      expect(Yast::SuSEFirewallServices.GetFilenameFromServiceDefinedByPackage("service:dns-server")).to eq "dns-server"
+      expect(subject.GetFilenameFromServiceDefinedByPackage("service:dns-server")).to eq "dns-server"
     end
 
     it "returns nil if service is not defined by package" do
-      expect(Yast::SuSEFirewallServices.GetFilenameFromServiceDefinedByPackage("dns-server")).to be_nil
+      expect(subject.GetFilenameFromServiceDefinedByPackage("dns-server")).to be_nil
     end
   end
 
   describe "#GetMetadataAgent" do
     it "returns non-empty agent definition" do
-      expect(Yast::SuSEFirewallServices.GetMetadataAgent("dns-server")).not_to be_nil
+      expect(subject.GetMetadataAgent("dns-server")).not_to be_nil
     end
   end
 
   describe "#service_details" do
     it "returns non-empty service definition" do
-      allow(Yast::SuSEFirewallServices).to receive(:all_services).and_return(
-        "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("tcp_ports" => ["a", "b"]),
-        "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("udp_ports" => ["x", "y"])
+      allow(subject).to receive(:all_services).and_return(
+        "service:dns-server"  => Yast::SuSEFirewall2ServicesClass::DEFAULT_SERVICE.merge("tcp_ports" => ["a", "b"]),
+        "service:dhcp-server" => Yast::SuSEFirewall2ServicesClass::DEFAULT_SERVICE.merge("udp_ports" => ["x", "y"])
       )
-      expect(Yast::SuSEFirewallServices.service_details("service:dns-server")).not_to be_nil
-      expect(Yast::SuSEFirewallServices.service_details("service:dns-server")["tcp_ports"]).to eq(["a", "b"])
+      expect(subject.service_details("service:dns-server")).not_to be_nil
+      expect(subject.service_details("service:dns-server")["tcp_ports"]).to eq(["a", "b"])
     end
 
     it "throws an exception SuSEFirewalServiceNotFound if service does not exist" do
-      allow(Yast::SuSEFirewallServices).to receive(:all_services).and_return({})
-      expect { Yast::SuSEFirewallServices.service_details("undefined_service") }.to raise_error(
+      allow(subject).to receive(:all_services).and_return({})
+      expect { subject.service_details("undefined_service") }.to raise_error(
         Yast::SuSEFirewalServiceNotFound, /undefined_service/
       )
     end
@@ -65,13 +69,13 @@ describe Yast::SuSEFirewallServices do
 
       # Listing services directly from test-dir
       services_on_disk = Dir.entries(SERVICES_DATA_PATH).reject do |s|
-        Yast::SuSEFirewallServicesClass::IGNORED_SERVICES.include?(s)
+        Yast::SuSEFirewall2ServicesClass::IGNORED_SERVICES.include?(s)
       end
       services_on_disk.map! do |s|
-        Yast::SuSEFirewallServicesClass::DEFINED_BY_PKG_PREFIX + s
+        Yast::SuSEFirewall2ServicesClass::DEFINED_BY_PKG_PREFIX + s
       end
 
-      services = Yast::SuSEFirewallServices.all_services
+      services = subject.all_services
       expect(services.keys.sort).to eq(services_on_disk.sort)
       # Just to make sure nobody removes service files without changing the test-case
       expect(services.size).to be >= 7
@@ -82,18 +86,18 @@ describe Yast::SuSEFirewallServices do
     it "returns whether service exists" do
       setup_data_dir
 
-      expect(Yast::SuSEFirewallServices.IsKnownService("service:bind")).to eq(true)
-      expect(Yast::SuSEFirewallServices.IsKnownService("service:no-bind")).to eq(false)
+      expect(subject.IsKnownService("service:bind")).to eq(true)
+      expect(subject.IsKnownService("service:no-bind")).to eq(false)
     end
 
     it "does not throw an exception if service does not exist" do
-      expect { Yast::SuSEFirewallServices.IsKnownService("unknown-service") }.not_to raise_error
+      expect { subject.IsKnownService("unknown-service") }.not_to raise_error
     end
   end
 
   describe "#GetListOfServicesAddedByPackage" do
     it "return list of known services" do
-      expect(Yast::SuSEFirewallServices.GetListOfServicesAddedByPackage.size).to be >= 7
+      expect(subject.GetListOfServicesAddedByPackage.size).to be >= 7
     end
   end
 
@@ -104,43 +108,43 @@ describe Yast::SuSEFirewallServices do
 
     describe "#GetNeededTCPPorts" do
       it "returns list of TCP ports required by a service" do
-        expect(Yast::SuSEFirewallServices.GetNeededTCPPorts("service:special-service")).to eq(["port_1", "port_44", "port_2"])
+        expect(subject.GetNeededTCPPorts("service:special-service")).to eq(["port_1", "port_44", "port_2"])
       end
     end
 
     describe "#GetNeededUDPPorts" do
       it "returns list of UDP ports required by a service" do
-        expect(Yast::SuSEFirewallServices.GetNeededUDPPorts("service:special-service")).to eq(["zzz", "bbb", "aaa"])
+        expect(subject.GetNeededUDPPorts("service:special-service")).to eq(["zzz", "bbb", "aaa"])
       end
     end
 
     describe "#GetNeededRPCPorts" do
       it "returns list of RPC ports required by a service" do
-        expect(Yast::SuSEFirewallServices.GetNeededRPCPorts("service:special-service")).to eq([])
+        expect(subject.GetNeededRPCPorts("service:special-service")).to eq([])
       end
     end
 
     describe "#GetNeededIPProtocols" do
       it "returns list of IP protocols required by a service" do
-        expect(Yast::SuSEFirewallServices.GetNeededIPProtocols("service:special-service")).to eq(["ICMP", "HMP", "DDP", "RSVP"])
+        expect(subject.GetNeededIPProtocols("service:special-service")).to eq(["ICMP", "HMP", "DDP", "RSVP"])
       end
     end
 
     describe "#GetDescription" do
       it "returns service description" do
-        expect(Yast::SuSEFirewallServices.GetDescription("service:special-service")).to include("parsed")
+        expect(subject.GetDescription("service:special-service")).to include("parsed")
       end
     end
 
     describe "#GetNeededBroadcastPorts" do
       it "returns list of broadcast ports required by a service" do
-        expect(Yast::SuSEFirewallServices.GetNeededBroadcastPorts("service:special-service")).to eq(["port_x", "port_z"])
+        expect(subject.GetNeededBroadcastPorts("service:special-service")).to eq(["port_x", "port_z"])
       end
     end
 
     describe "#GetNeededPortsAndProtocols" do
       it "returns hash of ports and protocols required by a service" do
-        service_details = Yast::SuSEFirewallServices.GetNeededPortsAndProtocols("service:special-service")
+        service_details = subject.GetNeededPortsAndProtocols("service:special-service")
 
         expect(service_details.is_a?(Hash)).to eq(true)
 
@@ -161,45 +165,45 @@ describe Yast::SuSEFirewallServices do
 
       new_set_of_ports = ["new", "set", "of", "ports"]
 
-      service_definition = Yast::SuSEFirewallServices.GetNeededPortsAndProtocols("service:special-service")
+      service_definition = subject.GetNeededPortsAndProtocols("service:special-service")
       expect(service_definition["tcp_ports"]).not_to eq(new_set_of_ports)
       service_definition["tcp_ports"] = new_set_of_ports
 
-      expect(Yast::SuSEFirewallServices.SetNeededPortsAndProtocols("service:special-service", service_definition)).to eq(true)
-      expect(Yast::SuSEFirewallServices.GetNeededPortsAndProtocols("service:special-service")).to eq(service_definition)
+      expect(subject.SetNeededPortsAndProtocols("service:special-service", service_definition)).to eq(true)
+      expect(subject.GetNeededPortsAndProtocols("service:special-service")).to eq(service_definition)
     end
   end
 
   context "while adjusting and checking the Modified flag" do
     before(:each) do
-      Yast::SuSEFirewallServices.ResetModified
+      subject.ResetModified
     end
 
     describe "#GetModified" do
       it "returns the default Modified flag" do
-        expect(Yast::SuSEFirewallServices.GetModified()).to eq(false)
+        expect(subject.GetModified()).to eq(false)
       end
     end
 
     describe "#SetModified" do
       it "sets the Modified flag" do
-        Yast::SuSEFirewallServices.SetModified
-        expect(Yast::SuSEFirewallServices.GetModified()).to eq(true)
+        subject.SetModified
+        expect(subject.GetModified()).to eq(true)
       end
     end
 
     describe "#ResetModified" do
       it "resets the Modified flag to default" do
-        Yast::SuSEFirewallServices.SetModified
-        Yast::SuSEFirewallServices.ResetModified
-        expect(Yast::SuSEFirewallServices.GetModified()).to eq(false)
+        subject.SetModified
+        subject.ResetModified
+        expect(subject.GetModified()).to eq(false)
       end
     end
   end
 
   describe "#OLD_SERVICES" do
     it "returns hash of old services definitions for conversion" do
-      old_services = Yast::SuSEFirewallServices.OLD_SERVICES
+      old_services = subject.OLD_SERVICES
       expect(old_services.size).to be >= 1
       expect(old_services.is_a?(Hash)).to eq(true)
     end
