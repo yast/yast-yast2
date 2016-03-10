@@ -1494,6 +1494,67 @@ module Yast
       nil
     end
 
+    # Function returns list of allowed ports for zone and protocol
+    #
+    # @param [String] zone
+    # @param [String] protocol
+    # @return	[Array<String>] of allowed ports
+    def GetAllowedServicesForZoneProto(zone, protocol)
+      Yast.import "SuSEFirewallServices"
+
+      result = []
+      protocol = protocol.downcase
+
+      get_zone_attr(zone, :ports).each do |p|
+        port_proto = p.split("/")
+        result << port_proto[0] if port_proto[1] == protocol
+      end
+      result = get_zone_attr(zone, :protocols) if protocol == "ip"
+      # We return the name of service instead of its ports
+      get_zone_attr(zone, :services).each do |s| # to be SF2 compatible.
+        if protocol == "tcp"
+          result << s if !SuSEFirewallServices.GetNeededTCPPorts(s).empty?
+        elsif protocol == "udp"
+          result << s if !SuSEFirewallServices.GetNeededUDPPorts(s).empty?
+        end
+      end
+      # FIXME: Is this really needed?
+      result.flatten!
+
+      deep_copy(result)
+    end
+
+    # This powerful function returns list of services/ports which are
+    # not assigned to any fully-supported known-services.
+    # This function doesn't check for services defined by packages.
+    # They are listed by a different way.
+    #
+    # @return	[Array<String>] of additional (unassigned) services
+    #
+    # @example
+    #	GetAdditionalServices("TCP", "EXT") -> ["53", "128"]
+    def GetAdditionalServices(protocol, zone)
+      protocol = protocol.upcase
+
+      if !IsSupportedProtocol(protocol.upcase)
+        Builtins.y2error("Unknown protocol '%1'", protocol)
+        return nil
+      end
+      if !IsKnownZone(zone)
+        Builtins.y2error("Unknown zone '%1'", zone)
+        return nil
+      end
+
+      # all ports or services allowed in zone for protocol
+      all_allowed_services = GetAllowedServicesForZoneProto(zone, protocol)
+
+      # And now drop the known ones
+      all_allowed_services -= SuSEFirewallServices.GetSupportedServices().keys
+
+      # well, actually it returns list of services not-assigned to any well-known service
+      deep_copy(all_allowed_services)
+    end
+
   private
 
     def set_zone_modified(zone, zone_params)
@@ -1681,6 +1742,8 @@ module Yast
     publish function: :SetIgnoreLoggingBroadcast, type: "void (string, string)"
     publish variable: :supported_protocols, type: "list <string>", private: true
     publish function: :IsSupportedProtocol, type: "boolean (string)", private: true
+    publish function: :GetAdditionalServices, type: "list <string> (string, string)"
+    publish function: :GetAllowedServicesForZoneProto, type: "list <string> (string, string)", private: true
   end
 
   # ----------------------------------------------------------------------------
