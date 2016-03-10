@@ -44,6 +44,33 @@ module Yast
     include Yast::Logger
     Yast.import "SuSEFirewall"
 
+    # Function returns the map of supported (known) services.
+    #
+    # @return [Hash{String => String}] supported services
+    #
+    # **Structure:**
+    #
+    #     { service_id => localized_service_name }
+    #     {
+    #         "service:dns-server" => "DNS Server",
+    #         "service:vnc" => "Remote Administration",
+    #     }
+    def GetSupportedServices
+      supported_services = {}
+      all_services.each do |service_id, service_definition|
+        # TRANSLATORS: Name of unknown service. %1 is a requested service id like nfs-server
+        supported_services[service_id] = service_definition["name"] || Builtins.sformat(_("Unknown service '%1'"), service_id)
+      end
+      supported_services
+    end
+
+    # Returns all known services loaded from disk on-the-fly
+    # @api private
+    def all_services
+      ReadServicesDefinedByRPMPackages() if @services.nil?
+      @services
+    end
+
     # Create appropriate firewall services class based on factors such as which
     # backend is selected by user or running on the system.
     #
@@ -398,13 +425,6 @@ module Yast
       service
     end
 
-    # Returns all known services loaded from disk on-the-fly
-    # @api private
-    def all_services
-      ReadServicesDefinedByRPMPackages() if @services.nil?
-      @services
-    end
-
     # Reads definition of services that can be used in FW_CONFIGURATIONS_[EXT|INT|DMZ]
     # in SuSEfirewall2.
     #
@@ -516,36 +536,6 @@ module Yast
     # @return	[Boolean] if is known (defined)
     def IsKnownService(service_id)
       !service_details(service_id, true).nil?
-    end
-
-    # Function returns the map of supported (known) services.
-    #
-    # @return [Hash{String => String}] supported services
-    #
-    # **Structure:**
-    #
-    #     { service_id => localized_service_name }
-    #     {
-    #         "service:dns-server" => "DNS Server",
-    #         "service:vnc" => "Remote Administration",
-    #     }
-    def GetSupportedServices
-      supported_services = {}
-
-      all_services.each do |service_id, service_definition|
-        Ops.set(
-          supported_services,
-          service_id,
-          # TRANSLATORS: Name of unknown service. %1 is a requested service id like nis-server
-          Ops.get_string(
-            service_definition,
-            "name",
-            Builtins.sformat(_("Unknown service '%1'"), service_id)
-          )
-        )
-      end
-
-      deep_copy(supported_services)
     end
 
     # Returns list of service-ids defined by packages.
@@ -787,6 +777,8 @@ module Yast
   end
 
   class SuSEFirewalldServicesClass < SuSEFirewallServicesClass
+    include Yast::Logger
+
     SERVICES_DIR = ["/etc/firewalld/services", "/usr/lib/firewalld/services"]
 
     IGNORED_SERVICES = ["..", "."]
@@ -803,6 +795,117 @@ module Yast
 
       @known_metadata = { "Name" => "name", "Description" => "description" }
     end
+
+    # Reads services that can be used in FirewallD
+    # @note Contrary to SF2 we do not read the full service details here
+    # @note since that would mean to issue 5-6 API calls for every service
+    # @note file which will take a lot of time for no particular reason.
+    # @note We will read the full service information if needed in the
+    # @note service_details method.
+    # @return [Boolean] if successful
+    # @api private
+    def ReadServicesDefinedByRPMPackages
+      log.info "Reading FirewallD services from #{SERVICES_DIR.join(" and ")}"
+
+      @services ||= {}
+
+      SuSEFirewall.api.services.each do |service_name|
+        # Init everything
+        @services[service_name] = {}
+        @known_services_features.merge(@known_metadata).each_value do |param|
+          # Set a good name for our service until we read its information
+          case param
+          when "description"
+            # We intentionally don't call the API here. We will use it as a
+            # flag to populate the full service details later on.
+            @services[service_name][param] = default_service_description(service_name)
+          when "name"
+            # We have to call the API here because there are callers which
+            # expect to at least provide a sensible service name without
+            # worrying for the full service details. This is going to be
+            # expensive though since the cost of calling --get-short grows
+            # linearly with the number of available services :-(
+            @services[service_name][param] = SuSEFirewall.api.service_short(service_name)
+          else
+            @services[service_name][param] = []
+          end
+        end
+      end
+    end
+
+    # Returns service definition.
+    # See @services for the format.
+    # If `silent` is not defined or set to `true`, function throws an exception
+    # SuSEFirewalServiceNotFound if service is not found on disk.
+    #
+    # @note Since we do not do full service population in ReadServicesDefinedByRPMPackages
+    # @note we have to do it here but only if the service hasn't been populated
+    # @note before. The way we determine if the service has been populated or not
+    # @note is to look at the "description" key.
+    #
+    # @param [String] service name (may include the "service:" prefix)
+    # @param [String] (optional) whether to silently return nil
+    #                 when service is not found (default false)
+    # @api private
+    def service_details(service_name, silent = false)
+      # Drop service: if needed
+      service_name = service_name.partition(":")[2] if service_name.include?("service:")
+      # If service description is the default one then we know that we haven't read the service
+      # information just yet. Lets do it now
+      populate_service(service_name) if all_services[service_name]["description"] ==
+          default_service_description(service_name)
+      service = all_services[service_name]
+      if service.nil? && !silent
+        log.error "Uknown service '#{service_name}'"
+        log.info "Known services: #{all_services.keys}"
+
+        raise(
+          SuSEFirewalServiceNotFound,
+          _("Service with name '%{service_name}' does not exist") % { service_name: service_name }
+        )
+      end
+
+      service
+    end
+
+  private
+
+    # A good default description for all services. We will use that to
+    # determine if the service has been populated or not.
+    #
+    # @param service_name [String] The service name
+    # @return [String] Default description for service
+    def default_service_description(service_name)
+      _("The %{service_name} Service") % { service_name: service_name.upcase }
+    end
+
+    # Populate service's internal data structures.
+    #
+    # @param service_name [String] The service name
+    def populate_service(service_name)
+      # This going to be too expensive (5 API calls per service) but this
+      # is really the slowpath since we rarely need to extract so much
+      # information from a service
+      SuSEFirewall.api.service_modules(service_name).split(" ").each do |x|
+        @services[service_name]["modules"] << x
+      end
+      SuSEFirewall.api.service_protocols(service_name).split(" ").each do |x|
+        @services[service_name]["protocols"] << x
+      end
+      SuSEFirewall.api.service_ports(service_name).split(" ").each do |x|
+        port_proto = x.split("/")
+        @services[service_name]["tcp_ports"] << port_proto[0] if port_proto[1] == "tcp"
+        @services[service_name]["udp_ports"] << port_proto[0] if port_proto[1] == "udp"
+      end
+      @services[service_name]["description"] = SuSEFirewall.api.service_description(service_name)
+
+      log.debug("Added service '#{service_name}' with info: #{@services[service_name]}")
+
+      true
+    end
+
+    publish function: :ReadServicesDefinedByRPMPackages, type: "boolean ()"
+    publish function: :GetSupportedServices, type: "map <string, string> ()"
   end
 
   SuSEFirewallServices = SuSEFirewallServicesClass.create
