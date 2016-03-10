@@ -758,6 +758,22 @@ module Yast
   end
 
   class SuSEFirewalldServicesClass < SuSEFirewallServicesClass
+    SERVICES_DIR = ["/etc/firewalld/services", "/usr/lib/firewalld/services"]
+
+    IGNORED_SERVICES = ["..", "."]
+
+    def initialize
+      @services = nil
+
+      @known_services_features = {
+        "TCP"     => "tcp_ports",
+        "UDP"     => "udp_ports",
+        "IP"      => "ip_protocols",
+        "MODULES" => "modules"
+      }
+
+      @known_metadata = { "Name" => "name", "Description" => "description" }
+    end
   end
 
   SuSEFirewallServices = SuSEFirewallServicesClass.create
