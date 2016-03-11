@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Mar 10 10:15:13 UTC 2016 - dvaleev@suse.com
+
+- Introduce PowerNV platform (boo#970582)
+- 3.1.178
+
+-------------------------------------------------------------------
 Fri Mar  4 10:54:48 UTC 2016 - mvidner@suse.com
 
 - Added ProductFeatures.SetOverlay,ClearOverlay for System Roles

@@ -200,13 +200,11 @@ module Yast
         end
         Builtins.y2milestone("_board_compatible '%1' \n", @_board_compatible)
         @_board_compatible = "wintel" if i386 || x86_64
-        # hwinfo expects CHRP/PReP/iSeries/MacRISC* in /proc/cpuinfo
+        # hwinfo expects CHRP/PReP/iSeries/MacRISC*/PowerNV in /proc/cpuinfo
         # there is no standard for the board identification
         # Cell and Maple based boards have no CHRP in /proc/cpuinfo
         # Pegasos and Cell do have CHRP in /proc/cpuinfo, but Pegasos2 should no be handled as CHRP
         # Efika is handled like Pegasos for the time being
-        # Treat PowerNV as CHRP. It is harmless for now. Patch for hwinfo is sent but it is better to be safe
-        @_board_compatible = "CHRP" if @_board_compatible == "PowerNV"
 
         if ppc && (@_board_compatible.nil? || @_board_compatible == "CHRP")
           device_type = Convert.to_map(
@@ -229,20 +227,10 @@ module Yast
             model,
             device_type
           )
-          compatible = Convert.to_map(
-            SCR.Execute(
-              path(".target.bash_output"),
-              "echo -n `cat /proc/device-tree/compatible`",
-              {}
-            )
-          )
           # catch remaining IBM boards
           if Builtins.issubstring(
             Ops.get_string(device_type, "stdout", ""),
             "chrp"
-       ) || Builtins.issubstring(
-         Ops.get_string(compatible, "stdout", ""),
-         "ibm,powernv"
        )
             @_board_compatible = "CHRP"
           end
@@ -299,6 +287,12 @@ module Yast
     # true for all "CHRP" ppc boards
     def board_chrp
       ppc && board_compatible == "CHRP"
+    end
+
+    # true for all baremetal Power8 systems
+    # https://github.com/open-power/docs
+    def board_powernv
+      ppc && board_compatible == "PowerNV"
     end
 
     # true for all "iSeries" ppc boards
