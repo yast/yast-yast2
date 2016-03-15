@@ -854,6 +854,62 @@ module Yast
       nil
     end
 
+    # Function returns if another firewall is currently running on the
+    # system. It uses command `iptables` to get information about just active
+    # iptables rules and compares the output with current status of the selected
+    # firewall backend
+    #
+    # @return	[Boolean] if other firewall is running
+    def IsOtherFirewallRunning
+      any_firewall_running = true
+
+      # grep must return at least blank lines, else it returns 'exit 1' instead of 'exit 0'
+      command = "LANG=C iptables -L -n | grep -v \"^\\(Chain\\|target\\)\""
+
+      iptables = Convert.to_map(
+        SCR.Execute(path(".target.bash_output"), command)
+      )
+      if Ops.get_integer(iptables, "exit", 0) == 0
+        iptables_list = Builtins.splitstring(
+          Ops.get_string(iptables, "stdout", ""),
+          "\n"
+        )
+        iptables_list = Builtins.filter(iptables_list) do |iptable_rule|
+          iptable_rule != ""
+        end
+
+        Builtins.y2milestone(
+          "Count of active iptables now: %1",
+          Builtins.size(iptables_list)
+        )
+
+        # none iptables rules
+        if Ops.greater_than(Builtins.size(iptables_list), 0)
+          any_firewall_running = true
+          # any iptables rules exist
+        else
+          any_firewall_running = false
+        end
+        # error running command
+      else
+        Builtins.y2error(
+          "Services Command: %1 (Exit %2) -> %3",
+          command,
+          Ops.get(iptables, "exit"),
+          Ops.get(iptables, "stderr")
+        )
+        return nil
+      end
+
+      # any firewall is running but it is not desired one
+      if any_firewall_running && !IsStarted()
+        Builtins.y2warning("Any other firewall is running...")
+        return true
+      end
+      # no firewall is running or the running firewall the desired one
+      false
+    end
+
     # Create appropriate firewall instance based on factors such as which backends
     # are available and/or running/selected.
     #
@@ -2130,6 +2186,7 @@ module Yast
     publish function: :SetAdditionalServices, type: "void (string, string, list <string>)"
     publish function: :RemoveAllowedPortsOrServices, type: "void (list <string>, string, string, boolean)", private: true
     publish function: :AddAllowedPortsOrServices, type: "void (list <string>, string, string)", private: true
+    publish function: :IsOtherFirewallRunning, type: "boolean ()"
   end
 
   # ----------------------------------------------------------------------------
@@ -4222,61 +4279,6 @@ module Yast
 
       # well, actually it returns list of services not-assigned to any well-known service
       deep_copy(all_allowed_services)
-    end
-
-    # Function returns if any other firewall then SuSEfirewall2 is currently running on the
-    # system. It uses command `iptables` to get information about just active iptables
-    # rules and compares the output with current status of SuSEfirewall2.
-    #
-    # @return	[Boolean] if other firewall is running
-    def IsOtherFirewallRunning
-      any_firewall_running = true
-
-      # grep must return at least blank lines, else it returns 'exit 1' instead of 'exit 0'
-      command = "iptables -L -n | grep -v \"^\\(Chain\\|target\\)\""
-
-      iptables = Convert.to_map(
-        SCR.Execute(path(".target.bash_output"), command)
-      )
-      if Ops.get_integer(iptables, "exit", 0) == 0
-        iptables_list = Builtins.splitstring(
-          Ops.get_string(iptables, "stdout", ""),
-          "\n"
-        )
-        iptables_list = Builtins.filter(iptables_list) do |iptable_rule|
-          iptable_rule != ""
-        end
-
-        Builtins.y2milestone(
-          "Count of active iptables now: %1",
-          Builtins.size(iptables_list)
-        )
-
-        # none iptables rules
-        if Ops.greater_than(Builtins.size(iptables_list), 0)
-          any_firewall_running = true
-          # any iptables rules exist
-        else
-          any_firewall_running = false
-        end
-        # error running command
-      else
-        Builtins.y2error(
-          "Services Command: %1 (Exit %2) -> %3",
-          command,
-          Ops.get(iptables, "exit"),
-          Ops.get(iptables, "stderr")
-        )
-        return nil
-      end
-
-      # any firewall is running but it is not a SuSEfirewall2
-      if any_firewall_running && !IsStarted()
-        Builtins.y2warning("Any other firewall is running...")
-        return true
-      end
-      # no firewall is running or the running firewall is SuSEfirewall2
-      false
     end
 
     # Function returns map of `interfaces in zones`.
