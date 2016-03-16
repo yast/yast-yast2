@@ -1,0 +1,30 @@
+/**
+ * File:
+ *   cfg_mail.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/sysconfig/mail
+ *   using the ini-agent
+ * Access:
+ *   read/write
+ * Authors:
+ *   Martin Vidner <mvidner@suse.cz>
+ * See:
+ *   yast2-agent-ini/ini.html
+ *   libscr
+ * Example:
+ *   Read(.sysconfig.mail.FROM_HEADER)
+ *   ("mycompany.com")
+ **
+ *   Write(.sysconfig.mail.FROM_HEADER, "MyCompany.com")
+ *   (true)
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/mail</tt>
+ * in an easy manner.
+ */
+.sysconfig.mail
+
+`ag_ini(
+  `SysConfigFile("/etc/sysconfig/mail")
+)
