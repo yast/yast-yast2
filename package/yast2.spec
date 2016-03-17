@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.178
+Version:        3.1.179
 Release:        0
 Url:            https://github.com/yast/yast-yast2
 
@@ -110,6 +110,9 @@ Conflicts:      yast2-sshd < 2.16.1
 
 # moved ag_content agent 
 Conflicts:      yast2-instserver <= 2.16.3
+
+# moved cfg_mail.scr
+Conflicts:      yast2-mail < 3.1.7
 
 # InstError
 Conflicts:      yast2-installation < 2.18.5

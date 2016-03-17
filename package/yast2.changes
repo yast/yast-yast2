@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 16 17:10:37 UTC 2016 - knut.anderssen@suse.com
+
+- Added cfg_mail.scr from yast-mail to avoid circular dependencies
+  with yast2-security, yast2-users and yast2-mail (FATE#319711)
+- 3.1.179
+
+-------------------------------------------------------------------
 Thu Mar 10 10:15:13 UTC 2016 - dvaleev@suse.com
 
 - Introduce PowerNV platform (boo#970582)
