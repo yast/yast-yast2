@@ -1010,6 +1010,158 @@ module Yast
       ret
     end
 
+    # Function adds service into selected zone (or zone of interface) for selected protocol.
+    # Function take care about port-aliases, first of all, removes all of them.
+    #
+    # @param [String] service/port
+    # @param [String] protocol TCP, UDP, RPC, IP
+    # @param	string zone name or interface name
+    # @return	[Boolean] success
+    #
+    # @example
+    #	AddService ("ssh", "TCP", "EXT")
+    #	AddService ("ssh", "TCP", "dsl0")
+    def AddService(service, protocol, interface)
+      Builtins.y2milestone(
+        "Adding service %1, protocol %2 to %3",
+        service,
+        protocol,
+        interface
+      )
+
+      if !IsSupportedProtocol(protocol)
+        Builtins.y2error("Unknown protocol: %1", protocol)
+        return false
+      end
+
+      zones_affected = []
+
+      # "all" means for all known zones
+      if interface == "all"
+        zones_affected = GetKnownFirewallZones()
+
+        # zone or interface name
+      else
+        # is probably an interface name
+        if !IsKnownZone(interface)
+          # interface is probably interface-name, checking for respective zone
+          interface = GetZoneOfInterface(interface)
+          # interface is not assigned to any zone
+          if interface.nil?
+            # TRANSLATORS: Error message, %1 = interface name (like eth0)
+            Report.Error(
+              Builtins.sformat(
+                _(
+                  "Interface '%1' is not assigned to any firewall zone.\nRun YaST2 Firewall and assign it.\n"
+                ),
+                interface
+              )
+            )
+            Builtins.y2warning(
+              "Interface '%1' is not assigned to any firewall zone",
+              interface
+            )
+            return false
+          end
+        end
+        zones_affected = [interface]
+      end
+
+      SetModified()
+
+      # Adding service support into each mentioned zone
+      Builtins.foreach(zones_affected) do |zone|
+        # If there isn't already
+        if !ArePortsOrServicesAllowed([service], protocol, zone, true)
+          AddAllowedPortsOrServices([service], protocol, zone)
+        else
+          Builtins.y2milestone(
+            "Port %1 has been already allowed in %2",
+            service,
+            zone
+          )
+        end
+      end
+
+      true
+    end
+
+    # Function removes service from selected zone (or for interface) for selected protocol.
+    # Function takes care about port-aliases, removes all of them.
+    #
+    # @param [String] service/port
+    # @param [String] protocol TCP, UDP, RPC, IP
+    # @param	string zone name or interface name
+    # @return	[Boolean] success
+    #
+    # @example
+    #	RemoveService ("22", "TCP", "DMZ") -> true
+    #  is the same as
+    #	RemoveService ("ssh", "TCP", "DMZ") -> true
+    def RemoveService(service, protocol, interface)
+      Builtins.y2milestone(
+        "Removing service %1, protocol %2 from %3",
+        service,
+        protocol,
+        interface
+      )
+
+      if !IsSupportedProtocol(protocol)
+        Builtins.y2error("Unknown protocol: %1", protocol)
+        return false
+      end
+
+      zones_affected = []
+
+      # "all" means for all known zones
+      if interface == "all"
+        zones_affected = GetKnownFirewallZones()
+
+        # zone or interface name
+      else
+        if !IsKnownZone(interface)
+          # interface is probably interface-name, checking for respective zone
+          interface = GetZoneOfInterface(interface)
+          # interface is not assigned to any zone
+          if interface.nil?
+            # TRANSLATORS: Error message, %1 = interface name (like eth0)
+            Report.Error(
+              Builtins.sformat(
+                _(
+                  "Interface '%1' is not assigned to any firewall zone.\nRun YaST2 Firewall and assign it.\n"
+                ),
+                interface
+              )
+            )
+            Builtins.y2warning(
+              "Interface '%1' is not assigned to any firewall zone",
+              interface
+            )
+            return false
+          end
+        end
+        zones_affected = [interface]
+      end
+
+      SetModified()
+
+      # Adding service support into each mentioned zone
+      Builtins.foreach(zones_affected) do |zone|
+        # if the service is allowed
+        if ArePortsOrServicesAllowed([service], protocol, zone, true)
+          RemoveAllowedPortsOrServices([service], protocol, zone, true)
+        else
+          Builtins.y2milestone(
+            "Port %1 has been already removed from %2",
+            service,
+            zone
+          )
+        end
+      end
+
+      true
+    end
+
     # Create appropriate firewall instance based on factors such as which backends
     # are available and/or running/selected.
     #
@@ -2313,6 +2465,8 @@ module Yast
     publish function: :GetSupportRoute, type: "boolean ()"
     publish function: :ArePortsOrServicesAllowed, type: "boolean (list <string>, string, string, boolean)", private: true
     publish function: :HaveService, type: "boolean (string, string, string)"
+    publish function: :AddService, type: "boolean (string, string, string)"
+    publish function: :RemoveService, type: "boolean (string, string, string)"
   end
 
   # ----------------------------------------------------------------------------
@@ -3592,158 +3746,6 @@ module Yast
       end
 
       deep_copy(interfaces_in_zone)
-    end
-
-    # Function adds service into selected zone (or zone of interface) for selected protocol.
-    # Function take care about port-aliases, first of all, removes all of them.
-    #
-    # @param [String] service/port
-    # @param [String] protocol TCP, UDP, RPC, IP
-    # @param	string zone name or interface name
-    # @return	[Boolean] success
-    #
-    # @example
-    #	AddService ("ssh", "TCP", "EXT")
-    #	AddService ("ssh", "TCP", "dsl0")
-    def AddService(service, protocol, interface)
-      Builtins.y2milestone(
-        "Adding service %1, protocol %2 to %3",
-        service,
-        protocol,
-        interface
-      )
-
-      if !IsSupportedProtocol(protocol)
-        Builtins.y2error("Unknown protocol: %1", protocol)
-        return false
-      end
-
-      zones_affected = []
-
-      # "all" means for all known zones
-      if interface == "all"
-        zones_affected = GetKnownFirewallZones()
-
-        # zone or interface name
-      else
-        # is probably an interface name
-        if !IsKnownZone(interface)
-          # interface is probably interface-name, checking for respective zone
-          interface = GetZoneOfInterface(interface)
-          # interface is not assigned to any zone
-          if interface.nil?
-            # TRANSLATORS: Error message, %1 = interface name (like eth0)
-            Report.Error(
-              Builtins.sformat(
-                _(
-                  "Interface '%1' is not assigned to any firewall zone.\nRun YaST2 Firewall and assign it.\n"
-                ),
-                interface
-              )
-            )
-            Builtins.y2warning(
-              "Interface '%1' is not assigned to any firewall zone",
-              interface
-            )
-            return false
-          end
-        end
-        zones_affected = [interface]
-      end
-
-      SetModified()
-
-      # Adding service support into each mentioned zone
-      Builtins.foreach(zones_affected) do |zone|
-        # If there isn't already
-        if !ArePortsOrServicesAllowed([service], protocol, zone, true)
-          AddAllowedPortsOrServices([service], protocol, zone)
-        else
-          Builtins.y2milestone(
-            "Port %1 has been already allowed in %2",
-            service,
-            zone
-          )
-        end
-      end
-
-      true
-    end
-
-    # Function removes service from selected zone (or for interface) for selected protocol.
-    # Function takes care about port-aliases, removes all of them.
-    #
-    # @param [String] service/port
-    # @param [String] protocol TCP, UDP, RPC, IP
-    # @param	string zone name or interface name
-    # @return	[Boolean] success
-    #
-    # @example
-    #	RemoveService ("22", "TCP", "DMZ") -> true
-    #  is the same as
-    #	RemoveService ("ssh", "TCP", "DMZ") -> true
-    def RemoveService(service, protocol, interface)
-      Builtins.y2milestone(
-        "Removing service %1, protocol %2 from %3",
-        service,
-        protocol,
-        interface
-      )
-
-      if !IsSupportedProtocol(protocol)
-        Builtins.y2error("Unknown protocol: %1", protocol)
-        return false
-      end
-
-      zones_affected = []
-
-      # "all" means for all known zones
-      if interface == "all"
-        zones_affected = GetKnownFirewallZones()
-
-        # zone or interface name
-      else
-        if !IsKnownZone(interface)
-          # interface is probably interface-name, checking for respective zone
-          interface = GetZoneOfInterface(interface)
-          # interface is not assigned to any zone
-          if interface.nil?
-            # TRANSLATORS: Error message, %1 = interface name (like eth0)
-            Report.Error(
-              Builtins.sformat(
-                _(
-                  "Interface '%1' is not assigned to any firewall zone.\nRun YaST2 Firewall and assign it.\n"
-                ),
-                interface
-              )
-            )
-            Builtins.y2warning(
-              "Interface '%1' is not assigned to any firewall zone",
-              interface
-            )
-            return false
-          end
-        end
-        zones_affected = [interface]
-      end
-
-      SetModified()
-
-      # Adding service support into each mentioned zone
-      Builtins.foreach(zones_affected) do |zone|
-        # if the service is allowed
-        if ArePortsOrServicesAllowed([service], protocol, zone, true)
-          RemoveAllowedPortsOrServices([service], protocol, zone, true)
-        else
-          Builtins.y2milestone(
-            "Port %1 has been already removed from %2",
-            service,
-            zone
-          )
-        end
-      end
-
-      true
     end
 
     # Returns whether a service is mentioned in FW_CONFIGURATIONS_[EXT|INT|DMZ].
