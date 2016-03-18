@@ -910,6 +910,106 @@ module Yast
       false
     end
 
+    def ArePortsOrServicesAllowed(needed_ports, protocol, zone, check_for_aliases)
+      needed_ports = deep_copy(needed_ports)
+      are_allowed = true
+
+      if Ops.less_than(Builtins.size(needed_ports), 1)
+        Builtins.y2warning(
+          "Undefined list of %1 services/ports for service",
+          protocol
+        )
+        return true
+      end
+
+      allowed_ports = {}
+      # BTW: only TCP and UDP ports can have aliases and only TCP and UDP ports can have port ranges
+      if check_for_aliases
+        allowed_ports = PortRanges.DividePortsAndPortRanges(
+          GetAllowedServicesForZoneProto(zone, protocol),
+          true
+        )
+      else
+        Ops.set(
+          allowed_ports,
+          "ports",
+          GetAllowedServicesForZoneProto(zone, protocol)
+        )
+      end
+
+      Builtins.foreach(needed_ports) do |needed_port|
+        if !Builtins.contains(Ops.get(allowed_ports, "ports", []), needed_port) &&
+            !PortRanges.PortIsInPortranges(
+              needed_port,
+              Ops.get(allowed_ports, "port_ranges", [])
+            )
+          are_allowed = false
+          raise Break
+        end
+      end
+
+      are_allowed
+    end
+
+    # Function returns if requested service is allowed in respective zone.
+    # Function takes care for service's aliases (only for TCP and UDP).
+    # Service is defined by set of parameters such as port and protocol.
+    #
+    # @param [String] service (service name, port name, port alias or port number)
+    # @param [String] protocol TCP, UDP, RCP or IP
+    # @param [String] interface name (like modem0), firewall zone (like "EXT") or "any" for all zones.
+    # @return	[Boolean] if service is allowed
+    #
+    # @example
+    #	HaveService ("ssh", "TCP", "EXT") -> true
+    #	HaveService ("ssh", "TCP", "modem0") -> false
+    #	HaveService ("53", "UDP", "dsl") -> false
+    def HaveService(service, protocol, interface)
+      if !IsSupportedProtocol(protocol)
+        Builtins.y2error("Unknown protocol: %1", protocol)
+        return nil
+      end
+
+      # definition of searched zones
+      zones = []
+
+      # "any" for all zones, this is ugly
+      if interface == "any"
+        zones = GetKnownFirewallZones()
+        # string interface is the zone name
+      elsif IsKnownZone(interface)
+        zones = Builtins.add(zones, interface)
+        # interface is the interface name
+      else
+        interface = GetZoneOfInterface(interface)
+        zones = Builtins.add(zones, interface) if !interface.nil?
+      end
+
+      # SuSEFirewall feature FW_PROTECT_FROM_INT
+      # should not be protected and searched zones include also internal (or the zone IS internal, sure)
+      if !GetProtectFromInternalZone() &&
+          Builtins.contains(zones, @int_zone_shortname)
+        Builtins.y2milestone(
+          "Checking for service '%1', in '%2', PROTECT_FROM_INTERNAL='no' => allowed",
+          service,
+          interface
+        )
+        return true
+      end
+
+      # Check and return whether the service (port) is supported anywhere
+      ret = false
+      Builtins.foreach(zones) do |zone|
+        # This function can also handle port ranges
+        if ArePortsOrServicesAllowed([service], protocol, zone, true)
+          ret = true
+          raise Break
+        end
+      end
+
+      ret
+    end
+
     # Create appropriate firewall instance based on factors such as which backends
     # are available and/or running/selected.
     #
@@ -1895,6 +1995,10 @@ module Yast
       @SETTINGS[:routing]
     end
 
+    def ArePortsOrServicesAllowed(needed_ports, protocol, zone, _check_for_aliases)
+      super(needed_ports, protocol, zone, false)
+    end
+
   private
 
     def set_zone_modified(zone, zone_params)
@@ -2207,6 +2311,8 @@ module Yast
     publish function: :IsOtherFirewallRunning, type: "boolean ()"
     publish function: :SetSupportRoute, type: "void (boolean)"
     publish function: :GetSupportRoute, type: "boolean ()"
+    publish function: :ArePortsOrServicesAllowed, type: "boolean (list <string>, string, string, boolean)", private: true
+    publish function: :HaveService, type: "boolean (string, string, string)"
   end
 
   # ----------------------------------------------------------------------------
@@ -3488,65 +3594,6 @@ module Yast
       deep_copy(interfaces_in_zone)
     end
 
-    # Function returns if requested service is allowed in respective zone.
-    # Function takes care for service's aliases (only for TCP and UDP).
-    # Service is defined by set of parameters such as port and protocol.
-    #
-    # @param [String] service (service name, port name, port alias or port number)
-    # @param [String] protocol TCP, UDP, RCP or IP
-    # @param [String] interface name (like modem0), firewall zone (like "EXT") or "any" for all zones.
-    # @return	[Boolean] if service is allowed
-    #
-    # @example
-    #	HaveService ("ssh", "TCP", "EXT") -> true
-    #	HaveService ("ssh", "TCP", "modem0") -> false
-    #	HaveService ("53", "UDP", "dsl") -> false
-    def HaveService(service, protocol, interface)
-      if !IsSupportedProtocol(protocol)
-        Builtins.y2error("Unknown protocol: %1", protocol)
-        return nil
-      end
-
-      # definition of searched zones
-      zones = []
-
-      # "any" for all zones, this is ugly
-      if interface == "any"
-        zones = GetKnownFirewallZones()
-        # string interface is the zone name
-      elsif IsKnownZone(interface)
-        zones = Builtins.add(zones, interface)
-        # interface is the interface name
-      else
-        interface = GetZoneOfInterface(interface)
-        zones = Builtins.add(zones, interface) if !interface.nil?
-      end
-
-      # SuSEFirewall feature FW_PROTECT_FROM_INT
-      # should not be protected and searched zones include also internal (or the zone IS internal, sure)
-      if !GetProtectFromInternalZone() &&
-          Builtins.contains(zones, @int_zone_shortname)
-        Builtins.y2milestone(
-          "Checking for service '%1', in '%2', PROTECT_FROM_INTERNAL='no' => allowed",
-          service,
-          interface
-        )
-        return true
-      end
-
-      # Check and return whether the service (port) is supported anywhere
-      ret = false
-      Builtins.foreach(zones) do |zone|
-        # This function can also handle port ranges
-        if ArePortsOrServicesAllowed([service], protocol, zone, true)
-          ret = true
-          raise Break
-        end
-      end
-
-      ret
-    end
-
     # Function adds service into selected zone (or zone of interface) for selected protocol.
     # Function take care about port-aliases, first of all, removes all of them.
     #
@@ -3697,47 +3744,6 @@ module Yast
       end
 
       true
-    end
-
-    def ArePortsOrServicesAllowed(needed_ports, protocol, zone, check_for_aliases)
-      needed_ports = deep_copy(needed_ports)
-      are_allowed = true
-
-      if Ops.less_than(Builtins.size(needed_ports), 1)
-        Builtins.y2warning(
-          "Undefined list of %1 services/ports for service",
-          protocol
-        )
-        return true
-      end
-
-      allowed_ports = {}
-      # BTW: only TCP and UDP ports can have aliases and only TCP and UDP ports can have port ranges
-      if check_for_aliases
-        allowed_ports = PortRanges.DividePortsAndPortRanges(
-          GetAllowedServicesForZoneProto(zone, protocol),
-          true
-        )
-      else
-        Ops.set(
-          allowed_ports,
-          "ports",
-          GetAllowedServicesForZoneProto(zone, protocol)
-        )
-      end
-
-      Builtins.foreach(needed_ports) do |needed_port|
-        if !Builtins.contains(Ops.get(allowed_ports, "ports", []), needed_port) &&
-            !PortRanges.PortIsInPortranges(
-              needed_port,
-              Ops.get(allowed_ports, "port_ranges", [])
-            )
-          are_allowed = false
-          raise Break
-        end
-      end
-
-      are_allowed
     end
 
     # Returns whether a service is mentioned in FW_CONFIGURATIONS_[EXT|INT|DMZ].
