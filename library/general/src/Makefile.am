@@ -63,6 +63,7 @@ scrconf_DATA = \
   scrconf/anyxml.scr \
   scrconf/yast2_desktop.scr \
   scrconf/proc_mounts.scr \
+  scrconf/proc_modules.scr \
   scrconf/cfg_ypserv.scr \
   scrconf/cfg_security.scr
 

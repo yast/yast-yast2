@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 23 16:26:26 UTC 2016 - cwh@suse.com
+
+- Added proc_modules.scr from yast-installation to avoid that
+  yast-sound depends on yast-installation (bsc#972310)
+- 3.1.180
+
+-------------------------------------------------------------------
 Wed Mar 16 17:10:37 UTC 2016 - knut.anderssen@suse.com
 
 - Added cfg_mail.scr from yast-mail to avoid circular dependencies
