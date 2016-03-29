@@ -25,6 +25,7 @@
 require "yast"
 require "uri"
 require "packages/dummy_callbacks"
+require "packages/file_conflict_callbacks"
 
 module Yast
   # Provides the default Callbacks for Pkg::
@@ -2759,6 +2760,10 @@ module Yast
       nil
     end
 
+    def SetFileConflictCallbacks
+      ::Packages::FileConflictCallbacks.register
+    end
+
     # Register package manager callbacks
     def InitPackageCallbacks
       SetProcessCallbacks()
@@ -2774,6 +2779,8 @@ module Yast
       SetSourceReportCallbacks()
 
       SetProgressReportCallbacks()
+
+      SetFileConflictCallbacks()
 
       # authentication callback
       Pkg.CallbackAuthentication(

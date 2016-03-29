@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 29 13:37:40 UTC 2016 - lslezak@suse.cz
+
+- Display a confirmation dialog when a file conflict is detected
+  during package installation (bsc#923590)
+- 3.1.181
+
+-------------------------------------------------------------------
 Wed Mar 23 16:26:26 UTC 2016 - cwh@suse.com
 
 - Added proc_modules.scr from yast-installation to avoid that
