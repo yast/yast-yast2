@@ -106,6 +106,7 @@
 # - optional package table
 # - release notes viewer
 require "yast"
+require "yast2/system_time"
 
 module Yast
   class SlideShowClass < Module
@@ -132,7 +133,7 @@ module Yast
       @start_time = -1
       @initial_recalc_delay = 60 # const - seconds before initially calculating remaining times
       @recalc_interval = 30 # const - seconds between "remaining time" recalculations
-      @next_recalc_time = Builtins.time
+      @next_recalc_time = Yast2::SystemTime.uptime
 
       @current_slide_no = 0
       @slide_start_time = 0
@@ -187,7 +188,7 @@ module Yast
     # Start the internal (global) timer.
     #
     def StartTimer
-      @start_time = Builtins.time
+      @start_time = Yast2::SystemTime.uptime
 
       nil
     end
@@ -195,7 +196,7 @@ module Yast
     # Reset the internal (global) timer.
     #
     def ResetTimer
-      @start_time = Builtins.time
+      @start_time = Yast2::SystemTime.uptime
 
       nil
     end
@@ -208,7 +209,7 @@ module Yast
         return
       end
 
-      elapsed = Ops.subtract(Builtins.time, @start_time)
+      elapsed = Ops.subtract(Yast2::SystemTime.uptime, @start_time)
       @start_time = -1
       @total_time_elapsed = Ops.add(@total_time_elapsed, elapsed)
       Builtins.y2debug(
@@ -458,7 +459,7 @@ module Yast
       @current_slide_no = slide_no
 
       slide_name = Ops.get(Slides.slides, slide_no, "")
-      @slide_start_time = Builtins.time
+      @slide_start_time = Yast2::SystemTime.uptime
 
       SetSlideText(Slides.LoadSlideFile(slide_name))
 
@@ -469,7 +470,7 @@ module Yast
     # necessary.
     #
     def ChangeSlideIfNecessary
-      if Builtins.time > (@slide_start_time + @slide_interval)
+      if Yast2::SystemTime.uptime > (@slide_start_time + @slide_interval)
         LoadSlide(@current_slide_no + 1)
       end
 
