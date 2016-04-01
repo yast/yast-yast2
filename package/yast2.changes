@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr  1 14:35:38 CEST 2016 - schubi@suse.de
+
+- Moved "uptime" from package autoyast2 to yast2.
+  Cleanup for bnc#956730.
+- 3.1.182
+
+-------------------------------------------------------------------
 Tue Mar 29 13:37:40 UTC 2016 - lslezak@suse.cz
 
 - Display a confirmation dialog when a file conflict is detected
