@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr  4 14:36:18 CEST 2016 - schubi@suse.de
+
+- Added system_time to ylib_DATA.
+  Cleanup for bnc#956730.
+- 3.1.183
+
+-------------------------------------------------------------------
 Fri Apr  1 14:35:38 CEST 2016 - schubi@suse.de
 
 - Moved "uptime" from package autoyast2 to yast2.
