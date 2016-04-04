@@ -1,7 +1,7 @@
 #
 # spec file for package yast2
 #
-# Copyright (c) 2015 SUSE LINUX GmbH, Nuernberg, Germany.
+# Copyright (c) 2016 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -19,114 +19,92 @@
 Name:           yast2
 Version:        3.1.184
 Release:        0
+Summary:        YaST2 - Main Package
+License:        GPL-2.0
+Group:          System/YaST
 Url:            https://github.com/yast/yast-yast2
-
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
-
 Source1:        yast2-rpmlintrc
-
-BuildRequires:  perl-XML-Writer
-BuildRequires:  update-desktop-files
-BuildRequires:  yast2-devtools >= 3.1.10
-BuildRequires:  yast2-perl-bindings
-BuildRequires:  yast2-testsuite
-# Needed already in build time
-BuildRequires:  yast2-core >= 2.18.12
-BuildRequires:  yast2-pkg-bindings >= 2.20.3
-BuildRequires:  yast2-ycp-ui-bindings >= 3.1.8
-
-# Needed for tests
-BuildRequires:  grep
-
 # for symlinking yardoc duplicates
 BuildRequires:  fdupes
-
-# For running RSpec tests during build
-BuildRequires:  rubygem(%rb_default_ruby_abi:rspec)
+# Needed for tests
+BuildRequires:  grep
+BuildRequires:  perl-XML-Writer
 # for defining abstract methods in libraries
-BuildRequires:  rubygem(%rb_default_ruby_abi:abstract_method)
-# for running scripts
-BuildRequires:  rubygem(%rb_default_ruby_abi:cheetah)
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
-BuildRequires:  rubygem(%rb_default_ruby_abi:cfa)
-
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:cfa)
+# for running scripts
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
+# For running RSpec tests during build
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
+BuildRequires:  update-desktop-files
+# Needed already in build time
+BuildRequires:  yast2-core >= 2.18.12
+BuildRequires:  yast2-devtools >= 3.1.10
+BuildRequires:  yast2-perl-bindings
+BuildRequires:  yast2-pkg-bindings >= 2.20.3
 # To have Yast::CoreExt::AnsiString
 BuildRequires:  yast2-ruby-bindings >= 3.1.36
-
-# pre-requires for filling the sysconfig template (sysconfig.yast2)
-PreReq:         %fillup_prereq
-
-# ag_ini section_private
-# ag_ini with (un)quoting support
-Requires:       yast2-core >= 2.23.0
-# for defining abstract methods in libraries
-Requires:  rubygem(%rb_default_ruby_abi:abstract_method)
-# for running scripts
-Requires:  rubygem(%rb_default_ruby_abi:cheetah)
-# for file access using augeas
-Requires:  rubygem(%rb_default_ruby_abi:cfa)
-# new UI::SetApplicationIcon
-Requires:       yast2-ycp-ui-bindings >= 3.1.8
-
-# changed StartPackage callback signature
-Requires:       yast2-pkg-bindings >= 2.20.3
-Requires:       yui_backend
-# For Cron Agent, Module
-Requires:       perl-Config-Crontab
+BuildRequires:  yast2-testsuite
+BuildRequires:  yast2-ycp-ui-bindings >= 3.1.8
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
 Requires:       coreutils
-Requires:       sysconfig >= 0.80.0
-Requires:       yast2-hardware-detection
-Requires:       yast2-xml
-# for SLPAPI.pm
-Requires:       yast2-perl-bindings
-# for ag_anyxml
-Requires:       perl-XML-Simple
 # for GPG.ycp
 Requires:       gpg2
-
-# for Punycode.rb (bnc#651893) - the idnconv tool is located in
-# different packages (SLE12/Leap-42.1: bind-utils, TW/Factory: idnkit)
-%if 0%{?suse_version} >= 1330
-Requires:       idnkit
-%else
-Requires:       bind-utils
-%endif
-
+# For Cron Agent, Module
+Requires:       perl-Config-Crontab
+# for ag_anyxml
+Requires:       perl-XML-Simple
+# for defining abstract methods in libraries
+Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
+# for file access using augeas
+Requires:       rubygem(%{rb_default_ruby_abi}:cfa)
+# for running scripts
+Requires:       rubygem(%{rb_default_ruby_abi}:cheetah)
+Requires:       sysconfig >= 0.80.0
+# ag_ini section_private
+# ag_ini with (un)quoting support
+Requires:       yast2-core >= 2.23.0
+Requires:       yast2-hardware-detection
+# for SLPAPI.pm
+Requires:       yast2-perl-bindings
+# changed StartPackage callback signature
+Requires:       yast2-pkg-bindings >= 2.20.3
+Requires:       yast2-ruby-bindings >= 3.1.33
+Requires:       yast2-xml
+# new UI::SetApplicationIcon
+Requires:       yast2-ycp-ui-bindings >= 3.1.8
+Requires:       yui_backend
+# pre-requires for filling the sysconfig template (sysconfig.yast2)
+PreReq:         %fillup_prereq
 # xdg-su in .desktops
 Recommends:     xdg-utils
-
-# moved cfg_security.scr
-Conflicts:      yast2-security <= 2.13.2
-# moved ag_netd, cfg_netd.scr, cfg_xinetd.scr
-Conflicts:      yast2-inetd <= 2.13.4
-Conflicts:      yast2-tune < 2.15.6
-Obsoletes:      yast2-mail-aliases <= 2.14.0
-Conflicts:      yast2-storage < 2.16.4
-Conflicts:      yast2-network < 2.16.6
-Conflicts:      yast2-sshd < 2.16.1
-
-# moved ag_content agent 
-Conflicts:      yast2-instserver <= 2.16.3
-
-# moved cfg_mail.scr
-Conflicts:      yast2-mail < 3.1.7
-
-# InstError
-Conflicts:      yast2-installation < 2.18.5
-
-Conflicts:      yast2-update < 2.16.1
-# Older packager use removed API
-Conflicts:      yast2-packager < 3.1.34
-Conflicts:      yast2-mouse < 2.16.0
 Conflicts:      autoyast2-installation < 2.16.2
 # country_long.ycp and country.ycp moved to yast2
 Conflicts:      yast2-country < 2.16.3
 # SrvStatusComponent moved to yast2.rpm
 Conflicts:      yast2-dns-server < 3.1.17
-
+# moved ag_netd, cfg_netd.scr, cfg_xinetd.scr
+Conflicts:      yast2-inetd <= 2.13.4
+# InstError
+Conflicts:      yast2-installation < 2.18.5
+# moved ag_content agent
+Conflicts:      yast2-instserver <= 2.16.3
+# moved cfg_mail.scr
+Conflicts:      yast2-mail < 3.1.7
+Conflicts:      yast2-mouse < 2.16.0
+Conflicts:      yast2-network < 2.16.6
+# Older packager use removed API
+Conflicts:      yast2-packager < 3.1.34
+# moved cfg_security.scr
+Conflicts:      yast2-security <= 2.13.2
+Conflicts:      yast2-sshd < 2.16.1
+Conflicts:      yast2-storage < 2.16.4
+Conflicts:      yast2-tune < 2.15.6
+Conflicts:      yast2-update < 2.16.1
+Obsoletes:      yast2-mail-aliases <= 2.14.0
 Provides:       yast2-lib-sequencer
 Obsoletes:      yast2-lib-sequencer
 Provides:       yast2-lib-wizard
@@ -139,44 +117,44 @@ Provides:       y2t_menu
 Provides:       yast2-trans-menu
 Obsoletes:      y2t_menu
 Obsoletes:      yast2-trans-menu
-
 # moved here from another packages
-Provides:       yast2-dns-server:/usr/share/YaST2/modules/DnsServerAPI.pm
-Provides:       yast2-installation:/usr/share/YaST2/modules/Hotplug.ycp
-Provides:       yast2-installation:/usr/share/YaST2/modules/HwStatus.ycp
-Provides:       yast2-installation:/usr/share/YaST2/modules/Installation.ycp
-Provides:       yast2-installation:/usr/share/YaST2/modules/Product.ycp
+Provides:       yast2-dns-server:%{_datadir}/YaST2/modules/DnsServerAPI.pm
+Provides:       yast2-installation:%{_datadir}/YaST2/modules/Hotplug.ycp
+Provides:       yast2-installation:%{_datadir}/YaST2/modules/HwStatus.ycp
+Provides:       yast2-installation:%{_datadir}/YaST2/modules/Installation.ycp
+Provides:       yast2-installation:%{_datadir}/YaST2/modules/Product.ycp
 Provides:       yast2-mail-aliases
-Provides:       yast2-network:/usr/share/YaST2/modules/Internet.ycp
-Provides:       yast2-packager:/usr/lib/YaST2/servers_non_y2/ag_anyxml
-
-Requires:       yast2-ruby-bindings >= 3.1.33
-
-Summary:        YaST2 - Main Package
-License:        GPL-2.0
-Group:          System/YaST
+Provides:       yast2-network:%{_datadir}/YaST2/modules/Internet.ycp
+Provides:       yast2-packager:%{_prefix}/lib/YaST2/servers_non_y2/ag_anyxml
+BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+# for Punycode.rb (bnc#651893) - the idnconv tool is located in
+# different packages (SLE12/Leap-42.1: bind-utils, TW/Factory: idnkit)
+%if 0%{?suse_version} >= 1330
+Requires:       idnkit
+%else
+Requires:       bind-utils
+%endif
 
 %description
 This package contains scripts and data needed for SUSE Linux
 installation with YaST2
 
 %package devel-doc
-Requires:       yast2 = %version
+Summary:        YaST2 - Development Scripts and Documentation
+Group:          System/YaST
+Requires:       yast2 = %{version}
+Requires:       yast2-core-devel
 Provides:       yast2-lib-sequencer-devel
 Obsoletes:      yast2-devel
 Obsoletes:      yast2-lib-sequencer-devel
 Provides:       yast2-devel
-Requires:       yast2-core-devel
-
-Summary:        YaST2 - Development Scripts and Documentation
-Group:          System/YaST
 
 %description devel-doc
 This package contains scripts and data needed for a SUSE Linux
 installation with YaST2.
 
 %prep
-%setup -n %{name}-%{version}
+%setup -q
 
 %build
 %yast_build
@@ -186,26 +164,26 @@ installation with YaST2.
 %install
 %yast_install
 
-mkdir -p "$RPM_BUILD_ROOT"%{yast_clientdir}
-mkdir -p "$RPM_BUILD_ROOT"%{yast_desktopdir}
-mkdir -p "$RPM_BUILD_ROOT"%{yast_imagedir}
-mkdir -p "$RPM_BUILD_ROOT"%{yast_localedir}
-mkdir -p "$RPM_BUILD_ROOT"%{yast_moduledir}
-mkdir -p "$RPM_BUILD_ROOT"%{yast_scrconfdir}
-mkdir -p "$RPM_BUILD_ROOT"%{yast_ybindir}
-mkdir -p "$RPM_BUILD_ROOT"%{yast_ydatadir}
-mkdir -p "$RPM_BUILD_ROOT"%{yast_yncludedir}
-mkdir -p "$RPM_BUILD_ROOT"%{yast_libdir}
-mkdir -p "$RPM_BUILD_ROOT"%{yast_vardir}
-mkdir -p "$RPM_BUILD_ROOT"%{yast_vardir}/hooks
-mkdir -p "$RPM_BUILD_ROOT"%{yast_schemadir}/control/rnc
-mkdir -p "$RPM_BUILD_ROOT"%{yast_schemadir}/autoyast/rnc
-mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
+mkdir -p %{buildroot}%{yast_clientdir}
+mkdir -p %{buildroot}%{yast_desktopdir}
+mkdir -p %{buildroot}%{yast_imagedir}
+mkdir -p %{buildroot}%{yast_localedir}
+mkdir -p %{buildroot}%{yast_moduledir}
+mkdir -p %{buildroot}%{yast_scrconfdir}
+mkdir -p %{buildroot}%{yast_ybindir}
+mkdir -p %{buildroot}%{yast_ydatadir}
+mkdir -p %{buildroot}%{yast_yncludedir}
+mkdir -p %{buildroot}%{yast_libdir}
+mkdir -p %{buildroot}%{yast_vardir}
+mkdir -p %{buildroot}%{yast_vardir}/hooks
+mkdir -p %{buildroot}%{yast_schemadir}/control/rnc
+mkdir -p %{buildroot}%{yast_schemadir}/autoyast/rnc
+mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 
 # symlink the yardoc duplicates, saves over 2MB in installed system
 # (the RPM package size is decreased just by few kilobytes
 # because of the compression)
-%fdupes -s %buildroot/%_prefix/share/doc/packages/yast2
+%fdupes -s %{buildroot}/%{_docdir}/yast2
 
 %post
 %{fillup_only -n yast2}
@@ -244,7 +222,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 %{yast_scrconfdir}/*
 %{yast_ybindir}/*
 %{yast_agentdir}/ag_*
-/var/adm/fillup-templates/sysconfig.yast2
+%{_localstatedir}/adm/fillup-templates/sysconfig.yast2
 
 # configuration files
 %config %{_sysconfdir}/bash_completion.d/yast2*.sh
@@ -253,7 +231,7 @@ mkdir -p "$RPM_BUILD_ROOT"/etc/YaST2
 # documentation (not included in devel subpackage)
 %doc %dir %{yast_docdir}
 %doc %{yast_docdir}/COPYING
-%doc %{_mandir}/*/*
+%{_mandir}/*/*
 %doc %{yast_vardir}/hooks/README.md
 
 /sbin/*
