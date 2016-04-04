@@ -1162,6 +1162,19 @@ module Yast
       true
     end
 
+    # Function adds a special interface 'xenbr+' into the FW_FORWARD_ALWAYS_INOUT_DEV variable.
+    #
+    # @see #https://bugzilla.novell.com/show_bug.cgi?id=154133
+    # @see #https://bugzilla.novell.com/show_bug.cgi?id=233934
+    # @see #https://bugzilla.novell.com/show_bug.cgi?id=375482
+    def AddXenSupport
+      Builtins.y2milestone(
+        "The whole functionality is currently handled by SuSEfirewall2 itself"
+      )
+
+      nil
+    end
+
     # Create appropriate firewall instance based on factors such as which backends
     # are available and/or running/selected.
     #
@@ -2151,6 +2164,17 @@ module Yast
       super(needed_ports, protocol, zone, false)
     end
 
+    # Sets whether ports need to be open already during boot
+    # bsc#916376. For FirewallD we simply return whatever it
+    # was passed as argument since FirewallD always does a
+    # full init on boot but we still need to be API compliant.
+    #
+    # @param [Boolean] new state
+    # @return [Boolean] current state
+    def full_init_on_boot(new_state)
+      new_state
+    end
+
   private
 
     def set_zone_modified(zone, zone_params)
@@ -2467,6 +2491,8 @@ module Yast
     publish function: :HaveService, type: "boolean (string, string, string)"
     publish function: :AddService, type: "boolean (string, string, string)"
     publish function: :RemoveService, type: "boolean (string, string, string)"
+    publish function: :AddXenSupport, type: "void ()"
+    publish function: :full_init_on_boot, type: "boolean (boolean)"
   end
 
   # ----------------------------------------------------------------------------
@@ -4711,19 +4737,6 @@ module Yast
       SetModified()
 
       Ops.set(@SETTINGS, Ops.add("FW_IGNORE_FW_BROADCAST_", zone), bcast)
-
-      nil
-    end
-
-    # Function adds a special interface 'xenbr+' into the FW_FORWARD_ALWAYS_INOUT_DEV variable.
-    #
-    # @see #https://bugzilla.novell.com/show_bug.cgi?id=154133
-    # @see #https://bugzilla.novell.com/show_bug.cgi?id=233934
-    # @see #https://bugzilla.novell.com/show_bug.cgi?id=375482
-    def AddXenSupport
-      Builtins.y2milestone(
-        "The whole functionality is currently handled by SuSEfirewall2 itself"
-      )
 
       nil
     end
