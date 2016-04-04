@@ -33,7 +33,8 @@ ylib_DATA = \
   lib/yast2/hw_detection.rb \
   lib/yast2/fs_snapshot.rb \
   lib/yast2/fs_snapshot_store.rb \
-  lib/yast2/target_file.rb
+  lib/yast2/target_file.rb \
+  lib/yast2/system_time.rb
 
 
 EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(scrconf_DATA) $(desktop_DATA) $(ylib_DATA)
