@@ -24,19 +24,16 @@
 # File: system_time.rb
 #
 
-
 require "yast"
 
 module Yast2
   # Module for handling system time
   class SystemTime
-
     # Determines the current uptime
     #
     # @return [Float] Current uptime in seconds
     def self.uptime
       Process.clock_gettime(Process::CLOCK_MONOTONIC)
     end
-
   end
 end
