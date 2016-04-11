@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr 11 07:55:44 UTC 2016 - lslezak@suse.cz
+
+- Make the "Abort" button default in the file conflict popup
+  (safe default compatible with zypper) (bsc#923590)
+- 3.1.184
+
+-------------------------------------------------------------------
 Mon Apr  4 14:36:18 CEST 2016 - schubi@suse.de
 
 - Added system_time to ylib_DATA.

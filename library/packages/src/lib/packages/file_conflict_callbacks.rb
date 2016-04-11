@@ -137,7 +137,6 @@ module Packages
         Yast::UI.OpenDialog(dialog(conflicts))
 
         begin
-          Yast::UI.SetFocus(Id(:continue))
           ret = Yast::UI.UserInput
           log.info "User Input: #{ret}"
           ret == :continue
@@ -161,8 +160,8 @@ module Packages
       # @return [Term] UI term
       def dialog(conflicts)
         button_box = ButtonBox(
-          PushButton(Id(:continue), Opt(:default, :okButton), Yast::Label.ContinueButton),
-          PushButton(Id(:abort), Opt(:cancelButton), Yast::Label.AbortButton)
+          PushButton(Id(:continue), Opt(:okButton), Yast::Label.ContinueButton),
+          PushButton(Id(:abort), Opt(:default, :cancelButton), Yast::Label.AbortButton)
         )
 
         # TRANSLATORS: A popup label, use max. 70 chars per line, use more lines if needed
