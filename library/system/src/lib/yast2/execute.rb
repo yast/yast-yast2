@@ -36,7 +36,7 @@ module Yast
     textdomain "base"
 
     # Runs arguments with respect of changed root in installation.
-    # @see Cheetah.run for parameters
+    # @see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run parameter docs
     # @raise Cheetah::ExecutionFailed
     def self.on_target(*args)
       root = "/"
@@ -52,7 +52,7 @@ module Yast
     end
 
     # Runs arguments without changed root.
-    # @see Cheetah.run for parameters
+    # @see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run parameter docs
     # @raise Cheetah::ExecutionFailed
     def self.locally(*args)
       popup_error { Cheetah.run(*args) }
