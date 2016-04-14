@@ -81,49 +81,20 @@ Requires:       yui_backend
 PreReq:         %fillup_prereq
 # xdg-su in .desktops
 Recommends:     xdg-utils
-Conflicts:      autoyast2-installation < 2.16.2
-# country_long.ycp and country.ycp moved to yast2
-Conflicts:      yast2-country < 2.16.3
 # SrvStatusComponent moved to yast2.rpm
 Conflicts:      yast2-dns-server < 3.1.17
-# moved ag_netd, cfg_netd.scr, cfg_xinetd.scr
-Conflicts:      yast2-inetd <= 2.13.4
 # InstError
 Conflicts:      yast2-installation < 2.18.5
-# moved ag_content agent
-Conflicts:      yast2-instserver <= 2.16.3
 # moved cfg_mail.scr
 Conflicts:      yast2-mail < 3.1.7
-Conflicts:      yast2-mouse < 2.16.0
-Conflicts:      yast2-network < 2.16.6
 # Older packager use removed API
 Conflicts:      yast2-packager < 3.1.34
-# moved cfg_security.scr
-Conflicts:      yast2-security <= 2.13.2
-Conflicts:      yast2-sshd < 2.16.1
-Conflicts:      yast2-storage < 2.16.4
-Conflicts:      yast2-tune < 2.15.6
-Conflicts:      yast2-update < 2.16.1
-Obsoletes:      yast2-mail-aliases <= 2.14.0
-Provides:       yast2-lib-sequencer
-Obsoletes:      yast2-lib-sequencer
-Provides:       yast2-lib-wizard
-Provides:       yast2-lib-wizard-devel
-Provides:       yast2-trans-wizard
-Obsoletes:      yast2-lib-wizard
-Obsoletes:      yast2-lib-wizard-devel
-Obsoletes:      yast2-trans-wizard
-Provides:       y2t_menu
-Provides:       yast2-trans-menu
-Obsoletes:      y2t_menu
-Obsoletes:      yast2-trans-menu
 # moved here from another packages
 Provides:       yast2-dns-server:%{_datadir}/YaST2/modules/DnsServerAPI.pm
 Provides:       yast2-installation:%{_datadir}/YaST2/modules/Hotplug.ycp
 Provides:       yast2-installation:%{_datadir}/YaST2/modules/HwStatus.ycp
 Provides:       yast2-installation:%{_datadir}/YaST2/modules/Installation.ycp
 Provides:       yast2-installation:%{_datadir}/YaST2/modules/Product.ycp
-Provides:       yast2-mail-aliases
 Provides:       yast2-network:%{_datadir}/YaST2/modules/Internet.ycp
 Provides:       yast2-packager:%{_prefix}/lib/YaST2/servers_non_y2/ag_anyxml
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -144,10 +115,6 @@ Summary:        YaST2 - Development Scripts and Documentation
 Group:          System/YaST
 Requires:       yast2 = %{version}
 Requires:       yast2-core-devel
-Provides:       yast2-lib-sequencer-devel
-Obsoletes:      yast2-devel
-Obsoletes:      yast2-lib-sequencer-devel
-Provides:       yast2-devel
 
 %description devel-doc
 This package contains scripts and data needed for a SUSE Linux
