@@ -89,14 +89,6 @@ Conflicts:      yast2-installation < 2.18.5
 Conflicts:      yast2-mail < 3.1.7
 # Older packager use removed API
 Conflicts:      yast2-packager < 3.1.34
-# moved here from another packages
-Provides:       yast2-dns-server:%{_datadir}/YaST2/modules/DnsServerAPI.pm
-Provides:       yast2-installation:%{_datadir}/YaST2/modules/Hotplug.ycp
-Provides:       yast2-installation:%{_datadir}/YaST2/modules/HwStatus.ycp
-Provides:       yast2-installation:%{_datadir}/YaST2/modules/Installation.ycp
-Provides:       yast2-installation:%{_datadir}/YaST2/modules/Product.ycp
-Provides:       yast2-network:%{_datadir}/YaST2/modules/Internet.ycp
-Provides:       yast2-packager:%{_prefix}/lib/YaST2/servers_non_y2/ag_anyxml
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 # for Punycode.rb (bnc#651893) - the idnconv tool is located in
 # different packages (SLE12/Leap-42.1: bind-utils, TW/Factory: idnkit)
