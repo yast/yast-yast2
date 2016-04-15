@@ -33,23 +33,27 @@
 require "yast"
 
 module Yast
+  # Tools for ranges of network ports, as used by iptables for firewalling.
+  #
+  # A Port Range is a string of two numbers separated with a colon: "3000:3010".
+  # The range includes both ends. The numbers are nonnegative integers.
+  #
+  # A *Valid* Port Range is an ascending pair of numbers between 1..65535.
   class PortRangesClass < Module
     def main
       textdomain "base"
 
       Yast.import "PortAliases"
 
-      # Local Helper Functions -->
-
       # Variable for ReportOnlyOnce() function
       @report_only_once = []
-
-      # <-- Local Helper Functions
 
       # Maximal number of port number, they are in the interval 1-65535 included.
       # The very same value should appear in SuSEFirewall::max_port_number.
       @max_port_number = 65_535
     end
+
+    # @!group Helpers
 
     # Report the error, warning, message only once.
     # Stores the error, warning, message in memory.
@@ -70,6 +74,7 @@ module Yast
         return true
       end
     end
+    # @!endgroup
 
     # Port Ranges -->
 
@@ -170,8 +175,9 @@ module Yast
     # list of port ranges. Port ranges must be defined as a string with format
     # "min_port_number:max_port_number".
     #
-    # @param string port_number_or_port_name
+    # @param [String] port a number or a name (see PortAliasesClass)
     # @param [Array<String>] port_ranges
+    # @return [Boolean]
     #
     # @example
     #     PortIsInPortranges ("130",  ["100:150","10:30"]) -> true
@@ -214,17 +220,14 @@ module Yast
     # If with_aliases is 'true' it also returns ports wit their port aliases.
     # Port ranges are not affected with it.
     #
-    #
-    # **Structure:**
-    #
-    #     Returns $[
-    #         "ports" : [ list of ports ],
-    #         "port_ranges" : [ list of port ranges ],
-    #      ]
-    #
     # @param [Array<String>] unsorted_ports
-    # @param boolean with port aliases
-    # @return <map <string, list <string> > > of divided ports
+    # @param [Boolean] with_aliases should names of single ports
+    #   be translated to numbers
+    # @return [Hash{String => Array<String>}] categorized ports:
+    #   {
+    #     "ports"       => [ list of ports ],
+    #     "port_ranges" => [ list of port ranges ],
+    #   }
     def DividePortsAndPortRanges(unsorted_ports, with_aliases)
       unsorted_ports = deep_copy(unsorted_ports)
       ret = {}
@@ -269,6 +272,12 @@ module Yast
     # @param integer min_port
     # @param integer max_port
     # @return [String] new port range
+    #
+    # @example
+    #    CreateNewPortRange(10, 20) # => "10:20"
+    #    CreateNewPortRange(10, 10) # => "10"
+    #    CreateNewPortRange(0,  20) # => ""
+    #    CreateNewPortRange(20, 10) # => ""
     def CreateNewPortRange(min_pr, max_pr)
       if min_pr.nil? || min_pr == 0
         Builtins.y2error(
@@ -306,14 +315,16 @@ module Yast
 
     # Function removes port number from all port ranges. Port must be in its numeric
     # form.
+    # A port range may be a single port, that's OK.
+    # Or a non-port, then it will be kept.
     #
     # @see #PortAliases::GetPortNumber()
     # @param [Fixnum] port_number to be removed
-    # @param list <string> of all current port_ranges
+    # @param [Array<String>] port_ranges
     # @return [Array<String>] of filtered port_ranges
     #
     # @example
-    #     RemovePortFromPortRanges(25, ["19-88", "152-160"]) -> ["19-24", "26-88", "152-160"]
+    #     RemovePortFromPortRanges(25, ["19:88", "152:160"]) -> ["19:24", "26:88", "152:160"]
     def RemovePortFromPortRanges(port_number, port_ranges)
       port_ranges = deep_copy(port_ranges)
       # Checking necessarity of filtering and params
@@ -382,7 +393,9 @@ module Yast
     # Function tries to flatten services into the minimal list.
     # If ports are already mentioned inside port ranges, they are dropped.
     #
-    # @param list <string> of services and port ranges
+    # @param old_list [Array<String>] port numbers, names, or ranges
+    # @param protocol [String] old_list is returned
+    #   unchanged if protocol is other than "TCP" or "UDP"
     # @return [Array<String>] of flattened services and port ranges
     def FlattenServices(old_list, protocol)
       old_list = deep_copy(old_list)
