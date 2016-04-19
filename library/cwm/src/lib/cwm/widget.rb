@@ -60,6 +60,7 @@ module CWM
   class AbstractWidget
     include Yast::UIShortcuts
     include Yast::I18n
+    include Yast::Logger
 
     # By default, {#handle} has no argument and it is called
     # only for events of its own widget.
@@ -675,8 +676,6 @@ module CWM
       @cwm_widgets = Yast::CWM.CreateWidgets(names, definition)
     end
 
-  protected
-
     # help that is result of used widget helps.
     # If overwritting, do not forget to use `super`, otherwise widget helps will
     # be missing
@@ -734,6 +733,10 @@ module CWM
       Yast::CWM.validateWidgets(@current_tab.cwm_definition["widgets"], "ID" => @current_tab.widget_id)
     end
 
+    def help
+      @current_tab ? @current_tab.help : ""
+    end
+
   protected
 
     # gets visual order of tabs
@@ -756,6 +759,8 @@ module CWM
       Yast::UI.ReplaceWidget(Id(replace_point_id), tab.cwm_definition["custom_widget"])
       Yast::CWM.initWidgets(tab.cwm_definition["widgets"])
       @current_tab = tab
+
+      Yast::CWM.ReplaceWidgetHelp(widget_id, help)
     end
 
     # visually mark currently active tab
