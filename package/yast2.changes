@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr 19 12:02:28 UTC 2016 - jreidinger@suse.com
+
+- CWM: fix showing help for tabs widgets
+  found during fixing bnc#952633)
+- 3.1.185
+
+-------------------------------------------------------------------
 Mon Apr 11 07:55:44 UTC 2016 - lslezak@suse.cz
 
 - Make the "Abort" button default in the file conflict popup
