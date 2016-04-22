@@ -272,8 +272,8 @@ module Yast
     # @return	[Boolean] whether service is defined by package
     #
     # @example
-    #	ServiceDefinedByPackage ("http-server") -> false
-    #	ServiceDefinedByPackage ("service:http-server") -> true
+    #   ServiceDefinedByPackage ("http-server") -> false
+    #   ServiceDefinedByPackage ("service:http-server") -> true
     def ServiceDefinedByPackage(service)
       service.start_with? DEFINED_BY_PKG_PREFIX
     end
@@ -285,8 +285,8 @@ module Yast
     # @return [String] file name (e.g., 'abc')
     #
     # @example
-    #	GetFilenameFromServiceDefinedByPackage ("service:abc") -> "abc"
-    #	GetFilenameFromServiceDefinedByPackage ("abc") -> nil
+    #   GetFilenameFromServiceDefinedByPackage ("service:abc") -> "abc"
+    #   GetFilenameFromServiceDefinedByPackage ("abc") -> nil
     def GetFilenameFromServiceDefinedByPackage(service)
       if !ServiceDefinedByPackage(service)
         log.error "Service #{service} is not defined by package"
@@ -299,7 +299,8 @@ module Yast
     # Returns SCR Agent definition.
     #
     # @return [Yast::Term] with agent definition
-    # @param string full filename path (to read by this agent)
+    # @param filefullpath [String] full filename path (to read by this agent)
+    # @api private
     def GetMetadataAgent(filefullpath)
       term(
         :IniAgent,
@@ -337,12 +338,13 @@ module Yast
 
     # Returns service definition.
     # See @services for the format.
-    # If `silent` is not defined or set to `true`, function throws an exception
-    # SuSEFirewalServiceNotFound if service is not found on disk.
+    # If *silent* is `false` (the default), the method throws an exception
+    # {Yast::SuSEFirewalServiceNotFound} if service is not found on disk.
     #
-    # @param [String] service name
+    # @param [String] service name (including the "service:" prefix)
     # @param [String] (optional) whether to silently return nil
     #                 when service is not found (default false)
+    # @api private
     def service_details(service_name, silent = false)
       service = all_services[service_name]
       if service.nil? && !silent
@@ -359,6 +361,7 @@ module Yast
     end
 
     # Returns all known services loaded from disk on-the-fly
+    # @api private
     def all_services
       ReadServicesDefinedByRPMPackages() if @services.nil?
       @services
@@ -368,6 +371,7 @@ module Yast
     # in SuSEfirewall2.
     #
     # @return [Boolean] if successful
+    # @api private
     def ReadServicesDefinedByRPMPackages
       log.info "Reading SuSEfirewall2 services from #{SERVICES_DIR}"
       @services ||= {}
@@ -470,7 +474,7 @@ module Yast
 
     # Function returns if the service_id is a known (defined) service
     #
-    # @param [String] service_id
+    # @param [String] service_id (including the "service:" prefix)
     # @return	[Boolean] if is known (defined)
     def IsKnownService(service_id)
       !service_details(service_id, true).nil?
@@ -480,15 +484,13 @@ module Yast
     #
     # @return [Hash{String => String}] supported services
     #
-    #
     # **Structure:**
     #
-    #
-    #     	$[ service_id : localized_service_name ]
-    #     	$[
-    #     	  "dns-server" : "DNS Server",
-    #         "vnc" : "Remote Administration",
-    #       ]
+    #     { service_id => localized_service_name }
+    #     {
+    #         "service:dns-server" => "DNS Server",
+    #         "service:vnc" => "Remote Administration",
+    #     }
     def GetSupportedServices
       supported_services = {}
 
@@ -509,6 +511,7 @@ module Yast
     end
 
     # Returns list of service-ids defined by packages.
+    # (including the "service:" prefix)
     #
     # @return [Array<String>] service ids
     def GetListOfServicesAddedByPackage
@@ -517,7 +520,7 @@ module Yast
 
     # Function returns needed TCP ports for service
     #
-    # @param [String] service
+    # @param [String] service (including the "service:" prefix)
     # @return	[Array<String>] of needed TCP ports
     def GetNeededTCPPorts(service)
       service_details(service)["tcp_ports"] || []
@@ -525,7 +528,7 @@ module Yast
 
     # Function returns needed UDP ports for service
     #
-    # @param [String] service
+    # @param [String] service (including the "service:" prefix)
     # @return	[Array<String>] of needed UDP ports
     def GetNeededUDPPorts(service)
       service_details(service)["udp_ports"] || []
@@ -533,7 +536,7 @@ module Yast
 
     # Function returns needed RPC ports for service
     #
-    # @param [String] service
+    # @param [String] service (including the "service:" prefix)
     # @return	[Array<String>] of needed RPC ports
     def GetNeededRPCPorts(service)
       service_details(service)["rpc_ports"] || []
@@ -541,7 +544,7 @@ module Yast
 
     # Function returns needed IP protocols for service
     #
-    # @param [String] service
+    # @param [String] service (including the "service:" prefix)
     # @return	[Array<String>] of needed IP protocols
     def GetNeededIPProtocols(service)
       service_details(service)["ip_protocols"] || []
@@ -549,7 +552,7 @@ module Yast
 
     # Function returns description of a firewall service
     #
-    # @param [String] service
+    # @param [String] service (including the "service:" prefix)
     # @return	[String] service description
     def GetDescription(service)
       service_details(service)["description"] || []
@@ -578,7 +581,7 @@ module Yast
 
     # Function returns needed ports allowing broadcast
     #
-    # @param [String] service
+    # @param [String] service (including the "service:" prefix)
     # @return	[Array<String>] of needed broadcast ports
     def GetNeededBroadcastPorts(service)
       service_details(service)["broadcast_ports"] || []
@@ -589,17 +592,17 @@ module Yast
     # Function throws an exception SuSEFirewalServiceNotFound
     # if service is not known (undefined).
     #
-    # @param [String] service
+    # @param [String] service (including the "service:" prefix)
     # @return	[Hash{String => Array<String>}] of needed ports and protocols
     #
     # @example
-    #	GetNeededPortsAndProtocols ("service:aaa") -> $[
-    #		"tcp_ports"       : [ "122", "ftp-data" ],
-    #		"udp_ports"       : [ "427" ],
-    #		"rpc_ports"       : [ "portmap", "ypbind" ],
-    #		"ip_protocols"    : [],
-    #		"broadcast_ports" : [ "427" ],
-    #	];
+    #   GetNeededPortsAndProtocols ("service:aaa") -> {
+    #           "tcp_ports"      => [ "122", "ftp-data" ],
+    #           "udp_ports"      => [ "427" ],
+    #           "rpc_ports"      => [ "portmap", "ypbind" ],
+    #           "ip_protocols"   => [],
+    #           "broadcast_ports"=> [ "427" ],
+    #   }
     def GetNeededPortsAndProtocols(service)
       DEFAULT_SERVICE.merge(service_details(service))
     end
@@ -607,28 +610,28 @@ module Yast
     # Immediately writes the configuration of service defined by package to the
     # service definition file. Service must be defined by package, this function
     # doesn't work for hard-coded services (SuSEFirewallServices).
-    # Function throws an exception SuSEFirewalServiceNotFound
+    # Function throws an exception {Yast::SuSEFirewalServiceNotFound}
     # if service is not known (undefined) or it is not a service
     # defined by package.
     #
     # @param [String] service ID (e.g., "service:ssh")
-    # @param map <string, list <string> > of full service definition
+    # @param [Hash{String => Array<String>] store_definition of full service definition
     # @return [Boolean] if successful (nil in case of developer's mistake)
     #
-    # @see #IsKnownService()
-    # @see #ServiceDefinedByPackage()
+    # @see #IsKnownService
+    # @see #ServiceDefinedByPackage
     #
     # @example
-    #	SetNeededPortsAndProtocols (
-    #		"service:something",
-    #		$[
-    #			"tcp_ports"       : [ "22", "ftp-data", "400:420" ],
-    #			"udp_ports"       : [ ],
-    #			"rpc_ports"       : [ "portmap", "ypbind" ],
-    #			"ip_protocols"    : [ "esp" ],
-    #			"broadcast_ports" : [ ],
-    #		]
-    #	);
+    #   SetNeededPortsAndProtocols (
+    #           "service:something",
+    #           {
+    #                   "tcp_ports"      => [ "22", "ftp-data", "400:420" ],
+    #                   "udp_ports"      => [ ],
+    #                   "rpc_ports"      => [ "portmap", "ypbind" ],
+    #                   "ip_protocols"   => [ "esp" ],
+    #                   "broadcast_ports"=> [ ],
+    #           }
+    #   )
     def SetNeededPortsAndProtocols(service, store_definition)
       if !IsKnownService(service)
         log.error "Service #{service} is unknown"
@@ -717,7 +720,7 @@ module Yast
 
     # Function returns list of possibly conflicting services.
     # Conflicting services are for instance nis-client and nis-server.
-    # DEPRECATED - we currently don't have such services - services are defined by packages.
+    # @deprecated we currently don't have such services - services are defined by packages.
     #
     # @return	[Array<String>] of conflicting services
     def GetPossiblyConflictServices
