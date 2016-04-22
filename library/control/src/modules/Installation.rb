@@ -36,6 +36,7 @@
 #
 # $Id$
 require "yast"
+require "fileutils"
 
 module Yast
   class InstallationClass < Module
@@ -107,6 +108,10 @@ module Yast
 
       # Running YaST in upgrade mode (initiated from running system)
       @run_update_file = Ops.add(Directory.vardir, "/run_system_update")
+
+      # A flag to know if current installation is restarting skipping dialogs or
+      # recovering values until the step just before the yast restart was done
+      @restarting_file = Ops.add(Directory.vardir, "/restarting_yast")
 
       # Network should be started before the installation starts (continues)
       # bugzilla #258742
@@ -242,6 +247,20 @@ module Yast
     # /etc/install.inf: InstMode
     def boot
       Linuxrc.InstallInf("InstMode") || "cd"
+    end
+
+    def restart!
+      ::FileUtils.touch(@restart_file)
+      ::FileUtils.touch(@restarting_file)
+      :restart_yast
+    end
+
+    def restarting?
+      ::File.exist?(@restarting_file)
+    end
+
+    def finish_restarting!
+      ::FileUtils.remove_file(@restarting_file, true) if restarting?
     end
 
     # run X11 configuration after inital boot
