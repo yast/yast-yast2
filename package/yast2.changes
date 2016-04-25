@@ -2,7 +2,8 @@
 Fri Apr 22 14:37:28 UTC 2016 - knut.anderssen@suse.com
 
 - Added restarting state to Installation to for example recover
-  data  or skip dialogs until the one wich restarted yast
+  data  or skip dialogs until the one wich restarted yast.
+  (related to bsc#974409)
 - 3.1.186
 
 -------------------------------------------------------------------
