@@ -5,6 +5,8 @@ TESTS = \
   package_callbacks_test.rb \
   packages_ui_test.rb \
   product_test.rb \
+  repository_test.rb \
+  repository_product_test.rb \
   signature_check_callbacks_test.rb \
   slide_show_test.rb \
   update_messages_view_test.rb
