@@ -45,14 +45,4 @@ describe "Hostname#CurrentFQ" do
 
     expect(hostname.CurrentFQ).to eq etc_hostname
   end
-
-  it "returns default hostname proposal when generating AY profile at the end of installation" do
-    Yast.import "Stage"
-
-    allow_execute_hostname("1.1.1.1")                     # linuxrc sometimes provides IP as hostname
-    allow_read_hostname("")                                  # linuxrc do not provide /etc/hostname
-    allow(Yast::Stage).to receive(:initial).and_return(true) # and all this happens only in installer
-
-    expect(hostname.CurrentFQ).to eq "linux.#{hostname.DefaultDomain}"
-  end
 end
