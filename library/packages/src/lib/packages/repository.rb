@@ -82,7 +82,8 @@ module Packages
       # Build an array of Packages::Product objects
       @products = candidates.map do |data|
         Packages::RepositoryProduct.new(name: data["name"], version: data["version"],
-          arch: data["arch"], category: data["category"], status: data["status"])
+          arch: data["arch"], category: data["category"], status: data["status"],
+          vendor: data["vendor"])
       end
     end
 

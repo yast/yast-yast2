@@ -5,19 +5,19 @@ require_relative "test_helper"
 require "packages/repository_product"
 
 describe Packages::RepositoryProduct do
+  BASE_ATTRS = {
+    name: "openSUSE", version: "20160405", arch: "x86_64",
+    category: "addon", status: :installed, vendor: "openSUSE"
+  }
+
   subject(:product) do
-    Packages::RepositoryProduct.new(name: "openSUSE", version: "20160405", arch: "x86_64",
-      category: "addon", status: :available)
+    Packages::RepositoryProduct.new(BASE_ATTRS)
   end
 
   describe "==" do
-    let(:other_data) do
-      { name: "openSUSE", version: "20160405", arch: "x86_64",
-        category: "addon", status: :installed }
-    end
 
-    context "when name and arch match" do
-      let(:other) { Packages::RepositoryProduct.new(other_data) }
+    context "when name, arch, version and vendor match" do
+      let(:other) { Packages::RepositoryProduct.new(BASE_ATTRS) }
 
       it "returns true" do
         expect(subject == other).to eq(true)
@@ -25,7 +25,7 @@ describe Packages::RepositoryProduct do
     end
 
     context "when name does not match" do
-      let(:other) { Packages::RepositoryProduct.new(other_data.merge(name: "other")) }
+      let(:other) { Packages::RepositoryProduct.new(BASE_ATTRS.merge(name: "other")) }
 
       it "returns false" do
         expect(subject == other).to eq(false)
@@ -33,7 +33,7 @@ describe Packages::RepositoryProduct do
     end
 
     context "when version does not match" do
-      let(:other) { Packages::RepositoryProduct.new(other_data.merge(version: "20160409")) }
+      let(:other) { Packages::RepositoryProduct.new(BASE_ATTRS.merge(version: "20160409")) }
 
       it "returns false" do
         expect(subject == other).to eq(false)
@@ -41,7 +41,15 @@ describe Packages::RepositoryProduct do
     end
 
     context "when arch does not match" do
-      let(:other) { Packages::RepositoryProduct.new(other_data.merge(arch: "i586")) }
+      let(:other) { Packages::RepositoryProduct.new(BASE_ATTRS.merge(arch: "i586")) }
+
+      it "returns false" do
+        expect(subject == other).to eq(false)
+      end
+    end
+
+    context "when vendor does not match" do
+      let(:other) { Packages::RepositoryProduct.new(BASE_ATTRS.merge(vendor: "SUSE")) }
 
       it "returns false" do
         expect(subject == other).to eq(false)

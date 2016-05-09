@@ -127,7 +127,7 @@ describe Packages::Repository do
     let(:products_data) { [product1] }
     let(:product1) do
       { "arch" => "x86_64", "name" => "openSUSE", "category" => "addon",
-        "status" => :available, "source" => repo_id }
+        "status" => :available, "source" => repo_id, "vendor" => "openSUSE" }
     end
       
     it "returns products available in the repository" do
