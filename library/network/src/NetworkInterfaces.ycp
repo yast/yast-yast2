@@ -656,6 +656,35 @@ global map<string, any> CanonicalizeIP (map<string, any> ifcfg)
     return ret;
 }
 
+/*
+ * Filters out INTERFACETYPE option from ifcfg config when it is not needed.
+ *
+ * INTERFACETYPE has big impact on wicked even yast behavior. It was overused
+ * by yast in the past. According wicked team it makes sense to use it only
+ * in two cases 1) lo device (when it's name is changed - very strongly discouraged)
+ * 2) dummy device
+ *
+ * This function silently modifies user's config files. However, it should make sense
+ * because:
+ * - INTERFACETYPE is usually not needed
+ * - other functions in this module modifies the config as well (see Canonicalize* functions)
+ * - using INTERFACETYPE is reported as a warning by wicked (it asks for reporting a bug)
+ * - it is often ignored by wicked
+ */
+global map<string, any> FilterInterfacetype(map<string, any> ifcfg)
+{
+    map<string, any> ret = ifcfg;
+    string itype = ifcfg["INTERFACETYPE"]:"";
+
+    if((itype != "lo") && (itype != "dummy"))
+    {
+        y2milestone("Filtering out INTERFACETYPE (= %1) option", itype);
+        ret = remove(ifcfg, "INTERFACETYPE");
+    }
+
+    return ret;
+}
+
 list<string> SensitiveFields = [
     "WIRELESS_WPA_PASSWORD",
     "WIRELESS_WPA_PSK",
@@ -785,6 +814,7 @@ global define boolean Read() {
 	}
 	config = CanonicalizeIP (config);
 	config = CanonicalizeStartmode (config);
+        config = FilterInterfacetype(config);
 
 	string devtype = GetTypeFromIfcfg(config);
 	if (devtype == nil) {
