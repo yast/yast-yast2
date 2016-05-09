@@ -90,7 +90,7 @@ module Installation
     # Adapt the metadata for inst_finish API
     def info
       {
-        "when " => modes,
+        "when"  => modes,
         "steps" => steps,
         "title" => title
       }
