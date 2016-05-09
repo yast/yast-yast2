@@ -108,5 +108,19 @@ module Packages
     def addons
       products.select { |p| p.category == :addon }
     end
+
+    # Enable the repository
+    #
+    # @see Yast::Pkg.SourceSetEnabled
+    def enable!
+      Yast::Pkg.SourceSetEnabled(repo_id, true)
+    end
+
+    # Disable the repository
+    #
+    # @see Yast::Pkg.SourceSetEnabled
+    def disable!
+      Yast::Pkg.SourceSetEnabled(repo_id, false)
+    end
   end
 end

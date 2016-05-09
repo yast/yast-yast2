@@ -137,4 +137,18 @@ describe Packages::Repository do
       expect(product.name).to eq("openSUSE")
     end
   end
+
+  describe "#enable!" do
+    it "enables the repository" do
+      expect(Yast::Pkg).to receive(:SourceSetEnabled).with(repo_id, false)
+      subject.disable!
+    end
+  end
+
+  describe "#disable!" do
+    it "disables the repository" do
+      expect(Yast::Pkg).to receive(:SourceSetEnabled).with(repo_id, false)
+      subject.disable!
+    end
+  end
 end
