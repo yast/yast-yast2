@@ -1,17 +1,16 @@
 #!/usr/bin/env rspec
 
 require_relative "test_helper"
-
 require "packages/repository"
+require "uri"
 
 describe Packages::Repository do
   Yast.import "Pkg"
-  Yast.import "URL"
 
   let(:repo_id) { 1 }
   let(:enabled) { true }
   let(:autorefresh) { true }
-  let(:repo_url) { "http://download.opensuse.org/update/leap/42.1/oss" }
+  let(:repo_url) { URI("http://download.opensuse.org/update/leap/42.1/oss") }
 
   subject do
     Packages::Repository.new(repo_id: repo_id, name: "repo-oss", enabled: enabled,
@@ -57,7 +56,7 @@ describe Packages::Repository do
         repo = described_class.find(repo_id)
         expect(repo.repo_id).to eq(repo_id)
         expect(repo.enabled?).to eq(repo_data["enabled"])
-        expect(repo.url).to eq(repo_data["url"])
+        expect(repo.url).to eq(URI(repo_data["url"]))
       end
     end
 
@@ -72,7 +71,7 @@ describe Packages::Repository do
 
   describe "#scheme" do
     context "when URL contains a scheme" do
-      let(:repo_url) { "cd://dev/sr1" }
+      let(:repo_url) { URI("cd://dev/sr1") }
 
       it "returns the repository scheme" do
         expect(subject.scheme).to eq(:cd)
@@ -80,10 +79,10 @@ describe Packages::Repository do
     end
 
     context "when URL does not contain a scheme" do
-      let(:repo_url) { "" }
+      let(:repo_url) { URI("/home/user/myrepo") }
 
-      it "raises an error" do
-        expect { subject.scheme }.to raise_error(Packages::Repository::UnknownScheme)
+      it "returns nil" do
+        expect(subject.scheme).to be_nil
       end
     end
   end

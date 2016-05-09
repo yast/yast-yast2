@@ -1,19 +1,16 @@
+require "uri"
 require "packages/repository_product"
 
 module Packages
   class Repository
     Yast.import "Pkg"
-    Yast.import "URL"
     
     # @return [Fixnum] Repository ID
     attr_reader :repo_id
     # @return [String] Repository name
     attr_reader :name
-    # @return [String] Repository URL
+    # @return [URI::Generic] Repository URL
     attr_reader :url
-
-    # The repository scheme could not be determined
-    class UnknownScheme < StandardError; end
 
     # Repository was not found
     class NotFound < StandardError; end
@@ -40,17 +37,17 @@ module Packages
         raise NotFound if repo_data.nil?
         new(repo_id: repo_id, enabled: repo_data["enabled"],
           name: repo_data["name"], autorefresh: repo_data["autorefresh"],
-          url: repo_data["url"])
+          url: URI(repo_data["url"]))
       end
     end
     
     # Constructor
     #
-    # @param repo_id     [Fixnum]  Repository ID
-    # @param name        [String]  Name
-    # @param enabled     [Boolean] Is the repository enabled?
-    # @param autorefresh [Boolean] Is auto-refresh enabled for this repository?
-    # @param url         [String]  Repository URL
+    # @param repo_id     [Fixnum]       Repository ID
+    # @param name        [String]       Name
+    # @param enabled     [Boolean]      Is the repository enabled?
+    # @param autorefresh [Boolean]      Is auto-refresh enabled for this repository?
+    # @param url         [URI::Generic] Repository URL
     def initialize(repo_id:, name:, enabled:, autorefresh:, url:)
       @repo_id = repo_id
       @name    = name
@@ -63,12 +60,9 @@ module Packages
     #
     # The scheme is determined using the URL
     #
-    # @raise UnknownScheme
+    # @return [Symbol,nil] URL scheme
     def scheme
-      return @scheme unless @scheme.nil?
-      data_from_url = Yast::URL.Parse(url)
-      raise UnknownScheme if data_from_url["scheme"].nil?
-      @scheme = data_from_url["scheme"].to_sym
+      url.scheme ? url.scheme.to_sym : nil
     end
 
     # Return products contained in the repository
