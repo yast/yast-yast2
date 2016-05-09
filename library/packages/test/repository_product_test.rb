@@ -16,7 +16,7 @@ describe Packages::RepositoryProduct do
         category: "addon", status: :installed }
     end
 
-    context "when name and arch" do
+    context "when name and arch match" do
       let(:other) { Packages::RepositoryProduct.new(other_data) }
 
       it "returns true" do
