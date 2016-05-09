@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon May  9 10:24:27 UTC 2016 - igonzalezsosa@suse.com
+
+- Fix "when" key in FinishClient#info
+
+-------------------------------------------------------------------
 Fri Apr 22 14:37:28 UTC 2016 - knut.anderssen@suse.com
 
 - Added restarting state to Installation to for example recover
