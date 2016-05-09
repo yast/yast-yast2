@@ -129,7 +129,7 @@ describe Packages::Repository do
       { "arch" => "x86_64", "name" => "openSUSE", "category" => "addon",
         "status" => :available, "source" => repo_id, "vendor" => "openSUSE" }
     end
-      
+
     it "returns products available in the repository" do
       allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "").
         and_return(products_data)

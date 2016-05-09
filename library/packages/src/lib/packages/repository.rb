@@ -4,7 +4,7 @@ require "packages/repository_product"
 module Packages
   class Repository
     Yast.import "Pkg"
-    
+
     # @return [Fixnum] Repository ID
     attr_reader :repo_id
     # @return [String] Repository name
@@ -40,7 +40,7 @@ module Packages
           url: URI(repo_data["url"]))
       end
     end
-    
+
     # Constructor
     #
     # @param repo_id     [Fixnum]       Repository ID
@@ -78,7 +78,7 @@ module Packages
       candidates = Yast::Pkg.ResolvableProperties("", :product, "").select do |pro|
         pro["source"] == repo_id
       end
-      
+
       # Build an array of Packages::Product objects
       @products = candidates.map do |data|
         Packages::RepositoryProduct.new(name: data["name"], version: data["version"],
