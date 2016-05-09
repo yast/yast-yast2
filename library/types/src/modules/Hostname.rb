@@ -157,7 +157,7 @@ module Yast
     def CurrentFQ
       hostname_data = SCR.Execute(path(".target.bash_output"), "hostname --fqdn")
 
-      if hostname_data["exit"] != 0 || invalid_hostname?(hostname_data["stdout"].to_s.strip)
+      if hostname_data["exit"] != 0
         Builtins.y2warning("Using fallback hostname")
 
         fqhostname = SCR.Read(path(".target.string"), "/etc/hostname") || ""
@@ -227,18 +227,6 @@ module Yast
     publish function: :CurrentFQ, type: "string ()"
     publish function: :CurrentHostname, type: "string ()"
     publish function: :CurrentDomain, type: "string ()"
-
-  private
-
-    # It checks if the hostname cannot be used for setting default fqdn
-    #
-    # FIXME: Hotfix for bnc#946047. This should be dropped as part of fate#319639
-    # implementation
-    #
-    # Basicaly, linuxrc sometimes resolves IP when querying "hostname --fqdn"
-    def invalid_hostname?(hostname)
-      Stage.initial && IP.Check(hostname)
-    end
   end
 
   Hostname = HostnameClass.new
