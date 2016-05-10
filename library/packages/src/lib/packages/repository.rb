@@ -2,7 +2,27 @@ require "uri"
 require "packages/repository_product"
 
 module Packages
+  # This class represents a libzypp repository
+  #
+  # It offers a simple API to list them, query basic attributes,
+  # find out the products they offer and enabling/disabling them.
+  #
+  # @example Get all repositories
+  #   all_repos = Packages::Repository.all     #=> [#<Packages::Repository>, ...]
+  #   enabled = Packages::Repository.enabled   #=> [#<Packages::Repository>]
+  #
+  # @example Get a repository using a repo ID
+  #   repo = Packages::Repository.find(1) #=> #<Packages::Repository>
+  #   repo.autorefresh?                   #=> true
+  #   repo.url                            #=> "http://download.opensuse.org..."
+  #
+  # @example Disabling a repository
+  #   repo = Packages::Repository.find(1) #=> #<Packages::Repository>
+  #   repo.enabled?                       #=> true
+  #   repo.disabled!
+  #   repo.enabled?                       #=> false
   class Repository
+
     Yast.import "Pkg"
 
     # @return [Fixnum] Repository ID
