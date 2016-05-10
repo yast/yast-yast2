@@ -4,6 +4,8 @@ module Packages
   # products instances are the same (for example, coming from different
   # repositories).
   class Product
+    include Yast::Logger
+
     # @return [String] Name
     attr_reader :name
     # @return [String] Version
@@ -41,8 +43,12 @@ module Packages
     #
     # @return [Boolean] true if both products are the same; false otherwise
     def ==(other)
-      arch == other.arch && name == other.name &&
+      result = arch == other.arch && name == other.name &&
         version == other.version && vendor == other.vendor
+      log.info("Comparing products: '#{arch}' <=> '#{other.arch}', '#{name}' <=> '#{other.name}', "\
+        "'#{version}' <=> '#{other.version}', '#{vendor}' <=> '#{other.vendor}' => "\
+        "result: #{result}")
+      result
     end
   end
 end
