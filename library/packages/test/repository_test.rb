@@ -99,7 +99,7 @@ describe Packages::Repository do
       let(:repo_url) { URI("cd://dev/sr1") }
 
       it "returns the repository scheme" do
-        expect(subject.scheme).to eq(:cd)
+        expect(repo.scheme).to eq(:cd)
       end
     end
 
@@ -107,7 +107,7 @@ describe Packages::Repository do
       let(:repo_url) { URI("/home/user/myrepo") }
 
       it "returns nil" do
-        expect(subject.scheme).to be_nil
+        expect(repo.scheme).to be_nil
       end
     end
   end
@@ -117,7 +117,7 @@ describe Packages::Repository do
       let(:enabled) { true }
 
       it "returns true" do
-        expect(subject).to be_enabled
+        expect(repo).to be_enabled
       end
     end
 
@@ -125,7 +125,7 @@ describe Packages::Repository do
       let(:enabled) { false }
 
       it "returns false" do
-        expect(subject).to_not be_enabled
+        expect(repo).to_not be_enabled
       end
     end
   end
@@ -135,7 +135,7 @@ describe Packages::Repository do
       let(:autorefresh) { true }
 
       it "returns true" do
-        expect(subject).to be_autorefresh
+        expect(repo).to be_autorefresh
       end
     end
 
@@ -143,14 +143,14 @@ describe Packages::Repository do
       let(:autorefresh) { false }
 
       it "returns false" do
-        expect(subject).to_not be_autorefresh
+        expect(repo).to_not be_autorefresh
       end
     end
   end
 
   describe "#products" do
-    let(:products_data) { [product1] }
-    let(:product1) do
+    let(:products_data) { [product] }
+    let(:product) do
       { "arch" => "x86_64", "name" => "openSUSE", "category" => "addon",
         "status" => :available, "source" => repo_id, "vendor" => "openSUSE" }
     end
@@ -158,7 +158,7 @@ describe Packages::Repository do
     it "returns products available in the repository" do
       allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "").
         and_return(products_data)
-      product = subject.products.first
+      product = repo.products.first
       expect(product.name).to eq("openSUSE")
     end
   end
