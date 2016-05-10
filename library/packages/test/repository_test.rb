@@ -12,14 +12,19 @@ describe Packages::Repository do
   let(:autorefresh) { true }
   let(:repo_url) { URI("http://download.opensuse.org/update/leap/42.1/oss") }
 
-  subject do
+  subject(:repo) do
     Packages::Repository.new(repo_id: repo_id, name: "repo-oss", enabled: enabled,
       autorefresh: autorefresh, url: repo_url)
   end
 
+  let(:disabled) do
+    Packages::Repository.new(repo_id: repo_id + 1, name: "disabled-repo", enabled: false,
+      autorefresh: false, url: repo_url)
+  end
+
   describe ".all" do
     before do
-      expect(Yast::Pkg).to receive(:SourceGetCurrent).with(true).and_return(repo_ids)
+      expect(Yast::Pkg).to receive(:SourceGetCurrent).with(false).and_return(repo_ids)
     end
 
     context "when no repository exist" do
@@ -38,6 +43,26 @@ describe Packages::Repository do
         expect(described_class).to receive(:find).with(repo_id).and_return(repo)
         expect(described_class.all).to eq([repo])
       end
+    end
+  end
+
+  describe ".enabled" do
+    before do
+      allow(Packages::Repository).to receive(:all).and_return([repo, disabled])
+    end
+
+    it "returns enabled repositories" do
+      expect(Packages::Repository.enabled).to eq([repo])
+    end
+  end
+
+  describe ".disabled" do
+    before do
+      allow(Packages::Repository).to receive(:all).and_return([repo, disabled])
+    end
+
+    it "returns disabled repositories" do
+      expect(Packages::Repository.disabled).to eq([disabled])
     end
   end
 
@@ -140,15 +165,15 @@ describe Packages::Repository do
 
   describe "#enable!" do
     it "enables the repository" do
-      expect(Yast::Pkg).to receive(:SourceSetEnabled).with(repo_id, false)
-      subject.disable!
+      expect(Yast::Pkg).to receive(:SourceSetEnabled).with(disabled.repo_id, true).and_return(true)
+      expect { disabled.enable! }.to change { disabled.enabled? }.from(false).to(true)
     end
   end
 
   describe "#disable!" do
     it "disables the repository" do
-      expect(Yast::Pkg).to receive(:SourceSetEnabled).with(repo_id, false)
-      subject.disable!
+      expect(Yast::Pkg).to receive(:SourceSetEnabled).with(repo.repo_id, false).and_return(true)
+      expect { repo.disable! }.to change { repo.enabled? }.from(true).to(false)
     end
   end
 end

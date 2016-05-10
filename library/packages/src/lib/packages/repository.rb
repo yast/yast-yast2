@@ -12,18 +12,37 @@ module Packages
     # @return [URI::Generic] Repository URL
     attr_reader :url
 
+    attr_writer :enabled
+    private :enabled=
+
     # Repository was not found
     class NotFound < StandardError; end
 
     class << self
       # Return all registered repositories
       #
+      # @return [Array<Repository>] Array containing all repositories
+      #
       # @see Yast::Pkg.SourceGetCurrent
       # @see Packages::Repository.find
       def all
-        Yast::Pkg.SourceGetCurrent(true).map do |repo_id|
+        Yast::Pkg.SourceGetCurrent(false).map do |repo_id|
           find(repo_id)
         end
+      end
+
+      # Return only enabled repositories
+      #
+      # @return [Array<Repository>] Array containing enabled repositories
+      def enabled
+        all.select(&:enabled?)
+      end
+
+      # Return only disabled repositories
+      #
+      # @return [Array<Repository>] Array containing disabled repositories
+      def disabled
+        all.reject(&:enabled?)
       end
 
       # Return a repository with the given repo_id
@@ -87,14 +106,14 @@ module Packages
       end
     end
 
-    # Determine if repository is enabled
+    # Determine if the repository is enabled
     #
     # @return [Boolean] true if repository is enabled; false otherwise
     def enabled?
       @enabled
     end
 
-    # Determine if auto-refresh is enabled
+    # Determine if auto-refresh is enabled for the repository
     #
     # @return [Boolean] true if auto-refresh is enabled; false otherwise
     def autorefresh?
@@ -114,14 +133,17 @@ module Packages
     #
     # @see Yast::Pkg.SourceSetEnabled
     def enable!
-      Yast::Pkg.SourceSetEnabled(repo_id, true)
+      success = Yast::Pkg.SourceSetEnabled(repo_id, true)
+      success && self.enabled = true
+
     end
 
     # Disable the repository
     #
     # @see Yast::Pkg.SourceSetEnabled
     def disable!
-      Yast::Pkg.SourceSetEnabled(repo_id, false)
+      success = Yast::Pkg.SourceSetEnabled(repo_id, false)
+      success && self.enabled = false
     end
   end
 end
