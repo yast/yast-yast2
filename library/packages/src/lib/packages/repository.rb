@@ -150,7 +150,11 @@ module Packages
 
     # Enable the repository
     #
+    # The repository status will be stored only in memory. Calling to
+    # Yast::Pkg.SourceSaveAll will make it persistent.
+    #
     # @see Yast::Pkg.SourceSetEnabled
+    # @see Yast::Pkg.SourceSaveAll
     def enable!
       success = Yast::Pkg.SourceSetEnabled(repo_id, true)
       success && self.enabled = true
@@ -158,7 +162,11 @@ module Packages
 
     # Disable the repository
     #
+    # The repository status will be stored only in memory. Calling to
+    # Yast::Pkg.SourceSaveAll will make it persistent.
+    #
     # @see Yast::Pkg.SourceSetEnabled
+    # @see Yast::Pkg.SourceSaveAll
     def disable!
       success = Yast::Pkg.SourceSetEnabled(repo_id, false)
       success && self.enabled = false
