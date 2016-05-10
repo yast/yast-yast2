@@ -25,7 +25,7 @@ ylib_DATA = \
   lib/packages/dummy_callbacks.rb \
   lib/packages/file_conflict_callbacks.rb \
   lib/packages/repository.rb \
-  lib/packages/repository_product.rb \
+  lib/packages/product.rb \
   lib/packages/update_message.rb \
   lib/packages/update_messages_view.rb
 

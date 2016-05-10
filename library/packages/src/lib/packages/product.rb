@@ -3,7 +3,7 @@ module Packages
   # time this class is responsible for finding out whether two
   # products instances are the same (for example, coming from different
   # repositories).
-  class RepositoryProduct
+  class Product
     # @return [String] Name
     attr_reader :name
     # @return [String] Version

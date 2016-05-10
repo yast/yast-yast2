@@ -1,5 +1,5 @@
 require "uri"
-require "packages/repository_product"
+require "packages/product"
 
 module Packages
   # This class represents a libzypp repository
@@ -105,10 +105,10 @@ module Packages
 
     # Return products contained in the repository
     #
-    # @return [Array<Packages::RepositoryProduct>] Products in the repository
+    # @return [Array<Packages::Product>] Products in the repository
     #
     # @see Yast::Pkg.ResolvableProperties
-    # @see Packages::RepositoryProduct
+    # @see Packages::Product
     def products
       return @products unless @products.nil?
 
@@ -119,7 +119,7 @@ module Packages
 
       # Build an array of Packages::Product objects
       @products = candidates.map do |data|
-        Packages::RepositoryProduct.new(name: data["name"], version: data["version"],
+        Packages::Product.new(name: data["name"], version: data["version"],
           arch: data["arch"], category: data["category"], status: data["status"],
           vendor: data["vendor"])
       end
@@ -141,7 +141,7 @@ module Packages
 
     # Return addons in the repository
     #
-    # @return [Array<Packages::RepositoryProduct>] Addons in the repository
+    # @return [Array<Packages::Product>] Addons in the repository
     #
     # @see #products
     def addons
