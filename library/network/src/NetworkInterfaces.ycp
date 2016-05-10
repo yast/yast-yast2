@@ -676,7 +676,7 @@ global map<string, any> FilterInterfacetype(map<string, any> ifcfg)
     map<string, any> ret = ifcfg;
     string itype = ifcfg["INTERFACETYPE"]:"";
 
-    if((itype != "lo") && (itype != "dummy"))
+    if( !IsEmpty(itype) && (itype != "lo") && (itype != "dummy"))
     {
         y2milestone("Filtering out INTERFACETYPE (= %1) option", itype);
         ret = remove(ifcfg, "INTERFACETYPE");
