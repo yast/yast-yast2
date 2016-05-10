@@ -156,8 +156,8 @@ describe Packages::Repository do
     end
 
     it "returns products available in the repository" do
-      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "").
-        and_return(products_data)
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+        .and_return(products_data)
       product = repo.products.first
       expect(product.name).to eq("openSUSE")
     end
@@ -165,14 +165,16 @@ describe Packages::Repository do
 
   describe "#enable!" do
     it "enables the repository" do
-      expect(Yast::Pkg).to receive(:SourceSetEnabled).with(disabled.repo_id, true).and_return(true)
+      expect(Yast::Pkg).to receive(:SourceSetEnabled).with(disabled.repo_id, true)
+        .and_return(true)
       expect { disabled.enable! }.to change { disabled.enabled? }.from(false).to(true)
     end
   end
 
   describe "#disable!" do
     it "disables the repository" do
-      expect(Yast::Pkg).to receive(:SourceSetEnabled).with(repo.repo_id, false).and_return(true)
+      expect(Yast::Pkg).to receive(:SourceSetEnabled).with(repo.repo_id, false)
+        .and_return(true)
       expect { repo.disable! }.to change { repo.enabled? }.from(true).to(false)
     end
   end

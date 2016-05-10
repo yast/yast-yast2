@@ -22,7 +22,6 @@ module Packages
   #   repo.disabled!
   #   repo.enabled?                       #=> false
   class Repository
-
     Yast.import "Pkg"
 
     # @return [Fixnum] Repository ID
@@ -155,7 +154,6 @@ module Packages
     def enable!
       success = Yast::Pkg.SourceSetEnabled(repo_id, true)
       success && self.enabled = true
-
     end
 
     # Disable the repository
