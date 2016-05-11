@@ -112,6 +112,68 @@ describe Packages::Repository do
     end
   end
 
+  describe "#local" do
+    before do
+      allow(repo).to receive(:scheme).and_return(scheme)
+    end
+
+    context "when scheme is :cd" do
+      let(:scheme) { :cd }
+
+      it "returns true" do
+        expect(repo).to be_local
+      end
+    end
+
+    context "when scheme is :dvd" do
+      let(:scheme) { :dvd }
+
+      it "returns true" do
+        expect(repo).to be_local
+      end
+    end
+
+    context "when scheme is :dir" do
+      let(:scheme) { :dir }
+
+      it "returns true" do
+        expect(repo).to be_local
+      end
+    end
+
+    context "when scheme is :hd" do
+      let(:scheme) { :hd }
+
+      it "returns true" do
+        expect(repo).to be_local
+      end
+    end
+
+    context "when scheme is :iso" do
+      let(:scheme) { :iso }
+
+      it "returns true" do
+        expect(repo).to be_local
+      end
+    end
+
+    context "when scheme is :file" do
+      let(:scheme) { :file }
+
+      it "returns true" do
+        expect(repo).to be_local
+      end
+    end
+
+    context "when scheme is other than local ones" do
+      let(:scheme) { :http }
+
+      it "returns false" do
+        expect(repo).to_not be_local
+      end
+    end
+  end
+
   describe "#enabled?" do
     context "when the repo is enabled" do
       let(:enabled) { true }

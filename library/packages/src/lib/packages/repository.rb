@@ -24,6 +24,10 @@ module Packages
   class Repository
     Yast.import "Pkg"
 
+    # Repository schemes considered local (see #local?)
+    # https://github.com/openSUSE/libzypp/blob/a7a038aeda1ad6d9e441e7d3755612aa83320dce/zypp/Url.cc#L458
+    LOCAL_SCHEMES = [:cd, :dvd, :dir, :hd, :iso, :file]
+
     # @return [Fixnum] Repository ID
     attr_reader :repo_id
     # @return [String] Repository name
@@ -123,6 +127,13 @@ module Packages
           arch: data["arch"], category: data["category"], status: data["status"],
           vendor: data["vendor"])
       end
+    end
+
+    # Determine if the repository is local
+    #
+    # @return [Boolean] true if the repository is considered local; false otherwise
+    def local?
+      LOCAL_SCHEMES.include?(scheme)
     end
 
     # Determine if the repository is enabled
