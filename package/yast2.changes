@@ -1,7 +1,14 @@
 -------------------------------------------------------------------
-Mon May  9 13:41:51 CEST 2016 - snwint@suse.de
+Tue May 17 14:50:44 CEST 2016 - snwint@suse.de
 
 - remove invalid_hostname check (fate#319639)
+- 3.1.188
+
+-------------------------------------------------------------------
+Mon May  9 14:55:10 UTC 2016 - igonzalezsosa@suse.com
+
+- Add Repository and Repository products classes to the packages
+  library API (part of FATE#320494)
 - 3.1.187
 
 -------------------------------------------------------------------
