@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue May 17 16:30:15 UTC 2016 - mfilka@suse.com
+
+- bnc#972575
+  - filter out INTERFACETYPE option from ifcfg files. This option
+    used to be written with incorrect value by older versions of
+    yast.
+- 2.17.141 
+
+-------------------------------------------------------------------
 Sat Jun 13 16:22:56 UTC 2015 - mfilka@suse.com
 
 - bnc#922765
