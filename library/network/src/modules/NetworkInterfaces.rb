@@ -641,7 +641,8 @@ module Yast
     # - using INTERFACETYPE is reported as a warning by wicked (it asks for reporting a bug)
     # - it is often ignored by wicked
     def filter_interfacetype(devmap)
-      devmap.delete_if { |k, v| k == "INTERFACETYPE" && !["lo", "dummy"].include?(v) }
+      ret = deep_copy(devmap)
+      ret.delete_if { |k, v| k == "INTERFACETYPE" && !["lo", "dummy"].include?(v) }
     end
 
     # Conceal secret information, such as WEP keys, so that the output
