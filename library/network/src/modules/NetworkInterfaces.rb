@@ -627,6 +627,24 @@ module Yast
       ifcfg
     end
 
+
+    # Filters out INTERFACETYPE option from ifcfg config when it is not needed.
+    #
+    # INTERFACETYPE has big impact on wicked even yast behavior. It was overused
+    # by yast in the past. According wicked team it makes sense to use it only
+    # in two cases 1) lo device (when it's name is changed - very strongly discouraged)
+    # 2) dummy device
+    #
+    # This function silently modifies user's config files. However, it should make sense
+    # because:
+    # - INTERFACETYPE is usually not needed
+    # - other functions in this module modifies the config as well (see Canonicalize* functions)
+    # - using INTERFACETYPE is reported as a warning by wicked (it asks for reporting a bug)
+    # - it is often ignored by wicked
+    def filter_interfacetype(devmap)
+      devmap.delete_if { |k, v| k == "INTERFACETYPE" && !["lo", "dummy"].include?(v) }
+    end
+
     # Conceal secret information, such as WEP keys, so that the output
     # can be passed to y2log and bugzilla.
     # @param [Hash{String => Object}] ifcfg one ifcfg
@@ -734,6 +752,8 @@ module Yast
         Ops.set(config, "_aliases", caliases) if caliases != {} # unconditionally?
         config = CanonicalizeIP(config)
         config = CanonicalizeStartmode(config)
+        config = filter_interfacetype(config)
+
         devtype = GetTypeFromIfcfg(config)
         devtype = GetType(d) if devtype.nil?
         dev = Ops.get(@Devices, devtype, {})
