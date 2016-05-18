@@ -58,5 +58,18 @@ module Yast
         end
       end
     end
+
+    describe "NetworkInterfaces#filter_interfacetype" do
+      it "drops interface type if present and not set to \"lo\" or \"dummy\"" do
+        devmap = { "INTERFACETYPE" => "eth" }
+
+        expect(NetworkInterfaces.filter_interfacetype(devmap)).not_to include "INTERFACETYPE"
+      end
+
+      it "keeps interface type if present and is set to \"lo\" or \"dummy\"" do
+        expect(NetworkInterfaces.filter_interfacetype("INTERFACETYPE" => "lo")).to include "INTERFACETYPE"
+        expect(NetworkInterfaces.filter_interfacetype("INTERFACETYPE" => "dummy")).to include "INTERFACETYPE"
+      end
+    end
   end
 end

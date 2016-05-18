@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed May 18 09:15:04 UTC 2016 - mfilka@suse.com
+
+- bnc#972575
+  - filter out INTERFACETYPE option from ifcfg files. This option
+    used to be written with incorrect value by older versions of
+    yast.
+- 3.1.155.4
+-------------------------------------------------------------------
 Thu Feb  5 12:35:38 UTC 2016 - kanderssen@suse.com
 
 - SuSEFirewall module reads system configuration during
