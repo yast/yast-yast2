@@ -748,16 +748,17 @@ module Yast
         caliases = Builtins.mapmap(Ops.get_map(config, "_aliases", {})) do |a, c|
           { a => CanonicalizeIP(c) }
         end
-        Ops.set(config, "_aliases", caliases) if caliases != {} # unconditionally?
+        config["_aliases"] = caliases if caliases != {}
         config = CanonicalizeIP(config)
         config = CanonicalizeStartmode(config)
         config = filter_interfacetype(config)
 
         devtype = GetTypeFromIfcfg(config)
         devtype = GetType(d) if devtype.nil?
-        dev = Ops.get(@Devices, devtype, {})
-        Ops.set(dev, d, config)
-        Ops.set(@Devices, devtype, dev)
+
+        dev = @Devices[devtype] || {}
+        dev[d] = config
+        @Devices[devtype] = dev
       end
       Builtins.y2debug("Devices=%1", @Devices)
 
