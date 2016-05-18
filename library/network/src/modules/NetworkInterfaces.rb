@@ -627,7 +627,6 @@ module Yast
       ifcfg
     end
 
-
     # Filters out INTERFACETYPE option from ifcfg config when it is not needed.
     #
     # INTERFACETYPE has big impact on wicked even yast behavior. It was overused

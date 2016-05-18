@@ -67,8 +67,8 @@ module Yast
       end
 
       it "keeps interface type if present and is set to \"lo\" or \"dummy\"" do
-        expect(NetworkInterfaces.filter_interfacetype({ "INTERFACETYPE" => "lo" })).to include "INTERFACETYPE"
-        expect(NetworkInterfaces.filter_interfacetype({ "INTERFACETYPE" => "dummy" })).to include "INTERFACETYPE"
+        expect(NetworkInterfaces.filter_interfacetype("INTERFACETYPE" => "lo")).to include "INTERFACETYPE"
+        expect(NetworkInterfaces.filter_interfacetype("INTERFACETYPE" => "dummy")).to include "INTERFACETYPE"
       end
     end
   end
