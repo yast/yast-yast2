@@ -42,14 +42,7 @@ module Yast
 
   class SuSEFirewallServicesClass < Module
     include Yast::Logger
-
-    # this is how services defined by package are distinguished
-    DEFINED_BY_PKG_PREFIX = "service:"
-
-    SERVICES_DIR = "/etc/sysconfig/SuSEfirewall2.d/services/"
-
-    # please, check it with configuration in refresh-srv-def-by-pkgs-trans.sh script
-    SERVICES_TEXTDOMAIN = "firewall-services"
+    Yast.import "SuSEFirewall"
 
     DEFAULT_SERVICE = {
       "tcp_ports"       => [],
@@ -60,6 +53,168 @@ module Yast
       "name"            => "",
       "description"     => ""
     }
+
+    # Function returns the map of supported (known) services.
+    #
+    # @return [Hash{String => String}] supported services
+    #
+    # **Structure:**
+    #
+    #     { service_id => localized_service_name }
+    #     {
+    #         "service:dns-server" => "DNS Server",
+    #         "service:vnc" => "Remote Administration",
+    #     }
+    def GetSupportedServices
+      supported_services = {}
+      all_services.each do |service_id, service_definition|
+        # TRANSLATORS: Name of unknown service. %1 is a requested service id like nfs-server
+        supported_services[service_id] = service_definition["name"] || Builtins.sformat(_("Unknown service '%1'"), service_id)
+      end
+      supported_services
+    end
+
+    # Function returns if the service_id is a known (defined) service
+    #
+    # @param [String] service_id (including the "service:" prefix)
+    # @return	[Boolean] if is known (defined)
+    def IsKnownService(service_id)
+      !service_details(service_id, true).nil?
+    end
+
+    # Returns list of service-ids defined by packages.
+    # (including the "service:" prefix)
+    #
+    # @return [Array<String>] service ids
+    def GetListOfServicesAddedByPackage
+      all_services.keys
+    end
+
+    # Function returns needed TCP ports for service
+    #
+    # @param [String] service (including the "service:" prefix)
+    # @return	[Array<String>] of needed TCP ports
+    def GetNeededTCPPorts(service)
+      service_details(service)["tcp_ports"] || []
+    end
+
+    # Function returns needed UDP ports for service
+    #
+    # @param [String] service (including the "service:" prefix)
+    # @return	[Array<String>] of needed UDP ports
+    def GetNeededUDPPorts(service)
+      service_details(service)["udp_ports"] || []
+    end
+
+    # Function returns needed RPC ports for service
+    #
+    # @param [String] service (including the "service:" prefix)
+    # @return	[Array<String>] of needed RPC ports
+    def GetNeededRPCPorts(service)
+      service_details(service)["rpc_ports"] || []
+    end
+
+    # Function returns needed IP protocols for service
+    #
+    # @param [String] service (including the "service:" prefix)
+    # @return	[Array<String>] of needed IP protocols
+    def GetNeededIPProtocols(service)
+      service_details(service)["ip_protocols"] || []
+    end
+
+    # Function returns description of a firewall service
+    #
+    # @param [String] service (including the "service:" prefix)
+    # @return	[String] service description
+    def GetDescription(service)
+      service_details(service)["description"] || []
+    end
+
+    # Function returns needed ports and protocols for service.
+    # Service needs to be known (installed in the system).
+    # Function throws an exception SuSEFirewalServiceNotFound
+    # if service is not known (undefined).
+    #
+    # @param [String] service (including the "service:" prefix)
+    # @return	[Hash{String => Array<String>}] of needed ports and protocols
+    #
+    # @example
+    #   GetNeededPortsAndProtocols ("service:aaa") -> {
+    #           "tcp_ports"      => [ "122", "ftp-data" ],
+    #           "udp_ports"      => [ "427" ],
+    #           "rpc_ports"      => [ "portmap", "ypbind" ],
+    #           "ip_protocols"   => [],
+    #           "broadcast_ports"=> [ "427" ],
+    #   }
+    def GetNeededPortsAndProtocols(service)
+      DEFAULT_SERVICE.merge(service_details(service))
+    end
+
+    # Returns all known services loaded from disk on-the-fly
+    # @api private
+    def all_services
+      ReadServicesDefinedByRPMPackages() if @services.nil?
+      @services
+    end
+
+    # Sets that configuration was not modified
+    def ResetModified
+      @sfws_modified = false
+
+      nil
+    end
+
+    # Returns whether configuration was modified
+    #
+    # @return [Boolean] modified
+    def GetModified
+      @sfws_modified
+    end
+
+    # Create appropriate firewall services class based on factors such as which
+    # backend is selected by user or running on the system.
+    #
+    # @note If the backend_sym parameter is :fwd (ie, FirewallD is the desired
+    # @note firewall backend), then the method will also start the FirewallD service.
+    #
+    # @param backend_sym [Symbol] if not nil, explicitely select :sf2 or :fwd
+    # @return SuSEFirewall2ServicesClass or SuSEfirewalldServicesClass instance
+    def self.create(backend_sym = nil)
+      # If backend is specificed, go ahead and create an instance. Otherwise, try
+      # to detect which backend is enabled and create the appropriate instance.
+      case backend_sym
+      when :sf2
+        SuSEFirewall2ServicesClass.new
+      when :fwd
+        # We need to start the backend first
+        if !SuSEFirewall.IsStarted()
+          log.info "Starting the FirewallD service"
+          SuSEFirewall.StartServices()
+        end
+        SuSEFirewalldServicesClass.new
+      when nil
+        # Instantiate one based on the running backend
+        if SuSEFirewall.is_a?(SuSEFirewall2Class)
+          SuSEFirewall2ServicesClass.new
+        else
+          SuSEFirewalldServicesClass.new
+        end
+      else
+        raise "Invalid symbol for firewall backend #{backend_sym.inspect}"
+      end
+    end
+  end
+
+  class SuSEFirewall2ServicesClass < SuSEFirewallServicesClass
+    include Yast::Logger
+
+    # this is how services defined by package are distinguished
+    DEFINED_BY_PKG_PREFIX = "service:"
+
+    SERVICES_DIR = "/etc/sysconfig/SuSEfirewall2.d/services/"
+
+    # please, check it with configuration in refresh-srv-def-by-pkgs-trans.sh script
+    SERVICES_TEXTDOMAIN = "firewall-services"
 
     READ_ONLY_SERVICE_FEATURES = ["name", "description"]
 
@@ -348,7 +503,7 @@ module Yast
     def service_details(service_name, silent = false)
       service = all_services[service_name]
       if service.nil? && !silent
-        log.error "Uknown service '#{service_name}'"
+        log.error "Unknown service '#{service_name}'"
         log.info "Known services: #{all_services.keys}"
 
         raise(
@@ -358,13 +513,6 @@ module Yast
       end
 
       service
-    end
-
-    # Returns all known services loaded from disk on-the-fly
-    # @api private
-    def all_services
-      ReadServicesDefinedByRPMPackages() if @services.nil?
-      @services
     end
 
     # Reads definition of services that can be used in FW_CONFIGURATIONS_[EXT|INT|DMZ]
@@ -472,111 +620,11 @@ module Yast
       true
     end
 
-    # Function returns if the service_id is a known (defined) service
-    #
-    # @param [String] service_id (including the "service:" prefix)
-    # @return	[Boolean] if is known (defined)
-    def IsKnownService(service_id)
-      !service_details(service_id, true).nil?
-    end
-
-    # Function returns the map of supported (known) services.
-    #
-    # @return [Hash{String => String}] supported services
-    #
-    # **Structure:**
-    #
-    #     { service_id => localized_service_name }
-    #     {
-    #         "service:dns-server" => "DNS Server",
-    #         "service:vnc" => "Remote Administration",
-    #     }
-    def GetSupportedServices
-      supported_services = {}
-
-      all_services.each do |service_id, service_definition|
-        Ops.set(
-          supported_services,
-          service_id,
-          # TRANSLATORS: Name of unknown service. %1 is a requested service id like nis-server
-          Ops.get_string(
-            service_definition,
-            "name",
-            Builtins.sformat(_("Unknown service '%1'"), service_id)
-          )
-        )
-      end
-
-      deep_copy(supported_services)
-    end
-
-    # Returns list of service-ids defined by packages.
-    # (including the "service:" prefix)
-    #
-    # @return [Array<String>] service ids
-    def GetListOfServicesAddedByPackage
-      all_services.keys
-    end
-
-    # Function returns needed TCP ports for service
-    #
-    # @param [String] service (including the "service:" prefix)
-    # @return	[Array<String>] of needed TCP ports
-    def GetNeededTCPPorts(service)
-      service_details(service)["tcp_ports"] || []
-    end
-
-    # Function returns needed UDP ports for service
-    #
-    # @param [String] service (including the "service:" prefix)
-    # @return	[Array<String>] of needed UDP ports
-    def GetNeededUDPPorts(service)
-      service_details(service)["udp_ports"] || []
-    end
-
-    # Function returns needed RPC ports for service
-    #
-    # @param [String] service (including the "service:" prefix)
-    # @return	[Array<String>] of needed RPC ports
-    def GetNeededRPCPorts(service)
-      service_details(service)["rpc_ports"] || []
-    end
-
-    # Function returns needed IP protocols for service
-    #
-    # @param [String] service (including the "service:" prefix)
-    # @return	[Array<String>] of needed IP protocols
-    def GetNeededIPProtocols(service)
-      service_details(service)["ip_protocols"] || []
-    end
-
-    # Function returns description of a firewall service
-    #
-    # @param [String] service (including the "service:" prefix)
-    # @return	[String] service description
-    def GetDescription(service)
-      service_details(service)["description"] || []
-    end
-
     # Sets that configuration was modified
     def SetModified
       @sfws_modified = true
 
       nil
-    end
-
-    # Sets that configuration was not modified
-    def ResetModified
-      @sfws_modified = false
-
-      nil
-    end
-
-    # Returns whether configuration was modified
-    #
-    # @return [Boolean] modified
-    def GetModified
-      @sfws_modified
     end
 
     # Function returns needed ports allowing broadcast
@@ -585,26 +633,6 @@ module Yast
     # @return	[Array<String>] of needed broadcast ports
     def GetNeededBroadcastPorts(service)
       service_details(service)["broadcast_ports"] || []
-    end
-
-    # Function returns needed ports and protocols for service.
-    # Service needs to be known (installed in the system).
-    # Function throws an exception SuSEFirewalServiceNotFound
-    # if service is not known (undefined).
-    #
-    # @param [String] service (including the "service:" prefix)
-    # @return	[Hash{String => Array<String>}] of needed ports and protocols
-    #
-    # @example
-    #   GetNeededPortsAndProtocols ("service:aaa") -> {
-    #           "tcp_ports"      => [ "122", "ftp-data" ],
-    #           "udp_ports"      => [ "427" ],
-    #           "rpc_ports"      => [ "portmap", "ypbind" ],
-    #           "ip_protocols"   => [],
-    #           "broadcast_ports"=> [ "427" ],
-    #   }
-    def GetNeededPortsAndProtocols(service)
-      DEFAULT_SERVICE.merge(service_details(service))
     end
 
     # Immediately writes the configuration of service defined by package to the
@@ -748,6 +776,159 @@ module Yast
     publish function: :GetPossiblyConflictServices, type: "list <string> ()"
   end
 
-  SuSEFirewallServices = SuSEFirewallServicesClass.new
-  SuSEFirewallServices.main
+  class SuSEFirewalldServicesClass < SuSEFirewallServicesClass
+    include Yast::Logger
+
+    SERVICES_DIR = ["/etc/firewalld/services", "/usr/lib/firewalld/services"]
+
+    IGNORED_SERVICES = ["..", "."]
+
+    def initialize
+      @services = nil
+
+      @known_services_features = {
+        "TCP"     => "tcp_ports",
+        "UDP"     => "udp_ports",
+        "IP"      => "ip_protocols",
+        "MODULES" => "modules"
+      }
+
+      @known_metadata = { "Name" => "name", "Description" => "description" }
+
+      # firewall needs restarting. Always false for firewalld
+      @sfws_modified = false
+    end
+
+    # Reads services that can be used in FirewallD
+    # @note Contrary to SF2 we do not read the full service details here
+    # @note since that would mean to issue 5-6 API calls for every service
+    # @note file which will take a lot of time for no particular reason.
+    # @note We will read the full service information if needed in the
+    # @note service_details method.
+    # @return [Boolean] if successful
+    # @api private
+    def ReadServicesDefinedByRPMPackages
+      log.info "Reading FirewallD services from #{SERVICES_DIR.join(" and ")}"
+
+      @services ||= {}
+
+      SuSEFirewall.api.services.each do |service_name|
+        # Init everything
+        @services[service_name] = {}
+        @known_services_features.merge(@known_metadata).each_value do |param|
+          # Set a good name for our service until we read its information
+          case param
+          when "description"
+            # We intentionally don't call the API here. We will use it as a
+            # flag to populate the full service details later on.
+            @services[service_name][param] = default_service_description(service_name)
+          when "name"
+            # We have to call the API here because there are callers which
+            # expect to at least provide a sensible service name without
+            # worrying for the full service details. This is going to be
+            # expensive though since the cost of calling --get-short grows
+            # linearly with the number of available services :-(
+            @services[service_name][param] = SuSEFirewall.api.service_short(service_name)
+          else
+            @services[service_name][param] = []
+          end
+        end
+      end
+    end
+
+    # Returns service definition.
+    # See @services for the format.
+    # If `silent` is not defined or set to `true`, function throws an exception
+    # SuSEFirewalServiceNotFound if service is not found on disk.
+    #
+    # @note Since we do not do full service population in ReadServicesDefinedByRPMPackages
+    # @note we have to do it here but only if the service hasn't been populated
+    # @note before. The way we determine if the service has been populated or not
+    # @note is to look at the "description" key.
+    #
+    # @param [String] service name (may include the "service:" prefix)
+    # @param [String] (optional) whether to silently return nil
+    #                 when service is not found (default false)
+    # @api private
+    def service_details(service_name, silent = false)
+      # Drop service: if needed
+      service_name = service_name.partition(":")[2] if service_name.include?("service:")
+      # If service description is the default one then we know that we haven't read the service
+      # information just yet. Lets do it now
+      populate_service(service_name) if all_services[service_name]["description"] ==
+          default_service_description(service_name)
+      service = all_services[service_name]
+      if service.nil? && !silent
+        log.error "Uknown service '#{service_name}'"
+        log.info "Known services: #{all_services.keys}"
+
+        raise(
+          SuSEFirewalServiceNotFound,
+          _("Service with name '%{service_name}' does not exist") % { service_name: service_name }
+        )
+      end
+
+      service
+    end
+
+    # Sets that configuration was modified
+    def SetModified
+      @sfws_modified = true
+
+      nil
+    end
+
+  private
+
+    # A good default description for all services. We will use that to
+    # determine if the service has been populated or not.
+    #
+    # @param service_name [String] The service name
+    # @return [String] Default description for service
+    def default_service_description(service_name)
+      _("The %{service_name} Service") % { service_name: service_name.upcase }
+    end
+
+    # Populate service's internal data structures.
+    #
+    # @param service_name [String] The service name
+    def populate_service(service_name)
+      # This going to be too expensive (5 API calls per service) but this
+      # is really the slowpath since we rarely need to extract so much
+      # information from a service
+      SuSEFirewall.api.service_modules(service_name).split(" ").each do |x|
+        @services[service_name]["modules"] << x
+      end
+      SuSEFirewall.api.service_protocols(service_name).split(" ").each do |x|
+        @services[service_name]["protocols"] << x
+      end
+      SuSEFirewall.api.service_ports(service_name).split(" ").each do |x|
+        port_proto = x.split("/")
+        @services[service_name]["tcp_ports"] << port_proto[0] if port_proto[1] == "tcp"
+        @services[service_name]["udp_ports"] << port_proto[0] if port_proto[1] == "udp"
+      end
+      @services[service_name]["description"] = SuSEFirewall.api.service_description(service_name)
+
+      log.debug("Added service '#{service_name}' with info: #{@services[service_name]}")
+
+      true
+    end
+
+    publish function: :ReadServicesDefinedByRPMPackages, type: "boolean ()"
+    publish function: :GetSupportedServices, type: "map <string, string> ()"
+    publish function: :GetListOfServicesAddedByPackage, type: "list <string> ()"
+    publish function: :GetNeededTCPPorts, type: "list <string> (string)"
+    publish function: :GetNeededUDPPorts, type: "list <string> (string)"
+    publish function: :GetNeededRPCPorts, type: "list <string> (string)"
+    publish function: :GetNeededIPProtocols, type: "list <string> (string)"
+    publish function: :GetDescription, type: "string (string)"
+    publish function: :IsKnownService, type: "boolean (string)"
+    publish function: :GetNeededPortsAndProtocols, type: "map <string, list <string>> (string)"
+    publish function: :SetModified, type: "void ()"
+    publish function: :ResetModified, type: "void ()"
+    publish function: :GetModified, type: "boolean ()"
+  end
+
+  SuSEFirewallServices = SuSEFirewallServicesClass.create
+  SuSEFirewallServices.main if SuSEFirewallServices.is_a?(SuSEFirewall2ServicesClass)
 end

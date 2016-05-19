@@ -35,6 +35,11 @@ Style/AccessorMethodName:
 Style/ClassAndModuleCamelCase:
   Enabled: false
 
+Style/ClassVars:
+  # We really need the class variables in SuSEFirewall module
+  Exclude:
+    - "library/network/src/modules/SuSEFirewall.rb"
+
 # ensure new code is properly documented
 Style/Documentation:
   Include:
@@ -47,6 +52,12 @@ Style/FileName:
 Style/MethodName:
   Include:
     - "library/*/src/lib/**/*.rb"
+
+Style/Next:
+  # skip this check for SuSEFirewall since it forces us to refactor
+  # the code in a sub-optimal way.
+  Exclude:
+    - "library/network/src/modules/SuSEFirewall.rb"
 
 # keep it as it is part of API for old code
 Style/PredicateName:
