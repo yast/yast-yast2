@@ -17,7 +17,7 @@ def setup_data_dir
   stub_const("Yast::SuSEFirewall2ServicesClass::SERVICES_DIR", SERVICES_DATA_PATH)
 end
 
-FakeFirewallServices = Yast::SuSEFirewallServicesClass.create(:sf2)
+FakeFirewallServices = Yast::FirewallServicesClass.create(:sf2)
 FakeFirewallServices.main
 
 describe FakeFirewallServices do

@@ -29,7 +29,10 @@ ylib_DATA = \
   lib/network/firewalld.rb \
   lib/network/susefirewall.rb \
   lib/network/susefirewall2.rb \
-  lib/network/susefirewalld.rb
+  lib/network/susefirewalld.rb \
+  lib/network/susefirewallservices.rb \
+  lib/network/susefirewall2services.rb \
+  lib/network/susefirewalldservices.rb
 
 EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA)
 
