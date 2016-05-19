@@ -26,7 +26,10 @@ agent_SCRIPTS = \
 
 ylibdir = @ylibdir@/network
 ylib_DATA = \
-  lib/network/firewalld.rb
+  lib/network/firewalld.rb \
+  lib/network/susefirewall.rb \
+  lib/network/susefirewall2.rb \
+  lib/network/susefirewalld.rb
 
 EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA)
 
