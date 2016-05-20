@@ -35,6 +35,11 @@ Style/AccessorMethodName:
 Style/ClassAndModuleCamelCase:
   Enabled: false
 
+Style/ClassVars:
+  # We really need the class variables in SuSEFirewall modules
+  Exclude:
+    - "library/network/src/modules/SuSEFirewall.rb"
+
 # ensure new code is properly documented
 Style/Documentation:
   Include:
