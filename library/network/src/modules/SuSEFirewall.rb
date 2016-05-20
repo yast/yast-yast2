@@ -46,7 +46,7 @@ module Yast
     Yast.import "PackageSystem"
 
     # Use same hash for package names and services
-    @@firewall_backends = {
+    FIREWALL_BACKENDS = {
       sf2: "SuSEfirewall2",
       fwd: "firewalld"
     }
@@ -59,7 +59,7 @@ module Yast
       # SF2 has it's own method of checking if it's installed. This is
       # used internally by SF2. Here, we simply care if the package
       # is present on the system.
-      PackageSystem.Installed(@@firewall_backends[backend_sym])
+      PackageSystem.Installed(FIREWALL_BACKENDS[backend_sym])
     end
 
     # Obtain backends which are installed on the system
@@ -68,7 +68,7 @@ module Yast
     def self.installed_backends
       backends = []
 
-      @@firewall_backends.each_key { |k| backends << k if backend_available?(k) }
+      FIREWALL_BACKENDS.each_key { |k| backends << k if backend_available?(k) }
 
       backends
     end
@@ -82,7 +82,7 @@ module Yast
       backends = []
 
       installed_backends.each do |b|
-        backends << b if Service.Enabled(@@firewall_backends[b])
+        backends << b if Service.Enabled(FIREWALL_BACKENDS[b])
       end
 
       backends
@@ -96,7 +96,7 @@ module Yast
 
       backends = []
 
-      installed_backends.each { |b| backends << b if Service.Active(@@firewall_backends[b]) }
+      installed_backends.each { |b| backends << b if Service.Active(FIREWALL_BACKENDS[b]) }
 
       # In theory this should only return an Array with only one element in it
       # since FirewallD and SF2 systemd service files conflict with each other.

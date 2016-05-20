@@ -49,10 +49,10 @@ module Yast
     # :ports      = [Array<String>]
     # :protocols  = [Array<String>]
     # :services   = [Array<String>]
-    @@zone_attributes = [:interfaces, :masquerade, :modified, :ports, :protocols, :services]
+    ZONE_ATTRIBUTES = [:interfaces, :masquerade, :modified, :ports, :protocols, :services]
     # {enable,start}_firewall are "inherited" from SF2 so we can't use symbols
     # there without having to change all the SF2 callers.
-    @@key_settings = ["enable_firewall", "logging", "routing", "start_firewall"]
+    KEY_SETTINGS = ["enable_firewall", "logging", "routing", "start_firewall"]
 
     EMPTY_ZONE = {
       interfaces: [],
@@ -120,7 +120,7 @@ module Yast
       @special_all_interface_zone = ""
 
       # Initialize the @SETTINGS hash
-      @@key_settings.each { |x| @SETTINGS[x] = nil }
+      KEY_SETTINGS.each { |x| @SETTINGS[x] = nil }
       GetKnownFirewallZones().each { |zone| @SETTINGS[zone] = deep_copy(EMPTY_ZONE) }
 
       # Are needed packages installed?
@@ -178,12 +178,12 @@ module Yast
       import_settings = deep_copy(import_settings)
       # Sanitize it
       import_settings.keys.each do |k|
-        if !GetKnownFirewallZones().include?(k) && !@@key_settings.include?(k)
+        if !GetKnownFirewallZones().include?(k) && !KEY_SETTINGS.include?(k)
           Builtins.y2warning("Removing invalid key: %1 from imported settings", k)
           import_settings.delete(k)
         else
           import_settings[k].keys.each do |v|
-            if !@@zone_attributes.include?(v)
+            if !ZONE_ATTRIBUTES.include?(v)
               Builtins.y2warning("Removing invalid value: %1 from key %2", v, k)
               import_settings[k].delete(v)
             end
@@ -273,7 +273,7 @@ module Yast
           zone = z
           next
         end
-        if @@zone_attributes.any? { |w| e.include?(w.to_s) }
+        if ZONE_ATTRIBUTES.any? { |w| e.include?(w.to_s) }
           attrs = e.split(":\s")
           attr = attrs[0].lstrip.to_sym
           # do not bother if empty
@@ -1041,13 +1041,13 @@ module Yast
     end
 
     def add_to_zone_attr(zone, attr, val)
-      return nil if !@@zone_attributes.include?(attr)
+      return nil if !ZONE_ATTRIBUTES.include?(attr)
       # No sanity checking. callers must be careful
       @SETTINGS[zone][attr] << val
     end
 
     def set_to_zone_attr(zone, attr, val)
-      return nil if !@@zone_attributes.include?(attr)
+      return nil if !ZONE_ATTRIBUTES.include?(attr)
       # No sanity checking. callers must be careful
       @SETTINGS[zone][attr] = val
     end
@@ -1057,7 +1057,7 @@ module Yast
     end
 
     def del_from_zone_attr(zone, attr, val)
-      return nil if !@@zone_attributes.include?(attr)
+      return nil if !ZONE_ATTRIBUTES.include?(attr)
       # No sanity checking. callers must be careful
       @SETTINGS[zone][attr].delete(val)
     end
