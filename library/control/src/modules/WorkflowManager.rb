@@ -1150,7 +1150,7 @@ module Yast
       end
 
       if Mode.auto &&
-        AutoinstGeneral.mode.has_key? "forceboot" &&
+        AutoinstGeneral.mode.has_key?("forceboot") &&
         !Yast::ProductFeatures.GetBooleanFeature("globals", "kexec_reboot") !=
           AutoinstGeneral.mode["forceboot"]
         # This entry can be set by the AutoYaST configuration file and
