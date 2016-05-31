@@ -39,6 +39,9 @@ require "yast"
 
 module Yast
   class WorkflowManagerClass < Module
+
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       Yast.import "Pkg"
@@ -56,6 +59,9 @@ module Yast
       Yast.import "String"
       Yast.import "XML"
       Yast.import "Report"
+      Yast.import "Mode"
+      Yast.import "AutoinstGeneral"
+
 
       #
       #    This API uses some new terms that need to be explained:
@@ -1141,6 +1147,22 @@ module Yast
           to:   "map <string, any>"
         )
         ProductFeatures.SetSection(section, sect)
+      end
+
+      if Mode.auto &&
+        AutoinstGeneral.mode.has_key?("forceboot") &&
+        !Yast::ProductFeatures.GetBooleanFeature("globals", "kexec_reboot") !=
+          AutoinstGeneral.mode["forceboot"]
+        # This entry can be set by the AutoYaST configuration file and
+        # should not be reset by any other product desciption file.
+        # bnc#981434
+        log.info( "Taking \"kexec_reboot\" from AutoYaST configuration " \
+          "\"forceboot\" #{AutoinstGeneral.mode["forceboot"]}" )
+        ProductFeatures.SetBooleanFeature(
+          "globals",
+          "kexec_reboot",
+          !AutoinstGeneral.mode["forceboot"]
+        )
       end
 
       # merging 'clone_modules'
