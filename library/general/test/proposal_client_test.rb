@@ -17,8 +17,8 @@ class TestProposal < ::Installation::ProposalClient
     "description"
   end
 
-  def write(args)
-    args.empty? ? "write" : args
+  def write
+    "write"
   end
 end
 
@@ -83,6 +83,20 @@ describe ::Installation::ProposalClient do
 
       it "raise NotImplementedError exception if abstract method not defined" do
         expect { ::Installation::ProposalClient.run }.to raise_error(NotImplementedError)
+      end
+    end
+
+    context "first client argument is Write" do
+      before do
+        allow(Yast::WFM).to receive(:Args).and_return(["Write", {}])
+      end
+
+      it "dispatch call to abstract method write" do
+        expect(subject.run).to eq "write"
+      end
+
+      it "succeeds even if write  method is not defined" do
+        expect { ::Installation::ProposalClient.run }.to_not raise_error
       end
     end
   end

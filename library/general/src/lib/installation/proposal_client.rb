@@ -89,7 +89,7 @@ module Installation
       when "Description"
         description
       when "Write"
-        write(param)
+        write
       else
         raise ArgumentError, "Invalid action for proposal '#{func.inspect}'"
       end
@@ -269,6 +269,10 @@ module Installation
     #
     def description
       raise NotImplementedError, "Calling abstract method 'description'"
+    end
+
+    def write
+      # doing nothing is OK. or is it? clarify the API, the docs, actual usage!
     end
   end
 end
