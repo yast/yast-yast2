@@ -2,4 +2,4 @@
 # Makefile.am for yast2/library/types
 #
 
-SUBDIRS = src testsuite doc test
+SUBDIRS = src testsuite test

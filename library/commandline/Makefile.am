@@ -2,4 +2,4 @@
 # Makefile.am for yast2/library/commandline
 #
 
-SUBDIRS = doc src testsuite test
+SUBDIRS = src testsuite test
