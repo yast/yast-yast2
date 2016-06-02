@@ -1,3 +1,3 @@
 # Makefile.am for library/general
 
-SUBDIRS = src testsuite test hooks doc
+SUBDIRS = src testsuite test hooks

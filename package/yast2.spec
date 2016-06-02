@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.191
+Version:        3.1.192
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0
@@ -101,16 +101,6 @@ Requires:       bind-utils
 %description
 This package contains scripts and data needed for SUSE Linux
 installation with YaST2
-
-%package devel-doc
-Summary:        YaST2 - Development Scripts and Documentation
-Group:          System/YaST
-Requires:       yast2 = %{version}
-Requires:       yast2-core-devel
-
-%description devel-doc
-This package contains scripts and data needed for a SUSE Linux
-installation with YaST2.
 
 %prep
 %setup -q
@@ -208,28 +198,5 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %dir %{yast_yncludedir}/hwinfo
 %{yast_yncludedir}/hwinfo/*.rb
 %{yast_desktopdir}/messages.desktop
-
-# documentation
-
-%files devel-doc
-%defattr(-,root,root)
-
-%doc %{yast_docdir}/autodocs
-%doc %{yast_docdir}/commandline
-%doc %{yast_docdir}/control
-%doc %{yast_docdir}/cron
-%doc %{yast_docdir}/cwm
-%doc %{yast_docdir}/desktop
-%doc %{yast_docdir}/gpg
-%doc %{yast_docdir}/log
-%doc %{yast_docdir}/network
-%doc %{yast_docdir}/packages
-%doc %{yast_docdir}/runlevel
-%doc %{yast_docdir}/sequencer
-%doc %{yast_docdir}/system
-%doc %{yast_docdir}/types
-%doc %{yast_docdir}/wizard
-%doc %{yast_docdir}/xml
-%doc %{yast_docdir}/general
 
 %changelog

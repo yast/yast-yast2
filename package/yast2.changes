@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun  2 10:29:34 UTC 2016 - igonzalezsosa@suse.com
+
+- Drop yast2-devel-doc package (fate#320356)
+- 3.1.192
+
+-------------------------------------------------------------------
 Fri May 20 08:09:04 UTC 2016 - mchandras@suse.de
 
 - Split SuSEFirewall and SuSEFirewallServices classes to separate
