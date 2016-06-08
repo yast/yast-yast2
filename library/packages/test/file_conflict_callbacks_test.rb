@@ -80,6 +80,7 @@ describe Packages::FileConflictCallbacks do
 
       it "opens a new progress if installation progress was not displayed" do
         expect(Yast::UI).to receive(:WidgetExists).and_return(false)
+        expect(Yast::Wizard).to receive(:CreateDialog)
         expect(Yast::Progress).to receive(:Simple)
 
         start_cb.call
@@ -287,7 +288,8 @@ describe Packages::FileConflictCallbacks do
       end
 
       it "closes progress if installation progress was not displayed" do
-        expect(Yast::UI).to receive(:WidgetExists).and_return(false)
+        allow(Yast::UI).to receive(:WidgetExists).and_return(false)
+        expect(Yast::Wizard).to receive(:CloseDialog)
         expect(Yast::Progress).to receive(:Finish)
 
         finish_cb.call

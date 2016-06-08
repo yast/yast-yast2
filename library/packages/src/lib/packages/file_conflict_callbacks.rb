@@ -37,6 +37,7 @@ module Packages
         Yast.import "Report"
         Yast.import "Label"
         Yast.import "PackageCallbacks"
+        Yast.import "Wizard"
 
         textdomain "base"
 
@@ -83,6 +84,7 @@ module Packages
           Yast::UI.ChangeWidget(Id(PKG_INSTALL_WIDGET), :Value, 0)
           Yast::UI.ChangeWidget(Id(PKG_INSTALL_WIDGET), :Label, label)
         else
+          Yast::Wizard.CreateDialog
           # TRANSLATORS: help text for the file conflict detection progress
           help = _("<p>Detecting the file conflicts is in progress.</p>")
           # Use the same label for the window title and the progressbar label
@@ -148,10 +150,11 @@ module Packages
       # Handle the file conflict detection finish callback.
       def finish
         log.info "File conflict check finished"
-        return if Yast::Mode.commandline
+        return if Yast::Mode.commandline || pkg_installation?
 
         # finish the opened progress dialog
-        Yast::Progress.Finish unless pkg_installation?
+        Yast::Progress.Finish
+        Yast::Wizard.CloseDialog
       end
 
       # Construct the file conflicts dialog.
