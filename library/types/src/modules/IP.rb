@@ -360,7 +360,7 @@ module Yast
       return true if ip.start_with?("192.19.")
 
       # all from 224. is covered by RFC#5771 and RFC#5735
-      return true if (224..255).include?(ip.split(".").first.to_i)
+      return true if (224..255).cover?(ip.split(".").first.to_i)
 
       false
     end
@@ -393,7 +393,7 @@ module Yast
       return false unless ip.start_with?("100.")
 
       second_part = ip.split(".")[1].to_i
-      (64..127).include?(second_part)
+      (64..127).cover?(second_part)
     end
 
     def private_network?(ip)
@@ -407,14 +407,14 @@ module Yast
       return false unless ip.start_with?("172.")
 
       second_part = ip.split(".")[1].to_i
-      (16..31).include?(second_part)
+      (16..31).cover?(second_part)
     end
 
     def ds_lite_address?(ip)
       return false unless ip.start_with?("192.0.0.")
 
       fourth_part = ip.split(".")[3].to_i
-      (0..7).include?(fourth_part)
+      (0..7).cover?(fourth_part)
     end
   end
 
