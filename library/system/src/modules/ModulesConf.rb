@@ -139,7 +139,7 @@ module Yast
 
       SCR.Write(path(".modules"), nil) if modules_conf_changed
 
-      RunDepmod(true) if !Mode.test if modules_conf_changed || force
+      RunDepmod(true) if (modules_conf_changed || force) && (!Mode.test)
 
       nil
     end

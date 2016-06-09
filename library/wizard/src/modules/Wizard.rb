@@ -821,7 +821,7 @@ module Yast
           UI.ChangeWidget(Id(:title), :Value, title)
         end
 
-        UI.SetFocus(Id(:accept)) if UI.WidgetExists(Id(:accept)) if set_focus
+        UI.SetFocus(Id(:accept)) if set_focus && UI.WidgetExists(Id(:accept))
       end
 
       SetHelpText(help_text)
