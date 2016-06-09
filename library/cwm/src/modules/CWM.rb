@@ -302,6 +302,7 @@ module Yast
       end
       minimum
     end
+
     # Add fallback functions to a widget
     # global only because of testsuites
     # @param [Array<Hash{String => Object>}] widgets a list of widget desctiption maps

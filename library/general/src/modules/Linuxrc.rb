@@ -116,6 +116,7 @@ module Yast
     def vnc
       InstallInf("VNC") == "1"
     end
+
     # remote X mode ?
     def display_ip
       !InstallInf("Display_IP").nil?

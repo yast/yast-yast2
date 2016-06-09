@@ -556,6 +556,7 @@ module Yast
 
       nil
     end
+
     # Function returns list of known interfaces in requested zone.
     # In the firewalld case, we don't support the special 'any' string.
     # Thus, interfaces not in a zone will not be included.

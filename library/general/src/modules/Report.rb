@@ -277,6 +277,7 @@ module Yast
         }
       }
     end
+
     # Clear stored yes/no messages
     # @return [void]
     def ClearYesNoMessages
@@ -626,6 +627,7 @@ module Yast
 
       nil
     end
+
     # Set messages logging to .y2log file
     # @param [Boolean] log if log is true then  messages will be logged
     # @return [void]

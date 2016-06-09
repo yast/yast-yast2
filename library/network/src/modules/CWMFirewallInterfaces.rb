@@ -989,6 +989,7 @@ module Yast
       UI.WidgetExists(Id("_cwm_open_firewall")) &&
         UI.WidgetExists(Id("_cwm_firewall_details"))
     end
+
     # Get the template for the help text to the firewall opening widget
     # @param [Boolean] restart_displayed shold be true if "Save and restart" is displayed
     # @return [String] help text template with %1 and %2 placeholders

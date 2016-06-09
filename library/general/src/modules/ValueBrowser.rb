@@ -197,6 +197,7 @@ module Yast
 
       nil
     end
+
     # Write contents of variable to log file.
     # @param [Object] variable variable to show.
     def DebugBrowse(variable)

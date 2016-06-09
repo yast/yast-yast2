@@ -316,6 +316,7 @@ module Yast
         return false
       end
     end
+
     # test for IPv6
     def isNetworkv6Running
       net = Convert.to_integer(

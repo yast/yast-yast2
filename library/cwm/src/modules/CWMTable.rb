@@ -308,6 +308,7 @@ module Yast
 
       nil
     end
+
     # Wrapper for TableInit using CWM::GetProcessedWidget () for getting
     # widget description map
     # @param [String] key any widget key

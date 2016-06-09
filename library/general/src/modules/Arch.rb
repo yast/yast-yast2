@@ -269,6 +269,7 @@ module Yast
       end
       @_board_compatible
     end
+
     # true for all PPC "MacRISC" boards
     def board_mac
       ppc &&
