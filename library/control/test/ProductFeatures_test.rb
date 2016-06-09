@@ -22,10 +22,10 @@ describe Yast::ProductFeatures do
   let(:overlay_features) do
     {
       "globals"  => {
-        "flags"      => ["Namibia"]
+        "flags" => ["Namibia"]
       },
       "software" => {
-        "packages"   => ["tangut-fonts"]
+        "packages" => ["tangut-fonts"]
       }
     }
   end
@@ -40,7 +40,7 @@ describe Yast::ProductFeatures do
         "open_space" => false
       },
       "software"     => {
-        "packages"   => ["tangut-fonts"]
+        "packages" => ["tangut-fonts"]
       }
     }
   end
