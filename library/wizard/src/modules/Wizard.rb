@@ -422,7 +422,7 @@ module Yast
 
       set_icon
       UI.OpenDialog(Opt(:wizardDialog), dialog)
-      if ! @relnotes_button_id.empty?
+      if !@relnotes_button_id.empty?
         ShowReleaseNotesButton(@relnotes_button_label, @relnotes_button_id)
       end
 
