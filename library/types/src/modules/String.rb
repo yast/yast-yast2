@@ -34,14 +34,14 @@ module Yast
     include Yast::Logger
 
     # @note it is ascii chars only
-    UPPER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    LOWER_CHARS = "abcdefghijklmnopqrstuvwxyz"
+    UPPER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".freeze
+    LOWER_CHARS = "abcdefghijklmnopqrstuvwxyz".freeze
     ALPHA_CHARS = UPPER_CHARS + LOWER_CHARS
-    DIGIT_CHARS = "0123456789"
+    DIGIT_CHARS = "0123456789".freeze
     ALPHA_NUM_CHARS = ALPHA_CHARS + DIGIT_CHARS
-    PUNCT_CHARS = "!\"\#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+    PUNCT_CHARS = "!\"\#$%&'()*+,-./:;<=>?@[\\]^_`{|}~".freeze
     GRAPHICAL_CHARS = ALPHA_NUM_CHARS + PUNCT_CHARS
-    SPACE_CHARS = "\f\r\n\t\v"
+    SPACE_CHARS = "\f\r\n\t\v".freeze
     PRINTABLE_CHARS = SPACE_CHARS + GRAPHICAL_CHARS
 
     def main

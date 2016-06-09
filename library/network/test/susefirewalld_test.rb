@@ -152,7 +152,7 @@ describe FakeFirewallD do
         services:   ["dns"],
         protocols:  ["ah"]
       }
-    }
+    }.freeze
 
     BAD_FAKE_FIREWALLD_CONFIG = {
       "dmz"     => {
@@ -163,7 +163,7 @@ describe FakeFirewallD do
         services:   ["foobar"],
         interfaces: ["eth3"]
       }
-    }
+    }.freeze
     FULL_FAKE_FIREWALLD_CONFIG = GOOD_FAKE_FIREWALLD_CONFIG.merge(BAD_FAKE_FIREWALLD_CONFIG)
 
     context "when verifying its basic configuration" do

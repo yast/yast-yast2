@@ -44,7 +44,7 @@ module Yast
       textdomain "base"
     end
 
-    OS_RELEASE_PATH = "/etc/os-release"
+    OS_RELEASE_PATH = "/etc/os-release".freeze
 
     # Get information about the OS release
     # Throws exception Yast::OSReleaseFileMissingError if release file

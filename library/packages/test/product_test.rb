@@ -278,10 +278,10 @@ describe Yast::Product do
   end
 
   # Methods that do not allow empty result
-  SUPPORTED_METHODS = [:name, :short_name, :version, :run_you, :flags, :relnotesurl]
+  SUPPORTED_METHODS = [:name, :short_name, :version, :run_you, :flags, :relnotesurl].freeze
 
   # Empty result is allowed
-  SUPPORTED_METHODS_ALLOWED_EMPTY = [:relnotesurl_all, :product_of_relnotes]
+  SUPPORTED_METHODS_ALLOWED_EMPTY = [:relnotesurl_all, :product_of_relnotes].freeze
 
   context "while called on a broken system (no os-release, no zypp information)" do
     before(:each) do

@@ -44,7 +44,7 @@ module Yast
     # max. retry timeout (15 minutes)
     RETRY_MAX_TIMEOUT = 15 * 60
     # symbols for ticking in cmd line
-    TICK_LABELS = ["/", "-", "\\", "|"]
+    TICK_LABELS = ["/", "-", "\\", "|"].freeze
 
     def main
       Yast.import "Pkg"

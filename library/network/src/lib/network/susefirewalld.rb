@@ -49,10 +49,10 @@ module Yast
     # :ports      = [Array<String>]
     # :protocols  = [Array<String>]
     # :services   = [Array<String>]
-    ZONE_ATTRIBUTES = [:interfaces, :masquerade, :modified, :ports, :protocols, :services]
+    ZONE_ATTRIBUTES = [:interfaces, :masquerade, :modified, :ports, :protocols, :services].freeze
     # {enable,start}_firewall are "inherited" from SF2 so we can't use symbols
     # there without having to change all the SF2 callers.
-    KEY_SETTINGS = ["enable_firewall", "logging", "routing", "start_firewall"]
+    KEY_SETTINGS = ["enable_firewall", "logging", "routing", "start_firewall"].freeze
 
     EMPTY_ZONE = {
       interfaces: [],
@@ -61,7 +61,7 @@ module Yast
       ports:      [],
       protocols:  [],
       services:   []
-    }
+    }.freeze
 
     # We need that for the tests. Nothing else should access the API
     # directly

@@ -32,13 +32,13 @@ module Yast
     Yast.import "String"
 
     # A single character used to separate alias id
-    ALIAS_SEPARATOR = "#"
-    TYPE_REGEX = "(ip6tnl|mip6mnha|[#{String.CAlpha}]+)"
-    ID_REGEX = "([^#{ALIAS_SEPARATOR}]*)"
-    ALIAS_REGEX = "(.*)"
-    DEVNAME_REGEX = "#{TYPE_REGEX}-?#{ID_REGEX}"
+    ALIAS_SEPARATOR = "#".freeze
+    TYPE_REGEX = "(ip6tnl|mip6mnha|[#{String.CAlpha}]+)".freeze
+    ID_REGEX = "([^#{ALIAS_SEPARATOR}]*)".freeze
+    ALIAS_REGEX = "(.*)".freeze
+    DEVNAME_REGEX = "#{TYPE_REGEX}-?#{ID_REGEX}".freeze
     # Supported hotplug types
-    HOTPLUG_TYPES = ["pcmcia", "usb"]
+    HOTPLUG_TYPES = ["pcmcia", "usb"].freeze
 
     # @attribute Name
     # @return [String]
@@ -691,7 +691,7 @@ module Yast
       "SCOPE",
       "LABEL",
       "IP_OPTIONS"
-    ]
+    ].freeze
 
     # Read devices from files
     # @return true if sucess

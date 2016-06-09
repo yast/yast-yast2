@@ -34,8 +34,8 @@ module Yast
     Yast.import "Stage"
     include Yast::Logger
 
-    SUPPORTED_TYPES  = %w( service socket target )
-    SUPPORTED_STATES = %w( enabled disabled )
+    SUPPORTED_TYPES  = %w( service socket target ).freeze
+    SUPPORTED_STATES = %w( enabled disabled ).freeze
 
     DEFAULT_PROPERTIES = {
       id:              "Id",
@@ -46,7 +46,7 @@ module Yast
       sub_state:       "SubState",
       unit_file_state: "UnitFileState",
       path:            "FragmentPath"
-    }
+    }.freeze
 
     extend Forwardable
 

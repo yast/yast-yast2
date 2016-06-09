@@ -39,10 +39,10 @@ require "yast"
 module Yast
   class KernelClass < Module
     # default configuration file for Kernel modules loaded on boot
-    MODULES_CONF_FILE = "yast.conf"
+    MODULES_CONF_FILE = "yast.conf".freeze
 
     # directory where configuration for Kernel modules loaded on boot is stored
-    MODULES_DIR = "/etc/modules-load.d/"
+    MODULES_DIR = "/etc/modules-load.d/".freeze
 
     # SCR path for reading/writing Kernel modules
     MODULES_SCR = Path.new(".kernel_modules_to_load")

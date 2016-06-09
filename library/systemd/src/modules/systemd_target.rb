@@ -43,9 +43,9 @@ module Yast
   class SystemdTargetClass < Module
     include Yast::Logger
 
-    UNIT_SUFFIX    = ".target"
-    DEFAULT_TARGET = "default.target"
-    PROPERTIES     = { allow_isolate: "AllowIsolate" }
+    UNIT_SUFFIX    = ".target".freeze
+    DEFAULT_TARGET = "default.target".freeze
+    PROPERTIES     = { allow_isolate: "AllowIsolate" }.freeze
 
     def find(target_name, properties = {})
       target_name += UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)

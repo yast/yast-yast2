@@ -33,7 +33,7 @@ module Yast
   class LinuxrcClass < Module
     # Disables filesystem snapshots (fate#317973)
     # Possible values: all, post, pre, single
-    DISABLE_SNAPSHOTS = "disable_snapshots"
+    DISABLE_SNAPSHOTS = "disable_snapshots".freeze
 
     def main
       Yast.import "Mode"

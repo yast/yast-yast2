@@ -104,7 +104,7 @@ module Yast
     end
 
     class SearchPath
-      DEFAULT_DIR = "/var/lib/YaST2/hooks"
+      DEFAULT_DIR = "/var/lib/YaST2/hooks".freeze
 
       attr_reader :path
 

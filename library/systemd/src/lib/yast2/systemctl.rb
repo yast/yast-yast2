@@ -13,9 +13,9 @@ module Yast
   module Systemctl
     include Yast::Logger
 
-    CONTROL         = "systemctl"
-    COMMAND_OPTIONS = " --no-legend --no-pager --no-ask-password "
-    ENV_VARS        = " LANG=C TERM=dumb COLUMNS=1024 "
+    CONTROL         = "systemctl".freeze
+    COMMAND_OPTIONS = " --no-legend --no-pager --no-ask-password ".freeze
+    ENV_VARS        = " LANG=C TERM=dumb COLUMNS=1024 ".freeze
     SYSTEMCTL       = ENV_VARS + CONTROL + COMMAND_OPTIONS
     TIMEOUT         = 30 # seconds
 

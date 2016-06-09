@@ -40,7 +40,7 @@ module Firewalld
 
     BASH_SCR_PATH = Yast::Path.new(".target.bash_output")
     # Base firewall-cmd command
-    COMMAND = "LANG=C firewall-cmd"
+    COMMAND = "LANG=C firewall-cmd".freeze
 
     attr_reader :option_str
 

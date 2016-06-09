@@ -60,13 +60,13 @@ module Yast2
 
     Yast.import "Linuxrc"
 
-    FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | grep \"^root \" >/dev/null"
-    CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description \"%{description}\""
-    LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list"
+    FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | grep \"^root \" >/dev/null".freeze
+    CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description \"%{description}\"".freeze
+    LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list".freeze
     VALID_LINE_REGEX = /\A\w+\s+\| \d+/
 
     # Predefined snapshot cleanup strategies (the user can define custom ones, too)
-    CLEANUP_STRATEGY = { number: "number", timeline: "timeline" }
+    CLEANUP_STRATEGY = { number: "number", timeline: "timeline" }.freeze
 
     attr_reader :number, :snapshot_type, :previous_number, :timestamp, :user,
       :cleanup_algo, :description

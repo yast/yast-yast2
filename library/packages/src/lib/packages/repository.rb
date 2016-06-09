@@ -26,7 +26,7 @@ module Packages
 
     # Repository schemes considered local (see #local?)
     # https://github.com/openSUSE/libzypp/blob/a7a038aeda1ad6d9e441e7d3755612aa83320dce/zypp/Url.cc#L458
-    LOCAL_SCHEMES = [:cd, :dvd, :dir, :hd, :iso, :file]
+    LOCAL_SCHEMES = [:cd, :dvd, :dir, :hd, :iso, :file].freeze
 
     # @return [Fixnum] Repository ID
     attr_reader :repo_id

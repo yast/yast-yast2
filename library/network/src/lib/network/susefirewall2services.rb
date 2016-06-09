@@ -38,19 +38,19 @@ module Yast
     include Yast::Logger
 
     # this is how services defined by package are distinguished
-    DEFINED_BY_PKG_PREFIX = "service:"
+    DEFINED_BY_PKG_PREFIX = "service:".freeze
 
-    SERVICES_DIR = "/etc/sysconfig/SuSEfirewall2.d/services/"
+    SERVICES_DIR = "/etc/sysconfig/SuSEfirewall2.d/services/".freeze
 
     # please, check it with configuration in refresh-srv-def-by-pkgs-trans.sh script
-    SERVICES_TEXTDOMAIN = "firewall-services"
+    SERVICES_TEXTDOMAIN = "firewall-services".freeze
 
-    READ_ONLY_SERVICE_FEATURES = ["name", "description"]
+    READ_ONLY_SERVICE_FEATURES = ["name", "description"].freeze
 
-    IGNORED_SERVICES = ["TEMPLATE", "..", "."]
+    IGNORED_SERVICES = ["TEMPLATE", "..", "."].freeze
 
-    TEMPLATE_SERVICE_NAME = "template service"
-    TEMPLATE_SERVICE_DESCRIPTION = "opens ports for foo in order to allow bar"
+    TEMPLATE_SERVICE_NAME = "template service".freeze
+    TEMPLATE_SERVICE_DESCRIPTION = "opens ports for foo in order to allow bar".freeze
 
     def main
       textdomain "base"

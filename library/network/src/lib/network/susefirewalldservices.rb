@@ -37,9 +37,9 @@ module Yast
   class SuSEFirewalldServicesClass < SuSEFirewallServicesClass
     include Yast::Logger
 
-    SERVICES_DIR = ["/etc/firewalld/services", "/usr/lib/firewalld/services"]
+    SERVICES_DIR = ["/etc/firewalld/services", "/usr/lib/firewalld/services"].freeze
 
-    IGNORED_SERVICES = ["..", "."]
+    IGNORED_SERVICES = ["..", "."].freeze
 
     def initialize
       @services = nil

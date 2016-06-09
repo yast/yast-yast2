@@ -49,7 +49,7 @@ module Yast
     FIREWALL_BACKENDS = {
       sf2: "SuSEfirewall2",
       fwd: "firewalld"
-    }
+    }.freeze
 
     # Check if backend is installed on the system.
     #

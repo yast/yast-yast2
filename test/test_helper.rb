@@ -6,7 +6,7 @@ ADDITIONAL_Y2DIRS = [
   "#{root_location}/library/general/test",
   # Needed to test Yast::CommandLine usage from a dummy client
   "#{root_location}/library/commandline/test"
-]
+].freeze
 inc_dirs.concat(ADDITIONAL_Y2DIRS)
 ENV["Y2DIR"] = inc_dirs.join(":")
 

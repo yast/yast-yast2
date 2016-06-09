@@ -54,7 +54,7 @@ module Yast
       netconfig:       "network",
       network_manager: "NetworkManager",
       wicked:          "wicked"
-    }
+    }.freeze
 
     # network backend identification to its rpm package name mapping
     BACKEND_PKG_NAMES = {
@@ -62,11 +62,11 @@ module Yast
       netconfig:       "sysconfig-network",
       network_manager: "NetworkManager",
       wicked:          "wicked"
-    }
+    }.freeze
 
-    SYSTEMCTL = "/bin/systemctl"
+    SYSTEMCTL = "/bin/systemctl".freeze
 
-    WICKED = "/usr/sbin/wicked"
+    WICKED = "/usr/sbin/wicked".freeze
 
     DEFAULT_BACKEND = :wicked
 

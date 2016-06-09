@@ -49,7 +49,7 @@ module Yast
       "broadcast_ports" => [],
       "name"            => "",
       "description"     => ""
-    }
+    }.freeze
 
     # Function returns the map of supported (known) services.
     #

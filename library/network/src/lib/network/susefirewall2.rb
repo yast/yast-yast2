@@ -38,7 +38,7 @@ module Yast
   # SuSEFirewall2/SF2 Class. The original, simply created from the Firewall
   # factory class.
   class SuSEFirewall2Class < SuSEFirewallClass
-    CONFIG_FILE = "/etc/sysconfig/SuSEfirewall2"
+    CONFIG_FILE = "/etc/sysconfig/SuSEfirewall2".freeze
 
     include Yast::Logger
 
