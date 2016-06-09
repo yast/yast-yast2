@@ -323,7 +323,7 @@ module Yast
       if Ops.greater_than(
         SCR.Read(path(".target.size"), "/usr/bin/rpmqpack"),
         -1
-        )
+      )
         @_rpm_query_binary = "/usr/bin/rpmqpack "
         # than rpm itself
       elsif Ops.greater_than(SCR.Read(path(".target.size"), "/bin/rpm"), -1)

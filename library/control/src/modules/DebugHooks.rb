@@ -56,7 +56,7 @@ module Yast
       if Ops.greater_or_equal(
         WFM.Read(path(".local.size"), Ops.add("/tmp/", filename)),
         0
-        )
+      )
         if at_entry
           Popup.Message(Builtins.sformat("Entry: %1", filename))
         else
@@ -111,7 +111,7 @@ module Yast
             Builtins.sformat("%1/%2_pre.sh", @tmp_dir, filename)
           ),
           0
-          )
+        )
           ExecuteScript(Builtins.sformat("%1_pre.sh", filename), "shell")
         elsif Ops.greater_than(
           WFM.Read(
@@ -119,7 +119,7 @@ module Yast
             Builtins.sformat("%1/%2_pre.pl", @tmp_dir, filename)
           ),
           0
-          )
+        )
           ExecuteScript(Builtins.sformat("%1_pre.pl", filename), "perl")
         else
           Builtins.y2debug(
@@ -135,7 +135,7 @@ module Yast
             Builtins.sformat("%1/%2_post.sh", @tmp_dir, filename)
           ),
           0
-          )
+        )
           ExecuteScript(Builtins.sformat("%1_post.sh", filename), "shell")
         elsif Ops.greater_than(
           WFM.Read(
@@ -143,7 +143,7 @@ module Yast
             Builtins.sformat("%1/%2_post.pl", @tmp_dir, filename)
           ),
           0
-          )
+        )
           ExecuteScript(Builtins.sformat("%1_post.pl", filename), "perl")
         else
           Builtins.y2debug(

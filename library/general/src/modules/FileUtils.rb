@@ -306,7 +306,7 @@ module Yast
             _("The path %1 does not exist.\nCreate it now?\n"),
             pathvalue
           )
-          )
+        )
           # Directory creation successful
           if Convert.to_boolean(SCR.Execute(path(".target.mkdir"), check_path))
             Builtins.y2milestone(

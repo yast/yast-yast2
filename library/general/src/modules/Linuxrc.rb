@@ -180,7 +180,7 @@ module Yast
                   root
                 )
               )
-              ) != 0
+            ) != 0
               Builtins.y2error(
                 "Cannot SaveInstallInf %1 to %2",
                 inst_if_file,

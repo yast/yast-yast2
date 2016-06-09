@@ -136,7 +136,7 @@ module Yast
         if Ops.greater_than(
           Builtins.size(Ops.get_map(loaded_modules, modulename, {})),
           0
-          )
+        )
           # already loaded
           return :ok
         end

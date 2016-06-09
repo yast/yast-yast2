@@ -59,8 +59,8 @@ module Packages
           fun_ref(
             method(:process_start),
             "void (string, list <string>, string)"
-            )
-            )
+          )
+        )
         Yast::Pkg.CallbackProcessProgress(boolean_integer_ref)
         Yast::Pkg.CallbackProcessNextStage(void_ref)
         Yast::Pkg.CallbackProcessDone(void_ref)
@@ -93,21 +93,21 @@ module Packages
       def register_provide_callbacks
         Yast::Pkg.CallbackStartProvide(
           fun_ref(method(:start_provide), "void (string, integer, boolean)")
-            )
+        )
         Yast::Pkg.CallbackProgressProvide(boolean_integer_ref)
         Yast::Pkg.CallbackDoneProvide(
           fun_ref(method(:done_provide), "string (integer, string, string)")
-            )
+        )
         Yast::Pkg.CallbackStartPackage(
           fun_ref(
             method(:start_package),
             "void (string, string, string, integer, boolean)"
-            )
-            )
+          )
+        )
         Yast::Pkg.CallbackProgressPackage(boolean_integer_ref)
         Yast::Pkg.CallbackDonePackage(
           fun_ref(method(:done_package), "string (integer, string)")
-            )
+        )
 
         nil
       end
@@ -148,7 +148,7 @@ module Packages
       def register_patch_callbacks
         Yast::Pkg.CallbackStartDeltaDownload(
           fun_ref(method(:void_string_integer), "void (string, integer)")
-            )
+        )
         Yast::Pkg.CallbackProgressDeltaDownload(boolean_integer_ref)
         Yast::Pkg.CallbackProblemDeltaDownload(void_string_ref)
         Yast::Pkg.CallbackFinishDeltaDownload(void_ref)
@@ -156,7 +156,7 @@ module Packages
         Yast::Pkg.CallbackStartDeltaApply(void_string_ref)
         Yast::Pkg.CallbackProgressDeltaApply(
           fun_ref(method(:void_integer), "void (integer)")
-            )
+        )
         Yast::Pkg.CallbackProblemDeltaApply(void_string_ref)
         Yast::Pkg.CallbackFinishDeltaApply(void_ref)
 
@@ -181,11 +181,11 @@ module Packages
           fun_ref(
             method(:source_create_error),
             "symbol (string, symbol, string)"
-            )
-            )
+          )
+        )
         Yast::Pkg.CallbackSourceCreateEnd(
           fun_ref(method(:source_create_end), "void (string, symbol, string)")
-            )
+        )
         Yast::Pkg.CallbackSourceCreateInit(void_ref)
         Yast::Pkg.CallbackSourceCreateDestroy(void_ref)
 
@@ -215,21 +215,21 @@ module Packages
           fun_ref(
             method(:source_report_start),
             "void (integer, string, string)"
-            )
-            )
+          )
+        )
         Yast::Pkg.CallbackSourceReportProgress(boolean_integer_ref)
         Yast::Pkg.CallbackSourceReportError(
           fun_ref(
             method(:source_report_error),
             "symbol (integer, string, symbol, string)"
-            )
-            )
+          )
+        )
         Yast::Pkg.CallbackSourceReportEnd(
           fun_ref(
             method(:source_report_end),
             "void (integer, string, string, symbol, string)"
-            )
-            )
+          )
+        )
         Yast::Pkg.CallbackSourceReportInit(void_ref)
         Yast::Pkg.CallbackSourceReportDestroy(void_ref)
 
@@ -252,17 +252,17 @@ module Packages
           fun_ref(
             method(:progress_start),
             "void (integer, string, boolean, boolean, integer, integer, integer, integer)"
-            )
-            )
+          )
+        )
         Yast::Pkg.CallbackProgressReportProgress(
           fun_ref(
             method(:progress_progress),
             "boolean (integer, integer, integer)"
-            )
-            )
+          )
+        )
         Yast::Pkg.CallbackProgressReportEnd(
           fun_ref(method(:void_integer), "void (integer)")
-            )
+        )
 
         nil
       end
@@ -288,22 +288,22 @@ module Packages
           fun_ref(
             method(:script_start),
             "void (string, string, string, string)"
-            )
-            )
+          )
+        )
         Yast::Pkg.CallbackScriptProgress(
           fun_ref(method(:script_progress), "boolean (boolean, string)")
-            )
+        )
         Yast::Pkg.CallbackScriptProblem(
           fun_ref(method(:string_string), "string (string)")
-            )
+        )
         Yast::Pkg.CallbackScriptFinish(void_ref)
 
         Yast::Pkg.CallbackMessage(
           fun_ref(
             method(:message),
             "boolean (string, string, string, string)"
-            )
-            )
+          )
+        )
 
         nil
       end
@@ -313,10 +313,10 @@ module Packages
         Yast::Pkg.CallbackProgressScanDb(boolean_integer_ref)
         Yast::Pkg.CallbackErrorScanDb(
           fun_ref(method(:string_integer_string), "string (integer, string)")
-            )
+        )
         Yast::Pkg.CallbackDoneScanDb(
           fun_ref(method(:void_integer_string), "void (integer, string)")
-            )
+        )
 
         nil
       end
@@ -342,16 +342,16 @@ module Packages
         Yast::Pkg.CallbackInitDownload(void_string_ref)
         Yast::Pkg.CallbackStartDownload(
           fun_ref(method(:start_download), "void (string, string)")
-            )
+        )
         Yast::Pkg.CallbackProgressDownload(
           fun_ref(
             method(:progress_download),
             "boolean (integer, integer, integer)"
-            )
-            )
+          )
+        )
         Yast::Pkg.CallbackDoneDownload(
           fun_ref(method(:done_download), "void (integer, string)")
-            )
+        )
         Yast::Pkg.CallbackDestDownload(void_ref)
         Yast::Pkg.CallbackStartRefresh(void_ref)
         Yast::Pkg.CallbackDoneRefresh(void_ref)

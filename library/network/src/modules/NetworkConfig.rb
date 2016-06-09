@@ -74,7 +74,7 @@ module Yast
         if Builtins.regexpmatch(
           comment,
           Ops.add(Ops.add("^.*## Type:[ \t]*([", String.CLower), "]*).*$")
-          )
+        )
           comment = Builtins.regexpsub(
             comment,
             Ops.add(Ops.add("^.*## Type:[ \t]*([", String.CLower), "]*).*$"),

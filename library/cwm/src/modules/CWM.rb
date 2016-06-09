@@ -669,7 +669,7 @@ module Yast
         if !Builtins.regexpmatch(
           Convert.to_string(UI.QueryWidget(Id(:_tp_value), :Value)),
           regexp
-          )
+        )
           failed = true
         end
       elsif val_type == :list

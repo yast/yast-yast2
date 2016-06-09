@@ -373,7 +373,7 @@ module Yast
           # yes-no popup
           if !Popup.YesNo(
             _("The key with the specified ID exists and is used.\nRemove it?")
-            )
+          )
             return nil
           else
             remove_file = Key2File(key2)
@@ -395,7 +395,7 @@ module Yast
             _(
               "A key with the specified ID was found\non your disk. Remove it?"
             )
-            )
+          )
             SCR.Execute(
               path(".target.bash"),
               Builtins.sformat(
@@ -464,7 +464,7 @@ module Yast
                 "identifier as some of already present keys.\n" \
                 "Old keys will be removed. Continue?"
             )
-            )
+          )
             return nil
           else
             Builtins.foreach(coliding_files) { |f| RemoveTSIGKeyFile(f) }

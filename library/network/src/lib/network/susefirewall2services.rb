@@ -381,7 +381,7 @@ module Yast
         if !SCR.RegisterAgent(
           path(".firewall_service_definition"),
           term(:ag_ini, term(:SysConfigFile, filefullpath))
-          )
+        )
           log.error "Cannot register agent for #{filefullpath}"
           next
         end
@@ -415,7 +415,7 @@ module Yast
         if SCR.RegisterAgent(
           path(".firewall_service_metadata"),
           term(:ag_ini, GetMetadataAgent(filefullpath))
-          )
+        )
           Builtins.foreach(@known_metadata) do |metadata_feature, metadata_key|
             definition = Convert.to_string(
               SCR.Read(
@@ -517,7 +517,7 @@ module Yast
       if !SCR.RegisterAgent(
         path(".firewall_service_definition"),
         term(:ag_ini, term(:SysConfigFile, filefullpath))
-        )
+      )
         log.error "Cannot register agent for #{filefullpath}"
         return false
       end

@@ -175,7 +175,7 @@ module Yast
           "autoupgrade"
         ],
         new_mode
-        )
+      )
         Builtins.y2error("Unknown mode %1", new_mode)
       end
 
@@ -208,7 +208,7 @@ module Yast
       if !Builtins.contains(
         ["none", "test", "demo", "screenshot", "testsuite"],
         new_test_mode
-        )
+      )
         Builtins.y2error("Unknown test mode %1", new_test_mode)
       end
       @_test = new_test_mode

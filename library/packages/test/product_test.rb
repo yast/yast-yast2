@@ -185,7 +185,7 @@ describe Yast::Product do
       it "reads data from zypp and returns hash of release notes URLs linking to their product names" do
         expect(Yast::Product.product_of_relnotes).to eq(
           "http://doc.opensuse.org/release-notes/x86_64/openSUSE/13.1/release-notes-openSUSE.rpm" => "openSUSE (SELECTED)"
-                                                        )
+        )
       end
     end
 
@@ -266,7 +266,7 @@ describe Yast::Product do
       it "reads data from zypp and returns hash of release notes URLs linking to their product names" do
         expect(Yast::Product.product_of_relnotes).to eq(
           "http://doc.opensuse.org/release-notes/x86_64/openSUSE/13.1/release-notes-openSUSE.rpm" => "openSUSE (INSTALLED)"
-                                                        )
+        )
       end
     end
 

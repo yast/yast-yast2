@@ -69,7 +69,7 @@ module Yast
       if Ops.less_or_equal(
         Convert.to_integer(SCR.Read(path(".target.size"), @data_file)),
         0
-        )
+      )
         @file_checksums = {}
         return
       end

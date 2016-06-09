@@ -450,7 +450,7 @@ module Yast
           if PortIsInPortranges(
             Builtins.tostring(Ops.subtract(port_number, 1)),
             list_of_ranges
-            )
+          )
             # Creating fake port range, to be joined with another one
             list_of_ranges = Builtins.add(
               list_of_ranges,
@@ -460,7 +460,7 @@ module Yast
           elsif PortIsInPortranges(
             Builtins.tostring(Ops.add(port_number, 1)),
             list_of_ranges
-            )
+          )
             # Creating fake port range, to be joined with another one
             list_of_ranges = Builtins.add(
               list_of_ranges,

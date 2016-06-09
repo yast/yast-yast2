@@ -320,7 +320,7 @@ module Yast
           SCR.Read(path(".target.size"), Ops.add(file, suffix))
         ),
         0
-        )
+      )
         # remove the existing key
         SCR.Execute(
           path(".target.bash"),

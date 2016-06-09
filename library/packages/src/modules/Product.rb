@@ -138,8 +138,8 @@ module Yast
         base_product.fetch("display_name",
           base_product.fetch("summary",
             base_product.fetch("name", "")
-          )
-        )
+                            )
+                          )
       )
 
       set_property(:short_name, base_product.fetch("short_name", name))

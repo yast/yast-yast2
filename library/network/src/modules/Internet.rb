@@ -145,7 +145,7 @@ module Yast
         if SCR.Execute(
           path(".target.bash"),
           Ops.add("/sbin/isdnctrl dial ", @device)
-          ) != 0
+        ) != 0
           Builtins.y2error("isdnctrl failed")
           return false
         end

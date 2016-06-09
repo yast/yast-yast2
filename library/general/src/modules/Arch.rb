@@ -236,7 +236,7 @@ module Yast
           if Builtins.issubstring(
             Ops.get_string(device_type, "stdout", ""),
             "chrp"
-       )
+          )
             @_board_compatible = "CHRP"
           end
           # Maple has its own way of pretenting OF1275 compliance

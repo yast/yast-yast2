@@ -148,7 +148,7 @@ module Yast
         if Mode.commandline
           CommandLine.PrintVerbose(
             Builtins.sformat(_("Downloading package %1 (%2)..."), name, sz)
-              )
+          )
         else
           UI.CloseDialog if @_provide_popup
 
@@ -156,7 +156,7 @@ module Yast
             Progress.SubprogressType(:progress, 100)
             Progress.SubprogressTitle(
               Builtins.sformat(_("Downloading package %1 (%2)..."), name, sz)
-              )
+            )
           else
             # popup heading
             providebox = progress_box(_("Downloading Package"), name, sz)
@@ -220,7 +220,7 @@ module Yast
         message = Builtins.sformat(
           _("Package %1 is broken, integrity check has failed."),
           name
-            )
+        )
 
         if Mode.commandline
           CommandLine.Print(message)
@@ -255,25 +255,25 @@ module Yast
           PushButton(Id(:abort), Opt(:cancelButton, :key_F9), Label.AbortButton),
           PushButton(Id(:retry), Opt(:customButton), Label.RetryButton),
           PushButton(Id(:ignore), Opt(:okButton), Label.IgnoreButton)
-            )
+        )
 
         if @showLongInfo
           UI.OpenDialog(
             Opt(:decorated),
             layout_popup(message, button_box, true)
-              )
+          )
           UI.ReplaceWidget(
             Id(:info),
             RichText(
               Opt(:plainText),
               Ops.add(Builtins.sformat(_("Error: %1:"), error), reason)
-              )
-              )
+            )
+          )
         else
           UI.OpenDialog(
             Opt(:decorated),
             layout_popup(message, button_box, false)
-              )
+          )
           UI.ReplaceWidget(Id(:info), Empty())
         end
 
@@ -302,9 +302,9 @@ module Yast
                     # detail string is appended to the end
                     Builtins.sformat(_("Error: %1:"), error_symbol),
                     reason
-                    )
                   )
-                  )
+                )
+              )
             else
               UI.ReplaceWidget(Id(:info), Empty())
             end
@@ -326,8 +326,8 @@ module Yast
             Popup.Warning(
               _(
                 "Ignoring a download failure may result in a broken system.\nVerify the system later by running the Software Management module.\n"
-               )
-                )
+              )
+            )
           end
 
           return "I"
@@ -368,14 +368,14 @@ module Yast
             end,
             @_package_name,
             sz
-            )
-            )
+          )
+        )
       else
         packagebox = progress_box(
           is_delete ? _("Uninstalling Package") : _("Installing Package"),
           @_package_name,
           sz
-            )
+        )
 
         UI.OpenDialog(Opt(:decorated), packagebox)
         @_package_popup = true
@@ -423,7 +423,7 @@ module Yast
           "DonePackage(error: %1, reason: '%2')",
           error,
           reason
-            )
+        )
 
         message = Builtins.sformat(
           if @_deleting_package
@@ -434,7 +434,7 @@ module Yast
             _("Installation of package %1 failed.")
           end,
           @_package_name
-            )
+        )
 
         if Mode.commandline
           CommandLine.Print(message)
@@ -467,19 +467,19 @@ module Yast
             PushButton(Id(:abort), Opt(:cancelButton), Label.AbortButton),
             PushButton(Id(:retry), Opt(:customButton), Label.RetryButton),
             PushButton(Id(:ignore), Opt(:okButton), Label.IgnoreButton)
-              )
+          )
 
           if @showLongInfo
             UI.OpenDialog(
               Opt(:decorated),
               layout_popup(message, button_box, true)
-                )
+            )
             UI.ReplaceWidget(Id(:info), RichText(Opt(:plainText), reason))
           else
             UI.OpenDialog(
               Opt(:decorated),
               layout_popup(message, button_box, false)
-                )
+            )
             UI.ReplaceWidget(Id(:info), Empty())
           end
 
@@ -506,8 +506,8 @@ module Yast
             Popup.Warning(
               _(
                 "Ignoring a package failure may result in a broken system.\nThe system should be later verified by running the Software Management module."
-               )
-                )
+              )
+            )
           end
 
           return "C" if r == :abort
@@ -556,7 +556,7 @@ module Yast
         wanted_label,
         devices,
         current_device
-          )
+      )
 
       url_scheme = Ops.get_string(URL.Parse(url), "scheme", "").downcase
 
@@ -578,7 +578,7 @@ module Yast
           "If the URL is correct, this indicates that the repository content has changed. To \n" \
           "continue using this repository, start <b>Installation Repositories</b> from \n" \
           "the YaST control center and refresh the repository.</p>\n"
-         )
+        )
       end
 
       if wanted_label == ""
@@ -625,10 +625,10 @@ module Yast
             "%1\n" \
             "%2.\n" \
             "Check whether the directory is accessible."
-           ),
+          ),
           URL.HidePassword(url),
           wanted_label
-            )
+        )
       elsif !is_disc
         # report error while accessing network media of product (%1 = URL, %2 = "SuSE Linux ...")
         message = Builtins.sformat(
@@ -637,10 +637,10 @@ module Yast
             "%1\n" \
             "%2.\n" \
             "Check whether the server is accessible."
-           ),
+          ),
           URL.HidePassword(url),
           wanted_label
-            )
+        )
       end
 
       # --------------------------------------
@@ -648,7 +648,7 @@ module Yast
 
       button_box = ButtonBox(
         PushButton(Id(:retry), Opt(:default, :okButton), Label.RetryButton)
-          )
+      )
 
       if current == -1 # wrong media id, offer "Ignore"
         button_box.params << PushButton(Id(:ignore), Opt(:customButton), Label.IgnoreButton)
@@ -658,7 +658,7 @@ module Yast
         Id(:cancel),
         Opt(:cancelButton),
         @autorefreshing ? _("Skip Autorefresh") : Label.AbortButton
-          )
+      )
 
       # push button label during media change popup, user can skip
       # this media (CD) so no packages from this media will be installed
@@ -688,10 +688,10 @@ module Yast
               Id(:auto_eject),
               _("A&utomatically Eject CD or DVD Medium"),
               autoeject
-              )
-            ),
-          button_box
             )
+          ),
+          button_box
+        )
       end
 
       @doing_eject = false
@@ -703,7 +703,7 @@ module Yast
           Builtins.contains(
             ["ftp", "sftp", "http", "https", "nfs", "smb"],
             url_scheme
-              )
+          )
         # this a different file, reset the retry counter
         if @retry_url != url
           @retry_url = url
@@ -727,14 +727,14 @@ module Yast
             # failed download will be automatically retried after the timeout, %1 = formatted time (MM:SS format)
             Left(Label(Id(:auto_retry), retry_label(@current_retry_timeout))),
             button_box
-            )
+          )
 
           doing_auto_retry = true
         else
           Builtins.y2warning(
             "Max. autoretry count (%1) reached, giving up...",
             RETRY_ATTEMPTS
-              )
+          )
         end
       end
 
@@ -778,27 +778,27 @@ module Yast
       Builtins.y2debug(
         "Opening Dialog: %1",
         layout_popup(message, button_box, true)
-          )
+      )
 
       if @showLongInfo
         UI.OpenDialog(
           Opt(:decorated),
           layout_popup(message, button_box, true)
-            )
+        )
         # TextEntry label
         UI.ReplaceWidget(
           Id(:info),
           VBox(
             InputField(Id(:url), Opt(:hstretch), _("&URL")),
             RichText(Opt(:plainText), error)
-            )
-            )
+          )
+        )
         UI.ChangeWidget(Id(:url), :Value, url)
       else
         UI.OpenDialog(
           Opt(:decorated),
           layout_popup(message, button_box, false)
-            )
+        )
         UI.ReplaceWidget(Id(:info), Empty())
       end
 
@@ -829,7 +829,7 @@ module Yast
                 Id(:auto_retry),
                 :Label,
                 retry_label(@current_retry_timeout)
-                  )
+              )
             end
           else
             # user has pressed a button, reset the retry counter in the next timeout
@@ -847,8 +847,8 @@ module Yast
               VBox(
                 TextEntry(Id(:url), _("&URL")),
                 RichText(Opt(:plainText), error)
-                )
               )
+            )
             UI.ChangeWidget(Id(:url), :Value, url)
           else
             UI.ReplaceWidget(Id(:info), Empty())
@@ -913,7 +913,7 @@ module Yast
           Builtins.y2warning(
             "Device %1 not found in the list, using default",
             eject_device
-              )
+          )
           return "E"
         end
       when :url
@@ -939,8 +939,8 @@ module Yast
             HSpacing(MAX_POPUP_TEXT_SIZE),
             Heading(Id(:label_source_popup), Opt(:hstretch), " "),
             ProgressBar(Id(:progress), " ", 100, 0)
-            )
-            )
+          )
+        )
       end
 
       @_source_open = Ops.add(@_source_open, 1)
@@ -956,7 +956,7 @@ module Yast
       if Ops.greater_than(
         Builtins.size(text),
         Ops.subtract(MAX_POPUP_TEXT_SIZE, ui_adjustment)
-          )
+      )
         text = process_message(text, Ops.subtract(MAX_POPUP_TEXT_SIZE, ui_adjustment))
       end
 
@@ -973,7 +973,7 @@ module Yast
       if Ops.greater_than(
         Builtins.size(text),
         Ops.add(MAX_POPUP_TEXT_SIZE, ui_adjustment)
-          )
+      )
         text = process_message(text, Ops.add(MAX_POPUP_TEXT_SIZE, ui_adjustment))
       end
 
@@ -1002,7 +1002,7 @@ module Yast
       if !IsSourcePopup()
         Builtins.y2error(
           "The toplevel dialog is not a repository popup dialog!"
-            )
+        )
         return
       end
 
@@ -1067,7 +1067,7 @@ module Yast
         URL.HidePassword(url),
         error,
         description
-          )
+      )
 
       # error message - a label followed by a richtext with details
       message = _("An error occurred while creating the repository.")
@@ -1114,9 +1114,9 @@ module Yast
           ButtonBox(
             PushButton(Id(:RETRY), Opt(:okButton), Label.RetryButton),
             PushButton(Id(:ABORT), Opt(:cancelButton), Label.AbortButton)
-            )
           )
-          )
+        )
+      )
       ret = Convert.to_symbol(UI.UserInput)
       UI.CloseDialog
       Builtins.y2milestone("Source create error: Returning %1", ret)
@@ -1133,7 +1133,7 @@ module Yast
         URL.HidePassword(url),
         error,
         description
-          )
+      )
 
       nil
     end
@@ -1152,7 +1152,7 @@ module Yast
         msg2 = Builtins.sformat(
           _("Probing Repository %1"),
           URL.HidePassword(url)
-            )
+        )
 
         if @_source_open == 1
           SetHeaderSourcePopup(msg2)
@@ -1169,7 +1169,7 @@ module Yast
         "Repository %1 is not %2 repository",
         URL.HidePassword(url),
         type
-          )
+      )
 
       nil
     end
@@ -1179,7 +1179,7 @@ module Yast
         "Repository %1 is type %2",
         URL.HidePassword(url),
         type
-          )
+      )
 
       nil
     end
@@ -1194,7 +1194,7 @@ module Yast
         URL.HidePassword(url),
         error,
         description
-          )
+      )
 
       # error message - a label followed by a richtext with details
       message = _("Error occurred while probing the repository.")
@@ -1244,9 +1244,9 @@ module Yast
           ButtonBox(
             PushButton(Id(:RETRY), Opt(:okButton), Label.RetryButton),
             PushButton(Id(:ABORT), Opt(:cancelButton), Label.AbortButton)
-            )
           )
-          )
+        )
+      )
       ret = Convert.to_symbol(UI.UserInput)
       UI.CloseDialog
       Builtins.y2milestone("Source probe error: Returning %1", ret)
@@ -1262,7 +1262,7 @@ module Yast
         URL.HidePassword(url),
         error,
         description
-          )
+      )
 
       nil
     end
@@ -1273,7 +1273,7 @@ module Yast
         source_id,
         URL.HidePassword(url),
         task
-          )
+      )
 
       if Mode.commandline
         CommandLine.Print(task)
@@ -1304,7 +1304,7 @@ module Yast
         URL.HidePassword(url),
         error,
         description
-          )
+      )
 
       # error message - a label followed by a richtext with details
       message = Builtins.sformat(_("Repository %1"), url)
@@ -1348,9 +1348,9 @@ module Yast
           HBox(
             PushButton(Id(:RETRY), Opt(:okButton), Label.RetryButton),
             PushButton(Id(:ABORT), Opt(:cancelButton), Label.AbortButton)
-            )
           )
-          )
+        )
+      )
       ret = Convert.to_symbol(UI.UserInput)
       UI.CloseDialog
       Builtins.y2milestone("Source report error: Returning %1", ret)
@@ -1366,7 +1366,7 @@ module Yast
         task,
         error,
         description
-          )
+      )
 
       # set 100% progress
       SourcePopupSetProgress(100)
@@ -1398,8 +1398,8 @@ module Yast
             _("Downloading delta RPM package %1 (%2)..."),
             name,
             sz
-            )
-            )
+          )
+        )
       else
         UI.CloseDialog if @_provide_popup
         # popup heading
@@ -1417,7 +1417,7 @@ module Yast
       if Mode.commandline
         CommandLine.PrintVerbose(
           Builtins.sformat(_("Applying delta RPM package %1..."), name)
-            )
+        )
       else
         # popup heading
         progressbox = VBox(
@@ -1426,9 +1426,9 @@ module Yast
           Heading(_("Applying delta RPM package")),
           Left(
             HBox(Left(Label(Opt(:boldFont), _("Package: "))), Left(Label(name)))
-            ),
+          ),
           ProgressBar(Id(:progress), "", 100, 0)
-            )
+        )
         UI.CloseDialog if @_provide_popup
         UI.OpenDialog(progressbox)
         @_provide_popup = true
@@ -1468,7 +1468,7 @@ module Yast
           patch_full_name = Ops.add(
             Ops.add(patch_full_name, "-"),
             patch_version
-              )
+          )
         end
 
         if !patch_arch.nil? && patch_arch != ""
@@ -1486,7 +1486,7 @@ module Yast
         "ScriptStart callback: patch: %1, script: %2",
         patch_full_name,
         script_path
-          )
+      )
 
       if Mode.commandline
         CommandLine.PrintVerbose(
@@ -1494,8 +1494,8 @@ module Yast
             _("Starting script %1 (patch %2)..."),
             script_path,
             patch_full_name
-            )
-            )
+          )
+        )
       else
         progressbox = VBox(
           HSpacing(60),
@@ -1508,7 +1508,7 @@ module Yast
                 Label(Opt(:boldFont), _("Patch: ")),
                 Label(patch_full_name),
                 HStretch()
-                )
+              )
             else
               Empty()
             end,
@@ -1517,8 +1517,8 @@ module Yast
               Label(Opt(:boldFont), _("Script: ")),
               Label(script_path),
               HStretch()
-              )
-            ),
+            )
+          ),
           # label
           LogView(Id(:log), _("Output of the Script"), 10, 0),
           ButtonBox(
@@ -1526,8 +1526,8 @@ module Yast
               Id(:abort),
               Opt(:default, :key_F9, :cancelButton),
               Label.AbortButton
-              )
-              )
+            )
+          )
         )
 
         UI.CloseDialog if @_script_popup
@@ -1571,7 +1571,7 @@ module Yast
         Label.AbortButton, # no_button_message
         Label.IgnoreButton, # retry_button_message
         :retry
-          )
+      )
 
       Builtins.y2milestone("Problem result: %1", ui)
 
@@ -1631,20 +1631,20 @@ module Yast
                 "\n" \
                 "Note: If the refresh is skipped some packages\n" \
                 "might be missing or out of date."
-               )
-              ),
+              )
+            ),
             ButtonBox(
               PushButton(
                 Id(:continue),
                 Opt(:default, :okButton),
                 Label.ContinueButton
-                ),
+              ),
               # push button label
               PushButton(Id(:skip), Opt(:cancelButton), _("&Skip Refresh"))
-              )
             )
           )
-            )
+        )
+      )
 
       UI.SetFocus(Id(:continue))
 
@@ -1686,15 +1686,15 @@ module Yast
                   HSpacing(1),
                   ProgressBar(Id(:progress), task, 100),
                   HSpacing(1)
-                  ),
+                ),
                 VSpacing(0.5),
                 ButtonBox(
                   PushButton(Id(:abort), Opt(:cancelButton), Label.AbortButton)
-                  ),
+                ),
                 VSpacing(0.5)
-                )
               )
-              )
+            )
+          )
           UI.ChangeWidget(Id(:progress), :Value, 0)
         end
       end
@@ -1713,7 +1713,7 @@ module Yast
         "Downloading %1 to %2",
         URL.HidePassword(url),
         localfile
-          )
+      )
 
       # reformat the URL
       url_report = URL.FormatURL(URL.Parse(URL.HidePassword(url)), MAX_POPUP_TEXT_SIZE)
@@ -1771,7 +1771,7 @@ module Yast
           msg_rate = Builtins.sformat(
             _("Downloading: %1"),
             String.FormatRateMessage(format, bps_avg, bps_current)
-              )
+          )
         end
 
         if full_screen
@@ -1824,7 +1824,7 @@ module Yast
             "Download failed: error %1: %2",
             error_value,
             error_text
-              )
+          )
         end
       end
 
@@ -1878,7 +1878,7 @@ module Yast
       # message in a progress popup
       message = _(
         "Rebuilding package database. This process can take some time."
-          )
+      )
 
       UI.OpenDialog(
         Opt(:decorated),
@@ -1889,9 +1889,9 @@ module Yast
             HSpacing(60),
             HBox(HSpacing(2), ProgressBar(Id(:progress), "", 100), HSpacing(2)),
             VSpacing(1)
-            )
           )
-          )
+        )
+      )
 
       UI.ChangeWidget(Id(:progress), :Value, 0)
 
@@ -1911,8 +1911,8 @@ module Yast
           Builtins.sformat(
             _("Rebuilding of package database failed:\n%1"),
             error_text
-            )
-            )
+          )
+        )
       end
 
       UI.CloseDialog
@@ -1928,10 +1928,10 @@ module Yast
       Pkg.CallbackStartRebuildDb(fun_ref(method(:StartRebuildDB), "void ()"))
       Pkg.CallbackProgressRebuildDb(
         fun_ref(method(:ProgressRebuildDB), "void (integer)")
-          )
+      )
       Pkg.CallbackStopRebuildDb(
         fun_ref(method(:StopRebuildDB), "void (integer, string)")
-          )
+      )
       Pkg.CallbackNotifyRebuildDb(fun_ref(method(:NotifyRebuildDB), "void ()"))
 
       nil
@@ -1944,7 +1944,7 @@ module Yast
       # message in a progress popup
       message = _(
         "Converting package database. This process can take some time."
-          )
+      )
 
       UI.OpenDialog(
         Opt(:decorated),
@@ -1957,11 +1957,11 @@ module Yast
               HSpacing(2),
               ProgressBar(Id(:progress), _("Status"), 100),
               HSpacing(2)
-              ),
+            ),
             VSpacing(1)
-            )
           )
-          )
+        )
+      )
 
       UI.ChangeWidget(Id(:progress), :Value, 0)
 
@@ -1981,8 +1981,8 @@ module Yast
           Builtins.sformat(
             _("Conversion of package database failed:\n%1"),
             error_text
-            )
-            )
+          )
+        )
       end
 
       UI.CloseDialog
@@ -1997,13 +1997,13 @@ module Yast
     def SetConvertDBCallbacks
       Pkg.CallbackStartConvertDb(
         fun_ref(method(:StartConvertDB), "void (string)")
-          )
+      )
       Pkg.CallbackProgressConvertDb(
         fun_ref(method(:ProgressConvertDB), "void (integer, string)")
-          )
+      )
       Pkg.CallbackStopConvertDb(
         fun_ref(method(:StopConvertDB), "void (integer, string)")
-          )
+      )
       Pkg.CallbackNotifyConvertDb(fun_ref(method(:NotifyConvertDB), "void ()"))
 
       nil
@@ -2026,7 +2026,7 @@ module Yast
                 Id(:label_scanDB_popup),
                 Opt(:hstretch),
                 _("Reading Installed Packages")
-                ),
+              ),
               HBox(
                 # progress bar label
                 ProgressBar(
@@ -2034,16 +2034,16 @@ module Yast
                   _("Scanning RPM database..."),
                   100,
                   0
-                  ), # TODO: allow Abort
+                ), # TODO: allow Abort
                 # 			,
                 # 			`VBox(
                 # 			    `Label(""),
                 # 			    `PushButton(`id(`abort), Label::AbortButton())
                 # 			)
                 HSpacing(1)
-                )
               )
-                )
+            )
+          )
 
           @_scan_popup = true
         else
@@ -2081,7 +2081,7 @@ module Yast
         "ErrorScanDb callback: error: %1, description: %2",
         error,
         description
-          )
+      )
 
       # error message, could not read RPM database
       message = _("Initialization of the target failed.")
@@ -2113,12 +2113,12 @@ module Yast
         PushButton(Id(:abort), Opt(:cancelButton), Label.AbortButton),
         PushButton(Id(:retry), Opt(:customButton), Label.RetryButton),
         PushButton(Id(:ignore), Opt(:okButton), Label.IgnoreButton)
-          )
+      )
 
       UI.OpenDialog(
         Opt(:decorated),
         layout_popup(message, button_box, false)
-          )
+      )
 
       r = nil
       loop do
@@ -2143,9 +2143,9 @@ module Yast
                   # detail string is appended to the end
                   Builtins.sformat(_("Error: %1:"), error_symbol),
                   description
-                  )
                 )
-                )
+              )
+            )
           else
             UI.ReplaceWidget(Id(:info), Empty())
           end
@@ -2172,7 +2172,7 @@ module Yast
         "RPM DB scan finished: error: %1, reason: '%2'",
         error,
         description
-          )
+      )
 
       if Mode.commandline
         # status message (command line mode)
@@ -2217,9 +2217,9 @@ module Yast
           RichText(
             Opt(:plainText),
             Builtins.sformat(_("URL: %1\n\n%2"), url, msg)
-            ),
-          HSpacing(0.1)
           ),
+          HSpacing(0.1)
+        ),
         VSpacing(0.1),
         HBox(
           HSpacing(1),
@@ -2229,14 +2229,14 @@ module Yast
             VSpacing(0.1),
             # textentry label
             Password(Id(:password), Opt(:hstretch), _("&Password"), password)
-            ),
-          HSpacing(1)
           ),
+          HSpacing(1)
+        ),
         VSpacing(0.5),
         ButtonBox(
           PushButton(Id(:cont), Opt(:default, :okButton), Label.ContinueButton),
           PushButton(Id(:cancel), Opt(:cancelButton), Label.CancelButton)
-            ),
+        ),
         VSpacing(0.5)
       )
 
@@ -2282,7 +2282,7 @@ module Yast
         @progress_stack = Builtins.add(
           @progress_stack,
           "type" => subprogress_type, "task" => task
-            )
+        )
 
         if IsProgressPopup() &&
             Ops.less_or_equal(Builtins.size(@progress_stack), 1)
@@ -2309,12 +2309,12 @@ module Yast
                 VSpacing(0.2),
                 ButtonBox(
                   PushButton(Id(:abort), Opt(:cancelButton), Label.AbortButton)
-                  ),
-                VSpacing(0.5)
                 ),
+                VSpacing(0.5)
+              ),
               HSpacing(1)
-              )
-              )
+            )
+          )
         end
       end
 
@@ -2328,7 +2328,7 @@ module Yast
       @progress_stack = Builtins.remove(
         @progress_stack,
         Ops.subtract(Builtins.size(@progress_stack), 1)
-          )
+      )
 
       if !Mode.commandline && IsProgressPopup()
         UI.CloseDialog if Builtins.size(@progress_stack) == 0
@@ -2338,12 +2338,12 @@ module Yast
             @progress_stack,
             [Ops.subtract(Builtins.size(@progress_stack), 1), "type"],
             :none
-              )
+          )
           task = Ops.get_string(
             @progress_stack,
             [Ops.subtract(Builtins.size(@progress_stack), 1), "task"],
             ""
-              )
+          )
 
           Progress.SubprogressType(progress_type, 100)
           Progress.SubprogressTitle(task)
@@ -2380,7 +2380,7 @@ module Yast
               id,
               val_percent,
               val_raw
-                )
+            )
             return false
           end
         elsif full_screen
@@ -2403,12 +2403,12 @@ module Yast
         task,
         stages,
         help
-          )
+      )
       Builtins.y2milestone(
         "Progress: status: %1, isrunning: %2",
         Progress.status,
         Progress.IsRunning
-          )
+      )
 
       return if Mode.commandline
 
@@ -2475,7 +2475,7 @@ module Yast
         "Close Wizard window: %1, new stack: %2",
         close,
         @opened_wizard
-          )
+      )
 
       # set 100%
       Progress.Finish
@@ -2494,11 +2494,11 @@ module Yast
         fun_ref(
           method(:MediaChange),
           "string (string, string, string, string, integer, string, integer, string, boolean, list <string>, integer)"
-          )
-          )
+        )
+      )
       Pkg.CallbackSourceChange(
         fun_ref(method(:SourceChange), "void (integer, integer)")
-          )
+      )
 
       nil
     end
@@ -2517,18 +2517,18 @@ module Yast
     def SetScriptCallbacks
       Pkg.CallbackScriptStart(
         fun_ref(method(:ScriptStart), "void (string, string, string, string)")
-          )
+      )
       Pkg.CallbackScriptProgress(
         fun_ref(method(:ScriptProgress), "boolean (boolean, string)")
-          )
+      )
       Pkg.CallbackScriptProblem(
         fun_ref(method(:ScriptProblem), "string (string)")
-          )
+      )
       Pkg.CallbackScriptFinish(fun_ref(method(:ScriptFinish), "void ()"))
 
       Pkg.CallbackMessage(
         fun_ref(method(:Message), "boolean (string, string, string, string)")
-          )
+      )
 
       nil
     end
@@ -2537,13 +2537,13 @@ module Yast
       Pkg.CallbackStartScanDb(fun_ref(method(:StartScanDb), "void ()"))
       Pkg.CallbackProgressScanDb(
         fun_ref(method(:ProgressScanDb), "boolean (integer)")
-          )
+      )
       Pkg.CallbackErrorScanDb(
         fun_ref(method(:ErrorScanDb), "string (integer, string)")
-          )
+      )
       Pkg.CallbackDoneScanDb(
         fun_ref(method(:DoneScanDb), "void (integer, string)")
-          )
+      )
 
       nil
     end
@@ -2561,16 +2561,16 @@ module Yast
       Pkg.CallbackInitDownload(fun_ref(method(:InitDownload), "void (string)"))
       Pkg.CallbackStartDownload(
         fun_ref(method(:StartDownload), "void (string, string)")
-          )
+      )
       Pkg.CallbackProgressDownload(
         fun_ref(
           method(:ProgressDownload),
           "boolean (integer, integer, integer)"
-          )
-          )
+        )
+      )
       Pkg.CallbackDoneDownload(
         fun_ref(method(:DoneDownload), "void (integer, string)")
-          )
+      )
       Pkg.CallbackDestDownload(fun_ref(method(:DestDownload), "void ()"))
       Pkg.CallbackStartRefresh(fun_ref(method(:RefreshStarted), "void ()"))
       Pkg.CallbackDoneRefresh(fun_ref(method(:RefreshDone), "void ()"))
@@ -2594,22 +2594,22 @@ module Yast
       # source create callbacks
       Pkg.CallbackSourceCreateStart(
         fun_ref(method(:SourceCreateStart), "void (string)")
-          )
+      )
       Pkg.CallbackSourceCreateProgress(
         fun_ref(method(:SourceCreateProgress), "boolean (integer)")
-          )
+      )
       Pkg.CallbackSourceCreateError(
         fun_ref(method(:SourceCreateError), "symbol (string, symbol, string)")
-          )
+      )
       Pkg.CallbackSourceCreateEnd(
         fun_ref(method(:SourceCreateEnd), "void (string, symbol, string)")
-          )
+      )
       Pkg.CallbackSourceCreateInit(
         fun_ref(method(:SourceCreateInit), "void ()")
-          )
+      )
       Pkg.CallbackSourceCreateDestroy(
         fun_ref(method(:SourceCreateDestroy), "void ()")
-          )
+      )
 
       nil
     end
@@ -2618,22 +2618,22 @@ module Yast
       # source probing callbacks
       Pkg.CallbackSourceProbeStart(
         fun_ref(method(:SourceProbeStart), "void (string)")
-          )
+      )
       Pkg.CallbackSourceProbeFailed(
         fun_ref(method(:SourceProbeFailed), "void (string, string)")
-          )
+      )
       Pkg.CallbackSourceProbeSucceeded(
         fun_ref(method(:SourceProbeSucceeded), "void (string, string)")
-          )
+      )
       Pkg.CallbackSourceProbeProgress(
         fun_ref(method(:SourceProbeProgress), "boolean (string, integer)")
-          )
+      )
       Pkg.CallbackSourceProbeError(
         fun_ref(method(:SourceProbeError), "symbol (string, symbol, string)")
-          )
+      )
       Pkg.CallbackSourceProbeEnd(
         fun_ref(method(:SourceProbeEnd), "void (string, symbol, string)")
-          )
+      )
 
       nil
     end
@@ -2642,13 +2642,13 @@ module Yast
       # register process callbacks (total progress)
       Pkg.CallbackProcessStart(
         fun_ref(method(:ProcessStart), "void (string, list <string>, string)")
-          )
+      )
       Pkg.CallbackProcessProgress(
         fun_ref(method(:ProcessProgress), "boolean (integer)")
-          )
+      )
       Pkg.CallbackProcessNextStage(
         fun_ref(method(:ProcessNextStage), "void ()")
-          )
+      )
       Pkg.CallbackProcessDone(fun_ref(method(:ProcessDone), "void ()"))
 
       nil
@@ -2657,25 +2657,25 @@ module Yast
     def SetProvideCallbacks
       Pkg.CallbackStartProvide(
         fun_ref(method(:StartProvide), "void (string, integer, boolean)")
-          )
+      )
       Pkg.CallbackProgressProvide(
         fun_ref(method(:ProgressProvide), "boolean (integer)")
-          )
+      )
       Pkg.CallbackDoneProvide(
         fun_ref(method(:DoneProvide), "string (integer, string, string)")
-          )
+      )
       Pkg.CallbackStartPackage(
         fun_ref(
           method(:StartPackage),
           "void (string, string, string, integer, boolean)"
-          )
-          )
+        )
+      )
       Pkg.CallbackProgressPackage(
         fun_ref(method(:ProgressPackage), "boolean (integer)")
-          )
+      )
       Pkg.CallbackDonePackage(
         fun_ref(method(:DonePackage), "string (integer, string)")
-          )
+      )
 
       nil
     end
@@ -2683,29 +2683,29 @@ module Yast
     def SetPatchCallbacks
       Pkg.CallbackStartDeltaDownload(
         fun_ref(method(:StartDeltaProvide), "void (string, integer)")
-          )
+      )
       Pkg.CallbackProgressDeltaDownload(
         fun_ref(method(:ProgressProvide), "boolean (integer)")
-          )
+      )
       Pkg.CallbackProblemDeltaDownload(
         fun_ref(method(:ProblemDeltaDownload), "void (string)")
-          )
+      )
       Pkg.CallbackFinishDeltaDownload(
         fun_ref(method(:FinishDeltaProvide), "void ()")
-          )
+      )
 
       Pkg.CallbackStartDeltaApply(
         fun_ref(method(:StartDeltaApply), "void (string)")
-          )
+      )
       Pkg.CallbackProgressDeltaApply(
         fun_ref(method(:ProgressDeltaApply), "void (integer)")
-          )
+      )
       Pkg.CallbackProblemDeltaApply(
         fun_ref(method(:ProblemDeltaApply), "void (string)")
-          )
+      )
       Pkg.CallbackFinishDeltaApply(
         fun_ref(method(:FinishDeltaProvide), "void ()")
-          )
+      )
 
       nil
     end
@@ -2714,28 +2714,28 @@ module Yast
       # source report callbacks
       Pkg.CallbackSourceReportStart(
         fun_ref(method(:SourceReportStart), "void (integer, string, string)")
-          )
+      )
       Pkg.CallbackSourceReportProgress(
         fun_ref(method(:SourceReportProgress), "boolean (integer)")
-          )
+      )
       Pkg.CallbackSourceReportError(
         fun_ref(
           method(:SourceReportError),
           "symbol (integer, string, symbol, string)"
-          )
-          )
+        )
+      )
       Pkg.CallbackSourceReportEnd(
         fun_ref(
           method(:SourceReportEnd),
           "void (integer, string, string, symbol, string)"
-          )
-          )
+        )
+      )
       Pkg.CallbackSourceReportInit(
         fun_ref(method(:SourceReportInit), "void ()")
-          )
+      )
       Pkg.CallbackSourceReportDestroy(
         fun_ref(method(:SourceReportDestroy), "void ()")
-          )
+      )
 
       nil
     end
@@ -2745,17 +2745,17 @@ module Yast
         fun_ref(
           method(:ProgressStart),
           "void (integer, string, boolean, boolean, integer, integer, integer, integer)"
-          )
-          )
+        )
+      )
       Pkg.CallbackProgressReportProgress(
         fun_ref(
           method(:ProgressProgress),
           "boolean (integer, integer, integer)"
-          )
-          )
+        )
+      )
       Pkg.CallbackProgressReportEnd(
         fun_ref(method(:ProgressEnd), "void (integer)")
-          )
+      )
 
       nil
     end
@@ -2787,8 +2787,8 @@ module Yast
         fun_ref(
           method(:Authentication),
           "map <string, any> (string, string, string, string)"
-          )
-          )
+        )
+      )
 
       # @see bugzilla #183821
       # Do not register these callbacks in case of AutoInstallation
@@ -2799,14 +2799,14 @@ module Yast
           fun_ref(
             SignatureCheckCallbacks.method(:AcceptUnsignedFile),
             "boolean (string, integer)"
-            )
-            )
+          )
+        )
         Pkg.CallbackAcceptUnknownGpgKey(
           fun_ref(
             SignatureCheckCallbacks.method(:AcceptUnknownGpgKey),
             "boolean (string, string, integer)"
-            )
-            )
+          )
+        )
         # During installation untrusted repositories are disabled to avoid
         # asking again
         gpg_callback = Stage.initial ? :import_gpg_key_or_disable : :ImportGpgKey
@@ -2814,44 +2814,44 @@ module Yast
           fun_ref(
             SignatureCheckCallbacks.method(gpg_callback),
             "boolean (map <string, any>, integer)"
-            )
-            )
+          )
+        )
         Pkg.CallbackAcceptVerificationFailed(
           fun_ref(
             SignatureCheckCallbacks.method(:AcceptVerificationFailed),
             "boolean (string, map <string, any>, integer)"
-            )
-            )
+          )
+        )
         Pkg.CallbackTrustedKeyAdded(
           fun_ref(
             SignatureCheckCallbacks.method(:TrustedKeyAdded),
             "void (map <string, any>)"
-            )
-            )
+          )
+        )
         Pkg.CallbackTrustedKeyRemoved(
           fun_ref(
             SignatureCheckCallbacks.method(:TrustedKeyRemoved),
             "void (map <string, any>)"
-            )
-            )
+          )
+        )
         Pkg.CallbackAcceptFileWithoutChecksum(
           fun_ref(
             SignatureCheckCallbacks.method(:AcceptFileWithoutChecksum),
             "boolean (string)"
-            )
-            )
+          )
+        )
         Pkg.CallbackAcceptWrongDigest(
           fun_ref(
             SignatureCheckCallbacks.method(:AcceptWrongDigest),
             "boolean (string, string, string)"
-            )
-            )
+          )
+        )
         Pkg.CallbackAcceptUnknownDigest(
           fun_ref(
             SignatureCheckCallbacks.method(:AcceptUnknownDigest),
             "boolean (string, string)"
-            )
-            )
+          )
+        )
       end
 
       SetMediaCallbacks()
@@ -3005,7 +3005,7 @@ module Yast
           # "info, "warning", "error"
           Icon.Image("warning", "margin_right" => 2),
           Left(Label(message))
-          ),
+        ),
         VSpacing(0.1),
         HBox(
           HSpacing(0.6),
@@ -3016,16 +3016,16 @@ module Yast
               # check box
               _("Show &details"),
               info_on
-              )
             )
-          ),
+          )
+        ),
         VSpacing(0.4),
         HBox(
           VSpacing(vertical_size),
           HSpacing(0.1),
           ReplacePoint(Id(:info), Empty()),
           HSpacing(0.1)
-            ),
+        ),
         HBox(HSpacing(0.1), button_box, HSpacing(0.1)),
         VSpacing(0.2)
       )
@@ -3081,15 +3081,15 @@ module Yast
             VBox(
               Left(Label(Opt(:boldFont), _("Package: "))),
               Left(Label(Opt(:boldFont), _("Size: ")))
-              ),
+            ),
             VBox(Left(Label(name)), Left(Label(sz)))
-            )
-          ),
+          )
+        ),
         ProgressBar(Id(:progress), " ", 100, 0),
         ButtonBox(
           PushButton(Id(:abort), Opt(:key_F9, :cancelButton), Label.AbortButton)
-          )
-          )
+        )
+      )
     end
 
     def full_screen

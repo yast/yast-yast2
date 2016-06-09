@@ -335,7 +335,7 @@ module Yast
             service_status,
             SuSEFirewall.special_all_interface_zone,
             false
-            )
+          )
             @allowed_interfaces = Convert.convert(
               Builtins.union(@allowed_interfaces, interfaces_supported_by_any),
               from: "list",
@@ -523,7 +523,7 @@ module Yast
               "\n" \
               "Continue?"
           )
-          )
+        )
           return false
         end
       end
@@ -556,7 +556,7 @@ module Yast
             ),
             ifaces_list
           )
-          )
+        )
           return false
         end
       end
@@ -575,7 +575,7 @@ module Yast
             ),
             ifaces_list
           )
-          )
+        )
           return false
         end
       end
@@ -629,7 +629,7 @@ module Yast
             ),
             ifaces_list
           )
-          )
+        )
           # all known ifaces are buggy
           if Builtins.size(@buggy_ifaces) == Builtins.size(all_ifaces)
             return false

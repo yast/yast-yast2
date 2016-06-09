@@ -89,7 +89,7 @@ module Yast
       if Ops.greater_than(
         Ops.subtract(Ops.subtract(Builtins.size(@lines), max_lines), 1),
         0
-        )
+      )
         @lines = Builtins.sublist(
           @lines,
           Ops.subtract(Ops.subtract(Builtins.size(@lines), max_lines), 1)

@@ -100,7 +100,7 @@ module Yast
       if Ops.greater_than(
         Ops.add(Ops.add(@current_cache_size, decoded_size), encoded_size),
         @maximum_cache_size
-        )
+      )
         return
       end
 
@@ -228,7 +228,7 @@ module Yast
 
         if Convert.to_integer(
           SCR.Execute(path(".target.bash"), convert_command)
-          ) != 0
+        ) != 0
           Builtins.y2error("Conversion failed!")
         else
           converted_not_cached = Convert.convert(

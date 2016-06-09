@@ -402,22 +402,22 @@ module Yast
       if Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "modem", ""))
-        )
+      )
         return _("Modem")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "netcard", ""))
-        )
+      )
         return _("Network Card")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "isdn", ""))
-        )
+      )
         return _("ISDN")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "dsl", ""))
-        )
+      )
         return _("DSL")
       else
         return _("Unknown")
@@ -874,12 +874,12 @@ module Yast
           if Ops.greater_than(
             Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
             0
-            ) &&
+          ) &&
               Builtins.find(Ops.get_string(devmap, "IPADDR", ""), "/") == -1
             if Ops.greater_than(
               Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
               0
-              ) &&
+            ) &&
                 Ops.greater_than(
                   Builtins.size(Ops.get_string(devmap, "NETMASK", "")),
                   0
@@ -899,7 +899,7 @@ module Yast
               if Ops.greater_than(
                 Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
                 0
-                ) &&
+              ) &&
                   Ops.greater_than(
                     Builtins.size(Ops.get_string(devmap, "PREFIXLEN", "")),
                     0
@@ -954,7 +954,7 @@ module Yast
                   if Ops.greater_than(
                     Builtins.size(Ops.get(amap, "IPADDR", "")),
                     0
-                    ) &&
+                  ) &&
                       Ops.greater_than(
                         Builtins.size(Ops.get(amap, "PREFIXLEN", "")),
                         0
@@ -1115,7 +1115,7 @@ module Yast
         if !Builtins.contains(
           Builtins.splitstring(Ops.get(@DeviceRegex, "netcard", ""), "|"),
           device
-          )
+        )
           Builtins.y2error(
             "%1 is not contained in DeviceRegex[\"netcard\"]",
             device

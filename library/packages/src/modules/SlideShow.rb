@@ -975,7 +975,7 @@ module Yast
           if Ops.greater_than(
             Ops.add(Ops.get_integer(stage, "size", 0), start),
             100
-            )
+          )
             Ops.set(stage, "size", Ops.subtract(100, start))
           end
 

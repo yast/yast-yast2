@@ -1155,7 +1155,7 @@ module Yast
           if !Builtins.haskey(
             Ops.get_map(cmdlineinfo, "actions", {}),
             mapaction
-            )
+          )
             Builtins.y2error(
               "Command line specification maps undefined action '%1'",
               mapaction
@@ -1171,7 +1171,7 @@ module Yast
             if !Builtins.haskey(
               Ops.get_map(cmdlineinfo, "options", {}),
               Convert.to_string(mapopt)
-              )
+            )
               Builtins.y2error(
                 "Command line specification maps undefined option '%1' for action '%2'",
                 mapopt,

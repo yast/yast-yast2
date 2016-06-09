@@ -183,7 +183,7 @@ module Yast2
         root:          target_root,
         snapshot_type: snapshot_type,
         description:   description
-      )
+                  )
       cmd << " --pre-num #{previous.number}" if previous
       cmd << " --userdata \"important=yes\"" if important
 

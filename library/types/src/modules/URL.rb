@@ -298,7 +298,7 @@ module Yast
       if !Builtins.regexpmatch(
         Ops.get_string(tokens, "scheme", ""),
         "^[[:alpha:]]*$"
-        )
+      )
         return false
       end
 
@@ -342,7 +342,7 @@ module Yast
       if Builtins.regexpmatch(
         Ops.get_string(tokens, "scheme", ""),
         "^[[:alpha:]]*$"
-        )
+      )
         # if (tokens["scheme"]:"" == "samba") url="smb";
         # 		else
         url = Ops.get_string(tokens, "scheme", "")

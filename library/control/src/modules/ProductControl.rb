@@ -262,7 +262,7 @@ module Yast
         if Builtins.contains(
           @DisabledProposals,
           Ops.get_string(mod, "proposal", "")
-          )
+        )
           return true
         end
         # Normal step
@@ -311,7 +311,7 @@ module Yast
           Ops.get_list(@productControl, ["partitioning", "partitions"], [])
         ),
         0
-        )
+      )
         partitioning = Ops.get_map(@productControl, "partitioning", {})
         ProductFeatures.SetBooleanFeature(
           "partitioning",
@@ -1350,7 +1350,7 @@ module Yast
             path(".target.string"),
             Installation.current_step,
             step_id
-            )
+          )
             Builtins.y2error("Error writing step identifier")
           end
         end
@@ -1384,7 +1384,7 @@ module Yast
             !Stage.initial
           if !Convert.to_boolean(
             SCR.Execute(path(".target.remove"), Installation.current_step)
-            )
+          )
             Builtins.y2error("Error removing step identifier")
           end
         end
