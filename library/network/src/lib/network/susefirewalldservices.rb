@@ -75,20 +75,20 @@ module Yast
         @services[service_name] = {}
         @known_services_features.merge(@known_metadata).each_value do |param|
           # Set a good name for our service until we read its information
-          case param
+          @services[service_name][param] = case param
           when "description"
             # We intentionally don't call the API here. We will use it as a
             # flag to populate the full service details later on.
-            @services[service_name][param] = default_service_description(service_name)
+            default_service_description(service_name)
           when "name"
             # We have to call the API here because there are callers which
             # expect to at least provide a sensible service name without
             # worrying for the full service details. This is going to be
             # expensive though since the cost of calling --get-short grows
             # linearly with the number of available services :-(
-            @services[service_name][param] = SuSEFirewall.api.service_short(service_name)
+            SuSEFirewall.api.service_short(service_name)
           else
-            @services[service_name][param] = []
+            []
           end
         end
       end

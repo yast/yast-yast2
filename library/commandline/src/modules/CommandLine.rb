@@ -488,10 +488,10 @@ module Yast
                 Ops.set(givenoptions, o, i)
               end
             else
-              if v == ""
-                ret = false
+              ret = if v == ""
+                false
               else
-                ret = TypeRepository.is_a(v, opttype)
+                TypeRepository.is_a(v, opttype)
               end
 
               if ret != true
@@ -1284,12 +1284,12 @@ module Yast
 
       res = nil
 
-      if type == :nohistory
-        res = Convert.to_string(SCR.Read(path(".dev.tty.nohistory")))
+      res = if type == :nohistory
+        Convert.to_string(SCR.Read(path(".dev.tty.nohistory")))
       elsif type == :noecho
-        res = Convert.to_string(SCR.Read(path(".dev.tty.noecho")))
+        Convert.to_string(SCR.Read(path(".dev.tty.noecho")))
       else
-        res = Convert.to_string(SCR.Read(path(".dev.tty")))
+        Convert.to_string(SCR.Read(path(".dev.tty")))
       end
 
       # set the default prompt

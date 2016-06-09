@@ -298,13 +298,13 @@ module Yast
 
       type = nil
 
-      case sys_type
+      type = case sys_type
       when "1"
-        type = GetEthTypeFromSysfs(dev)
+        GetEthTypeFromSysfs(dev)
       when "32"
-        type = GetIbTypeFromSysfs(dev)
+        GetIbTypeFromSysfs(dev)
       else
-        type = Ops.get(@TypeBySysfs, sys_type)
+        Ops.get(@TypeBySysfs, sys_type)
       end
 
       Builtins.y2debug(
@@ -1047,12 +1047,12 @@ module Yast
         to:   "map <string, map <string, map <string, any>>>"
       )
 
-      if devices.nil? || devices == {}
+      @initialized = if devices.nil? || devices == {}
         # devices == $[] is used in lan_auto "Reset" as a way how to
         # rollback changes imported from AY
-        @initialized = false
+        false
       else
-        @initialized = true
+        true
       end
 
       Builtins.y2milestone(

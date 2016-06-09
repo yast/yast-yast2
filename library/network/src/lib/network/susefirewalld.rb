@@ -141,10 +141,10 @@ module Yast
     # equivalent.
     def sf2_to_firewalld_service(service)
       # First, let's strip off 'service:' from service name if present.
-      if service.include?("service:")
-        tmp_service = service.partition(":")[2]
+      tmp_service = if service.include?("service:")
+        service.partition(":")[2]
       else
-        tmp_service = service
+        service
       end
 
       sf2_to_firewalld_map = {

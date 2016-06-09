@@ -187,10 +187,10 @@ module Yast
         else
           current_param = Ops.add(current_param, current_char)
         end
-        if current_char == "\\"
-          after_backslash = true
+        after_backslash = if current_char == "\\"
+          true
         else
-          after_backslash = false
+          false
         end
         parse_index = Ops.add(parse_index, 1)
       end
@@ -253,12 +253,12 @@ module Yast
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
       # live installation does not create /etc/install.inf (bsc#793065)
-      if Mode.live_installation
+      tmp = if Mode.live_installation
         # not using dedicated agent in order to use the same parser for cmdline
         # independently on whether it comes from /proc/cmdline or /etc/install.inf
-        tmp = Convert.to_string(SCR.Read(path(".target.string"), "/proc/cmdline"))
+        Convert.to_string(SCR.Read(path(".target.string"), "/proc/cmdline"))
       else
-        tmp = Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
+        Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
       end
 
       Builtins.y2milestone(
@@ -430,12 +430,12 @@ module Yast
       elsif Arch.ppc
         @binary = "vmlinux"
 
-        if Arch.board_iseries
-          @kernel_packages = ["kernel-iseries64"]
+        @kernel_packages = if Arch.board_iseries
+          ["kernel-iseries64"]
         elsif Arch.ppc32
-          @kernel_packages = ["kernel-default"]
+          ["kernel-default"]
         else
-          @kernel_packages = ["kernel-ppc64"]
+          ["kernel-ppc64"]
         end
       elsif Arch.ia64
         @kernel_packages = ["kernel-default"]

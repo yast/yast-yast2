@@ -572,13 +572,13 @@ module Yast
 
       Builtins.foreach(modules) do |m|
         client = ""
-        if Stage.firstboot
-          client = Ops.get_string(m, "name", "dummy")
+        client = if Stage.firstboot
+          Ops.get_string(m, "name", "dummy")
         else
-          if Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
-            client = Ops.get_string(m, "name", "dummy")
+          client = if Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
+            Ops.get_string(m, "name", "dummy")
           else
-            client = Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
+            Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
           end
         end
         # FIXME: what about the ruby files?
@@ -1083,13 +1083,13 @@ module Yast
           )
         # All proposal file names end with _proposal
         if !is_disabled
-          if !Builtins.issubstring(proposal_name, "_proposal")
-            final_proposals = Builtins.add(
+          final_proposals = if !Builtins.issubstring(proposal_name, "_proposal")
+            Builtins.add(
               final_proposals,
               [Ops.add(proposal_name, "_proposal"), order_value]
             )
           else
-            final_proposals = Builtins.add(
+            Builtins.add(
               final_proposals,
               [proposal_name, order_value]
             )

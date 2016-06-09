@@ -782,11 +782,11 @@ module Yast
         )
 
         # none iptables rules
-        if Ops.greater_than(Builtins.size(iptables_list), 0)
-          any_firewall_running = true
+        any_firewall_running = if Ops.greater_than(Builtins.size(iptables_list), 0)
+          true
           # any iptables rules exist
         else
-          any_firewall_running = false
+          false
         end
         # error running command
       else

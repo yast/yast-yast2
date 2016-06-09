@@ -8,10 +8,10 @@ class FakePkg
   class << self
     def method_missing(_met, *args, &_block)
       signature = args.first.signature
-      if signature.include?("()")
-        args_count = 0
+      args_count = if signature.include?("()")
+        0
       else
-        args_count = signature.count(",") + 1
+        signature.count(",") + 1
       end
 
       passed_args = Array.new(args_count, nil)

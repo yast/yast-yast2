@@ -413,11 +413,11 @@ module Yast
                 "\"" => "\\\""
               }
 
-              if backslash_seq[nextcharacter]
-                character = backslash_seq[nextcharacter]
+              character = if backslash_seq[nextcharacter]
+                backslash_seq[nextcharacter]
               else
                 # ignore backslash in invalid backslash sequence
-                character = nextcharacter
+                nextcharacter
               end
 
               log.debug "backslash sequence: '#{character}'"
@@ -438,10 +438,10 @@ module Yast
               # start of a string
               state = :in_string
 
-              if character == "\\\""
-                str = "\""
+              str = if character == "\\\""
+                "\""
               else
-                str = character
+                character
               end
             end
           # after double quoted string - handle non-separator chars after double quote

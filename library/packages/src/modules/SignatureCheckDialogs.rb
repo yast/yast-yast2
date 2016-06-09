@@ -269,11 +269,11 @@ module Yast
     def CheckSignaturesInYaST
       if @check_signatures.nil?
         chs = nil
-        if Stage.initial
-          chs = CheckSignatures()
+        chs = if Stage.initial
+          CheckSignatures()
         else
           # default is "yes"
-          chs = Convert.to_string(
+          Convert.to_string(
             SCR.Read(path(".sysconfig.security.CHECK_SIGNATURES"))
           )
         end

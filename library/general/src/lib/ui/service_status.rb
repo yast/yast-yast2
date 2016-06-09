@@ -55,10 +55,10 @@ module UI
       @enabled_flag = @service.enabled?
       @id_prefix = "_srv_status_#{@service.name}"
       textdomain "base"
-      if reload_flag_label == :restart
-        @reload_label = _("Restart After Saving Settings")
+      @reload_label = if reload_flag_label == :restart
+        _("Restart After Saving Settings")
       else
-        @reload_label = _("Reload After Saving Settings")
+        _("Reload After Saving Settings")
       end
     end
 

@@ -138,10 +138,10 @@ module Yast
       current = Convert.to_string(UI.QueryWidget(Id(:_hw_items), :CurrentItem))
       if Ops.get(event, "ID") == :_hw_items
         descr = ""
-        if @get_item_descr_callback.nil?
-          descr = Ops.get(@descriptions, current, "")
+        descr = if @get_item_descr_callback.nil?
+          Ops.get(@descriptions, current, "")
         else
-          descr = @get_item_descr_callback.call(current)
+          @get_item_descr_callback.call(current)
         end
         UI.ChangeWidget(Id(:_hw_sum), :Value, descr)
         return nil

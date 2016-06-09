@@ -104,14 +104,14 @@ module Yast
       label = ""
       if status == :not_installed
         # bnc #429861
-        if Stage.initial
+        label = if Stage.initial
           # label
-          label = _(
+          _(
             "Firewall cannot be adjusted during first stage installation."
           )
         else
           # label
-          label = _("Firewall package is not installed.")
+          _("Firewall package is not installed.")
         end
       elsif status == :off
         # label
@@ -149,10 +149,10 @@ module Yast
           ipaddr = NetworkInterfaces.GetValue(i, "IPADDR")
           # BNC #483455: Interface zone name
           zone = SuSEFirewall.GetZoneOfInterface(i)
-          if !zone.nil? && zone != ""
-            zone = SuSEFirewall.GetZoneFullName(zone)
+          zone = if !zone.nil? && zone != ""
+            SuSEFirewall.GetZoneFullName(zone)
           else
-            zone = _("Interface is not assigned to any zone")
+            _("Interface is not assigned to any zone")
           end
           if label == "static" || label == "" || label.nil?
             label = ipaddr
@@ -162,10 +162,10 @@ module Yast
               label = Builtins.sformat("%1/%2", label, ipaddr)
             end
           end
-          if label.nil? || label == ""
-            label = i
+          label = if label.nil? || label == ""
+            i
           else
-            label = Builtins.sformat("%1 (%2 / %3)", i, label, zone)
+            Builtins.sformat("%1 (%2 / %3)", i, label, zone)
           end
           Item(Id(i), label)
         end
@@ -899,10 +899,10 @@ module Yast
           UI.QueryWidget(Id("_cwm_open_firewall"), :Value)
         )
         Builtins.y2milestone("OF: %1", value)
-        if value
-          @allowed_interfaces = deep_copy(@all_interfaces)
+        @allowed_interfaces = if value
+          deep_copy(@all_interfaces)
         else
-          @allowed_interfaces = []
+          []
         end
 
         @buggy_ifaces = []
@@ -1076,10 +1076,10 @@ module Yast
         "firewall_details_handler"
       ) ||
         Ops.get_boolean(settings, "display_details", false)
-      if Builtins.haskey(settings, "help")
-        help = Ops.get_string(settings, "help", "")
+      help = if Builtins.haskey(settings, "help")
+        Ops.get_string(settings, "help", "")
       else
-        help = OpenFirewallHelp(display_firewall_details)
+        OpenFirewallHelp(display_firewall_details)
       end
 
       firewall_settings = CheckBox(

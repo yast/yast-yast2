@@ -110,10 +110,10 @@ module Yast
     def SysconfigWrite(level, values)
       values = deep_copy(values)
       result = true
-      if level == path(".")
-        level = path(".sysconfig")
+      level = if level == path(".")
+        path(".sysconfig")
       else
-        level = Ops.add(path(".sysconfig"), level)
+        Ops.add(path(".sysconfig"), level)
       end
 
       Builtins.foreach(values) do |entry|

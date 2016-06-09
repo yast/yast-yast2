@@ -458,12 +458,12 @@ module Yast
           ret = ValidateValueType(kk, vv, k) && ret
         end
         to_check = []
-        if Ops.get(v, "widget") == :custom
-          to_check = ["custom_widget"]
+        to_check = if Ops.get(v, "widget") == :custom
+          ["custom_widget"]
         elsif Ops.get(v, "widget") == :empty
-          to_check = []
+          []
         else
-          to_check = ["label", "widget"]
+          ["label", "widget"]
         end
         if !Builtins.haskey(v, "no_help")
           to_check = Convert.convert(
@@ -808,10 +808,10 @@ module Yast
       event_descr = {}
       timeout = GetLowestTimeout(widgets)
       while ret != :back && ret != :abort && !save
-        if Ops.greater_than(timeout, 0)
-          event_descr = UI.WaitForEvent(timeout)
+        event_descr = if Ops.greater_than(timeout, 0)
+          UI.WaitForEvent(timeout)
         else
-          event_descr = UI.WaitForEvent
+          UI.WaitForEvent
         end
         ret = Ops.get(event_descr, "ID")
         if Ops.get_string(event_descr, "EventType", "") == "DebugEvent"

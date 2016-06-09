@@ -59,10 +59,10 @@ module Yast
       }
       while Ops.less_than(i, Builtins.size(buttons))
         b = Ops.get_string(buttons_map, Ops.get(buttons, i), "-")
-        if b == "-"
-          t = Builtins.add(t, PushButton(b))
+        t = if b == "-"
+          Builtins.add(t, PushButton(b))
         else
-          t = Builtins.add(t, PushButton(Id(Ops.get(buttons, i)), b))
+          Builtins.add(t, PushButton(Id(Ops.get(buttons, i)), b))
         end
         i = Ops.add(i, 1)
       end

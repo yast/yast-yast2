@@ -406,8 +406,8 @@ module Yast
             Builtins.substring(Ops.get_string(tokens, "path", ""), 1)
           )
         end
-        if Ops.get_string(tokens, "scheme", "") == "ftp"
-          url = Builtins.sformat(
+        url = if Ops.get_string(tokens, "scheme", "") == "ftp"
+          Builtins.sformat(
             "%1/%%2f%2",
             url,
             Builtins.substring(
@@ -416,7 +416,7 @@ module Yast
             )
           )
         else
-          url = Builtins.sformat(
+          Builtins.sformat(
             "%1%2",
             url,
             URLRecode.EscapePath(Ops.get_string(tokens, "path", ""))
