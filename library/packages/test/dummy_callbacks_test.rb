@@ -8,11 +8,7 @@ class FakePkg
   class << self
     def method_missing(_met, *args, &_block)
       signature = args.first.signature
-      args_count = if signature.include?("()")
-        0
-      else
-        signature.count(",") + 1
-      end
+      args_count = signature.include?("()") ? 0 : (signature.count(",") + 1)
 
       passed_args = Array.new(args_count, nil)
       args.first.call(*passed_args) # try to call method to avoid syntax errors and typos

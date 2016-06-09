@@ -899,11 +899,7 @@ module Yast
           UI.QueryWidget(Id("_cwm_open_firewall"), :Value)
         )
         Builtins.y2milestone("OF: %1", value)
-        @allowed_interfaces = if value
-          deep_copy(@all_interfaces)
-        else
-          []
-        end
+        @allowed_interfaces = value ? deep_copy(@all_interfaces) : []
 
         @buggy_ifaces = []
         # Checks whether it's possible to enable or disable the service for all interfaces

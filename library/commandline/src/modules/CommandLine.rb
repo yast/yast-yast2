@@ -488,11 +488,7 @@ module Yast
                 Ops.set(givenoptions, o, i)
               end
             else
-              ret = if v == ""
-                false
-              else
-                TypeRepository.is_a(v, opttype)
-              end
+              ret = (v == "") ? false : TypeRepository.is_a(v, opttype)
 
               if ret != true
                 # translators: error message, %2 is expected type, %3 is the value given

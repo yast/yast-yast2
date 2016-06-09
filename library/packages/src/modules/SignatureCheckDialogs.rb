@@ -268,7 +268,6 @@ module Yast
     # @return do checking?
     def CheckSignaturesInYaST
       if @check_signatures.nil?
-        chs = nil
         chs = if Stage.initial
           CheckSignatures()
         else

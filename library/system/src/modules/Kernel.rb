@@ -187,11 +187,7 @@ module Yast
         else
           current_param = Ops.add(current_param, current_char)
         end
-        after_backslash = if current_char == "\\"
-          true
-        else
-          false
-        end
+        after_backslash = current_char == "\\"
         parse_index = Ops.add(parse_index, 1)
       end
       cmdlist = Builtins.add(cmdlist, current_param)

@@ -781,15 +781,10 @@ module Yast
           Builtins.size(iptables_list)
         )
 
-        # none iptables rules
-        any_firewall_running = if Ops.greater_than(Builtins.size(iptables_list), 0)
-          true
-          # any iptables rules exist
-        else
-          false
-        end
-        # error running command
+        # any iptables rule exist?
+        any_firewall_running = Ops.greater_than(Builtins.size(iptables_list), 0)
       else
+        # error running command
         Builtins.y2error(
           "Services Command: %1 (Exit %2) -> %3",
           command,

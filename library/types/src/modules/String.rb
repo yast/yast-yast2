@@ -438,11 +438,7 @@ module Yast
               # start of a string
               state = :in_string
 
-              str = if character == "\\\""
-                "\""
-              else
-                character
-              end
+              str = (character == "\\\"") ? "\"" : character
             end
           # after double quoted string - handle non-separator chars after double quote
           elsif state == :in_quoted_string_after_dblqt
