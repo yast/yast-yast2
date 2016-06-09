@@ -629,7 +629,7 @@ module Yast
 
       @modules_to_load.each do |file, modules|
         # The content hasn't changed
-        next if (modules.sort == @modules_to_load_old[file].sort)
+        next if modules.sort == @modules_to_load_old[file].sort
 
         if !register_modules_agent(file)
           Builtins.y2error("Cannot register new SCR agent for #{file_path} file")
