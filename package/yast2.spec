@@ -97,6 +97,7 @@ Requires:       idnkit
 %else
 Requires:       bind-utils
 %endif
+Obsoletes:      yast2-devel-doc
 
 %description
 This package contains scripts and data needed for SUSE Linux
