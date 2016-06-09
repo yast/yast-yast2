@@ -95,7 +95,7 @@ module Yast
     def RunSystemCtl(service, action)
       cmd = Builtins.sformat("%1 %2 %3.service", SYSTEMCTL, action, service)
       ret = Convert.convert(
-        SCR.Execute(path(".target.bash_output"), cmd,  "TERM" => "raw"),
+        SCR.Execute(path(".target.bash_output"), cmd, "TERM" => "raw"),
         from: "any",
         to:   "map <string, any>"
       )

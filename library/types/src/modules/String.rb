@@ -636,7 +636,7 @@ module Yast
       items.each_with_index do |row, rows_counter|
         table << table_left_padding
         table << table_row(row, cols_lenghts, current_horizontal_padding)
-        table <<  "\n" if (rows_counter + 1) < rows_count
+        table << "\n" if (rows_counter + 1) < rows_count
       end
       table
     end

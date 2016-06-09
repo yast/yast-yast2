@@ -84,7 +84,7 @@ module Yast
       @known_firewall_zones = ["block", "dmz", "drop", "external", "home",
                                "internal", "public", "trusted", "work"]
       # map defines zone name for all known firewall zones
-      @zone_names =  {
+      @zone_names = {
         # TRANSLATORS: Firewall zone name - used in combo box or dialog title
         "block"    => _(
           "Block Zone"

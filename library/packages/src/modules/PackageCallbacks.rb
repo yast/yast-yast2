@@ -3003,7 +3003,7 @@ module Yast
         HBox(
           # maybe more icon types could be used
           # "info, "warning", "error"
-          Icon.Image("warning",  "margin_right" => 2),
+          Icon.Image("warning", "margin_right" => 2),
           Left(Label(message))
           ),
         VSpacing(0.1),

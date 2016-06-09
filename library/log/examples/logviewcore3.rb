@@ -42,7 +42,7 @@ module Yast
         )
       )
 
-      LogViewCore.Start(Id(:log),  "command" => @command)
+      LogViewCore.Start(Id(:log), "command" => @command)
 
       loop do
         @widget = UI.TimeoutUserInput(250)

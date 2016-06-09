@@ -1530,7 +1530,7 @@ module Yast
     def DeleteAlias(device, aid)
       alias_ = Builtins.sformat("%1#%2", device, aid)
       Builtins.y2milestone("Deleting alias: %1", alias_)
-      @Deleted <<  alias_
+      @Deleted << alias_
       true
     end
 

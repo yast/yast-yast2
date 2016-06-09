@@ -80,7 +80,7 @@ module Yast
       DUMP("Handle")
 
       DUMP("- Both will run")
-      @ret = CWM.handleWidgets(@widget_data,  "ID" => :event)
+      @ret = CWM.handleWidgets(@widget_data, "ID" => :event)
       DUMP(Builtins.sformat("Returned %1", @ret))
       DUMP("- First causes event loop finish")
       Ops.set(
@@ -88,13 +88,13 @@ module Yast
         [0, "handle"],
         fun_ref(method(:w1_handle_symbol), "symbol (string, map)")
       )
-      @ret = CWM.handleWidgets(@widget_data,  "ID" => :event)
+      @ret = CWM.handleWidgets(@widget_data, "ID" => :event)
       DUMP(Builtins.sformat("Returned %1", @ret))
 
       DUMP("=========================================")
       DUMP("Validate")
       DUMP("- Run both")
-      @ret = CWM.validateWidgets(@widget_data,  "ID" => :event)
+      @ret = CWM.validateWidgets(@widget_data, "ID" => :event)
       DUMP(Builtins.sformat("Returned %1", @ret))
       DUMP("- First fails")
       Ops.set(
@@ -102,12 +102,12 @@ module Yast
         [0, "validate_function"],
         fun_ref(method(:w1_validat_false), "boolean (string, map)")
       )
-      @ret = CWM.validateWidgets(@widget_data,  "ID" => :event)
+      @ret = CWM.validateWidgets(@widget_data, "ID" => :event)
       DUMP(Builtins.sformat("Returned %1", @ret))
 
       DUMP("=========================================")
       DUMP("Save")
-      CWM.saveWidgets(@widget_data,  "ID" => :event)
+      CWM.saveWidgets(@widget_data, "ID" => :event)
 
       nil
     end

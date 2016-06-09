@@ -166,7 +166,7 @@ module Yast
       Builtins.y2milestone("Calling process agent with command %1", command)
 
       @id = Convert.to_integer(
-        SCR.Execute(path(".process.start_shell"), command,  "tty" => true)
+        SCR.Execute(path(".process.start_shell"), command, "tty" => true)
       )
       @is_running = true
 

@@ -95,7 +95,7 @@ module Packages
       @name    = name
       @enabled = enabled
       @autorefresh = autorefresh
-      @url     = url
+      @url = url
     end
 
     # Return repository scheme

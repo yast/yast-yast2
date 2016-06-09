@@ -1271,7 +1271,7 @@ module Yast
     def Scan
       res = Convert.to_string(SCR.Read(path(".dev.tty")))
       return nil if res.nil?
-      String.ParseOptions(res,  "separator" => " ")
+      String.ParseOptions(res, "separator" => " ")
     end
 
     # Set prompt and read input from command line

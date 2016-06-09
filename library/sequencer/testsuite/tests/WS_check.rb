@@ -59,7 +59,7 @@ module Yast
       TEST(->() { Sequencer.WS_check({}, {}) }, [], nil)
       TEST(->() { Sequencer.WS_check(@aliases1, @sequence1) }, [], nil)
 
-      TEST(->() { Sequencer.WS_check({},  "ws_start" => :ws_finish) }, [], nil)
+      TEST(->() { Sequencer.WS_check({}, "ws_start" => :ws_finish) }, [], nil)
 
       @clicks = nil
       @cur = -1
