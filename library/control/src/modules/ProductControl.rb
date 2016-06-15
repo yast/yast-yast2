@@ -574,10 +574,10 @@ module Yast
         client = ""
         client = if Stage.firstboot
           Ops.get_string(m, "name", "dummy")
-        else
+                 else
           client = if Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
             Ops.get_string(m, "name", "dummy")
-          else
+                   else
             Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
           end
         end
@@ -1088,7 +1088,7 @@ module Yast
               final_proposals,
               [Ops.add(proposal_name, "_proposal"), order_value]
             )
-          else
+                            else
             Builtins.add(
               final_proposals,
               [proposal_name, order_value]

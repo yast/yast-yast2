@@ -57,7 +57,7 @@ module UI
       textdomain "base"
       @reload_label = if reload_flag_label == :restart
         _("Restart After Saving Settings")
-      else
+                      else
         _("Reload After Saving Settings")
       end
     end

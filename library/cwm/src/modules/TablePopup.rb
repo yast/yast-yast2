@@ -804,11 +804,11 @@ module Yast
           step = 0
           step = if current_index == 0
             1
-          elsif Ops.add(current_index, 1) == Builtins.size(id_list)
+                 elsif Ops.add(current_index, 1) == Builtins.size(id_list)
             -1
-          elsif Ops.greater_or_equal(current_index, previous_index)
+                 elsif Ops.greater_or_equal(current_index, previous_index)
             1
-          else
+                 else
             -1
           end
           new_index = Ops.add(current_index, step)

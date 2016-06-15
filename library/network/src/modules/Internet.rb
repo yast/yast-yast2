@@ -130,7 +130,7 @@ module Yast
       ret = nil
       ret = if @askpassword == true
         SCR.Execute(path(".target.bash_input"), cmd, @password)
-      else
+            else
         SCR.Execute(path(".target.bash"), cmd)
       end
       if ret != 0

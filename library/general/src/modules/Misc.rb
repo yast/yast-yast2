@@ -112,7 +112,7 @@ module Yast
       result = true
       level = if level == path(".")
         path(".sysconfig")
-      else
+              else
         Ops.add(path(".sysconfig"), level)
       end
 

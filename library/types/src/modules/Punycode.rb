@@ -197,10 +197,10 @@ module Yast
         # Numbers, IPs and empty strings are not converted
         string_out = if Builtins.regexpmatch(string_in, @not_cached_regexp)
           string_in
-        else
+                     else
           string_out = if to_punycode
             GetEncodedCachedString(string_in)
-          else
+                       else
             GetDecodedCachedString(string_in)
           end
         end

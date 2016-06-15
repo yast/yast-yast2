@@ -109,7 +109,7 @@ module Yast
           _(
             "Firewall cannot be adjusted during first stage installation."
           )
-        else
+                else
           # label
           _("Firewall package is not installed.")
         end
@@ -151,7 +151,7 @@ module Yast
           zone = SuSEFirewall.GetZoneOfInterface(i)
           zone = if !zone.nil? && zone != ""
             SuSEFirewall.GetZoneFullName(zone)
-          else
+                 else
             _("Interface is not assigned to any zone")
           end
           if label == "static" || label == "" || label.nil?
@@ -164,7 +164,7 @@ module Yast
           end
           label = if label.nil? || label == ""
             i
-          else
+                  else
             Builtins.sformat("%1 (%2 / %3)", i, label, zone)
           end
           Item(Id(i), label)
@@ -1074,7 +1074,7 @@ module Yast
         Ops.get_boolean(settings, "display_details", false)
       help = if Builtins.haskey(settings, "help")
         Ops.get_string(settings, "help", "")
-      else
+             else
         OpenFirewallHelp(display_firewall_details)
       end
 

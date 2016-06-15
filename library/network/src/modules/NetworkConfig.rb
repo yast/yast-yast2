@@ -117,7 +117,7 @@ module Yast
         newval = ""
         newval = if Ops.is_boolean?(val)
           Convert.to_boolean(val) ? "yes" : "no"
-        else
+                 else
           Builtins.sformat("%1", val)
         end
         if oldval.nil? || oldval != newval

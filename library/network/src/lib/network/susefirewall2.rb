@@ -1109,7 +1109,7 @@ module Yast
         # interface is covered by 'any' in 'EXT'
         zone = if Builtins.contains(interfaces_covered_by_any, interface)
           @special_all_interface_zone
-        else
+               else
           # interface is explicitely mentioned in some zone
           GetZoneOfInterface(interface)
         end
@@ -2189,17 +2189,17 @@ module Yast
       if rule == "ACCEPT"
         ret_val = if Ops.get_string(@SETTINGS, "FW_LOG_ACCEPT_ALL", "no") == "yes"
           "ALL"
-        elsif Ops.get_string(@SETTINGS, "FW_LOG_ACCEPT_CRIT", "yes") == "yes"
+                  elsif Ops.get_string(@SETTINGS, "FW_LOG_ACCEPT_CRIT", "yes") == "yes"
           "CRIT"
-        else
+                  else
           "NONE"
         end
       elsif rule == "DROP"
         ret_val = if Ops.get_string(@SETTINGS, "FW_LOG_DROP_ALL", "no") == "yes"
           "ALL"
-        elsif Ops.get_string(@SETTINGS, "FW_LOG_DROP_CRIT", "yes") == "yes"
+                  elsif Ops.get_string(@SETTINGS, "FW_LOG_DROP_CRIT", "yes") == "yes"
           "CRIT"
-        else
+                  else
           "NONE"
         end
       else

@@ -1799,7 +1799,7 @@ module Yast
     def ShowTextTimed(headline, text, timeout)
       heading = if Builtins.size(headline) == 0
         VSpacing(0.2)
-      else
+                else
         Heading(headline)
       end
 
@@ -1856,7 +1856,7 @@ module Yast
 
       heading = if Builtins.size(headline) == 0
         VSpacing(0.2)
-      else
+                else
         Heading(headline)
       end
 

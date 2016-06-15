@@ -1282,9 +1282,9 @@ module Yast
 
       res = if type == :nohistory
         Convert.to_string(SCR.Read(path(".dev.tty.nohistory")))
-      elsif type == :noecho
+            elsif type == :noecho
         Convert.to_string(SCR.Read(path(".dev.tty.noecho")))
-      else
+            else
         Convert.to_string(SCR.Read(path(".dev.tty")))
       end
 

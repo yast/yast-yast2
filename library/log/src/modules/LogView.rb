@@ -201,7 +201,7 @@ module Yast
       if Ops.greater_or_equal(actions, 2)
         help = if save
           Ops.add(help, AdvancedSaveHelp(adv_button))
-        else
+               else
           Ops.add(help, AdvancedHelp(adv_button))
         end
       elsif save

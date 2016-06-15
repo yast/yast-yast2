@@ -61,7 +61,7 @@ module Yast
         b = Ops.get_string(buttons_map, Ops.get(buttons, i), "-")
         t = if b == "-"
           Builtins.add(t, PushButton(b))
-        else
+            else
           Builtins.add(t, PushButton(Id(Ops.get(buttons, i)), b))
         end
         i = Ops.add(i, 1)

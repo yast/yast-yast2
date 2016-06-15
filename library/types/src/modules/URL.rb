@@ -415,7 +415,7 @@ module Yast
               1
             )
           )
-        else
+              else
           Builtins.sformat(
             "%1%2",
             url,

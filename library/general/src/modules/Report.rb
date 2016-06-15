@@ -366,7 +366,7 @@ module Yast
             focus,
             @timeout_yesno_messages
           )
-        else
+              else
           Popup.AnyQuestion(
             headline,
             message,
@@ -402,7 +402,7 @@ module Yast
             focus,
             @timeout_yesno_messages
           )
-        else
+              else
           Popup.ErrorAnyQuestion(
             headline,
             message,
