@@ -65,15 +65,15 @@ module Yast
         SetModified()
 
         Builtins.y2milestone("Setting start-firewall to %1", start_service)
-        Ops.set(@SETTINGS, "start_firewall", start_service)
       else
         # without set modified!
         Builtins.y2milestone(
           "start-firewall has been already set to %1",
           start_service
         )
-        Ops.set(@SETTINGS, "start_firewall", start_service)
       end
+
+      Ops.set(@SETTINGS, "start_firewall", start_service)
 
       nil
     end
@@ -102,15 +102,15 @@ module Yast
         SetModified()
 
         Builtins.y2milestone("Setting enable-firewall to %1", enable_service)
-        Ops.set(@SETTINGS, "enable_firewall", enable_service)
       else
         # without set modified
         Builtins.y2milestone(
           "enable-firewall has been already set to %1",
           enable_service
         )
-        Ops.set(@SETTINGS, "enable_firewall", enable_service)
       end
+
+      Ops.set(@SETTINGS, "enable_firewall", enable_service)
 
       nil
     end

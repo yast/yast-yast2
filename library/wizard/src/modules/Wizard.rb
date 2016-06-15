@@ -1064,7 +1064,6 @@ module Yast
 
       if UI.WizardCommand(term(:SetBackButtonLabel, back_label)) == true
         UI.WizardCommand(term(:SetNextButtonLabel, next_label))
-        SetContents(title, contents, help_text, true, true)
       else
         # Set button labels first to avoid geometry problems: SetContents()
         # calls ReplaceWidget() wich triggers a re-layout.
@@ -1075,8 +1074,9 @@ module Yast
         if UI.WidgetExists(Id(:next))
           UI.ChangeWidget(Id(:next), :Label, next_label)
         end
-        SetContents(title, contents, help_text, true, true)
       end
+
+      SetContents(title, contents, help_text, true, true)
       SetHelpText(help_text)
       UI.CheckShortcuts
 
