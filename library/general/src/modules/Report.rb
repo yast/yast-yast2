@@ -358,22 +358,22 @@ module Yast
       ret = false
       if @display_yesno_messages
         ret = if Ops.greater_than(@timeout_yesno_messages, 0)
-          Popup.TimedAnyQuestion(
-            headline,
-            message,
-            yes_button_message,
-            no_button_message,
-            focus,
-            @timeout_yesno_messages
-          )
+                Popup.TimedAnyQuestion(
+                  headline,
+                  message,
+                  yes_button_message,
+                  no_button_message,
+                  focus,
+                  @timeout_yesno_messages
+                )
               else
-          Popup.AnyQuestion(
-            headline,
-            message,
-            yes_button_message,
-            no_button_message,
-            focus
-          )
+                Popup.AnyQuestion(
+                  headline,
+                  message,
+                  yes_button_message,
+                  no_button_message,
+                  focus
+                )
         end
       end
 
@@ -394,22 +394,22 @@ module Yast
       ret = false
       if @display_yesno_messages
         ret = if Ops.greater_than(@timeout_yesno_messages, 0)
-          Popup.TimedErrorAnyQuestion(
-            headline,
-            message,
-            yes_button_message,
-            no_button_message,
-            focus,
-            @timeout_yesno_messages
-          )
+                Popup.TimedErrorAnyQuestion(
+                  headline,
+                  message,
+                  yes_button_message,
+                  no_button_message,
+                  focus,
+                  @timeout_yesno_messages
+                )
               else
-          Popup.ErrorAnyQuestion(
-            headline,
-            message,
-            yes_button_message,
-            no_button_message,
-            focus
-          )
+                Popup.ErrorAnyQuestion(
+                  headline,
+                  message,
+                  yes_button_message,
+                  no_button_message,
+                  focus
+                )
         end
       end
 

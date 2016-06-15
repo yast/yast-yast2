@@ -269,12 +269,12 @@ module Yast
     def CheckSignaturesInYaST
       if @check_signatures.nil?
         chs = if Stage.initial
-          CheckSignatures()
+                CheckSignatures()
               else
           # default is "yes"
-          Convert.to_string(
-            SCR.Read(path(".sysconfig.security.CHECK_SIGNATURES"))
-          )
+                Convert.to_string(
+                  SCR.Read(path(".sysconfig.security.CHECK_SIGNATURES"))
+                )
         end
         Builtins.y2milestone("CHECK_SIGNATURES: %1", chs)
         @check_signatures = chs != "no"

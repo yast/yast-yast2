@@ -79,9 +79,9 @@ module Yast
       if Builtins.size(devices) == 0
         text = if !Mode.config
           # translators: summary if no hardware was detected
-          Builtins.sformat("<ul><li>%1</li></ul>", _("Not detected."))
+                 Builtins.sformat("<ul><li>%1</li></ul>", _("Not detected."))
                else
-          Builtins.sformat("<ul><li>%1</li></ul>", NotConfigured())
+                 Builtins.sformat("<ul><li>%1</li></ul>", NotConfigured())
         end
       else
         Builtins.foreach(devices) { |dev| text = Ops.add(text, dev) }

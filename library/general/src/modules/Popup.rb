@@ -1798,9 +1798,9 @@ module Yast
     # @example Popup::ShowText ("Boot Messages", "kernel panic", 10);
     def ShowTextTimed(headline, text, timeout)
       heading = if Builtins.size(headline) == 0
-        VSpacing(0.2)
+                  VSpacing(0.2)
                 else
-        Heading(headline)
+                  Heading(headline)
       end
 
       success = UI.OpenDialog(
@@ -1855,9 +1855,9 @@ module Yast
       heading = Empty()
 
       heading = if Builtins.size(headline) == 0
-        VSpacing(0.2)
+                  VSpacing(0.2)
                 else
-        Heading(headline)
+                  Heading(headline)
       end
 
       success = UI.OpenDialog(

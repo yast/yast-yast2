@@ -803,13 +803,13 @@ module Yast
           end
           step = 0
           step = if current_index == 0
-            1
+                   1
                  elsif Ops.add(current_index, 1) == Builtins.size(id_list)
-            -1
+                   -1
                  elsif Ops.greater_or_equal(current_index, previous_index)
-            1
+                   1
                  else
-            -1
+                   -1
           end
           new_index = Ops.add(current_index, step)
           opt_id = Ops.get(id_list, new_index)

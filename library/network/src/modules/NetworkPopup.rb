@@ -199,10 +199,10 @@ module Yast
         UI.CloseDialog
 
         @found_nfs_servers = if @found_nfs_servers.nil?
-          []
+                               []
                              else
           # sort list of servers
-          Builtins.sort(@found_nfs_servers)
+                               Builtins.sort(@found_nfs_servers)
         end
       end
 

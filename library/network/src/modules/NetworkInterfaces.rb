@@ -1050,9 +1050,9 @@ module Yast
       @initialized = if devices.nil? || devices == {}
         # devices == $[] is used in lan_auto "Reset" as a way how to
         # rollback changes imported from AY
-        false
+                       false
                      else
-        true
+                       true
       end
 
       Builtins.y2milestone(

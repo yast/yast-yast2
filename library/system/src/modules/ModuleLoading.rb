@@ -259,13 +259,13 @@ module Yast
 
       load_success = false
       load_success = if with_modprobe
-        Convert.to_boolean(
-          SCR.Execute(path(".target.modprobe"), modulename, moduleargs)
-        )
+                       Convert.to_boolean(
+                         SCR.Execute(path(".target.modprobe"), modulename, moduleargs)
+                       )
                      else
-        Convert.to_boolean(
-          SCR.Execute(path(".target.insmod"), modulename, moduleargs)
-        )
+                       Convert.to_boolean(
+                         SCR.Execute(path(".target.insmod"), modulename, moduleargs)
+                       )
       end
       load_success = false if load_success.nil?
 

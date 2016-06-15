@@ -414,10 +414,10 @@ module Yast
               }
 
               character = if backslash_seq[nextcharacter]
-                backslash_seq[nextcharacter]
+                            backslash_seq[nextcharacter]
                           else
                 # ignore backslash in invalid backslash sequence
-                nextcharacter
+                            nextcharacter
               end
 
               log.debug "backslash sequence: '#{character}'"

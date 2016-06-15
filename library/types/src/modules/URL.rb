@@ -407,20 +407,20 @@ module Yast
           )
         end
         url = if Ops.get_string(tokens, "scheme", "") == "ftp"
-          Builtins.sformat(
-            "%1/%%2f%2",
-            url,
-            Builtins.substring(
-              URLRecode.EscapePath(Ops.get_string(tokens, "path", "")),
-              1
-            )
-          )
+                Builtins.sformat(
+                  "%1/%%2f%2",
+                  url,
+                  Builtins.substring(
+                    URLRecode.EscapePath(Ops.get_string(tokens, "path", "")),
+                    1
+                  )
+                )
               else
-          Builtins.sformat(
-            "%1%2",
-            url,
-            URLRecode.EscapePath(Ops.get_string(tokens, "path", ""))
-          )
+                Builtins.sformat(
+                  "%1%2",
+                  url,
+                  URLRecode.EscapePath(Ops.get_string(tokens, "path", ""))
+                )
         end
       end
       Builtins.y2debug("url: %1", url)

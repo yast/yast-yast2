@@ -111,9 +111,9 @@ module Yast
       values = deep_copy(values)
       result = true
       level = if level == path(".")
-        path(".sysconfig")
+                path(".sysconfig")
               else
-        Ops.add(path(".sysconfig"), level)
+                Ops.add(path(".sysconfig"), level)
       end
 
       Builtins.foreach(values) do |entry|

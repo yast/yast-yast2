@@ -924,13 +924,13 @@ module Yast
 
       Builtins.foreach(stages) do |stage|
         total_time = if Ops.get_symbol(stage, "units", :sec) == :sec
-          Ops.add(total_time, Ops.get_integer(stage, "value", 0)) # assume kilobytes
+                       Ops.add(total_time, Ops.get_integer(stage, "value", 0)) # assume kilobytes
                      else
           # assume 15 minutes for installation of openSUSE 11.0, giving 3495 as the constant for kb/s
-          Ops.add(
-            total_time,
-            Ops.divide(Ops.get_integer(stage, "value", 0), 3495)
-          )
+                       Ops.add(
+                         total_time,
+                         Ops.divide(Ops.get_integer(stage, "value", 0), 3495)
+                       )
         end
       end
 
