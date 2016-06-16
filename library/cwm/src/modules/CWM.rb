@@ -855,7 +855,7 @@ module Yast
 
         next if ret.nil?
 
-        ret = nil if save && (!validateWidgets(widgets, event_descr))
+        ret = nil if save && !validateWidgets(widgets, event_descr)
 
         if ret.nil?
           save = false

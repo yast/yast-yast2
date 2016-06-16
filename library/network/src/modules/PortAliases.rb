@@ -121,7 +121,7 @@ module Yast
         port_number = Builtins.tointeger(port_name)
         # checking range
         return Ops.greater_or_equal(port_number, 0) &&
-          Ops.less_or_equal(port_number, 65_535)
+            Ops.less_or_equal(port_number, 65_535)
         # port is name
       else
         return Builtins.regexpmatch(port_name, @allowed_service_regexp)

@@ -247,13 +247,13 @@ module Yast
       elsif network =~ Regexp.new("^[" + @ValidChars4 + "]+/[0-9]+$")
         net_parts = network.split("/")
         return Check4(net_parts[0]) &&
-          Netmask.CheckPrefix4(net_parts[1])
+            Netmask.CheckPrefix4(net_parts[1])
 
       # 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
       elsif network =~ Regexp.new("^[" + @ValidChars4 + "]+/[" + @ValidChars4 + "]+$")
         net_parts = network.split("/")
         return Check4(net_parts[0]) &&
-          Netmask.Check4(net_parts[1])
+            Netmask.Check4(net_parts[1])
 
       # 192.168.0.1, 0.8.55.999
       elsif Check4(network)
@@ -281,13 +281,13 @@ module Yast
       elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + Netmask.ValidChars6 + "]*$")
         net_parts = network.split("/")
         return Check6(net_parts[0]) &&
-          Netmask.Check6(net_parts[1])
+            Netmask.Check6(net_parts[1])
 
         # 2001:db8:0::1/ffff:ffff::0
       elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + @ValidChars6 + "]+$")
         net_parts = network.split("/")
         return Check6(net_parts[0]) &&
-          Check6(net_parts[1])
+            Check6(net_parts[1])
       # 2001:db8:0::1
 
       elsif Check6(network)
