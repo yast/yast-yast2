@@ -271,7 +271,7 @@ module Yast
         chs = if Stage.initial
                 CheckSignatures()
               else
-          # default is "yes"
+                # default is "yes"
                 Convert.to_string(
                   SCR.Read(path(".sysconfig.security.CHECK_SIGNATURES"))
                 )

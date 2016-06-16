@@ -201,7 +201,7 @@ module Yast
         @found_nfs_servers = if @found_nfs_servers.nil?
                                []
                              else
-          # sort list of servers
+                               # sort list of servers
                                Builtins.sort(@found_nfs_servers)
         end
       end

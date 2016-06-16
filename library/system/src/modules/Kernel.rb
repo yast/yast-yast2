@@ -250,8 +250,8 @@ module Yast
       return if !(Stage.initial || Stage.cont)
       # live installation does not create /etc/install.inf (bsc#793065)
       tmp = if Mode.live_installation
-        # not using dedicated agent in order to use the same parser for cmdline
-        # independently on whether it comes from /proc/cmdline or /etc/install.inf
+              # not using dedicated agent in order to use the same parser for cmdline
+              # independently on whether it comes from /proc/cmdline or /etc/install.inf
               Convert.to_string(SCR.Read(path(".target.string"), "/proc/cmdline"))
             else
               Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))

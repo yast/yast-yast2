@@ -1110,7 +1110,7 @@ module Yast
         zone = if Builtins.contains(interfaces_covered_by_any, interface)
                  @special_all_interface_zone
                else
-          # interface is explicitely mentioned in some zone
+                 # interface is explicitely mentioned in some zone
                  GetZoneOfInterface(interface)
         end
         zones = Builtins.add(zones, zone) if !zone.nil?
