@@ -1852,8 +1852,6 @@ module Yast
     #
     # @example Popup::ShowText ("Boot Messages", "kernel panic");
     def ShowText(headline, text)
-      heading = Empty()
-
       heading = if Builtins.size(headline) == 0
                   VSpacing(0.2)
                 else

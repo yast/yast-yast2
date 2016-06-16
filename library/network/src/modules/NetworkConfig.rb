@@ -114,7 +114,6 @@ module Yast
         Convert.convert(data, from: "map", to: "map <string, any>")
       ) do |var, val|
         oldval = Convert.to_string(SCR.Read(Builtins.add(config, var)))
-        newval = ""
         newval = if Ops.is_boolean?(val)
                    Convert.to_boolean(val) ? "yes" : "no"
                  else

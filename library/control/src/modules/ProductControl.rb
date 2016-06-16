@@ -571,15 +571,12 @@ module Yast
       end
 
       Builtins.foreach(modules) do |m|
-        client = ""
         client = if Stage.firstboot
                    Ops.get_string(m, "name", "dummy")
+                 elsif Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
+                   Ops.get_string(m, "name", "dummy")
                  else
-                   client = if Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
-                              Ops.get_string(m, "name", "dummy")
-                            else
-                              Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
-                   end
+                   Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
         end
         # FIXME: what about the ruby files?
         client = Ops.add(

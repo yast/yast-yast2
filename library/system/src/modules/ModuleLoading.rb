@@ -257,7 +257,6 @@ module Yast
         end # ask_before_loading
       end
 
-      load_success = false
       load_success = if with_modprobe
                        Convert.to_boolean(
                          SCR.Execute(path(".target.modprobe"), modulename, moduleargs)

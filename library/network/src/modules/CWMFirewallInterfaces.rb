@@ -1051,12 +1051,11 @@ module Yast
     # @return [Hash] the widget description map
     def CreateOpenFirewallWidget(settings)
       settings = deep_copy(settings)
-      help = ""
-      # check box
 
       open_firewall_checkbox = Ops.get_locale(
         settings,
         "open_firewall_checkbox",
+        # check box
         _("Open Port in &Firewall")
       )
       # push button

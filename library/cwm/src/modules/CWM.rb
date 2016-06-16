@@ -457,7 +457,6 @@ module Yast
         Builtins.foreach(v) do |kk, vv|
           ret = ValidateValueType(kk, vv, k) && ret
         end
-        to_check = []
         to_check = if Ops.get(v, "widget") == :custom
                      ["custom_widget"]
                    elsif Ops.get(v, "widget") == :empty

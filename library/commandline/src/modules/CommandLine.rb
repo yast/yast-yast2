@@ -1278,8 +1278,6 @@ module Yast
       # set the required prompt
       SCR.Write(path(".dev.tty.prompt"), prompt)
 
-      res = nil
-
       res = if type == :nohistory
               Convert.to_string(SCR.Read(path(".dev.tty.nohistory")))
             elsif type == :noecho

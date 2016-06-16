@@ -137,7 +137,6 @@ module Yast
       @last_event = deep_copy(event)
       current = Convert.to_string(UI.QueryWidget(Id(:_hw_items), :CurrentItem))
       if Ops.get(event, "ID") == :_hw_items
-        descr = ""
         descr = if @get_item_descr_callback.nil?
                   Ops.get(@descriptions, current, "")
                 else

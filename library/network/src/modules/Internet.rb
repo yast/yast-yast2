@@ -127,7 +127,6 @@ module Yast
 
       cmd = Ops.add(Ops.add(Ops.add(cmd, "> "), log), " 2>&1") if log != ""
 
-      ret = nil
       ret = if @askpassword == true
               SCR.Execute(path(".target.bash_input"), cmd, @password)
             else

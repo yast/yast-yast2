@@ -296,8 +296,6 @@ module Yast
                  end
       sys_type = String.CutBlanks(sys_type)
 
-      type = nil
-
       type = case sys_type
       when "1"
         GetEthTypeFromSysfs(dev)

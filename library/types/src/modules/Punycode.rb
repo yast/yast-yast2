@@ -193,17 +193,15 @@ module Yast
       # Check the cache for already entered strings
       current_index = -1
       test_cached = Builtins.listmap(strings_in) do |string_in|
-        string_out = nil
         # Numbers, IPs and empty strings are not converted
         string_out = if Builtins.regexpmatch(string_in, @not_cached_regexp)
                        string_in
+                     elsif to_punycode
+                       GetEncodedCachedString(string_in)
                      else
-                       string_out = if to_punycode
-                                      GetEncodedCachedString(string_in)
-                                    else
-                                      GetDecodedCachedString(string_in)
-                       end
+                       GetDecodedCachedString(string_in)
         end
+
         if string_out.nil?
           current_index = Ops.add(current_index, 1)
           Ops.set(not_cached, current_index, string_in)

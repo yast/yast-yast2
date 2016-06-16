@@ -306,12 +306,11 @@ module Yast
     # @return [Hash] the widget description map
     def CreateAutoStartWidget(settings)
       settings = deep_copy(settings)
-      help = ""
-      # radio button
 
       start_auto_button = Ops.get_locale(
         settings,
         "start_auto_button",
+        # radio button
         _("During Boot")
       )
       # radio button
@@ -568,12 +567,11 @@ module Yast
     # @return [Hash] the widget description map
     def CreateStartStopWidget(settings)
       settings = deep_copy(settings)
-      help = ""
-      # push button for immediate service starting
 
       start_now_button = Ops.get_locale(
         settings,
         "start_now_button",
+        # push button for immediate service starting
         _("&Start the Service Now")
       )
       # push button for immediate service stopping
@@ -763,12 +761,11 @@ module Yast
     # @return [Hash] the widget description map
     def CreateLdapWidget(settings)
       settings = deep_copy(settings)
-      help = ""
-      # check box
 
       use_ldap_checkbox = Ops.get_locale(
         settings,
         "use_ldap_checkbox",
+        # check box
         _("&LDAP Support Active")
       )
       help = if Builtins.haskey(settings, "help")

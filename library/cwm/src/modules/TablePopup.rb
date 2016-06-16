@@ -801,7 +801,6 @@ module Yast
             current_index = Ops.add(current_index, 1)
             e == opt_id
           end
-          step = 0
           step = if current_index == 0
                    1
                  elsif Ops.add(current_index, 1) == Builtins.size(id_list)
