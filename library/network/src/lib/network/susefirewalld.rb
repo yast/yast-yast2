@@ -181,13 +181,13 @@ module Yast
         if !GetKnownFirewallZones().include?(k) && !KEY_SETTINGS.include?(k)
           Builtins.y2warning("Removing invalid key: %1 from imported settings", k)
           import_settings.delete(k)
-        else
+        elsif import_settings[k].is_a?(Hash)
           import_settings[k].keys.each do |v|
             if !ZONE_ATTRIBUTES.include?(v)
               Builtins.y2warning("Removing invalid value: %1 from key %2", v, k)
               import_settings[k].delete(v)
             end
-          end if import_settings[k].is_a?(Hash)
+          end
         end
       end
 
@@ -388,16 +388,14 @@ module Yast
           return true
         end
       # Firewall should stop after Write()
+      # started - stop
+      elsif IsStarted()
+        Builtins.y2milestone("Stopping firewall services")
+        return StopServices()
+        # stopped - skip stopping
       else
-        # started - stop
-        if IsStarted()
-          Builtins.y2milestone("Stopping firewall services")
-          return StopServices()
-          # stopped - skip stopping
-        else
-          Builtins.y2milestone("Firewall has been stopped already")
-          return true
-        end
+        Builtins.y2milestone("Firewall has been stopped already")
+        return true
       end
     end
 

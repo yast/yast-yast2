@@ -891,27 +891,25 @@ module Yast
               )
               devmap = Builtins.remove(devmap, "NETMASK")
               # TODO : delete NETMASK from config file
-            else
-              if Ops.greater_than(
-                Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
-                0
-              ) &&
-                  Ops.greater_than(
-                    Builtins.size(Ops.get_string(devmap, "PREFIXLEN", "")),
-                    0
-                  )
-                Ops.set(
-                  devmap,
-                  "IPADDR",
-                  Builtins.sformat(
-                    "%1/%2",
-                    Ops.get_string(devmap, "IPADDR", ""),
-                    Ops.get_string(devmap, "PREFIXLEN", "")
-                  )
+            elsif Ops.greater_than(
+              Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
+              0
+            ) &&
+                Ops.greater_than(
+                  Builtins.size(Ops.get_string(devmap, "PREFIXLEN", "")),
+                  0
                 )
-                devmap = Builtins.remove(devmap, "PREFIXLEN")
-                # TODO : delete PREFIXLEN from config file
-              end
+              Ops.set(
+                devmap,
+                "IPADDR",
+                Builtins.sformat(
+                  "%1/%2",
+                  Ops.get_string(devmap, "IPADDR", ""),
+                  Ops.get_string(devmap, "PREFIXLEN", "")
+                )
+              )
+              devmap = Builtins.remove(devmap, "PREFIXLEN")
+              # TODO : delete PREFIXLEN from config file
             end
           end
           # write all keys to config
@@ -946,27 +944,25 @@ module Yast
                   )
                   amap = Builtins.remove(amap, "NETMASK")
                   # TODO : delete NETMASK from config file
-                else
-                  if Ops.greater_than(
-                    Builtins.size(Ops.get(amap, "IPADDR", "")),
-                    0
-                  ) &&
-                      Ops.greater_than(
-                        Builtins.size(Ops.get(amap, "PREFIXLEN", "")),
-                        0
-                      )
-                    Ops.set(
-                      amap,
-                      "IPADDR",
-                      Builtins.sformat(
-                        "%1/%2",
-                        Ops.get(amap, "IPADDR", ""),
-                        Ops.get(amap, "PREFIXLEN", "")
-                      )
+                elsif Ops.greater_than(
+                  Builtins.size(Ops.get(amap, "IPADDR", "")),
+                  0
+                ) &&
+                    Ops.greater_than(
+                      Builtins.size(Ops.get(amap, "PREFIXLEN", "")),
+                      0
                     )
-                    amap = Builtins.remove(amap, "PREFIXLEN")
-                    # TODO : delete PREFIXLEN from config file
-                  end
+                  Ops.set(
+                    amap,
+                    "IPADDR",
+                    Builtins.sformat(
+                      "%1/%2",
+                      Ops.get(amap, "IPADDR", ""),
+                      Ops.get(amap, "PREFIXLEN", "")
+                    )
+                  )
+                  amap = Builtins.remove(amap, "PREFIXLEN")
+                  # TODO : delete PREFIXLEN from config file
                 end
                 Builtins.maplist(amap) do |ak, av|
                   akk = Ops.add(Ops.add(ak, "_"), anum)

@@ -128,30 +128,28 @@ module Yast
             filename
           )
         end
+      elsif Ops.greater_than(
+        WFM.Read(
+          path(".local.size"),
+          Builtins.sformat("%1/%2_post.sh", @tmp_dir, filename)
+        ),
+        0
+      )
+        ExecuteScript(Builtins.sformat("%1_post.sh", filename), "shell")
+      elsif Ops.greater_than(
+        WFM.Read(
+          path(".local.size"),
+          Builtins.sformat("%1/%2_post.pl", @tmp_dir, filename)
+        ),
+        0
+      )
+        ExecuteScript(Builtins.sformat("%1_post.pl", filename), "perl")
       else
-        if Ops.greater_than(
-          WFM.Read(
-            path(".local.size"),
-            Builtins.sformat("%1/%2_post.sh", @tmp_dir, filename)
-          ),
-          0
+        Builtins.y2debug(
+          "Debug hook not found: %1/%2_post.{sh,pl}",
+          @tmp_dir,
+          filename
         )
-          ExecuteScript(Builtins.sformat("%1_post.sh", filename), "shell")
-        elsif Ops.greater_than(
-          WFM.Read(
-            path(".local.size"),
-            Builtins.sformat("%1/%2_post.pl", @tmp_dir, filename)
-          ),
-          0
-        )
-          ExecuteScript(Builtins.sformat("%1_post.pl", filename), "perl")
-        else
-          Builtins.y2debug(
-            "Debug hook not found: %1/%2_post.{sh,pl}",
-            @tmp_dir,
-            filename
-          )
-        end
       end
       nil
     end

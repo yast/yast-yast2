@@ -953,21 +953,19 @@ module Yast
       # do not trust
       if zone == "no"
         Ops.set(@SETTINGS, "FW_IPSEC_TRUST", "no")
+      # trust IPsec is a known zone
+      elsif IsKnownZone(zone)
+        zone = GetZoneConfigurationString(zone)
+        Ops.set(@SETTINGS, "FW_IPSEC_TRUST", zone)
+        # unknown zone, changing to default value
       else
-        # trust IPsec is a known zone
-        if IsKnownZone(zone)
-          zone = GetZoneConfigurationString(zone)
-          Ops.set(@SETTINGS, "FW_IPSEC_TRUST", zone)
-          # unknown zone, changing to default value
-        else
-          defaultv = GetDefaultValue("FW_IPSEC_TRUST")
-          Builtins.y2warning(
-            "Trust IPsec as '%1' (unknown zone) changed to '%2'",
-            zone,
-            defaultv
-          )
-          Ops.set(@SETTINGS, "FW_IPSEC_TRUST", defaultv)
-        end
+        defaultv = GetDefaultValue("FW_IPSEC_TRUST")
+        Builtins.y2warning(
+          "Trust IPsec as '%1' (unknown zone) changed to '%2'",
+          zone,
+          defaultv
+        )
+        Ops.set(@SETTINGS, "FW_IPSEC_TRUST", defaultv)
       end
 
       nil
@@ -1657,36 +1655,32 @@ module Yast
           Builtins.y2milestone("Starting firewall services")
           return StartServices()
           # Started - restart it
-        else
-          # modified - restart it, or ...
-          # bugzilla #186186
-          # If any RPC service is configured to be allowed, always restart the firewall
-          # Some of these service's ports might have been reallocated (when SuSEFirewall
-          # is used from outside, e.g., yast2-nfs-server)
-          if GetModified() || AnyRPCServiceInConfiguration()
-            Builtins.y2milestone("Stopping firewall services")
-            StopServices()
-            Builtins.y2milestone("Starting firewall services")
-            return StartServices()
-            # not modified - skip restart
-          else
-            Builtins.y2milestone(
-              "Configuration hasn't modified, skipping restarting services"
-            )
-            return true
-          end
-        end
-        # Firewall should stop after Write()
-      else
-        # started - stop
-        if IsStarted()
+        # modified - restart it, or ...
+        # bugzilla #186186
+        # If any RPC service is configured to be allowed, always restart the firewall
+        # Some of these service's ports might have been reallocated (when SuSEFirewall
+        # is used from outside, e.g., yast2-nfs-server)
+        elsif GetModified() || AnyRPCServiceInConfiguration()
           Builtins.y2milestone("Stopping firewall services")
-          return StopServices()
-          # stopped - skip stopping
+          StopServices()
+          Builtins.y2milestone("Starting firewall services")
+          return StartServices()
+        # not modified - skip restart
         else
-          Builtins.y2milestone("Firewall has been stopped already")
+          Builtins.y2milestone(
+            "Configuration hasn't modified, skipping restarting services"
+          )
           return true
         end
+      # Firewall should stop after Write()
+      # started - stop
+      elsif IsStarted()
+        Builtins.y2milestone("Stopping firewall services")
+        return StopServices()
+        # stopped - skip stopping
+      else
+        Builtins.y2milestone("Firewall has been stopped already")
+        return true
       end
     end
 

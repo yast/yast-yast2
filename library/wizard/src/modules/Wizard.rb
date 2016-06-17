@@ -879,13 +879,11 @@ module Yast
       id = deep_copy(id)
       if UI.WizardCommand(term(:SetNextButtonLabel, label)) == true
         UI.WizardCommand(term(:SetNextButtonID, id))
-      else
-        if UI.WidgetExists(Id(:rep_next))
-          UI.ReplaceWidget(
-            Id(:rep_next),
-            PushButton(Id(id), Opt(:key_F10, :default), label)
-          )
-        end
+      elsif UI.WidgetExists(Id(:rep_next))
+        UI.ReplaceWidget(
+          Id(:rep_next),
+          PushButton(Id(id), Opt(:key_F10, :default), label)
+        )
       end
 
       nil
@@ -902,13 +900,11 @@ module Yast
       id = deep_copy(id)
       if UI.WizardCommand(term(:SetBackButtonLabel, label)) == true
         UI.WizardCommand(term(:SetBackButtonID, id))
-      else
-        if UI.WidgetExists(Id(:rep_back))
-          UI.ReplaceWidget(
-            Id(:rep_back),
-            PushButton(Id(id), Opt(:key_F8), label)
-          )
-        end
+      elsif UI.WidgetExists(Id(:rep_back))
+        UI.ReplaceWidget(
+          Id(:rep_back),
+          PushButton(Id(id), Opt(:key_F8), label)
+        )
       end
 
       nil
@@ -923,15 +919,14 @@ module Yast
     #
     def SetAbortButton(id, label)
       id = deep_copy(id)
+
       if UI.WizardCommand(term(:SetAbortButtonLabel, label)) == true
         UI.WizardCommand(term(:SetAbortButtonID, id))
-      else
-        if UI.WidgetExists(Id(:rep_abort))
-          UI.ReplaceWidget(
-            Id(:rep_abort),
-            PushButton(Id(id), Opt(:key_F9), label)
-          )
-        end
+      elsif UI.WidgetExists(Id(:rep_abort))
+        UI.ReplaceWidget(
+          Id(:rep_abort),
+          PushButton(Id(id), Opt(:key_F9), label)
+        )
       end
 
       nil

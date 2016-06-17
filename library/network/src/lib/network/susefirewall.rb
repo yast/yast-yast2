@@ -713,19 +713,17 @@ module Yast
                 )
               )
             end
-            # Removing a port range from port ranges
-          else
-            if !Builtins.contains(already_removed, remove_port)
-              # Just filtering the exact port range
-              Ops.set(
-                allowed_services,
-                "port_ranges",
-                Builtins.filter(Ops.get(allowed_services, "port_ranges", [])) do |one_port_range|
-                  one_port_range != remove_port
-                end
-              )
-              already_removed = Builtins.add(already_removed, remove_port)
-            end
+          # Removing a port range from port ranges
+          elsif !Builtins.contains(already_removed, remove_port)
+            # Just filtering the exact port range
+            Ops.set(
+              allowed_services,
+              "port_ranges",
+              Builtins.filter(Ops.get(allowed_services, "port_ranges", [])) do |one_port_range|
+                one_port_range != remove_port
+              end
+            )
+            already_removed = Builtins.add(already_removed, remove_port)
           end
         end
       end

@@ -403,12 +403,10 @@ module Yast
               @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-pae")
             end
           end
-        else
-          # add PV drivers
-          if xen
-            Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
-            @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
-          end
+        # add PV drivers
+        elsif xen
+          Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
+          @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
         end
       elsif Arch.x86_64
         if kernel_desktop_exists && IsGraphicalDesktop()
@@ -417,11 +415,9 @@ module Yast
             Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-desktop")
             @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-desktop")
           end
-        else
-          if xen
-            Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
-            @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
-          end
+        elsif xen
+          Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
+          @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
         end
       elsif Arch.ppc
         @binary = "vmlinux"

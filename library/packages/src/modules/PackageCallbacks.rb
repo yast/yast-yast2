@@ -1725,15 +1725,13 @@ module Yast
 
       if Mode.commandline
         CommandLine.PrintVerbose(message)
-      else
-        if IsDownloadProgressPopup()
-          # change the label
-          UI.ChangeWidget(Id(:progress), :Label, message)
-          UI.ChangeWidget(Id(:progress), :Value, 0)
-        elsif full_screen
-          Progress.SubprogressType(:progress, 100)
-          Progress.SubprogressTitle(message)
-        end
+      elsif IsDownloadProgressPopup()
+        # change the label
+        UI.ChangeWidget(Id(:progress), :Label, message)
+        UI.ChangeWidget(Id(:progress), :Value, 0)
+      elsif full_screen
+        Progress.SubprogressType(:progress, 100)
+        Progress.SubprogressTitle(message)
       end
 
       nil
@@ -1816,16 +1814,14 @@ module Yast
     def DoneDownload(error_value, error_text)
       if error_value == 0
         Builtins.y2milestone("Download finished")
+      elsif @autorefreshing && @autorefreshing_aborted
+        Builtins.y2milestone("Refresh aborted")
       else
-        if @autorefreshing && @autorefreshing_aborted
-          Builtins.y2milestone("Refresh aborted")
-        else
-          Builtins.y2warning(
-            "Download failed: error %1: %2",
-            error_value,
-            error_text
-          )
-        end
+        Builtins.y2warning(
+          "Download failed: error %1: %2",
+          error_value,
+          error_text
+        )
       end
 
       nil
@@ -2016,39 +2012,37 @@ module Yast
       if Mode.commandline
         # progress message (command line mode)
         CommandLine.PrintVerbose(_("Reading RPM database..."))
-      else
-        if !full_screen
-          UI.OpenDialog(
-            VBox(
-              HSpacing(60),
-              # popup heading
-              Heading(
-                Id(:label_scanDB_popup),
-                Opt(:hstretch),
-                _("Reading Installed Packages")
-              ),
-              HBox(
-                # progress bar label
-                ProgressBar(
-                  Id(:progress),
-                  _("Scanning RPM database..."),
-                  100,
-                  0
-                ), # TODO: allow Abort
-                # 			,
-                # 			`VBox(
-                # 			    `Label(""),
-                # 			    `PushButton(`id(`abort), Label::AbortButton())
-                # 			)
-                HSpacing(1)
-              )
+      elsif !full_screen
+        UI.OpenDialog(
+          VBox(
+            HSpacing(60),
+            # popup heading
+            Heading(
+              Id(:label_scanDB_popup),
+              Opt(:hstretch),
+              _("Reading Installed Packages")
+            ),
+            HBox(
+              # progress bar label
+              ProgressBar(
+                Id(:progress),
+                _("Scanning RPM database..."),
+                100,
+                0
+              ), # TODO: allow Abort
+              # 			,
+              # 			`VBox(
+              # 			    `Label(""),
+              # 			    `PushButton(`id(`abort), Label::AbortButton())
+              # 			)
+              HSpacing(1)
             )
           )
+        )
 
-          @_scan_popup = true
-        else
-          Progress.Title(_("Scanning RPM database..."))
-        end
+        @_scan_popup = true
+      else
+        Progress.Title(_("Scanning RPM database..."))
       end
 
       nil
@@ -2058,17 +2052,15 @@ module Yast
     def ProgressScanDb(value)
       if Mode.commandline
         CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT + "#{value}%")
-      else
-        if @_scan_popup && UI.WidgetExists(Id(:label_scanDB_popup))
-          UI.ChangeWidget(Id(:progress), :Value, value)
-          cont = UI.PollInput != :abort
+      elsif @_scan_popup && UI.WidgetExists(Id(:label_scanDB_popup))
+        UI.ChangeWidget(Id(:progress), :Value, value)
+        cont = UI.PollInput != :abort
 
-          Builtins.y2warning("Scan DB aborted") if !cont
+        Builtins.y2warning("Scan DB aborted") if !cont
 
-          return cont
-        elsif full_screen
-          Progress.Step(value)
-        end
+        return cont
+      elsif full_screen
+        Progress.Step(value)
       end
 
       # continue
@@ -2177,13 +2169,11 @@ module Yast
       if Mode.commandline
         # status message (command line mode)
         CommandLine.PrintVerbose(_("RPM database read"))
-      else
-        if @_scan_popup && UI.WidgetExists(Id(:label_scanDB_popup))
-          UI.CloseDialog
-          @_scan_popup = false
-        elsif !full_screen
-          Builtins.y2error("The toplevel dialog is not a scan DB popup!")
-        end
+      elsif @_scan_popup && UI.WidgetExists(Id(:label_scanDB_popup))
+        UI.CloseDialog
+        @_scan_popup = false
+      elsif !full_screen
+        Builtins.y2error("The toplevel dialog is not a scan DB popup!")
       end
 
       nil
@@ -2364,29 +2354,27 @@ module Yast
         else
           CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT + "#{val_percent}%")
         end
-      else
-        if IsProgressPopup()
-          if @tick_progress || @val_progress
-            UI.ChangeWidget(Id(:progress_widget), :Alive, true)
-          else
-            UI.ChangeWidget(Id(:progress_widget), :Value, val_percent)
-          end
-
-          # aborted ?
-          input = UI.PollInput
-          if input == :abort
-            Builtins.y2warning(
-              "Callback %1 has been aborted at %2%% (raw: %3)",
-              id,
-              val_percent,
-              val_raw
-            )
-            return false
-          end
-        elsif full_screen
-          # fullscreen callbacks
-          Progress.SubprogressValue(val_percent)
+      elsif IsProgressPopup()
+        if @tick_progress || @val_progress
+          UI.ChangeWidget(Id(:progress_widget), :Alive, true)
+        else
+          UI.ChangeWidget(Id(:progress_widget), :Value, val_percent)
         end
+
+        # aborted ?
+        input = UI.PollInput
+        if input == :abort
+          Builtins.y2warning(
+            "Callback %1 has been aborted at %2%% (raw: %3)",
+            id,
+            val_percent,
+            val_raw
+          )
+          return false
+        end
+      elsif full_screen
+        # fullscreen callbacks
+        Progress.SubprogressValue(val_percent)
       end
 
       true
@@ -3177,12 +3165,10 @@ module Yast
         if ["ftp", "http", "nfs", "file", "dir", "iso", "smb", "disk"].include?(parsed["scheme"])
           # reformat the URL
           w = URL.FormatURL(parsed, max_len)
-        else
-          if w.start_with?("/")
-            parts = w.split("/")
+        elsif w.start_with?("/")
+          parts = w.split("/")
 
-            w = String.FormatFilename(w, req_size) if parts.size > 2 # why this number?
-          end
+          w = String.FormatFilename(w, req_size) if parts.size > 2 # why this number?
         end
         w
       end

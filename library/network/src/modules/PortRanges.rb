@@ -239,25 +239,23 @@ module Yast
             Builtins.add(Ops.get(ret, "port_ranges", []), port)
           )
           # is a normal port
-        else
-          # find also aliases
-          if with_aliases
-            Ops.set(
-              ret,
-              "ports",
-              Convert.convert(
-                Builtins.union(
-                  Ops.get(ret, "ports", []),
-                  PortAliases.GetListOfServiceAliases(port)
-                ),
-                from: "list",
-                to:   "list <string>"
-              )
+        # find also aliases
+        elsif with_aliases
+          Ops.set(
+            ret,
+            "ports",
+            Convert.convert(
+              Builtins.union(
+                Ops.get(ret, "ports", []),
+                PortAliases.GetListOfServiceAliases(port)
+              ),
+              from: "list",
+              to:   "list <string>"
             )
-            # only add the port itself
-          else
-            Ops.set(ret, "ports", Builtins.add(Ops.get(ret, "ports", []), port))
-          end
+          )
+          # only add the port itself
+        else
+          Ops.set(ret, "ports", Builtins.add(Ops.get(ret, "ports", []), port))
         end
       end
 

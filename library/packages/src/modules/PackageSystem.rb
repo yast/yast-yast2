@@ -410,38 +410,35 @@ module Yast
     def CheckAndInstallPackagesInteractive(packages)
       packages = deep_copy(packages)
       success = CheckAndInstallPackages(packages)
-      if !success
-        if !LastOperationCanceled()
-          if Mode.commandline
-            # error report
-            Report.Error(_("Installing required packages failed."))
-          else
-            success = Popup.ContinueCancel(
-              # continue/cancel popup
-              _(
-                "Installing required packages failed. If you continue\n" \
-                  "without installing required packages,\n" \
-                  "YaST may not work properly.\n"
-              )
-            )
-          end
+      return success if success
+
+      if !LastOperationCanceled()
+        if Mode.commandline
+          # error report
+          Report.Error(_("Installing required packages failed."))
         else
-          if Mode.commandline
-            Report.Error(
-              # error report
-              _("Cannot continue without installing required packages.")
+          success = Popup.ContinueCancel(
+            # continue/cancel popup
+            _(
+              "Installing required packages failed. If you continue\n" \
+                "without installing required packages,\n" \
+                "YaST may not work properly.\n"
             )
-          else
-            success = Popup.ContinueCancel(
-              # continue/cancel popup
-              _(
-                "If you continue without installing required \npackages, YaST may not work properly.\n"
-              )
-            )
-          end
+          )
         end
+      elsif Mode.commandline
+        Report.Error(
+          # error report
+          _("Cannot continue without installing required packages.")
+        )
+      else
+        success = Popup.ContinueCancel(
+          # continue/cancel popup
+          _(
+            "If you continue without installing required \npackages, YaST may not work properly.\n"
+          )
+        )
       end
-      success
     end
 
     def InstallKernel(kernel_modules)

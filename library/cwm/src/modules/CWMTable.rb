@@ -157,19 +157,17 @@ module Yast
           Builtins.y2milestone("short list")
           UI.ChangeWidget(Id(:_tw_up), :Enabled, false)
           UI.ChangeWidget(Id(:_tw_down), :Enabled, false)
+        elsif index == 0
+          Builtins.y2milestone("first item")
+          UI.ChangeWidget(Id(:_tw_up), :Enabled, false)
+          UI.ChangeWidget(Id(:_tw_down), :Enabled, true)
+        elsif index == max
+          Builtins.y2milestone("last item")
+          UI.ChangeWidget(Id(:_tw_up), :Enabled, true)
+          UI.ChangeWidget(Id(:_tw_down), :Enabled, false)
         else
-          if index == 0
-            Builtins.y2milestone("first item")
-            UI.ChangeWidget(Id(:_tw_up), :Enabled, false)
-            UI.ChangeWidget(Id(:_tw_down), :Enabled, true)
-          elsif index == max
-            Builtins.y2milestone("last item")
-            UI.ChangeWidget(Id(:_tw_up), :Enabled, true)
-            UI.ChangeWidget(Id(:_tw_down), :Enabled, false)
-          else
-            UI.ChangeWidget(Id(:_tw_up), :Enabled, true)
-            UI.ChangeWidget(Id(:_tw_down), :Enabled, true)
-          end
+          UI.ChangeWidget(Id(:_tw_up), :Enabled, true)
+          UI.ChangeWidget(Id(:_tw_down), :Enabled, true)
         end
       else
         UI.ChangeWidget(Id(:_tw_up), :Enabled, false)

@@ -120,13 +120,11 @@ module Yast
       Builtins.foreach(values) do |entry|
         if Builtins.size(entry) != 2
           Builtins.y2error("bad entry in rc_write()")
-        else
-          if !SCR.Write(
-            Ops.add(level, Ops.get_path(entry, 0, path("."))),
-            Ops.get_string(entry, 1, "")
-          )
-            result = false
-          end
+        elsif !SCR.Write(
+          Ops.add(level, Ops.get_path(entry, 0, path("."))),
+          Ops.get_string(entry, 1, "")
+        )
+          result = false
         end
       end
       result
