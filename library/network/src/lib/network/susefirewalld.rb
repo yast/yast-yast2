@@ -814,7 +814,7 @@ module Yast
     # @example
     #	// Do not log broadcast packetes from DMZ
     #	SetIgnoreLoggingBroadcast ("DMZ", "yes")
-    def SetIgnoreLoggingBroadcast(_zone = nil, bcast)
+    def SetIgnoreLoggingBroadcast(_zone, bcast)
       bcast = bcast.casecmp("no").zero? ? "broadcast" : "off"
 
       return nil if @SETTINGS["logging"] == bcast
