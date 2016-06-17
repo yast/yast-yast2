@@ -314,7 +314,7 @@ module Yast
 
       UI.OpenDialog(
         Opt(:defaultsize),
-        if widget_options.size > 0 # FIXME: add empty? method to Yast::Term
+        if !widget_options.empty?
           PackageSelector(Id(:packages), widget_options, "")
         else
           PackageSelector(Id(:packages), "")

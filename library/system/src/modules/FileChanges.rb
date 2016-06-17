@@ -225,7 +225,7 @@ module Yast
     def CheckNewCreatedFiles(files)
       new_files = files - @file_checksums.keys
 
-      return true unless new_files.size > 0
+      return true unless !new_files.empty?
 
       # Continue/Cancel question, %s is a file name
       msg = _("File %s has been created manually.\nYaST might lose this file.")

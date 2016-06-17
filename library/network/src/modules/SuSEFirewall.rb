@@ -126,7 +126,7 @@ module Yast
 
           # If both firewalls are enabled, then make SF2 the default one and
           # emit a warning
-          if running_backends.size == 0 && enabled_backends.size > 1
+          if running_backends.empty? && enabled_backends.size > 1
             Builtins.y2warning("Both SuSEfirewall2 and firewalld services are enabled. " \
                                "Defaulting to SuSEfirewall2")
             enabled_backends[0] = :sf2
