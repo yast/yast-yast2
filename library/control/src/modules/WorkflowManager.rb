@@ -576,7 +576,7 @@ module Yast
           next deep_copy(new) unless Ops.is_map?(m)
 
           next Builtins.maplist(new) do |it|
-            Builtins.union(Convert.to_map(m),  "name" => it)
+            Builtins.union(Convert.to_map(m), "name" => it)
           end
         else
           next [m]
