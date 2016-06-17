@@ -262,7 +262,7 @@ module Yast
         )
       end
       UI.CloseDialog
-      return ret == :ok
+      ret == :ok
     end
 
     publish function: :FileChanged, type: "boolean (string)"
