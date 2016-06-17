@@ -110,8 +110,6 @@ module UI
       Yast::UI.ReplaceWidget(Id("#{id_prefix}_status"), status_widget)
     end
 
-    # rubocop:disable Style/TrivialAccessors
-
     # Checks if the user requested the service to be enabled on boot
     #
     # @return [Boolean]
@@ -125,8 +123,6 @@ module UI
     def reload_flag?
       @reload_flag
     end
-
-    # rubocop:enable Style/TrivialAccessors
 
     # Content for the help
     def help
