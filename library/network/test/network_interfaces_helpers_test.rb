@@ -76,7 +76,7 @@ module Yast
       let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
       # MOCKED IN test/data/etc/sysconfig/ifcfg*
       let(:devices) do
-        ["arc5", "bond0", "br1", "em1", "eth0", "eth1", "tr~", "vlan3"]
+        ["arc5", "bond0", "br1", "em1", "eth0", "eth1", "ppp0", "tr~", "vlan3"]
       end
 
       around do |example|
@@ -163,6 +163,28 @@ module Yast
           allow(FileUtils).to receive(:Exists).with(v[:sysfs].to_s).and_return true
           expect(subject.GetEthTypeFromSysfs(dev.to_s)).to eql(v[:eth_type])
         end
+      end
+    end
+
+    describe "#GetIbTypeFromSysfs" do
+      before do
+        allow(FileUtils).to receive(:Exists).with(anything).and_return false
+      end
+
+      it "returns <bond> if </sys/class/net/bond> exists" do
+        allow(FileUtils).to receive(:Exists).with("/sys/class/net/bond0/bonding").and_return true
+
+        expect(subject.GetIbTypeFromSysfs("bond0")).to eql("bond")
+      end
+
+      it "returns <ib> if </sys/class/net/create_child> exists" do
+        allow(FileUtils).to receive(:Exists).with("/sys/class/net/ib0/create_child").and_return true
+
+        expect(subject.GetIbTypeFromSysfs("ib0")).to eql("ib")
+      end
+
+      it "returns <ibchild> otherwise" do
+        expect(subject.GetIbTypeFromSysfs("ib0.8001")).to eql("ibchild")
       end
     end
   end

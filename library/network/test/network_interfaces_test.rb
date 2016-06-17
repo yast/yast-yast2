@@ -32,7 +32,7 @@ describe Yast::NetworkInterfaces do
   describe "#Read" do
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
     # Defined in test/data/etc/sysconfig/ifcfg-*
-    let(:devices) { ["arc5", "bond0", "br1", "em1", "eth0", "eth1", "vlan3"] }
+    let(:devices) { ["arc5", "bond0", "br1", "em1", "eth0", "eth1", "ppp0", "vlan3"] }
 
     around do |example|
       change_scr_root(data_dir, &example)
@@ -57,6 +57,33 @@ describe Yast::NetworkInterfaces do
       subject.Read
       expect(subject.GetIP("eth0")).to eql(["192.168.0.200", "192.168.20.100"])
       expect(subject.GetValue("eth0", "NETMASK")).to eql("255.255.255.0")
+    end
+  end
+
+  describe "#FilterDevices" do
+    let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+    # Defined in test/data/etc/sysconfig/ifcfg-*
+    let(:netcard_devices) { ["arc", "bond", "br", "em", "eth", "vlan"] }
+
+    around do |example|
+      change_scr_root(data_dir, &example)
+    end
+
+    context "when given regex is some of the predefined ones 'netcard', 'modem', 'isdn', 'dsl'." do
+      it "returns devices of the given type" do
+        expect(subject.FilterDevices("netcard").keys).to eql(netcard_devices)
+        expect(subject.FilterDevices("modem").keys).to eql(["ppp"])
+        expect(subject.FilterDevices("dsl").keys).to eql([])
+        expect(subject.FilterDevices("isdn").keys).to eql([])
+      end
+    end
+    context "when given regex is not a predefined one" do
+      it "returns devices whose type exactly match the given regex" do
+        expect(subject.FilterDevices("br").keys).to eql(["br"])
+        expect(subject.FilterDevices("br").size).to eql(1)
+        expect(subject.FilterDevices("vlan").keys).to eql(["vlan"])
+        expect(subject.FilterDevices("vlan").size).to eql(1)
+      end
     end
   end
 

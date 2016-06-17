@@ -237,17 +237,17 @@ module Yast
 
     # Detects a subtype of Ethernet device type according /sys or /proc content
     def GetEthTypeFromSysfs(dev)
-      sys_dir_path = "/sys/class/net/#{dev}/"
+      sys_dir_path = "/sys/class/net/#{dev}"
 
-      if FileUtils.Exists("#{sys_dir_path}wireless")
+      if FileUtils.Exists("#{sys_dir_path}/wireless")
         "wlan"
-      elsif FileUtils.Exists("#{sys_dir_path}phy80211")
+      elsif FileUtils.Exists("#{sys_dir_path}/phy80211")
         "wlan"
-      elsif FileUtils.Exists("#{sys_dir_path}bridge")
+      elsif FileUtils.Exists("#{sys_dir_path}/bridge")
         "br"
-      elsif FileUtils.Exists("#{sys_dir_path}bonding")
+      elsif FileUtils.Exists("#{sys_dir_path}/bonding")
         "bond"
-      elsif FileUtils.Exists("#{sys_dir_path}tun_flags")
+      elsif FileUtils.Exists("#{sys_dir_path}/tun_flags")
         "tap"
       elsif FileUtils.Exists("/proc/net/vlan/#{dev}")
         "vlan"
@@ -261,11 +261,11 @@ module Yast
 
     # Detects a subtype of InfiniBand device type according /sys or /proc content
     def GetIbTypeFromSysfs(dev)
-      sys_dir_path = Builtins.sformat("/sys/class/net/%1/", dev)
+      sys_dir_path = "/sys/class/net/#{dev}"
 
-      if FileUtils.Exists(Ops.add(sys_dir_path, "bonding"))
+      if FileUtils.Exists("#{sys_dir_path}/bonding")
         "bond"
-      elsif FileUtils.Exists(Ops.add(sys_dir_path, "create_child"))
+      elsif FileUtils.Exists("#{sys_dir_path}/create_child")
         "ib"
       else
         "ibchild"
@@ -607,8 +607,7 @@ module Yast
 
       # Now we have ipaddr and prefixlen
       # Let's compute the rest
-      netmask = ""
-      netmask = Netmask.FromBits(prefixlen.to_i) if IP.Check4(ipaddr)
+      netmask = IP.Check4(ipaddr) ? Netmask.FromBits(prefixlen.to_i) : ""
 
       ifcfg["IPADDR"] = ipaddr
       ifcfg["PREFIXLEN"] = prefixlen
@@ -717,7 +716,7 @@ module Yast
     def generate_config(pth, values)
       config = { "_aliases" => {} }
       values.each do |val|
-        item = SCR.Read(Builtins.topath("#{pth}.#{val}"))
+        item = SCR.Read(path("#{pth}.#{val}"))
         log.debug("item=#{item}")
         next if item.nil?
         # No underscore '_' -> global
@@ -765,7 +764,7 @@ module Yast
         pth = ".network.value.\"#{d}\""
         log.debug("pth=#{pth}")
 
-        values = SCR.Dir(Builtins.topath(pth))
+        values = SCR.Dir(path(pth))
         log.debug("values=#{values}")
 
         config = generate_config(pth, values)
@@ -796,20 +795,13 @@ module Yast
 
     def Filter(devices, devregex)
       devices = deep_copy(devices)
-      if devices.nil? || devregex.nil? || devregex == ""
-        return deep_copy(devices)
-      end
+      return devices if devices.nil? || devregex.nil? || devregex == ""
 
-      regex = Ops.add(
-        Ops.add("^(", Ops.get(@DeviceRegex, devregex, devregex)),
-        ")[0-9]*$"
-      )
-      Builtins.y2debug("regex=%1", regex)
-      devices = Builtins.filter(devices) do |file, _devmap|
-        Builtins.regexpmatch(file, regex) == true
-      end
-      Builtins.y2debug("devices=%1", devices)
-      deep_copy(devices)
+      regex = "^(#{@DeviceRegex[devregex] || devregex})[0-9]*$"
+      log.debug("regex=#{regex}")
+      devices.select! { |f, _d| f =~ /#{regex}/ }
+      log.debug("devices=#{devices}")
+      devices
     end
 
     # Used in BuildSummary, BuildOverview
@@ -818,48 +810,42 @@ module Yast
     end
 
     def FilterNOT(devices, devregex)
-      devices = deep_copy(devices)
       return {} if devices.nil? || devregex.nil? || devregex == ""
+      devices = deep_copy(devices)
 
-      regex = Ops.add(
-        Ops.add("^(", Ops.get(@DeviceRegex, devregex, devregex)),
-        ")[0-9]*$"
-      )
-      Builtins.y2debug("regex=%1", regex)
-      devices = Builtins.filter(devices) do |file, _devmap|
-        Builtins.regexpmatch(file, regex) != true
-      end
-      Builtins.y2debug("devices=%1", devices)
-      deep_copy(devices)
+      regex = "^(#{@DeviceRegex[devregex] || devregex})[0-9]*$"
+
+      log.debug("regex=#{regex}")
+      devices.select! { |f, _d| f !~ regex }
+
+      log.debug("devices=#{devices}")
+      devices
     end
 
     def Write(devregex)
-      Builtins.y2milestone("Writing configuration")
-      Builtins.y2debug("Devices=%1", @Devices)
-      Builtins.y2debug("Deleted=%1", @Deleted)
+      log.info("Writing configuration")
+      log.debug("Devices=#{@Devices}")
+      log.debug("Deleted=#{@Deleted}")
 
       devs = Filter(@Devices, devregex)
       original_devs = Filter(@OriginalDevices, devregex)
-      Builtins.y2milestone("OriginalDevs=%1", ConcealSecrets(original_devs))
-      Builtins.y2milestone("Devs=%1", ConcealSecrets(devs))
+      log.info("OriginalDevs=#{ConcealSecrets(original_devs)}")
+      log.info("Devs=#{ConcealSecrets(devs)}")
 
       # Check for changes
       if devs == original_devs
-        Builtins.y2milestone(
-          "No changes to %1 devices -> nothing to write",
-          devregex
-        )
+        log.info("No changes to #{devregex} devices -> nothing to write")
         return true
       end
 
       # remove deleted devices
-      Builtins.y2milestone("Deleted=%1", @Deleted)
+      log.info("Deleted=#{@Deleted}")
       Builtins.foreach(@Deleted) do |d|
         anum = alias_num(d)
         if anum == ""
           # delete config file
           p = Builtins.add(path(".network.section"), d)
-          Builtins.y2debug("deleting: %1", p)
+          log.debug("deleting: #{p}")
           SCR.Write(p, nil)
         else
           dev = device_name_from_alias(d)
@@ -871,7 +857,7 @@ module Yast
           dev_aliases = original_devs[typ][dev]["_aliases"][anum] || {}
           dev_aliases.keys.each do |key|
             p = base + "#{key}_#{anum}"
-            Builtins.y2debug("deleting: %1", p)
+            log.debug("deleting: #{p}")
             SCR.Write(p, nil)
           end
         end
@@ -1004,7 +990,7 @@ module Yast
           # 0600 if contains encryption key (#24842)
           has_key = @SensitiveFields.any? { |k| devmap[k] && !devmap[k].empty? }
           if has_key
-            Builtins.y2debug("Permission change: %1", config)
+            log.debug("Permission change: #{config}")
             SCR.Write(
               Builtins.add(path(".network.section_private"), config),
               true
@@ -1314,8 +1300,8 @@ module Yast
     # @return dumped settings (later acceptable by Import())
     def Export(devregex)
       devs = Filter(@Devices, devregex)
-      Builtins.y2debug("Devs=%1", devs)
-      Convert.convert(devs, from: "map", to: "map <string, map>")
+      log.debug("Devs=#{devs}")
+      devs
     end
 
     # Were the devices changed?
@@ -1323,8 +1309,8 @@ module Yast
     def Modified(devregex)
       devs = Filter(@Devices, devregex)
       original_devs = Filter(@OriginalDevices, devregex)
-      Builtins.y2debug("OriginalDevs=%1", original_devs)
-      Builtins.y2debug("Devs=%1", devs)
+      log.debug("OriginalDevs=#{original_devs}")
+      log.debug("Devs=#{devs}")
       devs == original_devs
     end
 
