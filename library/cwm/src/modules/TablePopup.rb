@@ -857,21 +857,25 @@ module Yast
       attrib = deep_copy(attrib)
       widget_descr = deep_copy(widget_descr)
       ValidateTableAttr(attrib)
+
       add_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
                      PushButton(Id(:_tp_add), Opt(:key_F3), Label.AddButton)
                    else
                      HSpacing(0)
-                   end
+      end
+
       edit_button = if Ops.get_boolean(attrib, "edit_button", true)
                       PushButton(Id(:_tp_edit), Opt(:key_F4), Label.EditButton)
                     else
                       HSpacing(0)
-                    end
+      end
+
       delete_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
                         PushButton(Id(:_tp_delete), Opt(:key_F5), Label.DeleteButton)
                       else
                         HSpacing(0)
-                      end
+      end
+
       table_header = if Ops.get_boolean(attrib, "changed_column", false)
                        Header(
                          # table header, shortcut for changed, keep very short
@@ -888,7 +892,7 @@ module Yast
                          # table header
                          _("Value")
                        )
-                     end
+      end
 
       replace_point = ReplacePoint(Id(:_tp_table_repl), HSpacing(0))
       # help 1/4
@@ -940,7 +944,7 @@ module Yast
                   )
                 else
                   HSpacing(0)
-                end
+      end
 
       ret = Convert.convert(
         Builtins.union(

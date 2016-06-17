@@ -355,7 +355,7 @@ module Yast
                        "and start this module again\n" \
                        "or continue without network."
                      )
-                   end
+      end
 
       ret = Popup.ContinueCancel(error_text)
 

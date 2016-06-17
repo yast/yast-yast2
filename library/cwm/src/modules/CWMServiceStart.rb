@@ -604,7 +604,7 @@ module Yast
                                )
                              else
                                VBox()
-                             end
+      end
 
       immediate_actions = VBox(
         # Frame label (stoping starting service)

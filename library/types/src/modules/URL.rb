@@ -378,7 +378,7 @@ module Yast
                 Builtins.sformat("%1[%2]", url, Ops.get_string(tokens, "host", ""))
               else
                 Builtins.sformat("%1%2", url, Ops.get_string(tokens, "host", ""))
-              end
+        end
       end
       Builtins.y2debug("url: %1", url)
 

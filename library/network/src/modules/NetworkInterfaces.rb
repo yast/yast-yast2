@@ -293,7 +293,8 @@ module Yast
                    Builtins.regexpsub(sys_type, "(.*)\n", "\\1")
                  else
                    ""
-                 end
+      end
+
       sys_type = String.CutBlanks(sys_type)
 
       type = case sys_type
@@ -1458,7 +1459,7 @@ module Yast
             GetTypeFromIfcfgOrName(name, newdev)
           else
             GetType(name)
-          end
+      end
 
       if name == @Name
         int_type = Ops.get_string(@Current, "INTERFACETYPE", "")

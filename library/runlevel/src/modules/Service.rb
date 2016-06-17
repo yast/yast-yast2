@@ -74,7 +74,8 @@ module Yast
         when "reload-or-try-restart" then :reload_or_try_restart
         else
           raise "Command '#{command_name}' not supported"
-        end
+      end
+
       result = service.send(systemd_command)
       failure(command_name, service_name, service.error) unless result
       result
@@ -370,7 +371,7 @@ module Yast
         else
           log.error "Unknown action '#{param}' for service '#{name}'"
           false
-        end
+      end
 
       result ? 0 : -1
     end

@@ -602,7 +602,7 @@ module Yast
                            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
                            # %3 side (e.g. "Side A")
                            Builtins.sformat("%1 (Medium %2, %3)", product, wanted, side)
-                         end
+          end
         else
           wanted_label = if is_disc
                            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
@@ -610,7 +610,7 @@ module Yast
                          else
                            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
                            Builtins.sformat(_("%1 (Medium %2)"), product, wanted)
-                         end
+          end
         end
       end
 
@@ -717,7 +717,7 @@ module Yast
                                      RETRY_TIMEOUT * (1 << @current_retry_attempt)
                                    else
                                      RETRY_MAX_TIMEOUT
-                                   end
+          end
 
           if Ops.greater_than(@current_retry_timeout, RETRY_MAX_TIMEOUT)
             @current_retry_timeout = RETRY_MAX_TIMEOUT
@@ -1763,7 +1763,7 @@ module Yast
                      Ops.add("%1 - ", @download_file)
                    else
                      Ops.add(@download_file, " - %1")
-                   end
+          end
 
           # progress bar label, %1 is URL with optional download rate
           msg_rate = Builtins.sformat(

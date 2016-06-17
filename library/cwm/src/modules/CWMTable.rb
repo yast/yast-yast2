@@ -339,17 +339,20 @@ module Yast
                      PushButton(Id(:_tw_add), Opt(:key_F3, :notify), Label.AddButton)
                    else
                      HSpacing(0)
-                   end
+      end
+
       edit_button = if Ops.get_boolean(attrib, "edit_button", true)
                       PushButton(Id(:_tw_edit), Opt(:key_F4, :notify), Label.EditButton)
                     else
                       HSpacing(0)
-                    end
+      end
+
       delete_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
                         PushButton(Id(:_tw_delete), Opt(:key_F5, :notify), Label.DeleteButton)
                       else
                         HSpacing(0)
-                      end
+      end
+
       table_header = Ops.get_term(attrib, "header")
 
       custom_button = if Ops.get_boolean(attrib, "custom_button", false)
@@ -360,7 +363,7 @@ module Yast
                         )
                       else
                         HSpacing(0)
-                      end
+      end
 
       up_down = if Ops.get_boolean(attrib, "up_down_buttons", false)
                   VBox(
@@ -373,7 +376,7 @@ module Yast
                   )
                 else
                   HSpacing(0)
-                end
+      end
 
       ret = Convert.convert(
         Builtins.union(

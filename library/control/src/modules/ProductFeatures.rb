@@ -247,7 +247,7 @@ module Yast
         value
       elsif Ops.is_string?(value)
         Builtins.tointeger(Convert.to_string(value))
-            end
+      end
     end
 
     # Set value of a feature

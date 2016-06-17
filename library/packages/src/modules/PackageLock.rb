@@ -66,7 +66,7 @@ module Yast
                     "\n" \
                     "Ask PackageKit to quit?"
                 )
-              end
+        end
 
         @packagekit_asked = true
 

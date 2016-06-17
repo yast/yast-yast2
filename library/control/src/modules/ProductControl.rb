@@ -863,7 +863,7 @@ module Yast
                           wizard_textdomain,
                           Ops.get_string(m, "label", "")
                         )
-                      end
+            end
 
           # Label
           elsif Ops.get_string(m, "label", "") != ""
@@ -879,7 +879,7 @@ module Yast
                         wizard_textdomain,
                         Ops.get_string(m, "label", "")
                       )
-                    end
+            end
 
             id = Ops.get_string(m, "id", "")
             last_label = Ops.get_string(m, "label", "")
