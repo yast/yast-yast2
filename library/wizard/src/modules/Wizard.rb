@@ -1566,9 +1566,9 @@ module Yast
     # @return Tree Item
     def QueryTreeItem
       if haveFancyUI
-        return Convert.to_string(UI.QueryWidget(Id(:wizard), :CurrentItem))
+        Convert.to_string(UI.QueryWidget(Id(:wizard), :CurrentItem))
       else
-        return Convert.to_string(UI.QueryWidget(Id(:wizardTree), :CurrentItem))
+        Convert.to_string(UI.QueryWidget(Id(:wizardTree), :CurrentItem))
       end
     end
 

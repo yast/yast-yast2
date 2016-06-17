@@ -214,11 +214,11 @@ module Yast
     def GetStringFeature(section, feature)
       value = GetFeature(section, feature)
       if Ops.is_string?(value)
-        return value
+        value
       elsif Ops.is_boolean?(value)
-        return Convert.to_boolean(value) ? "yes" : "no"
+        Convert.to_boolean(value) ? "yes" : "no"
       else
-        return Builtins.sformat("%1", value)
+        Builtins.sformat("%1", value)
       end
     end
 
@@ -231,14 +231,9 @@ module Yast
     # @return [Boolean] the feature value
     def GetBooleanFeature(section, feature)
       value = GetFeature(section, feature)
-      if Ops.is_boolean?(value)
-        return value
-      elsif Ops.is_string?(value) &&
-          Builtins.tolower(Convert.to_string(value)) == "yes"
-        return true
-      else
-        return false
-      end
+      return value if Ops.is_boolean?(value)
+
+      Ops.is_string?(value) && Builtins.tolower(Convert.to_string(value)) == "yes"
     end
 
     # Get value of a feature
@@ -249,11 +244,11 @@ module Yast
     def GetIntegerFeature(section, feature)
       value = GetFeature(section, feature)
       if Ops.is_integer?(value)
-        return value
+        value
       elsif Ops.is_string?(value)
-        return Builtins.tointeger(Convert.to_string(value))
+        Builtins.tointeger(Convert.to_string(value))
       else
-        return nil
+        nil
       end
     end
 

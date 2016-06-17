@@ -232,34 +232,29 @@ module Yast
       groups = String.NonEmpty(Builtins.toset(groups))
       groups = Builtins.filter(groups) { |g| !g.nil? }
       iface_groups = Builtins.maplist(groups) do |g|
-        ifaces_also_supported_by_any = SuSEFirewall.GetInterfacesInZoneSupportingAnyFeature(
-          g
-        )
+        ifaces_also_supported_by_any = SuSEFirewall.GetInterfacesInZoneSupportingAnyFeature(g)
+
         # If all interfaces in EXT zone are covered by the special 'any' string
         # and none of these interfaces are selected to be open, we can remove all of them
         # disable the service in whole EXT zone
-        if g == SuSEFirewall.special_all_interface_zone
-          ifaces_left_explicitely = Builtins.filter(
-            ifaces_also_supported_by_any
-          ) do |iface|
-            Builtins.contains(ifaces, iface)
-          end
-          Builtins.y2milestone(
-            "Ifaces left in zone: %1",
-            ifaces_left_explicitely
-          )
-          # there are no interfaces left that would be explicitely mentioned in the EXT zone
-          if ifaces_left_explicitely == []
-            next []
-            # Hmm, some interfaces left
-          else
-            next deep_copy(ifaces_also_supported_by_any)
-          end
-          # Just report all interfaces mentioned in zone
-        else
-          next deep_copy(ifaces_also_supported_by_any)
+        next deep_copy(ifaces_also_supported_by_any) if g != SuSEFirewall.special_all_interface_zone
+
+        ifaces_left_explicitely = Builtins.filter(
+          ifaces_also_supported_by_any
+        ) do |iface|
+          Builtins.contains(ifaces, iface)
         end
+        Builtins.y2milestone(
+          "Ifaces left in zone: %1",
+          ifaces_left_explicitely
+        )
+        # there are no interfaces left that would be explicitely mentioned in the EXT zone
+        next [] if ifaces_left_explicitely == []
+
+        # Hmm, some interfaces left
+        next deep_copy(ifaces_also_supported_by_any)
       end
+
       Builtins.y2milestone("Ifaces touched: %1", iface_groups)
       new_ifaces = Builtins.toset(Builtins.flatten(iface_groups))
       new_ifaces = Builtins.filter(new_ifaces) { |i| !i.nil? }
@@ -613,35 +608,30 @@ module Yast
           all_ok = false
         end
       end
-      if all_ok
-        return true
-      else
-        ifaces_list = Builtins.mergestring(@buggy_ifaces, "\n")
-        # yes-no popup
-        if Popup.YesNo(
-          Builtins.sformat(
-            _(
-              "Because of SuSE Firewall settings, the port\n" \
-                "on the following interfaces cannot be opened:\n" \
-                "%1\n" \
-                "\n" \
-                "Continue?"
-            ),
-            ifaces_list
-          )
+
+      return true if all_ok
+
+      ifaces_list = Builtins.mergestring(@buggy_ifaces, "\n")
+
+      if Popup.YesNo(
+        Builtins.sformat(
+          # yes-no popup
+          _(
+            "Because of SuSE Firewall settings, the port\n" \
+              "on the following interfaces cannot be opened:\n" \
+              "%1\n" \
+              "\n" \
+              "Continue?"
+          ),
+          ifaces_list
         )
-          # all known ifaces are buggy
-          if Builtins.size(@buggy_ifaces) == Builtins.size(all_ifaces)
-            return false
-          else
-            # at least one iface isn't buggy
-            return true
-          end
-        else
-          # cancel
-          @buggy_ifaces = deep_copy(@all_interfaces)
-          return false
-        end
+      )
+        # all known ifaces are buggy?
+        return Builtins.size(@buggy_ifaces) != Builtins.size(all_ifaces)
+      else
+        # cancel
+        @buggy_ifaces = deep_copy(@all_interfaces)
+        return false
       end
 
       false

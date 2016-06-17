@@ -242,11 +242,7 @@ module Yast
         return nil
       end
 
-      if conf_changed
-        return SaveCurrentConfiguration()
-      else
-        return nil
-      end
+      conf_changed ? SaveCurrentConfiguration() : nil
     end
 
     # Return the default return value for question that should not
@@ -346,11 +342,7 @@ module Yast
         return nil
       end
 
-      if conf_changed
-        return SaveCurrentConfiguration()
-      else
-        return nil
-      end
+      conf_changed ? SaveCurrentConfiguration() : nil
     end
 
     # Returns the current configuration map

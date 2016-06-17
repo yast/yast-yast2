@@ -311,20 +311,16 @@ module Yast
     # @param port_name_or_number
     # @param port_number or nil when not found
     def GetPortNumber(port_name)
-      if !Builtins.regexpmatch(port_name, "^[0123456789]+$")
-        port_number = Ops.get(@SERVICE_NAME_TO_PORT, port_name) do
-          LoadAndReturnNameToPort(port_name)
-        end
+      return Builtins.tointeger(port_name) if Builtins.regexpmatch(port_name, "^[0123456789]+$")
 
-        # not a known port
-        if port_number.nil?
-          return nil
-        else
-          return Builtins.tointeger(port_number)
-        end
-      else
-        return Builtins.tointeger(port_name)
+      port_number = Ops.get(@SERVICE_NAME_TO_PORT, port_name) do
+        LoadAndReturnNameToPort(port_name)
       end
+
+      # not a known port
+      return nil if port_number.nil?
+
+      Builtins.tointeger(port_number)
     end
 
     publish function: :IsAllowedPortName, type: "boolean (string)"

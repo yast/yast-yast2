@@ -170,21 +170,21 @@ module Yast
       info = Convert.to_map(SCR.Read(path(".target.lstat"), target))
 
       if Ops.get_boolean(info, "islink", false) == true
-        return "link"
+        "link"
       elsif Ops.get_boolean(info, "isdir", false) == true
-        return "directory"
+        "directory"
       elsif Ops.get_boolean(info, "isreg", false) == true
-        return "regular"
+        "regular"
       elsif Ops.get_boolean(info, "isblock", false) == true
-        return "block"
+        "block"
       elsif Ops.get_boolean(info, "isfifo", false) == true
-        return "fifo"
+        "fifo"
       elsif Ops.get_boolean(info, "issock", false) == true
-        return "socket"
+        "socket"
       elsif Ops.get_boolean(info, "ischr", false) == true
-        return "chr_device"
+        "chr_device"
       else
-        return nil
+        nil
       end
     end
 
@@ -197,21 +197,21 @@ module Yast
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
 
       if Ops.get_boolean(info, "isdir", false) == true
-        return "directory"
+        "directory"
       elsif Ops.get_boolean(info, "isreg", false) == true
-        return "regular"
+        "regular"
       elsif Ops.get_boolean(info, "isblock", false) == true
-        return "block"
+        "block"
       elsif Ops.get_boolean(info, "isfifo", false) == true
-        return "fifo"
+        "fifo"
       elsif Ops.get_boolean(info, "issock", false) == true
-        return "socket"
+        "socket"
       elsif Ops.get_boolean(info, "islink", false) == true
-        return "link"
+        "link"
       elsif Ops.get_boolean(info, "ischr", false) == true
-        return "chr_device"
+        "chr_device"
       else
-        return nil
+        nil
       end
     end
 
@@ -279,24 +279,22 @@ module Yast
       if Exists(check_path)
         Builtins.y2milestone("Path %1 exists", check_path)
         # Directory (path) is a type 'directory'
-        if IsDirectory(check_path)
-          return true
-          # Directory (path) is not a valid 'directory'
-        else
-          Builtins.y2warning("Path %1 is not a directory", check_path)
-          # Continue despite the error?
-          return Popup.ContinueCancel(
-            Builtins.sformat(
-              # TRANSLATORS: popup question (with continue / cancel buttons)
-              # %1 is the filesystem path
-              _(
-                "Although the path %1 exists, it is not a directory.\nContinue or cancel the operation?\n"
-              ),
-              pathvalue
-            )
+        return true if IsDirectory(check_path)
+
+        # Directory (path) is not a valid 'directory'
+        Builtins.y2warning("Path %1 is not a directory", check_path)
+        # Continue despite the error?
+        return Popup.ContinueCancel(
+          Builtins.sformat(
+            # TRANSLATORS: popup question (with continue / cancel buttons)
+            # %1 is the filesystem path
+            _(
+              "Although the path %1 exists, it is not a directory.\nContinue or cancel the operation?\n"
+            ),
+            pathvalue
           )
-        end
-        # Directory (path) doesn't exist, trying to create it if wanted
+        )
+      # Directory (path) doesn't exist, trying to create it if wanted
       else
         Builtins.y2milestone("Path %1 does not exist", check_path)
         if Popup.YesNo(

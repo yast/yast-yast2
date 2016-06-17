@@ -175,13 +175,13 @@ module Yast
     # @return [String] arch_short
     def arch_short
       if sparc
-        return "sparc"
+        "sparc"
       elsif ppc
-        return "ppc"
+        "ppc"
       elsif s390
-        return "s390"
+        "s390"
       else
-        return architecture
+        architecture
       end
     end
 

@@ -218,15 +218,10 @@ module Yast
     end
 
     def CheckNetworkShared(network)
-      if network.nil? || network == ""
-        return false
+      return false if network.nil? || network == ""
 
-        # all networks
-      elsif network == "0/0"
-        return true
-      end
-
-      nil
+      # all networks
+      network == "0/0" ? true : nil
     end
 
     # Checks the given IPv4 network entry.
@@ -240,21 +235,18 @@ module Yast
     #   CheckNetwork("172.55.0.0/33") -> false
     def CheckNetwork4(network)
       generic_check = CheckNetworkShared(network)
-      if !generic_check.nil?
-        return generic_check
+      return generic_check unless generic_check.nil?
 
       # 192.168.0.0/20, 0.8.55/158
-      elsif network =~ Regexp.new("^[" + @ValidChars4 + "]+/[0-9]+$")
+      if network =~ Regexp.new("^[" + @ValidChars4 + "]+/[0-9]+$")
         net_parts = network.split("/")
         return Check4(net_parts[0]) &&
             Netmask.CheckPrefix4(net_parts[1])
-
       # 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
       elsif network =~ Regexp.new("^[" + @ValidChars4 + "]+/[" + @ValidChars4 + "]+$")
         net_parts = network.split("/")
         return Check4(net_parts[0]) &&
             Netmask.Check4(net_parts[1])
-
       # 192.168.0.1, 0.8.55.999
       elsif Check4(network)
         return true
@@ -274,22 +266,19 @@ module Yast
     #   CheckNetwork("::1/257") -> false
     def CheckNetwork6(network)
       generic_check = CheckNetworkShared(network)
-      if !generic_check.nil?
-        return generic_check
+      return generic_check if !generic_check.nil?
 
-        # 2001:db8:0::1/64
-      elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + Netmask.ValidChars6 + "]*$")
+      # 2001:db8:0::1/64
+      if network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + Netmask.ValidChars6 + "]*$")
         net_parts = network.split("/")
         return Check6(net_parts[0]) &&
             Netmask.Check6(net_parts[1])
-
-        # 2001:db8:0::1/ffff:ffff::0
+      # 2001:db8:0::1/ffff:ffff::0
       elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + @ValidChars6 + "]+$")
         net_parts = network.split("/")
         return Check6(net_parts[0]) &&
             Check6(net_parts[1])
       # 2001:db8:0::1
-
       elsif Check6(network)
         return true
       end

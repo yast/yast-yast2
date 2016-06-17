@@ -37,12 +37,11 @@ module UI
 
       loop do
         input = user_input
-        if respond_to?(:"#{input}_handler")
-          send(:"#{input}_handler")
-          return @_finish_dialog_value if @_finish_dialog_flag
-        else
-          raise "Unknown action #{input}"
-        end
+        raise "Unknown action #{input}" unless respond_to?(:"#{input}_handler")
+
+        send(:"#{input}_handler")
+
+        return @_finish_dialog_value if @_finish_dialog_flag
       end
     end
 

@@ -145,16 +145,12 @@ module Yast
         UI.ChangeWidget(Id(:_hw_sum), :Value, descr)
         return nil
       end
-      if @action_callback.nil?
-        ret = Ops.get(event, "ID")
-        if Ops.is_symbol?(ret)
-          return Convert.to_symbol(ret)
-        else
-          return nil
-        end
-      else
-        return @action_callback.call(current, event)
-      end
+    
+      return @action_callback.call(current, event) unless @action_callback.nil?
+
+      ret = Ops.get(event, "ID")
+
+      Ops.is_symbol?(ret) ? Convert.to_symbol(ret) : nil
     end
 
     # internal functions

@@ -335,13 +335,8 @@ module Yast
       ) { |s| s != "" }
       Builtins.y2debug("allowedlist: %1", allowedlist)
       Builtins.y2debug("current: %1", current)
-      if Builtins.size(allowedlist) == 0
-        return true
-      elsif Builtins.contains(allowedlist, current)
-        return true
-      else
-        return false
-      end
+
+      Builtins.size(allowedlist) == 0 || Builtins.contains(allowedlist, current)
     end
 
     # Check if valid architecture
@@ -383,17 +378,10 @@ module Yast
       end
 
       # Defined custom control file
-      if @custom_control_file != ""
-        return name
+      return name if @custom_control_file != ""
 
-        # All standard clients start with "inst_"
-      else
-        if Builtins.issubstring(name, @_client_prefix)
-          return name
-        else
-          return Ops.add(@_client_prefix, name)
-        end
-      end
+      # All standard clients start with "inst_"
+      Builtins.issubstring(name, @_client_prefix) ? name : Ops.add(@_client_prefix, name)
     end
 
     # Return term to be used to run module with CallFunction
@@ -683,9 +671,9 @@ module Yast
           Ops.get_string(workflow, "textdomain", ""),
           label
         )
-      else
-        return Builtins.dgettext(wz_td, label)
       end
+
+      Builtins.dgettext(wz_td, label)
     end
 
     def DisableAllModulesAndProposals(mode, stage)

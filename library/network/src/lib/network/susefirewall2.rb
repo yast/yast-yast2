@@ -281,12 +281,10 @@ module Yast
     #	string error = sformat("Port number %1 is invalid.", port_nr);
     #	if (ReportOnlyOnce(error)) y2error(error);
     def ReportOnlyOnce(what_to_report)
-      if Builtins.contains(@report_only_once, what_to_report)
-        return false
-      else
-        @report_only_once = Builtins.add(@report_only_once, what_to_report)
-        return true
-      end
+      return false if Builtins.contains(@report_only_once, what_to_report)
+
+      @report_only_once = Builtins.add(@report_only_once, what_to_report)
+      true
     end
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
@@ -981,31 +979,28 @@ module Yast
     # @return	[String] zone or "no"
     def GetTrustIPsecAs
       # do not trust
-      if Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "no"
-        return "no"
-        # default value for 'yes" ~= "INT"
-      elsif Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "yes"
-        return "INT"
-      else
-        zone = GetConfigurationStringZone(
-          Ops.get_string(@SETTINGS, "FW_IPSEC_TRUST", "")
-        )
-        # trust as named zone (if known)
-        if IsKnownZone(zone)
-          return zone
-          # unknown zone, change to default value
-        else
-          SetModified()
-          defaultv = GetDefaultValue("FW_IPSEC_TRUST")
-          Builtins.y2warning(
-            "Trust IPsec as '%1' (unknown zone) changed to '%2'",
-            Ops.get_string(@SETTINGS, "FW_IPSEC_TRUST", ""),
-            defaultv
-          )
-          SetTrustIPsecAs(defaultv)
-          return "no"
-        end
-      end
+      return "no" if Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "no"
+
+      # default value for 'yes" ~= "INT"
+      return "INT" if Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "yes"
+
+      zone = GetConfigurationStringZone(
+        Ops.get_string(@SETTINGS, "FW_IPSEC_TRUST", "")
+      )
+
+      # trust as named zone (if known)
+      return zone if IsKnownZone(zone)
+
+      # unknown zone, change to default value
+      SetModified()
+      defaultv = GetDefaultValue("FW_IPSEC_TRUST")
+      Builtins.y2warning(
+        "Trust IPsec as '%1' (unknown zone) changed to '%2'",
+        Ops.get_string(@SETTINGS, "FW_IPSEC_TRUST", ""),
+        defaultv
+      )
+      SetTrustIPsecAs(defaultv)
+      "no"
     end
 
     # Function for getting exported SuSEFirewall configuration
@@ -2396,13 +2391,13 @@ module Yast
       protocol = Builtins.tolower(protocol)
 
       if protocol == ""
-        return ""
+        ""
       elsif Ops.get(@protocol_translations, protocol).nil?
         Builtins.y2error("Unknown protocol: %1", protocol)
         # table item, %1 stands for the buggy protocol name
-        return Builtins.sformat(_("Unknown protocol (%1)"), protocol)
+        Builtins.sformat(_("Unknown protocol (%1)"), protocol)
       else
-        return Ops.get(@protocol_translations, protocol, "")
+        Ops.get(@protocol_translations, protocol, "")
       end
     end
 

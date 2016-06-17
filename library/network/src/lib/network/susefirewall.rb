@@ -172,13 +172,10 @@ module Yast
     def DisableServices
       return false if !SuSEFirewallIsInstalled()
 
-      if Service.Disable(@firewall_service)
-        return true
-      else
-        # TRANSLATORS: a popup error message
-        Report.LongError(Service.Error)
-        return false
-      end
+      return true if Service.Disable(@firewall_service)
+
+      Report.LongError(Service.Error)
+      false
     end
 
     # Function determines if all SuSEFirewall scripts are enabled in

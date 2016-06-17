@@ -1320,13 +1320,7 @@ module Yast
     #  @see #Parse
     def Command
       # if we are done already, return the result
-      if @done
-        if @aborted
-          return { "command" => "abort" }
-        else
-          return { "command" => "exit" }
-        end
-      end
+      return { "command" => @aborted ? "abort" : "exit" } if @done
 
       # there is a command in the cache
       if Builtins.size(@commandcache) != 0
@@ -1352,13 +1346,7 @@ module Yast
             break if @done
           end
 
-          if @done
-            if @aborted
-              return { "command" => "abort" }
-            else
-              return { "command" => "exit" }
-            end
-          end
+          return { "command" => @aborted ? "abort" : "exit" } if @done
 
           # we are not done, return the command asked back to module
           result = deep_copy(@commandcache)

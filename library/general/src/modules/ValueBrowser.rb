@@ -54,18 +54,18 @@ module Yast
     def FormatSimpleType(variable, indent)
       variable = deep_copy(variable)
       if Ops.is_void?(variable)
-        return Builtins.sformat("%2%1 (void)", variable, indent)
+        Builtins.sformat("%2%1 (void)", variable, indent)
       elsif Ops.is_boolean?(variable)
-        return Builtins.sformat("%2%1 (boolean)", variable, indent)
+        Builtins.sformat("%2%1 (boolean)", variable, indent)
       elsif Ops.is_integer?(variable)
-        return Builtins.sformat(
+        Builtins.sformat(
           "%2%1, %3 (integer)",
           variable,
           indent,
           Builtins.tohexstring(Convert.to_integer(variable))
         )
       elsif Ops.is_float?(variable)
-        return Builtins.sformat("%2%1 (float)", variable, indent)
+        Builtins.sformat("%2%1 (float)", variable, indent)
       elsif Ops.is_string?(variable)
         return Builtins.sformat(
           "%2%1 (string)",
@@ -73,15 +73,15 @@ module Yast
           indent
         )
       elsif Ops.is_locale?(variable)
-        return Builtins.sformat("%2%1 (locale)", variable, indent)
+        Builtins.sformat("%2%1 (locale)", variable, indent)
       elsif Ops.is_byteblock?(variable)
-        return Builtins.sformat("%2%1 (byteblock)", variable, indent)
+        Builtins.sformat("%2%1 (byteblock)", variable, indent)
       elsif Ops.is_symbol?(variable)
-        return Builtins.sformat("%2%1 (symbol)", variable, indent)
+        Builtins.sformat("%2%1 (symbol)", variable, indent)
       elsif Ops.is_path?(variable)
-        return Builtins.sformat("%2%1 (path)", variable, indent)
+        Builtins.sformat("%2%1 (path)", variable, indent)
       else
-        return nil
+        nil
       end
     end
 
@@ -94,9 +94,10 @@ module Yast
     def BrowseTreeHelper(variable, indent)
       variable = deep_copy(variable)
       simple = FormatSimpleType(variable, indent)
-      if !simple.nil?
-        return Item(simple)
-      elsif Ops.is_list?(variable)
+
+      return Item(simple) if !simple.nil?
+
+      if Ops.is_list?(variable)
         items = []
         Builtins.foreach(Convert.to_list(variable)) do |i|
           items = Builtins.add(items, BrowseTreeHelper(i, ""))

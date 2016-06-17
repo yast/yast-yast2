@@ -355,12 +355,10 @@ module Yast
             return nil
           end
           # yes-no popup
-          if !Popup.YesNo(_("Specified file exists. Rewrite it?"))
-            return nil
-          else
-            DeleteTSIGKeyFromDisk(new_filename)
-            RemoveTSIGKeyFile(new_filename)
-          end
+          return nil unless Popup.YesNo(_("Specified file exists. Rewrite it?"))
+
+          DeleteTSIGKeyFromDisk(new_filename)
+          RemoveTSIGKeyFile(new_filename)
         end
         if key2.nil? || key2 == ""
           UI.SetFocus(Id("_cwm_new_key_id"))

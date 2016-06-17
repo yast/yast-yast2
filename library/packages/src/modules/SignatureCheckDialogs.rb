@@ -139,13 +139,8 @@ module Yast
 
       )
 
-      # Stored in the configuration
-      if !stored.nil?
-        return stored
-      else
-        # Unknown status, return default
-        return true
-      end
+      # Stored in the configuration?
+      stored.nil? ? true : stored
     end
 
     # Function sets the default dialog return value
@@ -330,19 +325,18 @@ module Yast
         )
       end
 
-      # UI can show images
-      if @has_local_image_support
-        if Ops.get(@msg_icons, msg_type).nil?
-          Builtins.y2warning("Message type %1 not defined", msg_type)
-          return Empty()
-        end
-        return MarginBox(
+      # UI cannot show images
+      return Empty() unless @has_local_image_support
+
+      if Ops.get(@msg_icons, msg_type).nil?
+        Builtins.y2warning("Message type %1 not defined", msg_type)
+        Empty()
+      else
+        MarginBox(
           1,
           0.5,
           Image(Ops.get(@msg_icons, msg_type, ""), "[!]")
         )
-      else
-        return Empty()
       end
     end
 

@@ -133,11 +133,8 @@ module Yast
       end
 
       def verify!
-        if path.exist?
-          path
-        else
-          raise "Hook search path #{path} does not exists"
-        end
+        return path if path.exist?
+        raise "Hook search path #{path} does not exists"
       end
 
     private

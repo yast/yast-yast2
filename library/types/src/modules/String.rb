@@ -304,11 +304,7 @@ module Yast
 
       pad = padding * (length - text.size)
 
-      if alignment == :right
-        return pad + text
-      else
-        return text + pad
-      end
+      alignment == :right ? (pad + text) : (text + pad)
     end
 
     # Add spaces after the text to make it long enough
@@ -738,13 +734,12 @@ module Yast
 
         break unless len # funny backward compatibility that for nil len remove one element
 
-        if ret.size > len
-          # still too long, remove the ellipsis and start a new iteration
-          dir.delete(ellipsis)
-        else
-          # the size is OK
-          break
-        end
+        # the size is OK
+        break unless ret.size > len
+
+        # still too long, remove the ellipsis and start a new iteration
+        dir.delete(ellipsis)
+
         break if dir.empty?
       end
 

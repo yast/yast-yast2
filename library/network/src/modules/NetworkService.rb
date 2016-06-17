@@ -274,26 +274,24 @@ module Yast
     #
     # @return [Boolean] continue
     def ConfirmNetworkManager
-      if !@already_asked_for_NetworkManager && network_manager?
-        # TRANSLATORS: pop-up question when reading the service configuration
-        cont = Popup.ContinueCancel(
-          _(
-            "Your network interfaces are currently controlled by NetworkManager\n" \
-              "but the service to configure might not work well with it.\n" \
-              "\n" \
-              "Really continue?"
-          )
-        )
-        Builtins.y2milestone(
-          "Network is controlled by NetworkManager, user decided %1...",
-          cont ? "to continue" : "not to continue"
-        )
-        @already_asked_for_NetworkManager = true
+      return true unless !@already_asked_for_NetworkManager && network_manager?
 
-        return cont
-      else
-        return true
-      end
+      # TRANSLATORS: pop-up question when reading the service configuration
+      cont = Popup.ContinueCancel(
+        _(
+          "Your network interfaces are currently controlled by NetworkManager\n" \
+            "but the service to configure might not work well with it.\n" \
+            "\n" \
+            "Really continue?"
+        )
+      )
+      Builtins.y2milestone(
+        "Network is controlled by NetworkManager, user decided %1...",
+        cont ? "to continue" : "not to continue"
+      )
+      @already_asked_for_NetworkManager = true
+
+      cont
     end
 
     def isNetworkRunning
@@ -342,29 +340,27 @@ module Yast
 
       log.info "RunningNetworkPopup #{network_running}"
 
-      if network_running
-        return true
-      else
-        error_text = if Stage.initial
-                       _(
-                         "No running network detected.\n" \
-                         "Restart installation and configure network in Linuxrc\n" \
-                         "or continue without network."
-                       )
-                     else
-                       _(
-                         "No running network detected.\n" \
-                         "Configure network with YaST or Network Manager plug-in\n" \
-                         "and start this module again\n" \
-                         "or continue without network."
-                       )
-                     end
+      return true if network_running
 
-        ret = Popup.ContinueCancel(error_text)
+      error_text = if Stage.initial
+                     _(
+                       "No running network detected.\n" \
+                       "Restart installation and configure network in Linuxrc\n" \
+                       "or continue without network."
+                     )
+                   else
+                     _(
+                       "No running network detected.\n" \
+                       "Configure network with YaST or Network Manager plug-in\n" \
+                       "and start this module again\n" \
+                       "or continue without network."
+                     )
+                   end
 
-        log.error "Network not runing!"
-        return ret
-      end
+      ret = Popup.ContinueCancel(error_text)
+
+      log.error "Network not runing!"
+      ret
     end
 
   private

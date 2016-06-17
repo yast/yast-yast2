@@ -70,13 +70,14 @@ module Yast
 
       if sub_vendor != "" && sub_device != ""
         return Ops.add(Ops.add(sub_vendor, "\n"), sub_device)
-      else
-        vendor = Ops.get_string(hardware_entry, "vendor", "")
-        return Ops.add(
-          Ops.add(vendor, vendor != "" ? "\n" : ""),
-          Ops.get_string(hardware_entry, "device", "")
-        )
       end
+
+      vendor = Ops.get_string(hardware_entry, "vendor", "")
+    
+      Ops.add(
+        Ops.add(vendor, vendor != "" ? "\n" : ""),
+        Ops.get_string(hardware_entry, "device", "")
+      )
     end
 
     # @param [Hash] lmap	map	map of language codes and translations

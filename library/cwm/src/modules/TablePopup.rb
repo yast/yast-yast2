@@ -195,11 +195,8 @@ module Yast
         from: "any",
         to:   "string (map, any)"
       )
-      if !toEval.nil?
-        return toEval.call(descr, opt_id)
-      else
-        return Convert.to_string(opt_id)
-      end
+
+      toEval.nil? ? Convert.to_string(opt_id) : toEval.call(descr, opt_id)
     end
 
     # Get option description map from the key

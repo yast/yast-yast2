@@ -239,22 +239,22 @@ module Yast
       sys_dir_path = Builtins.sformat("/sys/class/net/%1/", dev)
 
       if FileUtils.Exists(Ops.add(sys_dir_path, "wireless"))
-        return "wlan"
+        "wlan"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "phy80211"))
-        return "wlan"
+        "wlan"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "bridge"))
-        return "br"
+        "br"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "bonding"))
-        return "bond"
+        "bond"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "tun_flags"))
-        return "tap"
+        "tap"
       elsif FileUtils.Exists(Ops.add("/proc/net/vlan/", dev))
-        return "vlan"
+        "vlan"
       elsif FileUtils.Exists(Ops.add("/sys/devices/virtual/net/", dev)) &&
           Builtins.regexpmatch(dev, "dummy.*")
-        return "dummy"
+        "dummy"
       else
-        return "eth"
+        "eth"
       end
     end
 
@@ -263,11 +263,11 @@ module Yast
       sys_dir_path = Builtins.sformat("/sys/class/net/%1/", dev)
 
       if FileUtils.Exists(Ops.add(sys_dir_path, "bonding"))
-        return "bond"
+        "bond"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "create_child"))
-        return "ib"
+        "ib"
       else
-        return "ibchild"
+        "ibchild"
       end
     end
 
@@ -518,17 +518,15 @@ module Yast
     # @param [String] dev unique device string
     # @return true if connected
     def IsConnected(dev)
-      if !Mode.testsuite
-        cmd = Ops.add(Ops.add("cat /sys/class/net/", dev), "/carrier")
+      # Assume all devices are connected in testsuite mode
+      return true if Mode.testsuite
 
-        ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
-        Builtins.y2milestone("Sysfs returned %1", ret)
+      cmd = "cat /sys/class/net/#{dev}/carrier"
 
-        return Builtins.deletechars(Ops.get_string(ret, "stdout", ""), "\n") == "1" ? true : false
-      else
-        # Assume all devices are connected in testsuite mode
-        return true
-      end
+      ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
+      Builtins.y2milestone("Sysfs returned %1", ret)
+
+      Builtins.deletechars(Ops.get_string(ret, "stdout", ""), "\n") == "1"
     end
 
     # Return real type of the device (incl. PCMCIA, USB, ...)

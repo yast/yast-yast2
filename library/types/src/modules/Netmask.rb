@@ -43,12 +43,10 @@ module Yast
     def CheckPrefix4(prefix)
       return false if prefix.nil? || prefix == ""
       # <0,32>
-      if Builtins.regexpmatch(prefix, "^[0-9]+$")
-        nm = Builtins.tointeger(prefix)
-        return Ops.greater_or_equal(nm, 0) && Ops.less_or_equal(nm, 32)
-      else
-        return false
-      end
+      return false unless Builtins.regexpmatch(prefix, "^[0-9]+$")
+
+      nm = Builtins.tointeger(prefix)
+      Ops.greater_or_equal(nm, 0) && Ops.less_or_equal(nm, 32)
     end
 
     # Check the IPv4 netmask
