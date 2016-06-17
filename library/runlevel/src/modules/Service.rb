@@ -61,19 +61,19 @@ module Yast
 
       systemd_command =
         case command_name
-        when "show"    then :show
-        when "status"  then :status
-        when "start"   then :start
-        when "stop"    then :stop
-        when "enable"  then :enable
-        when "disable" then :disable
-        when "restart" then :restart
-        when "reload"  then :reload
-        when "try-restart" then :try_restart
-        when "reload-or-restart" then :reload_or_restart
-        when "reload-or-try-restart" then :reload_or_try_restart
-        else
-          raise "Command '#{command_name}' not supported"
+      when "show"    then :show
+      when "status"  then :status
+      when "start"   then :start
+      when "stop"    then :stop
+      when "enable"  then :enable
+      when "disable" then :disable
+      when "restart" then :restart
+      when "reload"  then :reload
+      when "try-restart" then :try_restart
+      when "reload-or-restart" then :reload_or_restart
+      when "reload-or-try-restart" then :reload_or_try_restart
+      else
+        raise "Command '#{command_name}' not supported"
       end
 
       result = service.send(systemd_command)
@@ -360,17 +360,17 @@ module Yast
 
       result =
         case param
-        when "start", "stop", "status", "reload", "restart", "enable", "disable"
-          service.send(param)
-        when "try-restart"
-          service.try_restart
-        when "reload-or-restart"
-          service.reload_or_restart
-        when "reload-or-try-restart"
-          service.reload_or_try_restart
-        else
-          log.error "Unknown action '#{param}' for service '#{name}'"
-          false
+      when "start", "stop", "status", "reload", "restart", "enable", "disable"
+        service.send(param)
+      when "try-restart"
+        service.try_restart
+      when "reload-or-restart"
+        service.reload_or_restart
+      when "reload-or-try-restart"
+        service.reload_or_try_restart
+      else
+        log.error "Unknown action '#{param}' for service '#{name}'"
+        false
       end
 
       result ? 0 : -1
