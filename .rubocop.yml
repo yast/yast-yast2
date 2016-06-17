@@ -11,6 +11,9 @@ Metrics/BlockNesting:
 Metrics/ClassLength:
   Max: 2711
 
+Metrics/ModuleLength:
+  Max: 270
+
 Metrics/CyclomaticComplexity:
   Max: 59
 
