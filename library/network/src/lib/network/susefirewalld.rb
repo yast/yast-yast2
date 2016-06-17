@@ -1161,7 +1161,7 @@ module Yast
             end
           end
         # Is it a port?
-        elsif s.match(/\d+((:|-)\d+)?/)
+        elsif s =~ /\d+((:|-)\d+)?/
           Builtins.y2debug("Adding port %1", s)
           ports << s
         # Is it something else?
