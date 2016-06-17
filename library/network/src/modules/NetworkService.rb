@@ -125,7 +125,7 @@ module Yast
       PackageSystem.Installed(BACKEND_PKG_NAMES[backend])
     end
 
-    alias_method :is_backend_available, :backend_available?
+    alias is_backend_available backend_available?
 
     # Checks if configuration is managed by NetworkManager
     #
@@ -135,25 +135,25 @@ module Yast
       cached_service?(:network_manager)
     end
 
-    alias_method :is_network_manager, :network_manager?
+    alias is_network_manager network_manager?
 
     def netconfig?
       cached_service?(:netconfig)
     end
 
-    alias_method :is_netconfig, :netconfig?
+    alias is_netconfig netconfig?
 
     def wicked?
       cached_service?(:wicked)
     end
 
-    alias_method :is_wicked, :wicked?
+    alias is_wicked wicked?
 
     def disabled?
       cached_service?(nil)
     end
 
-    alias_method :is_disabled, :disabled?
+    alias is_disabled disabled?
 
     def use_network_manager
       Read()
