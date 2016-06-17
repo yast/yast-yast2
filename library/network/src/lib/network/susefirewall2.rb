@@ -1654,7 +1654,7 @@ module Yast
         if !IsStarted()
           Builtins.y2milestone("Starting firewall services")
           return StartServices()
-          # Started - restart it
+        # Started - restart it
         # modified - restart it, or ...
         # bugzilla #186186
         # If any RPC service is configured to be allowed, always restart the firewall

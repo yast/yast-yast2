@@ -238,7 +238,7 @@ module Yast
             "port_ranges",
             Builtins.add(Ops.get(ret, "port_ranges", []), port)
           )
-          # is a normal port
+        # is a normal port
         # find also aliases
         elsif with_aliases
           Ops.set(
