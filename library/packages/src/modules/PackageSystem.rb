@@ -417,7 +417,7 @@ module Yast
           # error report
           Report.Error(_("Installing required packages failed."))
         else
-          success = Popup.ContinueCancel(
+          Popup.ContinueCancel(
             # continue/cancel popup
             _(
               "Installing required packages failed. If you continue\n" \
@@ -432,7 +432,7 @@ module Yast
           _("Cannot continue without installing required packages.")
         )
       else
-        success = Popup.ContinueCancel(
+        Popup.ContinueCancel(
           # continue/cancel popup
           _(
             "If you continue without installing required \npackages, YaST may not work properly.\n"
