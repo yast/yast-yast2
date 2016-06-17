@@ -1067,8 +1067,13 @@ module Yast
 
     def write_zone_masquerade(zone)
       return nil if !zone_attr_modified?(zone, :masquerade)
-      get_zone_attr(zone, :masquerade) ? @fwd_api.add_masquerade(zone) :
+
+      if get_zone_attr(zone, :masquerade)
+        @fwd_api.add_masquerade(zone)
+      else
         @fwd_api.remove_masquerade(zone)
+      end
+
       del_zone_modified(zone, :masquerade)
     end
 
