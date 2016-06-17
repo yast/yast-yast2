@@ -73,7 +73,7 @@ module Yast
       end
 
       vendor = Ops.get_string(hardware_entry, "vendor", "")
-    
+
       Ops.add(
         Ops.add(vendor, vendor != "" ? "\n" : ""),
         Ops.get_string(hardware_entry, "device", "")

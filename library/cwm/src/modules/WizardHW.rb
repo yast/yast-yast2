@@ -145,7 +145,7 @@ module Yast
         UI.ChangeWidget(Id(:_hw_sum), :Value, descr)
         return nil
       end
-    
+
       return @action_callback.call(current, event) unless @action_callback.nil?
 
       ret = Ops.get(event, "ID")
