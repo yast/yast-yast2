@@ -80,9 +80,7 @@ module Yast
         Builtins.sformat("%2%1 (symbol)", variable, indent)
       elsif Ops.is_path?(variable)
         Builtins.sformat("%2%1 (path)", variable, indent)
-      else
-        nil
-      end
+            end
     end
 
     # Creates tree with contents of variable. This function creates the tree items and

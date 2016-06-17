@@ -183,9 +183,7 @@ module Yast
         "socket"
       elsif Ops.get_boolean(info, "ischr", false) == true
         "chr_device"
-      else
-        nil
-      end
+            end
     end
 
     # Function returns the type of requested file/directory.
@@ -210,9 +208,7 @@ module Yast
         "link"
       elsif Ops.get_boolean(info, "ischr", false) == true
         "chr_device"
-      else
-        nil
-      end
+            end
     end
 
     # Function which returns the size of requested file/directory.
