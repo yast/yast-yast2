@@ -182,8 +182,7 @@ module Yast2
       cmd = format(CREATE_SNAPSHOT_CMD,
         root:          target_root,
         snapshot_type: snapshot_type,
-        description:   description
-                  )
+        description:   description)
       cmd << " --pre-num #{previous.number}" if previous
       cmd << " --userdata \"important=yes\"" if important
 

@@ -1187,7 +1187,8 @@ module Yast
       get_zone_attr(zone, :services).each do |s|
         Builtins.y2debug(
           "Examinining service %2_%1 for removal",
-          protocol, s)
+          protocol, s
+        )
         if protocol == "udp" &&
             SuSEFirewallServices.GetNeededTCPPorts(s).empty? &&
             !SuSEFirewallServices.GetNeededUDPPorts(s).empty?
@@ -1247,7 +1248,8 @@ module Yast
         # Remove old services and set the new ones.
         Builtins.y2debug(
           "Port %1 will be added to the %2 zone",
-          port_proto, zone)
+          port_proto, zone
+        )
         add_to_zone_attr(zone, :ports, port_proto)
         add_zone_modified(zone, :ports)
       end

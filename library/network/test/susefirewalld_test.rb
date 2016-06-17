@@ -300,7 +300,8 @@ describe FakeFirewallD do
       it "refuses to set an invalid service to a zone" do
         # mock a running backend
         expect { subject.SetServices(["foobar"], ["eth0"], true) }.to raise_exception(
-          Yast::SuSEFirewalServiceNotFound, /Service with name/)
+          Yast::SuSEFirewalServiceNotFound, /Service with name/
+        )
       end
 
       it "knows about all the new TCP services a zone" do
