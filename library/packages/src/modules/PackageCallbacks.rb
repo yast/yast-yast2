@@ -572,13 +572,13 @@ module Yast
 
       if Builtins.issubstring(error, "ERROR(InstSrc:E_bad_id)")
         error =
-        # error report
-        _(
-          "<p>The repository at the specified URL now provides a different media ID.\n" \
-          "If the URL is correct, this indicates that the repository content has changed. To \n" \
-          "continue using this repository, start <b>Installation Repositories</b> from \n" \
-          "the YaST control center and refresh the repository.</p>\n"
-        )
+          # error report
+          _(
+            "<p>The repository at the specified URL now provides a different media ID.\n" \
+            "If the URL is correct, this indicates that the repository content has changed. To \n" \
+            "continue using this repository, start <b>Installation Repositories</b> from \n" \
+            "the YaST control center and refresh the repository.</p>\n"
+          )
       end
 
       if wanted_label == ""
