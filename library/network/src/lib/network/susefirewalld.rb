@@ -1255,8 +1255,6 @@ module Yast
       end
     end
 
-  public
-
     publish variable: :firewall_service, type: "string", private: true
     publish variable: :FIREWALL_PACKAGE, type: "const string"
     publish variable: :SETTINGS, type: "map <string, any>", private: true
