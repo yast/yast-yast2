@@ -75,11 +75,12 @@ module Yast
       DUMP("Reseting again")
       TEST(->() { Initrd.Reset }, [@READ, {}, {}], 0)
       DUMP("Adding ne2k")
-      TEST(->() { Initrd.AddModule("ne2k", "io=0x300, irq=5") }, [
-        @READ,
-        {},
-        {}
-      ], 0)
+      TEST(->() { Initrd.AddModule("ne2k", "io=0x300, irq=5") },
+        [
+          @READ,
+          {},
+          {}
+        ], 0)
       TEST(->() { Initrd.ListModules }, [@READ, {}, {}], 0)
       DUMP("Removing lvmmod")
       TEST(->() { Initrd.RemoveModule("lvmmod") }, [@READ, {}, {}], 0)

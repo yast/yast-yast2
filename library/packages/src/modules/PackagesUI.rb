@@ -676,11 +676,12 @@ module Yast
       dialog = VBox(
         RichText(Id(:rtext), summary_str),
         Left(
-          ComboBox(Id(:action), _("After Installing Packages"), [
-            Item(Id("summary"), _("Show This Report"), current_action == "summary"),
-            Item(Id("close"), _("Finish"), current_action == "close"),
-            Item(Id("restart"), _("Continue in the Software Manager"), current_action == "restart")
-          ])
+          ComboBox(Id(:action), _("After Installing Packages"),
+            [
+              Item(Id("summary"), _("Show This Report"), current_action == "summary"),
+              Item(Id("close"), _("Finish"), current_action == "close"),
+              Item(Id("restart"), _("Continue in the Software Manager"), current_action == "restart")
+            ])
         )
       )
 

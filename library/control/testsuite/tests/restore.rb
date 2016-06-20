@@ -40,9 +40,10 @@ module Yast
         }
       }
 
-      TEST(->() { ProductFeatures.GetStringFeature("globals", "ui_mode") }, [
-        @READ
-      ], 0)
+      TEST(->() { ProductFeatures.GetStringFeature("globals", "ui_mode") },
+        [
+          @READ
+        ], 0)
       TEST(lambda do
         ProductFeatures.GetStringFeature("globals", "enable_autologin")
       end, [
