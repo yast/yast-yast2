@@ -561,9 +561,9 @@ module Yast
       Builtins.foreach(modules) do |m|
         client = if Stage.firstboot
                    Ops.get_string(m, "name", "dummy")
-                 elsif Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
+        elsif Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
                    Ops.get_string(m, "name", "dummy")
-                 else
+        else
                    Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
         end
         # FIXME: what about the ruby files?
@@ -858,7 +858,7 @@ module Yast
                           Ops.get_string(m, "textdomain", ""),
                           Ops.get_string(m, "label", "")
                         )
-                      else
+            else
                         Builtins.dgettext(
                           wizard_textdomain,
                           Ops.get_string(m, "label", "")
@@ -874,7 +874,7 @@ module Yast
                         Ops.get_string(m, "textdomain", ""),
                         Ops.get_string(m, "label", "")
                       )
-                    else
+            else
                       Builtins.dgettext(
                         wizard_textdomain,
                         Ops.get_string(m, "label", "")
@@ -1073,7 +1073,7 @@ module Yast
                                 final_proposals,
                                 [Ops.add(proposal_name, "_proposal"), order_value]
                               )
-                            else
+          else
                               Builtins.add(
                                 final_proposals,
                                 [proposal_name, order_value]

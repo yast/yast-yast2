@@ -261,7 +261,7 @@ module Yast
                        Convert.to_boolean(
                          SCR.Execute(path(".target.modprobe"), modulename, moduleargs)
                        )
-                     else
+      else
                        Convert.to_boolean(
                          SCR.Execute(path(".target.insmod"), modulename, moduleargs)
                        )

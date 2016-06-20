@@ -800,11 +800,11 @@ module Yast
           end
           step = if current_index == 0
                    1
-                 elsif Ops.add(current_index, 1) == Builtins.size(id_list)
+          elsif Ops.add(current_index, 1) == Builtins.size(id_list)
                    -1
-                 elsif Ops.greater_or_equal(current_index, previous_index)
+          elsif Ops.greater_or_equal(current_index, previous_index)
                    1
-                 else
+          else
                    -1
           end
           new_index = Ops.add(current_index, step)
@@ -860,19 +860,19 @@ module Yast
 
       add_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
                      PushButton(Id(:_tp_add), Opt(:key_F3), Label.AddButton)
-                   else
+      else
                      HSpacing(0)
       end
 
       edit_button = if Ops.get_boolean(attrib, "edit_button", true)
                       PushButton(Id(:_tp_edit), Opt(:key_F4), Label.EditButton)
-                    else
+      else
                       HSpacing(0)
       end
 
       delete_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
                         PushButton(Id(:_tp_delete), Opt(:key_F5), Label.DeleteButton)
-                      else
+      else
                         HSpacing(0)
       end
 
@@ -885,7 +885,7 @@ module Yast
                          # table header
                          _("Value")
                        )
-                     else
+      else
                        Header(
                          # table header
                          _("Option"),
@@ -942,7 +942,7 @@ module Yast
                     PushButton(Id(:_tp_down), _("&Down")),
                     VStretch()
                   )
-                else
+      else
                   HSpacing(0)
       end
 

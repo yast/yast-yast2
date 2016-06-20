@@ -598,7 +598,7 @@ module Yast
                            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
                            # %3 side (e.g. "Side A")
                            Builtins.sformat("%1 (Disc %2, %3)", product, wanted, side)
-                         else
+          else
                            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
                            # %3 side (e.g. "Side A")
                            Builtins.sformat("%1 (Medium %2, %3)", product, wanted, side)
@@ -607,7 +607,7 @@ module Yast
           wanted_label = if is_disc
                            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
                            Builtins.sformat(_("%1 (Disc %2)"), product, wanted)
-                         else
+          else
                            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
                            Builtins.sformat(_("%1 (Medium %2)"), product, wanted)
           end
@@ -715,7 +715,7 @@ module Yast
           # reset the counter, use logarithmic back-off with maximum limit
           @current_retry_timeout = if @current_retry_attempt < 10
                                      RETRY_TIMEOUT * (1 << @current_retry_attempt)
-                                   else
+          else
                                      RETRY_MAX_TIMEOUT
           end
 
@@ -1761,7 +1761,7 @@ module Yast
 
           format = if textmode
                      Ops.add("%1 - ", @download_file)
-                   else
+          else
                      Ops.add(@download_file, " - %1")
           end
 

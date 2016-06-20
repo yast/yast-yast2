@@ -348,7 +348,7 @@ module Yast
                        "Restart installation and configure network in Linuxrc\n" \
                        "or continue without network."
                      )
-                   else
+      else
                      _(
                        "No running network detected.\n" \
                        "Configure network with YaST or Network Manager plug-in\n" \

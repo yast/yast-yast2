@@ -333,7 +333,7 @@ module Yast
       )
       help = if Builtins.haskey(settings, "help")
                Ops.get_string(settings, "help", "")
-             else
+      else
                xinetd_available ? AutoStartXinetdHelp() : AutoStartHelp()
       end
 
@@ -592,7 +592,7 @@ module Yast
 
       help = if Builtins.haskey(settings, "help")
                Ops.get_string(settings, "help", "")
-             else
+      else
                StartStopHelp(display_save_now)
       end
 
@@ -602,7 +602,7 @@ module Yast
                                  Opt(:hstretch),
                                  save_now_button
                                )
-                             else
+      else
                                VBox()
       end
 
@@ -770,7 +770,7 @@ module Yast
       )
       help = if Builtins.haskey(settings, "help")
                Ops.get_string(settings, "help", "")
-             else
+      else
                EnableLdapHelp()
       end
 

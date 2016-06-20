@@ -253,7 +253,7 @@ module Yast
               # not using dedicated agent in order to use the same parser for cmdline
               # independently on whether it comes from /proc/cmdline or /etc/install.inf
               Convert.to_string(SCR.Read(path(".target.string"), "/proc/cmdline"))
-            else
+      else
               Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
       end
 
@@ -424,9 +424,9 @@ module Yast
 
         @kernel_packages = if Arch.board_iseries
                              ["kernel-iseries64"]
-                           elsif Arch.ppc32
+        elsif Arch.ppc32
                              ["kernel-default"]
-                           else
+        else
                              ["kernel-ppc64"]
         end
       elsif Arch.ia64

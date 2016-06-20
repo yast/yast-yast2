@@ -116,7 +116,7 @@ module Yast
         oldval = Convert.to_string(SCR.Read(Builtins.add(config, var)))
         newval = if Ops.is_boolean?(val)
                    Convert.to_boolean(val) ? "yes" : "no"
-                 else
+        else
                    Builtins.sformat("%1", val)
         end
         if oldval.nil? || oldval != newval

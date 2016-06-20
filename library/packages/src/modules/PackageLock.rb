@@ -58,7 +58,7 @@ module Yast
                 _(
                   "PackageKit is still running (probably busy).\nAsk PackageKit to quit again?"
                 )
-              else
+        else
                 _(
                   "PackageKit is blocking software management.\n" \
                     "This happens when the updater applet or another software management\n" \

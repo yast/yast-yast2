@@ -143,7 +143,7 @@ module Yast
       # First, let's strip off 'service:' from service name if present.
       tmp_service = if service.include?("service:")
                       service.partition(":")[2]
-                    else
+      else
                       service
       end
 

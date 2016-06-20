@@ -337,19 +337,19 @@ module Yast
       ValidateTableAttr(attrib)
       add_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
                      PushButton(Id(:_tw_add), Opt(:key_F3, :notify), Label.AddButton)
-                   else
+      else
                      HSpacing(0)
       end
 
       edit_button = if Ops.get_boolean(attrib, "edit_button", true)
                       PushButton(Id(:_tw_edit), Opt(:key_F4, :notify), Label.EditButton)
-                    else
+      else
                       HSpacing(0)
       end
 
       delete_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
                         PushButton(Id(:_tw_delete), Opt(:key_F5, :notify), Label.DeleteButton)
-                      else
+      else
                         HSpacing(0)
       end
 
@@ -361,7 +361,7 @@ module Yast
                           Opt(:notify),
                           Ops.get_string(attrib, "custom_button_name", "Custom button")
                         )
-                      else
+      else
                         HSpacing(0)
       end
 
@@ -374,7 +374,7 @@ module Yast
                     PushButton(Id(:_tw_down), Opt(:notify), _("&Down")),
                     VStretch()
                   )
-                else
+      else
                   HSpacing(0)
       end
 

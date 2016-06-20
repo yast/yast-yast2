@@ -104,7 +104,7 @@ module Yast
       text = if install
                # the message is followed by list of required packages
                _("These packages need to be installed:")
-             else
+      else
                # the message is followed by list of required packages
                _("These packages need to be removed:")
       end
@@ -146,7 +146,7 @@ module Yast
 
       doit = if Mode.commandline
                CommandLine.Interactive ? AskPackages(packs, install) : true
-             else
+      else
                Popup.AnyQuestionRichText(
                  "",
                  text,

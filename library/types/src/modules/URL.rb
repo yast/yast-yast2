@@ -376,7 +376,7 @@ module Yast
         # enclose an IPv6 address in square brackets
         url = if IP.Check6(Ops.get_string(tokens, "host", ""))
                 Builtins.sformat("%1[%2]", url, Ops.get_string(tokens, "host", ""))
-              else
+        else
                 Builtins.sformat("%1%2", url, Ops.get_string(tokens, "host", ""))
         end
       end
@@ -415,7 +415,7 @@ module Yast
                     1
                   )
                 )
-              else
+        else
                 Builtins.sformat(
                   "%1%2",
                   url,

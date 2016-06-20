@@ -291,7 +291,7 @@ module Yast
 
       sys_type = if sys_type
                    Builtins.regexpsub(sys_type, "(.*)\n", "\\1")
-                 else
+      else
                    ""
       end
 
@@ -1044,7 +1044,7 @@ module Yast
                        # devices == $[] is used in lan_auto "Reset" as a way how to
                        # rollback changes imported from AY
                        false
-                     else
+      else
                        true
       end
 
@@ -1457,7 +1457,7 @@ module Yast
 
       t = if !IsEmpty(newdev)
             GetTypeFromIfcfgOrName(name, newdev)
-          else
+      else
             GetType(name)
       end
 
