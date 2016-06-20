@@ -105,12 +105,12 @@ module Yast
       if status == :not_installed
         # bnc #429861
         label = if Stage.initial
-                  # label
+          # label
           _(
             "Firewall cannot be adjusted during first stage installation."
           )
         else
-                  # label
+          # label
           _("Firewall package is not installed.")
         end
       elsif status == :off

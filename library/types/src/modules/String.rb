@@ -412,7 +412,7 @@ module Yast
               character = if backslash_seq[nextcharacter]
                 backslash_seq[nextcharacter]
               else
-                            # ignore backslash in invalid backslash sequence
+                # ignore backslash in invalid backslash sequence
                 nextcharacter
               end
 

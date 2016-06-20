@@ -595,20 +595,20 @@ module Yast
           end
           wanted = Ops.shift_right(Ops.add(wanted, 1), 1)
           wanted_label = if is_disc
-                           # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
-                           # %3 side (e.g. "Side A")
+            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
+            # %3 side (e.g. "Side A")
             Builtins.sformat("%1 (Disc %2, %3)", product, wanted, side)
           else
-                           # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
-                           # %3 side (e.g. "Side A")
+            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
+            # %3 side (e.g. "Side A")
             Builtins.sformat("%1 (Medium %2, %3)", product, wanted, side)
           end
         else
           wanted_label = if is_disc
-                           # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
+            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
             Builtins.sformat(_("%1 (Disc %2)"), product, wanted)
           else
-                           # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
+            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
             Builtins.sformat(_("%1 (Medium %2)"), product, wanted)
           end
         end

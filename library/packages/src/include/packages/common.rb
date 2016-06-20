@@ -102,10 +102,10 @@ module Yast
       packs = deep_copy(packs)
       pkgs = Builtins.mergestring(packs, ", ")
       text = if install
-               # the message is followed by list of required packages
+        # the message is followed by list of required packages
         _("These packages need to be installed:")
       else
-               # the message is followed by list of required packages
+        # the message is followed by list of required packages
         _("These packages need to be removed:")
       end
 
