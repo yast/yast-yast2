@@ -364,11 +364,7 @@ module Yast
 
       type = device_type(dev) if type.nil?
 
-      Builtins.y2debug(
-        "GetTypeFromIfcfgOrName: device='%1', type='%2'",
-        dev,
-        type
-      )
+      log.debug("GetTypeFromIfcfgOrName: device='#{dev}' type='#{type}'")
 
       type
     end
@@ -432,7 +428,7 @@ module Yast
     #
     # Obsolete: It is incompatible with new device naming scheme.
     def device_num(dev)
-      Builtins.y2warning("Do not use device_num.")
+      log.warn("Do not use device_num.")
       ifcfg_part(dev, "2")
     end
 
@@ -500,8 +496,7 @@ module Yast
     # @return true if hotpluggable
     def IsHotplug(type)
       return false if type == "" || type.nil?
-      return true if HOTPLUG_TYPES.any? { |t| type.end_with?(t) }
-      false
+      HOTPLUG_TYPES.any? { |t| type.end_with?(t) }
     end
 
     # Return matching inteface for this hardware ID (uses getcfg-interface)
@@ -641,11 +636,7 @@ module Yast
     def ConcealSecrets1(ifcfg)
       ifcfg = deep_copy(ifcfg)
       return nil if ifcfg.nil?
-      out = Builtins.mapmap(ifcfg) do |k, v|
-        v = "CONCEALED" if Builtins.contains(@SensitiveFields, k) && v != ""
-        { k => v }
-      end
-      deep_copy(out)
+      ifcfg.each { |k, v| ifcfg[k] = "CONCEALED" if @SensitiveFields.include?(k) && v != "" }
     end
 
     # Conceal secret information, such as WEP keys, so that the output
@@ -689,9 +680,10 @@ module Yast
     # Canonicalize IPADDR and STARTMODE of given config
     # and nested _aliases
     # @return
-    def canonicalize_config!(config)
+    def canonicalize_config(config)
+      config = deep_copy(config)
       # canonicalize, #46885
-      caliases = config["_aliases"].tap do |h|
+      caliases = (config["_aliases"] || {}).tap do |h|
         h.map do |a, c|
           h[a] = CanonicalizeIP(c)
         end
@@ -714,7 +706,7 @@ module Yast
     ].freeze
 
     def generate_config(pth, values)
-      config = { "_aliases" => {} }
+      config = {}
       values.each do |val|
         item = SCR.Read(path("#{pth}.#{val}"))
         log.debug("item=#{item}")
@@ -740,7 +732,8 @@ module Yast
         end
       end
       log.info("config=#{ConcealSecrets1(config)}")
-      canonicalize_config!(config)
+      config = canonicalize_config(config)
+      filter_interfacetype(config)
     end
 
     def set_devtype_config(device, config)
@@ -1315,45 +1308,36 @@ module Yast
     end
 
     def GetFreeDevices(type, num)
-      Builtins.y2debug("Devices=%1", @Devices)
-      Builtins.y2debug("type,num=%1,%2", type, num)
-      Builtins.y2debug("Devices[%1]=%2", type, Ops.get(@Devices, type, {}))
+      log.debug("Devices=#{@Devices}")
+      log.debug("type,num=#{type},#{num}")
+      log.debug("Devices[#{type}]=#{@Devices[type]}")
 
-      curdevs = []
-      Builtins.foreach(
-        Convert.convert(
-          Map.Keys(Ops.get(@Devices, type, {})),
-          from: "list",
-          to:   "list <string>"
-        )
-      ) do |dev|
-        dev = device_num(dev) if Builtins.issubstring(dev, type)
-        curdevs = Builtins.add(curdevs, dev)
-      end
+      curdevs = @Devices.fetch(type, {}).keys
+      curdevs = curdevs.map { |d| d.include?(type) ? device_num(d) : d }
 
       i = 0
       count = 0
       ret = []
 
       # Hotpluggable devices
-      if IsHotplug(type) && !Builtins.contains(curdevs, "")
-        Builtins.y2debug("Added simple hotplug device")
-        count = Ops.add(count, 1)
-        ret = Builtins.add(ret, "")
+      if IsHotplug(type) && !curdevs.include?("")
+        log.debug("Added simple hotplug device")
+        count += 1
+        ret << ""
       end
 
       # Remaining numbered devices
-      while Ops.less_than(count, num)
-        ii = Builtins.sformat("%1", i)
-        if !Builtins.contains(curdevs, ii)
-          ret = Builtins.add(ret, ii)
-          count = Ops.add(count, 1)
+      while count < num
+        if !curdevs.include?(i.to_s)
+          ret << i.to_s
+          count += 1
         end
-        i = Ops.add(i, 1)
+        i += 1
       end
 
-      Builtins.y2debug("Free devices=%1", ret)
-      deep_copy(ret)
+      log.debug("Free devices=#{ret}")
+
+      ret
     end
 
     # Return free device
@@ -1361,12 +1345,14 @@ module Yast
     # @return free device
     # @example GetFreeDevice("eth") -&gt; "1"
     def GetFreeDevice(type)
-      Builtins.y2debug("type=%1", type)
-      freedevs = GetFreeDevices(type, 1)
-      ret = Ops.get(freedevs, 0)
-      Builtins.y2error("Free device location error: %1", ret) if ret.nil?
-      Builtins.y2debug("Free device=%1", ret)
-      ret
+      log.debug("type=#{type}")
+
+      free_dev = GetFreeDevices(type, 1).first
+
+      log.error("Free device location error: #{free_dev}") if free_dev.nil?
+      log.debug("Free device=#{free_dev}")
+
+      free_dev
     end
 
     # Check presence of the device (alias)
@@ -1594,17 +1580,12 @@ module Yast
     # @return [Array] of devices with key=val
     def Locate(key, val)
       ret = []
-      Builtins.maplist(@Devices) do |_typ, devsmap|
-        Builtins.maplist(
-          Convert.convert(devsmap, from: "map", to: "map <string, map>")
-        ) do |device, devmap|
-          if Ops.get_string(devmap, key, "") == val
-            ret = Builtins.add(ret, device)
-          end
-        end
+
+      @Devices.each do |device, devsmap|
+        ret << device if devsmap.any? { |_t, d| d[key] == val }
       end
 
-      deep_copy(ret)
+      ret
     end
 
     # Locate devices of the given type and value
@@ -1613,14 +1594,9 @@ module Yast
     # @return [Array] of devices with key!=val
     def LocateNOT(key, val)
       ret = []
-      Builtins.maplist(@Devices) do |_typ, devsmap|
-        Builtins.maplist(
-          Convert.convert(devsmap, from: "map", to: "map <string, map>")
-        ) do |device, devmap|
-          if Ops.get_string(devmap, key, "") != val
-            ret = Builtins.add(ret, device)
-          end
-        end
+
+      @Devices.each do |device, devsmap|
+        ret << device if devsmap.any? { |_t, d| d[key] != val }
       end
 
       deep_copy(ret)

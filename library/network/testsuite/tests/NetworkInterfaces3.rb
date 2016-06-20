@@ -46,20 +46,6 @@ module Yast
         }
       }
 
-      DUMP("ConcealSecrets1:")
-      @ifcfgs = [
-        # normal cases
-        @simple,
-        # error cases
-        nil,
-        {}
-      ]
-      Builtins.foreach(@ifcfgs) do |ifcfg|
-        TEST(lambda do
-               NetworkInterfaces.ConcealSecrets1(ifcfg)
-             end, [], nil)
-      end
-
       DUMP("ConcealSecrets:")
       @devss = [
         # normal cases

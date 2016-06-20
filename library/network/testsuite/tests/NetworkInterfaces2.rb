@@ -178,46 +178,6 @@ module Yast
       NetworkInterfaces.Import("", @exported)
       DUMP(Builtins.sformat("all     =%1", NetworkInterfaces.Devices))
 
-      DUMP("NetworkInterfaces::GetFreeDevices")
-      NetworkInterfaces.Devices = { "eth" => { "0" => {} } }
-      TEST(->() { NetworkInterfaces.GetFreeDevices("eth", 2) }, [], nil)
-      NetworkInterfaces.Devices = { "eth" => { "1" => {} } }
-      TEST(->() { NetworkInterfaces.GetFreeDevices("eth", 2) }, [], nil)
-      NetworkInterfaces.Devices = { "eth" => { "2" => {} } }
-      TEST(->() { NetworkInterfaces.GetFreeDevices("eth", 2) }, [], nil)
-      NetworkInterfaces.Devices = { "eth-pcmcia" => { "" => {} } }
-      TEST(->() { NetworkInterfaces.GetFreeDevices("eth-pcmcia", 2) }, [], nil)
-      NetworkInterfaces.Devices = { "eth-pcmcia" => { "0" => {} } }
-      TEST(->() { NetworkInterfaces.GetFreeDevices("eth-pcmcia", 2) }, [], nil)
-      NetworkInterfaces.Devices = { "eth-pcmcia" => { "1" => {} } }
-      TEST(->() { NetworkInterfaces.GetFreeDevices("eth-pcmcia", 2) }, [], nil)
-
-      DUMP("NetworkInterfaces::Locate")
-      NetworkInterfaces.Devices = {
-        "eth" => { "eth0" => { "BOOTPROTO" => "dhcp" } }
-      }
-      TEST(->() { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
-      NetworkInterfaces.Devices = {
-        "eth" => { "eth0" => { "BOOTPROTO" => "" } }
-      }
-      TEST(->() { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
-      NetworkInterfaces.Devices = {
-        "eth" => { "eth0" => { "BOOTPROTO" => "static" } }
-      }
-      TEST(->() { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
-      NetworkInterfaces.Devices = {
-        "eth" => {
-          "eth0" => { "BOOTPROTO" => "static" },
-          "eth1" => { "BOOTPROTO" => "dhcp" }
-        }
-      }
-      TEST(->() { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
-      NetworkInterfaces.Devices = {
-        "eth" => { "eth0" => { "BOOTPROTO" => "static" } },
-        "tr"  => { "tr1" => { "BOOTPROTO" => "dhcp" } }
-      }
-      TEST(->() { NetworkInterfaces.Locate("BOOTPROTO", "dhcp") }, [], nil)
-
       DUMP("NetworkInterfaces::UpdateModemSymlink")
       NetworkInterfaces.Devices = {
         "arc" => {

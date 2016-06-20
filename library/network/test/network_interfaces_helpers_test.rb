@@ -24,6 +24,11 @@ module Yast
           type_by_regex: "eth"
         },
         {
+          name:          "tr-pcmcia-1#0",
+          alias_id:      "0",
+          type_by_regex: "tr"
+        },
+        {
           name:          "enp0s3",
           alias_id:      "",
           type_by_regex: "enp"
@@ -37,6 +42,11 @@ module Yast
           name:          "enp0s3#0",
           alias_id:      "0",
           type_by_regex: "enp"
+        },
+        {
+          name:          "eth-id-00:07:e9:d5:8e:e8",
+          alias_id:      "",
+          type_by_regex: "eth"
         }
       ].freeze
 
@@ -85,7 +95,8 @@ module Yast
 
       before do
         subject.Reset
-        expect(subject.Read).to eql(true)
+        allow(subject).to receive(:Read).and_return(true)
+        allow(Yast::SCR).to receive(:Dir).with(Yast::Path.new(".network.section")).and_return(devices)
       end
 
       it "returns an array of configured interfaces filtered by regexp" do
@@ -106,7 +117,23 @@ module Yast
 
     end
 
-    describe "#canonicalize_config!" do
+    describe "#canonicalize_config" do
+      let(:in_config_without_aliases) do
+        {
+          "IPADDR"    => "10.0.0.1/8",
+          "other"     => "data",
+          "STARTMODE" => "on"
+        }
+      end
+      let(:out_config_without_aliases) do
+        {
+          "IPADDR"    => "10.0.0.1",
+          "PREFIXLEN" => "8",
+          "NETMASK"   => "255.0.0.0",
+          "other"     => "data",
+          "STARTMODE" => "auto"
+        }
+      end
       let(:in_config) do
         {
           "IPADDR"    => "10.0.0.1/8",
@@ -140,7 +167,9 @@ module Yast
       end
 
       it "returns the given config with canonicalized addresses" do
-        expect(subject.canonicalize_config!(in_config)).to eql(out_config)
+        expect(subject.canonicalize_config(in_config)).to eql(out_config)
+        expect(subject.canonicalize_config(in_config_without_aliases))
+          .to eql(out_config_without_aliases)
       end
     end
 
