@@ -175,10 +175,10 @@ module Yast
 
       msg = if Ops.greater_than(Builtins.size(files), 1)
               # Continue/Cancel question, %1 is a coma separated list of file names
-              _("Files %1 have been changed manually.\nYaST might lose some of the changes")
+        _("Files %1 have been changed manually.\nYaST might lose some of the changes")
       else
               # Continue/Cancel question, %1 is a file name
-              _("File %1 has been changed manually.\nYaST might lose some of the changes.\n")
+        _("File %1 has been changed manually.\nYaST might lose some of the changes.\n")
       end
 
       msg = Builtins.sformat(msg, Builtins.mergestring(files, ", "))

@@ -195,11 +195,11 @@ module Yast
       test_cached = Builtins.listmap(strings_in) do |string_in|
         # Numbers, IPs and empty strings are not converted
         string_out = if Builtins.regexpmatch(string_in, @not_cached_regexp)
-                       string_in
+          string_in
         elsif to_punycode
-                       GetEncodedCachedString(string_in)
+          GetEncodedCachedString(string_in)
         else
-                       GetDecodedCachedString(string_in)
+          GetDecodedCachedString(string_in)
         end
 
         if string_out.nil?

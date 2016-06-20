@@ -55,17 +55,17 @@ module Yast
       if PackageKit.IsRunning
         # ask to send quit signal to PackageKit
         msg = if @packagekit_asked
-                _(
-                  "PackageKit is still running (probably busy).\nAsk PackageKit to quit again?"
-                )
+          _(
+            "PackageKit is still running (probably busy).\nAsk PackageKit to quit again?"
+          )
         else
-                _(
-                  "PackageKit is blocking software management.\n" \
-                    "This happens when the updater applet or another software management\n" \
-                    "application is running.\n" \
-                    "\n" \
-                    "Ask PackageKit to quit?"
-                )
+          _(
+            "PackageKit is blocking software management.\n" \
+              "This happens when the updater applet or another software management\n" \
+              "application is running.\n" \
+              "\n" \
+              "Ask PackageKit to quit?"
+          )
         end
 
         @packagekit_asked = true

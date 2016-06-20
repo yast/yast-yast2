@@ -1101,10 +1101,10 @@ module Yast
       Builtins.foreach(interfaces) do |interface|
         # interface is covered by 'any' in 'EXT'
         zone = if Builtins.contains(interfaces_covered_by_any, interface)
-                 @special_all_interface_zone
+          @special_all_interface_zone
         else
                  # interface is explicitely mentioned in some zone
-                 GetZoneOfInterface(interface)
+          GetZoneOfInterface(interface)
         end
         zones = Builtins.add(zones, zone) if !zone.nil?
       end
@@ -2177,19 +2177,19 @@ module Yast
 
       if rule == "ACCEPT"
         ret_val = if Ops.get_string(@SETTINGS, "FW_LOG_ACCEPT_ALL", "no") == "yes"
-                    "ALL"
+          "ALL"
         elsif Ops.get_string(@SETTINGS, "FW_LOG_ACCEPT_CRIT", "yes") == "yes"
-                    "CRIT"
+          "CRIT"
         else
-                    "NONE"
+          "NONE"
         end
       elsif rule == "DROP"
         ret_val = if Ops.get_string(@SETTINGS, "FW_LOG_DROP_ALL", "no") == "yes"
-                    "ALL"
+          "ALL"
         elsif Ops.get_string(@SETTINGS, "FW_LOG_DROP_CRIT", "yes") == "yes"
-                    "CRIT"
+          "CRIT"
         else
-                    "NONE"
+          "NONE"
         end
       else
         Builtins.y2error("Possible rules are only 'ACCEPT' or 'DROP'")

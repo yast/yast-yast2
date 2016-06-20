@@ -77,9 +77,9 @@ module Yast
 
         ip_addr = if NetworkInterfaces.GetValue(i, "BOOTPROTO") == "dhcp"
                     # TRANSLATORS: Informs that the IP address is assigned via DHCP
-                    _("DHCP address")
+          _("DHCP address")
         else
-                    NetworkInterfaces.GetValue(i, "IPADDR")
+          NetworkInterfaces.GetValue(i, "IPADDR")
         end
 
         if ip_addr.nil? || ip_addr == ""
@@ -203,10 +203,10 @@ module Yast
         UI.CloseDialog
 
         @found_nfs_servers = if @found_nfs_servers.nil?
-                               []
+          []
         else
                                # sort list of servers
-                               Builtins.sort(@found_nfs_servers)
+          Builtins.sort(@found_nfs_servers)
         end
       end
 

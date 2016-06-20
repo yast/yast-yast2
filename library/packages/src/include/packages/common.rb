@@ -103,10 +103,10 @@ module Yast
       pkgs = Builtins.mergestring(packs, ", ")
       text = if install
                # the message is followed by list of required packages
-               _("These packages need to be installed:")
+        _("These packages need to be installed:")
       else
                # the message is followed by list of required packages
-               _("These packages need to be removed:")
+        _("These packages need to be removed:")
       end
 
       text += " " + pkgs
@@ -145,20 +145,20 @@ module Yast
       end
 
       doit = if Mode.commandline
-               CommandLine.Interactive ? AskPackages(packs, install) : true
+        CommandLine.Interactive ? AskPackages(packs, install) : true
       else
-               Popup.AnyQuestionRichText(
-                 "",
-                 text,
-                 40,
-                 10,
-                 # labels changed for bug #215195
-                 #	Label::ContinueButton (), Label::CancelButton (),
-                 # push button label
-                 install ? Label.InstallButton : _("&Uninstall"),
-                 Label.CancelButton,
-                 :focus_yes
-               )
+        Popup.AnyQuestionRichText(
+          "",
+          text,
+          40,
+          10,
+          # labels changed for bug #215195
+          #	Label::ContinueButton (), Label::CancelButton (),
+          # push button label
+          install ? Label.InstallButton : _("&Uninstall"),
+          Label.CancelButton,
+          :focus_yes
+        )
       end
 
       if doit

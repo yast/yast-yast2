@@ -252,9 +252,9 @@ module Yast
       tmp = if Mode.live_installation
               # not using dedicated agent in order to use the same parser for cmdline
               # independently on whether it comes from /proc/cmdline or /etc/install.inf
-              Convert.to_string(SCR.Read(path(".target.string"), "/proc/cmdline"))
+        Convert.to_string(SCR.Read(path(".target.string"), "/proc/cmdline"))
       else
-              Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
+        Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
       end
 
       Builtins.y2milestone(
@@ -423,11 +423,11 @@ module Yast
         @binary = "vmlinux"
 
         @kernel_packages = if Arch.board_iseries
-                             ["kernel-iseries64"]
+          ["kernel-iseries64"]
         elsif Arch.ppc32
-                             ["kernel-default"]
+          ["kernel-default"]
         else
-                             ["kernel-ppc64"]
+          ["kernel-ppc64"]
         end
       elsif Arch.ia64
         @kernel_packages = ["kernel-default"]

@@ -799,13 +799,13 @@ module Yast
             e == opt_id
           end
           step = if current_index == 0
-                   1
+            1
           elsif Ops.add(current_index, 1) == Builtins.size(id_list)
-                   -1
+            -1
           elsif Ops.greater_or_equal(current_index, previous_index)
-                   1
+            1
           else
-                   -1
+            -1
           end
           new_index = Ops.add(current_index, step)
           opt_id = Ops.get(id_list, new_index)
@@ -859,39 +859,39 @@ module Yast
       ValidateTableAttr(attrib)
 
       add_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
-                     PushButton(Id(:_tp_add), Opt(:key_F3), Label.AddButton)
+        PushButton(Id(:_tp_add), Opt(:key_F3), Label.AddButton)
       else
-                     HSpacing(0)
+        HSpacing(0)
       end
 
       edit_button = if Ops.get_boolean(attrib, "edit_button", true)
-                      PushButton(Id(:_tp_edit), Opt(:key_F4), Label.EditButton)
+        PushButton(Id(:_tp_edit), Opt(:key_F4), Label.EditButton)
       else
-                      HSpacing(0)
+        HSpacing(0)
       end
 
       delete_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
-                        PushButton(Id(:_tp_delete), Opt(:key_F5), Label.DeleteButton)
+        PushButton(Id(:_tp_delete), Opt(:key_F5), Label.DeleteButton)
       else
-                        HSpacing(0)
+        HSpacing(0)
       end
 
       table_header = if Ops.get_boolean(attrib, "changed_column", false)
-                       Header(
-                         # table header, shortcut for changed, keep very short
-                         _("Ch."),
-                         # table header
-                         _("Option"),
-                         # table header
-                         _("Value")
-                       )
+        Header(
+          # table header, shortcut for changed, keep very short
+          _("Ch."),
+          # table header
+          _("Option"),
+          # table header
+          _("Value")
+        )
       else
-                       Header(
-                         # table header
-                         _("Option"),
-                         # table header
-                         _("Value")
-                       )
+        Header(
+          # table header
+          _("Option"),
+          # table header
+          _("Value")
+        )
       end
 
       replace_point = ReplacePoint(Id(:_tp_table_repl), HSpacing(0))
@@ -934,16 +934,16 @@ module Yast
       end
 
       up_down = if Ops.get_boolean(attrib, "up_down_buttons", false)
-                  VBox(
-                    VStretch(),
-                    # push button
-                    PushButton(Id(:_tp_up), _("&Up")),
-                    # push button
-                    PushButton(Id(:_tp_down), _("&Down")),
-                    VStretch()
-                  )
+        VBox(
+          VStretch(),
+          # push button
+          PushButton(Id(:_tp_up), _("&Up")),
+          # push button
+          PushButton(Id(:_tp_down), _("&Down")),
+          VStretch()
+        )
       else
-                  HSpacing(0)
+        HSpacing(0)
       end
 
       ret = Convert.convert(

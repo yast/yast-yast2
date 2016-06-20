@@ -597,19 +597,19 @@ module Yast
           wanted_label = if is_disc
                            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
                            # %3 side (e.g. "Side A")
-                           Builtins.sformat("%1 (Disc %2, %3)", product, wanted, side)
+            Builtins.sformat("%1 (Disc %2, %3)", product, wanted, side)
           else
                            # label for a repository - %1 product name (e.g. "openSUSE 10.2"), %2 medium number (e.g. 2)
                            # %3 side (e.g. "Side A")
-                           Builtins.sformat("%1 (Medium %2, %3)", product, wanted, side)
+            Builtins.sformat("%1 (Medium %2, %3)", product, wanted, side)
           end
         else
           wanted_label = if is_disc
                            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
-                           Builtins.sformat(_("%1 (Disc %2)"), product, wanted)
+            Builtins.sformat(_("%1 (Disc %2)"), product, wanted)
           else
                            # label for a repository - %1 product name (e.g. openSUSE 10.2), %2 medium number (e.g. 2)
-                           Builtins.sformat(_("%1 (Medium %2)"), product, wanted)
+            Builtins.sformat(_("%1 (Medium %2)"), product, wanted)
           end
         end
       end
@@ -714,9 +714,9 @@ module Yast
         if Ops.less_than(@current_retry_attempt, RETRY_ATTEMPTS)
           # reset the counter, use logarithmic back-off with maximum limit
           @current_retry_timeout = if @current_retry_attempt < 10
-                                     RETRY_TIMEOUT * (1 << @current_retry_attempt)
+            RETRY_TIMEOUT * (1 << @current_retry_attempt)
           else
-                                     RETRY_MAX_TIMEOUT
+            RETRY_MAX_TIMEOUT
           end
 
           if Ops.greater_than(@current_retry_timeout, RETRY_MAX_TIMEOUT)
@@ -1760,9 +1760,9 @@ module Yast
           bps_avg = -1 if textmode && Ops.less_than(display_width, 100)
 
           format = if textmode
-                     Ops.add("%1 - ", @download_file)
+            Ops.add("%1 - ", @download_file)
           else
-                     Ops.add(@download_file, " - %1")
+            Ops.add(@download_file, " - %1")
           end
 
           # progress bar label, %1 is URL with optional download rate

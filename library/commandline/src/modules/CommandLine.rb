@@ -1275,11 +1275,11 @@ module Yast
       SCR.Write(path(".dev.tty.prompt"), prompt)
 
       res = if type == :nohistory
-              Convert.to_string(SCR.Read(path(".dev.tty.nohistory")))
+        Convert.to_string(SCR.Read(path(".dev.tty.nohistory")))
       elsif type == :noecho
-              Convert.to_string(SCR.Read(path(".dev.tty.noecho")))
+        Convert.to_string(SCR.Read(path(".dev.tty.noecho")))
       else
-              Convert.to_string(SCR.Read(path(".dev.tty")))
+        Convert.to_string(SCR.Read(path(".dev.tty")))
       end
 
       # set the default prompt

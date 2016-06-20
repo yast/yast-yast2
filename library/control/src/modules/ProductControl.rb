@@ -560,11 +560,11 @@ module Yast
 
       Builtins.foreach(modules) do |m|
         client = if Stage.firstboot
-                   Ops.get_string(m, "name", "dummy")
+          Ops.get_string(m, "name", "dummy")
         elsif Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
-                   Ops.get_string(m, "name", "dummy")
+          Ops.get_string(m, "name", "dummy")
         else
-                   Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
+          Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
         end
         # FIXME: what about the ruby files?
         client = Ops.add(
@@ -854,15 +854,15 @@ module Yast
           if Builtins.haskey(m, "heading") &&
               Ops.get_string(m, "label", "") != ""
             heading = if Builtins.haskey(m, "textdomain")
-                        Builtins.dgettext(
-                          Ops.get_string(m, "textdomain", ""),
-                          Ops.get_string(m, "label", "")
-                        )
+              Builtins.dgettext(
+                Ops.get_string(m, "textdomain", ""),
+                Ops.get_string(m, "label", "")
+              )
             else
-                        Builtins.dgettext(
-                          wizard_textdomain,
-                          Ops.get_string(m, "label", "")
-                        )
+              Builtins.dgettext(
+                wizard_textdomain,
+                Ops.get_string(m, "label", "")
+              )
             end
 
           # Label
@@ -870,15 +870,15 @@ module Yast
             first_id = Ops.get_string(m, "id", "") if first_id == ""
 
             label = if Builtins.haskey(m, "textdomain")
-                      Builtins.dgettext(
-                        Ops.get_string(m, "textdomain", ""),
-                        Ops.get_string(m, "label", "")
-                      )
+              Builtins.dgettext(
+                Ops.get_string(m, "textdomain", ""),
+                Ops.get_string(m, "label", "")
+              )
             else
-                      Builtins.dgettext(
-                        wizard_textdomain,
-                        Ops.get_string(m, "label", "")
-                      )
+              Builtins.dgettext(
+                wizard_textdomain,
+                Ops.get_string(m, "label", "")
+              )
             end
 
             id = Ops.get_string(m, "id", "")
@@ -1069,15 +1069,15 @@ module Yast
         # All proposal file names end with _proposal
         if !is_disabled
           final_proposals = if !Builtins.issubstring(proposal_name, "_proposal")
-                              Builtins.add(
-                                final_proposals,
-                                [Ops.add(proposal_name, "_proposal"), order_value]
-                              )
+            Builtins.add(
+              final_proposals,
+              [Ops.add(proposal_name, "_proposal"), order_value]
+            )
           else
-                              Builtins.add(
-                                final_proposals,
-                                [proposal_name, order_value]
-                              )
+            Builtins.add(
+              final_proposals,
+              [proposal_name, order_value]
+            )
           end
         else
           Builtins.y2milestone(

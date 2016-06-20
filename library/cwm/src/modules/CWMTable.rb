@@ -336,46 +336,46 @@ module Yast
       widget_descr = deep_copy(widget_descr)
       ValidateTableAttr(attrib)
       add_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
-                     PushButton(Id(:_tw_add), Opt(:key_F3, :notify), Label.AddButton)
+        PushButton(Id(:_tw_add), Opt(:key_F3, :notify), Label.AddButton)
       else
-                     HSpacing(0)
+        HSpacing(0)
       end
 
       edit_button = if Ops.get_boolean(attrib, "edit_button", true)
-                      PushButton(Id(:_tw_edit), Opt(:key_F4, :notify), Label.EditButton)
+        PushButton(Id(:_tw_edit), Opt(:key_F4, :notify), Label.EditButton)
       else
-                      HSpacing(0)
+        HSpacing(0)
       end
 
       delete_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
-                        PushButton(Id(:_tw_delete), Opt(:key_F5, :notify), Label.DeleteButton)
+        PushButton(Id(:_tw_delete), Opt(:key_F5, :notify), Label.DeleteButton)
       else
-                        HSpacing(0)
+        HSpacing(0)
       end
 
       table_header = Ops.get_term(attrib, "header")
 
       custom_button = if Ops.get_boolean(attrib, "custom_button", false)
-                        PushButton(
-                          Id(:_tw_custom),
-                          Opt(:notify),
-                          Ops.get_string(attrib, "custom_button_name", "Custom button")
-                        )
+        PushButton(
+          Id(:_tw_custom),
+          Opt(:notify),
+          Ops.get_string(attrib, "custom_button_name", "Custom button")
+        )
       else
-                        HSpacing(0)
+        HSpacing(0)
       end
 
       up_down = if Ops.get_boolean(attrib, "up_down_buttons", false)
-                  VBox(
-                    VStretch(),
-                    # push button
-                    PushButton(Id(:_tw_up), Opt(:notify), _("&Up")),
-                    # push button
-                    PushButton(Id(:_tw_down), Opt(:notify), _("&Down")),
-                    VStretch()
-                  )
+        VBox(
+          VStretch(),
+          # push button
+          PushButton(Id(:_tw_up), Opt(:notify), _("&Up")),
+          # push button
+          PushButton(Id(:_tw_down), Opt(:notify), _("&Down")),
+          VStretch()
+        )
       else
-                  HSpacing(0)
+        HSpacing(0)
       end
 
       ret = Convert.convert(

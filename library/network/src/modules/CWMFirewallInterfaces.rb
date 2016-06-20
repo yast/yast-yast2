@@ -106,12 +106,12 @@ module Yast
         # bnc #429861
         label = if Stage.initial
                   # label
-                  _(
-                    "Firewall cannot be adjusted during first stage installation."
-                  )
+          _(
+            "Firewall cannot be adjusted during first stage installation."
+          )
         else
                   # label
-                  _("Firewall package is not installed.")
+          _("Firewall package is not installed.")
         end
       elsif status == :off
         # label
@@ -150,9 +150,9 @@ module Yast
           # BNC #483455: Interface zone name
           zone = SuSEFirewall.GetZoneOfInterface(i)
           zone = if !zone.nil? && zone != ""
-                   SuSEFirewall.GetZoneFullName(zone)
+            SuSEFirewall.GetZoneFullName(zone)
           else
-                   _("Interface is not assigned to any zone")
+            _("Interface is not assigned to any zone")
           end
           if label == "static" || label == "" || label.nil?
             label = ipaddr
@@ -163,9 +163,9 @@ module Yast
             end
           end
           label = if label.nil? || label == ""
-                    i
+            i
           else
-                    Builtins.sformat("%1 (%2 / %3)", i, label, zone)
+            Builtins.sformat("%1 (%2 / %3)", i, label, zone)
           end
           Item(Id(i), label)
         end
@@ -1062,9 +1062,9 @@ module Yast
       ) ||
         Ops.get_boolean(settings, "display_details", false)
       help = if Builtins.haskey(settings, "help")
-               Ops.get_string(settings, "help", "")
+        Ops.get_string(settings, "help", "")
       else
-               OpenFirewallHelp(display_firewall_details)
+        OpenFirewallHelp(display_firewall_details)
       end
 
       firewall_settings = CheckBox(

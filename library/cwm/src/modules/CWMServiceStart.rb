@@ -332,9 +332,9 @@ module Yast
         "get_service_start_via_xinetd"
       )
       help = if Builtins.haskey(settings, "help")
-               Ops.get_string(settings, "help", "")
+        Ops.get_string(settings, "help", "")
       else
-               xinetd_available ? AutoStartXinetdHelp() : AutoStartHelp()
+        xinetd_available ? AutoStartXinetdHelp() : AutoStartHelp()
       end
 
       items = VBox(
@@ -591,19 +591,19 @@ module Yast
       display_save_now = Builtins.haskey(settings, "save_now_action")
 
       help = if Builtins.haskey(settings, "help")
-               Ops.get_string(settings, "help", "")
+        Ops.get_string(settings, "help", "")
       else
-               StartStopHelp(display_save_now)
+        StartStopHelp(display_save_now)
       end
 
       save_now_button_term = if display_save_now
-                               PushButton(
-                                 Id("_cwm_save_settings_now"),
-                                 Opt(:hstretch),
-                                 save_now_button
-                               )
+        PushButton(
+          Id("_cwm_save_settings_now"),
+          Opt(:hstretch),
+          save_now_button
+        )
       else
-                               VBox()
+        VBox()
       end
 
       immediate_actions = VBox(
@@ -769,9 +769,9 @@ module Yast
         _("&LDAP Support Active")
       )
       help = if Builtins.haskey(settings, "help")
-               Ops.get_string(settings, "help", "")
+        Ops.get_string(settings, "help", "")
       else
-               EnableLdapHelp()
+        EnableLdapHelp()
       end
 
       # check box

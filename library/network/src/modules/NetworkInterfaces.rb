@@ -290,9 +290,9 @@ module Yast
       )
 
       sys_type = if sys_type
-                   Builtins.regexpsub(sys_type, "(.*)\n", "\\1")
+        Builtins.regexpsub(sys_type, "(.*)\n", "\\1")
       else
-                   ""
+        ""
       end
 
       sys_type = String.CutBlanks(sys_type)
@@ -1043,9 +1043,9 @@ module Yast
       @initialized = if devices.nil? || devices == {}
                        # devices == $[] is used in lan_auto "Reset" as a way how to
                        # rollback changes imported from AY
-                       false
+        false
       else
-                       true
+        true
       end
 
       Builtins.y2milestone(
@@ -1456,9 +1456,9 @@ module Yast
       end
 
       t = if !IsEmpty(newdev)
-            GetTypeFromIfcfgOrName(name, newdev)
+        GetTypeFromIfcfgOrName(name, newdev)
       else
-            GetType(name)
+        GetType(name)
       end
 
       if name == @Name
