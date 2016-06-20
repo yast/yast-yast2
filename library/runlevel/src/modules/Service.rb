@@ -59,8 +59,7 @@ module Yast
       service = SystemdService.find(service_name)
       return failure(:not_found, service_name) unless service
 
-      systemd_command =
-        case command_name
+      systemd_command = case command_name
       when "show"    then :show
       when "status"  then :status
       when "start"   then :start
@@ -358,8 +357,7 @@ module Yast
         return -1
       end
 
-      result =
-        case param
+      result = case param
       when "start", "stop", "status", "reload", "restart", "enable", "disable"
         service.send(param)
       when "try-restart"

@@ -172,7 +172,7 @@ module Yast
                           )
                         else
                           ""
-          end
+                        end
         }
       end
 
