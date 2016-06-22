@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jun 22 08:39:50 UTC 2016 - lslezak@suse.cz
+
+- Use a high resolution window icon (64x64) instead of the low
+  resolution (22x22) one (bsc#985432)
+- 3.1.194
+
+-------------------------------------------------------------------
 Wed Jun  8 12:13:16 UTC 2016 - lslezak@suse.cz
 
 - Fixed displaying the file conflicts callbacks when the Progress

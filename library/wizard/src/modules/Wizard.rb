@@ -65,7 +65,7 @@ module Yast
       @relnotes_button_id = ""
 
       @icon_dir = File.join(Directory.themedir, "current", "icons",
-        "22x22", "apps")
+        "64x64", "apps")
       @icon_name = "yast"
     end
 
