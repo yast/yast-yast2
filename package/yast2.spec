@@ -48,6 +48,9 @@ BuildRequires:  yast2-pkg-bindings >= 2.20.3
 BuildRequires:  yast2-ruby-bindings >= 3.1.36
 BuildRequires:  yast2-testsuite
 BuildRequires:  yast2-ycp-ui-bindings >= 3.1.8
+# FIXME make it optional
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:ruby-lint)
+
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
 Requires:       coreutils
@@ -112,6 +115,63 @@ installation with YaST2
 
 %install
 %yast_install
+
+# to be made a separate script, with --constant and --directory
+# $1 --constant
+# $2
+# $3 --directory to place the result in
+# $4
+# $5 --ruby-eval
+# $6
+ruby_lint_definition_generator() {
+  export RLCONST="$2"
+  export RLDIR="$4"
+  export RLEVAL="$6"
+
+  mkdir -p "$RLDIR"
+  ruby -r ruby-lint -r ruby-lint/definition_generator \
+    -e "$RLEVAL" \
+    -e 'RubyLint::DefinitionGenerator.new(ENV["RLCONST"],ENV["RLDIR"]).generate'
+
+  # fixup https://github.com/YorickPeterse/ruby-lint/issues/190
+  sed -i -e '/define_(/d' "$RLDIR"/*.rb
+}
+
+# rpm macro for ruby to shorten this?
+export RLBASEDIR=$RPM_BUILD_ROOT/%{_libdir}/ruby/vendor_ruby/%{rb_ver}/ruby-lint/definitions/rpms
+MYRLDIR=$RLBASEDIR/%{name}
+
+# definitions for UI
+ruby_lint_definition_generator \
+    --constant Yast::UI \
+    --directory $RLBASEDIR/yast2-ycp-ui-bindings \
+    --ruby-eval "require 'yast'; Yast.import('UI')"
+
+# simpler name?
+export Y2DIR=%{buildroot}/%{yast_moduledir}/..
+
+# definitions for this package... oh sh**
+for M in Arch Wizard; do
+    ruby_lint_definition_generator \
+        --constant Yast::${M}Class \
+        --directory $MYRLDIR/$M \
+        --ruby-eval "require 'yast'; Yast.import('$M')"
+done
+
+# now lint yourself with the help of the definitions just created
+ruby -e '
+File.open("ruby-lint.yml", "w") do |f|
+  f.puts "presenter: emacs"
+  f.puts "requires:"
+  Dir.glob(ENV["RLBASEDIR"] + "/**/*.rb").each do |r|
+    f.puts "  - #{r}"
+  end
+end
+'
+# the pipe also masks exit codes
+ruby-lint library/*/src | tee $MYRLDIR/report.log
+: "Total ruby-lint reports:"
+wc -l $MYRLDIR/report.log
 
 mkdir -p %{buildroot}%{yast_clientdir}
 mkdir -p %{buildroot}%{yast_desktopdir}
@@ -198,5 +258,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %dir %{yast_yncludedir}/hwinfo
 %{yast_yncludedir}/hwinfo/*.rb
 %{yast_desktopdir}/messages.desktop
+
+%{_libdir}/ruby/vendor_ruby/%{rb_ver}/ruby-lint/definitions/rpms/yast2-ycp-ui-bindings
+%{_libdir}/ruby/vendor_ruby/%{rb_ver}/ruby-lint/definitions/rpms/%{name}
 
 %changelog
