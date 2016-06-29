@@ -48,7 +48,6 @@ module Yast
       Yast.import "Mode"
       Yast.import "Service"
       Yast.import "NetworkInterfaces"
-      Yast.import "SuSEFirewallServices"
       Yast.import "PortAliases"
       Yast.import "Report"
       Yast.import "Message"
@@ -798,6 +797,8 @@ module Yast
     # @param [String] service id
     # @param [String] zone
     def RemoveServiceSupportFromZone(service, zone)
+      Yast.import "SuSEFirewallServices" # lazy import due to circular dependencies
+
       needed = SuSEFirewallServices.GetNeededPortsAndProtocols(service)
       # unknown service
       if needed.nil?
@@ -844,6 +845,8 @@ module Yast
     # @param [String] service id
     # @param [String] zone
     def AddServiceSupportIntoZone(service, zone)
+      Yast.import "SuSEFirewallServices" # lazy import due to circular dependencies
+
       needed = SuSEFirewallServices.GetNeededPortsAndProtocols(service)
       # unknown service
       if needed.nil?
@@ -1360,6 +1363,8 @@ module Yast
     def IsServiceSupportedInZone(service, zone)
       return nil if !IsKnownZone(zone)
 
+      Yast.import "SuSEFirewallServices" # lazy import due to circular dependencies
+
       needed = SuSEFirewallServices.GetNeededPortsAndProtocols(service)
 
       # SuSEFirewall feature FW_PROTECT_FROM_INT
@@ -1831,6 +1836,8 @@ module Yast
 
       # all ports or services used by known service
       all_used_services = []
+
+      Yast.import "SuSEFirewallServices" # lazy import due to circular dependencies
 
       # trying all possible (known) services
       Builtins.foreach(SuSEFirewallServices.GetSupportedServices) do |service_id, _service_name|
@@ -2572,6 +2579,8 @@ module Yast
       end
 
       Builtins.y2milestone("Current conf: %1", current_conf)
+
+      Yast.import "SuSEFirewallServices" # lazy import due to circular dependencies
 
       Builtins.foreach(GetKnownFirewallZones()) do |zone|
         Builtins.foreach(SuSEFirewallServices.OLD_SERVICES) do |old_service_id, old_service_def|
