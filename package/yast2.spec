@@ -151,11 +151,20 @@ ruby_lint_definition_generator \
 export Y2DIR=%{buildroot}/%{yast_moduledir}/..
 
 # definitions for this package... oh sh**
-for M in Arch Wizard; do
-    ruby_lint_definition_generator \
-        --constant Yast::${M}Class \
-        --directory $MYRLDIR/$M \
-        --ruby-eval "require 'yast'; Yast.import('$M')"
+MS=$(ruby -e '
+Dir.chdir(ENV["Y2DIR"]+"/modules") do
+  puts Dir.glob("[A-Z]*.rb").map {|fn| fn.sub(/.rb$/,"")}.sort
+end
+')
+for M in $MS; do
+    # "for MM im $M ${M}Class" fails with
+    # inspector.rb:41:in `inspect_constants': undefined method `name' for #<Yast::ALogClass:0x00000001c09f80> (NoMethodError)
+    for MM in ${M}Class; do
+        ruby_lint_definition_generator \
+            --constant Yast::$MM \
+            --directory $MYRLDIR/$MM \
+            --ruby-eval "require 'yast'; Yast.import('$M')"
+    done
 done
 
 # now lint yourself with the help of the definitions just created
