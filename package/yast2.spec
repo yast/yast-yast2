@@ -187,6 +187,10 @@ ruby -e '
 File.open("ruby-lint.yml", "w") do |f|
   f.puts "presenter: emacs"
   f.puts "requires:"
+  f.puts "  # other packages"
+  f.puts "  - ruby-lint/definitions/rpms/yast2-ruby-bindings/yast.rb"
+  f.puts "  - ruby-lint/definitions/rpms/yast2-pkg-bindings/yast.rb"
+  f.puts "  # this package"
   Dir.glob(ENV["RLBASEDIR"] + "/**/*.rb").each do |r|
     f.puts "  - #{r}"
   end
