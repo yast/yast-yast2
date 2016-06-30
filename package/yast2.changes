@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 30 06:54:57 UTC 2016 - jreidinger@suse.com
+
+- fix cyclic dependencies caused by split of firewall classes
+  (bsc#987059)
+- 3.1.195
+
+-------------------------------------------------------------------
 Wed Jun 22 08:39:50 UTC 2016 - lslezak@suse.cz
 
 - Use a high resolution window icon (64x64) instead of the low
