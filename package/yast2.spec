@@ -157,6 +157,7 @@ Dir.chdir(ENV["Y2DIR"]+"/modules") do
 end
 ')
 for M in $MS; do
+    # https://github.com/YorickPeterse/ruby-lint/issues/193
     # "for MM im $M ${M}Class" fails with
     # inspector.rb:41:in `inspect_constants': undefined method `name' for #<Yast::ALogClass:0x00000001c09f80> (NoMethodError)
     for MM in ${M}Class; do
@@ -166,6 +167,20 @@ for M in $MS; do
             --ruby-eval "require 'yast'; Yast.import('$M')"
     done
 done
+
+ruby -e '
+puts "# work around https://github.com/YorickPeterse/ruby-lint/issues/193"
+ARGV.each do |m|
+  puts <<-EOS
+    RubyLint.registry.register("Yast::#{m}") do |defs|
+      defs.define_constant("Yast::#{m}") do |klass|
+        klass.inherits(defs.constant_proxy("Yast::#{m}Class", RubyLint.registry))
+        klass.instance!
+      end
+    end
+  EOS
+end
+' $MS > $MYRLDIR/instances.rb
 
 # now lint yourself with the help of the definitions just created
 ruby -e '
