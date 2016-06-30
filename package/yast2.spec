@@ -175,7 +175,7 @@ ARGV.each do |m|
     RubyLint.registry.register("Yast::#{m}") do |defs|
       defs.define_constant("Yast::#{m}") do |klass|
         klass.inherits(defs.constant_proxy("Yast::#{m}Class", RubyLint.registry))
-        klass.instance!
+#        klass.instance!
       end
     end
   EOS
