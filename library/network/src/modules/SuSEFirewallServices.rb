@@ -37,7 +37,6 @@ require "network/susefirewalldservices"
 module Yast
   class FirewallServicesClass < Module
     include Yast::Logger
-    Yast.import "SuSEFirewall"
 
     # Create appropriate firewall services class based on factors such as which
     # backend is selected by user or running on the system.
@@ -48,6 +47,8 @@ module Yast
     # @param backend_sym [Symbol] if not nil, explicitely select :sf2 or :fwd
     # @return SuSEFirewall2ServicesClass or SuSEfirewalldServicesClass instance
     def self.create(backend_sym = nil)
+      Yast.import "SuSEFirewall"
+
       # If backend is specificed, go ahead and create an instance. Otherwise, try
       # to detect which backend is enabled and create the appropriate instance.
       case backend_sym
@@ -72,7 +73,7 @@ module Yast
       end
     end
   end
-
-  SuSEFirewallServices = FirewallServicesClass.create
-  SuSEFirewallServices.main if SuSEFirewallServices.is_a?(SuSEFirewall2ServicesClass)
 end
+
+Yast::SuSEFirewallServices = Yast::FirewallServicesClass.create
+Yast::SuSEFirewallServices.main if Yast::SuSEFirewallServices.is_a?(Yast::SuSEFirewall2ServicesClass)
