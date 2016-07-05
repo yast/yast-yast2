@@ -69,6 +69,10 @@ describe Yast::NetworkInterfaces do
       change_scr_root(data_dir, &example)
     end
 
+    before do
+      subject.CleanCacheRead
+    end
+
     context "when given regex is some of the predefined ones 'netcard', 'modem', 'isdn', 'dsl'." do
       it "returns devices of the given type" do
         expect(subject.FilterDevices("netcard").keys).to eql(netcard_devices)
@@ -170,8 +174,7 @@ describe Yast::NetworkInterfaces do
     end
 
     before do
-      subject.Reset
-      subject.Read
+      subject.CleanCacheRead
     end
 
     it "returns an array of devices types which have got given key,value" do
@@ -193,12 +196,31 @@ describe Yast::NetworkInterfaces do
     end
 
     before do
-      subject.Reset
-      subject.Read
+      subject.CleanCacheRead
     end
 
     it "returns an array of devices types which have got a different key,value than given ones" do
       expect(subject.LocateNOT("BOOTPROTO", "static")).to eql(["arc", "br", "ppp", "vlan"])
+    end
+  end
+
+  describe "#LocateProvider" do
+    let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+
+    around do |example|
+      change_scr_root(data_dir, &example)
+    end
+
+    it "returns true if some of the devices has the given provider as 'PROVIDER' attribute" do
+      allow(subject).to receive(:Locate).with("PROVIDER", "some_provider").and_return(["ppp0"])
+
+      expect(subject.LocateProvider("some_provider")).to eql(true)
+    end
+
+    it "returns false otherwise" do
+      allow(subject).to receive(:Locate).with("PROVIDER", "no_provider").and_return([])
+
+      expect(subject.LocateProvider("no_provider")).to eql(false)
     end
   end
 

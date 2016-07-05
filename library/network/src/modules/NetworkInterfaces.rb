@@ -236,6 +236,12 @@ module Yast
     end
 
     # Detects a subtype of Ethernet device type according /sys or /proc content
+    #
+    # @example GetEthTypeFromSysfs("eth0") -> "eth"
+    # @example GetEthTypeFromSysfs("bond0") -> "bon"
+    #
+    # @param [String] interface name
+    # @return [String] device type
     def GetEthTypeFromSysfs(dev)
       sys_dir_path = "/sys/class/net/#{dev}"
 
@@ -259,7 +265,14 @@ module Yast
       end
     end
 
-    # Detects a subtype of InfiniBand device type according /sys or /proc content
+    # Detects a subtype of InfiniBand device type according /sys
+    #
+    # @example GetEthTypeFromSysfs("ib0") -> "ib"
+    # @example GetEthTypeFromSysfs("bond0") -> "bon"
+    # @example GetEthTypeFromSysfs("ib0.8001") -> "ibchild"
+    #
+    # @param [String] interface name
+    # @return [String] device type
     def GetIbTypeFromSysfs(dev)
       sys_dir_path = "/sys/class/net/#{dev}"
 
@@ -279,6 +292,7 @@ module Yast
     # to specify a "subtype". E.g. in case of "eth" it checks for presence of "wireless" subdir to
     # determine "wlan" device.
     #
+    # @param [String] interface name
     # @return return device type or nil if nothing known found
     def GetTypeFromSysfs(dev)
       sys_dir_path = Builtins.sformat("/sys/class/net/%1", dev)
@@ -636,7 +650,11 @@ module Yast
     def ConcealSecrets1(ifcfg)
       ifcfg = deep_copy(ifcfg)
       return nil if ifcfg.nil?
-      ifcfg.each { |k, v| ifcfg[k] = "CONCEALED" if @SensitiveFields.include?(k) && v != "" }
+
+      secret_fields = ifcfg.select { |k, v| @SensitiveFields.include?(k) && v != "" }
+      secret_fields.map { |k, _v| ifcfg[k] = "CONCEALED" }
+
+      ifcfg
     end
 
     # Conceal secret information, such as WEP keys, so that the output
@@ -663,9 +681,8 @@ module Yast
 
     # Get current sysconfig configured interfaces
     #
-    # @param [String] regex to filter by
+    # @param devregex [String] regex to filter by
     # @return [Array] of ifcfg names
-
     def get_devices(devregex = "[~]")
       allfiles = SCR.Dir(path(".network.section")) || []
       if devregex.nil? || devregex.empty?
@@ -679,16 +696,16 @@ module Yast
 
     # Canonicalize IPADDR and STARTMODE of given config
     # and nested _aliases
-    # @return
+    #
+    # @param [Hash] a map with netconfig (ifcfg) configuration
+    # @return [Hash] ifcfg with canonicalized IP addresses
     def canonicalize_config(config)
       config = deep_copy(config)
       # canonicalize, #46885
-      caliases = (config["_aliases"] || {}).tap do |h|
-        h.map do |a, c|
-          h[a] = CanonicalizeIP(c)
-        end
+      (config["_aliases"] || {}).tap do |aliases|
+        aliases.each { |a, c| aliases[a] = CanonicalizeIP(c) }
       end
-      config["_aliases"] = caliases if caliases != {} # unconditionally?
+
       config = CanonicalizeIP(config)
       CanonicalizeStartmode(config)
     end
@@ -705,6 +722,14 @@ module Yast
       "IP_OPTIONS"
     ].freeze
 
+    # It reads, parses and transforms the given attributes
+    # from the given device config path returning a hash
+    # with the transformed device config
+    #
+    # @param [String] path of the device config to read from
+    # @param [Hash{String => Object}] newdev new device map
+    #
+    # @return [Hash{String => Object}] parsed configuration
     def generate_config(pth, values)
       config = {}
       values.each do |val|
@@ -736,10 +761,16 @@ module Yast
       filter_interfacetype(config)
     end
 
-    def set_devtype_config(device, config)
-      devtype = GetTypeFromIfcfg(config) || GetType(device)
+    # The device is added to @Devices[devtype] hash using the device name as key
+    # and the ifconfg hash as value
+    #
+    # @param <String> device name
+    # @param [Hash] a map with netconfig (ifcfg) configuration
+    #
+    def add_device(device, ifcfg)
+      devtype = GetTypeFromIfcfg(ifcfg) || GetType(device)
       @Devices[devtype] ||= {}
-      @Devices[devtype][device] = config
+      @Devices[devtype][device] = ifcfg
     end
 
     # Read devices from files and cache it
@@ -753,8 +784,8 @@ module Yast
       devices = get_devices
 
       # Read devices
-      devices.each do |d|
-        pth = ".network.value.\"#{d}\""
+      devices.each do |device|
+        pth = ".network.value.\"#{device}\""
         log.debug("pth=#{pth}")
 
         values = SCR.Dir(path(pth))
@@ -762,7 +793,7 @@ module Yast
 
         config = generate_config(pth, values)
 
-        set_devtype_config(d, config)
+        add_device(device, config)
       end
       log.debug("Devices=#{@Devices}")
 
@@ -1307,13 +1338,21 @@ module Yast
       devs == original_devs
     end
 
+    # It returns an array with the next N devices available
+    # for the given device type.
+    #
+    # @example GetFreeDevices("eth", 2) -> [1, 2]
+    #
+    # @param [String] type device type
+    # @param [String] num number of free devices to return
+    # @return [Array] of free devices for given type
     def GetFreeDevices(type, num)
       log.debug("Devices=#{@Devices}")
       log.debug("type,num=#{type},#{num}")
       log.debug("Devices[#{type}]=#{@Devices[type]}")
 
       curdevs = @Devices.fetch(type, {}).keys
-      curdevs = curdevs.map { |d| d.include?(type) ? device_num(d) : d }
+      curdevs.map! { |d| d.include?(type) ? device_num(d) : d }
 
       i = 0
       count = 0
@@ -1574,7 +1613,8 @@ module Yast
       deep_copy(ips)
     end
 
-    # Locate devices of the given type and value
+    # Locate devices which attributes match given key and value
+    #
     # @param [String] key device key
     # @param [String] val device value
     # @return [Array] of devices with key=val
@@ -1588,7 +1628,8 @@ module Yast
       ret
     end
 
-    # Locate devices of the given type and value
+    # Locate devices which attributes doesn't match given key and value
+    #
     # @param [String] key device key
     # @param [String] val device value
     # @return [Array] of devices with key!=val
@@ -1599,15 +1640,14 @@ module Yast
         ret << device if devsmap.any? { |_t, d| d[key] != val }
       end
 
-      deep_copy(ret)
+      ret
     end
 
     # Check if any device is using the specified provider
     # @param [String] provider provider identification
     # @return true if there is any
     def LocateProvider(provider)
-      devs = Locate("PROVIDER", provider)
-      Ops.greater_than(Builtins.size(devs), 0)
+      Locate("PROVIDER", provider).size > 0
     end
 
     # Update /dev/modem symlink
