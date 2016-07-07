@@ -39,7 +39,7 @@ describe Yast::NetworkInterfaces do
     end
 
     before do
-      subject.Reset
+      subject.main
     end
 
     it "returns true if success" do

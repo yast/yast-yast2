@@ -801,15 +801,6 @@ module Yast
       @initialized = true
     end
 
-    def Reset
-      @Devices = {}
-      @OriginalDevices = {}
-      @Current = {}
-      @initialized = false
-      @stack = {}
-      @Name = ""
-    end
-
     # re-read all settings again from system
     # for creating new proposal from scratch (#170558)
     def CleanCacheRead
@@ -817,6 +808,11 @@ module Yast
       Read()
     end
 
+    # Returns all the devices which device name matchs given devregex
+    #
+    # @param [Array] of Devices
+    # @param [String] regex to filter by
+    # @return [Array] of Devices that match the given regex
     def Filter(devices, devregex)
       devices = deep_copy(devices)
       return devices if devices.nil? || devregex.nil? || devregex == ""
@@ -833,6 +829,11 @@ module Yast
       Filter(@Devices, devregex)
     end
 
+    # Returns all the devices that does not match the given devregex
+    #
+    # @param [Array] of Devices
+    # @param [String] regex to filter by
+    # @return [Array] of Devices that match the given regex
     def FilterNOT(devices, devregex)
       return {} if devices.nil? || devregex.nil? || devregex == ""
       devices = deep_copy(devices)

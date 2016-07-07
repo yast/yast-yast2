@@ -94,7 +94,7 @@ module Yast
       end
 
       before do
-        subject.Reset
+        subject.main
         allow(subject).to receive(:Read).and_return(true)
         allow(Yast::SCR).to receive(:Dir).with(Yast::Path.new(".network.section")).and_return(devices)
       end
