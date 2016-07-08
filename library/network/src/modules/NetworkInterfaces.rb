@@ -257,8 +257,7 @@ module Yast
         "tap"
       elsif FileUtils.Exists("/proc/net/vlan/#{dev}")
         "vlan"
-      elsif FileUtils.Exists("/sys/devices/virtual/net/#{dev}") &&
-          dev =~ /dummy.*/
+      elsif FileUtils.Exists("/sys/devices/virtual/net/#{dev}") && dev =~ /dummy/
         "dummy"
       else
         "eth"
@@ -684,12 +683,10 @@ module Yast
     # @param devregex [String] regex to filter by
     # @return [Array] of ifcfg names
     def get_devices(devregex = "[~]")
-      allfiles = SCR.Dir(path(".network.section")) || []
-      if devregex.nil? || devregex.empty?
-        devices = allfiles
-      else
-        devices = allfiles.select { |file| file !~ /#{devregex}/ }
-      end
+      devices = SCR.Dir(path(".network.section")) || []
+
+      devices.select! { |file| file !~ /#{devregex}/ } unless devregex.nil? && devregex.empty?
+
       log.debug "devices=#{devices}"
       devices
     end
@@ -1339,8 +1336,8 @@ module Yast
       devs == original_devs
     end
 
-    # It returns an array with the next N devices available
-    # for the given device type.
+    # It returns an array of <num> elements corresponding to the integer
+    # part of the free device names available for the given device type.
     #
     # @example GetFreeDevices("eth", 2) -> [1, 2]
     #
@@ -1528,7 +1525,6 @@ module Yast
       end
 
       t = GetType(name)
-      #    string d = device_num(name);
       a = alias_num(name)
       devsmap = Ops.get(@Devices, t, {})
 
@@ -1641,40 +1637,6 @@ module Yast
         ret << device if devsmap.any? { |_t, d| d[key] != val }
       end
 
-      ret
-    end
-
-    # Check if any device is using the specified provider
-    # @param [String] provider provider identification
-    # @return true if there is any
-    def LocateProvider(provider)
-      Locate("PROVIDER", provider).size > 0
-    end
-
-    # Update /dev/modem symlink
-    # @return true if success
-    def UpdateModemSymlink
-      ret = false
-      if Builtins.contains(Map.Keys(@Devices), "modem")
-        ml = Map.Keys(Ops.get(@Devices, "modem", {}))
-        ms = Ops.get_string(ml, 0, "0")
-        # map mm = Devices["modem"]:$[][ms]:$[];
-        mm = Ops.get(@Devices, ["modem", ms], {})
-        mdev = Ops.get_string(mm, "MODEM_DEVICE", "")
-        if mdev != "" && mdev != "/dev/modem"
-          curlink = nil
-          m = Convert.to_map(SCR.Read(path(".target.lstat"), "/dev/modem"))
-          if Ops.get_boolean(m, "islink", false) == true
-            curlink = Convert.to_string(
-              SCR.Read(path(".target.symlink"), "/dev/modem")
-            )
-          end
-          if curlink != mdev
-            SCR.Execute(path(".target.symlink"), mdev, "/dev/modem")
-            ret = true
-          end
-        end
-      end
       ret
     end
 
@@ -1854,7 +1816,6 @@ module Yast
     publish function: :SetValue, type: "boolean (string, string, string)"
     publish function: :GetIP, type: "list <string> (string)"
     publish function: :Locate, type: "list <string> (string, string)"
-    publish function: :LocateProvider, type: "boolean (string)"
     publish function: :UpdateModemSymlink, type: "boolean ()"
     publish function: :CleanHotplugSymlink, type: "boolean ()"
     publish function: :List, type: "list <string> (string)"

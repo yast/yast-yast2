@@ -17,7 +17,7 @@ module NetworkStubs
       data:     { "IPADDR" => "2a00:8a00:6000:40::451", "PREFIXLEN" => "119" },
       expected: { "IPADDR" => "2a00:8a00:6000:40::451", "PREFIXLEN" => "119", "NETMASK" => "" }
     }
-  ]
+  ].freeze
 
   # mocked IPv6 relevant part of loaded ifcfg
   IPV4_IFCFG = [
@@ -46,7 +46,7 @@ module NetworkStubs
       data:     { "BOOTPROTO" => "dhcp" },
       expected: { "BOOTPROTO" => "dhcp" }
     }
-  ]
+  ].freeze
 
   MOCKUP_SYSFS_INTERFACES = {
     wls3p0: {
@@ -77,5 +77,5 @@ module NetworkStubs
       sysfs:    "/sys/devices/virtual/net/dummy0",
       eth_type: "dummy"
     }
-  }
+  }.freeze
 end
