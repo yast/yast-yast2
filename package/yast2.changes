@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul 11 13:24:10 UTC 2016 - jreidinger@suse.com
+
+- define 32-bit arm architecture (thanks to @afaerber)
+- 3.1.196
+
+-------------------------------------------------------------------
 Thu Jun 30 06:54:57 UTC 2016 - jreidinger@suse.com
 
 - fix cyclic dependencies caused by split of firewall classes
