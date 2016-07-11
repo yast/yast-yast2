@@ -2,6 +2,7 @@
 Mon Jul 11 13:24:10 UTC 2016 - jreidinger@suse.com
 
 - define 32-bit arm architecture (thanks to @afaerber)
+  (FATE#310070)
 - 3.1.196
 
 -------------------------------------------------------------------
