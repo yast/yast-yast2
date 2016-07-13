@@ -22,6 +22,8 @@ module Installation
   #     previous call, then it call {#modified}
   # - it calls {#write} if user want to apply it now
   # - it calls {#import} if load autoyast profile
+  # - it calls {#modified?} to recognize if given module is modified and needs
+  #   its section with content of {#export} when saving profile
   # - order of all calls is independent, so client should not depend on certain order unless
   #   defined here as workflow call
   #
