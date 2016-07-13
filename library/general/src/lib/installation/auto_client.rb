@@ -11,6 +11,21 @@ module Installation
   #
   # "Autoinstall" basically means {#import}, then {#write}.
   # "Clone" means {#read}, then {#export}.
+  # "Config" workflow is more complicated:
+  #
+  # - it calls {#summary} when user click on icon of module
+  # - it calls {#reset} if user click respective button
+  # - if user want to modify module, it at first call {#export}, then it calls
+  #   {#change}, which can end up in multiple situations:
+  #   - if it returns cancel or abort, it then {#import} previous result of {#export}
+  #   - otherwise it calls {#export}. If output is different then
+  #     previous call, then it call {#modified}
+  # - it calls {#write} if user want to apply it now
+  # - it calls {#import} if load autoyast profile
+  # - order of all calls is independent, so client should not depend on certain order unless
+  #   defined here as workflow call
+  #
+  #
   #
   # @example how to run a client
   #   require "installation/example_auto"
