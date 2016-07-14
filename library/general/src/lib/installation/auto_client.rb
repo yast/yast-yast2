@@ -11,8 +11,6 @@ module Installation
   #
   # "Autoinstall" basically means {#import}, then {#write}.
   #
-  # "Clone" means {#read}, then {#export}.
-  #
   # The workflow for interactive editing in the UI
   # (`Mode.config == true`, see {Yast::ModeClass})
   # is more complicated. The user can choose to perform any action, and
