@@ -19,7 +19,7 @@ module Installation
   # a corresponding method is called:
   #
   # - {#summary}: clicking on the icon of the module.
-  # - {#reset}: clicking Reset.
+  # - {#reset}: clicking Clear.
   # - if the user clicks to Edit a module, at first {#export} is called,
   #   then {#change} is called for UI interaction, which can end up
   #   in multiple situations:
@@ -27,7 +27,8 @@ module Installation
   #     {#export})
   #   - otherwise {#export} is called. If the output is different from the
   #     previous call, then {#modified} is called.
-  # - {#write}: clicking Apply to System
+  # - {#write}: clicking Apply to System.
+  # - {#read}: clicking Clone.
   # - {#import}: selecting File/Open to load an autoyast profile
   # - it calls {#modified?} to recognize if a given module is modified and needs
   #   its section with content of {#export} when saving the profile
