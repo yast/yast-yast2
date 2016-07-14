@@ -52,28 +52,28 @@ module Yast
     end
 
     # Long product name including version
-    alias name find_property
+    alias_method :name, :find_property
 
     # Short product name
-    alias short_name find_property
+    alias_method :short_name, :find_property
 
     # Product version
-    alias version find_property
+    alias_method :version, :find_property
 
     # Boolean whether product requires to run online update
-    alias run_you find_property
+    alias_method :run_you, :find_property
 
     # Array of Strings - Product flags such as "no_you"
-    alias flags find_property
+    alias_method :flags, :find_property
 
     # URL to release notes
-    alias relnotesurl find_property
+    alias_method :relnotesurl, :find_property
 
     # Array of URLs of all release notes
-    alias relnotesurl_all find_property
+    alias_method :relnotesurl_all, :find_property
 
     # Hash of { URL => product_name } pairs
-    alias product_of_relnotes find_property
+    alias_method :product_of_relnotes, :find_property
 
     # Values loaded from os-release file
     OS_RELEASE_PROPERTIES = [

@@ -89,7 +89,7 @@ module Yast
       !!(service && service.active?)
     end
 
-    alias active? Active
+    alias_method :active?, :Active
 
     # Check if service is enabled (in any runlevel)
     #
@@ -102,7 +102,7 @@ module Yast
       !!(service && service.enabled?)
     end
 
-    alias enabled? Enabled
+    alias_method :enabled?, :Enabled
 
     # Enable service
     # Logs error with output from systemctl if the command fails
@@ -116,7 +116,7 @@ module Yast
       true
     end
 
-    alias enable Enable
+    alias_method :enable, :Enable
 
     # Disable service
     # Logs error with output from systemctl if the command fails
@@ -130,7 +130,7 @@ module Yast
       true
     end
 
-    alias disable Disable
+    alias_method :disable, :Disable
 
     # Start service
     # Logs error with output from systemctl if the command fails
@@ -144,7 +144,7 @@ module Yast
       true
     end
 
-    alias start Start
+    alias_method :start, :Start
 
     # Restart service
     # Logs error with output from systemctl if the command fails
@@ -158,7 +158,7 @@ module Yast
       true
     end
 
-    alias restart Restart
+    alias_method :restart, :Restart
 
     # Reload service
     # Logs error with output from systemctl if the command fails
@@ -172,7 +172,7 @@ module Yast
       true
     end
 
-    alias reload Reload
+    alias_method :reload, :Reload
 
     # Stop service
     # Logs error with output from systemctl if the command fails
@@ -186,7 +186,7 @@ module Yast
       true
     end
 
-    alias stop Stop
+    alias_method :stop, :Stop
 
     # Error Message
     #
