@@ -10,23 +10,29 @@ module Installation
   # You need to implement all the methods, except {#packages}.
   #
   # "Autoinstall" basically means {#import}, then {#write}.
+  #
   # "Clone" means {#read}, then {#export}.
-  # "Config" workflow is more complicated:
   #
-  # - it calls {#summary} when user click on icon of module
-  # - it calls {#reset} if user click respective button
-  # - if user want to modify module, it at first call {#export}, then it calls
-  #   {#change}, which can end up in multiple situations:
-  #   - if it returns cancel or abort, it then {#import} previous result of {#export}
-  #   - otherwise it calls {#export}. If output is different then
-  #     previous call, then it call {#modified}
-  # - it calls {#write} if user want to apply it now
-  # - it calls {#import} if load autoyast profile
-  # - it calls {#modified?} to recognize if given module is modified and needs
-  #   its section with content of {#export} when saving profile
-  # - order of all calls is independent, so client should not depend on certain order unless
-  #   defined here as workflow call
+  # The workflow for interactive editing in the UI
+  # (`Mode.config == true`, see {Yast::ModeClass})
+  # is more complicated. The user can choose to perform any action, and
+  # a corresponding method is called:
   #
+  # - {#summary}: clicking on the icon of the module.
+  # - {#reset}: clicking Reset.
+  # - if the user clicks to Edit a module, at first {#export} is called,
+  #   then {#change} is called for UI interaction, which can end up
+  #   in multiple situations:
+  #   - if cancelled/aborted, {#import} is called (on the previous result of
+  #     {#export})
+  #   - otherwise {#export} is called. If the output is different from the
+  #     previous call, then {#modified} is called.
+  # - {#write}: clicking Apply to System
+  # - {#import}: selecting File/Open to load an autoyast profile
+  # - it calls {#modified?} to recognize if a given module is modified and needs
+  #   its section with content of {#export} when saving the profile
+  # - the order of all calls is independent, so the client should not depend
+  #   on a certain order unless it is defined here as a workflow call
   #
   #
   # @example how to run a client
