@@ -224,10 +224,10 @@ module Yast
 
       return true unless !new_files.empty?
 
+      # TRANSLATORS: Continue/Cancel question, %s is a single file name or
+      # a comma separated list of file names.
       msg = n_(
-        # Continue/Cancel question, %s is a file name
         "File %s has been created manually.\nYaST might lose this file.",
-        # Continue/Cancel question, %s is a comma separated list of file names
         "Files %s have been created manually.\nYaST might lose these files.",
         new_files.size
       ) % new_files.join(", ")
