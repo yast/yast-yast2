@@ -10,7 +10,29 @@ module Installation
   # You need to implement all the methods, except {#packages}.
   #
   # "Autoinstall" basically means {#import}, then {#write}.
-  # "Clone" means {#read}, then {#export}.
+  #
+  # The workflow for interactive editing in the UI
+  # (`Mode.config == true`, see {Yast::ModeClass})
+  # is more complicated. The user can choose to perform any action, and
+  # a corresponding method is called:
+  #
+  # - {#summary}: clicking on the icon of the module.
+  # - {#reset}: clicking Clear.
+  # - if the user clicks to Edit a module, at first {#export} is called,
+  #   then {#change} is called for UI interaction, which can end up
+  #   in multiple situations:
+  #   - if cancelled/aborted, {#import} is called (on the previous result of
+  #     {#export})
+  #   - otherwise {#export} is called. If the output is different from the
+  #     previous call, then {#modified} is called.
+  # - {#write}: clicking Apply to System.
+  # - {#read}: clicking Clone.
+  # - {#import}: selecting File/Open to load an autoyast profile
+  # - it calls {#modified?} to recognize if a given module is modified and needs
+  #   its section with content of {#export} when saving the profile
+  # - the order of all calls is independent, so the client should not depend
+  #   on a certain order unless it is defined here as a workflow call
+  #
   #
   # @example how to run a client
   #   require "installation/example_auto"
