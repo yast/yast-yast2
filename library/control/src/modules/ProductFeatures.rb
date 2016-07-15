@@ -213,10 +213,12 @@ module Yast
     # @return [String] the feature value
     def GetStringFeature(section, feature)
       value = GetFeature(section, feature)
-      if Ops.is_string?(value)
+
+      case value
+      when ::String
         value
-      elsif Ops.is_boolean?(value)
-        Convert.to_boolean(value) ? "yes" : "no"
+      when true, false
+        value ? "yes" : "no"
       else
         Builtins.sformat("%1", value)
       end

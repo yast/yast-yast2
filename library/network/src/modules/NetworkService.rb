@@ -274,7 +274,7 @@ module Yast
     #
     # @return [Boolean] continue
     def ConfirmNetworkManager
-      return true unless !@already_asked_for_NetworkManager && network_manager?
+      return true if @already_asked_for_NetworkManager || !network_manager?
 
       # TRANSLATORS: pop-up question when reading the service configuration
       cont = Popup.ContinueCancel(

@@ -410,7 +410,7 @@ module Yast
     def CheckAndInstallPackagesInteractive(packages)
       packages = deep_copy(packages)
       success = CheckAndInstallPackages(packages)
-      return success if success
+      return true if success
 
       if !LastOperationCanceled()
         if Mode.commandline

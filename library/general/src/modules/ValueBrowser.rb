@@ -93,7 +93,7 @@ module Yast
       variable = deep_copy(variable)
       simple = FormatSimpleType(variable, indent)
 
-      return Item(simple) if !simple.nil?
+      return Item(simple) unless simple.nil?
 
       if Ops.is_list?(variable)
         items = []

@@ -735,7 +735,7 @@ module Yast
         break unless len # funny backward compatibility that for nil len remove one element
 
         # the size is OK
-        break unless ret.size > len
+        break if ret.size <= len
 
         # still too long, remove the ellipsis and start a new iteration
         dir.delete(ellipsis)

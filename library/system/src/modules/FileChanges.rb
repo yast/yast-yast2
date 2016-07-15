@@ -173,22 +173,19 @@ module Yast
 
       return true unless Ops.greater_than(Builtins.size(files), 0)
 
-      msg = if Ops.greater_than(Builtins.size(files), 1)
+      msg = n_(
         # Continue/Cancel question, %1 is a coma separated list of file names
-        _("Files %1 have been changed manually.\nYaST might lose some of the changes")
-      else
+        _("Files %1 have been changed manually.\nYaST might lose some of the changes"),
         # Continue/Cancel question, %1 is a file name
-        _("File %1 has been changed manually.\nYaST might lose some of the changes.\n")
-      end
+        _("File %1 has been changed manually.\nYaST might lose some of the changes.\n"),
+        files.size
+      )
 
       msg = Builtins.sformat(msg, Builtins.mergestring(files, ", "))
       popup_file = "/filechecks_non_verbose"
 
-      return true unless {} ==
-          SCR.Read(
-            path(".target.stat"),
-            Ops.add(Directory.vardir, popup_file)
-          )
+      stat = SCR.Read(path(".target.stat"), Ops.add(Directory.vardir, popup_file))
+      return true unless stat == {}
 
       content = VBox(
         Label(msg),
@@ -227,15 +224,14 @@ module Yast
 
       return true unless !new_files.empty?
 
-      # Continue/Cancel question, %s is a file name
-      msg = _("File %s has been created manually.\nYaST might lose this file.")
-      if new_files.size > 1
+      msg = n_(
+        # Continue/Cancel question, %s is a file name
+        "File %s has been created manually.\nYaST might lose this file.",
         # Continue/Cancel question, %s is a comma separated list of file names
-        msg = _(
-          "Files %s have been created manually.\nYaST might lose these files."
-        )
-      end
-      msg = msg % new_files.join(", ")
+        "Files %s have been created manually.\nYaST might lose these files.",
+        new_files.size
+      ) % new_files.join(", ")
+
       popup_file = "/filechecks_non_verbose"
       popup_file_path = File.join(Directory.vardir, popup_file)
 

@@ -252,7 +252,7 @@ module Yast
         next [] if ifaces_left_explicitely == []
 
         # Hmm, some interfaces left
-        next deep_copy(ifaces_also_supported_by_any)
+        deep_copy(ifaces_also_supported_by_any)
       end
 
       Builtins.y2milestone("Ifaces touched: %1", iface_groups)
@@ -633,8 +633,6 @@ module Yast
         @buggy_ifaces = deep_copy(@all_interfaces)
         return false
       end
-
-      false
     end
 
     # Init function of the widget

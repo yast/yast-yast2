@@ -119,16 +119,19 @@ module Yast
     # @param [String] which_steps (type) of finish ("before_chroot", "after_chroot" or "before_umount")
     # @return [Array<String>] steps to be called ...see which_steps parameter
     def GetAdditionalFinishSteps(which_steps)
-      if which_steps == "before_chroot"
-        deep_copy(@additional_finish_steps_before_chroot)
-      elsif which_steps == "after_chroot"
-        deep_copy(@additional_finish_steps_after_chroot)
-      elsif which_steps == "before_umount"
-        deep_copy(@additional_finish_steps_before_umount)
+      ret = case which_steps
+      when "before_chroot"
+        @additional_finish_steps_before_chroot
+      when "after_chroot"
+        @additional_finish_steps_after_chroot
+      when "before_umount"
+        @additional_finish_steps_before_umount
       else
         Builtins.y2error("Unknown FinishSteps type: %1", which_steps)
         nil
       end
+
+      deep_copy(ret)
     end
 
     # Stores the current ProductControl settings as the initial settings.
@@ -575,11 +578,11 @@ module Yast
 
           next deep_copy(new) unless Ops.is_map?(m)
 
-          next Builtins.maplist(new) do |it|
+          Builtins.maplist(new) do |it|
             Builtins.union(Convert.to_map(m), "name" => it)
           end
         else
-          next [m]
+          [m]
         end
       end
 
@@ -597,7 +600,7 @@ module Yast
             modules2 = Builtins.maplist(
               Ops.get_list(tab, "proposal_modules", [])
             ) do |m|
-              next (m == old) ? deep_copy(new) : [m]
+              (m == old) ? deep_copy(new) : [m]
             end
 
             Ops.set(tab, "proposal_modules", Builtins.flatten(modules2))
@@ -756,7 +759,7 @@ module Yast
 
         new_list = Builtins.add(new_list, m) if keep
 
-        next deep_copy(new_list)
+        deep_copy(new_list)
       end
 
       if !found

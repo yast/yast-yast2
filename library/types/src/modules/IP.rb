@@ -266,7 +266,7 @@ module Yast
     #   CheckNetwork("::1/257") -> false
     def CheckNetwork6(network)
       generic_check = CheckNetworkShared(network)
-      return generic_check if !generic_check.nil?
+      return generic_check unless generic_check.nil?
 
       # 2001:db8:0::1/64
       if network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + Netmask.ValidChars6 + "]*$")

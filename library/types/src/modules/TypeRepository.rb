@@ -52,7 +52,7 @@ module Yast
     def is_a(value, type)
       value = deep_copy(value)
       validator = Ops.get(@types, type)
-      return validator.call(value) if !validator.nil?
+      return validator.call(value) if validator
 
       Builtins.y2error("Request to validate unknown type %1", type)
       false
