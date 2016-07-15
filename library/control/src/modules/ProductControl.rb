@@ -262,7 +262,7 @@ module Yast
         if Builtins.contains(
           @DisabledProposals,
           Ops.get_string(mod, "proposal", "")
-          )
+        )
           return true
         end
         # Normal step
@@ -311,7 +311,7 @@ module Yast
           Ops.get_list(@productControl, ["partitioning", "partitions"], [])
         ),
         0
-        )
+      )
         partitioning = Ops.get_map(@productControl, "partitioning", {})
         ProductFeatures.SetBooleanFeature(
           "partitioning",
@@ -335,13 +335,8 @@ module Yast
       ) { |s| s != "" }
       Builtins.y2debug("allowedlist: %1", allowedlist)
       Builtins.y2debug("current: %1", current)
-      if Builtins.size(allowedlist) == 0
-        return true
-      elsif Builtins.contains(allowedlist, current)
-        return true
-      else
-        return false
-      end
+
+      Builtins.size(allowedlist) == 0 || Builtins.contains(allowedlist, current)
     end
 
     # Check if valid architecture
@@ -383,17 +378,10 @@ module Yast
       end
 
       # Defined custom control file
-      if @custom_control_file != ""
-        return name
+      return name if @custom_control_file != ""
 
-        # All standard clients start with "inst_"
-      else
-        if Builtins.issubstring(name, @_client_prefix)
-          return name
-        else
-          return Ops.add(@_client_prefix, name)
-        end
-      end
+      # All standard clients start with "inst_"
+      Builtins.issubstring(name, @_client_prefix) ? name : Ops.add(@_client_prefix, name)
     end
 
     # Return term to be used to run module with CallFunction
@@ -571,15 +559,12 @@ module Yast
       end
 
       Builtins.foreach(modules) do |m|
-        client = ""
-        if Stage.firstboot
-          client = Ops.get_string(m, "name", "dummy")
+        client = if Stage.firstboot
+          Ops.get_string(m, "name", "dummy")
+        elsif Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
+          Ops.get_string(m, "name", "dummy")
         else
-          if Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
-            client = Ops.get_string(m, "name", "dummy")
-          else
-            client = Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
-          end
+          Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
         end
         # FIXME: what about the ruby files?
         client = Ops.add(
@@ -686,9 +671,9 @@ module Yast
           Ops.get_string(workflow, "textdomain", ""),
           label
         )
-      else
-        return Builtins.dgettext(wz_td, label)
       end
+
+      Builtins.dgettext(wz_td, label)
     end
 
     def DisableAllModulesAndProposals(mode, stage)
@@ -869,32 +854,32 @@ module Yast
           if Builtins.haskey(m, "heading") &&
               Ops.get_string(m, "label", "") != ""
             heading = if Builtins.haskey(m, "textdomain")
-                        Builtins.dgettext(
-                          Ops.get_string(m, "textdomain", ""),
-                          Ops.get_string(m, "label", "")
-                        )
-                      else
-                        Builtins.dgettext(
-                          wizard_textdomain,
-                          Ops.get_string(m, "label", "")
-                        )
-                      end
+              Builtins.dgettext(
+                Ops.get_string(m, "textdomain", ""),
+                Ops.get_string(m, "label", "")
+              )
+            else
+              Builtins.dgettext(
+                wizard_textdomain,
+                Ops.get_string(m, "label", "")
+              )
+            end
 
           # Label
           elsif Ops.get_string(m, "label", "") != ""
             first_id = Ops.get_string(m, "id", "") if first_id == ""
 
             label = if Builtins.haskey(m, "textdomain")
-                      Builtins.dgettext(
-                        Ops.get_string(m, "textdomain", ""),
-                        Ops.get_string(m, "label", "")
-                      )
-                    else
-                      Builtins.dgettext(
-                        wizard_textdomain,
-                        Ops.get_string(m, "label", "")
-                      )
-                    end
+              Builtins.dgettext(
+                Ops.get_string(m, "textdomain", ""),
+                Ops.get_string(m, "label", "")
+              )
+            else
+              Builtins.dgettext(
+                wizard_textdomain,
+                Ops.get_string(m, "label", "")
+              )
+            end
 
             id = Ops.get_string(m, "id", "")
             last_label = Ops.get_string(m, "label", "")
@@ -1083,13 +1068,13 @@ module Yast
           )
         # All proposal file names end with _proposal
         if !is_disabled
-          if !Builtins.issubstring(proposal_name, "_proposal")
-            final_proposals = Builtins.add(
+          final_proposals = if !Builtins.issubstring(proposal_name, "_proposal")
+            Builtins.add(
               final_proposals,
               [Ops.add(proposal_name, "_proposal"), order_value]
             )
           else
-            final_proposals = Builtins.add(
+            Builtins.add(
               final_proposals,
               [proposal_name, order_value]
             )
@@ -1350,7 +1335,7 @@ module Yast
             path(".target.string"),
             Installation.current_step,
             step_id
-            )
+          )
             Builtins.y2error("Error writing step identifier")
           end
         end
@@ -1384,7 +1369,7 @@ module Yast
             !Stage.initial
           if !Convert.to_boolean(
             SCR.Execute(path(".target.remove"), Installation.current_step)
-            )
+          )
             Builtins.y2error("Error removing step identifier")
           end
         end

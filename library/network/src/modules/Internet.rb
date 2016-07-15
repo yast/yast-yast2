@@ -127,11 +127,10 @@ module Yast
 
       cmd = Ops.add(Ops.add(Ops.add(cmd, "> "), log), " 2>&1") if log != ""
 
-      ret = nil
-      if @askpassword == true
-        ret = SCR.Execute(path(".target.bash_input"), cmd, @password)
+      ret = if @askpassword == true
+        SCR.Execute(path(".target.bash_input"), cmd, @password)
       else
-        ret = SCR.Execute(path(".target.bash"), cmd)
+        SCR.Execute(path(".target.bash"), cmd)
       end
       if ret != 0
         Builtins.y2error(
@@ -145,7 +144,7 @@ module Yast
         if SCR.Execute(
           path(".target.bash"),
           Ops.add("/sbin/isdnctrl dial ", @device)
-          ) != 0
+        ) != 0
           Builtins.y2error("isdnctrl failed")
           return false
         end

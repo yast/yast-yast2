@@ -133,31 +133,29 @@ module Yast
       # check all aliases in sequence
       ret0 = Builtins.maplist(sequence) do |key, val|
         if key == "ws_start"
-          if !Ops.is_symbol?(val) && Ops.get(aliases, val).nil?
-            Builtins.y2error(2, "sequencer check: alias not found: %1", val)
-            next false
-          else
-            next true
-          end
+          next true if Ops.is_symbol?(val) || !Ops.get(aliases, val).nil?
+
+          Builtins.y2error(2, "sequencer check: alias not found: %1", val)
+          false
         elsif Ops.get(aliases, key).nil?
           Builtins.y2error(2, "sequencer check: alias not found: %1", key)
-          next false
+          false
         elsif !Ops.is_map?(val)
           Builtins.y2error(2, "sequencer check: not a map: %1 %2", key, val)
-          next false
+          false
         else
           ret1 = Builtins.maplist(Convert.to_map(val)) do |k, v|
             if !Ops.is_symbol?(k)
               Builtins.y2error(2, "sequencer check: not a symbol: %1", k)
-              next false
+              false
             elsif !Ops.is_symbol?(v) && Ops.get(aliases, v).nil?
               Builtins.y2error(2, "sequencer check: alias not found: %1", v)
-              next false
+              false
             else
-              next true
+              true
             end
           end
-          next ret1.all? { |v| v }
+          ret1.all?
         end
       end
       ret = Builtins.flatten([ret, ret0])

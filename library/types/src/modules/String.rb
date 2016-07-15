@@ -34,14 +34,14 @@ module Yast
     include Yast::Logger
 
     # @note it is ascii chars only
-    UPPER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    LOWER_CHARS = "abcdefghijklmnopqrstuvwxyz"
+    UPPER_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".freeze
+    LOWER_CHARS = "abcdefghijklmnopqrstuvwxyz".freeze
     ALPHA_CHARS = UPPER_CHARS + LOWER_CHARS
-    DIGIT_CHARS = "0123456789"
+    DIGIT_CHARS = "0123456789".freeze
     ALPHA_NUM_CHARS = ALPHA_CHARS + DIGIT_CHARS
-    PUNCT_CHARS = "!\"\#$%&'()*+,-./:;<=>?@[\\]^_`{|}~"
+    PUNCT_CHARS = "!\"\#$%&'()*+,-./:;<=>?@[\\]^_`{|}~".freeze
     GRAPHICAL_CHARS = ALPHA_NUM_CHARS + PUNCT_CHARS
-    SPACE_CHARS = "\f\r\n\t\v"
+    SPACE_CHARS = "\f\r\n\t\v".freeze
     PRINTABLE_CHARS = SPACE_CHARS + GRAPHICAL_CHARS
 
     def main
@@ -304,11 +304,7 @@ module Yast
 
       pad = padding * (length - text.size)
 
-      if alignment == :right
-        return pad + text
-      else
-        return text + pad
-      end
+      alignment == :right ? (pad + text) : (text + pad)
     end
 
     # Add spaces after the text to make it long enough
@@ -413,11 +409,11 @@ module Yast
                 "\"" => "\\\""
               }
 
-              if backslash_seq[nextcharacter]
-                character = backslash_seq[nextcharacter]
+              character = if backslash_seq[nextcharacter]
+                backslash_seq[nextcharacter]
               else
                 # ignore backslash in invalid backslash sequence
-                character = nextcharacter
+                nextcharacter
               end
 
               log.debug "backslash sequence: '#{character}'"
@@ -438,11 +434,7 @@ module Yast
               # start of a string
               state = :in_string
 
-              if character == "\\\""
-                str = "\""
-              else
-                str = character
-              end
+              str = (character == "\\\"") ? "\"" : character
             end
           # after double quoted string - handle non-separator chars after double quote
           elsif state == :in_quoted_string_after_dblqt
@@ -636,7 +628,7 @@ module Yast
       items.each_with_index do |row, rows_counter|
         table << table_left_padding
         table << table_row(row, cols_lenghts, current_horizontal_padding)
-        table <<  "\n" if (rows_counter + 1) < rows_count
+        table << "\n" if (rows_counter + 1) < rows_count
       end
       table
     end
@@ -742,13 +734,12 @@ module Yast
 
         break unless len # funny backward compatibility that for nil len remove one element
 
-        if ret.size > len
-          # still too long, remove the ellipsis and start a new iteration
-          dir.delete(ellipsis)
-        else
-          # the size is OK
-          break
-        end
+        # the size is OK
+        break if ret.size <= len
+
+        # still too long, remove the ellipsis and start a new iteration
+        dir.delete(ellipsis)
+
         break if dir.empty?
       end
 

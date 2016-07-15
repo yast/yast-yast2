@@ -422,7 +422,7 @@ module Yast
 
       set_icon
       UI.OpenDialog(Opt(:wizardDialog), dialog)
-      if ! @relnotes_button_id.empty?
+      if !@relnotes_button_id.empty?
         ShowReleaseNotesButton(@relnotes_button_label, @relnotes_button_id)
       end
 
@@ -821,7 +821,7 @@ module Yast
           UI.ChangeWidget(Id(:title), :Value, title)
         end
 
-        UI.SetFocus(Id(:accept)) if UI.WidgetExists(Id(:accept)) if set_focus
+        UI.SetFocus(Id(:accept)) if set_focus && UI.WidgetExists(Id(:accept))
       end
 
       SetHelpText(help_text)
@@ -879,13 +879,11 @@ module Yast
       id = deep_copy(id)
       if UI.WizardCommand(term(:SetNextButtonLabel, label)) == true
         UI.WizardCommand(term(:SetNextButtonID, id))
-      else
-        if UI.WidgetExists(Id(:rep_next))
-          UI.ReplaceWidget(
-            Id(:rep_next),
-            PushButton(Id(id), Opt(:key_F10, :default), label)
-          )
-        end
+      elsif UI.WidgetExists(Id(:rep_next))
+        UI.ReplaceWidget(
+          Id(:rep_next),
+          PushButton(Id(id), Opt(:key_F10, :default), label)
+        )
       end
 
       nil
@@ -902,13 +900,11 @@ module Yast
       id = deep_copy(id)
       if UI.WizardCommand(term(:SetBackButtonLabel, label)) == true
         UI.WizardCommand(term(:SetBackButtonID, id))
-      else
-        if UI.WidgetExists(Id(:rep_back))
-          UI.ReplaceWidget(
-            Id(:rep_back),
-            PushButton(Id(id), Opt(:key_F8), label)
-          )
-        end
+      elsif UI.WidgetExists(Id(:rep_back))
+        UI.ReplaceWidget(
+          Id(:rep_back),
+          PushButton(Id(id), Opt(:key_F8), label)
+        )
       end
 
       nil
@@ -923,15 +919,14 @@ module Yast
     #
     def SetAbortButton(id, label)
       id = deep_copy(id)
+
       if UI.WizardCommand(term(:SetAbortButtonLabel, label)) == true
         UI.WizardCommand(term(:SetAbortButtonID, id))
-      else
-        if UI.WidgetExists(Id(:rep_abort))
-          UI.ReplaceWidget(
-            Id(:rep_abort),
-            PushButton(Id(id), Opt(:key_F9), label)
-          )
-        end
+      elsif UI.WidgetExists(Id(:rep_abort))
+        UI.ReplaceWidget(
+          Id(:rep_abort),
+          PushButton(Id(id), Opt(:key_F9), label)
+        )
       end
 
       nil
@@ -1064,7 +1059,6 @@ module Yast
 
       if UI.WizardCommand(term(:SetBackButtonLabel, back_label)) == true
         UI.WizardCommand(term(:SetNextButtonLabel, next_label))
-        SetContents(title, contents, help_text, true, true)
       else
         # Set button labels first to avoid geometry problems: SetContents()
         # calls ReplaceWidget() wich triggers a re-layout.
@@ -1075,8 +1069,9 @@ module Yast
         if UI.WidgetExists(Id(:next))
           UI.ChangeWidget(Id(:next), :Label, next_label)
         end
-        SetContents(title, contents, help_text, true, true)
       end
+
+      SetContents(title, contents, help_text, true, true)
       SetHelpText(help_text)
       UI.CheckShortcuts
 
@@ -1566,9 +1561,9 @@ module Yast
     # @return Tree Item
     def QueryTreeItem
       if haveFancyUI
-        return Convert.to_string(UI.QueryWidget(Id(:wizard), :CurrentItem))
+        Convert.to_string(UI.QueryWidget(Id(:wizard), :CurrentItem))
       else
-        return Convert.to_string(UI.QueryWidget(Id(:wizardTree), :CurrentItem))
+        Convert.to_string(UI.QueryWidget(Id(:wizardTree), :CurrentItem))
       end
     end
 

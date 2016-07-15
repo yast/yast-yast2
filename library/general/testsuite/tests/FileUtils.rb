@@ -797,228 +797,270 @@ module Yast
       @tested_file = "/file/name/anywhere.is"
 
       DUMP("=Exists===============>")
-      TEST(->() { FileUtils.Exists(@tested_file) }, [
-        @READ_EXISTS_1,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.Exists(@tested_file) }, [
-        @READ_EXISTS_2,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.Exists(@tested_file) },
+        [
+          @READ_EXISTS_1,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.Exists(@tested_file) },
+        [
+          @READ_EXISTS_2,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=IsDirectory==========>")
-      TEST(->() { FileUtils.IsDirectory(@tested_file) }, [
-        @READ_DIRECTORY_1,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsDirectory(@tested_file) }, [
-        @READ_DIRECTORY_2,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsDirectory(@tested_file) }, [
-        @READ_EXISTS_2,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.IsDirectory(@tested_file) },
+        [
+          @READ_DIRECTORY_1,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsDirectory(@tested_file) },
+        [
+          @READ_DIRECTORY_2,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsDirectory(@tested_file) },
+        [
+          @READ_EXISTS_2,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=IsFile===============>")
-      TEST(->() { FileUtils.IsFile(@tested_file) }, [
-        @READ_FILE_1,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsFile(@tested_file) }, [
-        @READ_FILE_2,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsFile(@tested_file) }, [
-        @READ_EXISTS_2,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.IsFile(@tested_file) },
+        [
+          @READ_FILE_1,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsFile(@tested_file) },
+        [
+          @READ_FILE_2,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsFile(@tested_file) },
+        [
+          @READ_EXISTS_2,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=IsBlock==============>")
-      TEST(->() { FileUtils.IsBlock(@tested_file) }, [
-        @READ_BLOCK_1,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsBlock(@tested_file) }, [
-        @READ_BLOCK_2,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsBlock(@tested_file) }, [
-        @READ_EXISTS_2,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.IsBlock(@tested_file) },
+        [
+          @READ_BLOCK_1,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsBlock(@tested_file) },
+        [
+          @READ_BLOCK_2,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsBlock(@tested_file) },
+        [
+          @READ_EXISTS_2,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=IsFifo===============>")
-      TEST(->() { FileUtils.IsFifo(@tested_file) }, [
-        @READ_FIFO_1,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsFifo(@tested_file) }, [
-        @READ_FIFO_2,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsFifo(@tested_file) }, [
-        @READ_EXISTS_2,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.IsFifo(@tested_file) },
+        [
+          @READ_FIFO_1,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsFifo(@tested_file) },
+        [
+          @READ_FIFO_2,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsFifo(@tested_file) },
+        [
+          @READ_EXISTS_2,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=IsLink===============>")
-      TEST(->() { FileUtils.IsLink(@tested_file) }, [
-        @READ_LINK_1,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsLink(@tested_file) }, [
-        @READ_LINK_2,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsLink(@tested_file) }, [
-        @READ_EXISTS_3,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.IsLink(@tested_file) },
+        [
+          @READ_LINK_1,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsLink(@tested_file) },
+        [
+          @READ_LINK_2,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsLink(@tested_file) },
+        [
+          @READ_EXISTS_3,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=IsSocket=============>")
-      TEST(->() { FileUtils.IsSocket(@tested_file) }, [
-        @READ_SOCKET_1,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsSocket(@tested_file) }, [
-        @READ_SOCKET_2,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsSocket(@tested_file) }, [
-        @READ_EXISTS_2,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.IsSocket(@tested_file) },
+        [
+          @READ_SOCKET_1,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsSocket(@tested_file) },
+        [
+          @READ_SOCKET_2,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsSocket(@tested_file) },
+        [
+          @READ_EXISTS_2,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=IsCharacterDevice====>")
-      TEST(->() { FileUtils.IsCharacterDevice(@tested_file) }, [
-        @READ_CHARACTERDEVICE_1,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsCharacterDevice(@tested_file) }, [
-        @READ_CHARACTERDEVICE_2,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.IsCharacterDevice(@tested_file) }, [
-        @READ_EXISTS_2,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.IsCharacterDevice(@tested_file) },
+        [
+          @READ_CHARACTERDEVICE_1,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsCharacterDevice(@tested_file) },
+        [
+          @READ_CHARACTERDEVICE_2,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.IsCharacterDevice(@tested_file) },
+        [
+          @READ_EXISTS_2,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=GetFileRealType======>")
-      TEST(->() { FileUtils.GetFileRealType(@tested_file) }, [
-        @READ_REALTYPE_1,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileRealType(@tested_file) }, [
-        @READ_REALTYPE_2,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileRealType(@tested_file) }, [
-        @READ_REALTYPE_3,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileRealType(@tested_file) }, [
-        @READ_REALTYPE_4,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileRealType(@tested_file) }, [
-        @READ_REALTYPE_5,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileRealType(@tested_file) }, [
-        @READ_REALTYPE_6,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileRealType(@tested_file) }, [
-        @READ_REALTYPE_7,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileRealType(@tested_file) }, [
-        @READ_REALTYPE_UNKNOWN,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.GetFileRealType(@tested_file) },
+        [
+          @READ_REALTYPE_1,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileRealType(@tested_file) },
+        [
+          @READ_REALTYPE_2,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileRealType(@tested_file) },
+        [
+          @READ_REALTYPE_3,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileRealType(@tested_file) },
+        [
+          @READ_REALTYPE_4,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileRealType(@tested_file) },
+        [
+          @READ_REALTYPE_5,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileRealType(@tested_file) },
+        [
+          @READ_REALTYPE_6,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileRealType(@tested_file) },
+        [
+          @READ_REALTYPE_7,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileRealType(@tested_file) },
+        [
+          @READ_REALTYPE_UNKNOWN,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=GetFileType======>")
-      TEST(->() { FileUtils.GetFileType(@tested_file) }, [
-        @READ_UNREALTYPE_1,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileType(@tested_file) }, [
-        @READ_UNREALTYPE_2,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileType(@tested_file) }, [
-        @READ_UNREALTYPE_3,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileType(@tested_file) }, [
-        @READ_UNREALTYPE_4,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileType(@tested_file) }, [
-        @READ_UNREALTYPE_5,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileType(@tested_file) }, [
-        @READ_UNREALTYPE_6,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileType(@tested_file) }, [
-        @READ_UNREALTYPE_7,
-        @WRITE,
-        @EXEC
-      ], 0)
-      TEST(->() { FileUtils.GetFileType(@tested_file) }, [
-        @READ_UNREALTYPE_UNKNOWN,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.GetFileType(@tested_file) },
+        [
+          @READ_UNREALTYPE_1,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileType(@tested_file) },
+        [
+          @READ_UNREALTYPE_2,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileType(@tested_file) },
+        [
+          @READ_UNREALTYPE_3,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileType(@tested_file) },
+        [
+          @READ_UNREALTYPE_4,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileType(@tested_file) },
+        [
+          @READ_UNREALTYPE_5,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileType(@tested_file) },
+        [
+          @READ_UNREALTYPE_6,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileType(@tested_file) },
+        [
+          @READ_UNREALTYPE_7,
+          @WRITE,
+          @EXEC
+        ], 0)
+      TEST(->() { FileUtils.GetFileType(@tested_file) },
+        [
+          @READ_UNREALTYPE_UNKNOWN,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=GetSize==========>")
-      TEST(->() { FileUtils.GetSize(@tested_file) }, [
-        @READ_SIZE,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.GetSize(@tested_file) },
+        [
+          @READ_SIZE,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=GetOwnerUserID===>")
-      TEST(->() { FileUtils.GetOwnerUserID(@tested_file) }, [
-        @READ_USER,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.GetOwnerUserID(@tested_file) },
+        [
+          @READ_USER,
+          @WRITE,
+          @EXEC
+        ], 0)
       DUMP("=GetOwnerGroupID==>")
-      TEST(->() { FileUtils.GetOwnerGroupID(@tested_file) }, [
-        @READ_GROUP,
-        @WRITE,
-        @EXEC
-      ], 0)
+      TEST(->() { FileUtils.GetOwnerGroupID(@tested_file) },
+        [
+          @READ_GROUP,
+          @WRITE,
+          @EXEC
+        ], 0)
 
       nil
     end

@@ -8,9 +8,9 @@ module Yast
   # A drop-in replacement of an earlier Perl implementation
   class URLRecodeClass < Module
     # these will be substituted to a regex character class
-    USERNAME_PASSWORD_FRAGMENT_SAFE_CHARS = "-A-Za-z0-9_.!~*'()"
-    PATH_SAFE_CHARS =                       "-A-Za-z0-9_.!~*'()/"
-    QUERY_SAFE_CHARS =                      "-A-Za-z0-9_.!~*'()/:=&"
+    USERNAME_PASSWORD_FRAGMENT_SAFE_CHARS = "-A-Za-z0-9_.!~*'()".freeze
+    PATH_SAFE_CHARS =                       "-A-Za-z0-9_.!~*'()/".freeze
+    QUERY_SAFE_CHARS =                      "-A-Za-z0-9_.!~*'()/:=&".freeze
 
     # Escape password, user name and fragment part of URL string
     # @param [String] input input string

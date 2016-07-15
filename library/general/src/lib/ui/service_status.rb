@@ -55,10 +55,10 @@ module UI
       @enabled_flag = @service.enabled?
       @id_prefix = "_srv_status_#{@service.name}"
       textdomain "base"
-      if reload_flag_label == :restart
-        @reload_label = _("Restart After Saving Settings")
+      @reload_label = if reload_flag_label == :restart
+        _("Restart After Saving Settings")
       else
-        @reload_label = _("Reload After Saving Settings")
+        _("Reload After Saving Settings")
       end
     end
 
@@ -110,8 +110,6 @@ module UI
       Yast::UI.ReplaceWidget(Id("#{id_prefix}_status"), status_widget)
     end
 
-    # rubocop:disable Style/TrivialAccessors
-
     # Checks if the user requested the service to be enabled on boot
     #
     # @return [Boolean]
@@ -125,8 +123,6 @@ module UI
     def reload_flag?
       @reload_flag
     end
-
-    # rubocop:enable Style/TrivialAccessors
 
     # Content for the help
     def help

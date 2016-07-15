@@ -79,11 +79,12 @@ module Yast
       Yast.import "Mode"
 
       Mode.SetTest("testsuite")
-      TEST(->() { FileChanges.FileChanged("/etc/ntp.conf") }, [
-        @READ,
-        @WRITE,
-        @EXECL
-      ], nil)
+      TEST(->() { FileChanges.FileChanged("/etc/ntp.conf") },
+        [
+          @READ,
+          @WRITE,
+          @EXECL
+        ], nil)
       Ops.set(@READ, ["target", "ycp", "/etc/ntp.conf"], "incorrect checksum")
       @EXEC = {
         "target" => {
@@ -94,38 +95,42 @@ module Yast
         }
       }
 
-      TEST(->() { FileChanges.FileChanged("/etc/ntp.conf") }, [
-        @READ,
-        @WRITE,
-        @EXEC
-      ], nil)
+      TEST(->() { FileChanges.FileChanged("/etc/ntp.conf") },
+        [
+          @READ,
+          @WRITE,
+          @EXEC
+        ], nil)
       Ops.set(
         @READ,
         ["target", "ycp", "/etc/ntp.conf"],
         "f210720e1362615ac0ecc544b35abb73  /etc/ntp.conf"
       )
-      TEST(->() { FileChanges.FileChanged("/etc/ntp.conf") }, [
-        @READ,
-        @WRITE,
-        @EXEC
-      ], nil)
+      TEST(->() { FileChanges.FileChanged("/etc/ntp.conf") },
+        [
+          @READ,
+          @WRITE,
+          @EXEC
+        ], nil)
 
-      TEST(->() { FileChanges.CheckNewCreatedFiles([]) }, [
-        @READ,
-        @WRITE,
-        @EXEC
-      ], true)
+      TEST(->() { FileChanges.CheckNewCreatedFiles([]) },
+        [
+          @READ,
+          @WRITE,
+          @EXEC
+        ], true)
 
       Ops.set(
         @READ,
         ["target", "stat", "/var/lib/YaST2/filechecks_non_verbose"],
         {}
       )
-      TEST(->() { FileChanges.CheckNewCreatedFiles(["/etc/apache2/vhosts.d/vhost1"]) }, [
-        @READ,
-        @WRITE,
-        @EXEC
-      ], true)
+      TEST(->() { FileChanges.CheckNewCreatedFiles(["/etc/apache2/vhosts.d/vhost1"]) },
+        [
+          @READ,
+          @WRITE,
+          @EXEC
+        ], true)
 
       nil
     end

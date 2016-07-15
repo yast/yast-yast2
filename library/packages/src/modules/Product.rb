@@ -78,12 +78,12 @@ module Yast
     # Values loaded from os-release file
     OS_RELEASE_PROPERTIES = [
       :name, :short_name, :version
-    ]
+    ].freeze
 
     # All these methods have been dropped
     DROPPED_METHODS = [
       :vendor, :dist, :distproduct, :distversion, :shortlabel
-    ]
+    ].freeze
 
     # Returns list Hashes of selected (installation) or installed (running system)
     # base products got from libzypp
@@ -137,9 +137,7 @@ module Yast
         :name,
         base_product.fetch("display_name",
           base_product.fetch("summary",
-            base_product.fetch("name", "")
-          )
-        )
+            base_product.fetch("name", "")))
       )
 
       set_property(:short_name, base_product.fetch("short_name", name))

@@ -33,7 +33,7 @@ module Yast
   class LinuxrcClass < Module
     # Disables filesystem snapshots (fate#317973)
     # Possible values: all, post, pre, single
-    DISABLE_SNAPSHOTS = "disable_snapshots"
+    DISABLE_SNAPSHOTS = "disable_snapshots".freeze
 
     def main
       Yast.import "Mode"
@@ -116,6 +116,7 @@ module Yast
     def vnc
       InstallInf("VNC") == "1"
     end
+
     # remote X mode ?
     def display_ip
       !InstallInf("Display_IP").nil?
@@ -179,7 +180,7 @@ module Yast
                   root
                 )
               )
-              ) != 0
+            ) != 0
               Builtins.y2error(
                 "Cannot SaveInstallInf %1 to %2",
                 inst_if_file,

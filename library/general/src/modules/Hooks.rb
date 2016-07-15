@@ -104,7 +104,7 @@ module Yast
     end
 
     class SearchPath
-      DEFAULT_DIR = "/var/lib/YaST2/hooks"
+      DEFAULT_DIR = "/var/lib/YaST2/hooks".freeze
 
       attr_reader :path
 
@@ -133,11 +133,8 @@ module Yast
       end
 
       def verify!
-        if path.exist?
-          path
-        else
-          raise "Hook search path #{path} does not exists"
-        end
+        raise "Hook search path #{path} does not exists" unless path.exist?
+        path
       end
 
     private

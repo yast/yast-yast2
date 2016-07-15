@@ -67,12 +67,10 @@ module Yast
     #	string error = sformat("Port number %1 is invalid.", port_nr);
     #	if (ReportOnlyOnce(error)) y2error(error);
     def ReportOnlyOnce(what_to_report)
-      if Builtins.contains(@report_only_once, what_to_report)
-        return false
-      else
-        @report_only_once = Builtins.add(@report_only_once, what_to_report)
-        return true
-      end
+      return false if Builtins.contains(@report_only_once, what_to_report)
+
+      @report_only_once = Builtins.add(@report_only_once, what_to_report)
+      true
     end
     # @!endgroup
 
@@ -240,26 +238,24 @@ module Yast
             "port_ranges",
             Builtins.add(Ops.get(ret, "port_ranges", []), port)
           )
-          # is a normal port
-        else
-          # find also aliases
-          if with_aliases
-            Ops.set(
-              ret,
-              "ports",
-              Convert.convert(
-                Builtins.union(
-                  Ops.get(ret, "ports", []),
-                  PortAliases.GetListOfServiceAliases(port)
-                ),
-                from: "list",
-                to:   "list <string>"
-              )
+        # is a normal port
+        # find also aliases
+        elsif with_aliases
+          Ops.set(
+            ret,
+            "ports",
+            Convert.convert(
+              Builtins.union(
+                Ops.get(ret, "ports", []),
+                PortAliases.GetListOfServiceAliases(port)
+              ),
+              from: "list",
+              to:   "list <string>"
             )
-            # only add the port itself
-          else
-            Ops.set(ret, "ports", Builtins.add(Ops.get(ret, "ports", []), port))
-          end
+          )
+          # only add the port itself
+        else
+          Ops.set(ret, "ports", Builtins.add(Ops.get(ret, "ports", []), port))
         end
       end
 
@@ -295,21 +291,21 @@ module Yast
 
       # max and min are the same, this is not a port range
       if min_pr == max_pr
-        return Builtins.tostring(min_pr)
-        # right port range
+        Builtins.tostring(min_pr)
+      # right port range
       elsif Ops.less_than(min_pr, max_pr)
-        return Ops.add(
+        Ops.add(
           Ops.add(Builtins.tostring(min_pr), ":"),
           Builtins.tostring(max_pr)
         )
-        # min is bigger than max
+      # min is bigger than max
       else
         Builtins.y2error(
           "Starting port '%1' cannot be bigger than ending port '%2'",
           min_pr,
           max_pr
         )
-        return ""
+        ""
       end
     end
 
@@ -450,7 +446,7 @@ module Yast
           if PortIsInPortranges(
             Builtins.tostring(Ops.subtract(port_number, 1)),
             list_of_ranges
-            )
+          )
             # Creating fake port range, to be joined with another one
             list_of_ranges = Builtins.add(
               list_of_ranges,
@@ -460,7 +456,7 @@ module Yast
           elsif PortIsInPortranges(
             Builtins.tostring(Ops.add(port_number, 1)),
             list_of_ranges
-            )
+          )
             # Creating fake port range, to be joined with another one
             list_of_ranges = Builtins.add(
               list_of_ranges,

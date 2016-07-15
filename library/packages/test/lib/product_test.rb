@@ -8,7 +8,7 @@ describe Packages::Product do
   BASE_ATTRS = {
     name: "openSUSE", version: "20160405", arch: "x86_64",
     category: "addon", status: :installed, vendor: "openSUSE"
-  }
+  }.freeze
 
   subject(:product) do
     Packages::Product.new(BASE_ATTRS)

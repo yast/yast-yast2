@@ -39,10 +39,10 @@ require "yast"
 module Yast
   class KernelClass < Module
     # default configuration file for Kernel modules loaded on boot
-    MODULES_CONF_FILE = "yast.conf"
+    MODULES_CONF_FILE = "yast.conf".freeze
 
     # directory where configuration for Kernel modules loaded on boot is stored
-    MODULES_DIR = "/etc/modules-load.d/"
+    MODULES_DIR = "/etc/modules-load.d/".freeze
 
     # SCR path for reading/writing Kernel modules
     MODULES_SCR = Path.new(".kernel_modules_to_load")
@@ -187,11 +187,7 @@ module Yast
         else
           current_param = Ops.add(current_param, current_char)
         end
-        if current_char == "\\"
-          after_backslash = true
-        else
-          after_backslash = false
-        end
+        after_backslash = current_char == "\\"
         parse_index = Ops.add(parse_index, 1)
       end
       cmdlist = Builtins.add(cmdlist, current_param)
@@ -253,12 +249,12 @@ module Yast
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
       # live installation does not create /etc/install.inf (bsc#793065)
-      if Mode.live_installation
+      tmp = if Mode.live_installation
         # not using dedicated agent in order to use the same parser for cmdline
         # independently on whether it comes from /proc/cmdline or /etc/install.inf
-        tmp = Convert.to_string(SCR.Read(path(".target.string"), "/proc/cmdline"))
+        Convert.to_string(SCR.Read(path(".target.string"), "/proc/cmdline"))
       else
-        tmp = Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
+        Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
       end
 
       Builtins.y2milestone(
@@ -407,12 +403,10 @@ module Yast
               @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-pae")
             end
           end
-        else
-          # add PV drivers
-          if xen
-            Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
-            @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
-          end
+        # add PV drivers
+        elsif xen
+          Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
+          @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
         end
       elsif Arch.x86_64
         if kernel_desktop_exists && IsGraphicalDesktop()
@@ -421,21 +415,19 @@ module Yast
             Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-desktop")
             @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-desktop")
           end
-        else
-          if xen
-            Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
-            @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
-          end
+        elsif xen
+          Builtins.y2milestone("Adding Xen PV drivers: xen-kmp-default")
+          @kernel_packages = Builtins.add(@kernel_packages, "xen-kmp-default")
         end
       elsif Arch.ppc
         @binary = "vmlinux"
 
-        if Arch.board_iseries
-          @kernel_packages = ["kernel-iseries64"]
+        @kernel_packages = if Arch.board_iseries
+          ["kernel-iseries64"]
         elsif Arch.ppc32
-          @kernel_packages = ["kernel-default"]
+          ["kernel-default"]
         else
-          @kernel_packages = ["kernel-ppc64"]
+          ["kernel-ppc64"]
         end
       elsif Arch.ia64
         @kernel_packages = ["kernel-default"]
@@ -629,7 +621,7 @@ module Yast
 
       @modules_to_load.each do |file, modules|
         # The content hasn't changed
-        next if (modules.sort == @modules_to_load_old[file].sort)
+        next if modules.sort == @modules_to_load_old[file].sort
 
         if !register_modules_agent(file)
           Builtins.y2error("Cannot register new SCR agent for #{file_path} file")

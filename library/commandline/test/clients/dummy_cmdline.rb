@@ -35,14 +35,14 @@ module Yast
           }
         },
         "options"    => {
-          "text"       => {
+          "text" => {
             # Commandline option help
             "help" => "Any text",
             "type" => "string"
           }
         },
         "mappings"   => {
-          "echo"   => ["text"]
+          "echo" => ["text"]
         }
       }
 

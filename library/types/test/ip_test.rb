@@ -19,7 +19,7 @@ describe Yast::IP do
       "127.0.0.1",
       "255.255.255.255",
       "10.11.12.13"
-    ]
+    ].freeze
 
     VALID_IP4S.each do |valid_ip4|
       it "returns true for valid IPv4 '#{valid_ip4}'" do
@@ -33,7 +33,7 @@ describe Yast::IP do
       "256.255.255.255",
       "01.01.012.013",
       "10,11.12.13"
-    ]
+    ].freeze
 
     INVALID_IP4S.each do |invalid_ip4|
       it "returns false for invalid IPv4 '#{invalid_ip4}'" do
@@ -66,7 +66,7 @@ describe Yast::IP do
       "1:0::0",
       "1:2:3:4:5:6:127.0.0.1",
       "1:2:3::6:127.0.0.1"
-    ]
+    ].freeze
 
     VALID_IP6S.each do |valid_ip6|
       it "returns true for valid IPv6 '#{valid_ip6}'" do
@@ -87,7 +87,7 @@ describe Yast::IP do
       # FIXME: deprecated syntax, so we should handle it like invalid "::127.0.0.1",
       # FIXME: deprecated syntax, so we should handle it invalid "::FFFF:127.0.0.1",
       # FIXME: insufficient regex for ipv4 included in ipv6 "1:2:3:4:5:6:127.0.0.256"
-    ]
+    ].freeze
 
     INVALID_IP6S.each do |invalid_ip6|
       it "returns false for invalid IPv6 '#{invalid_ip6}" do
@@ -110,7 +110,7 @@ describe Yast::IP do
       "127.0.0.1"      => 2_130_706_433,
       "192.168.110.23" => 3_232_263_703,
       "10.20.1.29"     => 169_083_165
-    }
+    }.freeze
 
     RESULT_MAP_INT.each_pair do |k, v|
       it "returns #{v} for #{k}" do
@@ -140,7 +140,7 @@ describe Yast::IP do
       "10.10.0.1"       => "0A0A0001",
       "192.168.1.1"     => "C0A80101",
       "255.255.255.255" => "FFFFFFFF"
-    }
+    }.freeze
 
     RESULT_MAP_HEX.each_pair do |k, v|
       it "returns #{v} for valid #{k}" do
@@ -156,7 +156,7 @@ describe Yast::IP do
   RESULT_MAP_BITS = {
     "80.25.135.2"    => "01010000000110011000011100000010",
     "172.24.233.211" => "10101100000110001110100111010011"
-  }
+  }.freeze
 
   describe "#IPv4ToBits" do
     RESULT_MAP_BITS.each_pair do |k, v|

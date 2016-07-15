@@ -374,15 +374,13 @@ module Yast
       @passphrase = nil
 
       if Mode.commandline
-        if CommandLine.Interactive
-          # ask for the passphrase in the commandline (interactive) mode
-          return CommandLine.PasswordInput(
-            Builtins.sformat(_("Enter Passphrase to Unlock GPG Key %1: "), key)
-          )
-        else
-          # no input possible
-          return nil
-        end
+        # no input possible
+        return nil unless CommandLine.Interactive
+
+        # ask for the passphrase in the commandline (interactive) mode
+        return CommandLine.PasswordInput(
+          Builtins.sformat(_("Enter Passphrase to Unlock GPG Key %1: "), key)
+        )
       end
 
       # run the dialog

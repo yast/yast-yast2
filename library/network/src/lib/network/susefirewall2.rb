@@ -38,7 +38,7 @@ module Yast
   # SuSEFirewall2/SF2 Class. The original, simply created from the Firewall
   # factory class.
   class SuSEFirewall2Class < SuSEFirewallClass
-    CONFIG_FILE = "/etc/sysconfig/SuSEfirewall2"
+    CONFIG_FILE = "/etc/sysconfig/SuSEfirewall2".freeze
 
     include Yast::Logger
 
@@ -281,12 +281,10 @@ module Yast
     #	string error = sformat("Port number %1 is invalid.", port_nr);
     #	if (ReportOnlyOnce(error)) y2error(error);
     def ReportOnlyOnce(what_to_report)
-      if Builtins.contains(@report_only_once, what_to_report)
-        return false
-      else
-        @report_only_once = Builtins.add(@report_only_once, what_to_report)
-        return true
-      end
+      return false if Builtins.contains(@report_only_once, what_to_report)
+
+      @report_only_once = Builtins.add(@report_only_once, what_to_report)
+      true
     end
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
@@ -618,7 +616,7 @@ module Yast
         if !Builtins.contains(
           Ops.get(allowed_ports_divided, "ports", []),
           needed_port
-          ) &&
+        ) &&
             !PortRanges.PortIsInPortranges(
               needed_port,
               Ops.get(allowed_ports_divided, "port_ranges", [])
@@ -955,21 +953,19 @@ module Yast
       # do not trust
       if zone == "no"
         Ops.set(@SETTINGS, "FW_IPSEC_TRUST", "no")
+      # trust IPsec is a known zone
+      elsif IsKnownZone(zone)
+        zone = GetZoneConfigurationString(zone)
+        Ops.set(@SETTINGS, "FW_IPSEC_TRUST", zone)
+        # unknown zone, changing to default value
       else
-        # trust IPsec is a known zone
-        if IsKnownZone(zone)
-          zone = GetZoneConfigurationString(zone)
-          Ops.set(@SETTINGS, "FW_IPSEC_TRUST", zone)
-          # unknown zone, changing to default value
-        else
-          defaultv = GetDefaultValue("FW_IPSEC_TRUST")
-          Builtins.y2warning(
-            "Trust IPsec as '%1' (unknown zone) changed to '%2'",
-            zone,
-            defaultv
-          )
-          Ops.set(@SETTINGS, "FW_IPSEC_TRUST", defaultv)
-        end
+        defaultv = GetDefaultValue("FW_IPSEC_TRUST")
+        Builtins.y2warning(
+          "Trust IPsec as '%1' (unknown zone) changed to '%2'",
+          zone,
+          defaultv
+        )
+        Ops.set(@SETTINGS, "FW_IPSEC_TRUST", defaultv)
       end
 
       nil
@@ -981,31 +977,28 @@ module Yast
     # @return	[String] zone or "no"
     def GetTrustIPsecAs
       # do not trust
-      if Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "no"
-        return "no"
-        # default value for 'yes" ~= "INT"
-      elsif Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "yes"
-        return "INT"
-      else
-        zone = GetConfigurationStringZone(
-          Ops.get_string(@SETTINGS, "FW_IPSEC_TRUST", "")
-        )
-        # trust as named zone (if known)
-        if IsKnownZone(zone)
-          return zone
-          # unknown zone, change to default value
-        else
-          SetModified()
-          defaultv = GetDefaultValue("FW_IPSEC_TRUST")
-          Builtins.y2warning(
-            "Trust IPsec as '%1' (unknown zone) changed to '%2'",
-            Ops.get_string(@SETTINGS, "FW_IPSEC_TRUST", ""),
-            defaultv
-          )
-          SetTrustIPsecAs(defaultv)
-          return "no"
-        end
-      end
+      return "no" if Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "no"
+
+      # default value for 'yes" ~= "INT"
+      return "INT" if Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "yes"
+
+      zone = GetConfigurationStringZone(
+        Ops.get_string(@SETTINGS, "FW_IPSEC_TRUST", "")
+      )
+
+      # trust as named zone (if known)
+      return zone if IsKnownZone(zone)
+
+      # unknown zone, change to default value
+      SetModified()
+      defaultv = GetDefaultValue("FW_IPSEC_TRUST")
+      Builtins.y2warning(
+        "Trust IPsec as '%1' (unknown zone) changed to '%2'",
+        Ops.get_string(@SETTINGS, "FW_IPSEC_TRUST", ""),
+        defaultv
+      )
+      SetTrustIPsecAs(defaultv)
+      "no"
     end
 
     # Function for getting exported SuSEFirewall configuration
@@ -1107,11 +1100,11 @@ module Yast
 
       Builtins.foreach(interfaces) do |interface|
         # interface is covered by 'any' in 'EXT'
-        if Builtins.contains(interfaces_covered_by_any, interface)
-          zone = @special_all_interface_zone
+        zone = if Builtins.contains(interfaces_covered_by_any, interface)
+          @special_all_interface_zone
         else
           # interface is explicitely mentioned in some zone
-          zone = GetZoneOfInterface(interface)
+          GetZoneOfInterface(interface)
         end
         zones = Builtins.add(zones, zone) if !zone.nil?
       end
@@ -1661,37 +1654,33 @@ module Yast
         if !IsStarted()
           Builtins.y2milestone("Starting firewall services")
           return StartServices()
-          # Started - restart it
-        else
-          # modified - restart it, or ...
-          # bugzilla #186186
-          # If any RPC service is configured to be allowed, always restart the firewall
-          # Some of these service's ports might have been reallocated (when SuSEFirewall
-          # is used from outside, e.g., yast2-nfs-server)
-          if GetModified() || AnyRPCServiceInConfiguration()
-            Builtins.y2milestone("Stopping firewall services")
-            StopServices()
-            Builtins.y2milestone("Starting firewall services")
-            return StartServices()
-            # not modified - skip restart
-          else
-            Builtins.y2milestone(
-              "Configuration hasn't modified, skipping restarting services"
-            )
-            return true
-          end
-        end
-        # Firewall should stop after Write()
-      else
-        # started - stop
-        if IsStarted()
+        # Started - restart it
+        # modified - restart it, or ...
+        # bugzilla #186186
+        # If any RPC service is configured to be allowed, always restart the firewall
+        # Some of these service's ports might have been reallocated (when SuSEFirewall
+        # is used from outside, e.g., yast2-nfs-server)
+        elsif GetModified() || AnyRPCServiceInConfiguration()
           Builtins.y2milestone("Stopping firewall services")
-          return StopServices()
-          # stopped - skip stopping
+          StopServices()
+          Builtins.y2milestone("Starting firewall services")
+          return StartServices()
+        # not modified - skip restart
         else
-          Builtins.y2milestone("Firewall has been stopped already")
+          Builtins.y2milestone(
+            "Configuration hasn't modified, skipping restarting services"
+          )
           return true
         end
+      # Firewall should stop after Write()
+      # started - stop
+      elsif IsStarted()
+        Builtins.y2milestone("Stopping firewall services")
+        return StopServices()
+        # stopped - skip stopping
+      else
+        Builtins.y2milestone("Firewall has been stopped already")
+        return true
       end
     end
 
@@ -2187,20 +2176,20 @@ module Yast
       ret_val = nil
 
       if rule == "ACCEPT"
-        if Ops.get_string(@SETTINGS, "FW_LOG_ACCEPT_ALL", "no") == "yes"
-          ret_val = "ALL"
+        ret_val = if Ops.get_string(@SETTINGS, "FW_LOG_ACCEPT_ALL", "no") == "yes"
+          "ALL"
         elsif Ops.get_string(@SETTINGS, "FW_LOG_ACCEPT_CRIT", "yes") == "yes"
-          ret_val = "CRIT"
+          "CRIT"
         else
-          ret_val = "NONE"
+          "NONE"
         end
       elsif rule == "DROP"
-        if Ops.get_string(@SETTINGS, "FW_LOG_DROP_ALL", "no") == "yes"
-          ret_val = "ALL"
+        ret_val = if Ops.get_string(@SETTINGS, "FW_LOG_DROP_ALL", "no") == "yes"
+          "ALL"
         elsif Ops.get_string(@SETTINGS, "FW_LOG_DROP_CRIT", "yes") == "yes"
-          ret_val = "CRIT"
+          "CRIT"
         else
-          ret_val = "NONE"
+          "NONE"
         end
       else
         Builtins.y2error("Possible rules are only 'ACCEPT' or 'DROP'")
@@ -2396,13 +2385,13 @@ module Yast
       protocol = Builtins.tolower(protocol)
 
       if protocol == ""
-        return ""
+        ""
       elsif Ops.get(@protocol_translations, protocol).nil?
         Builtins.y2error("Unknown protocol: %1", protocol)
         # table item, %1 stands for the buggy protocol name
-        return Builtins.sformat(_("Unknown protocol (%1)"), protocol)
+        Builtins.sformat(_("Unknown protocol (%1)"), protocol)
       else
-        return Ops.get(@protocol_translations, protocol, "")
+        Ops.get(@protocol_translations, protocol, "")
       end
     end
 
@@ -2471,7 +2460,7 @@ module Yast
         if Ops.greater_or_equal(
           Builtins.size(GetServicesAcceptRelated(one_zone)),
           0
-          )
+        )
           Builtins.y2milestone("Some ServicesAcceptRelated are defined")
           needs_additional_module = true
           raise Break
@@ -2664,6 +2653,7 @@ module Yast
 
       nil
     end
+
     # Local function allows ports for requested protocol and zone.
     #
     # @param	list <string> ports to be added

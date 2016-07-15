@@ -104,14 +104,14 @@ module Yast
       label = ""
       if status == :not_installed
         # bnc #429861
-        if Stage.initial
+        label = if Stage.initial
           # label
-          label = _(
+          _(
             "Firewall cannot be adjusted during first stage installation."
           )
         else
           # label
-          label = _("Firewall package is not installed.")
+          _("Firewall package is not installed.")
         end
       elsif status == :off
         # label
@@ -149,10 +149,10 @@ module Yast
           ipaddr = NetworkInterfaces.GetValue(i, "IPADDR")
           # BNC #483455: Interface zone name
           zone = SuSEFirewall.GetZoneOfInterface(i)
-          if !zone.nil? && zone != ""
-            zone = SuSEFirewall.GetZoneFullName(zone)
+          zone = if !zone.nil? && zone != ""
+            SuSEFirewall.GetZoneFullName(zone)
           else
-            zone = _("Interface is not assigned to any zone")
+            _("Interface is not assigned to any zone")
           end
           if label == "static" || label == "" || label.nil?
             label = ipaddr
@@ -162,10 +162,10 @@ module Yast
               label = Builtins.sformat("%1/%2", label, ipaddr)
             end
           end
-          if label.nil? || label == ""
-            label = i
+          label = if label.nil? || label == ""
+            i
           else
-            label = Builtins.sformat("%1 (%2 / %3)", i, label, zone)
+            Builtins.sformat("%1 (%2 / %3)", i, label, zone)
           end
           Item(Id(i), label)
         end
@@ -232,34 +232,29 @@ module Yast
       groups = String.NonEmpty(Builtins.toset(groups))
       groups = Builtins.filter(groups) { |g| !g.nil? }
       iface_groups = Builtins.maplist(groups) do |g|
-        ifaces_also_supported_by_any = SuSEFirewall.GetInterfacesInZoneSupportingAnyFeature(
-          g
-        )
+        ifaces_also_supported_by_any = SuSEFirewall.GetInterfacesInZoneSupportingAnyFeature(g)
+
         # If all interfaces in EXT zone are covered by the special 'any' string
         # and none of these interfaces are selected to be open, we can remove all of them
         # disable the service in whole EXT zone
-        if g == SuSEFirewall.special_all_interface_zone
-          ifaces_left_explicitely = Builtins.filter(
-            ifaces_also_supported_by_any
-          ) do |iface|
-            Builtins.contains(ifaces, iface)
-          end
-          Builtins.y2milestone(
-            "Ifaces left in zone: %1",
-            ifaces_left_explicitely
-          )
-          # there are no interfaces left that would be explicitely mentioned in the EXT zone
-          if ifaces_left_explicitely == []
-            next []
-            # Hmm, some interfaces left
-          else
-            next deep_copy(ifaces_also_supported_by_any)
-          end
-          # Just report all interfaces mentioned in zone
-        else
-          next deep_copy(ifaces_also_supported_by_any)
+        next deep_copy(ifaces_also_supported_by_any) if g != SuSEFirewall.special_all_interface_zone
+
+        ifaces_left_explicitely = Builtins.filter(
+          ifaces_also_supported_by_any
+        ) do |iface|
+          Builtins.contains(ifaces, iface)
         end
+        Builtins.y2milestone(
+          "Ifaces left in zone: %1",
+          ifaces_left_explicitely
+        )
+        # there are no interfaces left that would be explicitely mentioned in the EXT zone
+        next [] if ifaces_left_explicitely == []
+
+        # Hmm, some interfaces left
+        deep_copy(ifaces_also_supported_by_any)
       end
+
       Builtins.y2milestone("Ifaces touched: %1", iface_groups)
       new_ifaces = Builtins.toset(Builtins.flatten(iface_groups))
       new_ifaces = Builtins.filter(new_ifaces) { |i| !i.nil? }
@@ -335,7 +330,7 @@ module Yast
             service_status,
             SuSEFirewall.special_all_interface_zone,
             false
-            )
+          )
             @allowed_interfaces = Convert.convert(
               Builtins.union(@allowed_interfaces, interfaces_supported_by_any),
               from: "list",
@@ -523,7 +518,7 @@ module Yast
               "\n" \
               "Continue?"
           )
-          )
+        )
           return false
         end
       end
@@ -556,7 +551,7 @@ module Yast
             ),
             ifaces_list
           )
-          )
+        )
           return false
         end
       end
@@ -575,7 +570,7 @@ module Yast
             ),
             ifaces_list
           )
-          )
+        )
           return false
         end
       end
@@ -613,38 +608,31 @@ module Yast
           all_ok = false
         end
       end
-      if all_ok
-        return true
-      else
-        ifaces_list = Builtins.mergestring(@buggy_ifaces, "\n")
-        # yes-no popup
-        if Popup.YesNo(
-          Builtins.sformat(
-            _(
-              "Because of SuSE Firewall settings, the port\n" \
-                "on the following interfaces cannot be opened:\n" \
-                "%1\n" \
-                "\n" \
-                "Continue?"
-            ),
-            ifaces_list
-          )
-          )
-          # all known ifaces are buggy
-          if Builtins.size(@buggy_ifaces) == Builtins.size(all_ifaces)
-            return false
-          else
-            # at least one iface isn't buggy
-            return true
-          end
-        else
-          # cancel
-          @buggy_ifaces = deep_copy(@all_interfaces)
-          return false
-        end
-      end
 
-      false
+      return true if all_ok
+
+      ifaces_list = Builtins.mergestring(@buggy_ifaces, "\n")
+
+      if Popup.YesNo(
+        Builtins.sformat(
+          # yes-no popup
+          _(
+            "Because of SuSE Firewall settings, the port\n" \
+              "on the following interfaces cannot be opened:\n" \
+              "%1\n" \
+              "\n" \
+              "Continue?"
+          ),
+          ifaces_list
+        )
+      )
+        # all known ifaces are buggy?
+        return Builtins.size(@buggy_ifaces) != Builtins.size(all_ifaces)
+      else
+        # cancel
+        @buggy_ifaces = deep_copy(@all_interfaces)
+        return false
+      end
     end
 
     # Init function of the widget
@@ -899,11 +887,7 @@ module Yast
           UI.QueryWidget(Id("_cwm_open_firewall"), :Value)
         )
         Builtins.y2milestone("OF: %1", value)
-        if value
-          @allowed_interfaces = deep_copy(@all_interfaces)
-        else
-          @allowed_interfaces = []
-        end
+        @allowed_interfaces = value ? deep_copy(@all_interfaces) : []
 
         @buggy_ifaces = []
         # Checks whether it's possible to enable or disable the service for all interfaces
@@ -989,6 +973,7 @@ module Yast
       UI.WidgetExists(Id("_cwm_open_firewall")) &&
         UI.WidgetExists(Id("_cwm_firewall_details"))
     end
+
     # Get the template for the help text to the firewall opening widget
     # @param [Boolean] restart_displayed shold be true if "Save and restart" is displayed
     # @return [String] help text template with %1 and %2 placeholders
@@ -1054,12 +1039,11 @@ module Yast
     # @return [Hash] the widget description map
     def CreateOpenFirewallWidget(settings)
       settings = deep_copy(settings)
-      help = ""
-      # check box
 
       open_firewall_checkbox = Ops.get_locale(
         settings,
         "open_firewall_checkbox",
+        # check box
         _("Open Port in &Firewall")
       )
       # push button
@@ -1075,10 +1059,10 @@ module Yast
         "firewall_details_handler"
       ) ||
         Ops.get_boolean(settings, "display_details", false)
-      if Builtins.haskey(settings, "help")
-        help = Ops.get_string(settings, "help", "")
+      help = if Builtins.haskey(settings, "help")
+        Ops.get_string(settings, "help", "")
       else
-        help = OpenFirewallHelp(display_firewall_details)
+        OpenFirewallHelp(display_firewall_details)
       end
 
       firewall_settings = CheckBox(

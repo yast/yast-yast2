@@ -70,13 +70,14 @@ module Yast
 
       if sub_vendor != "" && sub_device != ""
         return Ops.add(Ops.add(sub_vendor, "\n"), sub_device)
-      else
-        vendor = Ops.get_string(hardware_entry, "vendor", "")
-        return Ops.add(
-          Ops.add(vendor, vendor != "" ? "\n" : ""),
-          Ops.get_string(hardware_entry, "device", "")
-        )
       end
+
+      vendor = Ops.get_string(hardware_entry, "vendor", "")
+
+      Ops.add(
+        Ops.add(vendor, vendor != "" ? "\n" : ""),
+        Ops.get_string(hardware_entry, "device", "")
+      )
     end
 
     # @param [Hash] lmap	map	map of language codes and translations
@@ -110,22 +111,20 @@ module Yast
     def SysconfigWrite(level, values)
       values = deep_copy(values)
       result = true
-      if level == path(".")
-        level = path(".sysconfig")
+      level = if level == path(".")
+        path(".sysconfig")
       else
-        level = Ops.add(path(".sysconfig"), level)
+        Ops.add(path(".sysconfig"), level)
       end
 
       Builtins.foreach(values) do |entry|
         if Builtins.size(entry) != 2
           Builtins.y2error("bad entry in rc_write()")
-        else
-          if !SCR.Write(
-            Ops.add(level, Ops.get_path(entry, 0, path("."))),
-            Ops.get_string(entry, 1, "")
-            )
-            result = false
-          end
+        elsif !SCR.Write(
+          Ops.add(level, Ops.get_path(entry, 0, path("."))),
+          Ops.get_string(entry, 1, "")
+        )
+          result = false
         end
       end
       result

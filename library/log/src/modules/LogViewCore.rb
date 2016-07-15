@@ -89,7 +89,7 @@ module Yast
       if Ops.greater_than(
         Ops.subtract(Ops.subtract(Builtins.size(@lines), max_lines), 1),
         0
-        )
+      )
         @lines = Builtins.sublist(
           @lines,
           Ops.subtract(Ops.subtract(Builtins.size(@lines), max_lines), 1)
@@ -166,7 +166,7 @@ module Yast
       Builtins.y2milestone("Calling process agent with command %1", command)
 
       @id = Convert.to_integer(
-        SCR.Execute(path(".process.start_shell"), command,  "tty" => true)
+        SCR.Execute(path(".process.start_shell"), command, "tty" => true)
       )
       @is_running = true
 

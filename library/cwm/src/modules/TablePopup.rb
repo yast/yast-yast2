@@ -195,11 +195,8 @@ module Yast
         from: "any",
         to:   "string (map, any)"
       )
-      if !toEval.nil?
-        return toEval.call(descr, opt_id)
-      else
-        return Convert.to_string(opt_id)
-      end
+
+      toEval.nil? ? Convert.to_string(opt_id) : toEval.call(descr, opt_id)
     end
 
     # Get option description map from the key
@@ -801,15 +798,14 @@ module Yast
             current_index = Ops.add(current_index, 1)
             e == opt_id
           end
-          step = 0
-          if current_index == 0
-            step = 1
+          step = if current_index == 0
+            1
           elsif Ops.add(current_index, 1) == Builtins.size(id_list)
-            step = -1
+            -1
           elsif Ops.greater_or_equal(current_index, previous_index)
-            step = 1
+            1
           else
-            step = -1
+            -1
           end
           new_index = Ops.add(current_index, step)
           opt_id = Ops.get(id_list, new_index)
@@ -861,38 +857,42 @@ module Yast
       attrib = deep_copy(attrib)
       widget_descr = deep_copy(widget_descr)
       ValidateTableAttr(attrib)
+
       add_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
-                     PushButton(Id(:_tp_add), Opt(:key_F3), Label.AddButton)
-                   else
-                     HSpacing(0)
-                   end
+        PushButton(Id(:_tp_add), Opt(:key_F3), Label.AddButton)
+      else
+        HSpacing(0)
+      end
+
       edit_button = if Ops.get_boolean(attrib, "edit_button", true)
-                      PushButton(Id(:_tp_edit), Opt(:key_F4), Label.EditButton)
-                    else
-                      HSpacing(0)
-                    end
+        PushButton(Id(:_tp_edit), Opt(:key_F4), Label.EditButton)
+      else
+        HSpacing(0)
+      end
+
       delete_button = if Ops.get_boolean(attrib, "add_delete_buttons", true)
-                        PushButton(Id(:_tp_delete), Opt(:key_F5), Label.DeleteButton)
-                      else
-                        HSpacing(0)
-                      end
+        PushButton(Id(:_tp_delete), Opt(:key_F5), Label.DeleteButton)
+      else
+        HSpacing(0)
+      end
+
       table_header = if Ops.get_boolean(attrib, "changed_column", false)
-                       Header(
-                         # table header, shortcut for changed, keep very short
-                         _("Ch."),
-                         # table header
-                         _("Option"),
-                         # table header
-                         _("Value")
-                       )
-                     else
-                       Header(
-                         # table header
-                         _("Option"),
-                         # table header
-                         _("Value")
-                       )
-                     end
+        Header(
+          # table header, shortcut for changed, keep very short
+          _("Ch."),
+          # table header
+          _("Option"),
+          # table header
+          _("Value")
+        )
+      else
+        Header(
+          # table header
+          _("Option"),
+          # table header
+          _("Value")
+        )
+      end
 
       replace_point = ReplacePoint(Id(:_tp_table_repl), HSpacing(0))
       # help 1/4
@@ -934,17 +934,17 @@ module Yast
       end
 
       up_down = if Ops.get_boolean(attrib, "up_down_buttons", false)
-                  VBox(
-                    VStretch(),
-                    # push button
-                    PushButton(Id(:_tp_up), _("&Up")),
-                    # push button
-                    PushButton(Id(:_tp_down), _("&Down")),
-                    VStretch()
-                  )
-                else
-                  HSpacing(0)
-                end
+        VBox(
+          VStretch(),
+          # push button
+          PushButton(Id(:_tp_up), _("&Up")),
+          # push button
+          PushButton(Id(:_tp_down), _("&Down")),
+          VStretch()
+        )
+      else
+        HSpacing(0)
+      end
 
       ret = Convert.convert(
         Builtins.union(

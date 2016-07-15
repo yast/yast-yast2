@@ -54,7 +54,7 @@ module Yast
       netconfig:       "network",
       network_manager: "NetworkManager",
       wicked:          "wicked"
-    }
+    }.freeze
 
     # network backend identification to its rpm package name mapping
     BACKEND_PKG_NAMES = {
@@ -62,11 +62,11 @@ module Yast
       netconfig:       "sysconfig-network",
       network_manager: "NetworkManager",
       wicked:          "wicked"
-    }
+    }.freeze
 
-    SYSTEMCTL = "/bin/systemctl"
+    SYSTEMCTL = "/bin/systemctl".freeze
 
-    WICKED = "/usr/sbin/wicked"
+    WICKED = "/usr/sbin/wicked".freeze
 
     DEFAULT_BACKEND = :wicked
 
@@ -95,7 +95,7 @@ module Yast
     def RunSystemCtl(service, action)
       cmd = Builtins.sformat("%1 %2 %3.service", SYSTEMCTL, action, service)
       ret = Convert.convert(
-        SCR.Execute(path(".target.bash_output"), cmd,  "TERM" => "raw"),
+        SCR.Execute(path(".target.bash_output"), cmd, "TERM" => "raw"),
         from: "any",
         to:   "map <string, any>"
       )
@@ -274,26 +274,24 @@ module Yast
     #
     # @return [Boolean] continue
     def ConfirmNetworkManager
-      if !@already_asked_for_NetworkManager && network_manager?
-        # TRANSLATORS: pop-up question when reading the service configuration
-        cont = Popup.ContinueCancel(
-          _(
-            "Your network interfaces are currently controlled by NetworkManager\n" \
-              "but the service to configure might not work well with it.\n" \
-              "\n" \
-              "Really continue?"
-          )
-        )
-        Builtins.y2milestone(
-          "Network is controlled by NetworkManager, user decided %1...",
-          cont ? "to continue" : "not to continue"
-        )
-        @already_asked_for_NetworkManager = true
+      return true if @already_asked_for_NetworkManager || !network_manager?
 
-        return cont
-      else
-        return true
-      end
+      # TRANSLATORS: pop-up question when reading the service configuration
+      cont = Popup.ContinueCancel(
+        _(
+          "Your network interfaces are currently controlled by NetworkManager\n" \
+            "but the service to configure might not work well with it.\n" \
+            "\n" \
+            "Really continue?"
+        )
+      )
+      Builtins.y2milestone(
+        "Network is controlled by NetworkManager, user decided %1...",
+        cont ? "to continue" : "not to continue"
+      )
+      @already_asked_for_NetworkManager = true
+
+      cont
     end
 
     def isNetworkRunning
@@ -316,6 +314,7 @@ module Yast
         return false
       end
     end
+
     # test for IPv6
     def isNetworkv6Running
       net = Convert.to_integer(
@@ -341,29 +340,27 @@ module Yast
 
       log.info "RunningNetworkPopup #{network_running}"
 
-      if network_running
-        return true
+      return true if network_running
+
+      error_text = if Stage.initial
+        _(
+          "No running network detected.\n" \
+          "Restart installation and configure network in Linuxrc\n" \
+          "or continue without network."
+        )
       else
-        error_text = if Stage.initial
-                       _(
-                         "No running network detected.\n" \
-                         "Restart installation and configure network in Linuxrc\n" \
-                         "or continue without network."
-                       )
-                     else
-                       _(
-                         "No running network detected.\n" \
-                         "Configure network with YaST or Network Manager plug-in\n" \
-                         "and start this module again\n" \
-                         "or continue without network."
-                       )
-                     end
-
-        ret = Popup.ContinueCancel(error_text)
-
-        log.error "Network not runing!"
-        return ret
+        _(
+          "No running network detected.\n" \
+          "Configure network with YaST or Network Manager plug-in\n" \
+          "and start this module again\n" \
+          "or continue without network."
+        )
       end
+
+      ret = Popup.ContinueCancel(error_text)
+
+      log.error "Network not runing!"
+      ret
     end
 
   private

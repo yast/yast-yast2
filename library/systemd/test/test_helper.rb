@@ -24,10 +24,11 @@ module SystemctlStubs
 
   def stub_execute(success: true)
     allow(Yast::Systemctl).to receive(:execute).and_return(
-      OpenStruct.new \
+      OpenStruct.new(
         stdout: "success",
         stderr: (success ? "" : "failure"),
         exit:   (success ? 0  : 1)
+      )
     )
   end
 
@@ -65,7 +66,7 @@ initrd.target             static
 kexec.target              disabled
 multi-user.target         disabled
 LIST
-  )
+    )
   end
 
   def stub_service_units
@@ -113,10 +114,11 @@ module SystemdUnitStubs
     allow_any_instance_of(Yast::SystemdUnit)
       .to receive(:command)
       .and_return(
-        OpenStruct.new \
+        OpenStruct.new(
           stdout: "",
           stderr: (success ? "" : "failure"),
           exit:   (success ? 0  : 1)
+        )
       )
   end
 end
@@ -130,7 +132,7 @@ module SystemdSocketStubs
       stdout: File.read(File.join(__dir__, "data", "#{socket_name}_socket_properties")),
       stderr: "",
       exit:   0
-      )
+    )
   end
 
   def stub_sockets(socket: "iscsid")
@@ -161,7 +163,7 @@ module SystemdServiceStubs
       stdout: File.read(File.join(__dir__, "data", "#{service_name}_service_properties")),
       stderr: "",
       exit:   0
-      )
+    )
   end
 end
 
@@ -183,6 +185,6 @@ module SystemdTargetStubs
       stdout: File.read(File.join(__dir__, "data", "#{target_name}_target_properties")),
       stderr: "",
       exit:   0
-      )
+    )
   end
 end

@@ -404,7 +404,7 @@ module Yast
           @additional_parameters,
           Ops.add(Directory.logdir, "/y2logmkinitrd")
         )
-        ) != 0
+      ) != 0
         log = Convert.to_string(
           SCR.Read(
             path(".target.string"),

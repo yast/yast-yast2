@@ -923,11 +923,11 @@ module Yast
       total_time = 0
 
       Builtins.foreach(stages) do |stage|
-        if Ops.get_symbol(stage, "units", :sec) == :sec
-          total_time = Ops.add(total_time, Ops.get_integer(stage, "value", 0)) # assume kilobytes
+        total_time = if Ops.get_symbol(stage, "units", :sec) == :sec
+          Ops.add(total_time, Ops.get_integer(stage, "value", 0)) # assume kilobytes
         else
           # assume 15 minutes for installation of openSUSE 11.0, giving 3495 as the constant for kb/s
-          total_time = Ops.add(
+          Ops.add(
             total_time,
             Ops.divide(Ops.get_integer(stage, "value", 0), 3495)
           )
@@ -956,8 +956,6 @@ module Yast
             )
           )
           Ops.set(stage, "start", start)
-
-          start = Ops.add(start, Ops.get_integer(stage, "size", 0)) # assume kilobytes
         else
           # assume 15 minutes for installation of openSUSE 11.0, giving 3495 as the constant
           Ops.set(
@@ -975,12 +973,12 @@ module Yast
           if Ops.greater_than(
             Ops.add(Ops.get_integer(stage, "size", 0), start),
             100
-            )
+          )
             Ops.set(stage, "size", Ops.subtract(100, start))
           end
-
-          start = Ops.add(start, Ops.get_integer(stage, "size", 0))
         end
+
+        start = Ops.add(start, Ops.get_integer(stage, "size", 0))
         total_size += stage["size"]
         Ops.set(@_stages, Ops.get_string(stage, "name", ""), stage)
         # setup first stage

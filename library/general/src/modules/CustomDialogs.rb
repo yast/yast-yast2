@@ -45,12 +45,11 @@ module Yast
           Builtins.y2debug("no pattern")
           Builtins.y2debug("checking for %1", tmp)
           text = Convert.to_string(SCR.Read(path(".target.string"), [tmp, ""]))
-          if text != ""
-            break
-          else
-            i = Ops.add(i, 1)
-            next
-          end
+
+          break if text != ""
+
+          i = Ops.add(i, 1)
+          next
         end
         file = Builtins.sformat(tmp, language)
         Builtins.y2debug("checking for %1", file)

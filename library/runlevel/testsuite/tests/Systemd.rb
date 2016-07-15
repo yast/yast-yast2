@@ -44,52 +44,59 @@ module Yast
       DUMP("Systemd::SetDefaultRunlevel() tests")
 
       # test invalid parameters
-      TEST(->() { Systemd.SetDefaultRunlevel(nil) }, [
-        {},
-        {},
-        { "target" => { "bash" => 0 } }
-      ], nil)
+      TEST(->() { Systemd.SetDefaultRunlevel(nil) },
+        [
+          {},
+          {},
+          { "target" => { "bash" => 0 } }
+        ], nil)
 
-      TEST(->() { Systemd.SetDefaultRunlevel(-1) }, [
-        {},
-        {},
-        { "target" => { "bash" => 0 } }
-      ], nil)
+      TEST(->() { Systemd.SetDefaultRunlevel(-1) },
+        [
+          {},
+          {},
+          { "target" => { "bash" => 0 } }
+        ], nil)
 
-      TEST(->() { Systemd.SetDefaultRunlevel(7) }, [
-        {},
-        {},
-        { "target" => { "bash" => 0 } }
-      ], nil)
+      TEST(->() { Systemd.SetDefaultRunlevel(7) },
+        [
+          {},
+          {},
+          { "target" => { "bash" => 0 } }
+        ], nil)
 
       # test valid parameters
-      TEST(->() { Systemd.SetDefaultRunlevel(3) }, [
-        {},
-        {},
-        { "target" => { "bash" => 0 } }
-      ], nil)
+      TEST(->() { Systemd.SetDefaultRunlevel(3) },
+        [
+          {},
+          {},
+          { "target" => { "bash" => 0 } }
+        ], nil)
 
-      TEST(->() { Systemd.SetDefaultRunlevel(5) }, [
-        {},
-        {},
-        { "target" => { "bash" => 0 } }
-      ], nil)
+      TEST(->() { Systemd.SetDefaultRunlevel(5) },
+        [
+          {},
+          {},
+          { "target" => { "bash" => 0 } }
+        ], nil)
 
       # test failure
-      TEST(->() { Systemd.SetDefaultRunlevel(5) }, [
-        {},
-        {},
-        { "target" => { "bash" => 1 } }
-      ], nil)
+      TEST(->() { Systemd.SetDefaultRunlevel(5) },
+        [
+          {},
+          {},
+          { "target" => { "bash" => 1 } }
+        ], nil)
 
       DUMP("Systemd::DefaultRunlevel() tests")
 
       # test missing / invalid (not a symlink) default
-      TEST(->() { Systemd.DefaultRunlevel }, [
-        { "target" => { "symlink" => nil } },
-        {},
-        {}
-      ], nil)
+      TEST(->() { Systemd.DefaultRunlevel },
+        [
+          { "target" => { "symlink" => nil } },
+          {},
+          {}
+        ], nil)
 
       # test numeric runlevel
       TEST(

@@ -136,7 +136,7 @@ module Yast
         if Ops.greater_than(
           Builtins.size(Ops.get_map(loaded_modules, modulename, {})),
           0
-          )
+        )
           # already loaded
           return :ok
         end
@@ -257,13 +257,12 @@ module Yast
         end # ask_before_loading
       end
 
-      load_success = false
-      if with_modprobe
-        load_success = Convert.to_boolean(
+      load_success = if with_modprobe
+        Convert.to_boolean(
           SCR.Execute(path(".target.modprobe"), modulename, moduleargs)
         )
       else
-        load_success = Convert.to_boolean(
+        Convert.to_boolean(
           SCR.Execute(path(".target.insmod"), modulename, moduleargs)
         )
       end

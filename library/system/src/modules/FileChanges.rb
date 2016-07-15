@@ -69,7 +69,7 @@ module Yast
       if Ops.less_or_equal(
         Convert.to_integer(SCR.Read(path(".target.size"), @data_file)),
         0
-        )
+      )
         @file_checksums = {}
         return
       end
@@ -170,56 +170,47 @@ module Yast
     def CheckFiles(files)
       files = deep_copy(files)
       files = Builtins.filter(files) { |f| FileChanged(f) }
-      if Ops.greater_than(Builtins.size(files), 0)
+
+      return true unless Ops.greater_than(Builtins.size(files), 0)
+
+      msg = n_(
+        # Continue/Cancel question, %1 is a coma separated list of file names
+        _("Files %1 have been changed manually.\nYaST might lose some of the changes"),
         # Continue/Cancel question, %1 is a file name
-        msg = _(
-          "File %1 has been changed manually.\nYaST might lose some of the changes.\n"
+        _("File %1 has been changed manually.\nYaST might lose some of the changes.\n"),
+        files.size
+      )
+
+      msg = Builtins.sformat(msg, Builtins.mergestring(files, ", "))
+      popup_file = "/filechecks_non_verbose"
+
+      stat = SCR.Read(path(".target.stat"), Ops.add(Directory.vardir, popup_file))
+      return true unless stat == {}
+
+      content = VBox(
+        Label(msg),
+        Left(CheckBox(Id(:disable), _("Do not show this message anymore"))),
+        ButtonBox(
+          PushButton(Id(:ok), Opt(:okButton), Label.ContinueButton),
+          PushButton(Id(:cancel), Opt(:cancelButton), Label.CancelButton)
         )
-        if Ops.greater_than(Builtins.size(files), 1)
-          # Continue/Cancel question, %1 is a coma separated list of file names
-          msg = _(
-            "Files %1 have been changed manually.\nYaST might lose some of the changes"
-          )
-        end
-        msg = Builtins.sformat(msg, Builtins.mergestring(files, ", "))
-        popup_file = "/filechecks_non_verbose"
-        if {} ==
-            SCR.Read(
-              path(".target.stat"),
-              Ops.add(Directory.vardir, popup_file)
-            )
-          content = VBox(
-            Label(msg),
-            Left(CheckBox(Id(:disable), _("Do not show this message anymore"))),
-            ButtonBox(
-              PushButton(Id(:ok), Opt(:okButton), Label.ContinueButton),
-              PushButton(Id(:cancel), Opt(:cancelButton), Label.CancelButton)
-            )
-          )
-          UI.OpenDialog(content)
-          UI.SetFocus(:ok)
-          ret = UI.UserInput
-          Builtins.y2milestone("ret = %1", ret)
-          if ret == :ok && Convert.to_boolean(UI.QueryWidget(:disable, :Value))
-            Builtins.y2milestone("Disabled checksum popups")
-            SCR.Write(
-              path(".target.string"),
-              Ops.add(Directory.vardir, popup_file),
-              ""
-            )
-          end
-          UI.CloseDialog
-          if ret == :ok
-            return true
-          else
-            return false
-          end
-        else
-          #			return Popup::ContinueCancel (msg);
-          return true
-        end
+      )
+      UI.OpenDialog(content)
+      UI.SetFocus(:ok)
+
+      ret = UI.UserInput
+      Builtins.y2milestone("ret = %1", ret)
+
+      if ret == :ok && Convert.to_boolean(UI.QueryWidget(:disable, :Value))
+        Builtins.y2milestone("Disabled checksum popups")
+        SCR.Write(
+          path(".target.string"),
+          Ops.add(Directory.vardir, popup_file),
+          ""
+        )
       end
-      true
+      UI.CloseDialog
+      ret == :ok
     end
 
     # Check if any of the possibly new created files is really new
@@ -231,46 +222,43 @@ module Yast
     def CheckNewCreatedFiles(files)
       new_files = files - @file_checksums.keys
 
-      if new_files.size > 0
-        # Continue/Cancel question, %s is a file name
-        msg = _("File %s has been created manually.\nYaST might lose this file.")
-        if new_files.size > 1
-          # Continue/Cancel question, %s is a comma separated list of file names
-          msg = _(
-            "Files %s have been created manually.\nYaST might lose these files."
-          )
-        end
-        msg = msg % new_files.join(", ")
-        popup_file = "/filechecks_non_verbose"
-        popup_file_path = File.join(Directory.vardir, popup_file)
-        if !FileUtils.Exists(popup_file_path)
-          content = VBox(
-            Label(msg),
-            Left(CheckBox(Id(:disable), Message.DoNotShowMessageAgain())),
-            ButtonBox(
-              PushButton(Id(:ok), Opt(:okButton), Label.ContinueButton()),
-              PushButton(Id(:cancel), Opt(:cancelButton), Label.CancelButton())
-            )
-          )
-          UI.OpenDialog(content)
-          UI.SetFocus(:ok)
-          ret = UI.UserInput
-          Builtins.y2milestone("ret = %1", ret)
-          if ret == :ok && UI.QueryWidget(:disable, :Value)
-            Builtins.y2milestone("Disabled checksum popups")
-            SCR.Write(
-              path(".target.string"),
-              popup_file_path,
-              ""
-            )
-          end
-          UI.CloseDialog
-          return ret == :ok
-        else
-          return true
-        end
+      return true unless !new_files.empty?
+
+      # TRANSLATORS: Continue/Cancel question, %s is a single file name or
+      # a comma separated list of file names.
+      msg = n_(
+        "File %s has been created manually.\nYaST might lose this file.",
+        "Files %s have been created manually.\nYaST might lose these files.",
+        new_files.size
+      ) % new_files.join(", ")
+
+      popup_file = "/filechecks_non_verbose"
+      popup_file_path = File.join(Directory.vardir, popup_file)
+
+      return true if FileUtils.Exists(popup_file_path)
+
+      content = VBox(
+        Label(msg),
+        Left(CheckBox(Id(:disable), Message.DoNotShowMessageAgain())),
+        ButtonBox(
+          PushButton(Id(:ok), Opt(:okButton), Label.ContinueButton()),
+          PushButton(Id(:cancel), Opt(:cancelButton), Label.CancelButton())
+        )
+      )
+      UI.OpenDialog(content)
+      UI.SetFocus(:ok)
+      ret = UI.UserInput
+      Builtins.y2milestone("ret = %1", ret)
+      if ret == :ok && UI.QueryWidget(:disable, :Value)
+        Builtins.y2milestone("Disabled checksum popups")
+        SCR.Write(
+          path(".target.string"),
+          popup_file_path,
+          ""
+        )
       end
-      true
+      UI.CloseDialog
+      ret == :ok
     end
 
     publish function: :FileChanged, type: "boolean (string)"

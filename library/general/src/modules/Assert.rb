@@ -34,12 +34,10 @@ module Yast
     def EqualMsg(expected, actual, fail_message)
       expected = deep_copy(expected)
       actual = deep_copy(actual)
-      if expected == actual
-        return true
-      else
-        Builtins.y2error("%1", fail_message)
-        return false
-      end
+      return true if expected == actual
+
+      Builtins.y2error("%1", fail_message)
+      false
     end
 
     # @param [Object] expected expected value of test

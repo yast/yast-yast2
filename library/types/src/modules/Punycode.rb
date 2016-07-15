@@ -100,7 +100,7 @@ module Yast
       if Ops.greater_than(
         Ops.add(Ops.add(@current_cache_size, decoded_size), encoded_size),
         @maximum_cache_size
-        )
+      )
         return
       end
 
@@ -193,17 +193,15 @@ module Yast
       # Check the cache for already entered strings
       current_index = -1
       test_cached = Builtins.listmap(strings_in) do |string_in|
-        string_out = nil
         # Numbers, IPs and empty strings are not converted
-        if Builtins.regexpmatch(string_in, @not_cached_regexp)
-          string_out = string_in
+        string_out = if Builtins.regexpmatch(string_in, @not_cached_regexp)
+          string_in
+        elsif to_punycode
+          GetEncodedCachedString(string_in)
         else
-          if to_punycode
-            string_out = GetEncodedCachedString(string_in)
-          else
-            string_out = GetDecodedCachedString(string_in)
-          end
+          GetDecodedCachedString(string_in)
         end
+
         if string_out.nil?
           current_index = Ops.add(current_index, 1)
           Ops.set(not_cached, current_index, string_in)
@@ -228,7 +226,7 @@ module Yast
 
         if Convert.to_integer(
           SCR.Execute(path(".target.bash"), convert_command)
-          ) != 0
+        ) != 0
           Builtins.y2error("Conversion failed!")
         else
           converted_not_cached = Convert.convert(

@@ -706,6 +706,7 @@ module Yast
 
       nil
     end
+
     # Changes progress bar value to st.
     # @param [Fixnum] st new value
     def Step(st)
@@ -856,6 +857,7 @@ module Yast
 
       nil
     end
+
     # Replaces stages of superior progress by an empty help text.
     def CloseSuperior
       if UI.HasSpecialWidget(:Wizard)
@@ -868,6 +870,7 @@ module Yast
 
       nil
     end
+
     # Make one step in a superior progress bar.
     def StepSuperior
       if Ops.greater_or_equal(@super_step, 0) &&

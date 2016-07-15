@@ -45,7 +45,7 @@ module Yast
       TEST(->() { Sequencer.Run(nil, {}) }, [], nil)
       TEST(->() { Sequencer.Run({}, @Sequence) }, [], nil)
       TEST(->() { Sequencer.Run(@Aliases, {}) }, [], nil)
-      TEST(->() { Sequencer.Run({},  "ws_start" => :ok) }, [], nil)
+      TEST(->() { Sequencer.Run({}, "ws_start" => :ok) }, [], nil)
 
       nil
     end

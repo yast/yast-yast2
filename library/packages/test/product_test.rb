@@ -185,7 +185,7 @@ describe Yast::Product do
       it "reads data from zypp and returns hash of release notes URLs linking to their product names" do
         expect(Yast::Product.product_of_relnotes).to eq(
           "http://doc.opensuse.org/release-notes/x86_64/openSUSE/13.1/release-notes-openSUSE.rpm" => "openSUSE (SELECTED)"
-                                                        )
+        )
       end
     end
 
@@ -266,7 +266,7 @@ describe Yast::Product do
       it "reads data from zypp and returns hash of release notes URLs linking to their product names" do
         expect(Yast::Product.product_of_relnotes).to eq(
           "http://doc.opensuse.org/release-notes/x86_64/openSUSE/13.1/release-notes-openSUSE.rpm" => "openSUSE (INSTALLED)"
-                                                        )
+        )
       end
     end
 
@@ -278,10 +278,10 @@ describe Yast::Product do
   end
 
   # Methods that do not allow empty result
-  SUPPORTED_METHODS = [:name, :short_name, :version, :run_you, :flags, :relnotesurl]
+  SUPPORTED_METHODS = [:name, :short_name, :version, :run_you, :flags, :relnotesurl].freeze
 
   # Empty result is allowed
-  SUPPORTED_METHODS_ALLOWED_EMPTY = [:relnotesurl_all, :product_of_relnotes]
+  SUPPORTED_METHODS_ALLOWED_EMPTY = [:relnotesurl_all, :product_of_relnotes].freeze
 
   context "while called on a broken system (no os-release, no zypp information)" do
     before(:each) do

@@ -66,7 +66,7 @@ module Yast
   end
 
   class SystemdSocketClass < Module
-    UNIT_SUFFIX = ".socket"
+    UNIT_SUFFIX = ".socket".freeze
 
     def find(socket_name, properties = {})
       socket_name += UNIT_SUFFIX unless socket_name.end_with?(UNIT_SUFFIX)

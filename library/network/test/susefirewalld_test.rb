@@ -152,7 +152,7 @@ describe FakeFirewallD do
         services:   ["dns"],
         protocols:  ["ah"]
       }
-    }
+    }.freeze
 
     BAD_FAKE_FIREWALLD_CONFIG = {
       "dmz"     => {
@@ -163,7 +163,7 @@ describe FakeFirewallD do
         services:   ["foobar"],
         interfaces: ["eth3"]
       }
-    }
+    }.freeze
     FULL_FAKE_FIREWALLD_CONFIG = GOOD_FAKE_FIREWALLD_CONFIG.merge(BAD_FAKE_FIREWALLD_CONFIG)
 
     context "when verifying its basic configuration" do
@@ -300,7 +300,8 @@ describe FakeFirewallD do
       it "refuses to set an invalid service to a zone" do
         # mock a running backend
         expect { subject.SetServices(["foobar"], ["eth0"], true) }.to raise_exception(
-          Yast::SuSEFirewalServiceNotFound, /Service with name/)
+          Yast::SuSEFirewalServiceNotFound, /Service with name/
+        )
       end
 
       it "knows about all the new TCP services a zone" do

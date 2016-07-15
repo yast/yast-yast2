@@ -123,11 +123,8 @@ module Yast
       docSettings = Ops.get_map(@docs, docType, {})
       Ops.set(docSettings, "fileName", "dummy")
       ret = SCR.Execute(path(".xml.string"), docSettings, contents)
-      if Ops.is_string?(ret)
-        return Convert.to_string(ret)
-      else
-        return ""
-      end
+
+      Ops.is_string?(ret) ? Convert.to_string(ret) : ""
     end
 
     # Read XML file into YCP

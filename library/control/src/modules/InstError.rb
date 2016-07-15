@@ -192,16 +192,12 @@ module Yast
         return
       end
 
-      uret = nil
-
       loop do
         uret = UI.UserInput
 
-        if uret == :save_y2logs
-          SaveLogs()
-        else
-          break
-        end
+        break if uret != :save_y2logs
+
+        SaveLogs()
       end
 
       UI.CloseDialog

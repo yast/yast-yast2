@@ -139,13 +139,8 @@ module Yast
 
       )
 
-      # Stored in the configuration
-      if !stored.nil?
-        return stored
-      else
-        # Unknown status, return default
-        return true
-      end
+      # Stored in the configuration?
+      stored.nil? ? true : stored
     end
 
     # Function sets the default dialog return value
@@ -268,12 +263,11 @@ module Yast
     # @return do checking?
     def CheckSignaturesInYaST
       if @check_signatures.nil?
-        chs = nil
-        if Stage.initial
-          chs = CheckSignatures()
+        chs = if Stage.initial
+          CheckSignatures()
         else
           # default is "yes"
-          chs = Convert.to_string(
+          Convert.to_string(
             SCR.Read(path(".sysconfig.security.CHECK_SIGNATURES"))
           )
         end
@@ -298,7 +292,7 @@ module Yast
         if Ops.greater_or_equal(
           Ops.add(after_chars_counter, after_chars),
           max_size
-          )
+        )
           splittedstring = Ops.add(
             Ops.add(splittedstring, splittedstring == "" ? "" : delimiter),
             Builtins.substring(whattosplit, after_chars_counter)
@@ -331,19 +325,18 @@ module Yast
         )
       end
 
-      # UI can show images
-      if @has_local_image_support
-        if Ops.get(@msg_icons, msg_type).nil?
-          Builtins.y2warning("Message type %1 not defined", msg_type)
-          return Empty()
-        end
-        return MarginBox(
+      # UI cannot show images
+      return Empty() unless @has_local_image_support
+
+      if Ops.get(@msg_icons, msg_type).nil?
+        Builtins.y2warning("Message type %1 not defined", msg_type)
+        Empty()
+      else
+        MarginBox(
           1,
           0.5,
           Image(Ops.get(@msg_icons, msg_type, ""), "[!]")
         )
-      else
-        return Empty()
       end
     end
 
@@ -681,7 +674,7 @@ module Yast
       if Ops.greater_than(
         Builtins.size(Ops.get_string(key, "fingerprint", "")),
         0
-        )
+      )
         # GPG key property
         rt = Ops.add(
           rt,
@@ -994,8 +987,7 @@ module Yast
             "(%2):"
         ),
         Ops.get_locale(repo, "name", _("Unknown")),
-        repo && repo["url"] ? repo["url"].scan(/.{1,59}/).join("\n") :
-          _("Unknown")
+        repo && repo["url"] ? repo["url"].scan(/.{1,59}/).join("\n") : _("Unknown")
       )
 
       # popup message - label, part 2

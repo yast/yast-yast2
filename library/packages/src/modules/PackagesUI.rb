@@ -314,7 +314,7 @@ module Yast
 
       UI.OpenDialog(
         Opt(:defaultsize),
-        if widget_options.size > 0 # FIXME: add empty? method to Yast::Term
+        if !widget_options.empty?
           PackageSelector(Id(:packages), widget_options, "")
         else
           PackageSelector(Id(:packages), "")
@@ -546,7 +546,7 @@ module Yast
       if Ops.greater_than(
         Builtins.size(Ops.get_list(summary, "remaining", [])),
         0
-        )
+      )
         items = Builtins.add(
           items,
           Ops.add(
@@ -676,11 +676,12 @@ module Yast
       dialog = VBox(
         RichText(Id(:rtext), summary_str),
         Left(
-          ComboBox(Id(:action), _("After Installing Packages"), [
-            Item(Id("summary"), _("Show This Report"), current_action == "summary"),
-            Item(Id("close"), _("Finish"), current_action == "close"),
-            Item(Id("restart"), _("Continue in the Software Manager"), current_action == "restart")
-          ])
+          ComboBox(Id(:action), _("After Installing Packages"),
+            [
+              Item(Id("summary"), _("Show This Report"), current_action == "summary"),
+              Item(Id("close"), _("Finish"), current_action == "close"),
+              Item(Id("restart"), _("Continue in the Software Manager"), current_action == "restart")
+            ])
         )
       )
 

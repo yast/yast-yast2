@@ -302,6 +302,7 @@ module Yast
       end
       minimum
     end
+
     # Add fallback functions to a widget
     # global only because of testsuites
     # @param [Array<Hash{String => Object>}] widgets a list of widget desctiption maps
@@ -456,13 +457,12 @@ module Yast
         Builtins.foreach(v) do |kk, vv|
           ret = ValidateValueType(kk, vv, k) && ret
         end
-        to_check = []
-        if Ops.get(v, "widget") == :custom
-          to_check = ["custom_widget"]
+        to_check = if Ops.get(v, "widget") == :custom
+          ["custom_widget"]
         elsif Ops.get(v, "widget") == :empty
-          to_check = []
+          []
         else
-          to_check = ["label", "widget"]
+          ["label", "widget"]
         end
         if !Builtins.haskey(v, "no_help")
           to_check = Convert.convert(
@@ -668,7 +668,7 @@ module Yast
         if !Builtins.regexpmatch(
           Convert.to_string(UI.QueryWidget(Id(:_tp_value), :Value)),
           regexp
-          )
+        )
           failed = true
         end
       elsif val_type == :list
@@ -807,10 +807,10 @@ module Yast
       event_descr = {}
       timeout = GetLowestTimeout(widgets)
       while ret != :back && ret != :abort && !save
-        if Ops.greater_than(timeout, 0)
-          event_descr = UI.WaitForEvent(timeout)
+        event_descr = if Ops.greater_than(timeout, 0)
+          UI.WaitForEvent(timeout)
         else
-          event_descr = UI.WaitForEvent
+          UI.WaitForEvent
         end
         ret = Ops.get(event_descr, "ID")
         if Ops.get_string(event_descr, "EventType", "") == "DebugEvent"
@@ -855,7 +855,7 @@ module Yast
 
         next if ret.nil?
 
-        ret = nil if !validateWidgets(widgets, event_descr) if save
+        ret = nil if save && !validateWidgets(widgets, event_descr)
 
         if ret.nil?
           save = false

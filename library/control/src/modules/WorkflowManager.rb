@@ -119,16 +119,19 @@ module Yast
     # @param [String] which_steps (type) of finish ("before_chroot", "after_chroot" or "before_umount")
     # @return [Array<String>] steps to be called ...see which_steps parameter
     def GetAdditionalFinishSteps(which_steps)
-      if which_steps == "before_chroot"
-        return deep_copy(@additional_finish_steps_before_chroot)
-      elsif which_steps == "after_chroot"
-        return deep_copy(@additional_finish_steps_after_chroot)
-      elsif which_steps == "before_umount"
-        return deep_copy(@additional_finish_steps_before_umount)
+      ret = case which_steps
+      when "before_chroot"
+        @additional_finish_steps_before_chroot
+      when "after_chroot"
+        @additional_finish_steps_after_chroot
+      when "before_umount"
+        @additional_finish_steps_before_umount
       else
         Builtins.y2error("Unknown FinishSteps type: %1", which_steps)
-        return nil
+        nil
       end
+
+      deep_copy(ret)
     end
 
     # Stores the current ProductControl settings as the initial settings.
@@ -411,13 +414,8 @@ module Yast
             true
           )
 
-          # File exists
-          if !use_filename.nil?
-            return StoreWorkflowFile(use_filename, disk_filename)
-            # No such file
-          else
-            return nil
-          end
+          # File exists?
+          return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
         end
 
         # New workflow types can be added here
@@ -578,15 +576,13 @@ module Yast
                 Ops.get_string(Convert.to_map(m), "name", "") == old
           found = true
 
-          if Ops.is_map?(m)
-            next Builtins.maplist(new) do |it|
-              Builtins.union(Convert.to_map(m),  "name" => it)
-            end
-          else
-            next deep_copy(new)
+          next deep_copy(new) unless Ops.is_map?(m)
+
+          Builtins.maplist(new) do |it|
+            Builtins.union(Convert.to_map(m), "name" => it)
           end
         else
-          next [m]
+          [m]
         end
       end
 
@@ -604,12 +600,9 @@ module Yast
             modules2 = Builtins.maplist(
               Ops.get_list(tab, "proposal_modules", [])
             ) do |m|
-              if m == old
-                next deep_copy(new)
-              else
-                next [m]
-              end
+              (m == old) ? deep_copy(new) : [m]
             end
+
             Ops.set(tab, "proposal_modules", Builtins.flatten(modules2))
             deep_copy(tab)
           end
@@ -755,20 +748,18 @@ module Yast
       found = false
 
       modules = Builtins.maplist(Ops.get_list(workflow, "modules", [])) do |m|
-        if Ops.get_string(m, "name", "") == old
-          new_list = Builtins.maplist(new) do |n|
-            Ops.set(n, "textdomain", domain)
-            deep_copy(n)
-          end
+        next if Ops.get_string(m, "name", "") != old
 
-          found = true
-
-          new_list = Builtins.add(new_list, m) if keep
-
-          next deep_copy(new_list)
-        else
-          next [m]
+        new_list = Builtins.maplist(new) do |n|
+          Ops.set(n, "textdomain", domain)
+          deep_copy(n)
         end
+
+        found = true
+
+        new_list = Builtins.add(new_list, m) if keep
+
+        deep_copy(new_list)
       end
 
       if !found
@@ -1218,7 +1209,7 @@ module Yast
         Ops.get_map(update_file, "update", {}),
         name,
         Ops.get_string(update_file, "textdomain", "control")
-        )
+      )
         Builtins.y2error("Failed to update installation workflow")
         return false
       end
@@ -1240,7 +1231,7 @@ module Yast
 
       if !UpdateInstFinish(
         Ops.get_map(update_file, ["update", "inst_finish"], {})
-        )
+      )
         Builtins.y2error("Adding inst_finish steps failed")
         return false
       end

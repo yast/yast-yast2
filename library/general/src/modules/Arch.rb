@@ -175,13 +175,13 @@ module Yast
     # @return [String] arch_short
     def arch_short
       if sparc
-        return "sparc"
+        "sparc"
       elsif ppc
-        return "ppc"
+        "ppc"
       elsif s390
-        return "s390"
+        "s390"
       else
-        return architecture
+        architecture
       end
     end
 
@@ -236,7 +236,7 @@ module Yast
           if Builtins.issubstring(
             Ops.get_string(device_type, "stdout", ""),
             "chrp"
-       )
+          )
             @_board_compatible = "CHRP"
           end
           # Maple has its own way of pretenting OF1275 compliance
@@ -269,6 +269,7 @@ module Yast
       end
       @_board_compatible
     end
+
     # true for all PPC "MacRISC" boards
     def board_mac
       ppc &&

@@ -119,21 +119,13 @@ module Yast
     # @param [String] file file path
     # @return [Symbol]
     def DetectRichText(file)
-      text = ""
+      return :error unless Ops.greater_than(SCR.Read(path(".target.size"), file), 0)
 
-      if Ops.greater_than(SCR.Read(path(".target.size"), file), 0)
-        text = Convert.to_string(SCR.Read(path(".target.string"), file))
-      else
-        return :error
-      end
+      text = Convert.to_string(SCR.Read(path(".target.string"), file))
 
       return :empty if text == ""
 
-      if Builtins.regexpmatch(text, "</.*>")
-        return :richtext
-      else
-        return :plaintext
-      end
+      Builtins.regexpmatch(text, "</.*>") ? :richtext : :plaintext
     end
 
     publish function: :Rich2Plain, type: "string (string)"

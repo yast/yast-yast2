@@ -306,12 +306,11 @@ module Yast
     # @return [Hash] the widget description map
     def CreateAutoStartWidget(settings)
       settings = deep_copy(settings)
-      help = ""
-      # radio button
 
       start_auto_button = Ops.get_locale(
         settings,
         "start_auto_button",
+        # radio button
         _("During Boot")
       )
       # radio button
@@ -332,10 +331,10 @@ module Yast
         settings,
         "get_service_start_via_xinetd"
       )
-      if Builtins.haskey(settings, "help")
-        help = Ops.get_string(settings, "help", "")
+      help = if Builtins.haskey(settings, "help")
+        Ops.get_string(settings, "help", "")
       else
-        help = xinetd_available ? AutoStartXinetdHelp() : AutoStartHelp()
+        xinetd_available ? AutoStartXinetdHelp() : AutoStartHelp()
       end
 
       items = VBox(
@@ -568,12 +567,11 @@ module Yast
     # @return [Hash] the widget description map
     def CreateStartStopWidget(settings)
       settings = deep_copy(settings)
-      help = ""
-      # push button for immediate service starting
 
       start_now_button = Ops.get_locale(
         settings,
         "start_now_button",
+        # push button for immediate service starting
         _("&Start the Service Now")
       )
       # push button for immediate service stopping
@@ -592,21 +590,21 @@ module Yast
       )
       display_save_now = Builtins.haskey(settings, "save_now_action")
 
-      if Builtins.haskey(settings, "help")
-        help = Ops.get_string(settings, "help", "")
+      help = if Builtins.haskey(settings, "help")
+        Ops.get_string(settings, "help", "")
       else
-        help = StartStopHelp(display_save_now)
+        StartStopHelp(display_save_now)
       end
 
       save_now_button_term = if display_save_now
-                               PushButton(
-                                 Id("_cwm_save_settings_now"),
-                                 Opt(:hstretch),
-                                 save_now_button
-                               )
-                             else
-                               VBox()
-                             end
+        PushButton(
+          Id("_cwm_save_settings_now"),
+          Opt(:hstretch),
+          save_now_button
+        )
+      else
+        VBox()
+      end
 
       immediate_actions = VBox(
         # Frame label (stoping starting service)
@@ -763,18 +761,17 @@ module Yast
     # @return [Hash] the widget description map
     def CreateLdapWidget(settings)
       settings = deep_copy(settings)
-      help = ""
-      # check box
 
       use_ldap_checkbox = Ops.get_locale(
         settings,
         "use_ldap_checkbox",
+        # check box
         _("&LDAP Support Active")
       )
-      if Builtins.haskey(settings, "help")
-        help = Ops.get_string(settings, "help", "")
+      help = if Builtins.haskey(settings, "help")
+        Ops.get_string(settings, "help", "")
       else
-        help = EnableLdapHelp()
+        EnableLdapHelp()
       end
 
       # check box

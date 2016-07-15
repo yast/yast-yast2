@@ -43,9 +43,10 @@ module Yast
       TEST(->() { CommandLine.Done }, [], nil)
 
       # do help
-      TEST(->() { CommandLine.Command }, [
-        { "dev" => { "tty" => "add device=eth0" } }
-      ], nil)
+      TEST(->() { CommandLine.Command },
+        [
+          { "dev" => { "tty" => "add device=eth0" } }
+        ], nil)
       TEST(->() { CommandLine.Done }, [], nil)
       TEST(->() { CommandLine.Aborted }, [], nil)
 

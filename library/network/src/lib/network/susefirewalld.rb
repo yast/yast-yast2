@@ -49,10 +49,10 @@ module Yast
     # :ports      = [Array<String>]
     # :protocols  = [Array<String>]
     # :services   = [Array<String>]
-    ZONE_ATTRIBUTES = [:interfaces, :masquerade, :modified, :ports, :protocols, :services]
+    ZONE_ATTRIBUTES = [:interfaces, :masquerade, :modified, :ports, :protocols, :services].freeze
     # {enable,start}_firewall are "inherited" from SF2 so we can't use symbols
     # there without having to change all the SF2 callers.
-    KEY_SETTINGS = ["enable_firewall", "logging", "routing", "start_firewall"]
+    KEY_SETTINGS = ["enable_firewall", "logging", "routing", "start_firewall"].freeze
 
     EMPTY_ZONE = {
       interfaces: [],
@@ -61,7 +61,7 @@ module Yast
       ports:      [],
       protocols:  [],
       services:   []
-    }
+    }.freeze
 
     # We need that for the tests. Nothing else should access the API
     # directly
@@ -84,7 +84,7 @@ module Yast
       @known_firewall_zones = ["block", "dmz", "drop", "external", "home",
                                "internal", "public", "trusted", "work"]
       # map defines zone name for all known firewall zones
-      @zone_names =  {
+      @zone_names = {
         # TRANSLATORS: Firewall zone name - used in combo box or dialog title
         "block"    => _(
           "Block Zone"
@@ -141,10 +141,10 @@ module Yast
     # equivalent.
     def sf2_to_firewalld_service(service)
       # First, let's strip off 'service:' from service name if present.
-      if service.include?("service:")
-        tmp_service = service.partition(":")[2]
+      tmp_service = if service.include?("service:")
+        service.partition(":")[2]
       else
-        tmp_service = service
+        service
       end
 
       sf2_to_firewalld_map = {
@@ -181,13 +181,13 @@ module Yast
         if !GetKnownFirewallZones().include?(k) && !KEY_SETTINGS.include?(k)
           Builtins.y2warning("Removing invalid key: %1 from imported settings", k)
           import_settings.delete(k)
-        else
+        elsif import_settings[k].is_a?(Hash)
           import_settings[k].keys.each do |v|
             if !ZONE_ATTRIBUTES.include?(v)
               Builtins.y2warning("Removing invalid value: %1 from key %2", v, k)
               import_settings[k].delete(v)
             end
-          end if import_settings[k].is_a?(Hash)
+          end
         end
       end
 
@@ -388,16 +388,14 @@ module Yast
           return true
         end
       # Firewall should stop after Write()
+      # started - stop
+      elsif IsStarted()
+        Builtins.y2milestone("Stopping firewall services")
+        return StopServices()
+        # stopped - skip stopping
       else
-        # started - stop
-        if IsStarted()
-          Builtins.y2milestone("Stopping firewall services")
-          return StopServices()
-          # stopped - skip stopping
-        else
-          Builtins.y2milestone("Firewall has been stopped already")
-          return true
-        end
+        Builtins.y2milestone("Firewall has been stopped already")
+        return true
       end
     end
 
@@ -556,6 +554,7 @@ module Yast
 
       nil
     end
+
     # Function returns list of known interfaces in requested zone.
     # In the firewalld case, we don't support the special 'any' string.
     # Thus, interfaces not in a zone will not be included.
@@ -815,8 +814,8 @@ module Yast
     # @example
     #	// Do not log broadcast packetes from DMZ
     #	SetIgnoreLoggingBroadcast ("DMZ", "yes")
-    def SetIgnoreLoggingBroadcast(_zone = nil, bcast)
-      bcast = bcast.downcase == "no" ? "broadcast" : "off"
+    def SetIgnoreLoggingBroadcast(_zone, bcast)
+      bcast = bcast.casecmp("no").zero? ? "broadcast" : "off"
 
       return nil if @SETTINGS["logging"] == bcast
 
@@ -1068,8 +1067,13 @@ module Yast
 
     def write_zone_masquerade(zone)
       return nil if !zone_attr_modified?(zone, :masquerade)
-      get_zone_attr(zone, :masquerade) ? @fwd_api.add_masquerade(zone) :
+
+      if get_zone_attr(zone, :masquerade)
+        @fwd_api.add_masquerade(zone)
+      else
         @fwd_api.remove_masquerade(zone)
+      end
+
       del_zone_modified(zone, :masquerade)
     end
 
@@ -1157,7 +1161,7 @@ module Yast
             end
           end
         # Is it a port?
-        elsif s.match(/\d+((:|-)\d+)?/)
+        elsif s =~ /\d+((:|-)\d+)?/
           Builtins.y2debug("Adding port %1", s)
           ports << s
         # Is it something else?
@@ -1183,7 +1187,8 @@ module Yast
       get_zone_attr(zone, :services).each do |s|
         Builtins.y2debug(
           "Examinining service %2_%1 for removal",
-          protocol, s)
+          protocol, s
+        )
         if protocol == "udp" &&
             SuSEFirewallServices.GetNeededTCPPorts(s).empty? &&
             !SuSEFirewallServices.GetNeededUDPPorts(s).empty?
@@ -1243,13 +1248,12 @@ module Yast
         # Remove old services and set the new ones.
         Builtins.y2debug(
           "Port %1 will be added to the %2 zone",
-          port_proto, zone)
+          port_proto, zone
+        )
         add_to_zone_attr(zone, :ports, port_proto)
         add_zone_modified(zone, :ports)
       end
     end
-
-  public
 
     publish variable: :firewall_service, type: "string", private: true
     publish variable: :FIREWALL_PACKAGE, type: "const string"

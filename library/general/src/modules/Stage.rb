@@ -73,7 +73,7 @@ module Yast
       if !Builtins.contains(
         ["normal", "initial", "continue", "firstboot", "hardware_probed"],
         new_stage
-        )
+      )
         Builtins.y2error("Unknown stage %1", new_stage)
       end
 

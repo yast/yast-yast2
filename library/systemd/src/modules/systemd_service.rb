@@ -72,7 +72,7 @@ module Yast
   end
 
   class SystemdServiceClass < Module
-    UNIT_SUFFIX = ".service"
+    UNIT_SUFFIX = ".service".freeze
 
     def find(service_name, properties = {})
       service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
@@ -95,7 +95,7 @@ module Yast
       include Yast::Logger
 
       # Available only on installation system
-      START_SERVICE_INSTSYS_COMMAND = "/bin/service_start"
+      START_SERVICE_INSTSYS_COMMAND = "/bin/service_start".freeze
 
       def pid
         properties.pid

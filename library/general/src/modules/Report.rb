@@ -277,6 +277,7 @@ module Yast
         }
       }
     end
+
     # Clear stored yes/no messages
     # @return [void]
     def ClearYesNoMessages
@@ -356,8 +357,8 @@ module Yast
 
       ret = false
       if @display_yesno_messages
-        if Ops.greater_than(@timeout_yesno_messages, 0)
-          ret = Popup.TimedAnyQuestion(
+        ret = if Ops.greater_than(@timeout_yesno_messages, 0)
+          Popup.TimedAnyQuestion(
             headline,
             message,
             yes_button_message,
@@ -366,7 +367,7 @@ module Yast
             @timeout_yesno_messages
           )
         else
-          ret = Popup.AnyQuestion(
+          Popup.AnyQuestion(
             headline,
             message,
             yes_button_message,
@@ -392,8 +393,8 @@ module Yast
 
       ret = false
       if @display_yesno_messages
-        if Ops.greater_than(@timeout_yesno_messages, 0)
-          ret = Popup.TimedErrorAnyQuestion(
+        ret = if Ops.greater_than(@timeout_yesno_messages, 0)
+          Popup.TimedErrorAnyQuestion(
             headline,
             message,
             yes_button_message,
@@ -402,7 +403,7 @@ module Yast
             @timeout_yesno_messages
           )
         else
-          ret = Popup.ErrorAnyQuestion(
+          Popup.ErrorAnyQuestion(
             headline,
             message,
             yes_button_message,
@@ -626,6 +627,7 @@ module Yast
 
       nil
     end
+
     # Set messages logging to .y2log file
     # @param [Boolean] log if log is true then  messages will be logged
     # @return [void]

@@ -101,16 +101,16 @@ module Yast
     def AskPackages(packs, install)
       packs = deep_copy(packs)
       pkgs = Builtins.mergestring(packs, ", ")
-      # the message is followed by list of required packages
-      text = Ops.add(
-        (if install
-           _("These packages need to be installed:")
-         else
-           _("These packages need to be removed:")
-         end
-        ) + " ",
-        pkgs
-      )
+      text = if install
+        # the message is followed by list of required packages
+        _("These packages need to be installed:")
+      else
+        # the message is followed by list of required packages
+        _("These packages need to be removed:")
+      end
+
+      text += " " + pkgs
+
       CommandLine.Print(text)
 
       CommandLine.YesNo
@@ -145,21 +145,21 @@ module Yast
       end
 
       doit = if Mode.commandline
-               CommandLine.Interactive ? AskPackages(packs, install) : true
-             else
-               Popup.AnyQuestionRichText(
-                 "",
-                 text,
-                 40,
-                 10,
-                 # labels changed for bug #215195
-                 #	Label::ContinueButton (), Label::CancelButton (),
-                 # push button label
-                 install ? Label.InstallButton : _("&Uninstall"),
-                 Label.CancelButton,
-                 :focus_yes
-               )
-             end
+        CommandLine.Interactive ? AskPackages(packs, install) : true
+      else
+        Popup.AnyQuestionRichText(
+          "",
+          text,
+          40,
+          10,
+          # labels changed for bug #215195
+          #	Label::ContinueButton (), Label::CancelButton (),
+          # push button label
+          install ? Label.InstallButton : _("&Uninstall"),
+          Label.CancelButton,
+          :focus_yes
+        )
+      end
 
       if doit
         @last_op_canceled = false

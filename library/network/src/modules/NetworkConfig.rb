@@ -74,7 +74,7 @@ module Yast
         if Builtins.regexpmatch(
           comment,
           Ops.add(Ops.add("^.*## Type:[ \t]*([", String.CLower), "]*).*$")
-          )
+        )
           comment = Builtins.regexpsub(
             comment,
             Ops.add(Ops.add("^.*## Type:[ \t]*([", String.CLower), "]*).*$"),
@@ -114,11 +114,10 @@ module Yast
         Convert.convert(data, from: "map", to: "map <string, any>")
       ) do |var, val|
         oldval = Convert.to_string(SCR.Read(Builtins.add(config, var)))
-        newval = ""
-        if Ops.is_boolean?(val)
-          newval = Convert.to_boolean(val) ? "yes" : "no"
+        newval = if Ops.is_boolean?(val)
+          Convert.to_boolean(val) ? "yes" : "no"
         else
-          newval = Builtins.sformat("%1", val)
+          Builtins.sformat("%1", val)
         end
         if oldval.nil? || oldval != newval
           SCR.Write(Builtins.add(config, var), newval)

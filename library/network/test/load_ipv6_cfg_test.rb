@@ -18,7 +18,7 @@ IPV6_IFCFG = [
     data:     { "IPADDR" => "2a00:8a00:6000:40::451", "PREFIXLEN" => "119" },
     expected: { "IPADDR" => "2a00:8a00:6000:40::451", "PREFIXLEN" => "119", "NETMASK" => "" }
   }
-]
+].freeze
 
 describe Yast::NetworkInterfaces do
   context "Handling IPv6 address" do

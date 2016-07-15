@@ -37,7 +37,7 @@ module Yast
       it "returns the result of the original result of the command call" do
         expect(Service.call("status", "sshd")).to be_kind_of(::String)
 
-        stub_service_with(:"try_restart", false)
+        stub_service_with(:try_restart, false)
         expect(Service.call("try-restart", "sshd")).to eq(false)
       end
     end

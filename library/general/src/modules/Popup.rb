@@ -879,37 +879,36 @@ module Yast
 
       loop do
         ret = UI.UserInput
-        if ret == :details
-          success2 = UI.OpenDialog(
-            Opt(:decorated),
-            HBox(
-              VSpacing(@default_height),
-              VBox(
-                HSpacing(@default_width),
-                VSpacing(0.5),
-                RichText(
-                  Builtins.mergestring(
-                    Builtins.splitstring(String.EscapeTags(details), "\n"),
-                    "<br>"
-                  )
-                ),
-                VSpacing(),
-                ButtonBox(
-                  PushButton(
-                    Id(:ok),
-                    Opt(:default, :key_F10, :okButton),
-                    Label.OKButton
-                  )
+        break if ret != :details
+
+        success2 = UI.OpenDialog(
+          Opt(:decorated),
+          HBox(
+            VSpacing(@default_height),
+            VBox(
+              HSpacing(@default_width),
+              VSpacing(0.5),
+              RichText(
+                Builtins.mergestring(
+                  Builtins.splitstring(String.EscapeTags(details), "\n"),
+                  "<br>"
+                )
+              ),
+              VSpacing(),
+              ButtonBox(
+                PushButton(
+                  Id(:ok),
+                  Opt(:default, :key_F10, :okButton),
+                  Label.OKButton
                 )
               )
             )
           )
-          if success2 == true
-            UI.UserInput
-            UI.CloseDialog
-          end
-        else
-          break
+        )
+
+        if success2 == true
+          UI.UserInput
+          UI.CloseDialog
         end
       end
       UI.CloseDialog if success == true
@@ -1797,10 +1796,10 @@ module Yast
     #
     # @example Popup::ShowText ("Boot Messages", "kernel panic", 10);
     def ShowTextTimed(headline, text, timeout)
-      if Builtins.size(headline) == 0
-        heading = VSpacing(0.2)
+      heading = if Builtins.size(headline) == 0
+        VSpacing(0.2)
       else
-        heading = Heading(headline)
+        Heading(headline)
       end
 
       success = UI.OpenDialog(
@@ -1852,12 +1851,10 @@ module Yast
     #
     # @example Popup::ShowText ("Boot Messages", "kernel panic");
     def ShowText(headline, text)
-      heading = Empty()
-
-      if Builtins.size(headline) == 0
-        heading = VSpacing(0.2)
+      heading = if Builtins.size(headline) == 0
+        VSpacing(0.2)
       else
-        heading = Heading(headline)
+        Heading(headline)
       end
 
       success = UI.OpenDialog(

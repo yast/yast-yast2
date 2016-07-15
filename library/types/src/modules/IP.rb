@@ -218,15 +218,10 @@ module Yast
     end
 
     def CheckNetworkShared(network)
-      if network.nil? || network == ""
-        return false
+      return false if network.nil? || network == ""
 
-        # all networks
-      elsif network == "0/0"
-        return true
-      end
-
-      nil
+      # all networks
+      network == "0/0" ? true : nil
     end
 
     # Checks the given IPv4 network entry.
@@ -240,21 +235,18 @@ module Yast
     #   CheckNetwork("172.55.0.0/33") -> false
     def CheckNetwork4(network)
       generic_check = CheckNetworkShared(network)
-      if !generic_check.nil?
-        return generic_check
+      return generic_check unless generic_check.nil?
 
       # 192.168.0.0/20, 0.8.55/158
-      elsif network =~ Regexp.new("^[" + @ValidChars4 + "]+/[0-9]+$")
+      if network =~ Regexp.new("^[" + @ValidChars4 + "]+/[0-9]+$")
         net_parts = network.split("/")
         return Check4(net_parts[0]) &&
-          Netmask.CheckPrefix4(net_parts[1])
-
+            Netmask.CheckPrefix4(net_parts[1])
       # 192.168.0.0/255.255.255.0, 0.8.55/10.258.12
       elsif network =~ Regexp.new("^[" + @ValidChars4 + "]+/[" + @ValidChars4 + "]+$")
         net_parts = network.split("/")
         return Check4(net_parts[0]) &&
-          Netmask.Check4(net_parts[1])
-
+            Netmask.Check4(net_parts[1])
       # 192.168.0.1, 0.8.55.999
       elsif Check4(network)
         return true
@@ -274,22 +266,19 @@ module Yast
     #   CheckNetwork("::1/257") -> false
     def CheckNetwork6(network)
       generic_check = CheckNetworkShared(network)
-      if !generic_check.nil?
-        return generic_check
+      return generic_check unless generic_check.nil?
 
-        # 2001:db8:0::1/64
-      elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + Netmask.ValidChars6 + "]*$")
+      # 2001:db8:0::1/64
+      if network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + Netmask.ValidChars6 + "]*$")
         net_parts = network.split("/")
         return Check6(net_parts[0]) &&
-          Netmask.Check6(net_parts[1])
-
-        # 2001:db8:0::1/ffff:ffff::0
+            Netmask.Check6(net_parts[1])
+      # 2001:db8:0::1/ffff:ffff::0
       elsif network =~ Regexp.new("^[" + @ValidChars6 + "]+/[" + @ValidChars6 + "]+$")
         net_parts = network.split("/")
         return Check6(net_parts[0]) &&
-          Check6(net_parts[1])
+            Check6(net_parts[1])
       # 2001:db8:0::1
-
       elsif Check6(network)
         return true
       end
@@ -360,7 +349,7 @@ module Yast
       return true if ip.start_with?("192.19.")
 
       # all from 224. is covered by RFC#5771 and RFC#5735
-      return true if (224..255).include?(ip.split(".").first.to_i)
+      return true if (224..255).cover?(ip.split(".").first.to_i)
 
       false
     end
@@ -393,7 +382,7 @@ module Yast
       return false unless ip.start_with?("100.")
 
       second_part = ip.split(".")[1].to_i
-      (64..127).include?(second_part)
+      (64..127).cover?(second_part)
     end
 
     def private_network?(ip)
@@ -407,14 +396,14 @@ module Yast
       return false unless ip.start_with?("172.")
 
       second_part = ip.split(".")[1].to_i
-      (16..31).include?(second_part)
+      (16..31).cover?(second_part)
     end
 
     def ds_lite_address?(ip)
       return false unless ip.start_with?("192.0.0.")
 
       fourth_part = ip.split(".")[3].to_i
-      (0..7).include?(fourth_part)
+      (0..7).cover?(fourth_part)
     end
   end
 

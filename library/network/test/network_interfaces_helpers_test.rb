@@ -38,7 +38,7 @@ module Yast
           alias_id:      "0",
           type_by_regex: "enp"
         }
-      ]
+      ].freeze
 
       DEVICE_DESCS.each do |device_desc|
         device_name = device_desc[:name]

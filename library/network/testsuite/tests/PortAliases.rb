@@ -45,36 +45,42 @@ module Yast
       Yast.import "PortAliases"
 
       DUMP("== Allowed Port Aliases ==")
-      TEST(->() { PortAliases.IsAllowedPortName("xyz-abc-def") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(->() { PortAliases.IsAllowedPortName("a*a/b+b.c_c-d") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(->() { PortAliases.IsAllowedPortName("!port") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(->() { PortAliases.IsAllowedPortName("1") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(->() { PortAliases.IsAllowedPortName("65535") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
-      TEST(->() { PortAliases.IsAllowedPortName("65536") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
+      TEST(->() { PortAliases.IsAllowedPortName("xyz-abc-def") },
+        [
+          @READ,
+          @WRITE,
+          @EXECUTE
+        ], nil)
+      TEST(->() { PortAliases.IsAllowedPortName("a*a/b+b.c_c-d") },
+        [
+          @READ,
+          @WRITE,
+          @EXECUTE
+        ], nil)
+      TEST(->() { PortAliases.IsAllowedPortName("!port") },
+        [
+          @READ,
+          @WRITE,
+          @EXECUTE
+        ], nil)
+      TEST(->() { PortAliases.IsAllowedPortName("1") },
+        [
+          @READ,
+          @WRITE,
+          @EXECUTE
+        ], nil)
+      TEST(->() { PortAliases.IsAllowedPortName("65535") },
+        [
+          @READ,
+          @WRITE,
+          @EXECUTE
+        ], nil)
+      TEST(->() { PortAliases.IsAllowedPortName("65536") },
+        [
+          @READ,
+          @WRITE,
+          @EXECUTE
+        ], nil)
 
       DUMP("")
       DUMP("== Service Aliases Included ==")
@@ -135,28 +141,31 @@ module Yast
           "http-alt"
         ]
       ) do |port|
-        TEST(->() { PortAliases.GetListOfServiceAliases(port) }, [
-          @READ,
-          @WRITE,
-          @EXECUTE
-        ], nil)
+        TEST(->() { PortAliases.GetListOfServiceAliases(port) },
+          [
+            @READ,
+            @WRITE,
+            @EXECUTE
+          ], nil)
       end
 
       DUMP("")
       DUMP("== Service Aliases External ==")
-      TEST(->() { PortAliases.GetListOfServiceAliases("333") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
+      TEST(->() { PortAliases.GetListOfServiceAliases("333") },
+        [
+          @READ,
+          @WRITE,
+          @EXECUTE
+        ], nil)
 
       DUMP("")
       DUMP("== Port Name ==")
-      TEST(->() { PortAliases.IsKnownPortName("www") }, [
-        @READ,
-        @WRITE,
-        @EXECUTE
-      ], nil)
+      TEST(->() { PortAliases.IsKnownPortName("www") },
+        [
+          @READ,
+          @WRITE,
+          @EXECUTE
+        ], nil)
 
       nil
     end

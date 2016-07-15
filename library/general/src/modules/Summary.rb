@@ -77,11 +77,11 @@ module Yast
       devices = deep_copy(devices)
       text = ""
       if Builtins.size(devices) == 0
-        if !Mode.config
+        text = if !Mode.config
           # translators: summary if no hardware was detected
-          text = Builtins.sformat("<ul><li>%1</li></ul>", _("Not detected."))
+          Builtins.sformat("<ul><li>%1</li></ul>", _("Not detected."))
         else
-          text = Builtins.sformat("<ul><li>%1</li></ul>", NotConfigured())
+          Builtins.sformat("<ul><li>%1</li></ul>", NotConfigured())
         end
       else
         Builtins.foreach(devices) { |dev| text = Ops.add(text, dev) }

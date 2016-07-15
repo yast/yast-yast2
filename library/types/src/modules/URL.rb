@@ -298,7 +298,7 @@ module Yast
       if !Builtins.regexpmatch(
         Ops.get_string(tokens, "scheme", ""),
         "^[[:alpha:]]*$"
-        )
+      )
         return false
       end
 
@@ -342,7 +342,7 @@ module Yast
       if Builtins.regexpmatch(
         Ops.get_string(tokens, "scheme", ""),
         "^[[:alpha:]]*$"
-        )
+      )
         # if (tokens["scheme"]:"" == "samba") url="smb";
         # 		else
         url = Ops.get_string(tokens, "scheme", "")
@@ -375,10 +375,10 @@ module Yast
           IP.Check(Ops.get_string(tokens, "host", ""))
         # enclose an IPv6 address in square brackets
         url = if IP.Check6(Ops.get_string(tokens, "host", ""))
-                Builtins.sformat("%1[%2]", url, Ops.get_string(tokens, "host", ""))
-              else
-                Builtins.sformat("%1%2", url, Ops.get_string(tokens, "host", ""))
-              end
+          Builtins.sformat("%1[%2]", url, Ops.get_string(tokens, "host", ""))
+        else
+          Builtins.sformat("%1%2", url, Ops.get_string(tokens, "host", ""))
+        end
       end
       Builtins.y2debug("url: %1", url)
 
@@ -406,8 +406,8 @@ module Yast
             Builtins.substring(Ops.get_string(tokens, "path", ""), 1)
           )
         end
-        if Ops.get_string(tokens, "scheme", "") == "ftp"
-          url = Builtins.sformat(
+        url = if Ops.get_string(tokens, "scheme", "") == "ftp"
+          Builtins.sformat(
             "%1/%%2f%2",
             url,
             Builtins.substring(
@@ -416,7 +416,7 @@ module Yast
             )
           )
         else
-          url = Builtins.sformat(
+          Builtins.sformat(
             "%1%2",
             url,
             URLRecode.EscapePath(Ops.get_string(tokens, "path", ""))

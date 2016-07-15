@@ -167,12 +167,10 @@ module Yast
         else
           SCR.Write(path(".dev.tty.nocr"), s)
         end
+      elsif newline
+        SCR.Write(path(".dev.tty.stderr"), s)
       else
-        if newline
-          SCR.Write(path(".dev.tty.stderr"), s)
-        else
-          SCR.Write(path(".dev.tty.stderr_nocr"), s)
-        end
+        SCR.Write(path(".dev.tty.stderr_nocr"), s)
       end
 
       nil
@@ -488,11 +486,7 @@ module Yast
                 Ops.set(givenoptions, o, i)
               end
             else
-              if v == ""
-                ret = false
-              else
-                ret = TypeRepository.is_a(v, opttype)
-              end
+              ret = (v == "") ? false : TypeRepository.is_a(v, opttype)
 
               if ret != true
                 # translators: error message, %2 is expected type, %3 is the value given
@@ -509,24 +503,22 @@ module Yast
                 @aborted = true if !@interactive
               end
             end
-          else
-            # type is missing
-            if v != ""
-              Builtins.y2error(
-                "Type specification for option '%1' is missing, cannot assign a value to the option",
-                o
+          # type is missing
+          elsif v != ""
+            Builtins.y2error(
+              "Type specification for option '%1' is missing, cannot assign a value to the option",
+              o
+            )
+            # translators: error message if option has a value, but cannot have one
+            Print(
+              Builtins.sformat(
+                _("Option '%1' cannot have a value. Given value: %2"),
+                o,
+                v
               )
-              # translators: error message if option has a value, but cannot have one
-              Print(
-                Builtins.sformat(
-                  _("Option '%1' cannot have a value. Given value: %2"),
-                  o,
-                  v
-                )
-              )
-              @aborted = true if !@interactive
-              ret = false
-            end
+            )
+            @aborted = true if !@interactive
+            ret = false
           end
         end
       end
@@ -1155,7 +1147,7 @@ module Yast
           if !Builtins.haskey(
             Ops.get_map(cmdlineinfo, "actions", {}),
             mapaction
-            )
+          )
             Builtins.y2error(
               "Command line specification maps undefined action '%1'",
               mapaction
@@ -1171,7 +1163,7 @@ module Yast
             if !Builtins.haskey(
               Ops.get_map(cmdlineinfo, "options", {}),
               Convert.to_string(mapopt)
-              )
+            )
               Builtins.y2error(
                 "Command line specification maps undefined option '%1' for action '%2'",
                 mapopt,
@@ -1271,7 +1263,7 @@ module Yast
     def Scan
       res = Convert.to_string(SCR.Read(path(".dev.tty")))
       return nil if res.nil?
-      String.ParseOptions(res,  "separator" => " ")
+      String.ParseOptions(res, "separator" => " ")
     end
 
     # Set prompt and read input from command line
@@ -1282,14 +1274,12 @@ module Yast
       # set the required prompt
       SCR.Write(path(".dev.tty.prompt"), prompt)
 
-      res = nil
-
-      if type == :nohistory
-        res = Convert.to_string(SCR.Read(path(".dev.tty.nohistory")))
+      res = if type == :nohistory
+        Convert.to_string(SCR.Read(path(".dev.tty.nohistory")))
       elsif type == :noecho
-        res = Convert.to_string(SCR.Read(path(".dev.tty.noecho")))
+        Convert.to_string(SCR.Read(path(".dev.tty.noecho")))
       else
-        res = Convert.to_string(SCR.Read(path(".dev.tty")))
+        Convert.to_string(SCR.Read(path(".dev.tty")))
       end
 
       # set the default prompt
@@ -1326,13 +1316,7 @@ module Yast
     #  @see #Parse
     def Command
       # if we are done already, return the result
-      if @done
-        if @aborted
-          return { "command" => "abort" }
-        else
-          return { "command" => "exit" }
-        end
-      end
+      return { "command" => @aborted ? "abort" : "exit" } if @done
 
       # there is a command in the cache
       if Builtins.size(@commandcache) != 0
@@ -1340,42 +1324,34 @@ module Yast
         @commandcache = {}
         @done = !@interactive
         return deep_copy(result)
-      else
-        # if in interactive mode, ask user for input
-        if @interactive
-          loop do
-            newcommand = []
-            newcommand = Scan() while Builtins.size(newcommand) == 0
+      # if in interactive mode, ask user for input
+      elsif @interactive
+        loop do
+          newcommand = []
+          newcommand = Scan() while Builtins.size(newcommand) == 0
 
-            # EOF reached
-            if newcommand.nil?
-              @done = true
-              return { "command" => "exit" }
-            end
-
-            @commandcache = Parse(newcommand)
-            break if !ProcessSystemCommands(@commandcache)
-            break if @done
+          # EOF reached
+          if newcommand.nil?
+            @done = true
+            return { "command" => "exit" }
           end
 
-          if @done
-            if @aborted
-              return { "command" => "abort" }
-            else
-              return { "command" => "exit" }
-            end
-          end
-
-          # we are not done, return the command asked back to module
-          result = deep_copy(@commandcache)
-          @commandcache = {}
-
-          return deep_copy(result)
-        else
-          # there is no further commands left
-          @done = true
-          return { "command" => "exit" }
+          @commandcache = Parse(newcommand)
+          break if !ProcessSystemCommands(@commandcache)
+          break if @done
         end
+
+        return { "command" => @aborted ? "abort" : "exit" } if @done
+
+        # we are not done, return the command asked back to module
+        result = deep_copy(@commandcache)
+        @commandcache = {}
+
+        return deep_copy(result)
+      else
+        # there is no further commands left
+        @done = true
+        return { "command" => "exit" }
       end
     end
 
@@ -1594,11 +1570,9 @@ module Yast
 
             # if it is not interactive, abort on errors
             Abort() if !Interactive() && res == false
-          else
-            if !Done()
-              Builtins.y2error("Unknown command '%1' from CommandLine", command)
-              next
-            end
+          elsif !Done()
+            Builtins.y2error("Unknown command '%1' from CommandLine", command)
+            next
           end
         end
 

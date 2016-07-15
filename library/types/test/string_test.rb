@@ -57,7 +57,7 @@ describe Yast::String do
       1 << 20               => "1.00 MiB",
       1 << 30               => "1.000 GiB",
       1 << 40               => "1.000 TiB"
-    }
+    }.freeze
 
     it "returns size formatted with proper bytes units" do
       FORMAT_SIZE_DATA.each do |arg, res|
@@ -104,7 +104,7 @@ describe Yast::String do
       " \tabc\t "     => "abc",
       "\t a b c \t"   => "a b c",
       "\t a b c \t\n" => "a b c \t\n"
-    }
+    }.freeze
     it "remove trailing and prepending whitespace" do
       CUT_BLANKS_DATA.each do |arg, res|
         expect(subject.CutBlanks(arg)).to eq res
@@ -124,7 +124,7 @@ describe Yast::String do
       "001" => "1",
       "0"   => "0",
       "00"  => "0"
-    }
+    }.freeze
     it "removes prepended zeros" do
       CUT_ZEROS_DATA.each do |arg, res|
         expect(subject.CutZeros(arg)).to eq res

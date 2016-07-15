@@ -65,15 +65,15 @@ module Yast
         SetModified()
 
         Builtins.y2milestone("Setting start-firewall to %1", start_service)
-        Ops.set(@SETTINGS, "start_firewall", start_service)
       else
         # without set modified!
         Builtins.y2milestone(
           "start-firewall has been already set to %1",
           start_service
         )
-        Ops.set(@SETTINGS, "start_firewall", start_service)
       end
+
+      Ops.set(@SETTINGS, "start_firewall", start_service)
 
       nil
     end
@@ -102,15 +102,15 @@ module Yast
         SetModified()
 
         Builtins.y2milestone("Setting enable-firewall to %1", enable_service)
-        Ops.set(@SETTINGS, "enable_firewall", enable_service)
       else
         # without set modified
         Builtins.y2milestone(
           "enable-firewall has been already set to %1",
           enable_service
         )
-        Ops.set(@SETTINGS, "enable_firewall", enable_service)
       end
+
+      Ops.set(@SETTINGS, "enable_firewall", enable_service)
 
       nil
     end
@@ -172,13 +172,10 @@ module Yast
     def DisableServices
       return false if !SuSEFirewallIsInstalled()
 
-      if Service.Disable(@firewall_service)
-        return true
-      else
-        # TRANSLATORS: a popup error message
-        Report.LongError(Service.Error)
-        return false
-      end
+      return true if Service.Disable(@firewall_service)
+
+      Report.LongError(Service.Error)
+      false
     end
 
     # Function determines if all SuSEFirewall scripts are enabled in
@@ -716,19 +713,17 @@ module Yast
                 )
               )
             end
-            # Removing a port range from port ranges
-          else
-            if !Builtins.contains(already_removed, remove_port)
-              # Just filtering the exact port range
-              Ops.set(
-                allowed_services,
-                "port_ranges",
-                Builtins.filter(Ops.get(allowed_services, "port_ranges", [])) do |one_port_range|
-                  one_port_range != remove_port
-                end
-              )
-              already_removed = Builtins.add(already_removed, remove_port)
-            end
+          # Removing a port range from port ranges
+          elsif !Builtins.contains(already_removed, remove_port)
+            # Just filtering the exact port range
+            Ops.set(
+              allowed_services,
+              "port_ranges",
+              Builtins.filter(Ops.get(allowed_services, "port_ranges", [])) do |one_port_range|
+                one_port_range != remove_port
+              end
+            )
+            already_removed = Builtins.add(already_removed, remove_port)
           end
         end
       end
@@ -781,15 +776,10 @@ module Yast
           Builtins.size(iptables_list)
         )
 
-        # none iptables rules
-        if Ops.greater_than(Builtins.size(iptables_list), 0)
-          any_firewall_running = true
-          # any iptables rules exist
-        else
-          any_firewall_running = false
-        end
-        # error running command
+        # any iptables rule exist?
+        any_firewall_running = Ops.greater_than(Builtins.size(iptables_list), 0)
       else
+        # error running command
         Builtins.y2error(
           "Services Command: %1 (Exit %2) -> %3",
           command,

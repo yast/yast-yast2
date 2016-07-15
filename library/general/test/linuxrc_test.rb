@@ -47,7 +47,7 @@ DEFAULT_INSTALL_INF = {
   "XkbRules"         => "xfree86",
   "XkbModel"         => "pc104",
   "umount_result"    => "0"
-}
+}.freeze
 
 def load_install_inf(defaults_replacement = {})
   # Default value

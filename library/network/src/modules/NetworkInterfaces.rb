@@ -32,13 +32,13 @@ module Yast
     Yast.import "String"
 
     # A single character used to separate alias id
-    ALIAS_SEPARATOR = "#"
-    TYPE_REGEX = "(ip6tnl|mip6mnha|[#{String.CAlpha}]+)"
-    ID_REGEX = "([^#{ALIAS_SEPARATOR}]*)"
-    ALIAS_REGEX = "(.*)"
-    DEVNAME_REGEX = "#{TYPE_REGEX}-?#{ID_REGEX}"
+    ALIAS_SEPARATOR = "#".freeze
+    TYPE_REGEX = "(ip6tnl|mip6mnha|[#{String.CAlpha}]+)".freeze
+    ID_REGEX = "([^#{ALIAS_SEPARATOR}]*)".freeze
+    ALIAS_REGEX = "(.*)".freeze
+    DEVNAME_REGEX = "#{TYPE_REGEX}-?#{ID_REGEX}".freeze
     # Supported hotplug types
-    HOTPLUG_TYPES = ["pcmcia", "usb"]
+    HOTPLUG_TYPES = ["pcmcia", "usb"].freeze
 
     # @attribute Name
     # @return [String]
@@ -239,22 +239,22 @@ module Yast
       sys_dir_path = Builtins.sformat("/sys/class/net/%1/", dev)
 
       if FileUtils.Exists(Ops.add(sys_dir_path, "wireless"))
-        return "wlan"
+        "wlan"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "phy80211"))
-        return "wlan"
+        "wlan"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "bridge"))
-        return "br"
+        "br"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "bonding"))
-        return "bond"
+        "bond"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "tun_flags"))
-        return "tap"
+        "tap"
       elsif FileUtils.Exists(Ops.add("/proc/net/vlan/", dev))
-        return "vlan"
+        "vlan"
       elsif FileUtils.Exists(Ops.add("/sys/devices/virtual/net/", dev)) &&
           Builtins.regexpmatch(dev, "dummy.*")
-        return "dummy"
+        "dummy"
       else
-        return "eth"
+        "eth"
       end
     end
 
@@ -263,11 +263,11 @@ module Yast
       sys_dir_path = Builtins.sformat("/sys/class/net/%1/", dev)
 
       if FileUtils.Exists(Ops.add(sys_dir_path, "bonding"))
-        return "bond"
+        "bond"
       elsif FileUtils.Exists(Ops.add(sys_dir_path, "create_child"))
-        return "ib"
+        "ib"
       else
-        return "ibchild"
+        "ibchild"
       end
     end
 
@@ -290,21 +290,20 @@ module Yast
       )
 
       sys_type = if sys_type
-                   Builtins.regexpsub(sys_type, "(.*)\n", "\\1")
-                 else
-                   ""
-                 end
+        Builtins.regexpsub(sys_type, "(.*)\n", "\\1")
+      else
+        ""
+      end
+
       sys_type = String.CutBlanks(sys_type)
 
-      type = nil
-
-      case sys_type
+      type = case sys_type
       when "1"
-        type = GetEthTypeFromSysfs(dev)
+        GetEthTypeFromSysfs(dev)
       when "32"
-        type = GetIbTypeFromSysfs(dev)
+        GetIbTypeFromSysfs(dev)
       else
-        type = Ops.get(@TypeBySysfs, sys_type)
+        Ops.get(@TypeBySysfs, sys_type)
       end
 
       Builtins.y2debug(
@@ -402,22 +401,22 @@ module Yast
       if Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "modem", ""))
-        )
+      )
         return _("Modem")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "netcard", ""))
-        )
+      )
         return _("Network Card")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "isdn", ""))
-        )
+      )
         return _("ISDN")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "dsl", ""))
-        )
+      )
         return _("DSL")
       else
         return _("Unknown")
@@ -520,17 +519,15 @@ module Yast
     # @param [String] dev unique device string
     # @return true if connected
     def IsConnected(dev)
-      if !Mode.testsuite
-        cmd = Ops.add(Ops.add("cat /sys/class/net/", dev), "/carrier")
+      # Assume all devices are connected in testsuite mode
+      return true if Mode.testsuite
 
-        ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
-        Builtins.y2milestone("Sysfs returned %1", ret)
+      cmd = "cat /sys/class/net/#{dev}/carrier"
 
-        return Builtins.deletechars(Ops.get_string(ret, "stdout", ""), "\n") == "1" ? true : false
-      else
-        # Assume all devices are connected in testsuite mode
-        return true
-      end
+      ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
+      Builtins.y2milestone("Sysfs returned %1", ret)
+
+      Builtins.deletechars(Ops.get_string(ret, "stdout", ""), "\n") == "1"
     end
 
     # Return real type of the device (incl. PCMCIA, USB, ...)
@@ -691,7 +688,7 @@ module Yast
       "SCOPE",
       "LABEL",
       "IP_OPTIONS"
-    ]
+    ].freeze
 
     # Read devices from files
     # @return true if sucess
@@ -874,12 +871,12 @@ module Yast
           if Ops.greater_than(
             Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
             0
-            ) &&
+          ) &&
               Builtins.find(Ops.get_string(devmap, "IPADDR", ""), "/") == -1
             if Ops.greater_than(
               Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
               0
-              ) &&
+            ) &&
                 Ops.greater_than(
                   Builtins.size(Ops.get_string(devmap, "NETMASK", "")),
                   0
@@ -895,27 +892,25 @@ module Yast
               )
               devmap = Builtins.remove(devmap, "NETMASK")
               # TODO : delete NETMASK from config file
-            else
-              if Ops.greater_than(
-                Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
-                0
-                ) &&
-                  Ops.greater_than(
-                    Builtins.size(Ops.get_string(devmap, "PREFIXLEN", "")),
-                    0
-                  )
-                Ops.set(
-                  devmap,
-                  "IPADDR",
-                  Builtins.sformat(
-                    "%1/%2",
-                    Ops.get_string(devmap, "IPADDR", ""),
-                    Ops.get_string(devmap, "PREFIXLEN", "")
-                  )
+            elsif Ops.greater_than(
+              Builtins.size(Ops.get_string(devmap, "IPADDR", "")),
+              0
+            ) &&
+                Ops.greater_than(
+                  Builtins.size(Ops.get_string(devmap, "PREFIXLEN", "")),
+                  0
                 )
-                devmap = Builtins.remove(devmap, "PREFIXLEN")
-                # TODO : delete PREFIXLEN from config file
-              end
+              Ops.set(
+                devmap,
+                "IPADDR",
+                Builtins.sformat(
+                  "%1/%2",
+                  Ops.get_string(devmap, "IPADDR", ""),
+                  Ops.get_string(devmap, "PREFIXLEN", "")
+                )
+              )
+              devmap = Builtins.remove(devmap, "PREFIXLEN")
+              # TODO : delete PREFIXLEN from config file
             end
           end
           # write all keys to config
@@ -950,27 +945,25 @@ module Yast
                   )
                   amap = Builtins.remove(amap, "NETMASK")
                   # TODO : delete NETMASK from config file
-                else
-                  if Ops.greater_than(
-                    Builtins.size(Ops.get(amap, "IPADDR", "")),
-                    0
-                    ) &&
-                      Ops.greater_than(
-                        Builtins.size(Ops.get(amap, "PREFIXLEN", "")),
-                        0
-                      )
-                    Ops.set(
-                      amap,
-                      "IPADDR",
-                      Builtins.sformat(
-                        "%1/%2",
-                        Ops.get(amap, "IPADDR", ""),
-                        Ops.get(amap, "PREFIXLEN", "")
-                      )
+                elsif Ops.greater_than(
+                  Builtins.size(Ops.get(amap, "IPADDR", "")),
+                  0
+                ) &&
+                    Ops.greater_than(
+                      Builtins.size(Ops.get(amap, "PREFIXLEN", "")),
+                      0
                     )
-                    amap = Builtins.remove(amap, "PREFIXLEN")
-                    # TODO : delete PREFIXLEN from config file
-                  end
+                  Ops.set(
+                    amap,
+                    "IPADDR",
+                    Builtins.sformat(
+                      "%1/%2",
+                      Ops.get(amap, "IPADDR", ""),
+                      Ops.get(amap, "PREFIXLEN", "")
+                    )
+                  )
+                  amap = Builtins.remove(amap, "PREFIXLEN")
+                  # TODO : delete PREFIXLEN from config file
                 end
                 Builtins.maplist(amap) do |ak, av|
                   akk = Ops.add(Ops.add(ak, "_"), anum)
@@ -1047,12 +1040,12 @@ module Yast
         to:   "map <string, map <string, map <string, any>>>"
       )
 
-      if devices.nil? || devices == {}
+      @initialized = if devices.nil? || devices == {}
         # devices == $[] is used in lan_auto "Reset" as a way how to
         # rollback changes imported from AY
-        @initialized = false
+        false
       else
-        @initialized = true
+        true
       end
 
       Builtins.y2milestone(
@@ -1115,7 +1108,7 @@ module Yast
         if !Builtins.contains(
           Builtins.splitstring(Ops.get(@DeviceRegex, "netcard", ""), "|"),
           device
-          )
+        )
           Builtins.y2error(
             "%1 is not contained in DeviceRegex[\"netcard\"]",
             device
@@ -1463,10 +1456,10 @@ module Yast
       end
 
       t = if !IsEmpty(newdev)
-            GetTypeFromIfcfgOrName(name, newdev)
-          else
-            GetType(name)
-          end
+        GetTypeFromIfcfgOrName(name, newdev)
+      else
+        GetType(name)
+      end
 
       if name == @Name
         int_type = Ops.get_string(@Current, "INTERFACETYPE", "")
@@ -1530,7 +1523,7 @@ module Yast
     def DeleteAlias(device, aid)
       alias_ = Builtins.sformat("%1#%2", device, aid)
       Builtins.y2milestone("Deleting alias: %1", alias_)
-      @Deleted <<  alias_
+      @Deleted << alias_
       true
     end
 
