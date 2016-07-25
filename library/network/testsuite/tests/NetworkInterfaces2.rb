@@ -178,58 +178,6 @@ module Yast
       NetworkInterfaces.Import("", @exported)
       DUMP(Builtins.sformat("all     =%1", NetworkInterfaces.Devices))
 
-      DUMP("NetworkInterfaces::UpdateModemSymlink")
-      NetworkInterfaces.Devices = {
-        "arc" => {
-          "arc5" => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" }
-        }
-      }
-      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [], nil)
-      NetworkInterfaces.Devices = {
-        "modem" => {
-          "modemc5" => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" }
-        }
-      }
-      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [], nil)
-      NetworkInterfaces.Devices = {
-        "modem" => {
-          "modem5" => { "MODEM_DEVICE" => "", "STARTMODE" => "manual" }
-        }
-      }
-      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [], nil)
-      NetworkInterfaces.Devices = {
-        "modem" => {
-          "modem5" => {
-            "MODEM_DEVICE" => "/dev/modem",
-            "STARTMODE"    => "manual"
-          }
-        }
-      }
-      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [], nil)
-      NetworkInterfaces.Devices = {
-        "modem" => {
-          "modem5" => {
-            "MODEM_DEVICE" => "/dev/ttyS1",
-            "STARTMODE"    => "manual"
-          }
-        }
-      }
-      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [], nil)
-      @READ = {
-        "target" => {
-          "lstat"   => { "islink" => true },
-          "symlink" => "/dev/ttyS1"
-        }
-      }
-      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [@READ], nil)
-      @READ = {
-        "target" => {
-          "lstat"   => { "islink" => true },
-          "symlink" => "/dev/ttyS2"
-        }
-      }
-      TEST(->() { NetworkInterfaces.UpdateModemSymlink }, [@READ], nil)
-
       DUMP("NetworkInterfaces::List")
       NetworkInterfaces.Devices = {
         "lo" => { "lo" => { "BOOTPROTO" => "dhcp", "STARTMODE" => "manual" } }
