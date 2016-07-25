@@ -838,7 +838,7 @@ module Yast
       regex = "^(#{@DeviceRegex[devregex] || devregex})[0-9]*$"
 
       log.debug("regex=#{regex}")
-      devices.select! { |f, _d| f !~ regex }
+      devices.select! { |f, _d| f !~ /#{regex}/ }
 
       log.debug("devices=#{devices}")
       devices
