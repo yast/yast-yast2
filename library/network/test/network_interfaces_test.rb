@@ -91,6 +91,27 @@ describe Yast::NetworkInterfaces do
     end
   end
 
+  describe "#FilterNOT" do
+    let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+    # Defined in test/data/etc/sysconfig/ifcfg-*
+    let(:devices) { ["arc", "bond", "br", "em", "eth", "ppp", "vlan"] }
+
+    around do |example|
+      change_scr_root(data_dir, &example)
+    end
+
+    before do
+      subject.CleanCacheRead
+    end
+
+    context "given a list of device types and a regex" do
+      it "returns device types that don't match the given regex" do
+        expect(subject.FilterNOT(subject.FilterDevices(""), "eth").keys)
+          .to eql(["arc", "bond", "br", "em", "ppp", "vlan"])
+      end
+    end
+  end
+
   describe "#ConcealSecrets1" do
     let(:ifcfg_out) do
       {
