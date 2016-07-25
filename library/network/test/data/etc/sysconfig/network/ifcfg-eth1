@@ -1,0 +1,4 @@
+DEVICE=eth1
+BOOTPROTO='static'
+STARTMODE='auto'
+SLAVE=YES

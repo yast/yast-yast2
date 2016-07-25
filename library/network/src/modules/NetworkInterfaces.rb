@@ -30,6 +30,7 @@ module Yast
   # Presents them one ifcfg at a time through the {#Current} hash.
   class NetworkInterfacesClass < Module
     Yast.import "String"
+    include Logger
 
     # A single character used to separate alias id
     ALIAS_SEPARATOR = "#".freeze
@@ -235,36 +236,48 @@ module Yast
     end
 
     # Detects a subtype of Ethernet device type according /sys or /proc content
+    #
+    # @example GetEthTypeFromSysfs("eth0") -> "eth"
+    # @example GetEthTypeFromSysfs("bond0") -> "bon"
+    #
+    # @param [String] interface name
+    # @return [String] device type
     def GetEthTypeFromSysfs(dev)
-      sys_dir_path = Builtins.sformat("/sys/class/net/%1/", dev)
+      sys_dir_path = "/sys/class/net/#{dev}"
 
-      if FileUtils.Exists(Ops.add(sys_dir_path, "wireless"))
+      if FileUtils.Exists("#{sys_dir_path}/wireless")
         "wlan"
-      elsif FileUtils.Exists(Ops.add(sys_dir_path, "phy80211"))
+      elsif FileUtils.Exists("#{sys_dir_path}/phy80211")
         "wlan"
-      elsif FileUtils.Exists(Ops.add(sys_dir_path, "bridge"))
+      elsif FileUtils.Exists("#{sys_dir_path}/bridge")
         "br"
-      elsif FileUtils.Exists(Ops.add(sys_dir_path, "bonding"))
+      elsif FileUtils.Exists("#{sys_dir_path}/bonding")
         "bond"
-      elsif FileUtils.Exists(Ops.add(sys_dir_path, "tun_flags"))
+      elsif FileUtils.Exists("#{sys_dir_path}/tun_flags")
         "tap"
-      elsif FileUtils.Exists(Ops.add("/proc/net/vlan/", dev))
+      elsif FileUtils.Exists("/proc/net/vlan/#{dev}")
         "vlan"
-      elsif FileUtils.Exists(Ops.add("/sys/devices/virtual/net/", dev)) &&
-          Builtins.regexpmatch(dev, "dummy.*")
+      elsif FileUtils.Exists("/sys/devices/virtual/net/#{dev}") && dev =~ /dummy/
         "dummy"
       else
         "eth"
       end
     end
 
-    # Detects a subtype of InfiniBand device type according /sys or /proc content
+    # Detects a subtype of InfiniBand device type according /sys
+    #
+    # @example GetEthTypeFromSysfs("ib0") -> "ib"
+    # @example GetEthTypeFromSysfs("bond0") -> "bon"
+    # @example GetEthTypeFromSysfs("ib0.8001") -> "ibchild"
+    #
+    # @param [String] interface name
+    # @return [String] device type
     def GetIbTypeFromSysfs(dev)
-      sys_dir_path = Builtins.sformat("/sys/class/net/%1/", dev)
+      sys_dir_path = "/sys/class/net/#{dev}"
 
-      if FileUtils.Exists(Ops.add(sys_dir_path, "bonding"))
+      if FileUtils.Exists("#{sys_dir_path}/bonding")
         "bond"
-      elsif FileUtils.Exists(Ops.add(sys_dir_path, "create_child"))
+      elsif FileUtils.Exists("#{sys_dir_path}/create_child")
         "ib"
       else
         "ibchild"
@@ -278,6 +291,7 @@ module Yast
     # to specify a "subtype". E.g. in case of "eth" it checks for presence of "wireless" subdir to
     # determine "wlan" device.
     #
+    # @param [String] interface name
     # @return return device type or nil if nothing known found
     def GetTypeFromSysfs(dev)
       sys_dir_path = Builtins.sformat("/sys/class/net/%1", dev)
@@ -363,11 +377,7 @@ module Yast
 
       type = device_type(dev) if type.nil?
 
-      Builtins.y2debug(
-        "GetTypeFromIfcfgOrName: device='%1', type='%2'",
-        dev,
-        type
-      )
+      log.debug("GetTypeFromIfcfgOrName: device='#{dev}' type='#{type}'")
 
       type
     end
@@ -431,7 +441,7 @@ module Yast
     #
     # Obsolete: It is incompatible with new device naming scheme.
     def device_num(dev)
-      Builtins.y2warning("Do not use device_num.")
+      log.warn("Do not use device_num.")
       ifcfg_part(dev, "2")
     end
 
@@ -499,8 +509,7 @@ module Yast
     # @return true if hotpluggable
     def IsHotplug(type)
       return false if type == "" || type.nil?
-      return true if HOTPLUG_TYPES.any? { |t| type.end_with?(t) }
-      false
+      HOTPLUG_TYPES.any? { |t| type.end_with?(t) }
     end
 
     # Return matching inteface for this hardware ID (uses getcfg-interface)
@@ -596,30 +605,21 @@ module Yast
       ifcfg = deep_copy(ifcfg)
       return nil if ifcfg.nil?
 
-      ip_and_prefix = Builtins.splitstring(
-        Ops.get_string(ifcfg, "IPADDR", ""),
-        "/"
-      )
-      ipaddr = Ops.get(ip_and_prefix, 0, "")
-      return deep_copy(ifcfg) if ipaddr == "" # DHCP or inconsistent
+      ipaddr, prefixlen = ifcfg["IPADDR"].to_s.split("/")
 
-      prefixlen = Ops.get(ip_and_prefix, 1, "")
-      prefixlen = Ops.get_string(ifcfg, "PREFIXLEN", "") if prefixlen == ""
+      return ifcfg if ipaddr.to_s == "" # DHCP or inconsistent
 
-      if prefixlen == ""
-        prefixlen = Builtins.tostring(
-          Netmask.ToBits(Ops.get_string(ifcfg, "NETMASK", ""))
-        )
-      end
+      prefixlen = ifcfg["PREFIXLEN"].to_s if prefixlen.to_s == ""
+
+      prefixlen = Netmask.ToBits(ifcfg["NETMASK"].to_s).to_s if prefixlen == ""
 
       # Now we have ipaddr and prefixlen
       # Let's compute the rest
-      netmask = ""
-      netmask = Netmask.FromBits(Builtins.tointeger(prefixlen)) if IP.Check4(ipaddr)
+      netmask = IP.Check4(ipaddr) ? Netmask.FromBits(prefixlen.to_i) : ""
 
-      Ops.set(ifcfg, "IPADDR", ipaddr)
-      Ops.set(ifcfg, "PREFIXLEN", prefixlen)
-      Ops.set(ifcfg, "NETMASK", netmask)
+      ifcfg["IPADDR"] = ipaddr
+      ifcfg["PREFIXLEN"] = prefixlen
+      ifcfg["NETMASK"] = netmask
 
       ifcfg
     end
@@ -649,11 +649,11 @@ module Yast
     def ConcealSecrets1(ifcfg)
       ifcfg = deep_copy(ifcfg)
       return nil if ifcfg.nil?
-      out = Builtins.mapmap(ifcfg) do |k, v|
-        v = "CONCEALED" if Builtins.contains(@SensitiveFields, k) && v != ""
-        { k => v }
-      end
-      deep_copy(out)
+
+      secret_fields = ifcfg.select { |k, v| @SensitiveFields.include?(k) && v != "" }
+      secret_fields.map { |k, _v| ifcfg[k] = "CONCEALED" }
+
+      ifcfg
     end
 
     # Conceal secret information, such as WEP keys, so that the output
@@ -678,6 +678,35 @@ module Yast
       deep_copy(out)
     end
 
+    # Get current sysconfig configured interfaces
+    #
+    # @param devregex [String] regex to filter by
+    # @return [Array] of ifcfg names
+    def get_devices(devregex = "[~]")
+      devices = SCR.Dir(path(".network.section")) || []
+
+      devices.select! { |file| file !~ /#{devregex}/ } unless devregex.nil? && devregex.empty?
+
+      log.debug "devices=#{devices}"
+      devices
+    end
+
+    # Canonicalize IPADDR and STARTMODE of given config
+    # and nested _aliases
+    #
+    # @param [Hash] a map with netconfig (ifcfg) configuration
+    # @return [Hash] ifcfg with canonicalized IP addresses
+    def canonicalize_config(config)
+      config = deep_copy(config)
+      # canonicalize, #46885
+      (config["_aliases"] || {}).tap do |aliases|
+        aliases.each { |a, c| aliases[a] = CanonicalizeIP(c) }
+      end
+
+      config = CanonicalizeIP(config)
+      CanonicalizeStartmode(config)
+    end
+
     # Variables which could be suffixed and thus duplicated
     LOCALS = [
       "IPADDR",
@@ -690,7 +719,58 @@ module Yast
       "IP_OPTIONS"
     ].freeze
 
-    # Read devices from files
+    # It reads, parses and transforms the given attributes
+    # from the given device config path returning a hash
+    # with the transformed device config
+    #
+    # @param [String] path of the device config to read from
+    # @param [Hash{String => Object}] newdev new device map
+    #
+    # @return [Hash{String => Object}] parsed configuration
+    def generate_config(pth, values)
+      config = {}
+      values.each do |val|
+        item = SCR.Read(path("#{pth}.#{val}"))
+        log.debug("item=#{item}")
+        next if item.nil?
+        # No underscore '_' -> global
+        # Also temporarily standard globals
+        if !val.include?("_") || LOCALS.include?(val)
+          config[val] = item
+          next
+        end
+
+        # Try to strip _suffix
+        # @example "IP_OPTIONS_1".rpartition("_") => ["IP_OPTIONS", "_", "1"]
+        v, _j, s = val.rpartition("_")
+        log.info("#{val}:#{v}:#{s}")
+        # Global
+        if !LOCALS.include?(v)
+          config[val] = item
+        else
+          config["_aliases"] ||= {}
+          config["_aliases"][s] ||= {}
+          config["_aliases"][s][v] = item
+        end
+      end
+      log.info("config=#{ConcealSecrets1(config)}")
+      config = canonicalize_config(config)
+      filter_interfacetype(config)
+    end
+
+    # The device is added to @Devices[devtype] hash using the device name as key
+    # and the ifconfg hash as value
+    #
+    # @param <String> device name
+    # @param [Hash] a map with netconfig (ifcfg) configuration
+    #
+    def add_device(device, ifcfg)
+      devtype = GetTypeFromIfcfg(ifcfg) || GetType(device)
+      @Devices[devtype] ||= {}
+      @Devices[devtype][device] = ifcfg
+    end
+
+    # Read devices from files and cache it
     # @return true if sucess
     def Read
       return true if @initialized == true
@@ -698,71 +778,24 @@ module Yast
       @Devices = {}
 
       # preparation
-      allfiles = SCR.Dir(path(".network.section"))
-      allfiles = [] if allfiles.nil?
-      devices = Builtins.filter(allfiles) do |file|
-        !Builtins.regexpmatch(file, "[~]")
-      end
-      Builtins.y2debug("devices=%1", devices)
+      devices = get_devices
 
       # Read devices
-      Builtins.maplist(devices) do |d|
-        pth = Ops.add(Ops.add(".network.value.\"", d), "\"")
-        Builtins.y2debug("pth=%1", pth)
-        values = SCR.Dir(Builtins.topath(pth))
-        Builtins.y2debug("values=%1", values)
-        config = {}
-        Builtins.maplist(values) do |val|
-          item = Convert.to_string(
-            SCR.Read(Builtins.topath(Ops.add(Ops.add(pth, "."), val)))
-          )
-          Builtins.y2debug("item=%1", item)
-          next if item.nil?
-          # No underscore '_' -> global
-          # Also temporarily standard globals
-          if Ops.less_than(Builtins.find(val, "_"), 0) ||
-              LOCALS.include?(val)
-            Ops.set(config, val, item)
-            next
-          end
-          # Try to strip _suffix
-          v = Builtins.substring(val, 0, Builtins.findlastof(val, "_"))
-          s = Builtins.substring(val, Builtins.findlastof(val, "_"))
-          s = Builtins.substring(s, 1) if Ops.greater_than(Builtins.size(s), 1)
-          Builtins.y2milestone("%1:%2:%3", val, v, s)
-          # Global
-          if !LOCALS.include?(v)
-            Ops.set(config, val, item)
-          else
-            aliases = Ops.get_map(config, "_aliases", {})
-            suf = Ops.get_map(aliases, s, {})
-            Ops.set(suf, v, item)
-            Ops.set(aliases, s, suf)
-            Ops.set(config, "_aliases", aliases)
-          end
-        end
-        Builtins.y2milestone("config=%1", ConcealSecrets1(config))
-        # canonicalize, #46885
-        caliases = Builtins.mapmap(Ops.get_map(config, "_aliases", {})) do |a, c|
-          { a => CanonicalizeIP(c) }
-        end
-        config["_aliases"] = caliases if caliases != {}
-        config = CanonicalizeIP(config)
-        config = CanonicalizeStartmode(config)
-        config = filter_interfacetype(config)
+      devices.each do |device|
+        pth = ".network.value.\"#{device}\""
+        log.debug("pth=#{pth}")
 
-        devtype = GetTypeFromIfcfg(config)
-        devtype = GetType(d) if devtype.nil?
+        values = SCR.Dir(path(pth))
+        log.debug("values=#{values}")
 
-        dev = @Devices[devtype] || {}
-        dev[d] = config
-        @Devices[devtype] = dev
+        config = generate_config(pth, values)
+
+        add_device(device, config)
       end
-      Builtins.y2debug("Devices=%1", @Devices)
+      log.debug("Devices=#{@Devices}")
 
       @OriginalDevices = deep_copy(@Devices)
       @initialized = true
-      true
     end
 
     # re-read all settings again from system
@@ -772,22 +805,20 @@ module Yast
       Read()
     end
 
+    # Returns all the devices which device name matchs given devregex
+    #
+    # @param [Array] of Devices
+    # @param [String] regex to filter by
+    # @return [Array] of Devices that match the given regex
     def Filter(devices, devregex)
       devices = deep_copy(devices)
-      if devices.nil? || devregex.nil? || devregex == ""
-        return deep_copy(devices)
-      end
+      return devices if devices.nil? || devregex.nil? || devregex == ""
 
-      regex = Ops.add(
-        Ops.add("^(", Ops.get(@DeviceRegex, devregex, devregex)),
-        ")[0-9]*$"
-      )
-      Builtins.y2debug("regex=%1", regex)
-      devices = Builtins.filter(devices) do |file, _devmap|
-        Builtins.regexpmatch(file, regex) == true
-      end
-      Builtins.y2debug("devices=%1", devices)
-      deep_copy(devices)
+      regex = "^(#{@DeviceRegex[devregex] || devregex})[0-9]*$"
+      log.debug("regex=#{regex}")
+      devices.select! { |f, _d| f =~ /#{regex}/ }
+      log.debug("devices=#{devices}")
+      devices
     end
 
     # Used in BuildSummary, BuildOverview
@@ -795,49 +826,48 @@ module Yast
       Filter(@Devices, devregex)
     end
 
+    # Returns all the devices that does not match the given devregex
+    #
+    # @param [Array] of Devices
+    # @param [String] regex to filter by
+    # @return [Array] of Devices that match the given regex
     def FilterNOT(devices, devregex)
-      devices = deep_copy(devices)
       return {} if devices.nil? || devregex.nil? || devregex == ""
+      devices = deep_copy(devices)
 
-      regex = Ops.add(
-        Ops.add("^(", Ops.get(@DeviceRegex, devregex, devregex)),
-        ")[0-9]*$"
-      )
-      Builtins.y2debug("regex=%1", regex)
-      devices = Builtins.filter(devices) do |file, _devmap|
-        Builtins.regexpmatch(file, regex) != true
-      end
-      Builtins.y2debug("devices=%1", devices)
-      deep_copy(devices)
+      regex = "^(#{@DeviceRegex[devregex] || devregex})[0-9]*$"
+
+      log.debug("regex=#{regex}")
+      devices.select! { |f, _d| f !~ regex }
+
+      log.debug("devices=#{devices}")
+      devices
     end
 
     def Write(devregex)
-      Builtins.y2milestone("Writing configuration")
-      Builtins.y2debug("Devices=%1", @Devices)
-      Builtins.y2debug("Deleted=%1", @Deleted)
+      log.info("Writing configuration")
+      log.debug("Devices=#{@Devices}")
+      log.debug("Deleted=#{@Deleted}")
 
       devs = Filter(@Devices, devregex)
       original_devs = Filter(@OriginalDevices, devregex)
-      Builtins.y2milestone("OriginalDevs=%1", ConcealSecrets(original_devs))
-      Builtins.y2milestone("Devs=%1", ConcealSecrets(devs))
+      log.info("OriginalDevs=#{ConcealSecrets(original_devs)}")
+      log.info("Devs=#{ConcealSecrets(devs)}")
 
       # Check for changes
       if devs == original_devs
-        Builtins.y2milestone(
-          "No changes to %1 devices -> nothing to write",
-          devregex
-        )
+        log.info("No changes to #{devregex} devices -> nothing to write")
         return true
       end
 
       # remove deleted devices
-      Builtins.y2milestone("Deleted=%1", @Deleted)
+      log.info("Deleted=#{@Deleted}")
       Builtins.foreach(@Deleted) do |d|
         anum = alias_num(d)
         if anum == ""
           # delete config file
           p = Builtins.add(path(".network.section"), d)
-          Builtins.y2debug("deleting: %1", p)
+          log.debug("deleting: #{p}")
           SCR.Write(p, nil)
         else
           dev = device_name_from_alias(d)
@@ -849,7 +879,7 @@ module Yast
           dev_aliases = original_devs[typ][dev]["_aliases"][anum] || {}
           dev_aliases.keys.each do |key|
             p = base + "#{key}_#{anum}"
-            Builtins.y2debug("deleting: %1", p)
+            log.debug("deleting: #{p}")
             SCR.Write(p, nil)
           end
         end
@@ -982,7 +1012,7 @@ module Yast
           # 0600 if contains encryption key (#24842)
           has_key = @SensitiveFields.any? { |k| devmap[k] && !devmap[k].empty? }
           if has_key
-            Builtins.y2debug("Permission change: %1", config)
+            log.debug("Permission change: #{config}")
             SCR.Write(
               Builtins.add(path(".network.section_private"), config),
               true
@@ -1292,8 +1322,8 @@ module Yast
     # @return dumped settings (later acceptable by Import())
     def Export(devregex)
       devs = Filter(@Devices, devregex)
-      Builtins.y2debug("Devs=%1", devs)
-      Convert.convert(devs, from: "map", to: "map <string, map>")
+      log.debug("Devs=#{devs}")
+      devs
     end
 
     # Were the devices changed?
@@ -1301,51 +1331,50 @@ module Yast
     def Modified(devregex)
       devs = Filter(@Devices, devregex)
       original_devs = Filter(@OriginalDevices, devregex)
-      Builtins.y2debug("OriginalDevs=%1", original_devs)
-      Builtins.y2debug("Devs=%1", devs)
+      log.debug("OriginalDevs=#{original_devs}")
+      log.debug("Devs=#{devs}")
       devs == original_devs
     end
 
+    # It returns an array of <num> elements corresponding to the integer
+    # part of the free device names available for the given device type.
+    #
+    # @example GetFreeDevices("eth", 2) -> [1, 2]
+    #
+    # @param [String] type device type
+    # @param [String] num number of free devices to return
+    # @return [Array] of free devices for given type
     def GetFreeDevices(type, num)
-      Builtins.y2debug("Devices=%1", @Devices)
-      Builtins.y2debug("type,num=%1,%2", type, num)
-      Builtins.y2debug("Devices[%1]=%2", type, Ops.get(@Devices, type, {}))
+      log.debug("Devices=#{@Devices}")
+      log.debug("type,num=#{type},#{num}")
+      log.debug("Devices[#{type}]=#{@Devices[type]}")
 
-      curdevs = []
-      Builtins.foreach(
-        Convert.convert(
-          Map.Keys(Ops.get(@Devices, type, {})),
-          from: "list",
-          to:   "list <string>"
-        )
-      ) do |dev|
-        dev = device_num(dev) if Builtins.issubstring(dev, type)
-        curdevs = Builtins.add(curdevs, dev)
-      end
+      curdevs = @Devices.fetch(type, {}).keys
+      curdevs.map! { |d| d.include?(type) ? device_num(d) : d }
 
       i = 0
       count = 0
       ret = []
 
       # Hotpluggable devices
-      if IsHotplug(type) && !Builtins.contains(curdevs, "")
-        Builtins.y2debug("Added simple hotplug device")
-        count = Ops.add(count, 1)
-        ret = Builtins.add(ret, "")
+      if IsHotplug(type) && !curdevs.include?("")
+        log.debug("Added simple hotplug device")
+        count += 1
+        ret << ""
       end
 
       # Remaining numbered devices
-      while Ops.less_than(count, num)
-        ii = Builtins.sformat("%1", i)
-        if !Builtins.contains(curdevs, ii)
-          ret = Builtins.add(ret, ii)
-          count = Ops.add(count, 1)
+      while count < num
+        if !curdevs.include?(i.to_s)
+          ret << i.to_s
+          count += 1
         end
-        i = Ops.add(i, 1)
+        i += 1
       end
 
-      Builtins.y2debug("Free devices=%1", ret)
-      deep_copy(ret)
+      log.debug("Free devices=#{ret}")
+
+      ret
     end
 
     # Return free device
@@ -1353,12 +1382,14 @@ module Yast
     # @return free device
     # @example GetFreeDevice("eth") -&gt; "1"
     def GetFreeDevice(type)
-      Builtins.y2debug("type=%1", type)
-      freedevs = GetFreeDevices(type, 1)
-      ret = Ops.get(freedevs, 0)
-      Builtins.y2error("Free device location error: %1", ret) if ret.nil?
-      Builtins.y2debug("Free device=%1", ret)
-      ret
+      log.debug("type=#{type}")
+
+      free_dev = GetFreeDevices(type, 1).first
+
+      log.error("Free device location error: #{free_dev}") if free_dev.nil?
+      log.debug("Free device=#{free_dev}")
+
+      free_dev
     end
 
     # Check presence of the device (alias)
@@ -1494,7 +1525,6 @@ module Yast
       end
 
       t = GetType(name)
-      #    string d = device_num(name);
       a = alias_num(name)
       devsmap = Ops.get(@Devices, t, {})
 
@@ -1580,76 +1610,33 @@ module Yast
       deep_copy(ips)
     end
 
-    # Locate devices of the given type and value
+    # Locate devices which attributes match given key and value
+    #
     # @param [String] key device key
     # @param [String] val device value
     # @return [Array] of devices with key=val
     def Locate(key, val)
       ret = []
-      Builtins.maplist(@Devices) do |_typ, devsmap|
-        Builtins.maplist(
-          Convert.convert(devsmap, from: "map", to: "map <string, map>")
-        ) do |device, devmap|
-          if Ops.get_string(devmap, key, "") == val
-            ret = Builtins.add(ret, device)
-          end
-        end
+
+      @Devices.each do |device, devsmap|
+        ret << device if devsmap.any? { |_t, d| d[key] == val }
       end
 
-      deep_copy(ret)
+      ret
     end
 
-    # Locate devices of the given type and value
+    # Locate devices which attributes doesn't match given key and value
+    #
     # @param [String] key device key
     # @param [String] val device value
     # @return [Array] of devices with key!=val
     def LocateNOT(key, val)
       ret = []
-      Builtins.maplist(@Devices) do |_typ, devsmap|
-        Builtins.maplist(
-          Convert.convert(devsmap, from: "map", to: "map <string, map>")
-        ) do |device, devmap|
-          if Ops.get_string(devmap, key, "") != val
-            ret = Builtins.add(ret, device)
-          end
-        end
+
+      @Devices.each do |device, devsmap|
+        ret << device if devsmap.any? { |_t, d| d[key] != val }
       end
 
-      deep_copy(ret)
-    end
-
-    # Check if any device is using the specified provider
-    # @param [String] provider provider identification
-    # @return true if there is any
-    def LocateProvider(provider)
-      devs = Locate("PROVIDER", provider)
-      Ops.greater_than(Builtins.size(devs), 0)
-    end
-
-    # Update /dev/modem symlink
-    # @return true if success
-    def UpdateModemSymlink
-      ret = false
-      if Builtins.contains(Map.Keys(@Devices), "modem")
-        ml = Map.Keys(Ops.get(@Devices, "modem", {}))
-        ms = Ops.get_string(ml, 0, "0")
-        # map mm = Devices["modem"]:$[][ms]:$[];
-        mm = Ops.get(@Devices, ["modem", ms], {})
-        mdev = Ops.get_string(mm, "MODEM_DEVICE", "")
-        if mdev != "" && mdev != "/dev/modem"
-          curlink = nil
-          m = Convert.to_map(SCR.Read(path(".target.lstat"), "/dev/modem"))
-          if Ops.get_boolean(m, "islink", false) == true
-            curlink = Convert.to_string(
-              SCR.Read(path(".target.symlink"), "/dev/modem")
-            )
-          end
-          if curlink != mdev
-            SCR.Execute(path(".target.symlink"), mdev, "/dev/modem")
-            ret = true
-          end
-        end
-      end
       ret
     end
 
@@ -1829,7 +1816,6 @@ module Yast
     publish function: :SetValue, type: "boolean (string, string, string)"
     publish function: :GetIP, type: "list <string> (string)"
     publish function: :Locate, type: "list <string> (string, string)"
-    publish function: :LocateProvider, type: "boolean (string)"
     publish function: :UpdateModemSymlink, type: "boolean ()"
     publish function: :CleanHotplugSymlink, type: "boolean ()"
     publish function: :List, type: "list <string> (string)"
