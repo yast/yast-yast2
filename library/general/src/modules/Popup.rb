@@ -1778,7 +1778,7 @@ module Yast
     # @return [void]
     #
     def AnyTimedMessage(headline, message, timeout)
-      anyTimedMessageInternal(headline, message, nil, timeout)
+      anyTimedMessageInternal(headline, message, timeout)
 
       nil
     end
@@ -1787,7 +1787,6 @@ module Yast
       anyTimedRichMessageInternal(
         headline,
         message,
-        nil,
         timeout,
         @default_width,
         @default_height
