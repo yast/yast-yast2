@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 29 12:59:13 UTC 2016 - mvidner@suse.com
+
+- Fixed ArgumentError in Popup.AnyTimedMessage (bsc#988739).
+- 3.1.199
+
+-------------------------------------------------------------------
 Mon Jul 25 14:27:58 UTC 2016 - kanderssen@suse.com
 
 - Fixed Yast::NetworkInterfaces.FilterNOT regexp matching
