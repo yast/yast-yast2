@@ -1076,6 +1076,8 @@ module Yast
     # @param message [String] message with details, displayed below the headline
     # @param block block to execute
     def Feedback(headline, message, &block)
+      raise ArgumentError, "block must be supplied" unless block
+
       ShowFeedback(headline, message)
       block.call
     ensure
