@@ -299,4 +299,20 @@ describe Yast::Popup do
       subject.TimedLongNotifyGeometry("Title", 1, 30, 40)
     end
   end
+
+  describe ".AnyTimedMessage" do
+    it "is an adapter for anyTimedMessageInternal" do
+      expect(subject).to receive(:anyTimedMessageInternal)
+        .with("headline", "message", Integer)
+      expect(subject.AnyTimedMessage("headline", "message", 5)).to eq nil
+    end
+  end
+
+  describe ".AnyTimedRichMessage" do
+    it "is an adapter for anyTimedRichMessageInternal" do
+      expect(subject).to receive(:anyTimedRichMessageInternal)
+        .with("headline", "message", Integer, Integer, Integer)
+      expect(subject.AnyTimedRichMessage("headline", "message", 5)).to eq nil
+    end
+  end
 end
