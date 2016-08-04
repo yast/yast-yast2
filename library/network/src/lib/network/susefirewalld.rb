@@ -70,6 +70,8 @@ module Yast
     end
 
     def initialize
+      textdomain "base"
+
       # firewalld API interface.
       @fwd_api = FirewalldAPI.create
       # firewalld service

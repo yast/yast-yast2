@@ -51,6 +51,10 @@ module Yast
       "description"     => ""
     }.freeze
 
+    def initialize
+      textdomain "base"
+    end
+
     # Function returns the map of supported (known) services.
     #
     # @return [Hash{String => String}] supported services
