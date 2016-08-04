@@ -659,7 +659,7 @@ module Yast
       contents = Empty()
 
       show_slides = Slides.HaveSlideSupport && Slides.HaveSlides
-      if UI.HasSpecialWidget(:DumbTab) && (show_slides || ! @_relnotes.empty?)
+      if UI.HasSpecialWidget(:DumbTab) && (show_slides || !@_relnotes.empty?)
         tabs = [
           # tab
           Item(Id(:showDetails), _("&Details"))
