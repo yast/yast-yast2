@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug  4 07:37:08 UTC 2016 - jsrain@suse.cz
+
+- show release notes during package installation even if slide
+  show is not available (bsc#978700)
+- 3.1.200
+
+-------------------------------------------------------------------
 Fri Jul 29 12:59:13 UTC 2016 - mvidner@suse.com
 
 - Fixed ArgumentError in Popup.AnyTimedMessage (bsc#988739).
