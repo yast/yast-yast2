@@ -42,6 +42,8 @@ module Yast
     IGNORED_SERVICES = ["..", "."].freeze
 
     def initialize
+      textdomain "base"
+
       @services = nil
 
       @known_services_features = {

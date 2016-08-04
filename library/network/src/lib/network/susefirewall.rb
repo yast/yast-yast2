@@ -43,6 +43,10 @@ module Yast
 
     include Yast::Logger
 
+    def initialize
+      textdomain "base"
+    end
+
     # Function which returns if SuSEfirewall2 should start in Write process.
     # In fact it means that SuSEfirewall2 will at the end.
     #
