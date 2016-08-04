@@ -658,14 +658,16 @@ module Yast
     def RebuildDialog
       contents = Empty()
 
-      if UI.HasSpecialWidget(:DumbTab) && Slides.HaveSlideSupport &&
-          Slides.HaveSlides
+      show_slides = Slides.HaveSlideSupport && Slides.HaveSlides
+      if UI.HasSpecialWidget(:DumbTab) && (show_slides || !@_relnotes.empty?)
         tabs = [
-          # tab
-          Item(Id(:showSlide), _("Slide Sho&w")),
           # tab
           Item(Id(:showDetails), _("&Details"))
         ]
+        if show_slides
+          # tab
+          tabs.unshift(Item(Id(:showSlide), _("Slide Sho&w")))
+        end
 
         @_rn_tabs = {}
         if @_relnotes.key?(@_base_product)
