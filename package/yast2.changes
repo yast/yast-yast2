@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug  4 09:04:50 UTC 2016 - mvidner@suse.cz
+
+- Declare textdomain to fix untranslated texts (bsc#992084).
+- 3.1.201
+
+-------------------------------------------------------------------
 Thu Aug  4 07:37:08 UTC 2016 - jsrain@suse.cz
 
 - show release notes during package installation even if slide
