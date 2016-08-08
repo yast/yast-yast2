@@ -368,7 +368,7 @@ module Yast
         userpass = Ops.add(userpass, "@")
       end
 
-      url = Builtins.sformat("%1://%2", url, userpass)
+      url = Builtins.sformat("%1:#{scheme_separator(tokens["scheme"])}%2", url, userpass)
       Builtins.y2debug("url: %1", url)
 
       if Hostname.CheckFQ(Ops.get_string(tokens, "host", "")) ||
@@ -648,6 +648,23 @@ module Yast
     publish function: :FormatURL, type: "string (map, integer)"
     publish function: :HidePassword, type: "string (string)"
     publish function: :HidePasswordToken, type: "map (map)"
+
+  private
+
+    # Schemes which should use a single slash.
+    # see #schema_separator
+    SINGLE_SLASH_SCHEMES = ["cd", "dvd"].freeze
+
+    # Returns the separator to be used given a scheme
+    #
+    # Schemes like 'cd' or 'dvd' should used a single '/' character to separate
+    # the <scheme> and the <scheme-specific-part> (bsc#991935)
+    #
+    # @param scheme [String] URI scheme
+    # @return [String] Separator to be used
+    def scheme_separator(scheme)
+      SINGLE_SLASH_SCHEMES.include?(scheme.downcase) ? "/" : "//"
+    end
   end
 
   URL = URLClass.new
