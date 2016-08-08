@@ -25,6 +25,66 @@ describe Yast::URL do
     it "returns a hash containing the token extracted from the URL" do
       expect(subject.Parse(url)).to eq(tokens)
     end
+
+    context "given a CD/DVD with a file" do
+      let(:url) { "cd:/some/file" }
+      let(:tokens) do
+        {
+          "scheme"   => "cd",
+          "host"     => "",
+          "path"     => "/some/file",
+          "fragment" => "",
+          "user"     => "",
+          "pass"     => "",
+          "port"     => "",
+          "query"    => ""
+        }
+      end
+
+      it "returns a hash containing 'scheme' and 'path'" do
+        expect(subject.Parse(url)).to eq(tokens)
+      end
+    end
+
+    context "given a CD/DVD with a device" do
+      let(:url) { "cd:/?device=/dev/sr0" }
+      let(:tokens) do
+        {
+          "scheme"   => "cd",
+          "host"     => "",
+          "path"     => "/",
+          "fragment" => "",
+          "user"     => "",
+          "pass"     => "",
+          "port"     => "",
+          "query"    => "device=/dev/sr0"
+        }
+      end
+
+      it "returns a hash containing 'scheme', 'path' and 'query'" do
+        expect(subject.Parse(url)).to eq(tokens)
+      end
+    end
+
+    context "given a CD/DVD with a device and a path" do
+      let(:url) { "cd:/some/file?device=/dev/sr0" }
+      let(:tokens) do
+        {
+          "scheme"   => "cd",
+          "host"     => "",
+          "path"     => "/some/file",
+          "fragment" => "",
+          "user"     => "",
+          "pass"     => "",
+          "port"     => "",
+          "query"    => "device=/dev/sr0"
+        }
+      end
+
+      it "returns a hash containing 'scheme', 'path' and 'query'" do
+        expect(subject.Parse(url)).to eq(tokens)
+      end
+    end
   end
 
   describe ".Build" do
@@ -32,16 +92,56 @@ describe Yast::URL do
       expect(subject.Build(tokens)).to eq(url)
     end
 
-    context "given a cd/dvd URL" do
-      let(:tokens) do
-        {
-          "scheme" => "cd",
-          "query"  => "device=/dev/sr0"
-        }
+    context "given CD/DVD tokens including a device" do
+      context "with a device" do
+        let(:tokens) do
+          {
+            "scheme" => "cd",
+            "query"  => "device=/dev/sr0",
+            "path"   => "/"
+          }
+        end
+
+        it "returns a URL of the form 'cd:///?<device>'" do
+          expect(subject.Build(tokens)).to eq("cd:///?device=/dev/sr0")
+        end
       end
 
-      it "returns a URL containing which a single slash to separate the schema from the rest" do
-        expect(subject.Build(tokens)).to eq("cd:/?device=/dev/sr0")
+      context "with a directory" do
+        let(:tokens) do
+          {
+            "scheme" => "cd",
+            "path"   => "/dir"
+          }
+        end
+
+        it "returns a URL of the form 'cd:///<dir>'" do
+          expect(subject.Build(tokens)).to eq("cd:///dir")
+        end
+      end
+    end
+  end
+
+  describe "URLs rebuilding" do
+    # This intention of these tests is to check if URLs are rebuilt correctly.
+
+    URLS = {
+      "dvd:/dir"                        => "dvd:///dir",
+      "dvd://dir"                       => "dvd:///dir",
+      "dvd:///dir"                      => "dvd:///dir",
+      "cd:/?device=/dev/sr0"            => "cd:///?device=/dev/sr0",
+      "cd:/some/file?device=/dev/sr0"   => "cd:///some/file?device=/dev/sr0",
+      "cd:///some/file?device=/dev/sr0" => "cd:///some/file?device=/dev/sr0",
+      "http://u:p@suse.de/a#b"          => "http://u:p@suse.de/a#b",
+      "ftp://u:p@suse.de/a#b"           => "ftp://u:p@suse.de/a#b",
+      "slp:/"                           => "slp://"
+    }.freeze
+
+    URLS.each do |url, rebuilt|
+      context "given #{url}" do
+        it "returns #{rebuilt}" do
+          expect(subject.Build(subject.Parse(url))).to eq(rebuilt)
+        end
       end
     end
   end

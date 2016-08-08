@@ -274,6 +274,10 @@ module Yast
           Ops.set(tokens, "domain", Ops.get(options, "workgroup", ""))
         end
       end
+
+      # merge host and path if the scheme does not allow a host (bsc#991935)
+      tokens = merge_host_and_path(tokens) if SCHEMES_WO_HOST.include?(tokens["scheme"].downcase)
+
       Builtins.y2debug("tokens=%1", tokens)
       deep_copy(tokens)
     end
@@ -368,7 +372,7 @@ module Yast
         userpass = Ops.add(userpass, "@")
       end
 
-      url = Builtins.sformat("%1:#{scheme_separator(tokens["scheme"])}%2", url, userpass)
+      url = Builtins.sformat("%1://%2", url, userpass)
       Builtins.y2debug("url: %1", url)
 
       if Hostname.CheckFQ(Ops.get_string(tokens, "host", "")) ||
@@ -651,19 +655,26 @@ module Yast
 
   private
 
-    # Schemes which should use a single slash.
-    # see #schema_separator
-    SINGLE_SLASH_SCHEMES = ["cd", "dvd"].freeze
+    # Schemes which should not include a host.
+    # @see #merge_host_and_path
+    SCHEMES_WO_HOST = ["cd", "dvd"].freeze
 
-    # Returns the separator to be used given a scheme
+    # Merges host and path tokens
     #
-    # Schemes like 'cd' or 'dvd' should used a single '/' character to separate
-    # the <scheme> and the <scheme-specific-part> (bsc#991935)
+    # In schemes like 'cd' or 'dvd' the host part is not allowed.
+    # It leads to conversions like: "cd:/?device=/dev/sr0" to "cd://?device=/dev/sr0"
+    # or "cd:/info" to "cd://info".
     #
-    # @param scheme [String] URI scheme
-    # @return [String] Separator to be used
-    def scheme_separator(scheme)
-      SINGLE_SLASH_SCHEMES.include?(scheme.downcase) ? "/" : "//"
+    # If no host or path are specified, the path is set to "/".
+    #
+    # @param  [Hash<String,String>] URL tokens
+    # @return [Hash<String,String>] URL tokens with host and path merged
+    def merge_host_and_path(tokens)
+      parts = [tokens["host"], tokens["path"]].reject(&:empty?)
+      tokens.merge(
+        "path" => File.join("/", *parts),
+        "host" => ""
+      )
     end
   end
 
