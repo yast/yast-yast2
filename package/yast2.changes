@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug  8 10:54:35 UTC 2016 - igonzalezsosa@suse.com
+
+- Fixed handling of cd:/ and dvd:/ URLs (bsc#991935)
+- 3.1.202
+
+-------------------------------------------------------------------
 Thu Aug  4 09:04:50 UTC 2016 - mvidner@suse.cz
 
 - Declare textdomain to fix untranslated texts (bsc#992084).
