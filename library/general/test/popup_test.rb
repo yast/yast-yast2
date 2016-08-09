@@ -67,7 +67,7 @@ describe Yast::Popup do
     let(:line) { "<h1>Title</h1>\n" }
     let(:limit) { subject.too_many_lines }
 
-    # Backup and restore the original switch_to_rich flag
+    # Backup and restore the original switch_to_richtext flag
     around do |example|
       old_switch_to_richtext = subject.switch_to_richtext
       subject.switch_to_richtext = switch_to_richtext
