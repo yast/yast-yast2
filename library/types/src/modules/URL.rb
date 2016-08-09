@@ -274,6 +274,10 @@ module Yast
           Ops.set(tokens, "domain", Ops.get(options, "workgroup", ""))
         end
       end
+
+      # merge host and path if the scheme does not allow a host (bsc#991935)
+      tokens = merge_host_and_path(tokens) if SCHEMES_WO_HOST.include?(tokens["scheme"].downcase)
+
       Builtins.y2debug("tokens=%1", tokens)
       deep_copy(tokens)
     end
@@ -648,6 +652,30 @@ module Yast
     publish function: :FormatURL, type: "string (map, integer)"
     publish function: :HidePassword, type: "string (string)"
     publish function: :HidePasswordToken, type: "map (map)"
+
+  private
+
+    # Schemes which should not include a host.
+    # @see #merge_host_and_path
+    SCHEMES_WO_HOST = ["cd", "dvd"].freeze
+
+    # Merges host and path tokens
+    #
+    # In schemes like 'cd' or 'dvd' the host part is not allowed.
+    # It leads to conversions like: "cd:/?device=/dev/sr0" to "cd://?device=/dev/sr0"
+    # or "cd:/info" to "cd://info".
+    #
+    # If no host or path are specified, the path is set to "/".
+    #
+    # @param  [Hash<String,String>] URL tokens
+    # @return [Hash<String,String>] URL tokens with host and path merged
+    def merge_host_and_path(tokens)
+      parts = [tokens["host"], tokens["path"]].reject(&:empty?)
+      tokens.merge(
+        "path" => File.join("/", *parts),
+        "host" => ""
+      )
+    end
   end
 
   URL = URLClass.new
