@@ -4,7 +4,6 @@ require_relative "test_helper"
 require "erb"
 
 Yast.import "Popup"
-Yast.import "String"
 
 describe Yast::Popup do
   let(:ui) { double("Yast::UI") }
@@ -68,6 +67,7 @@ describe Yast::Popup do
     let(:line) { "<h1>Title</h1>\n" }
     let(:limit) { subject.too_many_lines }
 
+    # Backup and restore the original switch_to_rich flag
     around do |example|
       old_switch_to_richtext = subject.switch_to_richtext
       subject.switch_to_richtext = switch_to_richtext

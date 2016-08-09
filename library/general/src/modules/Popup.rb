@@ -48,6 +48,7 @@ module Yast
       Yast.import "Label"
       Yast.import "Mode"
       Yast.import "Directory"
+      Yast.import "String"
 
       @feedback_open = false
 
