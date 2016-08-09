@@ -48,7 +48,6 @@ module Yast
       Yast.import "Label"
       Yast.import "Mode"
       Yast.import "Directory"
-      Yast.import "String"
 
       @feedback_open = false
 
@@ -891,7 +890,7 @@ module Yast
               VSpacing(0.5),
               RichText(
                 Builtins.mergestring(
-                  Builtins.splitstring(String.EscapeTags(details), "\n"),
+                  Builtins.splitstring(ERB::Util.html_escape(details), "\n"),
                   "<br>"
                 )
               ),
