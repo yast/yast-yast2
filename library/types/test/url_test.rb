@@ -138,10 +138,8 @@ describe Yast::URL do
     }.freeze
 
     URLS.each do |url, rebuilt|
-      context "given #{url}" do
-        it "returns #{rebuilt}" do
-          expect(subject.Build(subject.Parse(url))).to eq(rebuilt)
-        end
+      it "returns '#{rebuilt}' for '#{url}'" do
+        expect(subject.Build(subject.Parse(url))).to eq(rebuilt)
       end
     end
   end
