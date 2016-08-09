@@ -36,6 +36,7 @@
 # <br>
 # See also <a href="../wizard/README.popups">README.popups</a>
 require "yast"
+require "erb"
 
 module Yast
   class PopupClass < Module
@@ -47,7 +48,6 @@ module Yast
       Yast.import "Label"
       Yast.import "Mode"
       Yast.import "Directory"
-      Yast.import "String"
 
       @feedback_open = false
 
@@ -1325,7 +1325,7 @@ module Yast
           Ops.greater_than(Builtins.size(lines), @too_many_lines)
         anyMessageInternalRich(
           Label.ErrorMsg,
-          String.EscapeTags(message),
+          ERB::Util.html_escape(message),
           @default_width,
           @default_height
         )

@@ -1,6 +1,7 @@
 #! /usr/bin/env rspec
 
 require_relative "test_helper"
+require "erb"
 
 Yast.import "Popup"
 Yast.import "String"
@@ -89,11 +90,11 @@ describe Yast::Popup do
 
       it "escapes the tags if message is too long" do
         message = line * limit
-        expect(subject).to receive(:RichText).with(Yast::String.EscapeTags(message))
+        expect(subject).to receive(:RichText).with(ERB::Util.html_escape(message))
         subject.Error(message)
       end
 
-      it "does not escape the tags if message is not too long" do
+      it "keeps the original text if the message is short" do
         expect(subject).to receive(:RichText).with(line)
         subject.Error(line)
       end
