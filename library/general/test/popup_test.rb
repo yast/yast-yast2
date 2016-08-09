@@ -1,6 +1,7 @@
 #! /usr/bin/env rspec
 
 require_relative "test_helper"
+require "erb"
 
 Yast.import "Popup"
 
@@ -62,9 +63,41 @@ describe Yast::Popup do
   describe ".Error" do
     before { allow(ui).to receive(:OpenDialog) }
 
-    it "shows a popup without escaping tags" do
-      expect(subject).to receive(:RichText).with("<h1>Title</h1>")
-      subject.Error("<h1>Title</h1>")
+    let(:switch_to_richtext) { true }
+    let(:line) { "<h1>Title</h1>\n" }
+    let(:limit) { subject.too_many_lines }
+
+    # Backup and restore the original switch_to_richtext flag
+    around do |example|
+      old_switch_to_richtext = subject.switch_to_richtext
+      subject.switch_to_richtext = switch_to_richtext
+      example.run
+      subject.switch_to_richtext = old_switch_to_richtext
+    end
+
+    context "when switching to richtext is not allowed" do
+      let(:switch_to_richtext) { false }
+
+      it "shows a popup without escaping tags" do
+        message = line * limit
+        expect(subject).to receive(:RichText).with(message)
+        subject.Error(message)
+      end
+    end
+
+    context "when switch to richtext is allowed" do
+      let(:switch_to_richtext) { true }
+
+      it "escapes the tags if message is too long" do
+        message = line * limit
+        expect(subject).to receive(:RichText).with(ERB::Util.html_escape(message))
+        subject.Error(message)
+      end
+
+      it "keeps the original text if the message is short" do
+        expect(subject).to receive(:RichText).with(line)
+        subject.Error(line)
+      end
     end
   end
 
