@@ -1325,7 +1325,7 @@ module Yast
           Ops.greater_than(Builtins.size(lines), @too_many_lines)
         anyMessageInternalRich(
           Label.ErrorMsg,
-          message,
+          String.EscapeTags(message),
           @default_width,
           @default_height
         )

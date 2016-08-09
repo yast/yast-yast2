@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Aug  9 11:31:45 UTC 2016 - igonzalezsosa@suse.com
+
+- Popup.Error will escape the text when message is too long and
+  richtext is used (bsc#992506)
+- 3.1.203
+
+-------------------------------------------------------------------
 Mon Aug  8 10:54:35 UTC 2016 - igonzalezsosa@suse.com
 
 - Fixed handling of cd:/ and dvd:/ URLs (bsc#991935)
