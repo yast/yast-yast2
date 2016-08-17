@@ -44,24 +44,26 @@ follows:
      to the [Ruby style
      guide](https://github.com/SUSE/style-guides/blob/master/Ruby.md).
 
-  4. Make sure your change didn't break anything by building the RPM package
+  4. Update the package version (usually by `rake version:bump`) and add
+     a new entry into the `*.changes` file. For bigger changes or changes which
+     need longer discussion it is advised to add this as a separate last commit
+     so it can be easily updated when another change is merged in the meantime.
+
+  5. Make sure your change didn't break anything by building the RPM package
      (`rake osc:build`). The build process includes running the full testsuite.
 
-  5. Publish the branch and create a pull request.
+  6. Publish the branch and create a pull request.
 
-  6. YaST developers will review your change and possibly point out issues.
+  7. YaST developers will review your change and possibly point out issues.
      Adapt the code under their guidance until they are all resolved.
 
-  7. Finally, the pull request will get merged or rejected.
+  8. Finally, the pull request will get merged or rejected.
 
 See also [GitHub's guide on
 contributing](https://help.github.com/articles/fork-a-repo).
 
 If you want to do multiple unrelated changes, use separate branches and pull
 requests.
-
-Do not change the `VERSION` and `*.changes` files as this could lead to
-conflicts.
 
 ### Commits
 
