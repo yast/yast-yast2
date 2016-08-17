@@ -44,10 +44,12 @@ follows:
      to the [Ruby style
      guide](https://github.com/SUSE/style-guides/blob/master/Ruby.md).
 
-  4. Update the package version (usually by `rake version:bump`) and add
-     a new entry into the `*.changes` file. For bigger changes or changes which
-     need longer discussion it is advised to add this as a separate last commit
-     so it can be easily updated when another change is merged in the meantime.
+  4. Update the package version (in `packages/*.spec`, usually by
+     `rake version:bump`) and add a new entry into the `package/*.changes` file
+     (by `osc vc`).  
+     For bigger changes or changes which need longer discussion it is advised to
+     add this as a separate last commit so it can be easily updated when another
+     change is merged in the meantime.
 
   5. Make sure your change didn't break anything by building the RPM package
      (`rake osc:build`). The build process includes running the full testsuite.
