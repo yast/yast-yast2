@@ -3,7 +3,7 @@ YaST Contribution Guidelines
 
 YaST is an open source project and as such it welcomes all kinds of
 contributions. If you decide to contribute, please follow these guidelines to
-ensure the process is effective and pleasant both for you and YaST maintainers.
+ensure the process is effective and pleasant both for you and the YaST maintainers.
 
 There are two main forms of contribution: reporting bugs and performing code
 changes.
@@ -17,12 +17,10 @@ or [GitHub issues](../../issues). (For Bugzilla, use the [simplified
 registration](https://secure-www.novell.com/selfreg/jsp/createSimpleAccount.jsp)
 if you don't have an account yet.)
 
-If you find a problem, please report it either using
-[Bugzilla](https://bugzilla.suse.com/) or GitHub issues. We can't guarantee
-that every bug will be fixed, but we'll try.
-
 When creating a bug report, please follow our [bug reporting
 guidelines](http://en.opensuse.org/openSUSE:Report_a_YaST_bug).
+
+We can't guarantee that every bug will be fixed, but we'll try.
 
 Code Changes
 ------------
