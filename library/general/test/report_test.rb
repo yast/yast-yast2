@@ -125,16 +125,16 @@ describe Yast::Report do
   end
 
   describe ".Settings" do
-    DATA_PATH =  File.join(File.dirname(__FILE__), 'data')
-    let(:ay_profile) { YAML.load_file(File.join(DATA_PATH, 'ay_profile.yml')) }
-    let(:default_normal) { YAML.load_file(File.join(DATA_PATH, 'default_normal_installation.yml')) }
-    let(:default_ay) { YAML.load_file(File.join(DATA_PATH, 'default_ay_installation.yml')) }
-    let(:result_ay) { YAML.load_file(File.join(DATA_PATH, 'ay_installation.yml')) }
+    DATA_PATH = File.join(File.dirname(__FILE__), "data")
+    let(:ay_profile) { YAML.load_file(File.join(DATA_PATH, "ay_profile.yml")) }
+    let(:default_normal) { YAML.load_file(File.join(DATA_PATH, "default_normal_installation.yml")) }
+    let(:default_ay) { YAML.load_file(File.join(DATA_PATH, "default_ay_installation.yml")) }
+    let(:result_ay) { YAML.load_file(File.join(DATA_PATH, "ay_installation.yml")) }
 
     context "while normal installation" do
       it "check default entries" do
         allow(Yast::Mode).to receive(:mode).and_return("installation")
-        subject.main()
+        subject.main
         expect(subject.Export()).to match(default_normal)
       end
     end
@@ -142,7 +142,7 @@ describe Yast::Report do
     context "while AutoYaST installation" do
       before(:each) do
         allow(Yast::Mode).to receive(:mode).and_return("autoinstallation")
-        subject.main()
+        subject.main
       end
 
       it "sets default entries" do
@@ -161,7 +161,7 @@ describe Yast::Report do
     context "while AutoYaST cloning system" do
       before(:each) do
         allow(Yast::Mode).to receive(:mode).and_return("autoinst_config")
-        subject.main()
+        subject.main
       end
 
       it "AutoYaST default entries will be cloned" do

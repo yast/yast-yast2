@@ -60,7 +60,7 @@ module Yast
 
       # timeouts
       # AutoYaST has different timeout (bnc#887397)
-      @default_timeout = Mode.auto||Mode.config ? 10 : 0
+      @default_timeout = (Mode.auto || Mode.config) ? 10 : 0
       @timeout_errors = 0 # default: Errors stop the installation
       @timeout_warnings = @default_timeout
       @timeout_messages = @default_timeout
