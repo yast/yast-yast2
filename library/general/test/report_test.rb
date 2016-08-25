@@ -5,7 +5,6 @@ require "yaml"
 
 Yast.import "Report"
 Yast.import "Mode"
-Yast.import "Profile"
 
 describe Yast::Report do
   before { subject.ClearAll }
@@ -127,7 +126,7 @@ describe Yast::Report do
 
   describe ".Settings" do
     DATA_PATH =  File.join(File.dirname(__FILE__), 'data')
-    let(:ay_profile) { File.join(DATA_PATH, 'ay_profile.xml') }
+    let(:ay_profile) { File.join(DATA_PATH, 'ay_profile.yml') }
     let(:default_normal) { File.join(DATA_PATH, 'default_normal_installation.yml') }
     let(:default_ay) { File.join(DATA_PATH, 'default_ay_installation.yml') }
     let(:result_ay) { File.join(DATA_PATH, 'ay_installation.yml') }
@@ -143,7 +142,6 @@ describe Yast::Report do
 
     context "while AutoYaST installation" do
       before(:each) do
-        Yast::Profile.ReadXML(ay_profile)
         Yast::Mode.SetMode("autoinstallation")
         subject.main()
       end
@@ -159,7 +157,8 @@ describe Yast::Report do
       end
       it "set flags via AutoYaST profile" do
         result_map = YAML.load_file(result_ay)
-        subject.Import(Yast::Profile.current["report"])
+        ay_map = YAML.load_file(ay_profile)
+        subject.Import(ay_map)
         expect(subject.Export()).to match(result_map)
       end
     end
