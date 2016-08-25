@@ -1,8 +1,10 @@
 #! /usr/bin/env rspec
 
 require_relative "test_helper"
+require "yaml"
 
 Yast.import "Report"
+Yast.import "Mode"
 
 describe Yast::Report do
   before { subject.ClearAll }
@@ -121,4 +123,52 @@ describe Yast::Report do
       expect(subject.GetMessages(0, 1, 0, 0)).to match(/Message/)
     end
   end
+
+  describe ".Settings" do
+    DATA_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "data")
+    let(:ay_profile) { YAML.load_file(File.join(DATA_DIR, "ay_profile.yml")) }
+    let(:default_normal) { YAML.load_file(File.join(DATA_DIR, "default_normal_installation.yml")) }
+    let(:default_ay) { YAML.load_file(File.join(DATA_DIR, "default_ay_installation.yml")) }
+    let(:result_ay) { YAML.load_file(File.join(DATA_DIR, "ay_installation.yml")) }
+
+    context "while normal installation" do
+      it "check default entries" do
+        allow(Yast::Mode).to receive(:mode).and_return("installation")
+        subject.main
+        expect(subject.Export()).to match(default_normal)
+      end
+    end
+
+    context "while AutoYaST installation" do
+      before(:each) do
+        allow(Yast::Mode).to receive(:mode).and_return("autoinstallation")
+        subject.main
+      end
+
+      it "sets default entries" do
+        expect(subject.Export()).to match(default_ay)
+      end
+      it "check if default entries are not overwritten by empty import" do
+        subject.Import({})
+        expect(subject.Export()).to match(default_ay)
+      end
+      it "set flags via AutoYaST profile" do
+        subject.Import(ay_profile)
+        expect(subject.Export()).to match(result_ay)
+      end
+    end
+
+    context "while AutoYaST cloning system" do
+      before(:each) do
+        allow(Yast::Mode).to receive(:mode).and_return("autoinst_config")
+        subject.main
+      end
+
+      it "AutoYaST default entries will be cloned" do
+        # Set timeout for autoyast to 10 seconds (bnc#887397)
+        expect(subject.Export()).to match(default_ay)
+      end
+    end
+  end
+
 end

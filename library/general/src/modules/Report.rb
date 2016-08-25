@@ -59,10 +59,12 @@ module Yast
       @display_yesno_messages = true
 
       # timeouts
-      @timeout_errors = 0
-      @timeout_warnings = 0
-      @timeout_messages = 0
-      @timeout_yesno_messages = 0
+      # AutoYaST has different timeout (bnc#887397)
+      @default_timeout = (Mode.auto || Mode.config) ? 10 : 0
+      @timeout_errors = 0 # default: Errors stop the installation
+      @timeout_warnings = @default_timeout
+      @timeout_messages = @default_timeout
+      @timeout_yesno_messages = @default_timeout
 
       # logging flags
       @log_errors = true
@@ -230,12 +232,14 @@ module Yast
 
       # timeouts
       @timeout_errors = Ops.get_integer(@error_settings, "timeout", 0)
-      @timeout_warnings = Ops.get_integer(@warning_settings, "timeout", 0)
-      @timeout_messages = Ops.get_integer(@message_settings, "timeout", 0)
+      @timeout_warnings = Ops.get_integer(@warning_settings, "timeout",
+        @default_timeout)
+      @timeout_messages = Ops.get_integer(@message_settings, "timeout",
+        @default_timeout)
       @timeout_yesno_messages = Ops.get_integer(
         @yesno_message_settings,
         "timeout",
-        0
+        @default_timeout
       )
 
       # logging flags
