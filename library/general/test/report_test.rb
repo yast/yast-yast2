@@ -126,17 +126,16 @@ describe Yast::Report do
 
   describe ".Settings" do
     DATA_PATH =  File.join(File.dirname(__FILE__), 'data')
-    let(:ay_profile) { File.join(DATA_PATH, 'ay_profile.yml') }
-    let(:default_normal) { File.join(DATA_PATH, 'default_normal_installation.yml') }
-    let(:default_ay) { File.join(DATA_PATH, 'default_ay_installation.yml') }
-    let(:result_ay) { File.join(DATA_PATH, 'ay_installation.yml') }
+    let(:ay_profile) { YAML.load_file(File.join(DATA_PATH, 'ay_profile.yml')) }
+    let(:default_normal) { YAML.load_file(File.join(DATA_PATH, 'default_normal_installation.yml')) }
+    let(:default_ay) { YAML.load_file(File.join(DATA_PATH, 'default_ay_installation.yml')) }
+    let(:result_ay) { YAML.load_file(File.join(DATA_PATH, 'ay_installation.yml')) }
 
     context "while normal installation" do
       it "check default entries" do
         allow(Yast::Mode).to receive(:mode).and_return("installation")
         subject.main()
-        default_map = YAML.load_file(default_normal)
-        expect(subject.Export()).to match(default_map)
+        expect(subject.Export()).to match(default_normal)
       end
     end
 
@@ -147,19 +146,15 @@ describe Yast::Report do
       end
 
       it "sets default entries" do
-        default_map = YAML.load_file(default_ay)
-        expect(subject.Export()).to match(default_map)
+        expect(subject.Export()).to match(default_ay)
       end
       it "check if default entries are not overwritten by empty import" do
-        default_map = YAML.load_file(default_ay)
         subject.Import({})
-        expect(subject.Export()).to match(default_map)
+        expect(subject.Export()).to match(default_ay)
       end
       it "set flags via AutoYaST profile" do
-        result_map = YAML.load_file(result_ay)
-        ay_map = YAML.load_file(ay_profile)
-        subject.Import(ay_map)
-        expect(subject.Export()).to match(result_map)
+        subject.Import(ay_profile)
+        expect(subject.Export()).to match(result_ay)
       end
     end
 
@@ -171,8 +166,7 @@ describe Yast::Report do
 
       it "AutoYaST default entries will be cloned" do
         # Set timeout for autoyast to 10 seconds (bnc#887397)
-        default_map = YAML.load_file(default_ay)
-        expect(subject.Export()).to match(default_map)
+        expect(subject.Export()).to match(default_ay)
       end
     end
   end
