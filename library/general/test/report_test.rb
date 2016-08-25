@@ -1,8 +1,11 @@
 #! /usr/bin/env rspec
 
 require_relative "test_helper"
+require "yaml"
 
 Yast.import "Report"
+Yast.import "Mode"
+Yast.import "Profile"
 
 describe Yast::Report do
   before { subject.ClearAll }
@@ -121,4 +124,58 @@ describe Yast::Report do
       expect(subject.GetMessages(0, 1, 0, 0)).to match(/Message/)
     end
   end
+
+  describe ".Settings" do
+    DATA_PATH =  File.join(File.dirname(__FILE__), 'data')
+    let(:ay_profile) { File.join(DATA_PATH, 'ay_profile.xml') }
+    let(:default_normal) { File.join(DATA_PATH, 'default_normal_installation.yml') }
+    let(:default_ay) { File.join(DATA_PATH, 'default_ay_installation.yml') }
+    let(:result_ay) { File.join(DATA_PATH, 'ay_installation.yml') }
+
+    context "while normal installation" do
+      it "check default entries" do
+        Yast::Mode.SetMode("installation")
+        subject.main()
+        default_map = YAML.load_file(default_normal)
+        expect(subject.Export()).to match(default_map)
+      end
+    end
+
+    context "while AutoYaST installation" do
+      before(:each) do
+        Yast::Profile.ReadXML(ay_profile)
+        Yast::Mode.SetMode("autoinstallation")
+        subject.main()
+      end
+
+      it "check default entries" do
+        default_map = YAML.load_file(default_ay)
+        expect(subject.Export()).to match(default_map)
+      end
+      it "check if default entries are not overwritten by empty import" do
+        default_map = YAML.load_file(default_ay)
+        subject.Import({})
+        expect(subject.Export()).to match(default_map)
+      end
+      it "set flags via AutoYaST profile" do
+        result_map = YAML.load_file(result_ay)
+        subject.Import(Yast::Profile.current["report"])
+        expect(subject.Export()).to match(result_map)
+      end
+    end
+
+    context "while AutoYaST cloning system" do
+      before(:each) do
+        Yast::Mode.SetMode("autoinst_config")
+        subject.main()
+      end
+
+      it "AutoYaST default entries will be cloned" do
+        # Set timeout for autoyast to 10 seconds (bnc#887397)
+        default_map = YAML.load_file(default_ay)
+        expect(subject.Export()).to match(default_map)
+      end
+    end
+  end
+
 end

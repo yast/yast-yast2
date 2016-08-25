@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE profile>
+<profile xmlns="http://www.suse.com/1.0/yast2ns" xmlns:config="http://www.suse.com/1.0/configns">
+<report>    
+  <errors>
+    <show config:type="boolean">true</show>
+    <timeout config:type="integer">10</timeout>
+    <log config:type="boolean">true</log>
+  </errors>
+  <warnings>
+    <show config:type="boolean">true</show>
+    <timeout config:type="integer">20</timeout>
+    <log config:type="boolean">true</log>
+  </warnings>
+  <yesno_messages>
+    <show config:type="boolean">true</show>
+    <timeout config:type="integer">40</timeout>
+    <log config:type="boolean">true</log>
+  </yesno_messages>
+</report>
+</profile>
