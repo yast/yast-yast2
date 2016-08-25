@@ -125,11 +125,11 @@ describe Yast::Report do
   end
 
   describe ".Settings" do
-    DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data")
-    let(:ay_profile) { YAML.load_file(File.join(DATA_PATH, "ay_profile.yml")) }
-    let(:default_normal) { YAML.load_file(File.join(DATA_PATH, "default_normal_installation.yml")) }
-    let(:default_ay) { YAML.load_file(File.join(DATA_PATH, "default_ay_installation.yml")) }
-    let(:result_ay) { YAML.load_file(File.join(DATA_PATH, "ay_installation.yml")) }
+    DATA_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "data")
+    let(:ay_profile) { YAML.load_file(File.join(DATA_DIR, "ay_profile.yml")) }
+    let(:default_normal) { YAML.load_file(File.join(DATA_DIR, "default_normal_installation.yml")) }
+    let(:default_ay) { YAML.load_file(File.join(DATA_DIR, "default_ay_installation.yml")) }
+    let(:result_ay) { YAML.load_file(File.join(DATA_DIR, "ay_installation.yml")) }
 
     context "while normal installation" do
       it "check default entries" do
