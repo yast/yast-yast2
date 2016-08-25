@@ -133,7 +133,7 @@ describe Yast::Report do
 
     context "while normal installation" do
       it "check default entries" do
-        Yast::Mode.SetMode("installation")
+        allow(Yast::Mode).to receive(:mode).and_return("installation")
         subject.main()
         default_map = YAML.load_file(default_normal)
         expect(subject.Export()).to match(default_map)
@@ -142,11 +142,11 @@ describe Yast::Report do
 
     context "while AutoYaST installation" do
       before(:each) do
-        Yast::Mode.SetMode("autoinstallation")
+        allow(Yast::Mode).to receive(:mode).and_return("autoinstallation")
         subject.main()
       end
 
-      it "check default entries" do
+      it "sets default entries" do
         default_map = YAML.load_file(default_ay)
         expect(subject.Export()).to match(default_map)
       end
@@ -165,7 +165,7 @@ describe Yast::Report do
 
     context "while AutoYaST cloning system" do
       before(:each) do
-        Yast::Mode.SetMode("autoinst_config")
+        allow(Yast::Mode).to receive(:mode).and_return("autoinst_config")
         subject.main()
       end
 
