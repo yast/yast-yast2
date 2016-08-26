@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Aug 25 14:17:13 CEST 2016 - schubi@suse.de
+
+- Set AutoYaST default timeout entries for reporting errors
+  correctly and do not overwrite AutoYaST profile settings.
+  (bnc#988949)
+- 3.1.204
+
+-------------------------------------------------------------------
 Tue Aug  9 11:31:45 UTC 2016 - igonzalezsosa@suse.com
 
 - Popup.Error will escape the text when message is too long and
