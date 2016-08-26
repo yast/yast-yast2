@@ -2988,9 +2988,7 @@ module Yast
       VBox(
         HSpacing(50), # enforce width
         VSpacing(0.1),
-        HBox(
-          Left(Label(message))
-        ),
+        Left(Label(message)),
         VSpacing(0.1),
         HBox(
           HSpacing(0.6),
