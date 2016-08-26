@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Aug 26 10:37:45 UTC 2016 - kanderssen@suse.com
+
+- Packages: remove warning icon from package callbacks.
+  (bnc#988949)
+- 3.1.205
+
+-------------------------------------------------------------------
 Thu Aug 25 14:17:13 CEST 2016 - schubi@suse.de
 
 - Set AutoYaST default timeout entries for reporting errors
