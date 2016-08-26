@@ -2988,12 +2988,7 @@ module Yast
       VBox(
         HSpacing(50), # enforce width
         VSpacing(0.1),
-        HBox(
-          # maybe more icon types could be used
-          # "info, "warning", "error"
-          Icon.Image("warning", "margin_right" => 2),
-          Left(Label(message))
-        ),
+        Left(Label(message)),
         VSpacing(0.1),
         HBox(
           HSpacing(0.6),
