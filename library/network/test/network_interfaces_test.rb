@@ -198,9 +198,9 @@ describe Yast::NetworkInterfaces do
       subject.CleanCacheRead
     end
 
-    it "returns an array of devices types which have got given key,value" do
-      expect(subject.Locate("BOOTPROTO", "static")).to eql(["bond", "em", "eth"])
-      expect(subject.Locate("BONDING_MASTER", "YES")).to eql(["bond"])
+    it "returns an array of devices which have got given key,value" do
+      expect(subject.Locate("BOOTPROTO", "static")).to eql(["bond0", "em1", "eth0","eth1"])
+      expect(subject.Locate("BONDING_MASTER", "YES")).to eql(["bond0"])
     end
 
     it "returns an empty array if not device match given criteria" do
@@ -219,8 +219,8 @@ describe Yast::NetworkInterfaces do
       subject.CleanCacheRead
     end
 
-    it "returns an array of devices types which have got a different key,value than given ones" do
-      expect(subject.LocateNOT("BOOTPROTO", "static")).to eql(["arc", "br", "ppp", "vlan"])
+    it "returns an array of devices which have got a different key,value than given ones" do
+      expect(subject.LocateNOT("BOOTPROTO", "static")).to eql(["arc5", "br1", "ppp0", "vlan3"])
     end
   end
 
