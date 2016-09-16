@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Sep 16 17:53:15 UTC 2016 - kanderssen@suse.com
+
+- Network: Locate returns interface names instead of type.
+  (bsc#998717)
+- 3.1.206
+
+-------------------------------------------------------------------
 Fri Aug 26 10:37:45 UTC 2016 - kanderssen@suse.com
 
 - Packages: remove warning icon from package callbacks.
