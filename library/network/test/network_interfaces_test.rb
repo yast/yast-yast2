@@ -199,7 +199,7 @@ describe Yast::NetworkInterfaces do
     end
 
     it "returns an array of devices which have got given key,value" do
-      expect(subject.Locate("BOOTPROTO", "static")).to eql(["bond0", "em1", "eth0","eth1"])
+      expect(subject.Locate("BOOTPROTO", "static")).to eql(["bond0", "em1", "eth0", "eth1"])
       expect(subject.Locate("BONDING_MASTER", "YES")).to eql(["bond0"])
     end
 
