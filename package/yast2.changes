@@ -1,8 +1,10 @@
 -------------------------------------------------------------------
 Fri Sep 16 17:53:15 UTC 2016 - kanderssen@suse.com
 
-- Network: Locate returns interface names instead of type.
-  (bsc#998717)
+- Network: Fix bug introduced during NetworkInterfaces.Read cleanup
+  The method Networkinterfaces.Locate now returns the interface
+  name of the interfaces that match the given condition instead of
+  the type. (bsc#998717)
 - 3.1.206
 
 -------------------------------------------------------------------
