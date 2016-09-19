@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Sep 16 17:53:15 UTC 2016 - kanderssen@suse.com
+
+- Network: Fix bug introduced during NetworkInterfaces.Read cleanup
+  The method Networkinterfaces.Locate now returns the interface
+  name of the interfaces that match the given condition instead of
+  the type. (bsc#998717)
+- 3.1.206
+
+-------------------------------------------------------------------
 Fri Aug 26 10:37:45 UTC 2016 - kanderssen@suse.com
 
 - Packages: remove warning icon from package callbacks.
