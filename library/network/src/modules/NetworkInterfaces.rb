@@ -1618,8 +1618,10 @@ module Yast
     def Locate(key, val)
       ret = []
 
-      @Devices.each do |device, devsmap|
-        ret << device if devsmap.any? { |_t, d| d[key] == val }
+      @Devices.values.each do |devsmap|
+        devsmap.each do |device, conf|
+          ret << device if conf[key] == val
+        end
       end
 
       ret
@@ -1633,8 +1635,10 @@ module Yast
     def LocateNOT(key, val)
       ret = []
 
-      @Devices.each do |device, devsmap|
-        ret << device if devsmap.any? { |_t, d| d[key] != val }
+      @Devices.values.each do |devsmap|
+        devsmap.each do |device, conf|
+          ret << device if conf[key] != val
+        end
       end
 
       ret
