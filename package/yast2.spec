@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.1.206
+Version:        3.1.207
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0
@@ -42,7 +42,6 @@ BuildRequires:  update-desktop-files
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
-BuildRequires:  yast2-perl-bindings
 BuildRequires:  yast2-pkg-bindings >= 2.20.3
 # To have Yast::CoreExt::AnsiString
 BuildRequires:  yast2-ruby-bindings >= 3.1.36

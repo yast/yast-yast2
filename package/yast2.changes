@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 20 07:23:10 UTC 2016 - mvidner@suse.com
+
+- Removed build dependency on yast2-perl-bindings (bsc#999203)
+- 3.1.207
+
+-------------------------------------------------------------------
 Fri Sep 16 17:53:15 UTC 2016 - kanderssen@suse.com
 
 - Network: Fix bug introduced during NetworkInterfaces.Read cleanup
