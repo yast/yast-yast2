@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 28 13:28:21 CEST 2016 - snwint@suse.de
+
+- save_y2logs: use canonical path (bsc#1001454)
+- 3.1.208
+
+-------------------------------------------------------------------
 Tue Sep 20 07:23:10 UTC 2016 - mvidner@suse.com
 
 - Removed build dependency on yast2-perl-bindings (bsc#999203)
