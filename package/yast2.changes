@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 28 13:15:46 CEST 2016 - snwint@suse.de
+
+- save_y2logs: use canonical path (bsc#1001454)
+- 3.1.189
+
+-------------------------------------------------------------------
 Tue May 17 14:50:44 CEST 2016 - snwint@suse.de
 
 - remove invalid_hostname check (fate#319639)
