@@ -59,7 +59,8 @@ else
 	echo "Use one of these suffixes: .tar .tgz .tar.gz .txz .tar.xz .tar.bz2" >&2
 	exit 4
   esac
-  TARGET="$1"
+  # use full path
+  TARGET=$(readlink -m "$1")
 fi
 
 # check for compression program
