@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 28 14:01:12 CEST 2016 - snwint@suse.de
+
+- save_y2logs: use canonical path (bsc#1001454)
+- 3.1.206.1
+
+-------------------------------------------------------------------
 Fri Sep 16 17:53:15 UTC 2016 - kanderssen@suse.com
 
 - Network: Fix bug introduced during NetworkInterfaces.Read cleanup
