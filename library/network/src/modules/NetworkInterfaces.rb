@@ -758,6 +758,16 @@ module Yast
       filter_interfacetype(config)
     end
 
+    def adapt_old_config!(config)
+      bootproto = config["BOOTPROTO"].to_s || "static"
+      return unless bootproto == "static" && config["IPADDR"] == "0.0.0.0"
+
+      config["BOOTPROTO"] = "none"
+      config["IPADDR"]    = ""
+      config["NETMASK"]   = "" if config["NETMASK"]
+      config["PREFIXLEN"] = "" if config["PREFIXLEN"]
+    end
+
     # The device is added to @Devices[devtype] hash using the device name as key
     # and the ifconfg hash as value
     #
@@ -789,6 +799,8 @@ module Yast
         log.debug("values=#{values}")
 
         config = generate_config(pth, values)
+
+        adapt_old_config!(config)
 
         add_device(device, config)
       end

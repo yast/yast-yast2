@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct  6 16:57:39 UTC 2016 - kanderssen@suse.com
+
+- Network: Adapt configuration of enslaved interfaces when they are
+  read. (bsc#962824)
+- 3.1.206.2
+
+-------------------------------------------------------------------
 Wed Sep 28 14:01:12 CEST 2016 - snwint@suse.de
 
 - save_y2logs: use canonical path (bsc#1001454)
