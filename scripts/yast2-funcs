@@ -155,6 +155,13 @@ function clr_inst_gtk_env()
     :
 }
 
+function set_inst_ncurses_env()
+{
+    if [ "$Y2COLORMODE" != "" ] && [ "$Y2COLORMODE" != "default" ];then
+        export Y2NCURSES_COLOR_THEME="$Y2COLORMODE"
+    fi
+}
+
 
 ### Local Variables: ***
 ### mode: shell-script ***
