@@ -59,17 +59,33 @@ describe Yast::NetworkInterfaces do
       expect(subject.GetValue("eth0", "NETMASK")).to eql("255.255.255.0")
     end
 
-    it "converts old enslaved interfaces config" do
-      expect(subject).to receive(:adapt_old_config!)
-        .exactly(devices.size).times.and_call_original
+  end
 
+  describe "adapt_old_config!" do
+    let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+    # Defined in test/data/etc/sysconfig/ifcfg-*
+    let(:devices) { ["arc5", "bond0", "br1", "em1", "eth0", "eth1", "eth2", "ppp0", "vlan3"] }
+
+    around do |example|
+      change_scr_root(data_dir, &example)
+    end
+
+    before do
+      subject.main
+    end
+
+    it "converts old enslaved interfaces config" do
       subject.Read
+      expect(subject.GetValue("eth2", "IPADDR")).to eql("0.0.0.0")
+      subject.adapt_old_config!
+
       expect(subject.GetValue("eth0", "IPADDR")).to eql("192.168.0.200")
       expect(subject.GetValue("eth2", "NETMASK")).to eql("")
       expect(subject.GetValue("eth2", "PREFIXLEN")).to eql("")
       expect(subject.GetValue("eth2", "IPADDR")).to eql("")
       expect(subject.GetValue("eth2", "BOOTPROTO")).to eql("none")
     end
+
   end
 
   describe "#FilterDevices" do
@@ -211,7 +227,7 @@ describe Yast::NetworkInterfaces do
     end
 
     it "returns an array of devices which have got given key,value" do
-      expect(subject.Locate("BOOTPROTO", "static")).to eql(["bond0", "em1", "eth0", "eth1"])
+      expect(subject.Locate("BOOTPROTO", "static")).to eql(["bond0", "em1", "eth0", "eth1", "eth2"])
       expect(subject.Locate("BONDING_MASTER", "YES")).to eql(["bond0"])
     end
 
@@ -232,7 +248,7 @@ describe Yast::NetworkInterfaces do
     end
 
     it "returns an array of devices which have got a different key,value than given ones" do
-      expect(subject.LocateNOT("BOOTPROTO", "static")).to eql(["arc5", "br1", "eth2", "ppp0", "vlan3"])
+      expect(subject.LocateNOT("BOOTPROTO", "static")).to eql(["arc5", "br1", "ppp0", "vlan3"])
     end
   end
 

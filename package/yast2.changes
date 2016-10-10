@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Thu Oct  6 16:57:39 UTC 2016 - kanderssen@suse.com
 
-- Network: Adapt configuration of enslaved interfaces when they are
-  read. (bsc#962824)
+- Network: Added method to adapt old configuration of enslaved
+  interfaces. (bsc#962824)
 - 3.1.206.2
 
 -------------------------------------------------------------------

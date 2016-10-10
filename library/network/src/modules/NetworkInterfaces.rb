@@ -758,14 +758,27 @@ module Yast
       filter_interfacetype(config)
     end
 
-    def adapt_old_config!(config)
-      bootproto = config["BOOTPROTO"].to_s || "static"
-      return unless bootproto == "static" && config["IPADDR"] == "0.0.0.0"
+    # Adapts the interface configuration used during many year for enslaved
+    # interfaces (IPADDR == 0.0.0.0 and BOOTPROTO == 'static').
+    #
+    # Sets the BOOTPROTO as none, empties the IPADDR, and also empties the
+    # NETMASK and the PREFIXLEN if exist.
+    def adapt_old_config!
+      @Devices.each do |devtype, devices|
+        devices.each do |device, config|
+          bootproto = config["BOOTPROTO"].to_s || "static"
+          next unless bootproto == "static" && config["IPADDR"] == "0.0.0.0"
 
-      config["BOOTPROTO"] = "none"
-      config["IPADDR"]    = ""
-      config["NETMASK"]   = "" if config["NETMASK"]
-      config["PREFIXLEN"] = "" if config["PREFIXLEN"]
+          config["BOOTPROTO"] = "none"
+          config["IPADDR"]    = ""
+          config["NETMASK"]   = "" if config.key? "NETMASK"
+          config["PREFIXLEN"] = "" if config.key? "PREFIXLEN"
+
+          @Devices[devtype][device] = config
+        end
+      end
+
+      @Devices
     end
 
     # The device is added to @Devices[devtype] hash using the device name as key
@@ -799,8 +812,6 @@ module Yast
         log.debug("values=#{values}")
 
         config = generate_config(pth, values)
-
-        adapt_old_config!(config)
 
         add_device(device, config)
       end
