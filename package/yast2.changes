@@ -1,9 +1,9 @@
 -------------------------------------------------------------------
 Thu Oct 13 14:11:31 UTC 2016 - igonzalezsosa@suse.com
 
-- Set ncurses theme when Y2COLORMODE is specified at boot time
+- Set installer theme when Screenmode is specified at boot time
   (related to bsc#780621)
-- 3.1.209
+- 3.2.0
 
 -------------------------------------------------------------------
 Wed Sep 28 13:28:21 CEST 2016 - snwint@suse.de
