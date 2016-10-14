@@ -766,7 +766,7 @@ module Yast
     def adapt_old_config!
       @Devices.each do |devtype, devices|
         devices.each do |device, config|
-          bootproto = config["BOOTPROTO"].to_s || "static"
+          bootproto = config["BOOTPROTO"] || "static"
           next unless bootproto == "static" && config["IPADDR"] == "0.0.0.0"
 
           config["BOOTPROTO"] = "none"
