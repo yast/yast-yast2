@@ -758,6 +758,29 @@ module Yast
       filter_interfacetype(config)
     end
 
+    # Adapts the interface configuration used during many year for enslaved
+    # interfaces (IPADDR == 0.0.0.0 and BOOTPROTO == 'static').
+    #
+    # Sets the BOOTPROTO as none, empties the IPADDR, and also empties the
+    # NETMASK and the PREFIXLEN if exist.
+    def adapt_old_config!
+      @Devices.each do |devtype, devices|
+        devices.each do |device, config|
+          bootproto = config["BOOTPROTO"] || "static"
+          next unless bootproto == "static" && config["IPADDR"] == "0.0.0.0"
+
+          config["BOOTPROTO"] = "none"
+          config["IPADDR"]    = ""
+          config["NETMASK"]   = "" if config.key? "NETMASK"
+          config["PREFIXLEN"] = "" if config.key? "PREFIXLEN"
+
+          @Devices[devtype][device] = config
+        end
+      end
+
+      @Devices
+    end
+
     # The device is added to @Devices[devtype] hash using the device name as key
     # and the ifconfg hash as value
     #
