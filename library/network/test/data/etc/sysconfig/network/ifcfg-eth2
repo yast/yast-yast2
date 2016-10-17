@@ -1,0 +1,5 @@
+DEVICE=eth2
+BOOTPROTO='static'
+IPADDR='0.0.0.0/32'
+STARTMODE='auto'
+SLAVE=YES
