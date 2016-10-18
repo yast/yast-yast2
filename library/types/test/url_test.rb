@@ -31,8 +31,8 @@ describe Yast::URL do
         url = subject.Parse(
           "http://name:pass@www.suse.cz:80/path/index.html?question#part"
         )
-        url["user"] = "user@domain"
-        expect(subject.Build(url)).to eq("http://user%40domain:pass@www.suse.cz:80/path/index.html?question#part")
+        url["user"] = "user:1@domain"
+        expect(subject.Build(url)).to eq("http://user%3a1%40domain:pass@www.suse.cz:80/path/index.html?question#part")
       end
     end
 
@@ -100,16 +100,16 @@ describe Yast::URL do
       let(:samba_url) { "smb://username:passwd@servername/share/path/on/the/share?mountoptions=ro&workgroup=group" }
       it "returns samba host" do
         SAMBA_URL = {
-          "domain" => "group",
+          "domain"   => "group",
           "fragment" => "",
-          "host" => "servername",
-          "pass" => "passwd",
-          "path" => "/share/path/on/the/share",
-          "port" => "",
-          "query" => "mountoptions=ro&workgroup=group",
-          "scheme" => "smb",
-          "user" => "username"
-        }
+          "host"     => "servername",
+          "pass"     => "passwd",
+          "path"     => "/share/path/on/the/share",
+          "port"     => "",
+          "query"    => "mountoptions=ro&workgroup=group",
+          "scheme"   => "smb",
+          "user"     => "username"
+        }.freeze
         expect(subject.Parse(samba_url)).to eq(SAMBA_URL)
       end
     end
@@ -118,26 +118,28 @@ describe Yast::URL do
       it "returns IPv6 host" do
         IPV6_URL = {
           "fragment" => "",
-          "host" => "2001:de8:0:f123::1",
-          "pass" => "",
-          "path" => "/path/to/dir",
-          "port" => "",
-          "query" => "",
-          "scheme" => "http",
-          "user" => "" }
+          "host"     => "2001:de8:0:f123::1",
+          "pass"     => "",
+          "path"     => "/path/to/dir",
+          "port"     => "",
+          "query"    => "",
+          "scheme"   => "http",
+          "user"     => ""
+        }.freeze
         expect(subject.Parse("http://[2001:de8:0:f123::1]/path/to/dir")).to eq(IPV6_URL)
       end
 
       it "returns IPv6 host with user/password, port" do
         IPV6_URL_PORT = {
           "fragment" => "",
-          "host" => "2001:de8:0:f123::1",
-          "pass" => "password",
-          "path" => "/path/to/dir",
-          "port" => "8080",
-          "query" => "",
-          "scheme" => "http",
-          "user" => "user" }
+          "host"     => "2001:de8:0:f123::1",
+          "pass"     => "password",
+          "path"     => "/path/to/dir",
+          "port"     => "8080",
+          "query"    => "",
+          "scheme"   => "http",
+          "user"     => "user"
+        }.freeze
         expect(subject.Parse("http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir")).to eq(IPV6_URL_PORT)
       end
     end
@@ -149,93 +151,93 @@ describe Yast::URL do
     end
 
     it "returns valid URL string" do
-      expect(subject.Build( {
-        "scheme" => "ftp",
-        "host"   => "ftp.example.com",
-        "path"   => "path/to/dir" }
-      )).to eq("ftp://ftp.example.com/path/to/dir")
+      expect(subject.Build("scheme" => "ftp",
+                           "host"   => "ftp.example.com",
+                           "path"   => "path/to/dir")).to eq(
+                             "ftp://ftp.example.com/path/to/dir"
+                           )
     end
 
     it "returns URL string with escaped leading / in the path" do
-      expect(subject.Build( {
-        "scheme" => "ftp",
-        "host"   => "ftp.example.com",
-        "path"   => "/path/to/dir" }
-      )).to eq("ftp://ftp.example.com/%2fpath/to/dir")
+      expect(subject.Build("scheme" => "ftp",
+                           "host"   => "ftp.example.com",
+                           "path"   => "/path/to/dir")).to eq(
+                             "ftp://ftp.example.com/%2fpath/to/dir"
+                           )
     end
 
     it "returns URL string with escaped leading // in the path" do
-      expect(subject.Build( {
-        "scheme" => "ftp",
-        "host"   => "ftp.example.com",
-        "path"   => "//path/to/dir" }
-      )).to eq("ftp://ftp.example.com/%2fpath/to/dir")
+      expect(subject.Build("scheme" => "ftp",
+                           "host"   => "ftp.example.com",
+                           "path"   => "//path/to/dir")).to eq(
+                             "ftp://ftp.example.com/%2fpath/to/dir"
+                           )
     end
 
     it "returns URL string with escaped leading /// in the path" do
-      expect(subject.Build( {
-        "scheme" => "ftp",
-        "host"   => "ftp.example.com",
-        "path"   => "///path/to/dir" }
-      )).to eq("ftp://ftp.example.com/%2fpath/to/dir")
+      expect(subject.Build("scheme" => "ftp",
+                           "host"   => "ftp.example.com",
+                           "path"   => "///path/to/dir")).to eq(
+                             "ftp://ftp.example.com/%2fpath/to/dir"
+                           )
     end
 
     it "returns URL string with escaped leading /// in the path and params" do
-      expect(subject.Build( {
-        "scheme" => "ftp",
-        "host"   => "ftp.example.com",
-        "query"  => "param1=val1&param2=val2",
-        "path"   => "///path/to/dir" }
-      )).to eq("ftp://ftp.example.com/%2fpath/to/dir?param1=val1&param2=val2")
+      expect(subject.Build("scheme" => "ftp",
+                           "host"   => "ftp.example.com",
+                           "query"  => "param1=val1&param2=val2",
+                           "path"   => "///path/to/dir")).to eq(
+                             "ftp://ftp.example.com/%2fpath/to/dir?param1=val1&param2=val2"
+                           )
     end
 
     it "returns URL string with escaped non-ASCII chars in the path" do
       # bnc#446395
-      expect(subject.Build( {
-        "scheme" => "dir",
-        "path"   => "/path/to/\u011B\u0161\u010D\u0159\u017E\u00FD\u00E1\u00ED\u00E9/dir" }
-      )).to eq("dir:///path/to/%c4%9b%c5%a1%c4%8d%c5%99%c5%be%c3%bd%c3%a1%c3%ad%c3%a9/dir")
+      expect(subject.Build("scheme" => "dir",
+                           "path"   => "/path/to/\u011B\u0161\u010D\u0159\u017E\u00FD\u00E1\u00ED\u00E9/dir")).to eq(
+                             "dir:///path/to/%c4%9b%c5%a1%c4%8d%c5%99%c5%be%c3%bd%c3%a1%c3%ad%c3%a9/dir"
+                           )
     end
 
     it "returns URL string with nonescaped ':' in the path" do
       # bnc#966413
-      expect(subject.Build( {
-        "scheme" => "nfs",
-        "host"   => "test.suse.de",
-        "path"   => "dist/ibs/SUSE:/SLE-SP1:/GA/images/iso/test.iso" }
-      )).to eq("nfs://test.suse.de/dist/ibs/SUSE:/SLE-SP1:/GA/images/iso/test.iso")
+      expect(subject.Build("scheme" => "nfs",
+                           "host"   => "test.suse.de",
+                           "path"   => "dist/ibs/SUSE:/SLE-SP1:/GA/images/iso/test.iso")).to eq(
+                             "nfs://test.suse.de/dist/ibs/SUSE:/SLE-SP1:/GA/images/iso/test.iso"
+                           )
     end
 
     context "given IPv6 host" do
       it "returns ftp URL string with IPv6 host" do
-        expect(subject.Build( {
-          "scheme" => "ftp",
-          "host"   => "2001:de8:0:f123::1",
-          "path"   => "///path/to/dir" }
-        )).to eq("ftp://[2001:de8:0:f123::1]/%2fpath/to/dir")
+        expect(subject.Build("scheme" => "ftp",
+                             "host"   => "2001:de8:0:f123::1",
+                             "path"   => "///path/to/dir")).to eq(
+                               "ftp://[2001:de8:0:f123::1]/%2fpath/to/dir"
+                             )
       end
 
       it "returns http URL string with IPv6 host" do
-        expect(subject.Build( {
-          "scheme" => "http",
-          "host"   => "2001:de8:0:f123::1",
-          "port"   => "8080",
-          "path"   => "///path/to/dir" }
-        )).to eq("http://[2001:de8:0:f123::1]:8080/path/to/dir")
+        expect(subject.Build("scheme" => "http",
+                             "host"   => "2001:de8:0:f123::1",
+                             "port"   => "8080",
+                             "path"   => "///path/to/dir")).to eq(
+                               "http://[2001:de8:0:f123::1]:8080/path/to/dir"
+                             )
       end
     end
 
     context "given Samba host" do
       it "returns samba URL string" do
         # bnc#491482
-        expect(subject.Build( {
-          "domain" => "workgroup",
-          "host"   => "myserver.com",
-          "pass"   => "passwd",
-          "path"   => "/share$$share/path/on/the/share",
-          "scheme" => "smb",
-          "user"   => "username" }
-        )).to eq("smb://username:passwd@myserver.com/share%24%24share/path/on/the/share?workgroup=workgroup")
+        expect(subject.Build("domain" => "workgroup",
+                             "host"   => "myserver.com",
+                             "pass"   => "passwd",
+                             "path"   => "/share$$share/path/on/the/share",
+                             "scheme" => "smb",
+                             "user"   => "username")).to eq(
+                               "smb://username:passwd@myserver.com/share%24%24share/path/on/the/share?workgroup=workgroup"
+                             )
       end
     end
 
@@ -273,20 +275,20 @@ describe Yast::URL do
     # This intention of these tests is to check if URLs are rebuilt correctly.
 
     URLS = {
-      "dvd:/dir"                        => "dvd:///dir",
-      "dvd://dir"                       => "dvd:///dir",
-      "dvd:///dir"                      => "dvd:///dir",
-      "cd:/?device=/dev/sr0"            => "cd:///?device=/dev/sr0",
-      "cd:/some/file?device=/dev/sr0"   => "cd:///some/file?device=/dev/sr0",
-      "cd:///some/file?device=/dev/sr0" => "cd:///some/file?device=/dev/sr0",
-      "http://u:p@suse.de/a#b"          => "http://u:p@suse.de/a#b",
-      "ftp://u:p@suse.de/a#b"           => "ftp://u:p@suse.de/a#b",
-      "dir:///"                         => "dir:///",
-      "http://na%40me:pa%3F%3fss@www.suse.cz:80/path/index.html?question#part" => "http://na%40me:pa%3f%3fss@www.suse.cz:80/path/index.html?question#part",
-      "http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir" => "http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir",
-      "http://name:pass@www.suse.cz:80/path/index.html?question#part" => "http://name:pass@www.suse.cz:80/path/index.html?question#part",
+      "dvd:/dir"                                                                                 => "dvd:///dir",
+      "dvd://dir"                                                                                => "dvd:///dir",
+      "dvd:///dir"                                                                               => "dvd:///dir",
+      "cd:/?device=/dev/sr0"                                                                     => "cd:///?device=/dev/sr0",
+      "cd:/some/file?device=/dev/sr0"                                                            => "cd:///some/file?device=/dev/sr0",
+      "cd:///some/file?device=/dev/sr0"                                                          => "cd:///some/file?device=/dev/sr0",
+      "http://u:p@suse.de/a#b"                                                                   => "http://u:p@suse.de/a#b",
+      "ftp://u:p@suse.de/a#b"                                                                    => "ftp://u:p@suse.de/a#b",
+      "dir:///"                                                                                  => "dir:///",
+      "http://na%40me:pa%3F%3fss@www.suse.cz:80/path/index.html?question#part"                   => "http://na%40me:pa%3f%3fss@www.suse.cz:80/path/index.html?question#part",
+      "http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir"                               => "http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir",
+      "http://name:pass@www.suse.cz:80/path/index.html?question#part"                            => "http://name:pass@www.suse.cz:80/path/index.html?question#part",
       "smb://username:passwd@servername/share/path/on/the/share?mountoptions=ro&workgroup=group" => "smb://username:passwd@servername/share/path/on/the/share?mountoptions=ro&workgroup=group",
-      "slp:/"                           => "slp://"
+      "slp:/"                                                                                    => "slp://"
     }.freeze
 
     URLS.each do |url, rebuilt|
@@ -364,22 +366,26 @@ describe Yast::URL do
     let(:long_url) { "http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file" }
     it "returns not truncated URL string" do
       expect(subject.FormatURL(subject.Parse(long_url), 200)).to eq(
-        "http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file")
+        "http://download.opensuse.org/very/log/path/which/will/be/truncated/target_file"
+      )
     end
 
     it "returns truncated URL string" do
       expect(subject.FormatURL(subject.Parse(long_url), 15)).to eq(
-        "http://download.opensuse.org/.../target_file")
+        "http://download.opensuse.org/.../target_file"
+      )
     end
 
     it "returns truncated URL string" do
       expect(subject.FormatURL(subject.Parse(long_url), 45)).to eq(
-        "http://download.opensuse.org/.../target_file")
+        "http://download.opensuse.org/.../target_file"
+      )
     end
 
     it "returns truncated URL string" do
       expect(subject.FormatURL(subject.Parse(long_url), 65)).to eq(
-        "http://download.opensuse.org/very/.../be/truncated/target_file")
+        "http://download.opensuse.org/very/.../be/truncated/target_file"
+      )
     end
   end
 end
