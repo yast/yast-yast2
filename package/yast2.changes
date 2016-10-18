@@ -1,6 +1,12 @@
 -------------------------------------------------------------------
-Sat Oct 15 19:11:39 UTC 2016 - kanderssen@suse.com
+Tue Oct 18 13:18:55 CEST 2016 - schubi@suse.de
 
+- Add-on module: Do not escape characters like ":" in the path
+  string (bnc#966413).
+- 3.2.2
+
+-------------------------------------------------------------------
+Sat Oct 15 19:11:39 UTC 2016 - kanderssen@suse.com
 - Network: Added method to adapt old configuration of enslaved
   interfaces. (bsc#962824)
 - 3.2.1
