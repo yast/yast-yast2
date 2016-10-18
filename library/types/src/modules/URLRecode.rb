@@ -9,7 +9,7 @@ module Yast
   class URLRecodeClass < Module
     # these will be substituted to a regex character class
     USERNAME_PASSWORD_FRAGMENT_SAFE_CHARS = "-A-Za-z0-9_.!~*'()"
-    PATH_SAFE_CHARS =                       "-A-Za-z0-9_.!~*'()/"
+    PATH_SAFE_CHARS =                       "-A-Za-z0-9_.!~*'()/:"
     QUERY_SAFE_CHARS =                      "-A-Za-z0-9_.!~*'()/:=&"
 
     # Escape password, user name and fragment part of URL string
