@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 18 16:43:25 CEST 2016 - schubi@suse.de
+
+- Add-on module: Do not escape characters like ":" in the path
+  string (bnc#966413).
+- 3.1.155.5
+
+-------------------------------------------------------------------
 Wed May 18 09:15:04 UTC 2016 - mfilka@suse.com
 
 - bnc#972575
