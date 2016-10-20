@@ -2,6 +2,8 @@
 
 require_relative "test_helper"
 
+require "yaml"
+
 Yast.import "Mode"
 Yast.import "PackageSystem"
 Yast.import "Pkg"
@@ -205,6 +207,29 @@ describe FakeFirewall do
           expect(subject.GetEnableService).to eq(false)
         end
       end
+    end
+  end
+
+
+
+  describe "#GetAllKnownInterfaces" do
+    before do
+      data_path = File.expand_path("../data/probe_netcard.yaml", __FILE__)
+      probe_mock = YAML.load(File.read(data_path))
+      allow(Yast::SCR).to receive(:Read).with(path(".probe.netcard")).and_return(probe_mock)
+    end
+
+    it "returns list of hashes with id, name and zone of interface" do
+      response = subject.GetAllKnownInterfaces
+      expect(response.first["id"]).to eq "wlp2s0"
+      expect(response.first["name"]).to eq "Wireless 8260"
+    end
+
+    it "have type key set to dialup for dialup interfaces" do
+      pending "missing testing data for dialup interfaces"
+
+      response = subject.GetAllKnownInterfaces
+      expect(response).to have_any { |i| i["type"] == "dialup"}
     end
   end
 end
