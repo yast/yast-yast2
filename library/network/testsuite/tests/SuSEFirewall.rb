@@ -202,12 +202,6 @@ module Yast
 
       DUMP("")
       DUMP("== Firewall behaviour ==")
-      TEST(->() { SuSEFirewall.GetAllKnownInterfaces },
-        [
-          @READ,
-          @WRITE,
-          @EXECUTE
-        ], nil)
       TEST(->() { SuSEFirewall.GetKnownFirewallZones },
         [
           @READ,
