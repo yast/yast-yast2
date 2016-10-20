@@ -1,0 +1,156 @@
+---
+- bus: PCI
+  bus_hwcfg: pci
+  bus_id: 2
+  class_id: 2
+  dev_name: wlp2s0
+  dev_names:
+  - wlp2s0
+  device: Wireless 8260
+  device_id: 74995
+  driver: iwlwifi
+  driver_module: iwlwifi
+  drivers:
+  - active: true
+    modprobe: true
+    modules:
+    - - iwlwifi
+      - ''
+  modalias: pci:v00008086d000024F3sv00008086sd00000050bc02sc80i00
+  model: Intel Wireless 8260
+  old_unique_key: NlA4.rav4pDhPsA2
+  parent_unique_key: z8Q3.nLk2wA+vke2
+  resource:
+    hwaddr:
+    - addr: e4:a4:71:25:36:2c
+    irq:
+    - count: 33
+      enabled: true
+      irq: 133
+    link:
+    - state: false
+    mem:
+    - active: true
+      length: 8192
+      start: 3719299072
+    wlan:
+    - auth_modes:
+      - open
+      - sharedkey
+      - wpa-psk
+      - wpa-eap
+      channels:
+      - '1'
+      - '2'
+      - '3'
+      - '4'
+      - '5'
+      - '6'
+      - '7'
+      - '8'
+      - '9'
+      - '10'
+      - '11'
+      - '12'
+      - '13'
+      - '14'
+      - '36'
+      - '40'
+      - '44'
+      - '48'
+      - '52'
+      - '56'
+      - '60'
+      - '64'
+      - '68'
+      - '72'
+      - '76'
+      - '80'
+      - '84'
+      - '88'
+      - '92'
+      - '96'
+      - '100'
+      - '104'
+      enc_modes:
+      - WEP40
+      - WEP104
+      - TKIP
+      - CCMP
+      frequencies:
+      - '2.412'
+      - '2.417'
+      - '2.422'
+      - '2.427'
+      - '2.432'
+      - '2.437'
+      - '2.442'
+      - '2.447'
+      - '2.452'
+      - '2.457'
+      - '2.462'
+      - '2.467'
+      - '2.472'
+      - '2.484'
+      - '5.18'
+      - '5.2'
+      - '5.22'
+      - '5.24'
+      - '5.26'
+      - '5.28'
+      - '5.3'
+      - '5.32'
+      - '5.34'
+      - '5.36'
+      - '5.38'
+      - '5.4'
+      - '5.42'
+      - '5.44'
+      - '5.46'
+      - '5.48'
+      - '5.5'
+      - '5.52'
+  rev: '58'
+  sub_class_id: 130
+  sub_device_id: 65616
+  sub_vendor: Intel Corporation
+  sub_vendor_id: 98438
+  sysfs_bus_id: '0000:02:00.0'
+  sysfs_id: "/devices/pci0000:00/0000:00:1c.0/0000:02:00.0"
+  unique_key: qru8.rav4pDhPsA2
+  vendor: Intel Corporation
+  vendor_id: 98438
+  wlan: true
+- bus: USB
+  bus_hwcfg: usb
+  class_id: 2
+  dev_name: enp10s0u1
+  dev_names:
+  - enp10s0u1
+  device: USB 10/100/1000 LAN
+  device_id: 229715
+  driver: r8152
+  driver_module: r8152
+  drivers:
+  - active: true
+    modprobe: true
+    modules:
+    - - r8152
+      - ''
+  hotplug: usb
+  modalias: usb:v0BDAp8153d3000dc00dsc00dp00icFFiscFFip00in00
+  model: Realtek USB 10/100/1000 LAN
+  old_unique_key: bp7B.n3BRSnBdEeC
+  parent_unique_key: zPk0.NaS4fLCXwp9
+  resource:
+    hwaddr:
+    - addr: 9c:eb:e8:3b:7a:ef
+    link:
+    - state: true
+  rev: '30.00'
+  sub_class_id: 0
+  sysfs_bus_id: 4-1:1.0
+  sysfs_id: "/devices/pci0000:00/0000:00:1d.6/0000:06:00.0/0000:07:02.0/0000:0a:00.0/usb4/4-1/4-1:1.0"
+  unique_key: PYMB.wUwnLJEqXX4
+  vendor: Realtek Semiconductor Corp.
+  vendor_id: 199642
