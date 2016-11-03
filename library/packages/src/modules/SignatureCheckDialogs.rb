@@ -463,6 +463,7 @@ module Yast
               "Install it anyway?"
           )
         else
+          item_name = strip_download_prefix(item_name)
           # popup question, %1 stands for the filename
           # %2 is a repository name
           # %3 is URL of the repository
@@ -550,6 +551,7 @@ module Yast
               "Install it anyway?\n"
           )
         else
+          item_name = strip_download_prefix(item_name)
           # popup question, %1 stands for the filename
           _(
             "No checksum for file %1 was found in the repository.\n" \
@@ -736,6 +738,7 @@ module Yast
               "Install it anyway?\n"
           )
         else
+          item_name = strip_download_prefix(item_name)
           # popup question, %1 stands for the filename, %2 for the complete description of the GnuPG key (multiline)
           _(
             "File %1 from repository %2\n" \
@@ -802,6 +805,7 @@ module Yast
               "Install it anyway?"
           )
         else
+          item_name = strip_download_prefix(item_name)
           # popup question, %1 stands for the filename, %2 for the complex multiline description of the GnuPG key
           _(
             "The file %1\n" \
@@ -896,6 +900,7 @@ module Yast
               "to skip the package.\n"
           )
         else
+          item_name = strip_download_prefix(item_name)
           # popup question, %1 stands for the filename, %2 for the key ID, %3 for the key name
           _(
             "The file %1 is digitally signed\n" \
@@ -1119,6 +1124,7 @@ module Yast
     # @param [String] dont_show_dialog_ident Uniq ID for "don't show again"
     # @return [Boolean] true when user accepts the file
     def UseFileWithWrongDigest(filename, requested_digest, found_digest, dont_show_dialog_ident)
+      filename = strip_download_prefix(filename)
       description_text =
         # popup question, %1 stands for the filename, %2 is expected checksum
         # %3 is the current checksum (e.g. "803a8ff00d00c9075a1bd223a480bcf92d2481c1")
@@ -1156,6 +1162,7 @@ module Yast
     # @param [String] dont_show_dialog_ident Uniq ID for "don't show again"
     # @return [Boolean] true when user accepts the file
     def UseFileWithUnknownDigest(filename, digest, dont_show_dialog_ident)
+      filename = strip_download_prefix(filename)
       description_text =
         # popup question, %1 stands for the filename, %2 is expected digest, %3 is the current digest
         Builtins.sformat(
@@ -1197,6 +1204,14 @@ module Yast
     publish function: :ImportGPGKeyIntoTrustedDialog, type: "boolean (map <string, any>, integer)"
     publish function: :UseFileWithWrongDigest, type: "boolean (string, string, string, string)"
     publish function: :UseFileWithUnknownDigest, type: "boolean (string, string, string)"
+
+  private
+
+      # helper to strip download path. It uses internal knowledge that download
+      # prefix ends in TmpDir.* zypp location
+      def strip_download_prefix(path)
+        path.sub(/^\/.*\/TmpDir\.[^\/]+\//, "")
+      end
   end
 
   SignatureCheckDialogs = SignatureCheckDialogsClass.new
