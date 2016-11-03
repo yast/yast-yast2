@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Nov  3 12:51:09 UTC 2016 - jreidinger@suse.com
+
+- fix do not show again for packages downloaded to temporary
+  directory (bsc#481011)
+- remove icons from signature check dialogs (bsc#875201)
+- 3.2.3
+
+-------------------------------------------------------------------
 Tue Oct 18 13:18:55 CEST 2016 - schubi@suse.de
 
 - Add-on module: Do not escape characters like ":" in the path

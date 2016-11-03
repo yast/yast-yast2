@@ -56,13 +56,6 @@ module Yast
       # GnuPG key ID used as "Key ID: 1144AAAA444"
       @s_keyid = _("Key ID")
 
-      # Defining icons for dialogs
-      @msg_icons = {
-        "error"    => "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_error.png",
-        "warning"  => "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_warning.png",
-        "question" => "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_warning.png"
-      }
-
       # UI can show images
       @has_local_image_support = nil
 
@@ -204,37 +197,6 @@ module Yast
       stored_return
     end
 
-    def HandleDoNotShowDialogAgain(default_return, dont_show_dialog_ident, dont_show_dialog_checkboxid, dont_show_url)
-      dont_show_status = Convert.to_boolean(
-        UI.QueryWidget(Id(dont_show_dialog_checkboxid), :Value)
-      )
-      # Widget doesn't exist
-      if dont_show_status.nil?
-        Builtins.y2warning(
-          "No such UI widget with ID: %1",
-          dont_show_dialog_checkboxid
-        )
-        # Checkbox selected -> Don't show again
-      elsif dont_show_status == true
-        Builtins.y2debug(
-          "User decision -- don't show the dialog %1 again, setting default return %2",
-          dont_show_dialog_ident,
-          default_return
-        )
-        SetShowThisPopup(dont_show_dialog_ident, false, dont_show_url)
-        SetDefaultDialogReturn(
-          dont_show_dialog_ident,
-          default_return,
-          dont_show_url
-        )
-        # Checkbox not selected -> Show again
-      else
-        SetShowThisPopup(dont_show_dialog_ident, true, dont_show_url)
-      end
-
-      nil
-    end
-
     # A semi-public helper. Convert the kernel parameter
     # to the sysconfig string
     # @return sysconfig value: yes, yast, no
@@ -277,159 +239,6 @@ module Yast
       @check_signatures
     end
 
-    # Function adds delimiter between after_chars characters in the string
-    #
-    # @param string to be splitted
-    # @param [String] delimiter
-    # @param integer after characters
-    # @return [String] with delimiters
-    def StringSplitter(whattosplit, delimiter, after_chars)
-      splittedstring = ""
-      after_chars_counter = 0
-      max_size = Builtins.size(whattosplit)
-
-      loop do
-        if Ops.greater_or_equal(
-          Ops.add(after_chars_counter, after_chars),
-          max_size
-        )
-          splittedstring = Ops.add(
-            Ops.add(splittedstring, splittedstring == "" ? "" : delimiter),
-            Builtins.substring(whattosplit, after_chars_counter)
-          )
-          break
-        else
-          splittedstring = Ops.add(
-            Ops.add(splittedstring, splittedstring == "" ? "" : delimiter),
-            Builtins.substring(whattosplit, after_chars_counter, after_chars)
-          )
-          after_chars_counter = Ops.add(after_chars_counter, after_chars)
-        end
-      end
-
-      splittedstring
-    end
-
-    # Returns term with message icon
-    #
-    # @param string message type "error", "warning" or "question"
-    # @return [Yast::Term] `Image(...) with margins
-    def MessageIcon(msg_type)
-      # lazy loading
-      if @has_local_image_support.nil?
-        ui_capabilities = UI.GetDisplayInfo
-        @has_local_image_support = Ops.get_boolean(
-          ui_capabilities,
-          "HasLocalImageSupport",
-          false
-        )
-      end
-
-      # UI cannot show images
-      return Empty() unless @has_local_image_support
-
-      if Ops.get(@msg_icons, msg_type).nil?
-        Builtins.y2warning("Message type %1 not defined", msg_type)
-        Empty()
-      else
-        MarginBox(
-          1,
-          0.5,
-          Image(Ops.get(@msg_icons, msg_type, ""), "[!]")
-        )
-      end
-    end
-
-    # Returns term of yes/no buttons
-    #
-    # @param symbol default button `yes or `no
-    # @return [Yast::Term] with buttons
-    def YesNoButtons(default_button)
-      yes_button = PushButton(
-        Id(:yes),
-        Opt(:okButton, :key_F10),
-        Label.YesButton
-      )
-      no_button = PushButton(
-        Id(:no),
-        Opt(:cancelButton, :key_F9),
-        Label.NoButton
-      )
-
-      if default_button == :yes
-        yes_button = PushButton(
-          Id(:yes),
-          Opt(:default, :okButton, :key_F10),
-          Label.YesButton
-        )
-      else
-        no_button = PushButton(
-          Id(:no),
-          Opt(:default, :cancelButton, :key_F9),
-          Label.NoButton
-        )
-      end
-
-      ButtonBox(yes_button, no_button)
-    end
-
-    # Returns 'true' (yes), 'false' (no) or 'nil' (cancel)
-    #
-    # @return [Boolean] user input yes==true
-    def WaitForYesNoCancelUserInput
-      user_input = nil
-      ret = nil
-
-      loop do
-        user_input = UI.UserInput
-        # yes button
-        if user_input == :yes
-          ret = true
-          break
-          # no button
-        elsif user_input == :no
-          ret = false
-          break
-          # closing window uisng [x]
-        elsif user_input == :cancel
-          ret = nil
-          break
-        else
-          Builtins.y2error("Unknown user input: '%1'", user_input)
-          next
-        end
-      end
-
-      ret
-    end
-
-    # Waits for user input and checks it agains accepted symbols.
-    # Returns the default symbol in case of `cancel (user closes the dialog).
-    #
-    # @param list <symbol> of accepted symbol by UserInput
-    # @param symbol default return for case of `cancel
-    def WaitForSymbolUserInput(list_of_accepted, default_symb)
-      list_of_accepted = deep_copy(list_of_accepted)
-      user_input = nil
-      ret = nil
-
-      loop do
-        user_input = Convert.to_symbol(UI.UserInput)
-        if Builtins.contains(list_of_accepted, user_input)
-          ret = user_input
-          break
-        elsif user_input == :cancel
-          ret = default_symb
-          break
-        else
-          Builtins.y2error("Unknown user input: '%1'", user_input)
-          next
-        end
-      end
-
-      ret
-    end
-
     # Used for unsiged file or package. Opens dialog asking whether user wants
     # to use this unsigned item.
     #
@@ -463,6 +272,7 @@ module Yast
               "Install it anyway?"
           )
         else
+          item_name = strip_download_prefix(item_name)
           # popup question, %1 stands for the filename
           # %2 is a repository name
           # %3 is URL of the repository
@@ -484,19 +294,12 @@ module Yast
       UI.OpenDialog(
         Opt(:decorated),
         VBox(
-          HBox(
-            VCenter(MessageIcon("warning")),
-            # popup heading
-            VCenter(
-              Heading(
-                if item_type == :package
-                  _("Unsigned Package")
-                else
-                  _("Unsigned File")
-                end
-              )
-            ),
-            HStretch()
+          Heading(
+            if item_type == :package
+              _("Unsigned Package")
+            else
+              _("Unsigned File")
+            end
           ),
           MarginBox(0.5, 0.5, Label(description_text)),
           Left(
@@ -550,6 +353,7 @@ module Yast
               "Install it anyway?\n"
           )
         else
+          item_name = strip_download_prefix(item_name)
           # popup question, %1 stands for the filename
           _(
             "No checksum for file %1 was found in the repository.\n" \
@@ -566,12 +370,8 @@ module Yast
       UI.OpenDialog(
         Opt(:decorated),
         VBox(
-          HBox(
-            VCenter(MessageIcon("warning")),
-            # popup heading
-            VCenter(Heading(_("No Checksum Found"))),
-            HStretch()
-          ),
+          # popup heading
+          Heading(_("No Checksum Found")),
           MarginBox(0.5, 0.5, Label(description_text)),
           Left(
             MarginBox(
@@ -604,112 +404,6 @@ module Yast
       ret
     end
 
-    def GPGKeyAsString(key)
-      key = deep_copy(key)
-      # Part of the GnuPG key description in popup, %1 is a GnuPG key ID
-      Ops.add(
-        Ops.add(
-          Ops.add(
-            Ops.add(
-              Ops.add(
-                Builtins.sformat(_("ID: %1"), Ops.get_string(key, "id", "")),
-                "\n"
-              ),
-              if Ops.get_string(key, "fingerprint", "").nil? ||
-                Ops.get_string(key, "fingerprint", "") == ""
-                # Part of the GnuPG key description in popup, %1 is a GnuPG key fingerprint
-                ""
-              else
-                Builtins.sformat(
-                  _("Fingerprint: %1") + "\n",
-                  StringSplitter(Ops.get_string(key, "fingerprint", ""), " ", 4)
-                )
-              end
-            ),
-            # Part of the GnuPG key description in popup, %1 is a GnuPG key name
-            Builtins.sformat(_("Name: %1"), Ops.get_string(key, "name", ""))
-          ),
-          if Ops.get_string(key, "created", "") != ""
-            Ops.add(
-              "\n",
-              Builtins.sformat(
-                _("Created: %1"),
-                Ops.get_string(key, "created", "")
-              )
-            )
-          else
-            ""
-          end
-        ),
-        if Ops.get_string(key, "expires", "") != ""
-          Ops.add(
-            "\n",
-            Builtins.sformat(
-              _("Expires: %1"),
-              Ops.get_string(key, "expires", "")
-            )
-          )
-        else
-          ""
-        end
-      )
-    end
-
-    def GPGKeyAsTerm(key)
-      key = deep_copy(key)
-      rt = Ops.add(
-        # GPG key property
-        Builtins.sformat(
-          "<b>%1</b>%2",
-          _("ID: "),
-          Ops.get_string(key, "id", "")
-        ),
-        # GPG key property
-        Builtins.sformat(
-          "<br><b>%1</b>%2",
-          _("Name: "),
-          Ops.get_string(key, "name", "")
-        )
-      )
-      if Ops.greater_than(
-        Builtins.size(Ops.get_string(key, "fingerprint", "")),
-        0
-      )
-        # GPG key property
-        rt = Ops.add(
-          rt,
-          Builtins.sformat(
-            "<br><b>%1</b>%2",
-            _("Fingerprint: "),
-            StringSplitter(Ops.get_string(key, "fingerprint", ""), " ", 4)
-          )
-        )
-      end
-      if Ops.greater_than(Builtins.size(Ops.get_string(key, "created", "")), 0)
-        # GPG key property
-        rt = Ops.add(
-          rt,
-          Builtins.sformat(
-            "<br><b>%1</b>%2",
-            _("Created: "),
-            Ops.get_string(key, "created", "")
-          )
-        )
-      end
-      if Ops.greater_than(Builtins.size(Ops.get_string(key, "expires", "")), 0)
-        # GPG key property
-        rt = Ops.add(
-          rt,
-          Builtins.sformat(
-            "<br><b>%1</b>%2",
-            _("Expires: "),
-            Ops.get_string(key, "expires", "")
-          )
-        )
-      end
-      RichText(rt)
-    end
-
     # Used for corrupted file or package. Opens dialog asking whether user wants
     # to use this corrupted item.
     #
@@ -736,6 +430,7 @@ module Yast
               "Install it anyway?\n"
           )
         else
+          item_name = strip_download_prefix(item_name)
           # popup question, %1 stands for the filename, %2 for the complete description of the GnuPG key (multiline)
           _(
             "File %1 from repository %2\n" \
@@ -759,11 +454,7 @@ module Yast
         Opt(:decorated),
         VBox(
           # popup heading
-          HBox(
-            VCenter(MessageIcon("error")),
-            VCenter(Heading(_("Validation Check Failed"))),
-            HStretch()
-          ),
+          Heading(_("Validation Check Failed")),
           MarginBox(0.5, 0.5, Label(description_text)),
           YesNoButtons(:no)
         )
@@ -802,6 +493,7 @@ module Yast
               "Install it anyway?"
           )
         else
+          item_name = strip_download_prefix(item_name)
           # popup question, %1 stands for the filename, %2 for the complex multiline description of the GnuPG key
           _(
             "The file %1\n" \
@@ -830,12 +522,8 @@ module Yast
       UI.OpenDialog(
         Opt(:decorated),
         VBox(
-          HBox(
-            VCenter(MessageIcon("warning")),
-            # popup heading
-            VCenter(Heading(_("Unknown GnuPG Key"))),
-            HStretch()
-          ),
+          # popup heading
+          Heading(_("Unknown GnuPG Key")),
           MarginBox(0.5, 0.5, Label(description_text)),
           Left(
             MarginBox(
@@ -896,6 +584,7 @@ module Yast
               "to skip the package.\n"
           )
         else
+          item_name = strip_download_prefix(item_name)
           # popup question, %1 stands for the filename, %2 for the key ID, %3 for the key name
           _(
             "The file %1 is digitally signed\n" \
@@ -917,12 +606,8 @@ module Yast
       UI.OpenDialog(
         Opt(:decorated),
         VBox(
-          HBox(
-            VCenter(MessageIcon("warning")),
-            # popup heading
-            VCenter(Heading(_("Signed with Untrusted Public Key"))),
-            HStretch()
-          ),
+          # popup heading
+          Heading(_("Signed with Untrusted Public Key")),
           MarginBox(0.5, 0.5, Label(description_text)),
           ButtonBox(
             # push button
@@ -1028,12 +713,8 @@ module Yast
           HWeight(
             5,
             VBox(
-              HBox(
-                VCenter(MessageIcon("question")),
-                # popup heading
-                VCenter(Heading(_("Import Untrusted GnuPG Key"))),
-                HStretch()
-              ),
+              # popup heading
+              Heading(_("Import Untrusted GnuPG Key")),
               # dialog message
               MarginBox(
                 0.4,
@@ -1068,50 +749,6 @@ module Yast
       ret == :trust
     end
 
-    def RunSimpleErrorPopup(heading, description_text, dont_show_dialog_ident, dont_show_dialog_param)
-      UI.OpenDialog(
-        Opt(:decorated),
-        VBox(
-          # popup heading
-          HBox(
-            VCenter(MessageIcon("error")),
-            # dialog heading - displayed in a big bold font
-            VCenter(Heading(heading)),
-            HStretch()
-          ),
-          MarginBox(0.5, 0.5, Label(description_text)),
-          Left(
-            MarginBox(
-              0,
-              1.2,
-              CheckBox(
-                Id(:dont_show_again),
-                Message.DoNotShowMessageAgain,
-                GetShowThisPopup(dont_show_dialog_ident, dont_show_dialog_param) ? false : true
-              )
-            )
-          ),
-          YesNoButtons(:no)
-        )
-      )
-
-      ret = WaitForYesNoCancelUserInput()
-      # default value
-      ret = false if ret.nil?
-
-      # Store the don't show value, store the default return value
-      HandleDoNotShowDialogAgain(
-        ret,
-        dont_show_dialog_ident,
-        :dont_show_again,
-        dont_show_dialog_param
-      )
-
-      UI.CloseDialog
-
-      ret
-    end
-
     # Ask user to accept wrong digest
     # @param [String] filename Name of the file
     # @param [String] requested_digest Expected checksum
@@ -1119,6 +756,7 @@ module Yast
     # @param [String] dont_show_dialog_ident Uniq ID for "don't show again"
     # @return [Boolean] true when user accepts the file
     def UseFileWithWrongDigest(filename, requested_digest, found_digest, dont_show_dialog_ident)
+      filename = strip_download_prefix(filename)
       description_text =
         # popup question, %1 stands for the filename, %2 is expected checksum
         # %3 is the current checksum (e.g. "803a8ff00d00c9075a1bd223a480bcf92d2481c1")
@@ -1156,6 +794,7 @@ module Yast
     # @param [String] dont_show_dialog_ident Uniq ID for "don't show again"
     # @return [Boolean] true when user accepts the file
     def UseFileWithUnknownDigest(filename, digest, dont_show_dialog_ident)
+      filename = strip_download_prefix(filename)
       description_text =
         # popup question, %1 stands for the filename, %2 is expected digest, %3 is the current digest
         Builtins.sformat(
@@ -1197,6 +836,315 @@ module Yast
     publish function: :ImportGPGKeyIntoTrustedDialog, type: "boolean (map <string, any>, integer)"
     publish function: :UseFileWithWrongDigest, type: "boolean (string, string, string, string)"
     publish function: :UseFileWithUnknownDigest, type: "boolean (string, string, string)"
+
+  private
+
+    # helper to strip download path. It uses internal knowledge that download
+    # prefix ends in TmpDir.* zypp location
+    def strip_download_prefix(path)
+      path.sub(/\A\/.*\/TmpDir\.[^\/]+\//, "")
+    end
+
+    def HandleDoNotShowDialogAgain(default_return, dont_show_dialog_ident, dont_show_dialog_checkboxid, dont_show_url)
+      dont_show_status = Convert.to_boolean(
+        UI.QueryWidget(Id(dont_show_dialog_checkboxid), :Value)
+      )
+      # Widget doesn't exist
+      if dont_show_status.nil?
+        Builtins.y2warning(
+          "No such UI widget with ID: %1",
+          dont_show_dialog_checkboxid
+        )
+        # Checkbox selected -> Don't show again
+      elsif dont_show_status == true
+        Builtins.y2debug(
+          "User decision -- don't show the dialog %1 again, setting default return %2",
+          dont_show_dialog_ident,
+          default_return
+        )
+        SetShowThisPopup(dont_show_dialog_ident, false, dont_show_url)
+        SetDefaultDialogReturn(
+          dont_show_dialog_ident,
+          default_return,
+          dont_show_url
+        )
+        # Checkbox not selected -> Show again
+      else
+        SetShowThisPopup(dont_show_dialog_ident, true, dont_show_url)
+      end
+
+      nil
+    end
+
+    # Function adds delimiter between after_chars characters in the string
+    #
+    # @param string to be splitted
+    # @param [String] delimiter
+    # @param integer after characters
+    # @return [String] with delimiters
+    def StringSplitter(whattosplit, delimiter, after_chars)
+      splittedstring = ""
+      after_chars_counter = 0
+      max_size = Builtins.size(whattosplit)
+
+      loop do
+        if Ops.greater_or_equal(
+          Ops.add(after_chars_counter, after_chars),
+          max_size
+        )
+          splittedstring = Ops.add(
+            Ops.add(splittedstring, splittedstring == "" ? "" : delimiter),
+            Builtins.substring(whattosplit, after_chars_counter)
+          )
+          break
+        else
+          splittedstring = Ops.add(
+            Ops.add(splittedstring, splittedstring == "" ? "" : delimiter),
+            Builtins.substring(whattosplit, after_chars_counter, after_chars)
+          )
+          after_chars_counter = Ops.add(after_chars_counter, after_chars)
+        end
+      end
+
+      splittedstring
+    end
+
+    # Returns term of yes/no buttons
+    #
+    # @param symbol default button `yes or `no
+    # @return [Yast::Term] with buttons
+    def YesNoButtons(default_button)
+      yes_button = PushButton(
+        Id(:yes),
+        Opt(:okButton, :key_F10),
+        Label.YesButton
+      )
+      no_button = PushButton(
+        Id(:no),
+        Opt(:cancelButton, :key_F9),
+        Label.NoButton
+      )
+
+      if default_button == :yes
+        yes_button = PushButton(
+          Id(:yes),
+          Opt(:default, :okButton, :key_F10),
+          Label.YesButton
+        )
+      else
+        no_button = PushButton(
+          Id(:no),
+          Opt(:default, :cancelButton, :key_F9),
+          Label.NoButton
+        )
+      end
+
+      ButtonBox(yes_button, no_button)
+    end
+
+    # Returns 'true' (yes), 'false' (no) or 'nil' (cancel)
+    #
+    # @return [Boolean] user input yes==true
+    def WaitForYesNoCancelUserInput
+      user_input = nil
+      ret = nil
+
+      loop do
+        user_input = UI.UserInput
+        # yes button
+        if user_input == :yes
+          ret = true
+          break
+          # no button
+        elsif user_input == :no
+          ret = false
+          break
+          # closing window uisng [x]
+        elsif user_input == :cancel
+          ret = nil
+          break
+        else
+          Builtins.y2error("Unknown user input: '%1'", user_input)
+          next
+        end
+      end
+
+      ret
+    end
+
+    # Waits for user input and checks it agains accepted symbols.
+    # Returns the default symbol in case of `cancel (user closes the dialog).
+    #
+    # @param list <symbol> of accepted symbol by UserInput
+    # @param symbol default return for case of `cancel
+    def WaitForSymbolUserInput(list_of_accepted, default_symb)
+      list_of_accepted = deep_copy(list_of_accepted)
+      user_input = nil
+      ret = nil
+
+      loop do
+        user_input = Convert.to_symbol(UI.UserInput)
+        if Builtins.contains(list_of_accepted, user_input)
+          ret = user_input
+          break
+        elsif user_input == :cancel
+          ret = default_symb
+          break
+        else
+          Builtins.y2error("Unknown user input: '%1'", user_input)
+          next
+        end
+      end
+
+      ret
+    end
+
+    # FIXME: add GPG class that have method to_string and to_term
+    def GPGKeyAsString(key)
+      key = deep_copy(key)
+      # Part of the GnuPG key description in popup, %1 is a GnuPG key ID
+      Ops.add(
+        Ops.add(
+          Ops.add(
+            Ops.add(
+              Ops.add(
+                Builtins.sformat(_("ID: %1"), Ops.get_string(key, "id", "")),
+                "\n"
+              ),
+              if Ops.get_string(key, "fingerprint", "").nil? ||
+                Ops.get_string(key, "fingerprint", "") == ""
+                # Part of the GnuPG key description in popup, %1 is a GnuPG key fingerprint
+                ""
+              else
+                Builtins.sformat(
+                  _("Fingerprint: %1") + "\n",
+                  StringSplitter(Ops.get_string(key, "fingerprint", ""), " ", 4)
+                )
+              end
+            ),
+            # Part of the GnuPG key description in popup, %1 is a GnuPG key name
+            Builtins.sformat(_("Name: %1"), Ops.get_string(key, "name", ""))
+          ),
+          if Ops.get_string(key, "created", "") != ""
+            Ops.add(
+              "\n",
+              Builtins.sformat(
+                _("Created: %1"),
+                Ops.get_string(key, "created", "")
+              )
+            )
+          else
+            ""
+          end
+        ),
+        if Ops.get_string(key, "expires", "") != ""
+          Ops.add(
+            "\n",
+            Builtins.sformat(
+              _("Expires: %1"),
+              Ops.get_string(key, "expires", "")
+            )
+          )
+        else
+          ""
+        end
+      )
+    end
+
+    # FIXME: add GPG class that have method to_string and to_term
+    def GPGKeyAsTerm(key)
+      key = deep_copy(key)
+      rt = Ops.add(
+        # GPG key property
+        Builtins.sformat(
+          "<b>%1</b>%2",
+          _("ID: "),
+          Ops.get_string(key, "id", "")
+        ),
+        # GPG key property
+        Builtins.sformat(
+          "<br><b>%1</b>%2",
+          _("Name: "),
+          Ops.get_string(key, "name", "")
+        )
+      )
+      if Ops.greater_than(
+        Builtins.size(Ops.get_string(key, "fingerprint", "")),
+        0
+      )
+        # GPG key property
+        rt = Ops.add(
+          rt,
+          Builtins.sformat(
+            "<br><b>%1</b>%2",
+            _("Fingerprint: "),
+            StringSplitter(Ops.get_string(key, "fingerprint", ""), " ", 4)
+          )
+        )
+      end
+      if Ops.greater_than(Builtins.size(Ops.get_string(key, "created", "")), 0)
+        # GPG key property
+        rt = Ops.add(
+          rt,
+          Builtins.sformat(
+            "<br><b>%1</b>%2",
+            _("Created: "),
+            Ops.get_string(key, "created", "")
+          )
+        )
+      end
+      if Ops.greater_than(Builtins.size(Ops.get_string(key, "expires", "")), 0)
+        # GPG key property
+        rt = Ops.add(
+          rt,
+          Builtins.sformat(
+            "<br><b>%1</b>%2",
+            _("Expires: "),
+            Ops.get_string(key, "expires", "")
+          )
+        )
+      end
+      RichText(rt)
+    end
+
+    def RunSimpleErrorPopup(heading, description_text, dont_show_dialog_ident, dont_show_dialog_param)
+      UI.OpenDialog(
+        Opt(:decorated),
+        VBox(
+          # dialog heading - displayed in a big bold font
+          Heading(heading),
+          MarginBox(0.5, 0.5, Label(description_text)),
+          Left(
+            MarginBox(
+              0,
+              1.2,
+              CheckBox(
+                Id(:dont_show_again),
+                Message.DoNotShowMessageAgain,
+                GetShowThisPopup(dont_show_dialog_ident, dont_show_dialog_param) ? false : true
+              )
+            )
+          ),
+          YesNoButtons(:no)
+        )
+      )
+
+      ret = WaitForYesNoCancelUserInput()
+      # default value
+      ret = false if ret.nil?
+
+      # Store the don't show value, store the default return value
+      HandleDoNotShowDialogAgain(
+        ret,
+        dont_show_dialog_ident,
+        :dont_show_again,
+        dont_show_dialog_param
+      )
+
+      UI.CloseDialog
+
+      ret
+    end
   end
 
   SignatureCheckDialogs = SignatureCheckDialogsClass.new
