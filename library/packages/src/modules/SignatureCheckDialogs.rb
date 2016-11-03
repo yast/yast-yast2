@@ -56,13 +56,6 @@ module Yast
       # GnuPG key ID used as "Key ID: 1144AAAA444"
       @s_keyid = _("Key ID")
 
-      # Defining icons for dialogs
-      @msg_icons = {
-        "error"    => "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_error.png",
-        "warning"  => "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_warning.png",
-        "question" => "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_warning.png"
-      }
-
       # UI can show images
       @has_local_image_support = nil
 
@@ -301,19 +294,12 @@ module Yast
       UI.OpenDialog(
         Opt(:decorated),
         VBox(
-          HBox(
-            VCenter(MessageIcon("warning")),
-            # popup heading
-            VCenter(
-              Heading(
-                if item_type == :package
-                  _("Unsigned Package")
-                else
-                  _("Unsigned File")
-                end
-              )
-            ),
-            HStretch()
+          Heading(
+            if item_type == :package
+              _("Unsigned Package")
+            else
+              _("Unsigned File")
+            end
           ),
           MarginBox(0.5, 0.5, Label(description_text)),
           Left(
@@ -384,12 +370,8 @@ module Yast
       UI.OpenDialog(
         Opt(:decorated),
         VBox(
-          HBox(
-            VCenter(MessageIcon("warning")),
-            # popup heading
-            VCenter(Heading(_("No Checksum Found"))),
-            HStretch()
-          ),
+          # popup heading
+          Heading(_("No Checksum Found")),
           MarginBox(0.5, 0.5, Label(description_text)),
           Left(
             MarginBox(
@@ -472,11 +454,7 @@ module Yast
         Opt(:decorated),
         VBox(
           # popup heading
-          HBox(
-            VCenter(MessageIcon("error")),
-            VCenter(Heading(_("Validation Check Failed"))),
-            HStretch()
-          ),
+          Heading(_("Validation Check Failed")),
           MarginBox(0.5, 0.5, Label(description_text)),
           YesNoButtons(:no)
         )
@@ -544,12 +522,8 @@ module Yast
       UI.OpenDialog(
         Opt(:decorated),
         VBox(
-          HBox(
-            VCenter(MessageIcon("warning")),
-            # popup heading
-            VCenter(Heading(_("Unknown GnuPG Key"))),
-            HStretch()
-          ),
+          # popup heading
+          Heading(_("Unknown GnuPG Key")),
           MarginBox(0.5, 0.5, Label(description_text)),
           Left(
             MarginBox(
@@ -632,12 +606,8 @@ module Yast
       UI.OpenDialog(
         Opt(:decorated),
         VBox(
-          HBox(
-            VCenter(MessageIcon("warning")),
-            # popup heading
-            VCenter(Heading(_("Signed with Untrusted Public Key"))),
-            HStretch()
-          ),
+          # popup heading
+          Heading(_("Signed with Untrusted Public Key")),
           MarginBox(0.5, 0.5, Label(description_text)),
           ButtonBox(
             # push button
@@ -743,12 +713,8 @@ module Yast
           HWeight(
             5,
             VBox(
-              HBox(
-                VCenter(MessageIcon("question")),
-                # popup heading
-                VCenter(Heading(_("Import Untrusted GnuPG Key"))),
-                HStretch()
-              ),
+              # popup heading
+              Heading(_("Import Untrusted GnuPG Key")),
               # dialog message
               MarginBox(
                 0.4,
@@ -941,36 +907,6 @@ module Yast
       end
 
       splittedstring
-    end
-
-    # Returns term with message icon
-    #
-    # @param string message type "error", "warning" or "question"
-    # @return [Yast::Term] `Image(...) with margins
-    def MessageIcon(msg_type)
-      # lazy loading
-      if @has_local_image_support.nil?
-        ui_capabilities = UI.GetDisplayInfo
-        @has_local_image_support = Ops.get_boolean(
-          ui_capabilities,
-          "HasLocalImageSupport",
-          false
-        )
-      end
-
-      # UI cannot show images
-      return Empty() unless @has_local_image_support
-
-      if Ops.get(@msg_icons, msg_type).nil?
-        Builtins.y2warning("Message type %1 not defined", msg_type)
-        Empty()
-      else
-        MarginBox(
-          1,
-          0.5,
-          Image(Ops.get(@msg_icons, msg_type, ""), "[!]")
-        )
-      end
     end
 
     # Returns term of yes/no buttons
@@ -1175,13 +1111,8 @@ module Yast
       UI.OpenDialog(
         Opt(:decorated),
         VBox(
-          # popup heading
-          HBox(
-            VCenter(MessageIcon("error")),
-            # dialog heading - displayed in a big bold font
-            VCenter(Heading(heading)),
-            HStretch()
-          ),
+          # dialog heading - displayed in a big bold font
+          Heading(heading),
           MarginBox(0.5, 0.5, Label(description_text)),
           Left(
             MarginBox(
