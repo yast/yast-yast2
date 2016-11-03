@@ -876,7 +876,7 @@ module Yast
     # helper to strip download path. It uses internal knowledge that download
     # prefix ends in TmpDir.* zypp location
     def strip_download_prefix(path)
-      path.sub(/^\/.*\/TmpDir\.[^\/]+\//, "")
+      path.sub(/\A\/.*\/TmpDir\.[^\/]+\//, "")
     end
 
     def HandleDoNotShowDialogAgain(default_return, dont_show_dialog_ident, dont_show_dialog_checkboxid, dont_show_url)
