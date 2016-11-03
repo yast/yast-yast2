@@ -1063,7 +1063,7 @@ module Yast
       ret
     end
 
-    # FIXME add GPG class that have method to_string and to_term
+    # FIXME: add GPG class that have method to_string and to_term
     def GPGKeyAsString(key)
       key = deep_copy(key)
       # Part of the GnuPG key description in popup, %1 is a GnuPG key ID
@@ -1115,7 +1115,7 @@ module Yast
       )
     end
 
-    # FIXME add GPG class that have method to_string and to_term
+    # FIXME: add GPG class that have method to_string and to_term
     def GPGKeyAsTerm(key)
       key = deep_copy(key)
       rt = Ops.add(
