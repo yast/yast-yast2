@@ -27,8 +27,8 @@ describe ".proc.meminfo" do
     end
 
     it "see comments" do
-      expect(content).to include("#comment")
       pending "need to be fixed"
+      expect(content).to include("#comment")
     end
   end
 end
