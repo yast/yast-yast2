@@ -1,0 +1,6 @@
+UUID=b66c1028-cd4a-4c08-b92d-fc4b9840845d       /       ext4    noatime,data=writeback,acl,user_xattr 1 1
+UUID=d2811ace-66e0-4ef2-9b68-9b2758359391       /home   ext4    noatime,data=writeback,acl 1 2
+192.168.1.2:/home/kv    /home/kv2       nfs     defaults 0 0
+192.168.1.2:/media/new2 /media/new2     nfs     defaults 0 0
+192.168.1.2:/media/new  /media/new      nfs     defaults 0 0
+tmpfs                /tmp                 tmpfs      defaults,size=25%              0 0
