@@ -25,5 +25,10 @@ describe ".proc.meminfo" do
     it "returned array contains tmpfs entry" do
       expect(content).to satisfy { |r| r.find { |e| e["file"] == "/tmp" } }
     end
+
+    it "see comments" do
+      expect(content).to include("#comment")
+      pending "need to be fixed"
+    end
   end
 end
