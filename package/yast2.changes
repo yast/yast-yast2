@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov  7 11:18:16 UTC 2016 - jreidinger@suse.com
+
+- Fix reading /etc/fstab when file do not have trailing new line
+  (bsc#429326#c11)
+- 3.2.4
+
+-------------------------------------------------------------------
 Thu Nov  3 12:51:09 UTC 2016 - jreidinger@suse.com
 
 - fix do not show again for packages downloaded to temporary
