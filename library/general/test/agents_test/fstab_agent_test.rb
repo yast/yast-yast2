@@ -16,13 +16,13 @@ describe ".proc.meminfo" do
       expect(content).to be_a(Array)
     end
 
-    it "returned array contains nfs entries" do
+    it "returns an array containing nfs entries" do
       expect(content).to satisfy { |r| r.find { |e| e["file"] == "/home/kv2" } }
       expect(content).to satisfy { |r| r.find { |e| e["file"] == "/media/new" } }
       expect(content).to satisfy { |r| r.find { |e| e["file"] == "/media/new2" } }
     end
 
-    it "returned array contains tmpfs entry" do
+    it "returns an array containing tmpfs entry" do
       expect(content).to satisfy { |r| r.find { |e| e["file"] == "/tmp" } }
     end
 
