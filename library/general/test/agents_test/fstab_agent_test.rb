@@ -3,7 +3,7 @@
 require_relative "../test_helper"
 require "yast"
 
-describe ".proc.meminfo" do
+describe ".etc.fstab" do
   around :each do |example|
     root = File.join(File.dirname(__FILE__), "test_root")
     change_scr_root(root, &example)

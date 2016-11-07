@@ -62,7 +62,7 @@
 	  `Optional(`passno (`Number())),
 	  `Optional(`Whitespace())
 	),
-	`Optional("\n")
+	"\n"
       ))
     )
 )
