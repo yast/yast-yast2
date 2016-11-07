@@ -26,7 +26,7 @@ describe ".proc.meminfo" do
       expect(content).to satisfy { |r| r.find { |e| e["file"] == "/tmp" } }
     end
 
-    it "see comments" do
+    it "is able to parse comments" do
       pending "need to be fixed"
       expect(content).to include("#comment")
     end
