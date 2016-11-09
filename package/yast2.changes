@@ -3,7 +3,7 @@ Tue Oct 18 13:18:55 CEST 2016 - schubi@suse.de
 
 - Add-on module: Do not escape characters like ":" in the path
   string (bnc#966413).
-- 3.1.207
+- 3.1.209
 
 -------------------------------------------------------------------
 Thu Oct  6 16:57:39 UTC 2016 - kanderssen@suse.com
