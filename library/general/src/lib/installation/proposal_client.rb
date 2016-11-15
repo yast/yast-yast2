@@ -146,6 +146,8 @@ module Installation
     #     button in the proposal dialog will be disabled - the user needs
     #     to fix that blocker before continuing.
     #     _Fatal_ is like _blocker_ but also stops building the proposal.
+    #     _Error_ does not prevent continuing of the installation, but shows
+    #     a popup that an user has to confirm to continue with the installation.
     #
     #   * **`"language_changed"`** [Boolean] ---
     #     This module just caused a change of the installation language.
