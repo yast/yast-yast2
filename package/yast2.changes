@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 16 15:18:39 CET 2016 - schubi@suse.de
+
+- Added needed include in Kernel.rb. Found while testing
+  bnc#1009023
+- 3.2.4
+
+-------------------------------------------------------------------
 Thu Nov  3 12:51:09 UTC 2016 - jreidinger@suse.com
 
 - fix do not show again for packages downloaded to temporary
