@@ -79,6 +79,11 @@ Auto prefix:
 * *X-SuSE-YaST-AutoInstResource* Specifies top level XML node under which is located
   module specific configuration in AutoYaST profile.
 
+* *X-SuSE-YaST-AutoInstResourceAliases* Specifies a list of alternative names
+  for the top level XML node. It is used to keep backward compatibility: for
+  example, when migrating from `runlevel` to `services-manager`. Default value
+  is empty.
+
 * *X-SuSE-YaST-AutoInstRequires* Contains comma separated list of modules that
   are required to run before this module. By default it is empty.
 
