@@ -349,7 +349,7 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	        TTY=console
 		;;
 	esac
-	
+
 	# The part below has changed: we don't use 'testutf8' any longer, i.e.
 	# don't start YaST in UTF-8 locale by default and don't fix the settings
 	# in rxvt*|vt*|xterm*|linux|screen* (trust the locale).
@@ -367,9 +367,9 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 			export LANG=en_US
 			export LC_CTYPE=en_US
 			export LC_ALL=en_US # just to make sure.
-		    fi	
+		    fi
 		    ;;
-	     esac	
+	     esac
 	fi
 
 	# set color theme, if defined
