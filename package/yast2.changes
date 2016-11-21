@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov 18 16:33:56 UTC 2016 - lslezak@suse.cz
+
+- Remove the restart file when starting YaST to avoid possible
+  infinite loop (bsc#842910)
+- 3.2.5
+
+-------------------------------------------------------------------
 Wed Nov 16 15:18:39 CET 2016 - schubi@suse.de
 
 - Added needed include in Kernel.rb. Found while testing

@@ -349,7 +349,7 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	        TTY=console
 		;;
 	esac
-	
+
 	# The part below has changed: we don't use 'testutf8' any longer, i.e.
 	# don't start YaST in UTF-8 locale by default and don't fix the settings
 	# in rxvt*|vt*|xterm*|linux|screen* (trust the locale).
@@ -367,9 +367,9 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 			export LANG=en_US
 			export LC_CTYPE=en_US
 			export LC_ALL=en_US # just to make sure.
-		    fi	
+		    fi
 		    ;;
-	     esac	
+	     esac
 	fi
 
 	# set color theme, if defined
@@ -422,6 +422,11 @@ else
 	*) REDO_FILE=/var/lib/YaST2/restart_yast ;;
     esac
     snapshot_pre $module
+
+    # remove the redo file if it already exists before starting the module,
+    # avoid possible infinite loop (bsc#842910)
+    rm -f "$REDO_FILE"
+
     #  break out on errors, #343258
     while [ $exit_code = 0 ]; do
 	$ybindir/y2base $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
