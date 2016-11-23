@@ -39,6 +39,8 @@ require "yast"
 
 module Yast
   class WorkflowManagerClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       Yast.import "Pkg"
@@ -748,7 +750,7 @@ module Yast
       found = false
 
       modules = Builtins.maplist(Ops.get_list(workflow, "modules", [])) do |m|
-        next if Ops.get_string(m, "name", "") != old
+        next [m] if Ops.get_string(m, "name", "") != old
 
         new_list = Builtins.maplist(new) do |n|
           Ops.set(n, "textdomain", domain)
@@ -762,15 +764,8 @@ module Yast
         deep_copy(new_list)
       end
 
-      if !found
-        Builtins.y2internal(
-          "Insert/Replace/Remove workflow module %1 not found",
-          old
-        )
-      end
-
+      log.warn("Insert/Replace/Remove workflow module '#{old}' not found") if !found
       Ops.set(workflow, "modules", Builtins.flatten(modules))
-
       deep_copy(workflow)
     end
 
@@ -783,6 +778,7 @@ module Yast
     def MergeWorkflow(base, addon, _prod_name, domain)
       base = deep_copy(base)
       addon = deep_copy(addon)
+
       # Merging - removing steps, settings
       removes = Ops.get_list(addon, "remove_modules", [])
 
