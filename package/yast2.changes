@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 23 15:23:24 UTC 2016 - igonzalezsosa@suse.com
+
+- Fix replacement of workflow modules (bsc#1011869)
+- 3.2.6
+
+-------------------------------------------------------------------
 Fri Nov 18 16:33:56 UTC 2016 - lslezak@suse.cz
 
 - Remove the restart file when starting YaST to avoid possible
