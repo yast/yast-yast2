@@ -32,8 +32,11 @@ library/*/testsuite/*.sum
 library/*/testsuite/*.exp
 library/*/testsuite/*.bak
 library/*/test/*.log
+library/*/test/*/*.log
 library/*/test/*.trs
+library/*/test/*/*.trs
 /test-driver
+coverage
 
 doc/yast.8
 

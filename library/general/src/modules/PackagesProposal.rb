@@ -3,6 +3,7 @@
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
+# Copyright (c) 2016 SUSE LLC
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -21,16 +22,17 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	PackagesProposal.ycp
-# Package:	Packages installation
-# Summary:	API for selecting or de-selecting packages for installation
-# Authors:	Lukas Ocilka <locilka@suse.cz>
-#
-# $Id$
+
 require "yast"
 
 module Yast
+  # API for selecting or de-selecting packages or patterns for installation.
+  # It stores two separate lists, one for required resolvables and the other one
+  # for optional resolvables. The optional resolvables can be deselected by user
+  # manually and the installation proposal will not complain that they are missing.
   class PackagesProposalClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -44,20 +46,23 @@ module Yast
       #          ]
       #      ]
       @resolvables_to_install = {}
+      # the same as above but the resolvables are considered optional
+      @opt_resolvables_to_install = {}
 
       # List of currently supported types of resolvables
       @supported_resolvables = [:package, :pattern]
     end
 
-    # Resets all resolvables to install. Use carefully.
+    # Resets all resolvables to install (both required and optional). Use carefully.
     def ResetAll
-      if @resolvables_to_install != {}
-        Builtins.y2warning("Reseting all PackagesProposal items")
+      if !@resolvables_to_install.empty? || !@opt_resolvables_to_install.empty?
+        log.warn("Resetting all PackagesProposal items")
       else
-        Builtins.y2milestone("Reseting all PackagesProposal items")
+        log.info("Resetting already empty items")
       end
 
-      @resolvables_to_install = {}
+      @resolvables_to_install.clear
+      @opt_resolvables_to_install.clear
 
       nil
     end
@@ -73,11 +78,11 @@ module Yast
 
     def IsSupportedResolvableType(type)
       if type.nil?
-        Builtins.y2error("Wrong type: %1", type)
+        log.error("Type cannot be nil")
         return false
       end
 
-      Builtins.contains(@supported_resolvables, type)
+      @supported_resolvables.include?(type)
     end
 
     # Checks the currently created data structure and creates
@@ -85,22 +90,17 @@ module Yast
     #
     # @param [String] unique_ID
     # @param [Symbol] type
-    def CreateEmptyStructureIfMissing(unique_ID, type)
-      if !Builtins.haskey(@resolvables_to_install, unique_ID)
-        Builtins.y2debug(
-          "Creating '%1' key in resolvables_to_install",
-          unique_ID
-        )
-        Ops.set(@resolvables_to_install, unique_ID, {})
+    # @param [Boolean] optional True for optional list, false (the default) for
+    #   the required list
+    def CreateEmptyStructureIfMissing(unique_ID, type, optional: false)
+      if !data(optional).key?(unique_ID)
+        log.debug("Creating #{unique_ID.inspect} ID")
+        data(optional)[unique_ID] = {}
       end
 
-      if !Builtins.haskey(Ops.get(@resolvables_to_install, unique_ID, {}), type)
-        Builtins.y2debug(
-          "Creating '%1' key in resolvables_to_install[%2]",
-          type,
-          unique_ID
-        )
-        Ops.set(@resolvables_to_install, [unique_ID, type], [])
+      if !data(optional)[unique_ID].key?(type)
+        log.debug("Creating '#{type}' key for #{unique_ID.inspect} ID")
+        data(optional)[unique_ID][type] = []
       end
 
       nil
@@ -113,16 +113,12 @@ module Yast
     # @return [Boolean] if parameters are correct
     def CheckParams(unique_ID, type)
       if unique_ID.nil? || unique_ID == ""
-        Builtins.y2error("Unique ID cannot be: %1", unique_ID)
+        log.error("Unique ID cannot be: #{unique_ID.inspect}")
         return false
       end
 
       if !IsSupportedResolvableType(type)
-        Builtins.y2error(
-          "Not a supported type: %1, supported are only: %2",
-          type,
-          @supported_resolvables
-        )
+        log.error("Not a supported type: #{type}")
         return false
       end
 
@@ -135,6 +131,8 @@ module Yast
     # @param [String] unique_ID
     # @param symbol resolvable type
     # @param list <string> of resolvables to add for installation
+    # @param [Boolean] optional True for optional list, false (the default) for
+    #   the required list
     # @return [Boolean] whether successful
     #
     # @example
@@ -144,35 +142,20 @@ module Yast
     #
     # @see #supported_resolvables
     # @see #RemoveResolvables()
-    def AddResolvables(unique_ID, type, resolvables)
+    def AddResolvables(unique_ID, type, resolvables, optional: false)
       resolvables = deep_copy(resolvables)
       return false if !CheckParams(unique_ID, type)
 
-      CreateEmptyStructureIfMissing(unique_ID, type)
+      CreateEmptyStructureIfMissing(unique_ID, type, optional: optional)
 
       if resolvables.nil?
-        Builtins.y2warning("Changing resolvables %1 to empty list", resolvables)
+        log.info("Using empty list instead of nil")
         resolvables = []
       end
 
-      Builtins.y2milestone(
-        "Adding resolvables %1 type %2 for %3",
-        resolvables,
-        type,
-        unique_ID
-      )
-      Ops.set(
-        @resolvables_to_install,
-        [unique_ID, type],
-        Convert.convert(
-          Builtins.union(
-            Ops.get(@resolvables_to_install, [unique_ID, type], []),
-            resolvables
-          ),
-          from: "list",
-          to:   "list <string>"
-        )
-      )
+      log.info("Adding #{log_label(optional)} #{resolvables} of type #{type} for #{unique_ID}")
+
+      data(optional)[unique_ID][type].concat(resolvables)
 
       true
     end
@@ -181,28 +164,26 @@ module Yast
     # but it replaces the list of resolvables instead of adding them to the pool.
     # It always replaces only the part that is identified by the unique_ID.
     #
-    # @param [String] unique_ID
-    # @param symbol resolvable type
-    # @param list <string> of resolvables to add for installation
+    # @param [String] unique_ID the unique identificator
+    # @param [Symbol] type resolvable type
+    # @param [Array<String>] resolvables list of resolvables to add for installation
+    # @param [Boolean] optional True for optional list, false (the default) for
+    #   the required list
     # @return [Boolean] whether successful
-    def SetResolvables(unique_ID, type, resolvables)
+    def SetResolvables(unique_ID, type, resolvables, optional: false)
       resolvables = deep_copy(resolvables)
       return false if !CheckParams(unique_ID, type)
 
-      CreateEmptyStructureIfMissing(unique_ID, type)
+      CreateEmptyStructureIfMissing(unique_ID, type, optional: optional)
 
       if resolvables.nil?
-        Builtins.y2warning("Changing resolvables %1 to empty list", resolvables)
+        log.warn("Using empty list instead of nil")
         resolvables = []
       end
 
-      Builtins.y2milestone(
-        "Adjusting resolvables %1 type %2 for %3",
-        resolvables,
-        type,
-        unique_ID
-      )
-      Ops.set(@resolvables_to_install, [unique_ID, type], resolvables)
+      log.info("Setting #{log_label(optional)} #{resolvables} of type #{type} for #{unique_ID}")
+
+      data(optional)[unique_ID][type] = resolvables
 
       true
     end
@@ -210,9 +191,11 @@ module Yast
     # Removes list of packages from pool that is then used by software proposal
     # to propose a selection of resolvables to install.
     #
-    # @param [String] unique_ID
-    # @param symbol resolvable type
-    # @param list <string> of resolvables to remove from list selected for installation
+    # @param [String] unique_ID the unique identificator
+    # @param [Symbol] type resolvable type
+    # @param [Array<String>] resolvables list of resolvables to add for installation
+    # @param [Boolean] optional True for optional list, false (the default) for
+    #   the required list
     # @return [Boolean] whether successful
     #
     # @example
@@ -220,55 +203,47 @@ module Yast
     #
     # @see #supported_resolvables
     # @see #AddResolvables()
-    def RemoveResolvables(unique_ID, type, resolvables)
+    def RemoveResolvables(unique_ID, type, resolvables, optional: false)
       resolvables = deep_copy(resolvables)
       return false if !CheckParams(unique_ID, type)
 
-      CreateEmptyStructureIfMissing(unique_ID, type)
+      CreateEmptyStructureIfMissing(unique_ID, type, optional: optional)
 
       if resolvables.nil?
-        Builtins.y2warning("Changing resolvables %1 to empty list", resolvables)
+        log.warn("Using empty list instead of nil")
         resolvables = []
       end
 
-      Builtins.y2milestone(
-        "Removing resolvables %1 type %2 for %3",
-        resolvables,
-        type,
-        unique_ID
-      )
-      Ops.set(
-        @resolvables_to_install,
-        [unique_ID, type],
-        Builtins.filter(Ops.get(@resolvables_to_install, [unique_ID, type], [])) do |one_resolvable|
-          !Builtins.contains(resolvables, one_resolvable)
-        end
-      )
-      Builtins.y2milestone(
-        "Resolvables left: %1",
-        Ops.get(@resolvables_to_install, [unique_ID, type], [])
-      )
+      log.info("Removing #{log_label(optional)} #{resolvables} type #{type} for #{unique_ID}")
+
+      data(optional)[unique_ID][type] -= resolvables
+      log.info("#{log_label(optional)} left: #{data(optional)[unique_ID][type].inspect}")
 
       true
     end
 
     # Returns all resolvables selected for installation.
     #
-    # @param [String] unique_ID
-    # @param symbol resolvable type
+    # @param [String] unique_ID the unique identificator
+    # @param [Symbol] type resolvable type
+    # @param [Boolean] optional True for optional list, false (the default) for
+    #   the required list
+
     # @return [Array<String>] of resolvables
     #
     # @example
     #   GetResolvables ("y2_kdump", `package) -> ["yast2-kdump", "kdump"]
-    def GetResolvables(unique_ID, type)
+    def GetResolvables(unique_ID, type, optional: false)
       return nil if !CheckParams(unique_ID, type)
 
-      Ops.get(@resolvables_to_install, [unique_ID, type], [])
+      data(optional).fetch(unique_ID, {}).fetch(type, [])
     end
 
     # Returns list of selected resolvables of a given type
     #
-    # @param symbol resolvable type
+    # @param [Symbol] type resolvable type
+    # @param [Boolean] optional True for optional list, false (the default) for
+    #   the required list
     # @return [Array<String>] list of resolvables
     #
     # @example
@@ -278,35 +253,29 @@ module Yast
     #   GetAllResolvables (`unknown) -> nil
     #
     # @see #supported_resolvables
-    def GetAllResolvables(type)
+    def GetAllResolvables(type, optional: false)
       if !IsSupportedResolvableType(type)
-        Builtins.y2error(
-          "Not a supported type: %1, supported are only: %2",
-          type,
-          @supported_resolvables
-        )
+        log.error("Not a supported type: #{type}, supported are only: #{@supported_resolvables}")
         return nil
       end
 
       ret = []
 
-      Builtins.foreach(@resolvables_to_install) do |_unique_ID, resolvables|
-        if Builtins.haskey(resolvables, type)
-          ret = Builtins.sort(
-            Convert.convert(
-              Builtins.union(ret, Ops.get(resolvables, type, [])),
-              from: "list",
-              to:   "list <string>"
-            )
-          )
-        end
+      data(optional).each do |_unique_ID, resolvables|
+        ret.concat(resolvables[type]) if resolvables.key?(type)
       end
+
+      # sort the result and remove the duplicates
+      ret.sort!
+      ret.uniq!
 
       deep_copy(ret)
     end
 
     # Returns all selected resolvables for all supported types
     #
+    # @param [Boolean] optional True for optional list, false (the default) for
+    #   the required list
     # @return [Hash{Symbol => Array<String>}] map of resolvables
     #
     # **Structure:**
@@ -326,31 +295,28 @@ module Yast
     #   `pattern : ["some", "patterns"],
     #   `package : ["some", "packages"],
     # ]
-    def GetAllResolvablesForAllTypes
+    def GetAllResolvablesForAllTypes(optional: false)
       ret = {}
-      resolvables = []
 
-      Builtins.foreach(GetSupportedResolvables()) do |one_type|
-        resolvables = GetAllResolvables(one_type)
-        if !resolvables.nil? && resolvables != []
-          Ops.set(ret, one_type, resolvables)
-        end
+      GetSupportedResolvables().each do |one_type|
+        resolvables = GetAllResolvables(one_type, optional: optional)
+        ret[one_type] = resolvables if !resolvables.nil? && !resolvables.empty?
       end
 
-      deep_copy(ret)
+      ret
     end
 
     # Return whether a unique ID is already in use.
     #
-    # @param [String] unique_ID to check
-    # @return [Boolean] whether the ID is not in use yet
+    # @param [String] unique_ID the unique identificator to check
+    # @return [Boolean] true if the ID is not used, false otherwise
     def IsUniqueID(unique_ID)
       if unique_ID.nil? || unique_ID == ""
-        Builtins.y2error("Unique ID cannot be: %1", unique_ID)
+        log.error("Unique ID cannot be #{unique_ID.inspect}")
         return nil
       end
 
-      !Builtins.haskey(@resolvables_to_install, unique_ID)
+      !@resolvables_to_install.key?(unique_ID) && !@opt_resolvables_to_install.key?(unique_ID)
     end
 
     publish function: :ResetAll, type: "void ()"
@@ -362,6 +328,20 @@ module Yast
     publish function: :GetAllResolvables, type: "list <string> (symbol)"
     publish function: :GetAllResolvablesForAllTypes, type: "map <symbol, list <string>> ()"
     publish function: :IsUniqueID, type: "boolean (string)"
+
+  private
+
+    # Return the required or the optional resolvable list.
+    # @param [Boolean] optional true for optional resolvables, false for
+    #   the required resolvables
+    # @return [Hash] the stored resolvables
+    def data(optional)
+      optional ? @opt_resolvables_to_install : @resolvables_to_install
+    end
+
+    def log_label(optional)
+      (optional ? "optional " : "") << "resolvables"
+    end
   end
 
   PackagesProposal = PackagesProposalClass.new
