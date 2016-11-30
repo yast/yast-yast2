@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 30 09:18:23 UTC 2016 - lslezak@suse.cz
+
+- Enhanced PackagesProposal API to handle required and optional
+  resolvables separately (bsc#885496)
+- 3.2.7
+
+-------------------------------------------------------------------
 Wed Nov 23 15:23:24 UTC 2016 - igonzalezsosa@suse.com
 
 - Fix replacement of workflow modules (bsc#1011869)
