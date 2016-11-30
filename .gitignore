@@ -15,11 +15,8 @@ configure.ac
 install-sh
 pluglib-bindings.ami
 */.dep
-library/*/.dep
-library/*/*/.dep
-library/*/*.ybc
-library/*/*/*.ybc
-library/*/*/*/*.ybc
+library/**/.dep
+library/**/*.ybc
 doc/autodocs
 library/*/doc/autodocs
 library/*/testsuite/config/
@@ -31,10 +28,8 @@ library/*/testsuite/*.log
 library/*/testsuite/*.sum
 library/*/testsuite/*.exp
 library/*/testsuite/*.bak
-library/*/test/*.log
-library/*/test/*/*.log
-library/*/test/*.trs
-library/*/test/*/*.trs
+library/*/test/**/*.log
+library/*/test/**/*.trs
 /test-driver
 coverage
 
