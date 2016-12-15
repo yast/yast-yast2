@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 14 12:44:39 UTC 2016 - jreidinger@suse.com
+
+- add generic cwm widget for keyboard layout (used for FATE#321754)
+- 3.2.8
+
+-------------------------------------------------------------------
 Wed Nov 30 09:18:23 UTC 2016 - lslezak@suse.cz
 
 - Enhanced PackagesProposal API to handle required and optional
