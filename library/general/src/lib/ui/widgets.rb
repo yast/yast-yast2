@@ -24,6 +24,8 @@ require "cwm/widget"
 
 module UI
   module Widgets
+    # Widget representing input field for testing keyboard layout.
+    # Its value is ignored and never used anywhere.
     class KeyboardLayoutTest < CWM::InputField
       def initialize
         textdomain "base"
