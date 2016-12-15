@@ -36,8 +36,8 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:abstract_method)
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:cfa)
 # for running scripts
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
-# For running RSpec tests during build
 BuildRequires:  update-desktop-files
+# For running RSpec tests during build
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12
@@ -60,8 +60,8 @@ Requires:       perl-XML-Simple
 Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
 Requires:       rubygem(%{rb_default_ruby_abi}:cfa)
-# for running scripts
 Requires:       sysconfig >= 0.80.0
+# for running scripts
 Requires:       rubygem(%{rb_default_ruby_abi}:cheetah)
 # ag_ini section_private
 # ag_ini with (un)quoting support
