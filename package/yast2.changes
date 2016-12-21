@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Dec 20 16:28:45 UTC 2016 - igonzalezsosa@suse.com
+
+- Add a method to read the ID property from the /etc/os-release
+  file (related to bsc#1016004)
+- 3.1.211
+
+-------------------------------------------------------------------
 Wed Nov 23 15:23:24 UTC 2016 - igonzalezsosa@suse.com
 
 - Fix replacement of workflow modules (bsc#1011869)
