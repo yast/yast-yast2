@@ -80,6 +80,13 @@ module Yast
       Misc.CustomSysconfigRead("VERSION_ID", "", File.join(directory, OS_RELEASE_PATH))
     end
 
+    # Get information about OS ID
+    # Is limited for the currently running product
+    # @return [String] the OS identifier (sles, opensuse, etc.)
+    def id(directory = "/")
+      Misc.CustomSysconfigRead("ID", "", File.join(directory, OS_RELEASE_PATH))
+    end
+
     # Returns whether os-release file exists in the given directory
     #
     # @param [String] (optional) directory, defaults to "/"
