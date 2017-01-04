@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jan  5 11:58:05 UTC 2017 - mfilka@suse.com
+
+- bnc#956755
+  - Use full type detection when caching network configuration to
+    solve ambiguos configurations (like bridge over wlan).
+- 3.2.12
+
+-------------------------------------------------------------------
 Thu Jan  5 11:35:23 UTC 2017 - mfilka@suse.com
 
 - bnc#1017716
