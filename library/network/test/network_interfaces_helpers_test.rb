@@ -115,6 +115,14 @@ module Yast
         expect(subject.get_devices("")).to eql devices
       end
 
+      it "does not crash with exception" do
+        expect { subject.get_devices }.not_to raise_error
+      end
+
+      it "doesn't carry empty strings" do
+        expect(subject.get_devices).not_to include ""
+      end
+
     end
 
     describe "#canonicalize_config" do
