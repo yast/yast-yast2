@@ -110,8 +110,7 @@ class DummyPkg
 
   MOCK_METHODS.each do |method|
     # mock empty methods with a single argument
-    send(:define_method, method) do |func|
-    end
+    define_method(method) { |arg| }
   end
 end
 
