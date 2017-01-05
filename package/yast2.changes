@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan  5 08:06:25 UTC 2017 - lslezak@suse.cz
+
+- Fixed tests to pass with the latest yast2-core package
+  (related to the bsc#932331 fix)
+- 3.2.10
+
+-------------------------------------------------------------------
 Tue Dec 20 16:28:45 UTC 2016 - igonzalezsosa@suse.com
 
 - Add a method to read the ID property from the /etc/os-release
