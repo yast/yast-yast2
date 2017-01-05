@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu Jan  5 11:35:23 UTC 2017 - mfilka@suse.com
+
+- bnc#1017716
+  - do not cache ifcfg files with empty device name part (ifcfg-).
+    Such file cannot be mapped to any existing device and providing
+    empty device name could lead to unexpected crashes in other
+    parts of yast.
+- 3.2.11 
+
+-------------------------------------------------------------------
 Thu Jan  5 08:06:25 UTC 2017 - lslezak@suse.cz
 
 - Fixed tests to pass with the latest yast2-core package
