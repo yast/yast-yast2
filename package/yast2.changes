@@ -3,6 +3,8 @@ Fri Mar 10 09:20:51 UTC 2017 - mfilka@suse.com
 
 - bnc#1026027
   - removed insserv calls
+- Fixed tests to pass with the latest yast2-core package
+  (related to the bsc#932331 fix)
 - 3.1.210.6
 
 -------------------------------------------------------------------
