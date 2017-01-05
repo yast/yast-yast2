@@ -789,7 +789,7 @@ module Yast
     # @param [Hash] a map with netconfig (ifcfg) configuration
     #
     def add_device(device, ifcfg)
-      devtype = GetTypeFromIfcfg(ifcfg) || GetType(device)
+      devtype = GetType(device)
       @Devices[devtype] ||= {}
       @Devices[devtype][device] = ifcfg
     end
