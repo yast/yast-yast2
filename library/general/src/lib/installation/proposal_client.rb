@@ -116,10 +116,11 @@ module Installation
     #   submodules that translate any strings internally based on internal maps
     #   (e.g., keyboard etc.) need to take more action.
     #
-    # @option attrs [Boolean] "cramped_label_mode"
+    # @option attrs [Boolean] "simple_mode"
     #   Propose in a different format,
     #   pioneered in the CASP/CaaSP all-in-one dialog: we are short of space,
     #   and employ labels instead of RichText.
+    #   The result must include `label_proposal`.
     #
     # @return [Hash] containing:
     #
@@ -138,7 +139,7 @@ module Installation
     #     proposal can contain hyperlinks with IDs listed in the list `links`.
     #
     #   * **`"label_proposal"`** [Array<String>, nil] ---
-    #     (only used for `cramped_label_mode`)
+    #     (only used for `simple_mode`)
     #     Human readable proposal.
     #     The caller will format each item as Label.
     #
