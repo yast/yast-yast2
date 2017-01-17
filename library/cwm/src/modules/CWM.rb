@@ -923,9 +923,9 @@ module Yast
     # Display the dialog and run its event loop using new widget API
     # @param [Yast::Term] contents is UI term including instances of CWM::AbstractWidget
     # @param [String] caption of dialog
-    # @param [String] back_button label for dialog back button
-    # @param [String] next_button label for dialog next button
-    # @param [String] abort_button label for dialog abort button
+    # @param [String] back_button label for dialog back button. If empty string is passed, button is disabled.
+    # @param [String] next_button label for dialog next button. If empty string is passed, button is disabled.
+    # @param [String] abort_button label for dialog abort button. If empty string is passed, button is disabled.
     # @param [Array] skip_store_for list of events for which the value of the widget will not be stored.
     #   Useful mainly when some widget returns an event that should not trigger the storing,
     #   like a reset button or a redrawing
@@ -938,12 +938,23 @@ module Yast
         "widget_descr" => Hash[widgets.map { |w| [w.widget_id, w.cwm_definition] }]
       }
       options["caption"] = caption if caption
-      options["back_button"] = back_button if back_button
-      options["next_button"] = next_button if next_button
-      options["abort_button"] = abort_button if abort_button
+      fill_option_button(options, back_button, "back_button")
+      fill_option_button(options, next_button, "next_button")
+      fill_option_button(options, abort_button, "abort_button")
       options["skip_store_for"] = skip_store_for
 
       ShowAndRun(options)
+    end
+
+    def fill_option_button(options, value, option_key)
+      return unless value
+
+      if value.empty?
+        options["disable_buttons"] ||= []
+        options["disable_buttons"] << option_key
+      else
+        options[option_key] = value
+      end
     end
 
     # Display the dialog and run its event loop
