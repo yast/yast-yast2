@@ -787,7 +787,8 @@ module Yast
     # @param [Hash] functions map initialize/save/handle fallbacks if not specified
     #   with the widgets.
     # @param [Array<Object>] skip_store_for list of events for which the value of the widget will not be stored
-    #   Useful mainly for non-standard redraw of widgets, like :reset or :redraw
+    #   Useful mainly for non-standard redraw of widgets, like :reset or :redraw. It will skip also
+    #   validation, because it is not needed as nothing is stored.
     # @return [Symbol] wizard sequencer symbol
     def Run(widgets, functions, skip_store_for: [])
       widgets = deep_copy(widgets)
@@ -855,11 +856,12 @@ module Yast
 
         next if ret.nil?
 
-        ret = nil if save && !validateWidgets(widgets, event_descr)
-
-        if ret.nil?
+        # ok, so what happens here? event want to save widgets, so check that there is no explicit
+        # skip of  storing for this event and there is a widget containing invalid value.
+        # In such case do not save and clear ret, so we are still in loop
+        if save && !skip_store_for.include?(ret) && !validateWidgets(widgets, event_descr)
+          ret = nil
           save = false
-          next
         end
       end
       saveWidgets(widgets, event_descr) if save && !skip_store_for.include?(ret)
@@ -928,7 +930,8 @@ module Yast
     # @param [String] abort_button label for dialog abort button
     # @param [Array] skip_store_for list of events for which the value of the widget will not be stored.
     #   Useful mainly when some widget returns an event that should not trigger the storing,
-    #   like a reset button or a redrawing
+    #   like a reset button or a redrawing.  It will skip also validation, because it is not needed
+    #   as nothing is stored.
     # @return [Symbol] wizard sequencer symbol
     def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil, skip_store_for: [])
       widgets = widgets_in_contents(contents)
