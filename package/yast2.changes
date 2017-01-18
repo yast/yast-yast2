@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 18 13:56:27 UTC 2017 - jreidinger@suse.com
+
+- CWM: when skipping storing of widget values, skip also its
+  validation (FATE#322328)
+- 3.1.210.3
+
+-------------------------------------------------------------------
 Tue Dec 20 16:28:45 UTC 2016 - igonzalezsosa@suse.com
 
 - Add a method to read the ID property from the /etc/os-release
