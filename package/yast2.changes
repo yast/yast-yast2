@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Thu Jan 19 13:49:10 UTC 2017 - jreidinger@suse.com
+
+- Added a CWM::ReplacePoint widget
+- 3.2.12
+
+-------------------------------------------------------------------
+Wed Jan 18 13:56:27 UTC 2017 - jreidinger@suse.com
+
+- CWM: when skipping storing of widget values, skip also its
+  validation (FATE#322328)
+
+-------------------------------------------------------------------
 Thu Jan  5 11:35:23 UTC 2017 - mfilka@suse.com
 
 - bnc#1017716
@@ -6,7 +18,7 @@ Thu Jan  5 11:35:23 UTC 2017 - mfilka@suse.com
     Such file cannot be mapped to any existing device and providing
     empty device name could lead to unexpected crashes in other
     parts of yast.
-- 3.2.11 
+- 3.2.11
 
 -------------------------------------------------------------------
 Thu Jan  5 08:06:25 UTC 2017 - lslezak@suse.cz
