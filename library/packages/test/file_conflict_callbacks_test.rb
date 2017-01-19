@@ -159,6 +159,10 @@ describe Packages::FileConflictCallbacks do
     end
 
     context "in UI mode" do
+      before do
+        allow(Yast::Mode).to receive(:commandline).and_return(false)
+      end
+
       it "reuses the package installation progress" do
         expect(Yast::UI).to receive(:WidgetExists).and_return(true)
         expect(Yast::UI).to receive(:ChangeWidget).twice
@@ -209,6 +213,10 @@ describe Packages::FileConflictCallbacks do
     end
 
     context "in UI mode" do
+      before do
+        allow(Yast::Mode).to receive(:commandline).and_return(false)
+      end
+
       it "returns false to abort if user clicks Abort" do
         expect(Yast::UI).to receive(:PollInput).and_return(:abort)
 
@@ -320,6 +328,7 @@ describe Packages::FileConflictCallbacks do
 
       context "in UI mode" do
         before do
+          allow(Yast::Mode).to receive(:commandline).and_return(false)
           allow(Yast::UI).to receive(:OpenDialog)
           allow(Yast::UI).to receive(:CloseDialog)
           allow(Yast::UI).to receive(:SetFocus)
@@ -368,6 +377,10 @@ describe Packages::FileConflictCallbacks do
     end
 
     context "in UI mode" do
+      before do
+        allow(Yast::Mode).to receive(:commandline).and_return(false)
+      end
+
       it "no change if installation progress was already displayed" do
         ui = double("no method call expected", WidgetExists: true)
         stub_const("Yast::UI", ui)
