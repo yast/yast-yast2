@@ -45,7 +45,7 @@ class StoreWidget < CWM::InputField
     return true unless value.empty?
 
     Yast::Popup.Error("Empty value!")
-    return false
+    false
   end
 
   def store
@@ -53,14 +53,12 @@ class StoreWidget < CWM::InputField
   end
 end
 
-widgets = [ PopupButtonWidget.new, CWM::Empty.new(:empty), StoreWidget.new ]
+widgets = [PopupButtonWidget.new, CWM::Empty.new(:empty), StoreWidget.new]
 replace_point = CWM::ReplacePoint.new(widget: widgets.first)
 
 content = Yast::Term.new(:VBox,
   SwitchWidget.new(replace_point, widgets),
-  replace_point
-)
-
+  replace_point)
 
 Yast::Wizard.CreateDialog
 Yast::CWM.show(content)
