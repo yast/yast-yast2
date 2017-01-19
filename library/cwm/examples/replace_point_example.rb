@@ -1,4 +1,4 @@
-# Simple example to demonstrate object oriented placeholder widget
+# Simple example to demonstrate object oriented replace_point widget
 
 require_relative "example_helper"
 
@@ -11,8 +11,8 @@ Yast.import "CWM"
 Yast.import "Wizard"
 
 class SwitchWidget < CWM::PushButton
-  def initialize(placeholder, widgets)
-    @placeholder = placeholder
+  def initialize(replace_point, widgets)
+    @replace_point = replace_point
     @widgets = widgets
   end
 
@@ -22,7 +22,7 @@ class SwitchWidget < CWM::PushButton
 
   def handle
     @widgets.rotate!
-    @placeholder.replace(@widgets.first)
+    @replace_point.replace(@widgets.first)
   end
 end
 
@@ -53,12 +53,12 @@ class StoreWidget < CWM::InputField
   end
 end
 
-widgets = [ CWM::Empty.new(:empty), PopupButtonWidget.new, StoreWidget.new ]
-placeholder = CWM::PlaceholderWidget.new(widget: widgets.first)
+widgets = [ PopupButtonWidget.new, CWM::Empty.new(:empty), StoreWidget.new ]
+replace_point = CWM::ReplacePoint.new(widget: widgets.first)
 
 content = Yast::Term.new(:VBox,
-  SwitchWidget.new(placeholder, widgets),
-  placeholder
+  SwitchWidget.new(replace_point, widgets),
+  replace_point
 )
 
 

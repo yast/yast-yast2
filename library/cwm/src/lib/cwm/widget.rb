@@ -824,7 +824,7 @@ module CWM
 
   # Placeholder widget that is used to replace content on demand.
   # The most important method is {replace} which allows switching content
-  class PlaceholderWidget < CustomWidget
+  class ReplacePoint < CustomWidget
     # @param id [Object] id of widget. Needed to redefine only if more then one
     # placeholder needed to be in dialog. Parameter type is limited by component
     # system
@@ -836,18 +836,15 @@ module CWM
     end
 
     def contents
-      ReplacePoint(Id(@id), Empty())
+      ReplacePoint(Id(@id), widget_content(@widget))
     end
 
     # Replaces content with different widget. All its events are properly
     # handled.
     # @param widget [CWM::AbstractWidget] widget to display and process events
     def replace(widget)
-      definition = widget.cwm_definition
-      definition["_cwm_key"] = widget.widget_id # a bit hacky way to pass widget id
-      definition = Yast::CWM.prepareWidget(definition)
-      log.info "replacing with new widget #{definition.inspect}"
-      Yast::UI.ReplaceWidget(@id, definition["widget"])
+      log.info "replacing with new widget #{widget.inspect}"
+      Yast::UI.ReplaceWidget(@id, widget_content(widget))
       @widget = widget
       @widget.init if @widget.respond_to?(:init)
     end
@@ -881,6 +878,15 @@ module CWM
 
     def cleanup
       @widget.cleanup if @widget.respond_to?(:cleanup)
+    end
+
+  private
+
+    def widget_content(widget)
+      definition = widget.cwm_definition
+      definition["_cwm_key"] = widget.widget_id # a bit hacky way to pass widget id
+      definition = Yast::CWM.prepareWidget(definition)
+      definition["widget"]
     end
   end
 end
