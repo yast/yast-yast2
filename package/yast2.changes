@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 19 13:49:10 UTC 2017 - jreidinger@suse.com
+
+- Added a CWM::ReplacePoint widget
+- 3.1.210.4
+
+-------------------------------------------------------------------
 Wed Jan 18 13:56:27 UTC 2017 - jreidinger@suse.com
 
 - CWM: when skipping storing of widget values, skip also its
