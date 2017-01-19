@@ -823,9 +823,9 @@ module CWM
   end
 
   # Placeholder widget that is used to replace content on demand.
-  # The most important method is {replace} which allows switching content
+  # The most important method is {#replace} which allows switching content
   class ReplacePoint < CustomWidget
-    # @param id [Object] id of widget. Needed to redefine only if more then one
+    # @param id [Object] id of widget. Needed to redefine only if more than one
     # placeholder needed to be in dialog. Parameter type is limited by component
     # system
     # @param widget [CWM::AbstractWidget] initial widget in placeholder
