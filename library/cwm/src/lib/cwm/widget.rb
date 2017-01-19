@@ -831,12 +831,16 @@ module CWM
     # @param widget [CWM::AbstractWidget] initial widget in placeholder
     def initialize(id: :_placeholder, widget: Empty.new(:_initial_placeholder))
       self.handle_all_events = true
-      @id = id
+      self.widget_id = id
       @widget = widget
     end
 
     def contents
-      ReplacePoint(Id(@id), widget_content(@widget))
+      ReplacePoint(Id(widget_id), widget_content(@widget))
+    end
+
+    def init
+      @widget.init if @widget.respond_to?(:init)
     end
 
     # Replaces content with different widget. All its events are properly
@@ -846,7 +850,7 @@ module CWM
       log.info "replacing with new widget #{widget.inspect}"
       Yast::UI.ReplaceWidget(@id, widget_content(widget))
       @widget = widget
-      @widget.init if @widget.respond_to?(:init)
+      init
     end
 
     def help
