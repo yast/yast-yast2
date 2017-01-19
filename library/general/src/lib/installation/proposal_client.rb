@@ -116,6 +116,12 @@ module Installation
     #   submodules that translate any strings internally based on internal maps
     #   (e.g., keyboard etc.) need to take more action.
     #
+    # @option attrs [Boolean] "simple_mode"
+    #   Propose in a different format,
+    #   pioneered in the CASP/CaaSP all-in-one dialog: we are short of space,
+    #   and employ labels instead of RichText.
+    #   The result must include `label_proposal`.
+    #
     # @return [Hash] containing:
     #
     #   * **`"links"`** [Array<String>] ---
@@ -126,11 +132,16 @@ module Installation
     #     Human readable proposal preformatted in HTML. It is possible to use
     #     the {Yast::HTMLClass Yast::HTML} module for such formatting.
     #
-    #   * **`"raw_proposal"`** [Array<String>, nil]
-    #     (only used if `preformatted_proposal` is not present) ---
+    #   * **`"raw_proposal"`** [Array<String>, nil] ---
+    #     (only used if `preformatted_proposal` is not present)
     #     Human readable proposal, not formatted yet.
     #     The caller will format each item as a HTML list item (`<li>`). The
     #     proposal can contain hyperlinks with IDs listed in the list `links`.
+    #
+    #   * **`"label_proposal"`** [Array<String>, nil] ---
+    #     (only used for `simple_mode`)
+    #     Human readable proposal.
+    #     The caller will format each item as Label.
     #
     #   * **`"warning"`** [String, nil] ---
     #     Warning in human readable format without HTML tags other than `\<br>`.
