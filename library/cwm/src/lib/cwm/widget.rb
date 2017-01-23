@@ -836,7 +836,7 @@ module CWM
     end
 
     def contents
-      ReplacePoint(Id(widget_id.to_sym), widget_content(@widget))
+      ReplacePoint(Id(widget_id), widget_content(@widget))
     end
 
     def init
@@ -848,7 +848,7 @@ module CWM
     # @param widget [CWM::AbstractWidget] widget to display and process events
     def replace(widget)
       log.info "replacing with new widget #{widget.inspect}"
-      Yast::UI.ReplaceWidget(widget_id.to_sym, widget_content(widget))
+      Yast::UI.ReplaceWidget(Id(widget_id), widget_content(widget))
       @widget = widget
       init
     end
