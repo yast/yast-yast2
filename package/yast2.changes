@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 20 18:58:27 UTC 2017 - jreidinger@suse.com
+
+- Fix error popup when replacing widget with CWM::ReplacePoint
+  (FATE#322328)
+- 3.1.210.5
+
+-------------------------------------------------------------------
 Thu Jan 19 13:49:10 UTC 2017 - jreidinger@suse.com
 
 - Added a CWM::ReplacePoint widget
