@@ -836,7 +836,7 @@ module CWM
     # placeholder needed to be in dialog. Parameter type is limited by component
     # system
     # @param widget [CWM::AbstractWidget] initial widget in placeholder
-    def initialize(id: :_placeholder, widget: Empty.new(:_initial_placeholder))
+    def initialize(id: "_placeholder", widget: Empty.new("_initial_placeholder"))
       self.handle_all_events = true
       self.widget_id = id
       @widget = widget
@@ -855,7 +855,7 @@ module CWM
     # @param widget [CWM::AbstractWidget] widget to display and process events
     def replace(widget)
       log.info "replacing with new widget #{widget.inspect}"
-      Yast::UI.ReplaceWidget(@id, widget_content(widget))
+      Yast::UI.ReplaceWidget(Id(widget_id), widget_content(widget))
       @widget = widget
       init
     end
