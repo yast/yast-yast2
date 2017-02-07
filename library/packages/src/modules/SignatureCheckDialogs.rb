@@ -239,10 +239,10 @@ module Yast
       @check_signatures
     end
 
-    # Used for unsiged file or package. Opens dialog asking whether user wants
+    # Used for unsiged file, package or repository. Opens dialog asking whether user wants
     # to use this unsigned item.
     #
-    # @param [Symbol] item_type `file or `package
+    # @param [Symbol] item_type :file, :package or :repository
     # @param [String] item_name file name or package name
     # @param [String] dont_show_dialog_ident for the identification in magic "don't show" functions
     # @return [Boolean] use or don't use ('true' if 'yes')
@@ -271,6 +271,19 @@ module Yast
               "\n" \
               "Install it anyway?"
           )
+        elsif item_type == :repository
+          # TRANSLATORS: Yes/No popup
+          # (%1 is not used)
+          # %2 is a repository name
+          # %3 is URL of the repository
+          _("Repository \"%2\" (%3)\n" \
+            "is not digitally signed.\n" \
+            "\n" \
+            "This means that the origin and integrity of the repository cannot be verified.\n" \
+            "Installing the packages from this repository may put the integrity \n" \
+            "of your system at risk.\n" \
+            "\n" \
+            "Use the repository anyway?")
         else
           item_name = strip_download_prefix(item_name)
           # popup question, %1 stands for the filename
@@ -291,28 +304,36 @@ module Yast
         Ops.get_locale(repo, "url", _("Unknown"))
       )
 
+      again_widget = if dont_show_dialog_ident.nil?
+        Empty()
+      else
+        Left(
+          MarginBox(
+            0,
+            1.2,
+            CheckBox(
+              Id(:dont_show_again),
+              Message.DoNotShowMessageAgain,
+              GetShowThisPopup(dont_show_dialog_ident, item_name) ? false : true
+            )
+          )
+        )
+      end
+
       UI.OpenDialog(
         Opt(:decorated),
         VBox(
           Heading(
             if item_type == :package
               _("Unsigned Package")
+            elsif item_type == :repository
+              _("Unsigned Repository")
             else
               _("Unsigned File")
             end
           ),
           MarginBox(0.5, 0.5, Label(description_text)),
-          Left(
-            MarginBox(
-              0,
-              1.2,
-              CheckBox(
-                Id(:dont_show_again),
-                Message.DoNotShowMessageAgain,
-                GetShowThisPopup(dont_show_dialog_ident, item_name) ? false : true
-              )
-            )
-          ),
+          again_widget,
           YesNoButtons(:no)
         )
       )
@@ -321,13 +342,15 @@ module Yast
       # default value
       ret = false if ret.nil?
 
-      # Store the don't show value, store the default return value
-      HandleDoNotShowDialogAgain(
-        ret,
-        dont_show_dialog_ident,
-        :dont_show_again,
-        item_name
-      )
+      if !dont_show_dialog_ident.nil?
+        # Store the don't show value, store the default return value
+        HandleDoNotShowDialogAgain(
+          ret,
+          dont_show_dialog_ident,
+          :dont_show_again,
+          item_name
+        )
+      end
 
       UI.CloseDialog
       ret
