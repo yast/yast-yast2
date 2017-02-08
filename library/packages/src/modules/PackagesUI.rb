@@ -335,7 +335,7 @@ module Yast
     # @return [Symbol] Return `accept or `cancel
     #
     #
-    def RunPatternSelector
+    def RunPatternSelector(enable_back: false, cancel_label: Label.CancelButton)
       Builtins.y2milestone("Running pattern selection dialog")
 
       if !UI.HasSpecialWidget(:PatternSelector) ||
@@ -378,9 +378,9 @@ module Yast
       # [ Back ] [ Cancel ] [ Accept ] buttons with [ Back ] disabled
       Wizard.OpenNextBackDialog
       Wizard.SetBackButton(:back, Label.BackButton)
-      Wizard.SetAbortButton(:cancel, Label.CancelButton)
+      Wizard.SetAbortButton(:cancel, cancel_label)
       Wizard.SetNextButton(:accept, Label.OKButton)
-      Wizard.DisableBackButton
+      enable_back ? Wizard.EnableBackButton : Wizard.DisableBackButton
 
       Wizard.SetContents(
         # Dialog title
@@ -388,7 +388,7 @@ module Yast
         _("Software Selection and System Tasks"),
         PatternSelector(Id(:patterns)),
         help_text,
-        false, # has_back
+        enable_back,
         true
       ) # has_next
 
