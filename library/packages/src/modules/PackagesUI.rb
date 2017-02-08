@@ -408,7 +408,7 @@ module Yast
             result = nil
           end
         end
-        break if result == :cancel || result == :accept
+        break if result == :cancel || result == :accept || result == :back
       end
 
       Wizard.CloseDialog
