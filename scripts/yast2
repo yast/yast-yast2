@@ -203,7 +203,7 @@ chef_is_running ()
 # return 0 if user decided to continue
 chef_warning_continue ()
 {
-  $ybindir/y2base other_tools_warning -S "(chef)" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
+  $ybindir/y2base other_tools_warning --arg chef "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
 }
 
 # Check if chef-client is running and warn user about it (bnc#803358)
@@ -285,19 +285,14 @@ else
 	shift
 fi
 
-# Pass the arguments to WFM::Args():
-# Surround all args by (...).  args may contain spaces.
-# Use -S to avoid YCP escaping (bnc#382883)
-# But avoid a lone -S (cc-gnome dies, bnc#537470)
+# Pass the arguments to client:
 
 if [ -n "$CMDLINE_HELP" ]; then
     set -- $@ help;
 fi
 if [ $# -gt 0 ]; then
     a=("$@")
-    b=("${a[@]/#/(}")
-    c=("${b[@]/%/)}")
-    set -- -S "${c[@]}"
+    set -- -arg "${a[@]}"
 fi
 
 case "`basename $0`" in
