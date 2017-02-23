@@ -42,21 +42,16 @@
 #
 require "yast"
 
+require "cfa/aliases"
+
 module Yast
   class MailAliasesClass < Module
     def main
-      # no translatable strings, no textdomain.
-      Yast.import "MailTable"
-
-      # ----------------------------------------------------------------
-
       # List of maps: $[comment:, alias:, destinations:] (all are strings)
       # Except root.
       @aliases = []
       # Separated/joined with aliases by read/write/set/export
       @root_alias = ""
-      # Separated/joined with aliases by read/write/set/export
-      @root_alias_comment = ""
     end
 
     # Useful for autoinstall: the provided aliases will be (with
@@ -68,11 +63,9 @@ module Yast
     # Separates aliases into aliases, root_alias and root_alias_comment
     def FilterRootAlias
       @root_alias = ""
-      @root_alias_comment = ""
       @aliases = Builtins.filter(@aliases) do |e|
         if Ops.get_string(e, "alias", "") == "root"
           @root_alias = Ops.get_string(e, "destinations", "")
-          @root_alias_comment = Ops.get_string(e, "comment", "")
           next false
         end
         true
@@ -84,12 +77,13 @@ module Yast
     # Read the aliases table (and separate the root alias)
     # @return success?
     def ReadAliases
-      a_raw = MailTable.Read("aliases")
-      @aliases = Builtins.maplist(a_raw) do |e|
+      @cfa_aliases = CFA::Aliases.new
+      @cfa_aliases.load
+      @aliases = @cfa_aliases.aliases.map do |k,v|
         {
-          "comment"      => Ops.get_string(e, "comment", ""),
-          "alias"        => Ops.get_string(e, "key", ""),
-          "destinations" => Ops.get_string(e, "value", "")
+          "comment"      => "", #not used
+          "alias"        => k,
+          "destinations" => v
         }
       end
       FilterRootAlias()
@@ -107,7 +101,7 @@ module Yast
 
           "alias"        => "root",
           "destinations" => @root_alias,
-          "comment"      => @root_alias_comment
+          "comment"      => ""
 
         )
       end
@@ -118,14 +112,10 @@ module Yast
     # @return success
     # @see #SetRootAlias
     def WriteAliases
-      a_raw = Builtins.maplist(MergeRootAlias(@aliases)) do |e|
-        {
-          "comment" => Ops.get_string(e, "comment", ""),
-          "key"     => Ops.get_string(e, "alias", ""),
-          "value"   => Ops.get_string(e, "destinations", "")
-        }
-      end
-      MailTable.Write("aliases", a_raw)
+      @cfa_aliases ||= CFA::Aliases.new
+      @cfa_aliases.aliases = MergeRootAlias(@aliases)
+      @cfa_aliases.save
+
       true
     end
 
@@ -150,11 +140,8 @@ module Yast
       return false if !ReadAliases()
 
       @root_alias = destinations
-      @root_alias_comment = "" # TODO: "created by the ... yast2 module"?
 
       return false if !WriteAliases()
-
-      return false if !MailTable.Flush("aliases")
       true
     end
 

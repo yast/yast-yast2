@@ -17,12 +17,12 @@ describe Yast::MailAliases do
 
   describe ".ReadAliases" do
     it "reads aliases table and sets it without root alias" do
-      expected_output =[{"comment"=>" Basic system aliases that MUST be present.\n",
+      expected_output =[{"comment"=>"",
         "alias"=>"postmaster",
         "destinations"=>"root"},
         {"comment"=>"", "alias"=>"mailer-daemon", "destinations"=>"postmaster"},
-        {"comment"=>" amavis\n", "alias"=>"virusalert", "destinations"=>"root"},
-        {"comment"=>" General redirections for pseudo accounts in /etc/passwd.\n",
+        {"comment"=>"", "alias"=>"virusalert", "destinations"=>"root"},
+        {"comment"=>"",
         "alias"=>"administrator",
         "destinations"=>"root"}]
 
