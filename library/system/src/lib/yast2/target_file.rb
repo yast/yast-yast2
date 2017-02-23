@@ -42,8 +42,7 @@ module Yast
     end
 
     def self.final_path(path)
-      root = "/"
-      root = Yast::Installation.destdir if Yast::WFM.scr_chrooted?
+      root = Yast::WFM.scr_root
 
       ::File.join(root, path)
     end
