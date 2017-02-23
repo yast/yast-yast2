@@ -1,4 +1,5 @@
 TESTS = \
+  aliases_test.rb \
   asciifile_test.rb \
   auto_client_test.rb \
   dialog_test.rb \

@@ -17,7 +17,7 @@ root:	jreidinger
 postmaster:	root
 mailer-daemon:	postmaster
 # amavis
-virusalert:	root
+virusalert:	root, test
 # General redirections for pseudo accounts in /etc/passwd.
 administrator:	root
 # mlmmj needs only one alias to function; this is with a mailinglist in
