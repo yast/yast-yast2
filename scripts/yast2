@@ -292,7 +292,7 @@ if [ -n "$CMDLINE_HELP" ]; then
 fi
 if [ $# -gt 0 ]; then
     a=("$@")
-    set -- -arg "${a[@]}"
+    set -- --arg "${a[@]}"
 fi
 
 case "`basename $0`" in
