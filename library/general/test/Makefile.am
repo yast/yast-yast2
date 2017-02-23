@@ -7,6 +7,7 @@ TESTS = \
   finish_client_test.rb \
   hooks_test.rb \
   linuxrc_test.rb \
+  MailAliases_test.rb \
   os_release_test.rb \
   popup_test.rb \
   proposal_client_test.rb \

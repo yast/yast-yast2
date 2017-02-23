@@ -116,6 +116,7 @@ module Yast
 
     # ----------------------------------------------------------------
 
+    # TODO: drop unused
     # Merges mail tables, which are order-preserving maps.
     # First are the entries of the old map, with values updated
     # from the new one, then the rest of the new map.

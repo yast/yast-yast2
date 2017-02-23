@@ -1,0 +1,25 @@
+# This is the aliases file - it says who gets mail for whom.
+#
+# >>>>>>>>>>      The program "newaliases" will need to be run
+# >> NOTE >>      after this file is updated for any changes
+# >>>>>>>>>>      to show through to sendmail.
+#
+# It is probably best to not work as user root and redirect all
+# email to "root" to the address of a HUMAN who deals with this
+# system's problems. Then you don't have to check for important
+# email too often on the root account.
+# The "\root" will make sure that email is also delivered to the
+# root-account, but also forwared to the user "joe".
+#root:		joe, \root
+
+root:	jreidinger
+# Basic system aliases that MUST be present.
+postmaster:	root
+mailer-daemon:	postmaster
+# amavis
+virusalert:	root
+# General redirections for pseudo accounts in /etc/passwd.
+administrator:	root
+# mlmmj needs only one alias to function; this is with a mailinglist in
+# /var/spool/mlmmj/myownlist (remember full path):
+
