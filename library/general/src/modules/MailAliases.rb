@@ -114,56 +114,6 @@ module Yast
       deep_copy(ret)
     end
 
-    # ----------------------------------------------------------------
-
-    # TODO: drop unused
-    # Merges mail tables, which are order-preserving maps.
-    # First are the entries of the old map, with values updated
-    # from the new one, then the rest of the new map.
-    # @param [Array<Hash>] new	new table
-    # @param [Array<Hash>] old	old table
-    # @return		merged table
-    def mergeTables(new, old)
-      new = deep_copy(new)
-      old = deep_copy(old)
-      # make a true map
-      new_m = Builtins.listmap(new) do |e|
-        {
-          Ops.get_string(e, "key", "") => [
-            Ops.get_string(e, "comment", ""),
-            Ops.get_string(e, "value", "")
-          ]
-        }
-      end
-      # update old values
-      replaced = Builtins.maplist(old) do |e|
-        k = Ops.get_string(e, "key", "")
-        cv = Ops.get_list(new_m, k, [])
-        if Ops.greater_than(Builtins.size(cv), 0)
-          Ops.set(new_m, k, []) # ok, newly constructed
-          next {
-            "key"     => k,
-            "comment" => Ops.get_string(cv, 0, ""),
-            "value"   => Ops.get_string(cv, 1, "")
-          }
-        else
-          next {
-            "key"     => k,
-            "comment" => Ops.get_string(e, "comment", ""),
-            "value"   => Ops.get_string(e, "value", "")
-          }
-        end
-      end
-      # remove already updated values
-      filtered = Builtins.filter(new) do |e|
-        Ops.greater_than(
-          Builtins.size(Ops.get_list(new_m, Ops.get_string(e, "key", ""), [])),
-          0
-        )
-      end
-      Builtins.flatten([replaced, filtered])
-    end
-
     # Part of Write.
     # @return success
     # @see #SetRootAlias
