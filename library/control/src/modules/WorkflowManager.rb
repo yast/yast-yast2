@@ -36,6 +36,7 @@
 #
 # $Id: $
 require "yast"
+require "fileutils"
 
 module Yast
   class WorkflowManagerClass < Module
@@ -393,6 +394,84 @@ module Yast
       file_location
     end
 
+    # Get the package containing installer updates including control file
+    # from rpm-md metadata
+    #
+    # @param [Symbol] type `addon or `pattern
+    # @param [Fixnum] src_id with Source ID
+    # @param [String] name with unique identification (ignored for addon)
+    # @return [String] path to downloaded workflow file
+    #
+    def GetControlFileFromPackage(type, src_id,_name)
+      # identify the product
+      products = Pkg.ResolvableDependencies("", :product, "")
+      products = products.select { |p|
+        p["source"] == src_id
+      }
+      # the dependencies are bound to its -release package
+      control_file_package = nil
+      release_package_name = products[0]["product_package"]
+      release_package = Pkg.ResolvableDependencies(release_package_name, :package, "")[0]
+      # find the package name with installer update in its Provide dependencies
+      release_package["deps"].each { | dep |
+        next if dep["provides"].nil?
+        provide = dep["provides"]
+        if provide.match(/\Ainstallerupdate\((.*)\)\z/)
+          control_file_package = Regexp.last_match[1].strip
+          Builtins.y2milestone("Package with control file: %1", control_file_package)
+        end
+      }
+      return nil if control_file_package.nil?
+
+      Builtins.y2milestone("Processing package with control file: %1", control_file_package)
+      # Identify the installation repository with the package
+      pkgs = Pkg.ResolvableProperties(control_file_package, :package, "")
+      Builtins.y2milestone("Pkgs: %1", pkgs)
+      pkg = pkgs[0]
+      src = pkg["source"]
+      Builtins.y2milestone("Source: %1", src)
+
+      # Store the package locally for being processed further
+      # and extract its contents
+      dir = Directory.tmpdir + "/workflow-updates/" + src_id.to_s;
+      Builtins.y2milestone("Dir to store extension: %1", dir);
+      fetch_package(src, pkg, dir)
+      Builtins.y2milestone("Installation.xml: %1", dir + "/installation.xml")
+      return dir + "/installation.xml"
+
+    end
+
+    # RIXME: copy-pasted function from installer update handling
+    def fetch_package(repo_id, package, dir)
+      log.info("Fetch started")
+      Builtins.y2milestone("Package: %1", package)
+      tempfile = Tempfile.new(package["name"])
+      tempfile.close
+        log.info("Trying to get #{package["name"]} from repo #{repo_id}")
+        if !Yast::Pkg.ProvidePackage(repo_id, package["name"], tempfile.path.to_s)
+          log.error("Package #{package} could not be retrieved.")
+          raise PackageNotFound
+        end
+        extract(tempfile, dir)
+    ensure
+      tempfile.unlink
+    end
+
+    EXTRACT_CMD = "rpm2cpio %<source>s | cpio --quiet --sparse -dimu --no-absolute-filenames".freeze
+
+    # RIXME: copy-pasted function from installer update handling
+    def extract(package_file, dir)
+      ::FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
+      Dir.chdir(dir) do
+        cmd = format(EXTRACT_CMD, source: package_file.path)
+        out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
+        log.info("Extracting package #{package_file.inspect}: #{out}")
+        raise CouldNotExtractPackage unless out["exit"].zero?
+      end
+    end
+
+
+
     # Returns requested control filename. Parameter 'name' is ignored
     # for Add-Ons.
     #
@@ -418,6 +497,10 @@ module Yast
             "/installation.xml",
             true
           )
+
+          if use_filename.nil?
+            use_filename = GetControlFileFromPackage(type, src_id,_name)
+          end
 
           # File exists?
           return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
