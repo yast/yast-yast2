@@ -290,10 +290,11 @@ fi
 if [ -n "$CMDLINE_HELP" ]; then
     set -- $@ help;
 fi
-if [ $# -gt 0 ]; then
-    a=("$@")
-    set -- --arg "${a[@]}"
-fi
+ARGS=""
+for i in $@; do
+  ARGS="$ARGS --arg $i"
+done
+set -- $ARGS
 
 case "`basename $0`" in
 	YaST|yast|yast1|zast)
