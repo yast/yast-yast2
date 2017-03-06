@@ -2,4 +2,5 @@ require "yast"
 
 args = Yast::WFM.Args
 
-args == ['abc"\'\\|;&<>! ', 'second']
+puts args
+exit 66 if args != ['abc"\'\\|;&<>! ', "second"]
