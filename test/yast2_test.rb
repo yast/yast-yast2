@@ -1,3 +1,5 @@
+#! rspec --format doc
+
 require_relative "test_helper"
 
 require "cheetah"
