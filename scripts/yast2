@@ -40,14 +40,15 @@ export PX_MODULE_PATH=""
 # /sbin/yast2, /sbin/yast, yast2 (sh -x yast2 ...), /sbin/yast2 (PATH=/sbin/:...)
 shopt -s extglob
 mydir=${0%%*(/)[YyZz]a[Ss][Tt]?(2)}
-if [[ -z "$mydir" || "$mydir" = /sbin ]]; then
+if [[ -z "$mydir" || "$mydir" = /sbin || -n "$TESTING_YAST2" ]]; then
     YAST_PREFIX=/usr
 else
     YAST_PREFIX=${mydir%/sbin}
 fi
 
+[[ -n "$TESTING_YAST2" ]] && YAST2FUNCS="$(dirname $0)/yast2-funcs" || YAST2FUNCS=$YAST_PREFIX/lib/YaST2/bin/yast2-funcs
 # load common script functions
-. $YAST_PREFIX/lib/YaST2/bin/yast2-funcs
+. $YAST2FUNCS
 
 
 # check that system directories are non-empty - bnc #450643
