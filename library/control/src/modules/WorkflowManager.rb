@@ -83,6 +83,7 @@ module Yast
       @wkf_initial_proposals = []
       @wkf_initial_inst_finish = []
       @wkf_initial_clone_modules = []
+      @wkf_initial_roles = []
 
       @wkf_initial_product_features = {}
 
@@ -152,6 +153,7 @@ module Yast
       @wkf_initial_proposals = deep_copy(ProductControl.proposals)
       @wkf_initial_inst_finish = deep_copy(ProductControl.inst_finish)
       @wkf_initial_clone_modules = deep_copy(ProductControl.clone_modules)
+      @wkf_initial_system_roles = deep_copy(ProductControl.system_roles)
 
       @additional_finish_steps_before_chroot = []
       @additional_finish_steps_after_chroot = []
@@ -295,6 +297,7 @@ module Yast
       ProductControl.proposals = deep_copy(@wkf_initial_proposals)
       ProductControl.inst_finish = deep_copy(@wkf_initial_inst_finish)
       ProductControl.clone_modules = deep_copy(@wkf_initial_clone_modules)
+      ProductControl.system_roles = deep_copy(@wkf_initial_system_roles)
 
       @additional_finish_steps_before_chroot = []
       @additional_finish_steps_after_chroot = []
@@ -1232,6 +1235,8 @@ module Yast
         return false
       end
 
+      ProductControl.add_system_roles(update_file.fetch("system_roles", []))
+
       true
     end
 
@@ -1360,6 +1365,7 @@ module Yast
     #     		"proposals" : ...
     #     		"inst_finish" : ...
     #     		"clone_modules" : ...
+    #         "system_roles" : ...
     #     		"unmerged_changes" : ...
     #     	];
     def DumpCurrentSettings
@@ -1368,6 +1374,7 @@ module Yast
         "proposals"        => ProductControl.proposals,
         "inst_finish"      => ProductControl.inst_finish,
         "clone_modules"    => ProductControl.clone_modules,
+        "system_roles"     => ProductControl.system_roles,
         "unmerged_changes" => @unmerged_changes
       }
     end
