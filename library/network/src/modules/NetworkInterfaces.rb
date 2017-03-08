@@ -701,11 +701,10 @@ module Yast
       @Devices = {}
 
       # preparation
-      allfiles = SCR.Dir(path(".network.section"))
-      allfiles = [] if allfiles.nil?
-      devices = Builtins.filter(allfiles) do |file|
-        !Builtins.regexpmatch(file, "[~]")
-      end
+      devices = SCR.Dir(path(".network.section")) || []
+      devices.select! { |file| file !~ /[~]/ }
+      devices.delete_if(&:empty?)
+
       Builtins.y2debug("devices=%1", devices)
 
       # Read devices
