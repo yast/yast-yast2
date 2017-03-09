@@ -29,6 +29,8 @@ module Yast
   # Categorizes the configurations according to type.
   # Presents them one ifcfg at a time through the {#Current} hash.
   class NetworkInterfacesClass < Module
+    include Logger
+
     Yast.import "String"
 
     # A single character used to separate alias id
@@ -681,6 +683,20 @@ module Yast
       deep_copy(out)
     end
 
+    # Get current sysconfig configured interfaces
+    #
+    # @param devregex [String] regex to filter by
+    # @return [Array] of ifcfg names
+    def get_devices(devregex = "[~]")
+      devices = SCR.Dir(path(".network.section")) || []
+
+      devices.select! { |file| file !~ /#{devregex}/ } unless devregex.nil? && devregex.empty?
+      devices.delete_if(&:empty?)
+
+      log.debug "devices=#{devices}"
+      devices
+    end
+
     # Variables which could be suffixed and thus duplicated
     LOCALS = [
       "IPADDR",
@@ -701,12 +717,7 @@ module Yast
       @Devices = {}
 
       # preparation
-      allfiles = SCR.Dir(path(".network.section"))
-      allfiles = [] if allfiles.nil?
-      devices = Builtins.filter(allfiles) do |file|
-        !Builtins.regexpmatch(file, "[~]")
-      end
-      Builtins.y2debug("devices=%1", devices)
+      devices = get_devices
 
       # Read devices
       Builtins.maplist(devices) do |d|
