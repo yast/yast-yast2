@@ -83,7 +83,7 @@ module Yast
       @wkf_initial_proposals = []
       @wkf_initial_inst_finish = []
       @wkf_initial_clone_modules = []
-      @wkf_initial_roles = []
+      @wkf_initial_system_roles = []
 
       @wkf_initial_product_features = {}
 

@@ -1603,16 +1603,14 @@ module Yast
 
     # Add new system roles
     #
-    # For the time being, roles are inserted at the beginning of the
-    # roles list.
+    # For the time being, new roles are appended to the list of roles.
     #
     # @example Adding a simple role
-    #   ProductControl.system_roles #=> []
-    #   ProductControl.add_system_roles([{"id" => "new_role"}]) #=> [{"id" => "new_role"}]
-    #   ProductControl.system_roles #=> [{"id" => "new_role"}]
+    #   ProductControl.system_roles #=> [{"id" => "normal_role"}]
+    #   ProductControl.add_system_roles([{"id" => "new_role"}])
+    #   ProductControl.system_roles #=> [{"id" => "normal_roles"}, {"id" => "new_role"}]
     #
     # @param [Array<Hash>] new_roles Roles to add
-    # @return [Array<Hash>] All existing roles after adding the new roles
     def add_system_roles(new_roles)
       log.info "Adding roles to product control: #{new_roles.inspect}"
       system_roles.concat(new_roles)
