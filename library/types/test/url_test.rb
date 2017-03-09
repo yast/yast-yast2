@@ -36,7 +36,6 @@ describe Yast::URL do
       end
     end
 
-
     context "given a Samba device and a path" do
       let(:samba_url) { "smb://username:passwd@servername/share/path/on/the/share?mountoptions=ro&workgroup=group" }
       it "returns samba host" do
