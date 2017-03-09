@@ -895,6 +895,29 @@ module Yast
       true
     end
 
+    # Update sytem roles according to the update section of the control file
+    #
+    # The hash is expectd to have the following structure:
+    #
+    # "insert_system_roles" => [
+    #   {
+    #    "system_roles" =>
+    #      [
+    #        { "id" => "additional_role1" },
+    #        { "id" => "additional_role2" }
+    #      ]
+    #   }
+    # ]
+    #
+    # @param new_roles [Hash] System roles specification
+    #
+    # @see ProductControl#add_system_roles
+    def update_system_roles(system_roles)
+      system_roles.fetch("insert_system_roles", []).each do |insert|
+        ProductControl.add_system_roles(insert["system_roles"])
+      end
+    end
+
     # Add specified steps to inst_finish.
     # Just modifies internal variables, inst_finish grabs them itself
     #
@@ -935,6 +958,7 @@ module Yast
     #
     # @return [Boolean] true on success
     def UpdateInstallation(update_file, name, domain)
+      log.info "Updating installation workflow: #{update_file.inspect}"
       update_file = deep_copy(update_file)
       PrepareSystemProposals()
       PrepareSystemWorkflows()
@@ -946,6 +970,8 @@ module Yast
       workflows = Ops.get_list(update_file, "workflows", [])
       workflows = PrepareWorkflows(workflows)
       UpdateWorkflows(workflows, name, domain)
+
+      update_system_roles(update_file.fetch("system_roles", {}))
 
       true
     end
@@ -1234,8 +1260,6 @@ module Yast
         Builtins.y2error("Adding inst_finish steps failed")
         return false
       end
-
-      ProductControl.add_system_roles(update_file.fetch("system_roles", []))
 
       true
     end

@@ -72,17 +72,12 @@ describe Yast::WorkflowManager do
       { "mode" => "installation", "modules" => ["mod1"] }
     end
 
-    let(:additional_role) do
-      { "id" => "additional_role" }
-    end
-
     let(:control) do
       {
         "display_name" => "new workflow",
         "proposals"    => [proposal],
         "workflows"    => [workflow],
         "textdomain"   => "control",
-        "system_roles" => [additional_role],
         "update"       => {
           "inst_finish" => { "before_chroot" => ["before_chroot_1"] }
         }
@@ -96,7 +91,6 @@ describe Yast::WorkflowManager do
       allow(subject).to receive(:AddNewProposals).and_return(new_proposals_added)
       allow(subject).to receive(:Replaceworkflows).and_return(workflows_replaced)
       allow(subject).to receive(:UpdateInstFinish).and_return(inst_finish_updated)
-      Yast::ProductControl.system_roles = []
     end
 
     it "updates the installation" do
@@ -121,11 +115,6 @@ describe Yast::WorkflowManager do
       expect(subject).to receive(:UpdateInstFinish)
         .with(control["update"]["inst_finish"])
       expect(subject.IntegrateWorkflow(filename)).to eq(true)
-    end
-
-    it "adds roles" do
-      expect(subject.IntegrateWorkflow(filename)).to eq(true)
-      expect(Yast::ProductControl.system_roles).to eq([additional_role])
     end
 
     context "when fails to update the installation" do
@@ -176,6 +165,67 @@ describe Yast::WorkflowManager do
           .with(/inst_finish steps failed/)
         expect(subject.IntegrateWorkflow(filename)).to eq(false)
       end
+    end
+  end
+
+  describe "#UpdateInstallation" do
+    let(:workflow) do
+      { "mode"     => "installation",
+        "archs"    => "",
+        "stage"    => "",
+        "defaults" => { "archs" => "" } }
+    end
+    let(:proposal) { { "mode" => "installation", "archs" => "", "stage" => "" } }
+
+    let(:update) do
+      {
+        "system_roles" => { "insert_system_roles" => [] },
+        "workflows"    => [workflow],
+        "proposals"    => [proposal]
+      }
+    end
+
+    let(:name) { "addon name" }
+    let(:domain) { "control" }
+
+    it "updates proposals" do
+      expect(subject).to receive(:UpdateProposals).with(update["proposals"], name, domain)
+      subject.UpdateInstallation(update, name, domain)
+    end
+
+    it "updates workflows" do
+      expect(subject).to receive(:UpdateWorkflows).with(update["workflows"], name, domain)
+      subject.UpdateInstallation(update, name, domain)
+    end
+
+    it "updates system roles" do
+      expect(subject).to receive(:update_system_roles).with(update["system_roles"])
+      subject.UpdateInstallation(update, name, domain)
+    end
+  end
+
+  describe "#update_system_roles" do
+    let(:system_roles) do
+      {
+        "insert_system_roles" => [
+          {
+            "position"     => -1,
+            "system_roles" => [additional_role1]
+          }
+        ]
+      }
+    end
+
+    let(:additional_role1) { { "id" => "additional_role1" } }
+    let(:default_role) { { "id" => "default_role" } }
+
+    before do
+      Yast::ProductControl.system_roles = [default_role]
+    end
+
+    it "add system roles at the beginning" do
+      subject.update_system_roles(system_roles)
+      expect(Yast::ProductControl.system_roles).to eq([additional_role1, default_role])
     end
   end
 
