@@ -1615,7 +1615,7 @@ module Yast
     # @return [Array<Hash>] All existing roles after adding the new roles
     def add_system_roles(new_roles)
       log.info "Adding roles to product control: #{new_roles.inspect}"
-      system_roles.unshift(*new_roles)
+      system_roles.concat(new_roles)
     end
 
     publish variable: :productControl, type: "map"

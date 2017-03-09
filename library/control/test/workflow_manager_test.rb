@@ -210,13 +210,13 @@ describe Yast::WorkflowManager do
         "insert_system_roles" => [
           {
             "position"     => -1,
-            "system_roles" => [additional_role1]
+            "system_roles" => [additional_role]
           }
         ]
       }
     end
 
-    let(:additional_role1) { { "id" => "additional_role1" } }
+    let(:additional_role) { { "id" => "additional_role" } }
     let(:default_role) { { "id" => "default_role" } }
 
     before do
@@ -225,7 +225,7 @@ describe Yast::WorkflowManager do
 
     it "add system roles at the beginning" do
       subject.update_system_roles(system_roles)
-      expect(Yast::ProductControl.system_roles).to eq([additional_role1, default_role])
+      expect(Yast::ProductControl.system_roles).to eq([default_role, additional_role])
     end
   end
 
