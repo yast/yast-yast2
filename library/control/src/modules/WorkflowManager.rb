@@ -83,6 +83,7 @@ module Yast
       @wkf_initial_proposals = []
       @wkf_initial_inst_finish = []
       @wkf_initial_clone_modules = []
+      @wkf_initial_system_roles = []
 
       @wkf_initial_product_features = {}
 
@@ -152,6 +153,7 @@ module Yast
       @wkf_initial_proposals = deep_copy(ProductControl.proposals)
       @wkf_initial_inst_finish = deep_copy(ProductControl.inst_finish)
       @wkf_initial_clone_modules = deep_copy(ProductControl.clone_modules)
+      @wkf_initial_system_roles = deep_copy(ProductControl.system_roles)
 
       @additional_finish_steps_before_chroot = []
       @additional_finish_steps_after_chroot = []
@@ -295,6 +297,7 @@ module Yast
       ProductControl.proposals = deep_copy(@wkf_initial_proposals)
       ProductControl.inst_finish = deep_copy(@wkf_initial_inst_finish)
       ProductControl.clone_modules = deep_copy(@wkf_initial_clone_modules)
+      ProductControl.system_roles = deep_copy(@wkf_initial_system_roles)
 
       @additional_finish_steps_before_chroot = []
       @additional_finish_steps_after_chroot = []
@@ -892,6 +895,29 @@ module Yast
       true
     end
 
+    # Update sytem roles according to the update section of the control file
+    #
+    # The hash is expectd to have the following structure:
+    #
+    # "insert_system_roles" => [
+    #   {
+    #    "system_roles" =>
+    #      [
+    #        { "id" => "additional_role1" },
+    #        { "id" => "additional_role2" }
+    #      ]
+    #   }
+    # ]
+    #
+    # @param new_roles [Hash] System roles specification
+    #
+    # @see ProductControl#add_system_roles
+    def update_system_roles(system_roles)
+      system_roles.fetch("insert_system_roles", []).each do |insert|
+        ProductControl.add_system_roles(insert["system_roles"])
+      end
+    end
+
     # Add specified steps to inst_finish.
     # Just modifies internal variables, inst_finish grabs them itself
     #
@@ -932,6 +958,7 @@ module Yast
     #
     # @return [Boolean] true on success
     def UpdateInstallation(update_file, name, domain)
+      log.info "Updating installation workflow: #{update_file.inspect}"
       update_file = deep_copy(update_file)
       PrepareSystemProposals()
       PrepareSystemWorkflows()
@@ -943,6 +970,8 @@ module Yast
       workflows = Ops.get_list(update_file, "workflows", [])
       workflows = PrepareWorkflows(workflows)
       UpdateWorkflows(workflows, name, domain)
+
+      update_system_roles(update_file.fetch("system_roles", {}))
 
       true
     end
@@ -1360,6 +1389,7 @@ module Yast
     #     		"proposals" : ...
     #     		"inst_finish" : ...
     #     		"clone_modules" : ...
+    #         "system_roles" : ...
     #     		"unmerged_changes" : ...
     #     	];
     def DumpCurrentSettings
@@ -1368,6 +1398,7 @@ module Yast
         "proposals"        => ProductControl.proposals,
         "inst_finish"      => ProductControl.inst_finish,
         "clone_modules"    => ProductControl.clone_modules,
+        "system_roles"     => ProductControl.system_roles,
         "unmerged_changes" => @unmerged_changes
       }
     end
