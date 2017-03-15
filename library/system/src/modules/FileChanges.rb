@@ -217,7 +217,7 @@ module Yast
     #
     # @param files [Array<String>] candidate files that may be new
     # @return [Array<String>]
-    def new_created_files(files)
+    def created_files(files)
       files - @file_checksums.keys
     end
 
@@ -228,7 +228,7 @@ module Yast
     #  to continue
 
     def CheckNewCreatedFiles(files)
-      new_files = new_created_files(files)
+      new_files = created_files(files)
 
       return true if new_files.empty?
 
