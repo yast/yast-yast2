@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Mar 16 13:48:06 CET 2017 - schubi@suse.de
+
+- UnitFileState will be used for evaluating enable state of
+  services. If it has an invalid value "systemctl is-enabled...."
+  has to be called instead. (bnc#1012047)
+- 3.1.214
+
+-------------------------------------------------------------------
 Wed Mar 15 14:19:44 UTC 2017 - ancor@suse.com
 
 - Added FileChanges.created_files (part of fix for bsc#1027582)
