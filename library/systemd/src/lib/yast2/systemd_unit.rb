@@ -167,9 +167,10 @@ module Yast
       # Check the value of #unit_file_state; its value mirrors UnitFileState dbus property
       # @return [Boolean] True if enabled, False if not
       def read_enabled_state
-        # If UnitFileState property is missing due to e.g. legacy sysvinit service
-        # we must use a different way how to get the real status of the service
-        if unit_file_state.nil?
+        # If UnitFileState property is missing (due to e.g. legacy sysvinit service) or
+        # has an unknown entry (e.g. "bad") we must use a different way how to get the
+        # real status of the service.
+        unless SUPPORTED_STATES.member?(unit_file_state)
           # Check for exit code of `systemctl is-enabled systemd_unit.name` ; additionally
           # test the stdout of the command for valid values when the service is enabled
           # http://www.freedesktop.org/software/systemd/man/systemctl.html#is-enabled%20NAME...
