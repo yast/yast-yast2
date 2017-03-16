@@ -58,7 +58,7 @@ module Yast
       @unit_name, @unit_type = full_unit_name.split(".")
       raise "Missing unit type suffix" unless unit_type
 
-      log.warn "Unsupported unit type '#{unit_type}'" unless SUPPORTED_TYPES.member?(unit_type)
+      log.warn "Unsupported unit type '#{unit_type}'" unless SUPPORTED_TYPES.include?(unit_type)
       @input_properties = properties.merge!(DEFAULT_PROPERTIES)
 
       @properties = show
@@ -159,7 +159,7 @@ module Yast
         self[:loaded?]    = load_state   == "loaded"
         self[:not_found?] = load_state   == "not-found"
         self[:enabled?]   = read_enabled_state
-        self[:supported?] = SUPPORTED_STATES.member?(unit_file_state)
+        self[:supported?] = SUPPORTED_STATES.include?(unit_file_state)
       end
 
     private
@@ -167,16 +167,17 @@ module Yast
       # Check the value of #unit_file_state; its value mirrors UnitFileState dbus property
       # @return [Boolean] True if enabled, False if not
       def read_enabled_state
-        # If UnitFileState property is missing due to e.g. legacy sysvinit service
-        # we must use a different way how to get the real status of the service
-        if unit_file_state.nil?
+        # If UnitFileState property is missing (due to e.g. legacy sysvinit service) or
+        # has an unknown entry (e.g. "bad") we must use a different way how to get the
+        # real status of the service.
+        if SUPPORTED_STATES.include?(unit_file_state)
+          state_name_enabled?(unit_file_state)
+        else
           # Check for exit code of `systemctl is-enabled systemd_unit.name` ; additionally
           # test the stdout of the command for valid values when the service is enabled
           # http://www.freedesktop.org/software/systemd/man/systemctl.html#is-enabled%20NAME...
           status = systemd_unit.command("is-enabled")
           status.exit.zero? && state_name_enabled?(status.stdout)
-        else
-          state_name_enabled?(unit_file_state)
         end
       end
 
@@ -186,7 +187,7 @@ module Yast
       # a service as enabled.
       # @return [Boolean] True if enabled, False if not
       def state_name_enabled?(state)
-        ["enabled", "enabled-runtime"].member?(state.strip)
+        ["enabled", "enabled-runtime"].include?(state.strip)
       end
 
       def extract_properties
