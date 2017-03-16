@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 15 14:19:44 UTC 2017 - ancor@suse.com
+
+- Added FileChanges.created_files (part of fix for bsc#1027582)
+- 3.1.213.1
+
+-------------------------------------------------------------------
 Fri Mar 10 09:20:51 UTC 2017 - mfilka@suse.com
 
 - bnc#1026027
@@ -26,6 +32,15 @@ Wed Jan 18 13:56:27 UTC 2017 - jreidinger@suse.com
 - CWM: when skipping storing of widget values, skip also its
   validation (FATE#322328)
 - 3.1.210.3
+
+-------------------------------------------------------------------
+Thu Jan  5 11:35:23 UTC 2017 - mfilka@suse.com
+
+- bnc#1017716
+  - do not cache ifcfg files with empty device name part (ifcfg-).
+    Such file cannot be mapped to any existing device and providing
+    empty device name could lead to unexpected crashes in other
+    parts of yast.
 
 -------------------------------------------------------------------
 Tue Dec 20 16:28:45 UTC 2016 - igonzalezsosa@suse.com
