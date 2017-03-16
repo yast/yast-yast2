@@ -213,6 +213,14 @@ module Yast
       ret == :ok
     end
 
+    # Files that are really new
+    #
+    # @param files [Array<String>] candidate files that may be new
+    # @return [Array<String>]
+    def created_files(files)
+      files - @file_checksums.keys
+    end
+
     # Check if any of the possibly new created files is really new
     # Issue a question whether to continue if such file was manually created
     # @param [Array<String>] files a list of files to check
@@ -220,9 +228,9 @@ module Yast
     #  to continue
 
     def CheckNewCreatedFiles(files)
-      new_files = files - @file_checksums.keys
+      new_files = created_files(files)
 
-      return true unless !new_files.empty?
+      return true if new_files.empty?
 
       # TRANSLATORS: Continue/Cancel question, %s is a single file name or
       # a comma separated list of file names.
