@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 15 14:19:44 UTC 2017 - ancor@suse.com
+
+- Added FileChanges.created_files (part of fix for bsc#1027582)
+- 3.2.16
+
+-------------------------------------------------------------------
 Wed Mar  8 15:26:48 UTC 2017 - igonzalezsosa@suse.com
 
 - Support to add roles through addons (FATE#320772)
