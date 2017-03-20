@@ -397,20 +397,25 @@ module Yast
     # Get the package containing installer updates including control file
     # from rpm-md metadata
     #
-    # @param [Symbol] type `addon or `pattern
     # @param [Fixnum] src_id with Source ID
-    # @param [String] name with unique identification (ignored for addon)
-    # @return [String] path to downloaded workflow file
+    # @return [String, nil] path to downloaded workflow file (installation.xml)
+    #   or nil when no workflow is provided
     #
-    def GetControlFileFromPackage(type, src_id,_name)
+    def GetControlFileFromPackage(src_id)
       # identify the product
       products = Pkg.ResolvableDependencies("", :product, "")
-      products = products.select { |p|
-        p["source"] == src_id
-      }
+      products.select! { |p| p["source"] == src_id }
+
+      if products.size > 1
+        log.warn("More than one product found in the repository: #{products}")
+        log.warn("Using the first one: #{products.first}")
+      end
+
+      product = products.first
+
       # the dependencies are bound to its -release package
       control_file_package = nil
-      release_package_name = products[0]["product_package"]
+      release_package_name = product["product_package"]
       release_package = Pkg.ResolvableDependencies(release_package_name, :package, "")[0]
       # find the package name with installer update in its Provide dependencies
       release_package["deps"].each { | dep |
@@ -433,43 +438,34 @@ module Yast
 
       # Store the package locally for being processed further
       # and extract its contents
-      dir = Directory.tmpdir + "/workflow-updates/" + src_id.to_s;
-      Builtins.y2milestone("Dir to store extension: %1", dir);
+      dir = Dir.mktmpdir
+      log.info("Unpacking the workflow package into #{dir}")
       fetch_package(src, pkg, dir)
-      Builtins.y2milestone("Installation.xml: %1", dir + "/installation.xml")
-      return dir + "/installation.xml"
-
+      path = dir + "/installation.xml"
+      log.info("Full installation.xml path: #{path}")
+      path
     end
 
-    # RIXME: copy-pasted function from installer update handling
     def fetch_package(repo_id, package, dir)
-      log.info("Fetch started")
-      Builtins.y2milestone("Package: %1", package)
-      tempfile = Tempfile.new(package["name"])
-      tempfile.close
-        log.info("Trying to get #{package["name"]} from repo #{repo_id}")
-        if !Yast::Pkg.ProvidePackage(repo_id, package["name"], tempfile.path.to_s)
-          log.error("Package #{package} could not be retrieved.")
-          raise PackageNotFound
+      begin
+        log.info("Fetch started")
+        downloader = Packages::PackageDownloader.new(repo_id, package)
+        tmp = Tempfile.new("downloaded-package-")
+        downloader.download(tmp.path)
+        extract(tmp, dir)
+      ensure
+        if tmp
+          tmp.close
+          tmp.unlink
         end
-        extract(tempfile, dir)
-    ensure
-      tempfile.unlink
-    end
-
-    EXTRACT_CMD = "rpm2cpio %<source>s | cpio --quiet --sparse -dimu --no-absolute-filenames".freeze
-
-    # RIXME: copy-pasted function from installer update handling
-    def extract(package_file, dir)
-      ::FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
-      Dir.chdir(dir) do
-        cmd = format(EXTRACT_CMD, source: package_file.path)
-        out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
-        log.info("Extracting package #{package_file.inspect}: #{out}")
-        raise CouldNotExtractPackage unless out["exit"].zero?
       end
     end
 
+    def extract(package_file, dir)
+      log.info("Extracting file #{package_file}")
+      extractor = Packages::PackageExtractor.new(package_file)
+      extractor.extract(dir)
+    end
 
 
     # Returns requested control filename. Parameter 'name' is ignored
@@ -499,7 +495,7 @@ module Yast
           )
 
           if use_filename.nil?
-            use_filename = GetControlFileFromPackage(type, src_id,_name)
+            use_filename = GetControlFileFromPackage(src_id)
           end
 
           # File exists?
