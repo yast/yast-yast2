@@ -1,7 +1,7 @@
 #!/usr/bin/env rspec
 
 require "tempfile"
-require_relative "test_helper"
+require_relative "../test_helper"
 require "packages/package_extractor"
 
 describe Packages::PackageExtractor do
