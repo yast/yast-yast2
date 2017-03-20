@@ -4,14 +4,14 @@ require_relative "test_helper"
 
 require "packages/package_downloader"
 
-describe Yast2::PackageDownloader do
+describe Packages::PackageDownloader do
   Yast.import "Pkg"
 
   let(:repo_id) { 1 }
   let(:package) { "package_to_download" }
   let(:path) { "dummy" }
 
-  subject { Yast2::PackageDownloader.new(repo_id, package) }
+  subject { Packages::PackageDownloader.new(repo_id, package) }
 
   describe "#download" do
     it "downloads the requested package" do
@@ -21,7 +21,7 @@ describe Yast2::PackageDownloader do
 
     it "raises FetchError when download fails" do
       expect(Yast::Pkg).to receive(:ProvidePackage).with(repo_id, package, path).and_return(nil)
-      expect { subject.download(path) }.to raise_error(Yast2::PackageDownloader::FetchError)
+      expect { subject.download(path) }.to raise_error(Packages::PackageDownloader::FetchError)
     end
   end
 end

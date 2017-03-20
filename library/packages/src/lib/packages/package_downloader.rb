@@ -21,7 +21,7 @@ require "yast2/execute"
 
 Yast.import "Pkg"
 
-module Yast2
+module Packages
   # Downloads a package from a known package manager (libzypp) repository.
   #
   # @note For downloading files outside of a libzypp repository use the
@@ -67,7 +67,7 @@ module Yast2
     # It is responsibility of the caller to remove the downloaded package
     # when it is not needed anymore.
     #
-    # @param [#to_s] path path where the downloaded package will be stored
+    # @param path [#to_s] path where the downloaded package will be stored
     #
     # @raise PackageNotFound
     def download(path)

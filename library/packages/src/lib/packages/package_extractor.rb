@@ -17,7 +17,7 @@ require "shellwords"
 require "yast"
 require "yast2/execute"
 
-module Yast2
+module Packages
   # Extracts the RPM package contents to a directory.
   #
   # @example Extracting a package into a temporary directory
@@ -38,7 +38,7 @@ module Yast2
 
     # Constructor
     #
-    # @param [String] package_path the path to the package to extract
+    # @param package_path [String] the path to the package to extract
     def initialize(package_path)
       @package_path = package_path
     end
