@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.2.18
+Version:        3.2.19
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0
@@ -47,6 +47,11 @@ BuildRequires:  yast2-pkg-bindings >= 2.20.3
 BuildRequires:  yast2-ruby-bindings >= 3.1.36
 BuildRequires:  yast2-testsuite
 BuildRequires:  yast2-ycp-ui-bindings >= 3.1.8
+# for the PackageExtractor tests, just make sure they are present,
+# these should be installed in the default build anyway
+BuildRequires:  rpm
+BuildRequires:  cpio
+
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
 Requires:       coreutils
@@ -97,6 +102,10 @@ Requires:       idnkit
 Requires:       bind-utils
 %endif
 Obsoletes:      yast2-devel-doc
+# for the PackageExtractor class, just make sure they are present,
+# these should be present even in a very minimal installation
+Requires:  rpm
+Requires:  cpio
 
 %description
 This package contains scripts and data needed for SUSE Linux
