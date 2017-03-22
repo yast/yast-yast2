@@ -21,7 +21,7 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/WorkflowManager.ycp
+# File:	modules/WorkflowManager.rb
 # Package:	yast2
 # Summary:	Provides API for configuring workflows
 # Authors:	Lukas Ocilka <locilka@suse.cz>
@@ -34,9 +34,7 @@
 #
 # Module unifies Add-Ons and Patterns modifying the workflow.
 #
-# $Id: $
 require "yast"
-require "fileutils"
 
 module Yast
   class WorkflowManagerClass < Module
@@ -399,74 +397,31 @@ module Yast
     #
     # @param [Fixnum] src_id with Source ID
     # @return [String, nil] path to downloaded workflow file (installation.xml)
-    #   or nil when no workflow is provided
+    #   or nil when no workflow is defined or the workflow package is missing
     #
     def GetControlFileFromPackage(src_id)
-      # identify the product
-      products = Pkg.ResolvableDependencies("", :product, "")
-      products.select! { |p| p["source"] == src_id }
+      product = find_product(src_id)
+      return nil unless product
 
-      if products.size > 1
-        log.warn("More than one product found in the repository: #{products}")
-        log.warn("Using the first one: #{products.first}")
-      end
+      # the dependencies are bound to the product's -release package
+      release_package = Pkg.ResolvableDependencies(product["product_package"], :package, "").first
 
-      product = products.first
-
-      # the dependencies are bound to its -release package
-      control_file_package = nil
-      release_package_name = product["product_package"]
-      release_package = Pkg.ResolvableDependencies(release_package_name, :package, "")[0]
       # find the package name with installer update in its Provide dependencies
-      release_package["deps"].each { | dep |
-        next if dep["provides"].nil?
-        provide = dep["provides"]
-        if provide.match(/\Ainstallerupdate\((.*)\)\z/)
-          control_file_package = Regexp.last_match[1].strip
-          Builtins.y2milestone("Package with control file: %1", control_file_package)
-        end
-      }
-      return nil if control_file_package.nil?
+      control_file_package = find_control_package(release_package)
+      return nil unless control_file_package
 
-      Builtins.y2milestone("Processing package with control file: %1", control_file_package)
-      # Identify the installation repository with the package
-      pkgs = Pkg.ResolvableProperties(control_file_package, :package, "")
-      Builtins.y2milestone("Pkgs: %1", pkgs)
-      pkg = pkgs[0]
-      src = pkg["source"]
-      Builtins.y2milestone("Source: %1", src)
+      # get the repository ID of the package
+      src = package_repository(control_file_package)
+      return nil unless src
 
-      # Store the package locally for being processed further
-      # and extract its contents
-      dir = Dir.mktmpdir
-      log.info("Unpacking the workflow package into #{dir}")
-      fetch_package(src, pkg, dir)
-      path = dir + "/installation.xml"
-      log.info("Full installation.xml path: #{path}")
+      # extract the package, Directory.tmpdir is automatically cleaned at the exit
+      dir = File.join(Directory.tmpdir, "workflow-updates", src_id.to_s)
+      fetch_package(src, control_file_package, dir)
+
+      path = File.join(dir, "installation.xml")
+      log.info("installation.xml path: #{path}")
       path
     end
-
-    def fetch_package(repo_id, package, dir)
-      begin
-        log.info("Fetch started")
-        downloader = Packages::PackageDownloader.new(repo_id, package)
-        tmp = Tempfile.new("downloaded-package-")
-        downloader.download(tmp.path)
-        extract(tmp, dir)
-      ensure
-        if tmp
-          tmp.close
-          tmp.unlink
-        end
-      end
-    end
-
-    def extract(package_file, dir)
-      log.info("Extracting file #{package_file}")
-      extractor = Packages::PackageExtractor.new(package_file)
-      extractor.extract(dir)
-    end
-
 
     # Returns requested control filename. Parameter 'name' is ignored
     # for Add-Ons.
@@ -1506,6 +1461,68 @@ module Yast
     publish function: :SetAllUsedControlFiles, type: "void (list <string>)"
     publish function: :HaveAdditionalWorkflows, type: "boolean ()"
     publish function: :DumpCurrentSettings, type: "map <string, any> ()"
+
+  private
+
+    def find_product(repo_id)
+      # identify the product
+      products = Pkg.ResolvableDependencies("", :product, "")
+      return nil unless products
+
+      products.select! { |p| p["source"] == repo_id }
+
+      if products.size > 1
+        log.warn("More than one product found in the repository: #{products}")
+        log.warn("Using the first one: #{products.first}")
+      end
+
+      products.first
+    end
+
+    def find_control_package(release_package)
+      release_package["deps"].each do | dep |
+        provide = dep["provides"]
+        next unless provide && provide.match(/\Ainstallerupdate\((.*)\)\z/)
+
+        control_file_package = Regexp.last_match[1].strip
+        log.info("Found referenced package with control file: #{control_file_package}")
+        return control_file_package
+      end
+
+      nil
+    end
+
+    def package_repository(package_name)
+      # Identify the installation repository with the package
+      pkgs = Pkg.ResolvableProperties(package_name, :package, "")
+
+      if pkgs.size > 1
+        log.warn("More than one control package found: #{pkgs}")
+        log.warn("Using the first one: #{pkgs.first}")
+      end
+
+      pkgs.first["source"]
+    end
+
+    def fetch_package(repo_id, package, dir)
+      begin
+        downloader = Packages::PackageDownloader.new(repo_id, package)
+        tmp = Tempfile.new("downloaded-package-")
+        downloader.download(tmp.path)
+        extract(tmp, dir)
+      ensure
+        if tmp
+          tmp.close
+          tmp.unlink
+        end
+      end
+    end
+
+    def extract(package_file, dir)
+      log.info("Extracting file #{package_file}")
+      extractor = Packages::PackageExtractor.new(package_file)
+      extractor.extract(dir)
+    end
   end
 
   WorkflowManager = WorkflowManagerClass.new
