@@ -602,12 +602,30 @@ module CWM
     include ItemsSelection
     abstract_method :label
 
+    # @!method vspacing
+    #   @return [Fixnum] space between the options
+
     def value
       Yast::UI.QueryWidget(Id(widget_id), :CurrentButton)
     end
 
     def value=(val)
       Yast::UI.ChangeWidget(Id(widget_id), :CurrentButton, val)
+    end
+
+    # See AbstractWidget#cwm_definition
+    # In addition to the base definition, this honors a possible
+    # `vspacing` method
+    #
+    # @example defining additional space between the options
+    #   def vspacing
+    #     1
+    #   end
+    def cwm_definition
+      additional = {}
+      additional["vspacing"] = vspacing if respond_to?(:vspacing)
+
+      super.merge(additional)
     end
   end
 

@@ -214,6 +214,44 @@ describe CWM::CustomWidget do
   end
 end
 
+describe CWM::RadioButtons do
+
+  class TestRadioButtons < CWM::RadioButtons
+    def label
+      "Choose a number"
+    end
+
+    def items
+      [[:one, "One"], [:two, "Two"], [:three, "Three"]]
+    end
+  end
+
+  describe "#cwm_definition" do
+    context "if #vspacing is not defined" do
+      subject { TestRadioButtons.new }
+
+      it "does not include the vspacing key" do
+        expect(subject.cwm_definition.keys).to_not include("vspacing")
+      end
+    end
+
+    context "if #vspacing is defined" do
+      class TestSpacedRadioButtons < TestRadioButtons
+        def vspacing
+          2
+        end
+      end
+
+      subject { TestSpacedRadioButtons.new }
+
+      it "sets vspacing based on the method result" do
+        expect(subject.cwm_definition.keys).to include("vspacing")
+        expect(subject.cwm_definition["vspacing"]).to eq 2
+      end
+    end
+  end
+end
+
 describe CWM::ReplacePoint do
 
   class ReplacePointTestWidget < CWM::InputField
