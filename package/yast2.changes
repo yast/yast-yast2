@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 22 15:37:51 UTC 2017 - ancor@suse.com
+
+- Added an option to CWM::RadioButtons to set extra space between
+  the options (related to poo#14936 and bsc#1025415).
+- 3.2.20
+
+-------------------------------------------------------------------
 Mon Mar 20 10:11:52 UTC 2017 - lslezak@suse.cz
 
 - Added PackageDownloader and PackageExtractor classes for sharing
