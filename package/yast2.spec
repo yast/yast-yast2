@@ -43,8 +43,8 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
 BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  yast2-pkg-bindings >= 2.20.3
-# To have Yast::CoreExt::AnsiString
-BuildRequires:  yast2-ruby-bindings >= 3.1.36
+# To have Yast::WFM.scr_root
+BuildRequires:  yast2-ruby-bindings >= 3.2.8
 BuildRequires:  yast2-testsuite
 BuildRequires:  yast2-ycp-ui-bindings >= 3.1.8
 # for the PackageExtractor tests, just make sure they are present,
@@ -76,7 +76,7 @@ Requires:       yast2-hardware-detection
 Requires:       yast2-perl-bindings
 # changed StartPackage callback signature
 Requires:       yast2-pkg-bindings >= 2.20.3
-Requires:       yast2-ruby-bindings >= 3.1.33
+Requires:       yast2-ruby-bindings >= 3.2.8
 Requires:       yast2-xml
 # new UI::SetApplicationIcon
 Requires:       yast2-ycp-ui-bindings >= 3.1.8
