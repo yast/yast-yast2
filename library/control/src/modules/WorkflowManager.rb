@@ -427,6 +427,12 @@ module Yast
 
       log.info("installation.xml path: #{path}")
       path
+    rescue Packages::PackageDownloader::FetchError
+      Report.Error(_("Downloading the installer extension package failed."))
+      nil
+    rescue Packages::PackageExtractor::ExtractionFailed
+      Report.Error(_("Extracting the installer extension failed."))
+      nil
     end
 
     # Returns requested control filename. Parameter 'name' is ignored

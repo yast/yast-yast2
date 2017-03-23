@@ -328,6 +328,38 @@ describe Yast::WorkflowManager do
       expect(subject.GetControlFileFromPackage(repo_id)).to be nil
     end
 
+    context "downloading the installer extension package fails" do
+      before do
+        expect_any_instance_of(Packages::PackageDownloader).to receive(:download).and_raise(Packages::PackageDownloader::FetchError)
+        allow(Yast::Report).to receive(:Error)
+      end
+
+      it "reports an error" do
+        expect(Yast::Report).to receive(:Error)
+        subject.GetControlFileFromPackage(repo_id)
+      end
+
+      it "returns nil" do
+        expect(subject.GetControlFileFromPackage(repo_id)).to be nil
+      end
+    end
+
+    context "extracting the installer extension package fails" do
+      before do
+        expect_any_instance_of(Packages::PackageExtractor).to receive(:extract).and_raise(Packages::PackageExtractor::ExtractionFailed)
+        allow(Yast::Report).to receive(:Error)
+      end
+
+      it "reports an error" do
+        expect(Yast::Report).to receive(:Error)
+        subject.GetControlFileFromPackage(repo_id)
+      end
+
+      it "returns nil" do
+        expect(subject.GetControlFileFromPackage(repo_id)).to be nil
+      end
+    end
+
     it "downloads and extracts the extension package" do
       expect_any_instance_of(Packages::PackageDownloader).to receive(:download)
       expect_any_instance_of(Packages::PackageExtractor).to receive(:extract)
