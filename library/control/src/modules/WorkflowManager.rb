@@ -428,9 +428,11 @@ module Yast
       log.info("installation.xml path: #{path}")
       path
     rescue Packages::PackageDownloader::FetchError
+      # TRANSLATORS: an error message
       Report.Error(_("Downloading the installer extension package failed."))
       nil
     rescue Packages::PackageExtractor::ExtractionFailed
+      # TRANSLATORS: an error message
       Report.Error(_("Extracting the installer extension failed."))
       nil
     end
