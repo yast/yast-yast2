@@ -395,13 +395,14 @@ module Yast
       file_location
     end
 
-    # Get the package containing installer updates including control file
-    # from rpm-md metadata
+    # Download and extract the control file (installation.xml) from the add-on
+    # repository.
     #
-    # @param [Fixnum] src_id with Source ID
-    # @return [String, nil] path to downloaded workflow file (installation.xml)
+    # @param src_id [Fixnum] repository ID
+    # @return [String, nil] path to downloaded installation.xml file or nil
     #   or nil when no workflow is defined or the workflow package is missing
-    #
+    # @raise [Packages::PackageDownloader::FetchError] if package download failed
+    # @raise [Packages::PackageExtractor::ExtractionFailed] if package extraction failed
     def GetControlFileFromPackage(src_id)
       product = find_product(src_id)
       return nil unless product && product["product_package"]
@@ -1467,6 +1468,9 @@ module Yast
 
   private
 
+    # Find the product from a repository.
+    # @param repo_id [Fixnum] repository ID
+    # @return [Hash,nil] pkg-bindings product hash or nil if not found
     def find_product(repo_id)
       # identify the product
       products = Pkg.ResolvableDependencies("", :product, "")
@@ -1482,6 +1486,9 @@ module Yast
       products.first
     end
 
+    # Find the extension package name defined by the "installerextension()"
+    # RPM "Provides" dependency.
+    # @return [String,nil] a package name or nil if not found
     def find_control_package(release_package)
       return nil unless release_package && release_package["deps"]
 
@@ -1497,6 +1504,9 @@ module Yast
       nil
     end
 
+    # Find the repository ID for the package.
+    # @param package_name [String] name of the package
+    # @return [Fixnum,nil] repository ID or nil if not found
     def package_repository(package_name)
       # Identify the installation repository with the package
       pkgs = Pkg.ResolvableProperties(package_name, :package, "")
@@ -1512,6 +1522,11 @@ module Yast
       pkgs.first["source"]
     end
 
+    # Download and extract a package from a repository.
+    # @param repo_id [Fixnum] repository ID
+    # @param package [String] name of the package
+    # @raise [Packages::PackageDownloader::FetchError] if package download failed
+    # @raise [Packages::PackageExtractor::ExtractionFailed] if package extraction failed
     def fetch_package(repo_id, package, dir)
       downloader = Packages::PackageDownloader.new(repo_id, package)
       tmp = Tempfile.new("downloaded-package-")
@@ -1524,6 +1539,10 @@ module Yast
       end
     end
 
+    # Extract an RPM package into the given directory.
+    # @param package_file [String] the RPM package path
+    # @param dir [String] A directory where the package will be extracted to
+    # @raise [Packages::PackageExtractor::ExtractionFailed] if package extraction failed
     def extract(package_file, dir)
       log.info("Extracting file #{package_file}")
       extractor = Packages::PackageExtractor.new(package_file)
