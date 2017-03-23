@@ -270,19 +270,21 @@ describe Yast::WorkflowManager do
   describe "#GetControlFileFromPackage" do
     let(:repo_id) { 42 }
     let(:product_package) { "foo-release" }
-    let(:product) { {"name" => "foo", "source" => repo_id, "product_package" => product_package} }
+    let(:product) { { "name" => "foo", "source" => repo_id, "product_package" => product_package } }
     let(:ext_package) { "foo-installation" }
-    let(:extension) { {"name" => ext_package, "source" => repo_id} }
-    let(:release) { {"name" => product_package, "source" => repo_id,
-      "deps" => ["provides" => "installerextension(#{ext_package})"]} }
+    let(:extension) { { "name" => ext_package, "source" => repo_id } }
+    let(:release) do
+      { "name" => product_package, "source" => repo_id,
+      "deps" => ["provides" => "installerextension(#{ext_package})"] }
+    end
 
     before do
+      # generic mocks, can be are overriden in the tests
       allow(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
       allow(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
       allow(Yast::Pkg).to receive(:ResolvableProperties).with(ext_package, :package, "").and_return([extension])
       allow_any_instance_of(Packages::PackageDownloader).to receive(:download)
       allow_any_instance_of(Packages::PackageExtractor).to receive(:extract)
-
       # allow using it at other places
       allow(File).to receive(:exist?).and_call_original
     end
@@ -293,13 +295,13 @@ describe Yast::WorkflowManager do
     end
 
     it "returns nil if the product does not refer to a release package" do
-      product = {"name" => "foo", "source" => repo_id}
+      product = { "name" => "foo", "source" => repo_id }
       expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
       expect(subject.GetControlFileFromPackage(repo_id)).to be nil
     end
 
     it "returns nil if the product belongs to a different repository" do
-      product = {"name" => "foo", "source" => repo_id + 1}
+      product = { "name" => "foo", "source" => repo_id + 1 }
       expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
       expect(subject.GetControlFileFromPackage(repo_id)).to be nil
     end
@@ -310,13 +312,13 @@ describe Yast::WorkflowManager do
     end
 
     it "returns nil if the product release package does not have any dependencies" do
-      release = {"name" => "foo", "source" => repo_id}
+      release = { "name" => "foo", "source" => repo_id }
       expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
       expect(subject.GetControlFileFromPackage(repo_id)).to be nil
     end
 
     it "returns nil if the product release package dependency do not match" do
-      release = {"name" => "foo", "source" => repo_id, "deps" => ["provides" => "foo"]}
+      release = { "name" => "foo", "source" => repo_id, "deps" => ["provides" => "foo"] }
       expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
       expect(subject.GetControlFileFromPackage(repo_id)).to be nil
     end
@@ -338,7 +340,7 @@ describe Yast::WorkflowManager do
       expect(subject.GetControlFileFromPackage(repo_id)).to be nil
     end
 
-    it "returns the installation.xml path nil if the extracted package contains it" do
+    it "returns the installation.xml path if the extracted package contains it" do
       expect(File).to receive(:exist?).with(/installation.xml\z/).and_return(true)
       expect(subject.GetControlFileFromPackage(repo_id)).to match(/\/installation\.xml\z/)
     end

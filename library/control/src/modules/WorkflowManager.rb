@@ -451,9 +451,7 @@ module Yast
             true
           )
 
-          if use_filename.nil?
-            use_filename = GetControlFileFromPackage(src_id)
-          end
+          use_filename = GetControlFileFromPackage(src_id) if use_filename.nil?
 
           # File exists?
           return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
@@ -1484,7 +1482,7 @@ module Yast
     def find_control_package(release_package)
       return nil unless release_package && release_package["deps"]
 
-      release_package["deps"].each do | dep |
+      release_package["deps"].each do |dep|
         provide = dep["provides"]
         next unless provide && provide.match(/\Ainstallerextension\((.+)\)\z/)
 
@@ -1512,16 +1510,14 @@ module Yast
     end
 
     def fetch_package(repo_id, package, dir)
-      begin
-        downloader = Packages::PackageDownloader.new(repo_id, package)
-        tmp = Tempfile.new("downloaded-package-")
-        downloader.download(tmp.path)
-        extract(tmp, dir)
-      ensure
-        if tmp
-          tmp.close
-          tmp.unlink
-        end
+      downloader = Packages::PackageDownloader.new(repo_id, package)
+      tmp = Tempfile.new("downloaded-package-")
+      downloader.download(tmp.path)
+      extract(tmp, dir)
+    ensure
+      if tmp
+        tmp.close
+        tmp.unlink
       end
     end
 
