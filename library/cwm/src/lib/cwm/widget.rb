@@ -614,16 +614,22 @@ module CWM
     end
 
     # See AbstractWidget#cwm_definition
-    # In addition to the base definition, this honors a possible
-    # `vspacing` method
+    # In addition to the base definition, this honors possible
+    # `vspacing` and `hspacing` methods
     #
     # @example defining additional space between the options
     #   def vspacing
     #     1
     #   end
+    #
+    # @example defining some margin at both sides of the list of options
+    #   def hspacing
+    #     3
+    #   end
     def cwm_definition
       additional = {}
       additional["vspacing"] = vspacing if respond_to?(:vspacing)
+      additional["hspacing"] = hspacing if respond_to?(:hspacing)
 
       super.merge(additional)
     end

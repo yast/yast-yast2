@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Wed Mar 22 15:37:51 UTC 2017 - ancor@suse.com
 
-- Added an option to CWM::RadioButtons to set extra space between
-  the options (related to poo#14936 and bsc#1025415).
+- Added options to CWM::RadioButtons to set some extra spaces
+  (related to poo#14936 and bsc#1025415).
 - 3.2.20
 
 -------------------------------------------------------------------
