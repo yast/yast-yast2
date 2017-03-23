@@ -378,4 +378,10 @@ describe Yast::WorkflowManager do
       expect(subject.addon_control_file(repo_id)).to end_with("/installation.xml")
     end
   end
+  
+  describe "#addon_control_dir" do
+    it "returns a directory path"
+    it "removes the existing content if cleanup is requested"
+    it "does not create the directory if it already exists"
+  end
 end
