@@ -403,7 +403,7 @@ module Yast
     #   or nil when no workflow is defined or the workflow package is missing
     # @raise [Packages::PackageDownloader::FetchError] if package download failed
     # @raise [Packages::PackageExtractor::ExtractionFailed] if package extraction failed
-    def GetControlFileFromPackage(src_id)
+    def addon_control_file(src_id)
       product = find_product(src_id)
       return nil unless product && product["product_package"]
 
@@ -418,8 +418,9 @@ module Yast
       src = package_repository(control_file_package)
       return nil unless src
 
-      # extract the package, Directory.tmpdir is automatically cleaned at the exit
-      dir = File.join(Directory.tmpdir, "workflow-updates", src_id.to_s)
+      # ensure the previous content is removed, the src_id should avoid
+      # collisions but rather be safe...
+      dir = addon_control_dir(src_id, cleanup: true)
       fetch_package(src, control_file_package, dir)
 
       path = File.join(dir, "installation.xml")
@@ -435,6 +436,19 @@ module Yast
       # TRANSLATORS: an error message
       Report.Error(_("Extracting the installer extension failed."))
       nil
+    end
+
+    # Create a temporary directory for storing the installer extension package content.
+    # The directory is automatically removed at exit.
+    # @param src_id [Fixnum] repository ID
+    # @param cleanup [Boolean] remove the content if the directory already exists
+    # @return [String] directory path
+    def addon_control_dir(src_id, cleanup: false)
+      # Directory.tmpdir is automatically removed at exit
+      dir = File.join(Directory.tmpdir, "installer-extension-#{src_id}")
+      ::FileUtils.remove_entry(dir) if cleanup && Dir.exist?(dir)
+      ::FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
+      dir
     end
 
     # Returns requested control filename. Parameter 'name' is ignored
@@ -465,7 +479,7 @@ module Yast
 
           # The most generic way it to use the package referenced by the "installerextension()"
           # provides, this works with all repository types, including the RPM-MD repositories.
-          use_filename = GetControlFileFromPackage(src_id) if use_filename.nil?
+          use_filename = addon_control_file(src_id) if use_filename.nil?
 
           # File exists?
           return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
