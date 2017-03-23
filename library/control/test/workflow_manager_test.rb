@@ -342,7 +342,7 @@ describe Yast::WorkflowManager do
 
     it "returns the installation.xml path if the extracted package contains it" do
       expect(File).to receive(:exist?).with(/installation.xml\z/).and_return(true)
-      expect(subject.GetControlFileFromPackage(repo_id)).to match(/\/installation\.xml\z/)
+      expect(subject.GetControlFileFromPackage(repo_id)).to match(/\A\/.+\/installation\.xml\z/)
     end
   end
 end
