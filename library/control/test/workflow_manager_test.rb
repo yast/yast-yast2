@@ -266,4 +266,100 @@ describe Yast::WorkflowManager do
       expect(subject.DumpCurrentSettings["unmerged_changes"]).to eq(false)
     end
   end
+
+  describe "#GetControlFileFromPackage" do
+    let(:repo_id) { 42 }
+    let(:product_package) { "foo-release" }
+    let(:ext_package) { "foo-installation" }
+    let(:extension) { {"name" => ext_package, "source" => repo_id} }
+
+    it "returns nil if the repository does provide any product" do
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([])
+      expect(subject.GetControlFileFromPackage(repo_id)).to be nil
+    end
+
+    it "returns nil if the product does not refer to a release package" do
+      product = {"name" => "foo", "source" => repo_id}
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      expect(subject.GetControlFileFromPackage(repo_id)).to be nil
+    end
+
+    it "returns nil if the product belongs to a different repository" do
+      product = {"name" => "foo", "source" => repo_id + 1}
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      expect(subject.GetControlFileFromPackage(repo_id)).to be nil
+    end
+
+    it "returns nil if the product release package cannot be found" do
+      product = {"name" => "foo", "source" => repo_id, "product_package" => product_package}
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([])
+      expect(subject.GetControlFileFromPackage(repo_id)).to be nil
+    end
+
+    it "returns nil if the product release package does not have any dependencies" do
+      product = {"name" => "foo", "source" => repo_id, "product_package" => product_package}
+      release = {"name" => "foo", "source" => repo_id}
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+      expect(subject.GetControlFileFromPackage(repo_id)).to be nil
+    end
+
+    it "returns nil if the product release package dependency do not match" do
+      product = {"name" => "foo", "source" => repo_id, "product_package" => product_package}
+      release = {"name" => "foo", "source" => repo_id, "deps" => ["provides" => "foo"]}
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+      expect(subject.GetControlFileFromPackage(repo_id)).to be nil
+    end
+
+    it "returns nil if the installer extension package is not found" do
+      product = {"name" => "foo", "source" => repo_id, "product_package" => product_package}
+      release = {"name" => "foo", "source" => repo_id, "deps" => ["provides" => "installerextension(#{ext_package})"]}
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+      expect(Yast::Pkg).to receive(:ResolvableProperties).with(ext_package, :package, "").and_return([])
+      expect(subject.GetControlFileFromPackage(repo_id)).to be nil
+    end
+
+    it "downloads and extracts the extension package" do
+      product = {"name" => "foo", "source" => repo_id, "product_package" => product_package}
+      release = {"name" => product_package, "source" => repo_id, "deps" => ["provides" => "installerextension(#{ext_package})"]}
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with(ext_package, :package, "").and_return([extension])
+      expect_any_instance_of(Packages::PackageDownloader).to receive(:download)
+      expect_any_instance_of(Packages::PackageExtractor).to receive(:extract)
+      allow(File).to receive(:exist?)
+      subject.GetControlFileFromPackage(repo_id)
+    end
+
+    it "returns nil if the extracted package does not contain installation.xml" do
+      product = {"name" => "foo", "source" => repo_id, "product_package" => product_package}
+      release = {"name" => product_package, "source" => repo_id, "deps" => ["provides" => "installerextension(#{ext_package})"]}
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with(ext_package, :package, "").and_return([extension])
+      allow_any_instance_of(Packages::PackageDownloader).to receive(:download)
+      allow_any_instance_of(Packages::PackageExtractor).to receive(:extract)
+      # allow using it at other places
+      expect(File).to receive(:exist?).and_call_original
+      expect(File).to receive(:exist?).with(/installation\.xml\z/).and_return(false)
+      expect(subject.GetControlFileFromPackage(repo_id)).to be nil
+    end
+
+    it "returns the installation.xml path nil if the extracted package contains it" do
+      product = {"name" => "foo", "source" => repo_id, "product_package" => product_package}
+      release = {"name" => product_package, "source" => repo_id, "deps" => ["provides" => "installerextension(#{ext_package})"]}
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with(ext_package, :package, "").and_return([extension])
+      allow_any_instance_of(Packages::PackageDownloader).to receive(:download)
+      allow_any_instance_of(Packages::PackageExtractor).to receive(:extract)
+      # allow using it at other places
+      expect(File).to receive(:exist?).and_call_original
+      expect(File).to receive(:exist?).with(/installation.xml\z/).and_return(true)
+      expect(subject.GetControlFileFromPackage(repo_id)).to match(/\/installation\.xml\z/)
+    end
+  end
 end

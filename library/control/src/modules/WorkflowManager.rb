@@ -401,7 +401,7 @@ module Yast
     #
     def GetControlFileFromPackage(src_id)
       product = find_product(src_id)
-      return nil unless product
+      return nil unless product && product["product_package"]
 
       # the dependencies are bound to the product's -release package
       release_package = Pkg.ResolvableDependencies(product["product_package"], :package, "").first
@@ -419,6 +419,8 @@ module Yast
       fetch_package(src, control_file_package, dir)
 
       path = File.join(dir, "installation.xml")
+      return nil unless File.exist?(path)
+
       log.info("installation.xml path: #{path}")
       path
     end
@@ -1480,9 +1482,11 @@ module Yast
     end
 
     def find_control_package(release_package)
+      return nil unless release_package && release_package["deps"]
+
       release_package["deps"].each do | dep |
         provide = dep["provides"]
-        next unless provide && provide.match(/\Ainstallerupdate\((.*)\)\z/)
+        next unless provide && provide.match(/\Ainstallerextension\((.+)\)\z/)
 
         control_file_package = Regexp.last_match[1].strip
         log.info("Found referenced package with control file: #{control_file_package}")
@@ -1496,7 +1500,10 @@ module Yast
       # Identify the installation repository with the package
       pkgs = Pkg.ResolvableProperties(package_name, :package, "")
 
-      if pkgs.size > 1
+      if pkgs.empty?
+        log.warn("The installer extension package #{package_name} was not found")
+        return nil
+      elsif pkgs.size > 1
         log.warn("More than one control package found: #{pkgs}")
         log.warn("Using the first one: #{pkgs.first}")
       end
