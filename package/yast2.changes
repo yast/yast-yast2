@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Mar 22 16:53:07 UTC 2017 - jreidinger@suse.com
+
+- Use for Yast::TargetFile and Yast::Execute real path where scr
+  operates. It allows easier switching scr in unit tests.
+  (needed for testing fix for bsc#1023204)
+- 3.2.21
+
+-------------------------------------------------------------------
 Wed Mar 22 15:37:51 UTC 2017 - ancor@suse.com
 
 - Added options to CWM::RadioButtons to set some extra spaces

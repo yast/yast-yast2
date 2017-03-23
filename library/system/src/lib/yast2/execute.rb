@@ -23,8 +23,6 @@
 require "yast"
 require "cheetah"
 
-Yast.import "Installation"
-
 module Yast
   # Module for executing scripts/programs in safe way. Uses cheetah as backend,
   # but adds support for chrooting in installation.
@@ -39,8 +37,7 @@ module Yast
     # @see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run parameter docs
     # @raise Cheetah::ExecutionFailed
     def self.on_target(*args)
-      root = "/"
-      root = Yast::Installation.destdir if Yast::WFM.scr_chrooted?
+      root = Yast::WFM.scr_root
 
       if args.last.is_a? ::Hash
         args.last[:chroot] = root
