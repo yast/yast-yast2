@@ -447,7 +447,7 @@ module Yast
           # Trying to get the file from source
         else
           Builtins.y2milestone("File %1 not cached", disk_filename)
-          # using a file from source
+          # using a file from source, works only for SUSE tags repositories
           use_filename = Pkg.SourceProvideDigestedFile(
             src_id,
             1,
@@ -455,6 +455,8 @@ module Yast
             true
           )
 
+          # The most generic way it to use the package referenced by the "installerextension()"
+          # provides, this works with all repository types, including the RPM-MD repositories.
           use_filename = GetControlFileFromPackage(src_id) if use_filename.nil?
 
           # File exists?
@@ -1486,7 +1488,8 @@ module Yast
       products.first
     end
 
-    # Find the extension package name defined by the "installerextension()"
+    # Find the extension package name for the specified release package.
+    # The extension package is defined by the "installerextension()"
     # RPM "Provides" dependency.
     # @return [String,nil] a package name or nil if not found
     def find_control_package(release_package)
@@ -1534,6 +1537,9 @@ module Yast
       extract(tmp, dir)
     ensure
       if tmp
+        # the RPM package file is not needed after extracting it's content,
+        # remove it explicitly, do not wait for the garbage collector
+        # (in inst-syst it is stored in a RAM disk and eats the RAM memory)
         tmp.close
         tmp.unlink
       end
@@ -1541,7 +1547,7 @@ module Yast
 
     # Extract an RPM package into the given directory.
     # @param package_file [String] the RPM package path
-    # @param dir [String] A directory where the package will be extracted to
+    # @param dir [String] a directory where the package will be extracted to
     # @raise [Packages::PackageExtractor::ExtractionFailed] if package extraction failed
     def extract(package_file, dir)
       log.info("Extracting file #{package_file}")
