@@ -605,6 +605,9 @@ module CWM
     # @!method vspacing
     #   @return [Fixnum] space between the options
 
+    # @!method hspacing
+    #   @return [Fixnum] margin at both sides of the options list
+
     def value
       Yast::UI.QueryWidget(Id(widget_id), :CurrentButton)
     end
