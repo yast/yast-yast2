@@ -36,6 +36,9 @@
 #
 require "yast"
 
+require "packages/package_downloader"
+require "packages/package_extractor"
+
 module Yast
   class WorkflowManagerClass < Module
     include Yast::Logger
