@@ -29,8 +29,7 @@ describe Yast::Execute do
 
   describe ".on_target" do
     it "adds to passed arguments chroot option if scr chrooted" do
-      Yast::Installation.destdir = "/mnt"
-      allow(Yast::WFM).to receive(:scr_chrooted?).and_return(true)
+      allow(Yast::WFM).to receive(:scr_root).and_return("/mnt")
       expect(Cheetah).to receive(:run).with("ls", "-a", chroot: "/mnt")
 
       Yast::Execute.on_target("ls", "-a")
