@@ -289,7 +289,7 @@ describe Yast::WorkflowManager do
       allow(File).to receive(:exist?).and_call_original
     end
 
-    it "returns nil if the repository does provide any product" do
+    it "returns nil if the repository does not provide any product" do
       expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([])
       expect(subject.GetControlFileFromPackage(repo_id)).to be nil
     end
@@ -306,18 +306,18 @@ describe Yast::WorkflowManager do
       expect(subject.GetControlFileFromPackage(repo_id)).to be nil
     end
 
-    it "returns nil if the product release package cannot be found" do
+    it "returns nil if the release package cannot be found" do
       expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([])
       expect(subject.GetControlFileFromPackage(repo_id)).to be nil
     end
 
-    it "returns nil if the product release package does not have any dependencies" do
+    it "returns nil if the release package does not have any dependencies" do
       release = { "name" => "foo", "source" => repo_id }
       expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
       expect(subject.GetControlFileFromPackage(repo_id)).to be nil
     end
 
-    it "returns nil if the product release package dependency do not match" do
+    it "returns nil if the release package does not have any installerextension() provides" do
       release = { "name" => "foo", "source" => repo_id, "deps" => ["provides" => "foo"] }
       expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
       expect(subject.GetControlFileFromPackage(repo_id)).to be nil
@@ -342,7 +342,8 @@ describe Yast::WorkflowManager do
 
     it "returns the installation.xml path if the extracted package contains it" do
       expect(File).to receive(:exist?).with(/installation.xml\z/).and_return(true)
-      expect(subject.GetControlFileFromPackage(repo_id)).to match(/\A\/.+\/installation\.xml\z/)
+      # the returned path contains "/installation.xml" at the end
+      expect(subject.GetControlFileFromPackage(repo_id)).to end_with("/installation.xml")
     end
   end
 end
