@@ -268,6 +268,7 @@ describe Yast::WorkflowManager do
   end
 
   describe "#addon_control_file" do
+    # setup fake products and their packages
     let(:repo_id) { 42 }
     let(:product_package) { "foo-release" }
     let(:product) { { "name" => "foo", "source" => repo_id, "product_package" => product_package } }
@@ -400,11 +401,11 @@ describe Yast::WorkflowManager do
       end
 
       it "removes the existing content if cleanup is requested" do
-        expect{subject.addon_control_dir(src_id, cleanup: true)}.to change{File.exist?(path)}.from(true).to(false)
+        expect { subject.addon_control_dir(src_id, cleanup: true) }.to change { File.exist?(path) }.from(true).to(false)
       end
 
       it "keeps the existing content if cleanup is not requested" do
-        expect{subject.addon_control_dir(src_id)}.to_not change{File.exist?(path)}
+        expect { subject.addon_control_dir(src_id) }.to_not change { File.exist?(path) }
       end
     end
 
