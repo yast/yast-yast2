@@ -383,6 +383,7 @@ describe Yast::WorkflowManager do
     let(:src_id) { 3 }
 
     after do
+      # remove the created directory after each run to ensure the same initial state
       FileUtils.remove_entry(subject.addon_control_dir(src_id))
     end
 
@@ -390,7 +391,7 @@ describe Yast::WorkflowManager do
       expect(File.directory?(subject.addon_control_dir(src_id))).to be true
     end
 
-    context "a file already exists in the directory" do
+    context "a file already exists in the target directory" do
       let(:path) { subject.addon_control_dir(src_id) + "/test" }
 
       before do
@@ -399,7 +400,7 @@ describe Yast::WorkflowManager do
       end
 
       it "removes the existing content if cleanup is requested" do
-        # expect{subject.addon_control_dir(src_id, cleanup: true)}.to change{File.exist?(path)}.from(true).to(false)
+        expect{subject.addon_control_dir(src_id, cleanup: true)}.to change{File.exist?(path)}.from(true).to(false)
       end
 
       it "keeps the existing content if cleanup is not requested" do
