@@ -401,8 +401,6 @@ module Yast
     # @param src_id [Fixnum] repository ID
     # @return [String, nil] path to downloaded installation.xml file or nil
     #   or nil when no workflow is defined or the workflow package is missing
-    # @raise [Packages::PackageDownloader::FetchError] if package download failed
-    # @raise [Packages::PackageExtractor::ExtractionFailed] if package extraction failed
     def addon_control_file(src_id)
       product = find_product(src_id)
       return nil unless product && product["product_package"]
@@ -479,7 +477,7 @@ module Yast
 
           # The most generic way it to use the package referenced by the "installerextension()"
           # provides, this works with all repository types, including the RPM-MD repositories.
-          use_filename = addon_control_file(src_id) if use_filename.nil?
+          use_filename ||= addon_control_file(src_id)
 
           # File exists?
           return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
@@ -1519,11 +1517,13 @@ module Yast
 
       release_package["deps"].each do |dep|
         provide = dep["provides"]
-        next unless provide && provide.match(/\Ainstallerextension\((.+)\)\z/)
+        next unless provide
 
-        control_file_package = Regexp.last_match[1].strip
+        control_file_package = provide[/\Ainstallerextension\((.+)\)\z/, 1]
+        next unless control_file_package
+
         log.info("Found referenced package with control file: #{control_file_package}")
-        return control_file_package
+        return control_file_package.strip
       end
 
       nil
@@ -1554,15 +1554,13 @@ module Yast
     # @raise [Packages::PackageExtractor::ExtractionFailed] if package extraction failed
     def fetch_package(repo_id, package, dir)
       downloader = Packages::PackageDownloader.new(repo_id, package)
-      tmp = Tempfile.new("downloaded-package-")
-      downloader.download(tmp.path)
-      extract(tmp, dir)
-    ensure
-      if tmp
+
+      Tempfile.open("downloaded-package-") do |tmp|
+        downloader.download(tmp.path)
+        extract(tmp, dir)
         # the RPM package file is not needed after extracting it's content,
-        # remove it explicitly, do not wait for the garbage collector
+        # remove it explicitly now, do not wait for the garbage collector
         # (in inst-syst it is stored in a RAM disk and eats the RAM memory)
-        tmp.close
         tmp.unlink
       end
     end
