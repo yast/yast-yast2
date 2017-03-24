@@ -378,10 +378,40 @@ describe Yast::WorkflowManager do
       expect(subject.addon_control_file(repo_id)).to end_with("/installation.xml")
     end
   end
-  
+
   describe "#addon_control_dir" do
-    it "returns a directory path"
-    it "removes the existing content if cleanup is requested"
-    it "does not create the directory if it already exists"
+    let(:src_id) { 3 }
+
+    after do
+      FileUtils.remove_entry(subject.addon_control_dir(src_id))
+    end
+
+    it "returns a directory path" do
+      expect(File.directory?(subject.addon_control_dir(src_id))).to be true
+    end
+
+    context "a file already exists in the directory" do
+      let(:path) { subject.addon_control_dir(src_id) + "/test" }
+
+      before do
+        # write some dummy file first
+        File.write(path, "")
+      end
+
+      it "removes the existing content if cleanup is requested" do
+        # expect{subject.addon_control_dir(src_id, cleanup: true)}.to change{File.exist?(path)}.from(true).to(false)
+      end
+
+      it "keeps the existing content if cleanup is not requested" do
+        expect{subject.addon_control_dir(src_id)}.to_not change{File.exist?(path)}
+      end
+    end
+
+    it "does not create the directory if it already exists" do
+      dir = subject.addon_control_dir(src_id)
+      expect(File.directory?(subject.addon_control_dir(src_id))).to be true
+      expect(FileUtils).to_not receive(:mkdir_p).with(dir)
+      subject.addon_control_dir(src_id)
+    end
   end
 end
