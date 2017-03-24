@@ -266,4 +266,154 @@ describe Yast::WorkflowManager do
       expect(subject.DumpCurrentSettings["unmerged_changes"]).to eq(false)
     end
   end
+
+  describe "#addon_control_file" do
+    # setup fake products and their packages
+    let(:repo_id) { 42 }
+    let(:product_package) { "foo-release" }
+    let(:product) { { "name" => "foo", "source" => repo_id, "product_package" => product_package } }
+    let(:ext_package) { "foo-installation" }
+    let(:extension) { { "name" => ext_package, "source" => repo_id } }
+    let(:release) do
+      { "name" => product_package, "source" => repo_id,
+      "deps" => ["provides" => "installerextension(#{ext_package})"] }
+    end
+
+    before do
+      # generic mocks, can be are overriden in the tests
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      allow(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with(ext_package, :package, "").and_return([extension])
+      allow_any_instance_of(Packages::PackageDownloader).to receive(:download)
+      allow_any_instance_of(Packages::PackageExtractor).to receive(:extract)
+      # allow using it at other places
+      allow(File).to receive(:exist?).and_call_original
+    end
+
+    it "returns nil if the repository does not provide any product" do
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([])
+      expect(subject.addon_control_file(repo_id)).to be nil
+    end
+
+    it "returns nil if the product does not refer to a release package" do
+      product = { "name" => "foo", "source" => repo_id }
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      expect(subject.addon_control_file(repo_id)).to be nil
+    end
+
+    it "returns nil if the product belongs to a different repository" do
+      product = { "name" => "foo", "source" => repo_id + 1 }
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+      expect(subject.addon_control_file(repo_id)).to be nil
+    end
+
+    it "returns nil if the release package cannot be found" do
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([])
+      expect(subject.addon_control_file(repo_id)).to be nil
+    end
+
+    it "returns nil if the release package does not have any dependencies" do
+      release = { "name" => "foo", "source" => repo_id }
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+      expect(subject.addon_control_file(repo_id)).to be nil
+    end
+
+    it "returns nil if the release package does not have any installerextension() provides" do
+      release = { "name" => "foo", "source" => repo_id, "deps" => ["provides" => "foo"] }
+      expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+      expect(subject.addon_control_file(repo_id)).to be nil
+    end
+
+    it "returns nil if the installer extension package is not found" do
+      expect(Yast::Pkg).to receive(:ResolvableProperties).with(ext_package, :package, "").and_return([])
+      expect(subject.addon_control_file(repo_id)).to be nil
+    end
+
+    context "downloading the installer extension package fails" do
+      before do
+        expect_any_instance_of(Packages::PackageDownloader).to receive(:download).and_raise(Packages::PackageDownloader::FetchError)
+        allow(Yast::Report).to receive(:Error)
+      end
+
+      it "reports an error" do
+        expect(Yast::Report).to receive(:Error)
+        subject.addon_control_file(repo_id)
+      end
+
+      it "returns nil" do
+        expect(subject.addon_control_file(repo_id)).to be nil
+      end
+    end
+
+    context "extracting the installer extension package fails" do
+      before do
+        expect_any_instance_of(Packages::PackageExtractor).to receive(:extract).and_raise(Packages::PackageExtractor::ExtractionFailed)
+        allow(Yast::Report).to receive(:Error)
+      end
+
+      it "reports an error" do
+        expect(Yast::Report).to receive(:Error)
+        subject.addon_control_file(repo_id)
+      end
+
+      it "returns nil" do
+        expect(subject.addon_control_file(repo_id)).to be nil
+      end
+    end
+
+    it "downloads and extracts the extension package" do
+      expect_any_instance_of(Packages::PackageDownloader).to receive(:download)
+      expect_any_instance_of(Packages::PackageExtractor).to receive(:extract)
+      allow(File).to receive(:exist?)
+      subject.addon_control_file(repo_id)
+    end
+
+    it "returns nil if the extracted package does not contain installation.xml" do
+      expect(File).to receive(:exist?).with(/installation\.xml\z/).and_return(false)
+      expect(subject.addon_control_file(repo_id)).to be nil
+    end
+
+    it "returns the installation.xml path if the extracted package contains it" do
+      expect(File).to receive(:exist?).with(/installation.xml\z/).and_return(true)
+      # the returned path contains "/installation.xml" at the end
+      expect(subject.addon_control_file(repo_id)).to end_with("/installation.xml")
+    end
+  end
+
+  describe "#addon_control_dir" do
+    let(:src_id) { 3 }
+
+    after do
+      # remove the created directory after each run to ensure the same initial state
+      FileUtils.remove_entry(subject.addon_control_dir(src_id))
+    end
+
+    it "returns a directory path" do
+      expect(File.directory?(subject.addon_control_dir(src_id))).to be true
+    end
+
+    context "a file already exists in the target directory" do
+      let(:path) { subject.addon_control_dir(src_id) + "/test" }
+
+      before do
+        # write some dummy file first
+        File.write(path, "")
+      end
+
+      it "removes the existing content if cleanup is requested" do
+        expect { subject.addon_control_dir(src_id, cleanup: true) }.to change { File.exist?(path) }.from(true).to(false)
+      end
+
+      it "keeps the existing content if cleanup is not requested" do
+        expect { subject.addon_control_dir(src_id) }.to_not change { File.exist?(path) }
+      end
+    end
+
+    it "does not create the directory if it already exists" do
+      dir = subject.addon_control_dir(src_id)
+      expect(File.directory?(subject.addon_control_dir(src_id))).to be true
+      expect(FileUtils).to_not receive(:mkdir_p).with(dir)
+      subject.addon_control_dir(src_id)
+    end
+  end
 end

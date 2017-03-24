@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Mar 24 09:37:44 UTC 2017 - lslezak@suse.cz
+
+- Download the addon installation.xml file from a package
+  referenced by the "installerextension" provides dependency
+  (FATE#320772)
+- 3.2.22
+
+-------------------------------------------------------------------
+
 Wed Mar 22 16:53:07 UTC 2017 - jreidinger@suse.com
 
 - Use for Yast::TargetFile and Yast::Execute real path where scr
