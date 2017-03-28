@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 28 07:25:39 WEST 2017 - knut.anderssen@suse.com
+
+- SlideShow: Escape plain text release notes being shown properly
+  in RichText (bsc#1028721).
+- 3.2.23
+
+-------------------------------------------------------------------
 Fri Mar 24 09:37:44 UTC 2017 - lslezak@suse.cz
 
 - Download the addon installation.xml file from a package
