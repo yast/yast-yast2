@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Mar 28 10:19:44 WEST 2017 - knut.anderssen@suse.com
+
+- backported
+  - SlideShow: Escape plain text release notes being shown properly
+    in RichText (bsc#1028721).
+- 3.1.215.1
+
+-------------------------------------------------------------------
 Thu Mar 16 13:48:06 CET 2017 - schubi@suse.de
 
 - UnitFileState will be used for evaluating enable state of
