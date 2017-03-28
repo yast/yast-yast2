@@ -568,6 +568,7 @@ module Yast
     # @return	A term describing the widgets
     #
     def RelNotesPageWidgets(id)
+      # Release notes in plain text need to be escaped to be shown properly (bsc#1028721)
       rel_notes =
         if @_rn_tabs[id] =~ /<\/.*>/
           @_rn_tabs[id]
