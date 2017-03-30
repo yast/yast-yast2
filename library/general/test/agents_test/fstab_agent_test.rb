@@ -16,6 +16,14 @@ describe ".etc.fstab" do
       expect(content).to be_a(Array)
     end
 
+    it "can read fstab without ending newline at the end" do
+      reset_scr_root
+      root = File.join(File.dirname(__FILE__), "test_root2")
+      change_scr_root(root)
+      expect(content).to be_a(Array)
+
+    end
+
     it "returns an array containing nfs entries" do
       expect(content).to satisfy { |r| r.find { |e| e["file"] == "/home/kv2" } }
       expect(content).to satisfy { |r| r.find { |e| e["file"] == "/media/new" } }
