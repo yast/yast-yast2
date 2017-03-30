@@ -426,11 +426,11 @@ module Yast
 
       log.info("installation.xml path: #{path}")
       path
-    rescue Packages::PackageDownloader::FetchError
+    rescue ::Packages::PackageDownloader::FetchError
       # TRANSLATORS: an error message
       Report.Error(_("Downloading the installer extension package failed."))
       nil
-    rescue Packages::PackageExtractor::ExtractionFailed
+    rescue ::Packages::PackageExtractor::ExtractionFailed
       # TRANSLATORS: an error message
       Report.Error(_("Extracting the installer extension failed."))
       nil
@@ -1550,14 +1550,14 @@ module Yast
     # Download and extract a package from a repository.
     # @param repo_id [Fixnum] repository ID
     # @param package [String] name of the package
-    # @raise [Packages::PackageDownloader::FetchError] if package download failed
-    # @raise [Packages::PackageExtractor::ExtractionFailed] if package extraction failed
+    # @raise [::Packages::PackageDownloader::FetchError] if package download failed
+    # @raise [::Packages::PackageExtractor::ExtractionFailed] if package extraction failed
     def fetch_package(repo_id, package, dir)
-      downloader = Packages::PackageDownloader.new(repo_id, package)
+      downloader = ::Packages::PackageDownloader.new(repo_id, package)
 
       Tempfile.open("downloaded-package-") do |tmp|
         downloader.download(tmp.path)
-        extract(tmp, dir)
+        extract(tmp.path, dir)
         # the RPM package file is not needed after extracting it's content,
         # remove it explicitly now, do not wait for the garbage collector
         # (in inst-syst it is stored in a RAM disk and eats the RAM memory)
@@ -1568,10 +1568,10 @@ module Yast
     # Extract an RPM package into the given directory.
     # @param package_file [String] the RPM package path
     # @param dir [String] a directory where the package will be extracted to
-    # @raise [Packages::PackageExtractor::ExtractionFailed] if package extraction failed
+    # @raise [::Packages::PackageExtractor::ExtractionFailed] if package extraction failed
     def extract(package_file, dir)
       log.info("Extracting file #{package_file}")
-      extractor = Packages::PackageExtractor.new(package_file)
+      extractor = ::Packages::PackageExtractor.new(package_file)
       extractor.extract(dir)
     end
   end

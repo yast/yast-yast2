@@ -363,6 +363,7 @@ describe Yast::WorkflowManager do
 
     it "downloads and extracts the extension package" do
       expect_any_instance_of(Packages::PackageDownloader).to receive(:download)
+      expect(Packages::PackageExtractor).to receive(:new).with(instance_of(String)).and_call_original
       expect_any_instance_of(Packages::PackageExtractor).to receive(:extract)
       allow(File).to receive(:exist?)
       subject.addon_control_file(repo_id)
