@@ -1,4 +1,152 @@
 -------------------------------------------------------------------
+Tue Mar 28 07:25:39 WEST 2017 - knut.anderssen@suse.com
+
+- SlideShow: Escape plain text release notes being shown properly
+  in RichText (bsc#1028721).
+- 3.2.23
+
+-------------------------------------------------------------------
+Fri Mar 24 09:37:44 UTC 2017 - lslezak@suse.cz
+
+- Download the addon installation.xml file from a package
+  referenced by the "installerextension" provides dependency
+  (FATE#320772)
+- 3.2.22
+
+-------------------------------------------------------------------
+
+Wed Mar 22 16:53:07 UTC 2017 - jreidinger@suse.com
+
+- Use for Yast::TargetFile and Yast::Execute real path where scr
+  operates. It allows easier switching scr in unit tests.
+  (needed for testing fix for bsc#1023204)
+- 3.2.21
+
+-------------------------------------------------------------------
+Wed Mar 22 15:37:51 UTC 2017 - ancor@suse.com
+
+- Added options to CWM::RadioButtons to set some extra spaces
+  (related to poo#14936 and bsc#1025415).
+- 3.2.20
+
+-------------------------------------------------------------------
+Mon Mar 20 10:11:52 UTC 2017 - lslezak@suse.cz
+
+- Added PackageDownloader and PackageExtractor classes for sharing
+  the package downloading and extracting functions (fate#320772)
+- 3.2.19
+
+-------------------------------------------------------------------
+Mon Mar 20 08:09:06 UTC 2017 - mfilka@suse.com
+
+- bnc#1026027
+  - removed insserv calls
+- 3.2.18
+
+-------------------------------------------------------------------
+Thu Mar 16 13:48:06 CET 2017 - schubi@suse.de
+
+- UnitFileState will be used for evaluating enable state of
+  services. If it has an invalid value "systemctl is-enabled...."
+  has to be called instead. (bnc#1012047)
+- 3.2.17
+
+-------------------------------------------------------------------
+Wed Mar 15 14:19:44 UTC 2017 - ancor@suse.com
+
+- Added FileChanges.created_files (part of fix for bsc#1027582)
+- 3.2.16
+
+-------------------------------------------------------------------
+Wed Mar  8 15:26:48 UTC 2017 - igonzalezsosa@suse.com
+
+- Support to add roles through addons (FATE#320772)
+- 3.2.15
+
+-------------------------------------------------------------------
+Wed Feb  8 14:39:13 UTC 2017 - jreidinger@suse.com
+
+- Allow Pattern selector to have more generic button names and
+  enablement (needed for poo#14936, bsc#1025415)
+- 3.2.14
+
+-------------------------------------------------------------------
+Fri Jan 20 18:58:27 UTC 2017 - jreidinger@suse.com
+
+- Fix error popup when replacing widget with CWM::ReplacePoint
+  (FATE#322328)
+- 3.2.13
+
+-------------------------------------------------------------------
+Thu Jan 19 13:49:10 UTC 2017 - jreidinger@suse.com
+
+- Added a CWM::ReplacePoint widget
+- 3.2.12
+
+-------------------------------------------------------------------
+Wed Jan 18 13:56:27 UTC 2017 - jreidinger@suse.com
+
+- CWM: when skipping storing of widget values, skip also its
+  validation (FATE#322328)
+
+-------------------------------------------------------------------
+Thu Jan  5 11:35:23 UTC 2017 - mfilka@suse.com
+
+- bnc#1017716
+  - do not cache ifcfg files with empty device name part (ifcfg-).
+    Such file cannot be mapped to any existing device and providing
+    empty device name could lead to unexpected crashes in other
+    parts of yast.
+- 3.2.11
+
+-------------------------------------------------------------------
+Thu Jan  5 08:06:25 UTC 2017 - lslezak@suse.cz
+
+- Fixed tests to pass with the latest yast2-core package
+  (related to the bsc#932331 fix)
+- 3.2.10
+
+-------------------------------------------------------------------
+Tue Dec 20 16:28:45 UTC 2016 - igonzalezsosa@suse.com
+
+- Add a method to read the ID property from the /etc/os-release
+  file (related to bsc#1016004)
+- 3.2.9
+
+-------------------------------------------------------------------
+Wed Dec 14 12:44:39 UTC 2016 - jreidinger@suse.com
+
+- add generic cwm widget for keyboard layout (used for FATE#321754)
+- 3.2.8
+
+-------------------------------------------------------------------
+Wed Nov 30 09:18:23 UTC 2016 - lslezak@suse.cz
+
+- Enhanced PackagesProposal API to handle required and optional
+  resolvables separately (bsc#885496)
+- 3.2.7
+
+-------------------------------------------------------------------
+Wed Nov 23 15:23:24 UTC 2016 - igonzalezsosa@suse.com
+
+- Fix replacement of workflow modules (bsc#1011869)
+- 3.2.6
+
+-------------------------------------------------------------------
+Fri Nov 18 16:33:56 UTC 2016 - lslezak@suse.cz
+
+- Remove the restart file when starting YaST to avoid possible
+  infinite loop (bsc#842910)
+- 3.2.5
+
+-------------------------------------------------------------------
+Wed Nov 16 15:18:39 CET 2016 - schubi@suse.de
+
+- Added needed include in Kernel.rb. Found while testing
+  bnc#1009023
+- 3.2.4
+
+-------------------------------------------------------------------
 Thu Nov  3 12:51:09 UTC 2016 - jreidinger@suse.com
 
 - fix do not show again for packages downloaded to temporary

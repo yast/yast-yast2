@@ -24,6 +24,94 @@ class DummyPkg
   def CallbackFileConflictFinish(func)
     @fc_finish = func
   end
+
+  # run this command in "irb -ryast" to obtain the method names:
+  # Yast.import "Pkg"; Yast::Pkg.methods.select {|m| m.to_s.start_with?("Callback")}
+  # (Remove the methods which are defined above.)
+  MOCK_METHODS = [
+    :CallbackAcceptFileWithoutChecksum,
+    :CallbackAcceptUnknownDigest,
+    :CallbackAcceptUnknownGpgKey,
+    :CallbackAcceptUnsignedFile,
+    :CallbackAcceptVerificationFailed,
+    :CallbackAcceptWrongDigest,
+    :CallbackAuthentication,
+    :CallbackDestDownload,
+    :CallbackDoneDownload,
+    :CallbackDonePackage,
+    :CallbackDoneProvide,
+    :CallbackDoneRefresh,
+    :CallbackDoneScanDb,
+    :CallbackErrorScanDb,
+    :CallbackFinishDeltaApply,
+    :CallbackFinishDeltaDownload,
+    :CallbackImportGpgKey,
+    :CallbackInitDownload,
+    :CallbackMediaChange,
+    :CallbackMessage,
+    :CallbackNotifyConvertDb,
+    :CallbackNotifyRebuildDb,
+    :CallbackPkgGpgCheck,
+    :CallbackProblemDeltaApply,
+    :CallbackProblemDeltaDownload,
+    :CallbackProcessDone,
+    :CallbackProcessNextStage,
+    :CallbackProcessProgress,
+    :CallbackProcessStart,
+    :CallbackProgressConvertDb,
+    :CallbackProgressDeltaApply,
+    :CallbackProgressDeltaDownload,
+    :CallbackProgressDownload,
+    :CallbackProgressPackage,
+    :CallbackProgressProvide,
+    :CallbackProgressRebuildDb,
+    :CallbackProgressReportEnd,
+    :CallbackProgressReportProgress,
+    :CallbackProgressReportStart,
+    :CallbackProgressScanDb,
+    :CallbackResolvableReport,
+    :CallbackScriptFinish,
+    :CallbackScriptProblem,
+    :CallbackScriptProgress,
+    :CallbackScriptStart,
+    :CallbackSourceChange,
+    :CallbackSourceCreateDestroy,
+    :CallbackSourceCreateEnd,
+    :CallbackSourceCreateError,
+    :CallbackSourceCreateInit,
+    :CallbackSourceCreateProgress,
+    :CallbackSourceCreateStart,
+    :CallbackSourceProbeEnd,
+    :CallbackSourceProbeError,
+    :CallbackSourceProbeFailed,
+    :CallbackSourceProbeProgress,
+    :CallbackSourceProbeStart,
+    :CallbackSourceProbeSucceeded,
+    :CallbackSourceReportDestroy,
+    :CallbackSourceReportEnd,
+    :CallbackSourceReportError,
+    :CallbackSourceReportInit,
+    :CallbackSourceReportProgress,
+    :CallbackSourceReportStart,
+    :CallbackStartConvertDb,
+    :CallbackStartDeltaApply,
+    :CallbackStartDeltaDownload,
+    :CallbackStartDownload,
+    :CallbackStartPackage,
+    :CallbackStartProvide,
+    :CallbackStartRebuildDb,
+    :CallbackStartRefresh,
+    :CallbackStartScanDb,
+    :CallbackStopConvertDb,
+    :CallbackStopRebuildDb,
+    :CallbackTrustedKeyAdded,
+    :CallbackTrustedKeyRemoved
+  ].freeze
+
+  MOCK_METHODS.each do |method|
+    # mock empty methods with a single argument
+    define_method(method) { |arg| }
+  end
 end
 
 describe Packages::FileConflictCallbacks do
@@ -42,10 +130,10 @@ describe Packages::FileConflictCallbacks do
 
   describe ".register" do
     it "calls the Pkg methods for registering the file conflicts handlers" do
-      expect(dummy_pkg).to receive(:CallbackFileConflictStart)
-      expect(dummy_pkg).to receive(:CallbackFileConflictProgress)
-      expect(dummy_pkg).to receive(:CallbackFileConflictReport)
-      expect(dummy_pkg).to receive(:CallbackFileConflictFinish)
+      expect(dummy_pkg).to receive(:CallbackFileConflictStart).at_least(:once)
+      expect(dummy_pkg).to receive(:CallbackFileConflictProgress).at_least(:once)
+      expect(dummy_pkg).to receive(:CallbackFileConflictReport).at_least(:once)
+      expect(dummy_pkg).to receive(:CallbackFileConflictFinish).at_least(:once)
 
       Packages::FileConflictCallbacks.register
     end
@@ -71,6 +159,10 @@ describe Packages::FileConflictCallbacks do
     end
 
     context "in UI mode" do
+      before do
+        allow(Yast::Mode).to receive(:commandline).and_return(false)
+      end
+
       it "reuses the package installation progress" do
         expect(Yast::UI).to receive(:WidgetExists).and_return(true)
         expect(Yast::UI).to receive(:ChangeWidget).twice
@@ -121,6 +213,10 @@ describe Packages::FileConflictCallbacks do
     end
 
     context "in UI mode" do
+      before do
+        allow(Yast::Mode).to receive(:commandline).and_return(false)
+      end
+
       it "returns false to abort if user clicks Abort" do
         expect(Yast::UI).to receive(:PollInput).and_return(:abort)
 
@@ -232,6 +328,7 @@ describe Packages::FileConflictCallbacks do
 
       context "in UI mode" do
         before do
+          allow(Yast::Mode).to receive(:commandline).and_return(false)
           allow(Yast::UI).to receive(:OpenDialog)
           allow(Yast::UI).to receive(:CloseDialog)
           allow(Yast::UI).to receive(:SetFocus)
@@ -280,6 +377,10 @@ describe Packages::FileConflictCallbacks do
     end
 
     context "in UI mode" do
+      before do
+        allow(Yast::Mode).to receive(:commandline).and_return(false)
+      end
+
       it "no change if installation progress was already displayed" do
         ui = double("no method call expected", WidgetExists: true)
         stub_const("Yast::UI", ui)

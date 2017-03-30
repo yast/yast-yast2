@@ -58,4 +58,14 @@ describe Yast::OSRelease do
       expect(Yast::OSRelease.ReleaseVersion(DATA_DIR)).to eq("13.1")
     end
   end
+
+  describe "#id" do
+    it "returns an OS identifier" do
+      stub_const("Yast::OSReleaseClass::OS_RELEASE_PATH", "os-release_SLES_12_Beta5")
+      expect(Yast::OSRelease.id(DATA_DIR)).to eq("sles")
+
+      stub_const("Yast::OSReleaseClass::OS_RELEASE_PATH", "os-release_openSUSE_13.1_GM")
+      expect(Yast::OSRelease.id(DATA_DIR)).to eq("opensuse")
+    end
+  end
 end

@@ -29,8 +29,9 @@ module Yast
   # Categorizes the configurations according to type.
   # Presents them one ifcfg at a time through the {#Current} hash.
   class NetworkInterfacesClass < Module
-    Yast.import "String"
     include Logger
+
+    Yast.import "String"
 
     # A single character used to separate alias id
     ALIAS_SEPARATOR = "#".freeze
@@ -686,6 +687,7 @@ module Yast
       devices = SCR.Dir(path(".network.section")) || []
 
       devices.select! { |file| file !~ /#{devregex}/ } unless devregex.nil? && devregex.empty?
+      devices.delete_if(&:empty?)
 
       log.debug "devices=#{devices}"
       devices

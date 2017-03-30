@@ -38,6 +38,8 @@ require "yast"
 
 module Yast
   class KernelClass < Module
+    include Yast::Logger
+
     # default configuration file for Kernel modules loaded on boot
     MODULES_CONF_FILE = "yast.conf".freeze
 

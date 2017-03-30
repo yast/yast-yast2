@@ -9,6 +9,15 @@ describe Yast::Mode do
     Yast::Mode.Initialize()
   end
 
+  # restore the original modes to not accidentally influence the other tests
+  around(:example) do |example|
+    orig_mode = Yast::Mode.mode
+    orig_ui = Yast::Mode.ui
+    example.run
+    Yast::Mode.SetMode(orig_mode)
+    Yast::Mode.SetUI(orig_ui)
+  end
+
   describe "#SetMode" do
     it "sets mode to given one" do
       Yast::Mode.SetMode("installation")

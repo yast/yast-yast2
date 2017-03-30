@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.2.3
+Version:        3.2.23
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0
@@ -36,17 +36,22 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:abstract_method)
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:cfa)
 # for running scripts
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
+BuildRequires:  update-desktop-files
 # For running RSpec tests during build
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
-BuildRequires:  update-desktop-files
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  yast2-pkg-bindings >= 2.20.3
-# To have Yast::CoreExt::AnsiString
-BuildRequires:  yast2-ruby-bindings >= 3.1.36
+# To have Yast::WFM.scr_root
+BuildRequires:  yast2-ruby-bindings >= 3.2.8
 BuildRequires:  yast2-testsuite
 BuildRequires:  yast2-ycp-ui-bindings >= 3.1.8
+# for the PackageExtractor tests, just make sure they are present,
+# these should be installed in the default build anyway
+BuildRequires:  rpm
+BuildRequires:  cpio
+
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
 Requires:       coreutils
@@ -60,9 +65,9 @@ Requires:       perl-XML-Simple
 Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
 Requires:       rubygem(%{rb_default_ruby_abi}:cfa)
+Requires:       sysconfig >= 0.80.0
 # for running scripts
 Requires:       rubygem(%{rb_default_ruby_abi}:cheetah)
-Requires:       sysconfig >= 0.80.0
 # ag_ini section_private
 # ag_ini with (un)quoting support
 Requires:       yast2-core >= 2.23.0
@@ -71,7 +76,7 @@ Requires:       yast2-hardware-detection
 Requires:       yast2-perl-bindings
 # changed StartPackage callback signature
 Requires:       yast2-pkg-bindings >= 2.20.3
-Requires:       yast2-ruby-bindings >= 3.1.33
+Requires:       yast2-ruby-bindings >= 3.2.8
 Requires:       yast2-xml
 # new UI::SetApplicationIcon
 Requires:       yast2-ycp-ui-bindings >= 3.1.8
@@ -97,6 +102,10 @@ Requires:       idnkit
 Requires:       bind-utils
 %endif
 Obsoletes:      yast2-devel-doc
+# for the PackageExtractor class, just make sure they are present,
+# these should be present even in a very minimal installation
+Requires:  rpm
+Requires:  cpio
 
 %description
 This package contains scripts and data needed for SUSE Linux
