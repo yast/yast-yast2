@@ -54,7 +54,7 @@ module Yast
     # @param [Yast::Term] buttons Content to place rights from buttons. Usually
     #    an additional button, e.g. Set as default.
     #    Set it to nil if you do not want to place anything here.
-    # @return Content for the SetWizardContent[Buttons]()
+    # @return Content for the `SetWizardContent[Buttons]()`
     # <B>UI elements ids:</B><table>
     # <tr><td>Table</td><td>`table</td></tr>
     # <tr><td>Button add</td><td>`add_button</td></tr>

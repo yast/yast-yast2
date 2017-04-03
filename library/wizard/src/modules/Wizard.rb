@@ -842,8 +842,8 @@ module Yast
     # @param [String] help_text Help text
     # @param [Boolean] has_back Is the Back button enabled?
     # @param [Boolean] has_next Is the Next button enabled?
-    # Example file (../examples/wizard1.ycp): {include:file:../examples/wizard1.rb}
-    # ![screenshots/wizard1.png](../../screenshots/wizard1.png)
+    # @see Example file doc/examples/wizard1.rb
+    # ![screenshots/wizard1.png](../../doc/screenshots/wizard1.png)
     #
     def SetContents(title, contents, help_text, has_back, has_next)
       contents = deep_copy(contents)
@@ -1439,7 +1439,7 @@ module Yast
     #
     # Declare a name for the current dialog to ease making screenshots.
     # By convention, the name is
-    # {rpm-name-without-yast2}-{sorting-prefix}-{description}
+    # `{rpm-name-without-yast2}-{sorting-prefix}-{description}`
     # The calls may be nested.
     # @param s eg. "mail-1-conntype"
     # @see #RestoreScreenShotName

@@ -1470,7 +1470,7 @@ module Yast
     # Parse the Command Line
     #
     # Function to parse the command line, start a GUI or handle interactive and
-    # command line actions as supported by the {#CommandLine} module.
+    # command line actions as supported by the {Yast::CommandLine} module.
     #
     # @param [Hash] commandline	a map used in the CommandLine module with information
     #                      about the handlers for GUI and commands.

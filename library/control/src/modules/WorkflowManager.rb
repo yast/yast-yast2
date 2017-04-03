@@ -1324,7 +1324,7 @@ module Yast
       true
     end
 
-    # Returns file unique identification in format ${file_MD5sum}-${file_size}
+    # Returns file unique identification in format <file_MD5sum>-<file_size>
     # Returns 'nil' if file doesn't exist, it is not a 'file', etc.
     #
     # @param string file

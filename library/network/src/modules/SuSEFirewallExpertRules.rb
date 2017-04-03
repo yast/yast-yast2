@@ -138,7 +138,7 @@ module Yast
     # @return [Array<Hash{String => String>}] of rules
     #
     # @example
-    # GetListOfAcceptRules("EXT") -> $[]
+    #   GetListOfAcceptRules("EXT") -> $[]
     def GetListOfAcceptRules(zone)
       zone = Builtins.toupper(zone)
 
@@ -248,11 +248,11 @@ module Yast
     # @see #RemoveAcceptRule()
     #
     # @example
-    # AddNewAcceptRule (
+    #   AddNewAcceptRule (
     #     "EXT",
     #     $["network":"192.168.0.1/255.255.240.0", "protocol":"tcp", "sport":"22",
     #         "options":"hitcount=3,blockseconds=60,recentname=ssh"]
-    # ) -> true
+    #   ) -> true
     def AddNewAcceptRule(zone, params)
       params = deep_copy(params)
       zone = Builtins.toupper(zone)
@@ -296,10 +296,10 @@ module Yast
     # @see #AddNewAcceptRule()
     #
     # @example
-    # RemoveAcceptRule (
+    #   RemoveAcceptRule (
     #     "EXT",
     #     $["network":"192.168.0.1/255.255.240.0", "protocol":"tcp", "sport":"22"]
-    # ) -> true
+    #   ) -> true
     def RemoveAcceptRule(zone, params)
       params = deep_copy(params)
       zone = Builtins.toupper(zone)

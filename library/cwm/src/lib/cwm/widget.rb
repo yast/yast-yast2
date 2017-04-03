@@ -818,7 +818,7 @@ module CWM
     end
 
     # gets id of initial tab
-    # This default implementation returns first tab from {#tabs} method
+    # This default implementation returns first tab passed to constructor
     def initial_tab_id
       initial = @tabs.find(&:initial)
 

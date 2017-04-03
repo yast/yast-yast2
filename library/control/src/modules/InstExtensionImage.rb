@@ -157,8 +157,8 @@ module Yast
     # Merges two different URLs, repspectively their parameters
     # to one string with parameters. See the example.
     #
-    # @param string base URL with params
-    # @param string URL with modifications (added or changed params)
+    # @param [String] base_url URL with params
+    # @param [String] url_with_modifs URL with modifications (added or changed params)
     # @return [String] merged params
     #
     # @example
@@ -230,8 +230,8 @@ module Yast
     # it is merged with the first one, otherwise the second one is
     # returned (with params cut).
     #
-    # @param string base URL
-    # @param string modif URL (relative or absolute)
+    # @param [String] url_base URL
+    # @param [String] url_with_modifs URL (relative or absolute)
     # @return [String] merged URL
     #
     # @example
@@ -340,8 +340,8 @@ module Yast
     # Load a rpm package from the media into the inst-sys and ensure its
     # unloading after end of block.
     # @param [String] package to load
-    # @param [Proc] Block to be yield
-    # @raises [RuntimeError] when package loading failed
+    # @yield context when extension is available
+    # @raise [RuntimeError] when package loading failed
     #
     # @example
     #   InstExtensionImage.with_extension("snapper") do
