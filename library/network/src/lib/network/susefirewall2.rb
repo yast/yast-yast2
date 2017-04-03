@@ -208,13 +208,6 @@ module Yast
         "FW_BOOT_FULL_INIT"
       ]
 
-      @one_line_per_record = [
-        "FW_FORWARD_MASQ",
-        "FW_SERVICES_ACCEPT_EXT",
-        "FW_SERVICES_ACCEPT_INT",
-        "FW_SERVICES_ACCEPT_DMZ"
-      ]
-
       # FATE #300970: Firewall support for SMB browsing
       @broadcast_related_module = "nf_conntrack_netbios_ns"
 
@@ -2704,7 +2697,6 @@ module Yast
     publish variable: :allowed_conflict_services, type: "map <string, list <string>>", private: true
     publish variable: :firewall_service, type: "string", private: true
     publish variable: :SuSEFirewall_variables, type: "list <string>", private: true
-    publish variable: :one_line_per_record, type: "list <string>", private: true
     publish variable: :broadcast_related_module, type: "string", private: true
     publish function: :SetModified, type: "void ()"
     publish function: :ResetModified, type: "void ()"
