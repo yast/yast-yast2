@@ -106,9 +106,9 @@ module Yast
     # @note before. The way we determine if the service has been populated or not
     # @note is to look at the "description" key.
     #
-    # @param [String] service name (may include the "service:" prefix)
-    # @param [String] (optional) whether to silently return nil
-    #                 when service is not found (default false)
+    # @param [String] service_name name that may include the "service:" prefix
+    # @param [String] silent whether to silently return nil
+    #                 when service is not found
     # @api private
     def service_details(service_name, silent = false)
       # Drop service: if needed

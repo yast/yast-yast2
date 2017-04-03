@@ -325,9 +325,9 @@ module Yast
     # If *silent* is `false` (the default), the method throws an exception
     # {Yast::SuSEFirewalServiceNotFound} if service is not found on disk.
     #
-    # @param [String] service name (including the "service:" prefix)
-    # @param [String] (optional) whether to silently return nil
-    #                 when service is not found (default false)
+    # @param [String] service_name name including the "service:" prefix
+    # @param [String] silent whether to silently return nil
+    #                 when service is not found
     # @api private
     def service_details(service_name, silent = false)
       service = all_services[service_name]
@@ -472,7 +472,7 @@ module Yast
     # defined by package.
     #
     # @param [String] service ID (e.g., "service:ssh")
-    # @param [Hash{String => Array<String>] store_definition of full service definition
+    # @param [Hash<String, Array<String>>] store_definition of full service definition
     # @return [Boolean] if successful (nil in case of developer's mistake)
     #
     # @see #IsKnownService

@@ -89,7 +89,7 @@ module Installation
     #
     # The profile is a Hash or an Array according to the configuration item
     # `X-SuSE-YaST-AutoInstDataType`
-    # @param profile [Hash, Array] profile data specific to this module.
+    # @param _profile [Hash, Array] profile data specific to this module.
     # @return true on success
     def import(_profile)
       raise NotImplementedError, "Calling abstract method 'import'"
