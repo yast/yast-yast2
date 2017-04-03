@@ -24,6 +24,8 @@ ylib_DATA = \
   lib/packages/commit_result.rb \
   lib/packages/dummy_callbacks.rb \
   lib/packages/file_conflict_callbacks.rb \
+  lib/packages/package_downloader.rb \
+  lib/packages/package_extractor.rb \
   lib/packages/repository.rb \
   lib/packages/product.rb \
   lib/packages/update_message.rb \

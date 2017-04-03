@@ -122,7 +122,6 @@ module Yast
       it "doesn't carry empty strings" do
         expect(subject.get_devices).not_to include ""
       end
-
     end
 
     describe "#canonicalize_config" do

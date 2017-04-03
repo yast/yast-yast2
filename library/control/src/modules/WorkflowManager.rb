@@ -21,7 +21,7 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/WorkflowManager.ycp
+# File:	modules/WorkflowManager.rb
 # Package:	yast2
 # Summary:	Provides API for configuring workflows
 # Authors:	Lukas Ocilka <locilka@suse.cz>
@@ -34,8 +34,10 @@
 #
 # Module unifies Add-Ons and Patterns modifying the workflow.
 #
-# $Id: $
 require "yast"
+
+require "packages/package_downloader"
+require "packages/package_extractor"
 
 module Yast
   class WorkflowManagerClass < Module
@@ -83,6 +85,7 @@ module Yast
       @wkf_initial_proposals = []
       @wkf_initial_inst_finish = []
       @wkf_initial_clone_modules = []
+      @wkf_initial_system_roles = []
 
       @wkf_initial_product_features = {}
 
@@ -152,6 +155,7 @@ module Yast
       @wkf_initial_proposals = deep_copy(ProductControl.proposals)
       @wkf_initial_inst_finish = deep_copy(ProductControl.inst_finish)
       @wkf_initial_clone_modules = deep_copy(ProductControl.clone_modules)
+      @wkf_initial_system_roles = deep_copy(ProductControl.system_roles)
 
       @additional_finish_steps_before_chroot = []
       @additional_finish_steps_after_chroot = []
@@ -295,6 +299,7 @@ module Yast
       ProductControl.proposals = deep_copy(@wkf_initial_proposals)
       ProductControl.inst_finish = deep_copy(@wkf_initial_inst_finish)
       ProductControl.clone_modules = deep_copy(@wkf_initial_clone_modules)
+      ProductControl.system_roles = deep_copy(@wkf_initial_system_roles)
 
       @additional_finish_steps_before_chroot = []
       @additional_finish_steps_after_chroot = []
@@ -390,6 +395,60 @@ module Yast
       file_location
     end
 
+    # Download and extract the control file (installation.xml) from the add-on
+    # repository.
+    #
+    # @param src_id [Fixnum] repository ID
+    # @return [String, nil] path to downloaded installation.xml file or nil
+    #   or nil when no workflow is defined or the workflow package is missing
+    def addon_control_file(src_id)
+      product = find_product(src_id)
+      return nil unless product && product["product_package"]
+
+      # the dependencies are bound to the product's -release package
+      release_package = Pkg.ResolvableDependencies(product["product_package"], :package, "").first
+
+      # find the package name with installer update in its Provide dependencies
+      control_file_package = find_control_package(release_package)
+      return nil unless control_file_package
+
+      # get the repository ID of the package
+      src = package_repository(control_file_package)
+      return nil unless src
+
+      # ensure the previous content is removed, the src_id should avoid
+      # collisions but rather be safe...
+      dir = addon_control_dir(src_id, cleanup: true)
+      fetch_package(src, control_file_package, dir)
+
+      path = File.join(dir, "installation.xml")
+      return nil unless File.exist?(path)
+
+      log.info("installation.xml path: #{path}")
+      path
+    rescue ::Packages::PackageDownloader::FetchError
+      # TRANSLATORS: an error message
+      Report.Error(_("Downloading the installer extension package failed."))
+      nil
+    rescue ::Packages::PackageExtractor::ExtractionFailed
+      # TRANSLATORS: an error message
+      Report.Error(_("Extracting the installer extension failed."))
+      nil
+    end
+
+    # Create a temporary directory for storing the installer extension package content.
+    # The directory is automatically removed at exit.
+    # @param src_id [Fixnum] repository ID
+    # @param cleanup [Boolean] remove the content if the directory already exists
+    # @return [String] directory path
+    def addon_control_dir(src_id, cleanup: false)
+      # Directory.tmpdir is automatically removed at exit
+      dir = File.join(Directory.tmpdir, "installer-extension-#{src_id}")
+      ::FileUtils.remove_entry(dir) if cleanup && Dir.exist?(dir)
+      ::FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
+      dir
+    end
+
     # Returns requested control filename. Parameter 'name' is ignored
     # for Add-Ons.
     #
@@ -408,13 +467,17 @@ module Yast
           # Trying to get the file from source
         else
           Builtins.y2milestone("File %1 not cached", disk_filename)
-          # using a file from source
+          # using a file from source, works only for SUSE tags repositories
           use_filename = Pkg.SourceProvideDigestedFile(
             src_id,
             1,
             "/installation.xml",
             true
           )
+
+          # The most generic way it to use the package referenced by the "installerextension()"
+          # provides, this works with all repository types, including the RPM-MD repositories.
+          use_filename ||= addon_control_file(src_id)
 
           # File exists?
           return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
@@ -892,6 +955,29 @@ module Yast
       true
     end
 
+    # Update sytem roles according to the update section of the control file
+    #
+    # The hash is expectd to have the following structure:
+    #
+    # "insert_system_roles" => [
+    #   {
+    #    "system_roles" =>
+    #      [
+    #        { "id" => "additional_role1" },
+    #        { "id" => "additional_role2" }
+    #      ]
+    #   }
+    # ]
+    #
+    # @param new_roles [Hash] System roles specification
+    #
+    # @see ProductControl#add_system_roles
+    def update_system_roles(system_roles)
+      system_roles.fetch("insert_system_roles", []).each do |insert|
+        ProductControl.add_system_roles(insert["system_roles"])
+      end
+    end
+
     # Add specified steps to inst_finish.
     # Just modifies internal variables, inst_finish grabs them itself
     #
@@ -932,6 +1018,7 @@ module Yast
     #
     # @return [Boolean] true on success
     def UpdateInstallation(update_file, name, domain)
+      log.info "Updating installation workflow: #{update_file.inspect}"
       update_file = deep_copy(update_file)
       PrepareSystemProposals()
       PrepareSystemWorkflows()
@@ -943,6 +1030,8 @@ module Yast
       workflows = Ops.get_list(update_file, "workflows", [])
       workflows = PrepareWorkflows(workflows)
       UpdateWorkflows(workflows, name, domain)
+
+      update_system_roles(update_file.fetch("system_roles", {}))
 
       true
     end
@@ -1360,6 +1449,7 @@ module Yast
     #     		"proposals" : ...
     #     		"inst_finish" : ...
     #     		"clone_modules" : ...
+    #         "system_roles" : ...
     #     		"unmerged_changes" : ...
     #     	];
     def DumpCurrentSettings
@@ -1368,6 +1458,7 @@ module Yast
         "proposals"        => ProductControl.proposals,
         "inst_finish"      => ProductControl.inst_finish,
         "clone_modules"    => ProductControl.clone_modules,
+        "system_roles"     => ProductControl.system_roles,
         "unmerged_changes" => @unmerged_changes
       }
     end
@@ -1396,6 +1487,93 @@ module Yast
     publish function: :SetAllUsedControlFiles, type: "void (list <string>)"
     publish function: :HaveAdditionalWorkflows, type: "boolean ()"
     publish function: :DumpCurrentSettings, type: "map <string, any> ()"
+
+  private
+
+    # Find the product from a repository.
+    # @param repo_id [Fixnum] repository ID
+    # @return [Hash,nil] pkg-bindings product hash or nil if not found
+    def find_product(repo_id)
+      # identify the product
+      products = Pkg.ResolvableDependencies("", :product, "")
+      return nil unless products
+
+      products.select! { |p| p["source"] == repo_id }
+
+      if products.size > 1
+        log.warn("More than one product found in the repository: #{products}")
+        log.warn("Using the first one: #{products.first}")
+      end
+
+      products.first
+    end
+
+    # Find the extension package name for the specified release package.
+    # The extension package is defined by the "installerextension()"
+    # RPM "Provides" dependency.
+    # @return [String,nil] a package name or nil if not found
+    def find_control_package(release_package)
+      return nil unless release_package && release_package["deps"]
+
+      release_package["deps"].each do |dep|
+        provide = dep["provides"]
+        next unless provide
+
+        control_file_package = provide[/\Ainstallerextension\((.+)\)\z/, 1]
+        next unless control_file_package
+
+        log.info("Found referenced package with control file: #{control_file_package}")
+        return control_file_package.strip
+      end
+
+      nil
+    end
+
+    # Find the repository ID for the package.
+    # @param package_name [String] name of the package
+    # @return [Fixnum,nil] repository ID or nil if not found
+    def package_repository(package_name)
+      # Identify the installation repository with the package
+      pkgs = Pkg.ResolvableProperties(package_name, :package, "")
+
+      if pkgs.empty?
+        log.warn("The installer extension package #{package_name} was not found")
+        return nil
+      elsif pkgs.size > 1
+        log.warn("More than one control package found: #{pkgs}")
+        log.warn("Using the first one: #{pkgs.first}")
+      end
+
+      pkgs.first["source"]
+    end
+
+    # Download and extract a package from a repository.
+    # @param repo_id [Fixnum] repository ID
+    # @param package [String] name of the package
+    # @raise [::Packages::PackageDownloader::FetchError] if package download failed
+    # @raise [::Packages::PackageExtractor::ExtractionFailed] if package extraction failed
+    def fetch_package(repo_id, package, dir)
+      downloader = ::Packages::PackageDownloader.new(repo_id, package)
+
+      Tempfile.open("downloaded-package-") do |tmp|
+        downloader.download(tmp.path)
+        extract(tmp.path, dir)
+        # the RPM package file is not needed after extracting it's content,
+        # remove it explicitly now, do not wait for the garbage collector
+        # (in inst-syst it is stored in a RAM disk and eats the RAM memory)
+        tmp.unlink
+      end
+    end
+
+    # Extract an RPM package into the given directory.
+    # @param package_file [String] the RPM package path
+    # @param dir [String] a directory where the package will be extracted to
+    # @raise [::Packages::PackageExtractor::ExtractionFailed] if package extraction failed
+    def extract(package_file, dir)
+      log.info("Extracting file #{package_file}")
+      extractor = ::Packages::PackageExtractor.new(package_file)
+      extractor.extract(dir)
+    end
   end
 
   WorkflowManager = WorkflowManagerClass.new

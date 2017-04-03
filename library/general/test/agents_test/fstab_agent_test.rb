@@ -3,7 +3,7 @@
 require_relative "../test_helper"
 require "yast"
 
-describe ".proc.meminfo" do
+describe ".etc.fstab" do
   around :each do |example|
     root = File.join(File.dirname(__FILE__), "test_root")
     change_scr_root(root, &example)
@@ -14,6 +14,14 @@ describe ".proc.meminfo" do
 
     it "reads content of /etc/fstab and returns array" do
       expect(content).to be_a(Array)
+    end
+
+    it "can read fstab without ending newline at the end" do
+      reset_scr_root
+      root = File.join(File.dirname(__FILE__), "test_root2")
+      change_scr_root(root)
+      expect(content).to be_a(Array)
+
     end
 
     it "returns an array containing nfs entries" do

@@ -568,7 +568,15 @@ module Yast
     # @return	A term describing the widgets
     #
     def RelNotesPageWidgets(id)
-      widgets = AddProgressWidgets(:relNotesPage, RichText(@_rn_tabs[id]))
+      # Release notes in plain text need to be escaped to be shown properly (bsc#1028721)
+      rel_notes =
+        if @_rn_tabs[id] =~ /<\/.*>/
+          @_rn_tabs[id]
+        else
+          "<pre>#{String.EscapeTags(@_rn_tabs[id])}</pre>"
+        end
+
+      widgets = AddProgressWidgets(:relNotesPage, RichText(rel_notes))
       Builtins.y2debug("widget term: \n%1", widgets)
       deep_copy(widgets)
     end
