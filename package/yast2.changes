@@ -2,7 +2,7 @@ Mon Apr  3 16:00:22 CEST 2017 - mgerstner@suse.de
 
 - don't generate multiline entries, it's against SuSEfirewall2 recommendation
   multiline entries create trouble with fillup, see bsc#798468
-- 3.2.15
+- 3.2.25
 
 -------------------------------------------------------------------
 Thu Mar 30 11:51:43 UTC 2017 - lslezak@suse.cz
