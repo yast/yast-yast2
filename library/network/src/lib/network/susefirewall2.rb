@@ -208,13 +208,6 @@ module Yast
         "FW_BOOT_FULL_INIT"
       ]
 
-      @one_line_per_record = [
-        "FW_FORWARD_MASQ",
-        "FW_SERVICES_ACCEPT_EXT",
-        "FW_SERVICES_ACCEPT_INT",
-        "FW_SERVICES_ACCEPT_DMZ"
-      ]
-
       # FATE #300970: Firewall support for SMB browsing
       @broadcast_related_module = "nf_conntrack_netbios_ns"
 
@@ -260,14 +253,6 @@ module Yast
     # <!-- SuSEFirewall VARIABLES //-->
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
-
-    # Returns whether records in variable should be written one record on one line.
-    # @return [Boolean] if wolpr
-    def WriteOneRecordPerLine(key_name)
-      return true if key_name.nil? && key_name == ""
-
-      Builtins.contains(@one_line_per_record, key_name)
-    end
 
     # Report the error, warning, message only once.
     # Stores the error, warning, message in memory.
@@ -402,9 +387,6 @@ module Yast
       Builtins.foreach(variables) do |variable|
         # if variable is undefined, get default value
         value = Ops.get_string(@SETTINGS, variable) { GetDefaultValue(variable) }
-        if WriteOneRecordPerLine(variable) == true
-          value = Builtins.mergestring(Builtins.splitstring(value, " "), "\n")
-        end
         write_status = SCR.Write(
           Builtins.add(path(".sysconfig.SuSEfirewall2"), variable),
           value
@@ -2715,9 +2697,7 @@ module Yast
     publish variable: :allowed_conflict_services, type: "map <string, list <string>>", private: true
     publish variable: :firewall_service, type: "string", private: true
     publish variable: :SuSEFirewall_variables, type: "list <string>", private: true
-    publish variable: :one_line_per_record, type: "list <string>", private: true
     publish variable: :broadcast_related_module, type: "string", private: true
-    publish function: :WriteOneRecordPerLine, type: "boolean (string)", private: true
     publish function: :SetModified, type: "void ()"
     publish function: :ResetModified, type: "void ()"
     publish function: :GetKnownFirewallZones, type: "list <string> ()"
