@@ -277,9 +277,15 @@ module Yast
           # %2 is a repository name
           # %3 is URL of the repository
           _("Repository \"%2\" (%3)\n" \
-            "is not digitally signed.\n" \
+            "meta-data is not digitally signed.\n" \
             "\n" \
-            "This means that the origin and integrity of the repository cannot be verified.\n" \
+            "This means that the origin and integrity of the repository meta-data\n" \
+            "cannot be verified.\n" \
+            "\n" \
+            "By default, the signatures for each package will be verified prior\n" \
+            "to installation. Additional manual steps may be required to add\n" \
+            "the signing key used to the list of keys trusted for this purpose.\n" \
+            "\n" \
             "Installing the packages from this repository may put the integrity \n" \
             "of your system at risk.\n" \
             "\n" \
