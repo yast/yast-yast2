@@ -29,8 +29,9 @@ module Yast
   # Categorizes the configurations according to type.
   # Presents them one ifcfg at a time through the {#Current} hash.
   class NetworkInterfacesClass < Module
-    Yast.import "String"
     include Logger
+
+    Yast.import "String"
 
     # A single character used to separate alias id
     ALIAS_SEPARATOR = "#".freeze
@@ -237,10 +238,11 @@ module Yast
 
     # Detects a subtype of Ethernet device type according /sys or /proc content
     #
-    # @example GetEthTypeFromSysfs("eth0") -> "eth"
-    # @example GetEthTypeFromSysfs("bond0") -> "bon"
+    # @example
+    #   GetEthTypeFromSysfs("eth0") -> "eth"
+    #   GetEthTypeFromSysfs("bond0") -> "bon"
     #
-    # @param [String] interface name
+    # @param [String] dev interface name
     # @return [String] device type
     def GetEthTypeFromSysfs(dev)
       sys_dir_path = "/sys/class/net/#{dev}"
@@ -266,11 +268,12 @@ module Yast
 
     # Detects a subtype of InfiniBand device type according /sys
     #
-    # @example GetEthTypeFromSysfs("ib0") -> "ib"
-    # @example GetEthTypeFromSysfs("bond0") -> "bon"
-    # @example GetEthTypeFromSysfs("ib0.8001") -> "ibchild"
+    # @example
+    #   GetEthTypeFromSysfs("ib0") -> "ib"
+    #   GetEthTypeFromSysfs("bond0") -> "bon"
+    #   GetEthTypeFromSysfs("ib0.8001") -> "ibchild"
     #
-    # @param [String] interface name
+    # @param [String] dev interface name
     # @return [String] device type
     def GetIbTypeFromSysfs(dev)
       sys_dir_path = "/sys/class/net/#{dev}"
@@ -291,7 +294,7 @@ module Yast
     # to specify a "subtype". E.g. in case of "eth" it checks for presence of "wireless" subdir to
     # determine "wlan" device.
     #
-    # @param [String] interface name
+    # @param [String] dev interface name
     # @return return device type or nil if nothing known found
     def GetTypeFromSysfs(dev)
       sys_dir_path = Builtins.sformat("/sys/class/net/%1", dev)
@@ -512,17 +515,6 @@ module Yast
       HOTPLUG_TYPES.any? { |t| type.end_with?(t) }
     end
 
-    # Return matching inteface for this hardware ID (uses getcfg-interface)
-    # @param [String] dev unique device string
-    # return interface name
-    # @example MatchInterface("eth-id-00:01:DE:AD:BE:EF") -> "eth0"
-    # global string MatchInterface(string dev) {
-    #     string cmd = "getcfg-interface " + dev;
-    #     map dn =(map) SCR::Execute(.target.bash_output, cmd);
-    #     string devname = deletechars(dn["stdout"]:"", "\n");
-    #
-    #     return devname;
-    # }
     # Test whether device is connected (Link:up)
     # The info is taken from sysfs
     # @param [String] dev unique device string
@@ -695,7 +687,7 @@ module Yast
     # Canonicalize IPADDR and STARTMODE of given config
     # and nested _aliases
     #
-    # @param [Hash] a map with netconfig (ifcfg) configuration
+    # @param [Hash] config a map with netconfig (ifcfg) configuration
     # @return [Hash] ifcfg with canonicalized IP addresses
     def canonicalize_config(config)
       config = deep_copy(config)
@@ -724,8 +716,8 @@ module Yast
     # from the given device config path returning a hash
     # with the transformed device config
     #
-    # @param [String] path of the device config to read from
-    # @param [Hash{String => Object}] newdev new device map
+    # @param [String] pth path of the device config to read from
+    # @param [Hash<String, Object>] values new device map
     #
     # @return [Hash{String => Object}] parsed configuration
     def generate_config(pth, values)
@@ -785,9 +777,8 @@ module Yast
     # The device is added to @Devices[devtype] hash using the device name as key
     # and the ifconfg hash as value
     #
-    # @param <String> device name
-    # @param [Hash] a map with netconfig (ifcfg) configuration
-    #
+    # @param [String] device name
+    # @param [Hash] ifcfg a map with netconfig (ifcfg) configuration
     def add_device(device, ifcfg)
       devtype = GetTypeFromIfcfg(ifcfg) || GetType(device)
       @Devices[devtype] ||= {}
@@ -831,8 +822,8 @@ module Yast
 
     # Returns all the devices which device name matchs given devregex
     #
-    # @param [Array] of Devices
-    # @param [String] regex to filter by
+    # @param [Array] devices of Devices
+    # @param [String] devregex regex to filter by
     # @return [Array] of Devices that match the given regex
     def Filter(devices, devregex)
       devices = deep_copy(devices)
@@ -852,8 +843,8 @@ module Yast
 
     # Returns all the devices that does not match the given devregex
     #
-    # @param [Array] of Devices
-    # @param [String] regex to filter by
+    # @param [Array] devices of Devices
+    # @param [String] devregex regex to filter by
     # @return [Array] of Devices that match the given regex
     def FilterNOT(devices, devregex)
       return {} if devices.nil? || devregex.nil? || devregex == ""
@@ -1065,7 +1056,8 @@ module Yast
     # All devices which confirms to <devregex> are silently removed from Devices
     # and replaced by those supplied by <devices>.
     #
-    # @param settings settings to be imported
+    # @param [String] devregex filter for devices
+    # @param [Array] devices devices to replace filtered ones
     # @return true on success
     def Import(devregex, devices)
       devices = deep_copy(devices)
@@ -1175,10 +1167,12 @@ module Yast
 
     # Return textual device type
     # @param [String] type device type
-    # @param [String] type description type
+    # @param [String] longdescr description type
     # @return textual form of device type
-    # @example GetDevTypeDescription("eth", false) -> "Ethernet"
-    # @example GetDevTypeDescription("eth", true)  -> "Ethernet Network Card"
+    # @example
+    #   GetDevTypeDescription("eth", false) -> "Ethernet"
+    # @example
+    #   GetDevTypeDescription("eth", true)  -> "Ethernet Network Card"
     def GetDevTypeDescription(type, longdescr)
       if Builtins.issubstring(type, "#")
         # Device type label
@@ -1434,7 +1428,7 @@ module Yast
     end
 
     # Select the given device
-    # @param device to select ("" for new device, default values)
+    # @param [String] name device to select ("" for new device, default values)
     # @return true if success
     def Select(name)
       @Name = ""
@@ -1477,7 +1471,7 @@ module Yast
     end
 
     # Edit the given device
-    # @param dev device to edit
+    # @param [String] name device to edit
     # @return true if success
     def Edit(name)
       @operation = nil
@@ -1487,7 +1481,7 @@ module Yast
     end
 
     # Delete the given device
-    # @param dev device to delete
+    # @param [String] name device to delete
     # @return true if success
     def Delete(name)
       @operation = nil
@@ -1497,9 +1491,9 @@ module Yast
     end
 
     # Update Devices map
-    # @param dev device identifier
-    # @param [Hash{String => Object}] newdev new device map
-    # @param [Boolean] check if check if device already exists
+    # @param [String] name device identifier
+    # @param [Hash<String, Object>] newdev new device map
+    # @param [true, false] check if check if device already exists
     # @return true if success
     def Change2(name, newdev, check)
       newdev = deep_copy(newdev)
@@ -1622,9 +1616,8 @@ module Yast
     end
 
     # get IP addres + additional IP addresses
-    # @param identifier for network interface
+    # @param [String] device identifier for network interface
     # @return [Array] of IP addresses of selected interface
-
     def GetIP(device)
       Select(device)
       ips = [GetValue(device, "IPADDR")]
@@ -1695,7 +1688,7 @@ module Yast
     end
 
     # Get devices of the given type
-    # @param type devices type ("" for all)
+    # @param [String] devregex devices type ("" for all)
     # @return [Array] of found devices
     def List(devregex)
       ret = []

@@ -602,12 +602,39 @@ module CWM
     include ItemsSelection
     abstract_method :label
 
+    # @!method vspacing
+    #   @return [Fixnum] space between the options
+
+    # @!method hspacing
+    #   @return [Fixnum] margin at both sides of the options list
+
     def value
       Yast::UI.QueryWidget(Id(widget_id), :CurrentButton)
     end
 
     def value=(val)
       Yast::UI.ChangeWidget(Id(widget_id), :CurrentButton, val)
+    end
+
+    # See AbstractWidget#cwm_definition
+    # In addition to the base definition, this honors possible
+    # `vspacing` and `hspacing` methods
+    #
+    # @example defining additional space between the options
+    #   def vspacing
+    #     1
+    #   end
+    #
+    # @example defining some margin at both sides of the list of options
+    #   def hspacing
+    #     3
+    #   end
+    def cwm_definition
+      additional = {}
+      additional["vspacing"] = vspacing if respond_to?(:vspacing)
+      additional["hspacing"] = hspacing if respond_to?(:hspacing)
+
+      super.merge(additional)
     end
   end
 
@@ -791,7 +818,7 @@ module CWM
     end
 
     # gets id of initial tab
-    # This default implementation returns first tab from {#tabs} method
+    # This default implementation returns first tab passed to constructor
     def initial_tab_id
       initial = @tabs.find(&:initial)
 

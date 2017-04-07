@@ -24,8 +24,6 @@ require "yast"
 
 require "cfa/base_model"
 
-Yast.import "Installation"
-
 module Yast
   # A file handler suitable for CFA::BaseModel (from config_files_api.gem)
   # that respects Yast::Installation.destdir. When this class is `require`d,
@@ -42,8 +40,7 @@ module Yast
     end
 
     def self.final_path(path)
-      root = "/"
-      root = Yast::Installation.destdir if Yast::WFM.scr_chrooted?
+      root = Yast::WFM.scr_root
 
       ::File.join(root, path)
     end

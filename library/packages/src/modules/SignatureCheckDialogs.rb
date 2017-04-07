@@ -70,7 +70,7 @@ module Yast
     # Functions sets whether user want's to show the dialog again
     #
     # @param [String] popup_type dialog type
-    # @param boolean show again
+    # @param [true, false] show_it show again
     # @param [String] popup_url
     def SetShowThisPopup(popup_type, show_it, popup_url)
       if popup_type.nil? || show_it.nil?
@@ -172,7 +172,8 @@ module Yast
     # for case when user selected "don't show again"
     #
     # @param [String] popup_type dialog type
-    # @boolean boolean default dialog return
+    # @param [String] popup_url dialog type
+    # @return [true, false] default dialog return
     def GetDefaultDialogReturn(popup_type, popup_url)
       if popup_type.nil?
         Builtins.y2error("popup_type %1 mustn't be nil!", popup_type)
@@ -473,7 +474,6 @@ module Yast
     # @param [Symbol] item_type `file or `package
     # @param [String] item_name file name or package name
     # @param [String] key_id
-    # @param string fingerprint
     # @param [String] dont_show_dialog_ident for the identification in magic "don't show" functions
     # @param [Fixnum] repoid Id of the repository from the item was downloaded
     # @return [Boolean] true if 'yes, use file'
@@ -562,11 +562,10 @@ module Yast
     # Used for file or package signed by a public key. This key is still
     # not listed in trusted keys.
     #
-    # @param [Symbol] item_type `file or `package
-    # @param [String] item_name file name or package name
-    # @param string key_id
-    # @param string key_name
-    # @return [Symbol] `key_import, `install, `skip
+    # @param item_type [Symbol] `:file` or `:package`
+    # @param item_name [String] file name or package name
+    # @param key [Hash<String, Object>]
+    # @return [Symbol] `:key_import`, `:install`, `:skip`
     def ItemSignedWithPublicSignature(item_type, item_name, key)
       key = deep_copy(key)
       description_text = Builtins.sformat(
@@ -641,9 +640,8 @@ module Yast
 
     # ImportUntrustedGPGKeyIntoTrustedDialog
     #
-    # @param string key_id
-    # @param string key_name
-    # @param string fingerprint
+    # @param key [Hash<String, Object>]
+    # @param repository [Integer]
     # @return [Boolean] whether zypp should import the key into the keyring of trusted keys
     def ImportGPGKeyIntoTrustedDialog(key, repository)
       key = deep_copy(key)
@@ -878,10 +876,10 @@ module Yast
 
     # Function adds delimiter between after_chars characters in the string
     #
-    # @param string to be splitted
-    # @param [String] delimiter
-    # @param integer after characters
-    # @return [String] with delimiters
+    # @param whattosplit [String] text to be splitted
+    # @param delimiter [String] to place
+    # @param after_chars [Integer] after characters
+    # @return [String] after_chars with delimiters
     def StringSplitter(whattosplit, delimiter, after_chars)
       splittedstring = ""
       after_chars_counter = 0
@@ -911,7 +909,7 @@ module Yast
 
     # Returns term of yes/no buttons
     #
-    # @param symbol default button `yes or `no
+    # @param default_button [Symbol] `:yes` or `:no`. If another value is passed, `:no` is used.
     # @return [Yast::Term] with buttons
     def YesNoButtons(default_button)
       yes_button = PushButton(
@@ -975,8 +973,8 @@ module Yast
     # Waits for user input and checks it agains accepted symbols.
     # Returns the default symbol in case of `cancel (user closes the dialog).
     #
-    # @param list <symbol> of accepted symbol by UserInput
-    # @param symbol default return for case of `cancel
+    # @param list_of_accepted [Array<Symbol>] of accepted symbol by UserInput
+    # @param default_symb [Symbol] default return for case of `cancel
     def WaitForSymbolUserInput(list_of_accepted, default_symb)
       list_of_accepted = deep_copy(list_of_accepted)
       user_input = nil

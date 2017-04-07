@@ -33,6 +33,12 @@ require "yast"
 
 module Yast
   class ProductControlClass < Module
+    include Yast::Logger
+
+    # Product control system roles key
+    # @return [String] System roles
+    SYSTEM_ROLES_KEY = "system_roles".freeze
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -66,6 +72,9 @@ module Yast
 
       # modules to be offered to clone configuration at the end of installation
       @clone_modules = []
+
+      # roles
+      @system_roles = []
 
       # additional workflow parameters
       # workflow doesn't only match mode and stage but also these params
@@ -293,6 +302,7 @@ module Yast
       @proposals = Ops.get_list(@productControl, "proposals", [])
       @inst_finish = Ops.get_list(@productControl, "inst_finish_stages", [])
       @clone_modules = Ops.get_list(@productControl, "clone_modules", [])
+      @system_roles = @productControl.fetch(SYSTEM_ROLES_KEY, [])
 
       Builtins.foreach(
         ["software", "globals", "network", "partitioning", "texts"]
@@ -1591,11 +1601,27 @@ module Yast
       nil
     end
 
+    # Add new system roles
+    #
+    # For the time being, new roles are appended to the list of roles.
+    #
+    # @example Adding a simple role
+    #   ProductControl.system_roles #=> [{"id" => "normal_role"}]
+    #   ProductControl.add_system_roles([{"id" => "new_role"}])
+    #   ProductControl.system_roles #=> [{"id" => "normal_roles"}, {"id" => "new_role"}]
+    #
+    # @param [Array<Hash>] new_roles Roles to add
+    def add_system_roles(new_roles)
+      log.info "Adding roles to product control: #{new_roles.inspect}"
+      system_roles.concat(new_roles)
+    end
+
     publish variable: :productControl, type: "map"
     publish variable: :workflows, type: "list <map>"
     publish variable: :proposals, type: "list <map>"
     publish variable: :inst_finish, type: "list <map <string, any>>"
     publish variable: :clone_modules, type: "list <string>"
+    publish variable: :system_roles, type: "list <map>"
     publish variable: :custom_control_file, type: "string"
     publish variable: :y2update_control_file, type: "string"
     publish variable: :default_control_file, type: "string"
@@ -1647,6 +1673,7 @@ module Yast
     publish function: :ProductControl, type: "void ()"
     publish function: :SetAdditionalWorkflowParams, type: "void (map <string, any>)"
     publish function: :ResetAdditionalWorkflowParams, type: "void ()"
+    publish function: :add_system_roles, type: "void (list <map>)"
   end
 
   ProductControl = ProductControlClass.new

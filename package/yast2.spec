@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.2.14
+Version:        3.2.25
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0
@@ -43,10 +43,15 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
 BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  yast2-pkg-bindings >= 2.20.3
-# To have Yast::CoreExt::AnsiString
-BuildRequires:  yast2-ruby-bindings >= 3.1.36
+# To have Yast::WFM.scr_root
+BuildRequires:  yast2-ruby-bindings >= 3.2.8
 BuildRequires:  yast2-testsuite
 BuildRequires:  yast2-ycp-ui-bindings >= 3.1.8
+# for the PackageExtractor tests, just make sure they are present,
+# these should be installed in the default build anyway
+BuildRequires:  rpm
+BuildRequires:  cpio
+
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
 Requires:       coreutils
@@ -71,7 +76,7 @@ Requires:       yast2-hardware-detection
 Requires:       yast2-perl-bindings
 # changed StartPackage callback signature
 Requires:       yast2-pkg-bindings >= 2.20.3
-Requires:       yast2-ruby-bindings >= 3.1.33
+Requires:       yast2-ruby-bindings >= 3.2.8
 Requires:       yast2-xml
 # new UI::SetApplicationIcon
 Requires:       yast2-ycp-ui-bindings >= 3.1.8
@@ -97,6 +102,10 @@ Requires:       idnkit
 Requires:       bind-utils
 %endif
 Obsoletes:      yast2-devel-doc
+# for the PackageExtractor class, just make sure they are present,
+# these should be present even in a very minimal installation
+Requires:  rpm
+Requires:  cpio
 
 %description
 This package contains scripts and data needed for SUSE Linux

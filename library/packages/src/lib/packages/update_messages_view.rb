@@ -9,15 +9,15 @@ module Packages
     include Yast::I18n
     extend Yast::I18n
 
+    # @param messages [Array<UpdateMessage>] List of messages
     def initialize(messages)
       Yast.import "String"
       textdomain "base"
       @messages = messages
     end
 
-    # Convert a list of messages into richtext
+    # Gets richtext representation of messages passed to constructor
     #
-    # @param messages [Array<UpdateMessage>] List of messages
     # @return [String] Richtext representation of the list of messages
     def richtext
       text = "<h1>#{_("Packages notifications")}</h1>\n" \

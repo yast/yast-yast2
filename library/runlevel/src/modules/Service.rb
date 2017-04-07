@@ -191,8 +191,8 @@ module Yast
     # Error Message
     #
     # If a Service function returns an error, this function would return
-    # an error message, including insserv stderr and possibly containing
-    # newlines.
+    # an error message, possibly containing newlines.
+    #
     # @return error message from the last operation
     def Error
       error

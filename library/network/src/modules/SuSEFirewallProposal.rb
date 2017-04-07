@@ -95,7 +95,7 @@ module Yast
 
     # Local function sets currently known interfaces.
     #
-    # @param	list <string> of known interfaces
+    # @param [Array<String>] interfaces list of known interfaces
     def SetKnownInterfaces(interfaces)
       interfaces = deep_copy(interfaces)
       @known_interfaces = deep_copy(interfaces)
@@ -130,7 +130,7 @@ module Yast
 
     # Local function adds list of interfaces into zone.
     #
-    # @param	list [string] of interfaces
+    # @param [Array<String>] interfaces
     # @param [String] zone
     def SetInterfacesToZone(interfaces, zone)
       interfaces = deep_copy(interfaces)
@@ -227,7 +227,7 @@ module Yast
 
     # Enables ports in zones.
     #
-    # @param list <string> fallback TCP ports
+    # @param [Array<String>] fallback_ports fallback TCP ports
     # @param [Array<String>] zones
     def EnableFallbackPorts(fallback_ports, zones)
       known_zones = SuSEFirewall.GetKnownFirewallZones()
@@ -250,9 +250,9 @@ module Yast
     #
     # @see OpenServiceOnNonDialUpInterfaces for more info.
     #
-    # @param [String] service, e.g., "service:http-server"
-    # @param [Array<String>] fallback_ports, e.g., ["80"]
-    # @param [Array<String>] interfaces, e.g., ["eth3"]
+    # @param [String] service e.g., "service:http-server"
+    # @param [Array<String>] fallback_ports e.g., ["80"]
+    # @param [Array<String>] interfaces e.g., ["eth3"]
     def OpenServiceInInterfaces(service, fallback_ports, interfaces)
       fallback_ports = deep_copy(fallback_ports)
       interfaces = deep_copy(interfaces)
@@ -275,8 +275,8 @@ module Yast
     # Checks whether the given service or (TCP) ports are open at least in
     # one FW zone.
     #
-    # @param [String] service, e.g., "service:http-server"
-    # @param [Array<String>] fallback_ports, e.g., ["80"]
+    # @param [String] service e.g., "service:http-server"
+    # @param [Array<String>] fallback_ports e.g., ["80"]
     def IsServiceOrPortsOpen(service, fallback_ports)
       fallback_ports = deep_copy(fallback_ports)
       ret = false
@@ -311,7 +311,7 @@ module Yast
     # are only dial-up interfaces, function opens the service for them.
     #
     # @param [String] service such as "service:koo" or "serice:boo"
-    # @param list <string> list of ports used as a fallback if the given service doesn't exist
+    # @param [Array<String>] fallback_ports list of ports used as a fallback if the given service doesn't exist
     def OpenServiceOnNonDialUpInterfaces(service, fallback_ports)
       fallback_ports = deep_copy(fallback_ports)
       non_dial_up_interfaces = SuSEFirewall.GetAllNonDialUpInterfaces
@@ -459,7 +459,7 @@ module Yast
 
     # Function sets that proposal was changed by user
     #
-    # @param	boolean if changed by user
+    # @param changed [true, false] if changed by user
     def SetChangedByUser(changed)
       Builtins.y2milestone("Proposal was changed by user")
       @proposal_changed_by_user = changed
@@ -476,7 +476,7 @@ module Yast
 
     # Function sets that proposal was initialized
     #
-    # @param	boolean if initialized
+    # @param initialized [true, false] if initialized
     def SetProposalInitialized(initialized)
       @proposal_initialized = initialized
 

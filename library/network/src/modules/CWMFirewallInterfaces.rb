@@ -213,7 +213,7 @@ module Yast
 
     # Get the list of all interfaces that will be selected
     # @param [Array<String>] ifaces a list of interfaces selected by the user
-    # @param [Boolean] nm_ifaces_have_to_be_selected defines whether also NetworkManager have to be selected too
+    # @param [Boolean] _nm_ifaces_have_to_be_selected defines whether also NetworkManager have to be selected too
     # @return a list of interfaces that will be opened
     def Selected2Opened(ifaces, _nm_ifaces_have_to_be_selected)
       ifaces = deep_copy(ifaces)
@@ -394,8 +394,8 @@ module Yast
     end
 
     # Init function of the widget
-    # @param [Hash{String => Object}] widget a widget description map
-    # @param [String] key strnig the widget key
+    # @param [Hash<String, Object>] _widget a widget description map
+    # @param [String] _key strnig the widget key
     def InterfacesInit(_widget, _key)
       # set the list of ifaces
       InitAllInterfacesList() if @all_interfaces.nil?
@@ -419,8 +419,8 @@ module Yast
     end
 
     # Handle function of the widget
-    # @param [Hash{String => Object}] widget a widget description map
-    # @param [String] key strnig the widget key
+    # @param [Hash<String, Object>] _widget a widget description map
+    # @param [String] _key strnig the widget key
     # @param [Hash] event map event to be handled
     # @return [Symbol] for wizard sequencer or nil
     def InterfacesHandle(_widget, _key, event)
@@ -441,9 +441,9 @@ module Yast
     end
 
     # Store function of the widget
-    # @param [Hash{String => Object}] widget a widget description map
-    # @param [String] key strnig the widget key
-    # @param [Hash] event map that caused widget data storing
+    # @param [Hash<String, Object>] _widget a widget description map
+    # @param [String] _key strnig the widget key
+    # @param [Hash] _event map that caused widget data storing
     def InterfacesStore(_widget, _key, _event)
       @allowed_interfaces = Convert.convert(
         UI.QueryWidget(Id("_cwm_interface_list"), :SelectedItems),
@@ -457,9 +457,9 @@ module Yast
     end
 
     # Validate function of the widget
-    # @param [Hash{String => Object}] widget a widget description map
-    # @param [String] key strnig the widget key
-    # @param [Hash] event map event that caused the validation
+    # @param [Hash<String, Object>] _widget a widget description map
+    # @param [String] _key strnig the widget key
+    # @param [Hash] _event map event that caused the validation
     # @return true if validation succeeded, false otherwise
     def InterfacesValidate(_widget, _key, _event)
       ifaces = Convert.convert(
@@ -832,8 +832,9 @@ module Yast
     end
 
     # Store function of the widget
-    # @param [String] key strnig the widget key
-    # @param [Hash] event map that caused widget data storing
+    # @param [Hash] widget widget description
+    # @param [String] _key strnig the widget key
+    # @param [Hash] _event map that caused widget data storing
     def OpenFirewallStore(widget, _key, _event)
       widget = deep_copy(widget)
       if !UI.WidgetExists(Id("_cwm_open_firewall"))
@@ -855,9 +856,9 @@ module Yast
     end
 
     # Handle the immediate start and stop of the service
-    # @param [Hash{String => Object}] widget a map describing the widget
-    # @param [String] key strnig the widget key
-    # @param event_id any the ID of the occurred event
+    # @param [Hash<String, Object>] widget a map describing the widget
+    # @param [String] _key strnig the widget key
+    # @param [Hash<String, Object>] event event to handle
     # @return always nil
     def OpenFirewallHandle(widget, _key, event)
       widget = deep_copy(widget)
@@ -930,7 +931,7 @@ module Yast
 
     # Handle the immediate start and stop of the service
     # @param [String] key strnig the widget key
-    # @param event_id any the ID of the occurred event
+    # @param [Hash<String, Object>] event to handle
     # @return always nil
     def OpenFirewallHandleWrapper(key, event)
       event = deep_copy(event)
@@ -938,14 +939,13 @@ module Yast
     end
 
     # Check if the widget was modified
-    # @param [String] key strnig the widget key
+    # @param [String] _key the widget key
     # @return [Boolean] true if widget was modified
     def OpenFirewallModified(_key)
       @configuration_changed
     end
 
     # Enable the whole firewal widget
-    # @param key strnig the widget key
     def EnableOpenFirewallWidget
       return if !UI.WidgetExists(Id("_cwm_open_firewall"))
       return if !UI.WidgetExists(Id("_cwm_firewall_details"))
@@ -956,7 +956,6 @@ module Yast
     end
 
     # Disable the whole firewal widget
-    # @param key strnig the widget key
     def DisableOpenFirewallWidget
       return if !UI.WidgetExists(Id("_cwm_open_firewall"))
       return if !UI.WidgetExists(Id("_cwm_firewall_details"))

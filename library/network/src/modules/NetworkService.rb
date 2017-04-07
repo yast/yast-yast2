@@ -212,17 +212,7 @@ module Yast
       stop_service(@current_name)
       disable_service(@current_name)
 
-      case @cached_name
-      when :network_manager, :wicked
-        RunSystemCtl(BACKENDS[@cached_name], "--force enable")
-      when :netconfig
-        RunSystemCtl(BACKENDS[@current_name], "disable")
-
-        # Workaround for bug #61055:
-        Builtins.y2milestone("Enabling service %1", "network")
-        cmd = "cd /; /sbin/insserv -d /etc/init.d/network"
-        SCR.Execute(path(".target.bash"), cmd)
-      end
+      RunSystemCtl(BACKENDS[@cached_name], "--force enable")
 
       @initialized = false
       Read()

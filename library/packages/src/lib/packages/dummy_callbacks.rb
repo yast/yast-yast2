@@ -2,7 +2,7 @@ require "yast"
 
 module Packages
   # Empty callbacks for package bindings. To register empty bindings in Yast::Pkg just call
-  # {Package::DummyCallbacks.register}
+  # {Packages::DummyCallbacks.register}
   class DummyCallbacks
     class << self
       include Yast::Logger
