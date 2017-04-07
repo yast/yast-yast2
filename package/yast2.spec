@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.2.25
+Version:        3.2.26
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0
@@ -76,7 +76,8 @@ Requires:       yast2-hardware-detection
 Requires:       yast2-perl-bindings
 # changed StartPackage callback signature
 Requires:       yast2-pkg-bindings >= 2.20.3
-Requires:       yast2-ruby-bindings >= 3.2.8
+# for y2start
+Requires:       yast2-ruby-bindings >= 3.2.10
 Requires:       yast2-xml
 # new UI::SetApplicationIcon
 Requires:       yast2-ycp-ui-bindings >= 3.1.8
