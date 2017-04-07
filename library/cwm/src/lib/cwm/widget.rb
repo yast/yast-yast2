@@ -6,57 +6,25 @@ require "abstract_method"
 # An object-oriented API for the YCP-era {Yast::CWMClass}.
 module CWM
   # Represent base for any widget used in CWM. It can be passed as "widget"
-  # argument. For more details about usage see {Yast::CWM.show}
+  # argument. For more details about usage
+  # see {Yast::CWMClass#show Yast::CWM.show}
   #
-  # For using widgets, a design decision is to use *subclasses*. The reason
-  # is to have better separeated and easily reusable code. The opposite
-  # approach is to use *instances* of existing classes, but especially with
-  # storing and initializing widgets it can be quite complex.
+  # Underneath there is a widget library with a procedural API, using symbol parameters as widget IDs.
   #
-  # @example InputField with instances
-  #   widget = InputField.new(
-  #     label: _("My label"),
-  #     help: _("blablabla" \
-  #       "blablabla" \
-  #       "blablabla"
-  #     ),
-  #     init: Proc.new do
-  #       ...
-  #     end,
-  #     store: Proc.new do
-  #       ...
-  #     end,
-  #     validate: Proc.new do
-  #       ....
-  #     end
-  #   )
+  # The call sequence is:
   #
-  # @example InputFieldwith subclasses
-  #   class MyWidget < CWM::InputField
-  #     def label
-  #       _("My label")
-  #     end
+  # - {#initialize} is called by the Ruby constructor {.new}
+  # - CWM#show builds a widget tree, using
+  #     - the AbstractWidget concrete class
+  #     - {#opt} widget options: `[:notify]` is needed if {#handle} is defined
+  #     - {#label}
+  #     - {#help}
   #
-  #     def help
-  #       _("blablabla" \
-  #         "blablabla" \
-  #         "blablabla"
-  #     end
-  #
-  #     def init
-  #       ...
-  #     end
-  #
-  #     def store
-  #       ...
-  #     end
-  #
-  #     def validate
-  #       ....
-  #     end
-  #   end
-  #
-  #   widget = MyWidget.new
+  # - {#init} may initialize the widget state from persistent storage
+  # - loop:
+  #     - {#handle} may update other widgets if this one tells them to
+  #     - {#validate} may decide whether the user input is valid
+  # - {#store} may store the widget state to persistent storage
   class AbstractWidget
     include Yast::UIShortcuts
     include Yast::I18n

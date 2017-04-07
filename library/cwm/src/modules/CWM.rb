@@ -871,7 +871,7 @@ module Yast
     end
 
     # Disable given bottom buttons of the wizard sequencer
-    # @patam buttons list of buttons to be disabled
+    # @param buttons list of buttons to be disabled
     def DisableButtons(buttons)
       buttons = deep_copy(buttons)
       Builtins.foreach(buttons) do |button|
@@ -884,7 +884,7 @@ module Yast
     end
 
     # Adjust the labels of the bottom buttons of the wizard sequencer
-    # @param [String] next label of the "Next" button
+    # @param [String] next_ label of the "Next" button
     # @param [String] back string label of the "Back" button
     # @param [String] abort string label of the "Abort" button
     # @param [String] _help unused parameter since help button cannot be hide anyway
@@ -923,7 +923,7 @@ module Yast
     end
 
     # Display the dialog and run its event loop using new widget API
-    # @param [Yast::Term] contents is UI term including instances of CWM::AbstractWidget
+    # @param [Yast::Term] contents is UI term including instances of {CWM::AbstractWidget}
     # @param [String] caption of dialog
     # @param [String] back_button label for dialog back button
     # @param [String] next_button label for dialog next button
@@ -1028,15 +1028,15 @@ module Yast
 
     # Do-nothing replacement for a widget initialization function.
     # Used for push buttons if all the other widgets have a fallback.
-    # @param [String] key id of the widget
+    # @param [String] _key id of the widget
     def InitNull(_key)
       nil
     end
 
     # Do-nothing replacement for a widget storing function.
     # Used for push buttons if all the other widgets have a fallback.
-    # @param [String] key	id of the widget
-    # @param [Hash] event	the event being handled
+    # @param [String] _key	id of the widget
+    # @param [Hash] _event	the event being handled
     def StoreNull(_key, _event)
       nil
     end
