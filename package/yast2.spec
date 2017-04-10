@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        3.2.26
+Version:        3.2.27
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0
@@ -46,7 +46,8 @@ BuildRequires:  yast2-pkg-bindings >= 2.20.3
 # To have Yast::WFM.scr_root
 BuildRequires:  yast2-ruby-bindings >= 3.2.8
 BuildRequires:  yast2-testsuite
-BuildRequires:  yast2-ycp-ui-bindings >= 3.1.8
+# UI::.SetApplicationTitle
+BuildRequires:  yast2-ycp-ui-bindings >= 3.2.0
 # for the PackageExtractor tests, just make sure they are present,
 # these should be installed in the default build anyway
 BuildRequires:  rpm
@@ -79,8 +80,8 @@ Requires:       yast2-pkg-bindings >= 2.20.3
 # for y2start
 Requires:       yast2-ruby-bindings >= 3.2.10
 Requires:       yast2-xml
-# new UI::SetApplicationIcon
-Requires:       yast2-ycp-ui-bindings >= 3.1.8
+# new UI::SetApplicationTitle
+Requires:       yast2-ycp-ui-bindings >= 3.2.0
 Requires:       yui_backend
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq

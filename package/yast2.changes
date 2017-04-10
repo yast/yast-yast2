@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 10 15:23:06 UTC 2017 - jreidinger@suse.com
+
+- Set correct title when wizard is supported (bsc#1033161#c4)
+- 3.2.27
+
+-------------------------------------------------------------------
 Fri Apr  7 12:35:24 UTC 2017 - jreidinger@suse.com
 
 - start using y2start instead of y2base (bsc#1027181)
