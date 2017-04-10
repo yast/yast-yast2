@@ -1086,6 +1086,10 @@ module Yast
     #	SetDialogTitle ("DNS Server Configuration");
     #
     def SetDialogTitle(titleText)
+      # backward compatibility with showing just YaST2 in qt
+      # see bsc#1033161 comment#4
+      UI.SetApplicationTitle("YaST2") if haveFancyUI
+
       UI.WizardCommand(term(:SetDialogTitle, titleText))
 
       nil
