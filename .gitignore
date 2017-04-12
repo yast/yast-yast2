@@ -42,6 +42,9 @@ library/network/src/scrconf/network.scr
 missing
 library/packages/src/packages
 /.yardoc
+/*.pot
+*.log
+*.trs
 
 # Package
 package/yast2-*.tar.bz2
