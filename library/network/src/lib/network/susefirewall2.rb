@@ -2247,7 +2247,7 @@ module Yast
     # @return [String] "yes" or "no"
     #
     # @example
-    #    // Does not logg ignored broadcast packets
+    #    # Does not log ignored broadcast packets
     #    GetIgnoreLoggingBroadcast ("EXT") -> "yes"
     def GetIgnoreLoggingBroadcast(zone)
       if !IsKnownZone(zone)
@@ -2264,7 +2264,7 @@ module Yast
     # @param [String] bcast ignore 'yes' or 'no'
     #
     # @example
-    #   # Do not log broadcast packetes from DMZ
+    #   # Does not log broadcast packets from DMZ
     #   SetIgnoreLoggingBroadcast ("DMZ", "yes")
     def SetIgnoreLoggingBroadcast(zone, bcast)
       if !IsKnownZone(zone)
