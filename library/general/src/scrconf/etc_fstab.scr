@@ -45,7 +45,8 @@
 `ag_anyagent(
   `Description (
       (`File("/etc/fstab")),	// real file name
-      "#\n",			// Comment
+      // tab and space is a workaround for white space only lines (bsc#1030425)
+      "#\n\t ",			// Comment
       false,			// read-only
       (`List (
 	`Tuple (
