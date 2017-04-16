@@ -240,7 +240,7 @@ module Yast2
         data = line.split("|").map(&:strip)
         next if data[1] == "0" # Ignores 'current' snapshot (id = 0) because it's not a real snapshot
         begin
-          timestamp = DateTime.parse(data[3])
+          timestamp = data[3] == "" ? nil : DateTime.parse(data[3])
         rescue ArgumentError
           log.warn("Error when parsing date/time: #{timestamp}")
           timestamp = nil
