@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Apr 19 14:16:33 UTC 2017 - lslezak@suse.cz
+
+- Fixed parsing whitespace lines in /etc/fstab (bsc#1030425)
+- 3.2.28
+
+-------------------------------------------------------------------
 Mon Apr 10 15:23:06 UTC 2017 - jreidinger@suse.com
 
 - Set correct title when wizard is supported (bsc#1033161#c4)
