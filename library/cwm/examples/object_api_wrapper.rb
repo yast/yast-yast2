@@ -15,11 +15,9 @@ module Yast
     def run
       textdomain "example"
 
-
       contents = HBox(
         ::CWM::WrapperWidget.new("firewall",
-          CWMFirewallInterfaces.CreateOpenFirewallWidget("services" => ["service:sshd", "service:ntp"])
-        )
+          CWMFirewallInterfaces.CreateOpenFirewallWidget("services" => ["service:sshd", "service:ntp"]))
       )
 
       Yast::Wizard.CreateDialog
@@ -30,4 +28,3 @@ module Yast
 end
 
 Yast::ExampleDialog.new.run
-

@@ -268,7 +268,6 @@ module CWM
   #     CWMFirewallInterfaces.CreateOpenFirewallWidget("services" => ["service:sshd", "service:ntp"])
   #   )
   class WrapperWidget < AbstractWidget
-
     # Creates new instance with specified id and content
     # @param widget_id [String] name of widget used as identified, have to be unique
     # @param content [Hash<String, Object>] CWM hash definition
@@ -286,11 +285,11 @@ module CWM
       unsupported
     end
 
-    def handle_all_events=(arg)
+    def handle_all_events=(_arg)
       unsupported
     end
 
-    def self.widget_type=(arg)
+    def self.widget_type=(_arg)
       raise "Not supported for WrapperWidget"
     end
 
