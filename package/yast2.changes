@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Apr 19 13:35:03 UTC 2017 - jreidinger@suse.com
+
+- CWM: Add object wrapper to allow running object CWM with old
+  hash style widgets (bsc#1032725)
+- 3.2.28
+
+-------------------------------------------------------------------
 Mon Apr 10 15:23:06 UTC 2017 - jreidinger@suse.com
 
 - Set correct title when wizard is supported (bsc#1033161#c4)
