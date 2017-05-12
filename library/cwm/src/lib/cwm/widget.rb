@@ -4,6 +4,7 @@ require "abstract_method"
 require "cwm/abstract_widget"
 require "cwm/custom_widget"
 require "cwm/tabs"
+require "cwm/tree"
 
 # Common Widget Manipulation.
 # An object-oriented API for the YCP-era {Yast::CWMClass}.
