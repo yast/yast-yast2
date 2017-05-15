@@ -9,7 +9,7 @@ Yast.import "Wizard"
 
 class NiceTable < CWM::Table
   def header
-    [ "name", "surname" ]
+    ["name", "surname"]
   end
 
   def items

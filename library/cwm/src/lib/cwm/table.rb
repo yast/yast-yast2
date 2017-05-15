@@ -1,5 +1,4 @@
 require "abstract_method"
-require "cwm/abstract_widget"
 require "cwm/custom_widget"
 
 module CWM
@@ -34,7 +33,7 @@ module CWM
   private
 
     def contents
-      opt_args = respond_to?(:opt, with_private = true) ? opt : []
+      opt_args = respond_to?(:opt, true) ? opt : []
       Table(
         Id(widget_id),
         Opt(*opt_args),
