@@ -1,3 +1,5 @@
+require "abstract_method"
+
 module CWM
   # Represent base for any widget used in CWM. It can be passed as "widget"
   # argument. For more details about usage
