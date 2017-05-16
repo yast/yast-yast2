@@ -1,4 +1,5 @@
 module CWM
+  # A Tree widget item
   class TreeItem
     attr_reader :id, :label, :icon, :open, :data
     # @return [Hash{id => TreeItem}]
@@ -23,9 +24,10 @@ module CWM
     end
   end
 
+  # Tree widget CWM object
   class Tree < Tabs
     def contents
-      item_terms = items.map { |id, i| i.ui_term }
+      item_terms = items.map { |_id, i| i.ui_term }
       tree = Tree(Id(widget_id), Opt(:notify), label, item_terms)
       HBox(
         HWeight(30, tree),
@@ -34,15 +36,20 @@ module CWM
     end
 
   private
+
     def init
       # nothing, dont select initial "tab" yet
     end
 
     # Subclass will override
-    def label; "?"; end
+    def label
+      "?"
+    end
 
     # Subclass will override
     # Hash
-    def items; {}; end
+    def items
+      {}
+    end
   end
 end
