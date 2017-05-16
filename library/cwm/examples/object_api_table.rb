@@ -20,8 +20,7 @@ class NiceTable < CWM::Table
   def items
     [
       [1, "Joe", "Doe",
-        cell(icon(Yast::Directory.icondir + "/22x22/apps/yast-partitioning"))
-      ],
+       cell(icon(Yast::Directory.icondir + "/22x22/apps/yast-partitioning"))],
       [2, "Billy", "Kid", nil],
       [3, "Benny", nil, nil]
     ]
