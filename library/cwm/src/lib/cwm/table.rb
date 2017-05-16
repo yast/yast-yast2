@@ -41,6 +41,21 @@ module CWM
       Yast::UI.ChangeWidget(Id(widget_id), :Items, format_items(items_list))
     end
 
+    # gets id of selected item in table or array of ids if multiselection option is used
+    # @return [Array<Object>, Object] array if multiselection? return true
+    def value
+      val = Yast::UI.QueryWidget(Id(widget_id), :SelectedItems)
+      multiselection? ? val : val.first
+    end
+
+    # sets id of selected item(-s) in table
+    # @param id [Object, Array<Object>] selected id, if multiselection? is true
+    #   it require array of ids to select
+    def value=(id)
+      Yast::UI.ChangeWidget(Id(widget_id), :SelectedItems, Array[id])
+    end
+
+
   protected
 
     # helper to create icon term
@@ -56,6 +71,13 @@ module CWM
     #   cell(icon("/tmp/cool_icon.png"), "Really cool!!!")
     def cell(*args)
       Yast::Term.new(:cell, *args)
+    end
+
+    # helper to say if table have multiselection
+    def multiselection?
+      return false unless respond_to?(:opt, true)
+
+      return opt.include?(:multiSelection)
     end
 
   private

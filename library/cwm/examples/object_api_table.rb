@@ -25,6 +25,10 @@ class NiceTable < CWM::Table
       [3, "Benny", nil, nil]
     ]
   end
+
+  def init
+    self.value = 3
+  end
 end
 
 module Yast
@@ -42,6 +46,7 @@ module Yast
 
       Yast::Wizard.CreateDialog
       CWM.show(contents, caption: _("Table Example"))
+      Yast.y2milestone("Selected item: #{table_widget.value.inspect}")
       Yast::Wizard.CloseDialog
     end
   end
