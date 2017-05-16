@@ -65,6 +65,18 @@ module CWM
       Yast::UI.ChangeWidget(Id(widget_id), Cell(id, collumn_number), cell_content)
     end
 
+    # Resulting table as YUI term.
+    # @note used mainly to pass it CWM.
+    def contents
+      opt_args = respond_to?(:opt, true) ? opt : []
+      Table(
+        Id(widget_id),
+        Opt(*opt_args),
+        Header(*header),
+        format_items(items)
+      )
+    end
+
   protected
 
     # helper to create icon term
@@ -93,16 +105,6 @@ module CWM
     end
 
   private
-
-    def contents
-      opt_args = respond_to?(:opt, true) ? opt : []
-      Table(
-        Id(widget_id),
-        Opt(*opt_args),
-        Header(*header),
-        format_items(items)
-      )
-    end
 
     def format_items(items)
       items.map do |item|
