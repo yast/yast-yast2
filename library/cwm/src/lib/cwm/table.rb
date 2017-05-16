@@ -56,6 +56,15 @@ module CWM
       Yast::UI.ChangeWidget(Id(widget_id), :SelectedItems, Array[id])
     end
 
+    # modifies single cell
+    # @param id [Object] id of row ( the first element in #items )
+    # @param collumn_number [Integer] index of cell in row. Index start with 0 for first cell.
+    # @param cell_content [String, Yast::Term, Object] Content of cell. Support same stuff as #items
+    # @note more efficient for bigger tables then changing everything with #change_items
+    def modify_cell(id, collumn_number, cell_content)
+      Yast::UI.ChangeWidget(Id(widget_id), Cell(id, collumn_number), cell_content)
+    end
+
   protected
 
     # helper to create icon term
@@ -66,6 +75,9 @@ module CWM
 
     # helper to create icon term
     # @param args content of cell, often used to combine icon and string
+    # @note Please see difference between `Cell` and `cell`. The first one is
+    #   used in queries to pick exact cell, but later is used for content of cell.
+    #   For reasons ask libyui authors.
     #
     # @example
     #   cell(icon("/tmp/cool_icon.png"), "Really cool!!!")
