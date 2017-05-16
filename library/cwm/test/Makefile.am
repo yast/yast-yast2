@@ -1,4 +1,6 @@
 TESTS = \
+	abstract_widget_test.rb \
+	custom_widget_test.rb \
 	widgets_test.rb
 
 TEST_EXTENSIONS = .rb

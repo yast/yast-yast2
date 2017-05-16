@@ -364,6 +364,7 @@ module CWM
     # system
     # @param widget [CWM::AbstractWidget] initial widget in placeholder
     def initialize(id: "_placeholder", widget: Empty.new("_initial_placeholder"))
+      Yast.import "CWM"
       self.handle_all_events = true
       self.widget_id = id
       @widget = widget

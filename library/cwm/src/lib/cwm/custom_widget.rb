@@ -1,3 +1,6 @@
+require "abstract_method"
+require "cwm/abstract_widget"
+
 module CWM
   # A custom widget that has its UI content defined in the method {#contents}.
   # Useful mainly when a specialized widget including more subwidgets should be
