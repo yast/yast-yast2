@@ -5,18 +5,25 @@ require_relative "example_helper"
 require "cwm/table"
 
 Yast.import "CWM"
+Yast.import "Directory"
 Yast.import "Wizard"
 
 class NiceTable < CWM::Table
   def header
-    ["name", "surname"]
+    [
+      Center("name"),
+      Right("surname"),
+      "icon"
+    ]
   end
 
   def items
     [
-      [1, "Joe", "Doe"],
-      [2, "Billy", "Kid"],
-      [3, "Benny", nil]
+      [1, "Joe", "Doe",
+        cell(icon(Yast::Directory.icondir + "/22x22/apps/yast-partitioning"))
+      ],
+      [2, "Billy", "Kid", nil],
+      [3, "Benny", nil, nil]
     ]
   end
 end
