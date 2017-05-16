@@ -7,7 +7,8 @@ module CWM
     # @method header
     #   return array of String or Yast::Term which is used as headers for table
     #   it can use e.g. align Left/Center/Right
-    # @note have to be overwritten
+    # @note It has to be overwritten
+    # @return [Array<String|Yast::Term>]
     #
     # @example of header
     #   def header
@@ -36,7 +37,7 @@ module CWM
     end
 
     # change list on fly with argument. Useful when content of widget is changed.
-    # @arg items_list [Array<Array<Object>>] same format as {#items}
+    # @param items_list [Array<Array<Object>>] same format as {#items}
     def change_items(items_list)
       Yast::UI.ChangeWidget(Id(widget_id), :Items, format_items(items_list))
     end
@@ -55,17 +56,16 @@ module CWM
       Yast::UI.ChangeWidget(Id(widget_id), :SelectedItems, Array[id])
     end
 
-
   protected
 
     # helper to create icon term
-    # @arg path [String] path to icon
+    # @param path [String] path to icon
     def icon(path)
       Yast::Term.new(:icon, path)
     end
 
     # helper to create icon term
-    # @arg args content of cell, often used to combine icon and string
+    # @param args content of cell, often used to combine icon and string
     #
     # @example
     #   cell(icon("/tmp/cool_icon.png"), "Really cool!!!")
@@ -77,7 +77,7 @@ module CWM
     def multiselection?
       return false unless respond_to?(:opt, true)
 
-      return opt.include?(:multiSelection)
+      opt.include?(:multiSelection)
     end
 
   private
