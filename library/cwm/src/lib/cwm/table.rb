@@ -29,7 +29,7 @@ module CWM
     #   then in #init call #change_items method, so it will be filled when all widgets are at place
     #   and just filling its content.
     #
-    # @example for table with two collumns
+    # @example for table with two columns
     #   def items
     #     [
     #       [:first_user, "Joe", "Doe"],
@@ -41,6 +41,8 @@ module CWM
     end
 
     # change list on fly with argument. Useful when content of widget is changed.
+    # @note items and change_items is consistent with ItemsSelection mixin, just format of
+    #   items is different due to nature of Table content.
     # @param items_list [Array<Array<Object>>] same format as {#items}
     def change_items(items_list)
       Yast::UI.ChangeWidget(Id(widget_id), :Items, format_items(items_list))
@@ -60,13 +62,13 @@ module CWM
       Yast::UI.ChangeWidget(Id(widget_id), :SelectedItems, Array[id])
     end
 
-    # modifies single cell
+    # Replaces content of single cell
     # @param id [Object] id of row ( the first element in #items )
-    # @param collumn_number [Integer] index of cell in row. Index start with 0 for first cell.
+    # @param column_number [Integer] index of cell in row. Index start with 0 for first cell.
     # @param cell_content [String, Yast::Term, Object] Content of cell. Support same stuff as #items
     # @note more efficient for bigger tables then changing everything with #change_items
-    def modify_cell(id, collumn_number, cell_content)
-      Yast::UI.ChangeWidget(Id(widget_id), Cell(id, collumn_number), cell_content)
+    def change_cell(id, column_number, cell_content)
+      Yast::UI.ChangeWidget(Id(widget_id), Cell(id, column_number), cell_content)
     end
 
     # Resulting table as YUI term.
