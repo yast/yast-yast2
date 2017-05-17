@@ -3,6 +3,7 @@
 require_relative "test_helper"
 
 require "cwm/widget"
+require "cwm/rspec"
 
 describe CWM::RadioButtons do
 
@@ -86,6 +87,8 @@ describe CWM::ReplacePoint do
     def cleanup
     end
   end
+
+  include_examples "CWM::CustomWidget"
 
   describe ".new" do
     it "has widget_id as passed" do
