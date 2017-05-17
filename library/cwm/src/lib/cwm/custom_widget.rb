@@ -45,6 +45,7 @@ module CWM
     end
 
     # Returns all nested widgets used in contents
+    # @return [Array<AbstractWidget>]
     def nested_widgets
       Yast.import "CWM"
 

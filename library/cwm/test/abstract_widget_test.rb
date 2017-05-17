@@ -3,8 +3,11 @@
 require_relative "test_helper"
 
 require "cwm/abstract_widget"
+require "cwm/rspec"
 
 describe CWM::AbstractWidget do
+  include_examples "CWM::AbstractWidget"
+
   describe "#widget_id" do
     class T1 < CWM::AbstractWidget
       def initialize(id: nil)
