@@ -1,6 +1,22 @@
 require "abstract_method"
 
 module CWM
+  # A Yast::Term that can be passed as is to Yast::UI methods
+  # (OpenDialog, ReplaceWidget)
+  class UITerm < Yast::Term; end
+
+  # A Yast::Term that contains instances of {CWM::AbstractWidget}.
+  # Can be passed to {Yast::CWMClass#show Yast::CWM.show}
+  class WidgetTerm < Yast::Term; end
+
+  # A Yast::Term that contains strings
+  # which identify the old style hash based CWM widgets.
+  # Can be passed to {Yast::CWMClass#ShowAndRun Yast::CWM.ShowAndRun}
+  class StringTerm < Yast::Term; end
+
+  # A {Hash{String=>Object}} that {Yast::CWMClass} knows to handle
+  class WidgetHash < Hash; end
+
   # Represent base for any widget used in CWM. It can be passed as "widget"
   # argument. For more details about usage
   # see {Yast::CWMClass#show Yast::CWM.show}
@@ -9,7 +25,7 @@ module CWM
   #
   # The call sequence is:
   #
-  # - {#initialize} is called by the Ruby constructor {.new}
+  # - `#initialize` is called by the Ruby constructor {.new}
   # - CWM#show builds a widget tree, using
   #     - the AbstractWidget concrete class
   #     - {#opt} widget options: `[:notify]` is needed if {#handle} is defined
@@ -106,7 +122,7 @@ module CWM
     # It refers to
     # {#help}, {#label}, {#opt}
     # {#validate}, {#init}, {#handle}, {#store}, {#cleanup}.
-    # @return [Hash{String => Object}]
+    # @return [WidgetHash]
     # @raise [RuntimeError] if a required method is not implemented
     #   or widget_type is not set.
     def cwm_definition

@@ -57,6 +57,7 @@ module CWM
       []
     end
 
+    # @return [WidgetHash]
     def cwm_definition
       super.merge(
         "items" => items
@@ -248,6 +249,8 @@ module CWM
 
     # The definition for IntField additionally supports
     # `minimum` and `maximum` methods.
+    #
+    # @return [WidgetHash]
     # @example minimum and maximum methods
     #   def minimum
     #     50
@@ -294,6 +297,7 @@ module CWM
     # In addition to the base definition, this honors possible
     # `vspacing` and `hspacing` methods
     #
+    # @return [WidgetHash]
     # @example defining additional space between the options
     #   def vspacing
     #     1
@@ -369,6 +373,7 @@ module CWM
       @widget = widget
     end
 
+    # @return [UITerm]
     def contents
       ReplacePoint(Id(widget_id), widget_content(@widget))
     end
@@ -420,6 +425,8 @@ module CWM
 
   private
 
+    # @param widget [AbstractWidget]
+    # @return [UITerm]
     def widget_content(widget)
       definition = widget.cwm_definition
       definition["_cwm_key"] = widget.widget_id # a bit hacky way to pass widget id
