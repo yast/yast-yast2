@@ -3,18 +3,28 @@ require "abstract_method"
 module CWM
   # A Yast::Term that can be passed as is to Yast::UI methods
   # (OpenDialog, ReplaceWidget)
+  #
+  # The normal workflow is that a {WidgetTerm} becomes a {StringTerm}
+  # which becomes a {UITerm}.
   class UITerm < Yast::Term; end
-
-  # A Yast::Term that contains instances of {CWM::AbstractWidget}.
-  # Can be passed to {Yast::CWMClass#show Yast::CWM.show}
-  class WidgetTerm < Yast::Term; end
 
   # A Yast::Term that contains strings
   # which identify the old style hash based CWM widgets.
   # Can be passed to {Yast::CWMClass#ShowAndRun Yast::CWM.ShowAndRun}
+  #
+  # The normal workflow is that a {WidgetTerm} becomes a {StringTerm}
+  # which becomes a {UITerm}.
   class StringTerm < Yast::Term; end
 
-  # A {Hash{String=>Object}} that {Yast::CWMClass} knows to handle
+  # A Yast::Term that contains instances of {CWM::AbstractWidget}.
+  # Can be passed to {Yast::CWMClass#show Yast::CWM.show}
+  #
+  # The normal workflow is that a {WidgetTerm} becomes a {StringTerm}
+  # which becomes a {UITerm}.
+  class WidgetTerm < Yast::Term; end
+
+  # A {Hash{String=>Object}} that {Yast::CWMClass} knows to handle.
+  # TODO: document the members
   class WidgetHash < Hash; end
 
   # Represent base for any widget used in CWM. It can be passed as "widget"
