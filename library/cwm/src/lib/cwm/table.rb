@@ -24,6 +24,10 @@ module CWM
     # rest is data in table, which can be e.g. terms. Then it have to be enclosed in
     # `cell` term.
     # @see for more complex example see examples directory
+    # @note default value is empty array. It is useful when computation expensive content
+    #   need to be set. In such case, it is better to keep empty items to quickly show table and
+    #   then in #init call #change_items method, so it will be filled when all widgets are at place
+    #   and just filling its content.
     #
     # @example for table with two collumns
     #   def items
