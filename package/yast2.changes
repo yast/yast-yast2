@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 18 13:35:05 UTC 2017 - lslezak@suse.cz
+
+- Translation fix: Ruby gettext cannot extract translatable texts
+  from interpolated strings (bsc#1038077)
+- 3.2.30
+
+-------------------------------------------------------------------
 Tue May 16 12:04:40 UTC 2017 - mvidner@suse.com
 
 - Added cwm/rspec with shared_examples for CWM::AbstractWidget
