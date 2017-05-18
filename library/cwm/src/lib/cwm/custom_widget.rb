@@ -33,9 +33,10 @@ module CWM
 
     # @!method contents
     #   Must be defined by subclasses
-    #   @return [Yast::Term] a UI term; {AbstractWidget} are not allowed inside
+    #   @return [UITerm] a UI term; {AbstractWidget} are not allowed inside
     abstract_method :contents
 
+    # @return [WidgetHash]
     def cwm_definition
       res = { "custom_widget" => cwm_contents }
 
@@ -45,6 +46,7 @@ module CWM
     end
 
     # Returns all nested widgets used in contents
+    # @return [Array<AbstractWidget>]
     def nested_widgets
       Yast.import "CWM"
 
@@ -55,6 +57,7 @@ module CWM
 
     # return contents converted to format understandable by CWM module
     # Basically it replace instance of AbstractWidget by its widget_id
+    # @return [StringTerm]
     def cwm_contents
       Yast.import "CWM"
 

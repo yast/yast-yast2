@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue May 16 12:04:40 UTC 2017 - mvidner@suse.com
+
+- Added cwm/rspec with shared_examples for CWM::AbstractWidget
+  and its children (boo#1039302)
+- 3.2.29
+
+-------------------------------------------------------------------
 Wed Apr 19 14:16:33 UTC 2017 - lslezak@suse.cz
 
 - Fixed parsing whitespace lines in /etc/fstab (bsc#1030425)
