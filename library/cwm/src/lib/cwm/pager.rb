@@ -9,92 +9,92 @@ module CWM
   #
   # @see examples/object_api_tabs.rb
   class Pager < CustomWidget
-    # @param [Array<CWM::Page>] tabs to be shown
-    def initialize(*tabs)
-      @tabs = tabs
-      @current_tab = nil
+    # @param [Array<CWM::Page>] pages to be shown
+    def initialize(*pages)
+      @pages = pages
+      @current_page = nil
       self.handle_all_events = true
     end
 
-    # initializes tabs, show tab which is initial
+    # initializes pages, show page which is initial
     def init
-      switch_tab(initial_tab_id)
+      switch_page(initial_page_id)
     end
 
     def handle(event)
-      # pass it to content of tab at first, maybe something stop passing
-      res = Yast::CWM.handleWidgets(@current_tab.cwm_widgets, event)
+      # pass it to content of page at first, maybe something stop passing
+      res = Yast::CWM.handleWidgets(@current_page.cwm_widgets, event)
       return res if res
 
       new_id = event["ID"]
-      tab = tab_for_id(new_id)
+      page = page_for_id(new_id)
 
-      return nil unless tab
+      return nil unless page
 
-      return nil if @current_tab.widget_id == new_id
+      return nil if @current_page.widget_id == new_id
 
       unless validate
-        mark_tab(@current_tab)
+        mark_page(@current_page)
         return nil
       end
 
-      store_tab(@current_tab.widget_id)
+      store_page(@current_page.widget_id)
 
-      switch_tab(new_id)
+      switch_page(new_id)
 
       nil
     end
 
-    # store content of current tab
+    # store content of current page
     def store
-      store_tab(@current_tab.widget_id)
+      store_page(@current_page.widget_id)
     end
 
-    # validates current tab
+    # validates current page
     def validate
-      Yast::CWM.validateWidgets(@current_tab.cwm_definition["widgets"], "ID" => @current_tab.widget_id)
+      Yast::CWM.validateWidgets(@current_page.cwm_definition["widgets"], "ID" => @current_page.widget_id)
     end
 
     def help
-      @current_tab ? @current_tab.help : ""
+      @current_page ? @current_page.help : ""
     end
 
   protected
 
-    # gets visual order of tabs
+    # gets visual order of pages
     # This default implementation returns same order as passed to constructor
-    def tab_order
-      @tabs.map(&:widget_id)
+    def page_order
+      @pages.map(&:widget_id)
     end
 
-    # stores tab with given id
-    def store_tab(tab_id)
-      Yast::CWM.saveWidgets(tab_for_id(tab_id).cwm_definition["widgets"], "ID" => tab_id)
+    # stores page with given id
+    def store_page(page_id)
+      Yast::CWM.saveWidgets(page_for_id(page_id).cwm_definition["widgets"], "ID" => page_id)
     end
 
-    # switch to target tab
-    def switch_tab(tab_id)
-      tab = tab_for_id(tab_id)
-      return unless tab
+    # switch to target page
+    def switch_page(page_id)
+      page = page_for_id(page_id)
+      return unless page
 
-      mark_tab(tab)
-      Yast::UI.ReplaceWidget(Id(replace_point_id), tab.cwm_definition["custom_widget"])
-      Yast::CWM.initWidgets(tab.cwm_definition["widgets"])
-      @current_tab = tab
+      mark_page(page)
+      Yast::UI.ReplaceWidget(Id(replace_point_id), page.cwm_definition["custom_widget"])
+      Yast::CWM.initWidgets(page.cwm_definition["widgets"])
+      @current_page = page
 
       Yast::CWM.ReplaceWidgetHelp(widget_id, help)
     end
 
-    # visually mark currently active tab
-    def mark_tab(tab)
+    # Mark the currently active page in the selector
+    def mark_page(tab)
       if Yast::UI.HasSpecialWidget(:DumbTab)
         Yast::UI.ChangeWidget(Id(widget_id), :CurrentItem, tab.widget_id)
       else
-        if @current_tab
+        if @current_page
           Yast::UI.ChangeWidget(
-            Id(@current_tab.widget_id),
+            Id(@current_page.widget_id),
             :Label,
-            @current_tab.label
+            @current_page.label
           )
         end
         Yast::UI.ChangeWidget(
@@ -105,12 +105,12 @@ module CWM
       end
     end
 
-    # gets id of initial tab
-    # This default implementation returns first tab passed to constructor
-    def initial_tab_id
-      initial = @tabs.find(&:initial)
+    # gets id of initial page
+    # This default implementation returns first page passed to constructor
+    def initial_page_id
+      initial = @pages.find(&:initial)
 
-      (initial || @tabs.first).widget_id
+      (initial || @pages.first).widget_id
     end
 
     def contents
@@ -129,14 +129,14 @@ module CWM
       end
     end
 
-    def tab_for_id(id)
-      @tabs.find { |t| t.widget_id == id }
+    def page_for_id(id)
+      @pages.find { |t| t.widget_id == id }
     end
 
   private
 
     def replace_point_id
-      :_cwm_tab_contents_rp
+      :_cwm_page_contents_rp
     end
 
     def replace_point
