@@ -1,55 +1,63 @@
 module CWM
-  # A Tree widget item
+  # A {Tree} widget item
   class TreeItem
-    attr_reader :id, :label, :icon, :open, :data
+    include Enumerable
+
+    # @return what to put in Id
+    attr_reader :id
+    # @return [String]
+    attr_reader :label
+    # @return [String] icon filename
+    attr_reader :icon
+    # @return [Boolean] is the subtree open?
+    attr_reader :open
     # @return [Hash{id => TreeItem}]
     attr_reader :children
 
-    def initialize(id, label, icon: nil, open: true, data: nil, children: {})
+    def initialize(id, label, icon: nil, open: true, children: [])
       @id = id
       @label = label
       @icon = icon
       @open = open
-      @data = data
-      @children = children
+      @children = children.map { |c| [c.id, c] }.to_h
     end
 
     def ui_term
-      args = [Id(id)]
+      args = [Yast::Term.new(:id, id)]
       args << Yast::Term.new(:icon, icon) if icon
       args << label
       args << open
       args << children.values.map(&:ui_term)
-      Item(*args)
+      Yast::Term.new(:item, *args)
     end
   end
 
-  # Tree widget CWM object
-  class Tree < Tabs
-    def contents
-      item_terms = items.map { |_id, i| i.ui_term }
-      tree = Tree(Id(widget_id), Opt(:notify), label, item_terms)
-      HBox(
-        HWeight(30, tree),
-        HWeight(70, replace_point)
-      )
+  class Tree < CustomWidget
+    # @return [Enumerable<TreeItem>]
+    attr_reader :items
+    def initialize(* items)
+      @items = items
     end
 
-  private
-
-    def init
-      # nothing, dont select initial "tab" yet
-    end
-
-    # Subclass will override
+    # FIXME: handle labels better
     def label
       "?"
     end
 
-    # Subclass will override
-    # Hash
-    def items
-      {}
+    def contents
+      item_terms = items.map { |i| i.ui_term }
+      Tree(Id(widget_id), Opt(:notify), label, item_terms)
+    end
+
+    # FIXME: CurrentBranch? item id uniqueness?
+    # TODO: extract value/value= to CurrentItemBasedWidget
+    # or declare: value_property :CurrentItem
+    def value
+      Yast::UI.QueryWidget(Id(widget_id), :CurrentItem)
+    end
+
+    def value=(val)
+      Yast::UI.ChangeWidget(Id(widget_id), :CurrentItem, val)
     end
   end
 end

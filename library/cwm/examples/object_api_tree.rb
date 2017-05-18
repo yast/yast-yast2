@@ -3,6 +3,7 @@
 require_relative "example_helper"
 
 require "cwm/widget"
+require "cwm/tree_pager"
 
 Yast.import "CWM"
 Yast.import "Popup"
@@ -148,7 +149,10 @@ module Yast
       lucky_number_tab = LuckyNumberTab.new
       true_love_tab = TrueLoveTab.new
 
-      tabs = ::CWM::Tree.new(lucky_number_tab, true_love_tab)
+      tl_item = ::CWM::PagerTreeItem.page(true_love_tab)
+      ln_item = ::CWM::PagerTreeItem.page(lucky_number_tab,
+                                          children: [tl_item])
+      tabs = ::CWM::TreePager.new(ln_item)
 
       contents = VBox(tabs)
 

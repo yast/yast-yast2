@@ -18,6 +18,7 @@ ylib_DATA = \
   lib/cwm/pager.rb \
   lib/cwm/tabs.rb \
   lib/cwm/tree.rb \
+  lib/cwm/tree_pager.rb \
   lib/cwm/widget.rb
 
 
