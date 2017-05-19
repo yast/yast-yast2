@@ -20,8 +20,8 @@ module Packages
     #
     # @return [String] Richtext representation of the list of messages
     def richtext
-      text = "<h1>#{_("Packages notifications")}</h1>\n" \
-        "<p>#{_("You have notifications from the following packages:")}</p>"
+      text = "<h1>" + _("Packages notifications") + "</h1>\n<p>" \
+        + _("You have notifications from the following packages:") + "</p>"
       text << richtext_toc(@messages) if @messages.size > 1
       text << @messages.map { |m| message_to_richtext(m) }.join("<hr>")
     end

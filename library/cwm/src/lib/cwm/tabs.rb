@@ -5,11 +5,12 @@ module CWM
     # @return [Boolean] is this the initially selected tab
     attr_accessor :initial
 
-    # @return [Yast::Term] contents of the tab, can contain {AbstractWidget}s
+    # @return [WidgetTerm] contents of the tab, can contain {AbstractWidget}s
     abstract_method :contents
     # @return [String] label defines name of tab header
     abstract_method :label
 
+    # @return [WidgetHash]
     def cwm_definition
       super.merge(
         "widgets"       => cwm_widgets,
@@ -19,6 +20,7 @@ module CWM
 
     # get cwm style of widget definitions
     # @note internal api only used as gate to communicate with CWM
+    # @return [Array<WidgetHash>]
     def cwm_widgets
       return @cwm_widgets if @cwm_widgets
 

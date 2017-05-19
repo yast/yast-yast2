@@ -107,9 +107,9 @@ module Yast
 
     # Process term with the dialog, replace strings in the term with
     # appropriate widgets
-    # @param [Yast::Term] t term dialog containing strings
-    # @param [Hash <String, Hash{String => Object>}] widgets map of widget name -> widget description map
-    # @return [Yast::Term] updated term ready to be used as a dialog
+    # @param t [::CWM::StringTerm] term dialog containing strings
+    # @param widgets [Hash{String => ::CWM::WidgetHash}] widget name -> widget description
+    # @return [::CWM::UITerm] updated term ready to be used as a dialog
     def ProcessTerm(t, widgets)
       t = deep_copy(t)
       widgets = deep_copy(widgets)
@@ -155,8 +155,8 @@ module Yast
 
     # Process term with the dialog, return all strings.
     # To be used as an argument for widget_names until they are obsoleted.
-    # @param [Yast::Term] t term dialog containing strings
-    # @return [String]s found in the term
+    # @param t [::CWM::StringTerm] term dialog containing strings
+    # @return [Array<String>] found in the term
     def StringsOfTerm(t)
       t = deep_copy(t)
       rets = []
@@ -305,7 +305,7 @@ module Yast
 
     # Add fallback functions to a widget
     # global only because of testsuites
-    # @param [Array<Hash{String => Object>}] widgets a list of widget desctiption maps
+    # @param [Array<::CWM::WidgetHash>] widgets a list of widget desctiption maps
     # @param [Hash] functions map of functions
     # @return a list of modified widget description maps
     def mergeFunctions(widgets, functions)
@@ -328,7 +328,7 @@ module Yast
 
     # Set widgets according to internally stored settings
     # global only because of testsuites
-    # @param [Array<Hash{String => Object>}] widgets list of maps representing widgets
+    # @param [Array<::CWM::WidgetHash>] widgets list of maps representing widgets
     def initWidgets(widgets)
       widgets = deep_copy(widgets)
       Builtins.foreach(widgets) do |w|
@@ -356,7 +356,7 @@ module Yast
 
     # Handle change of widget after event generated
     # global only because of testsuites
-    # @param [Array<Hash{String => Object>}] widgets list of maps represenging widgets
+    # @param [Array<::CWM::WidgetHash>] widgets list of maps represenging widgets
     # @param [Hash] event_descr map event that occured
     # @return [Symbol] modified action (sometimes may be needed) or nil
     def handleWidgets(widgets, event_descr)
@@ -385,7 +385,7 @@ module Yast
     # Save changes of widget after event generated
     # global only because of testsuites
     # CWMTab uses it too
-    # @param [Array<Hash{String => Object>}] widgets list of maps represenging widgets
+    # @param [Array<::CWM::WidgetHash>] widgets list of maps represenging widgets
     # @param [Hash] event map event that occured
     def saveWidgets(widgets, event)
       widgets = deep_copy(widgets)
@@ -405,7 +405,7 @@ module Yast
 
     # Cleanup after dialog was finished (independently on what event)
     # global only because of testsuites
-    # @param [Array<Hash{String => Object>}] widgets list of maps represenging widgets
+    # @param [Array<::CWM::WidgetHash>] widgets list of maps represenging widgets
     def cleanupWidgets(widgets)
       widgets = deep_copy(widgets)
       Builtins.foreach(widgets) do |w|
@@ -430,7 +430,7 @@ module Yast
     end
 
     # Create a term with OK and Cancel buttons placed horizontally
-    # @return the term (HBox)
+    # @return [::CWM::UITerm] the term (HBox)
     def OkCancelBox
       ButtonBox(
         PushButton(
@@ -448,7 +448,7 @@ module Yast
 
     # Validate widget description map, check for maps structure
     # Also checks option description maps if present
-    # @param [Hash <String, Hash{String => Object>}] widgets map widgets description map
+    # @param [Hash{String => ::CWM::WidgetHash}] widgets map widgets description map
     # @return [Boolean] true on success
     def ValidateMaps(widgets)
       widgets = deep_copy(widgets)
@@ -501,8 +501,9 @@ module Yast
     end
 
     # Prepare a widget for usage
-    # @param [Hash{String => Object}] widget_descr map widget description map
-    # @return [Hash] modified widget description map
+    # @param [::CWM::WidgetHash] widget_descr map widget description map
+    # @return [::CWM::WidgetHash] modified widget description map
+    #    where "widget" key is a {::CWM::UITerm}
     def prepareWidget(widget_descr)
       widget_descr = deep_copy(widget_descr)
       w = deep_copy(widget_descr)
@@ -646,7 +647,7 @@ module Yast
     end
 
     # Validate single widget
-    # @param [Hash{String => Object}] widget widget description map
+    # @param [::CWM::WidgetHash] widget widget description map
     # @param [Hash] event map event that caused validation
     # @param [String] key widget key for validation by function
     # @return true if validation succeeded
@@ -697,7 +698,7 @@ module Yast
     end
 
     # Validate dialog contents for allow it to be saved
-    # @param [Array<Hash{String => Object>}] widgets list of widgets to validate
+    # @param [Array<::CWM::WidgetHash>] widgets list of widgets to validate
     # @param [Hash] event map event that caused validation
     # @return [Boolean] true if everything is OK, false  if something is wrong
     def validateWidgets(widgets, event)
@@ -716,8 +717,8 @@ module Yast
 
     # Read widgets with listed names
     # @param [Array<String>] names a list of strings/symbols names of widgets
-    # @param [Hash <String, Hash{String => Object>}] source a map containing the widgets
-    # @return [Array] of maps representing widgets
+    # @param [Hash <String, ::CWM::WidgetHash] source a map containing the widgets
+    # @return [Array<::CWM::WidgetHash>] of maps representing widgets
     def CreateWidgets(names, source)
       names = deep_copy(names)
       source = deep_copy(source)
@@ -735,7 +736,7 @@ module Yast
     end
 
     # Merge helps from the widgets
-    # @param [Array<Hash{String => Object>}] widgets a list of widget description maps
+    # @param [Array<::CWM::WidgetHash>] widgets a list of widget description maps
     # @return [String] merged helps of the widgets
     def MergeHelps(widgets)
       widgets = deep_copy(widgets)
@@ -746,9 +747,9 @@ module Yast
 
     # Prepare the dialog, replace strings in the term with appropriate
     # widgets
-    # @param [Yast::Term] dialog term dialog containing strings
-    # @param [Array<Hash{String => Object>}] widgets list of widget description maps
-    # @return updated term ready to be used as a dialog
+    # @param dialog  [::CWM::StringTerm] term dialog containing strings
+    # @param widgets [Array<::CWM::WidgetHash>] list of widget description maps
+    # @return [::CWM::UITerm] updated term ready to be used as a dialog
     def PrepareDialog(dialog, widgets)
       dialog = deep_copy(dialog)
       widgets = deep_copy(widgets)
@@ -783,7 +784,7 @@ module Yast
     end
 
     # Generic function to create dialog and handle it's events
-    # @param [Array<Hash{String => Object>}] widgets list of widget maps
+    # @param [Array<::CWM::WidgetHash>] widgets list of widget maps
     # @param [Hash] functions map initialize/save/handle fallbacks if not specified
     #   with the widgets.
     # @param [Array<Object>] skip_store_for list of events for which the value of the widget will not be stored
@@ -923,7 +924,7 @@ module Yast
     end
 
     # Display the dialog and run its event loop using new widget API
-    # @param [Yast::Term] contents is UI term including instances of {CWM::AbstractWidget}
+    # @param [::CWM::WidgetTerm] contents is UI term including instances of {CWM::AbstractWidget}
     # @param [String] caption of dialog
     # @param [String] back_button label for dialog back button
     # @param [String] next_button label for dialog next button
@@ -951,7 +952,7 @@ module Yast
 
     # Display the dialog and run its event loop
     # @param [Hash<String, Object>] settings a map of all settings needed to run the dialog
-    # @option settings [AbstractWidget] "widgets" list of widgets used in CWM,
+    # @option settings [Array<CWM::AbstractWidget>] "widgets" list of widgets used in CWM,
     #   it is auto added to `"widget_names"` and `"widget_descr"`
     def ShowAndRun(settings)
       settings = deep_copy(settings)
@@ -997,8 +998,8 @@ module Yast
     # Display the dialog and run its event loop
     # @param [Array<String>] widget_names list of names of widgets that will be used in the
     #   dialog
-    # @param [Hash <String, Hash{String => Object>}] widget_descr map description map of all widgets
-    # @param [Yast::Term] contents term contents of the dialog, identifiers instead of
+    # @param [Hash{String => ::CWM::WidgetHash}] widget_descr map description map of all widgets
+    # @param contents [::CWM::StringTerm] contents of the dialog, identifiers instead of
     #   widgets
     # @param [String] caption string dialog caption
     # @param [String] back_button string label of the back button
@@ -1083,6 +1084,7 @@ module Yast
     publish function: :InitNull, type: "void (string)"
     publish function: :StoreNull, type: "void (string, map)"
 
+    # @return [Array<::CWM::AbstractWidget>]
     def widgets_in_contents(contents)
       contents.each_with_object([]) do |arg, res|
         case arg
@@ -1093,6 +1095,8 @@ module Yast
       end
     end
 
+    # @param  [::CWM::WidgetTerm] contents
+    # @return [::CWM::StringTerm]
     def widgets_contents(contents)
       res = contents.clone
 
