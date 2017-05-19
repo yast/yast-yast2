@@ -35,13 +35,11 @@ module CWM
   class Tree < CustomWidget
     # @return [Enumerable<TreeItem>]
     attr_reader :items
-    def initialize(* items)
-      @items = items
-    end
+    attr_reader :label
 
-    # FIXME: handle labels better
-    def label
-      "?"
+    def initialize(* items, label:)
+      @label = label
+      @items = items
     end
 
     def contents

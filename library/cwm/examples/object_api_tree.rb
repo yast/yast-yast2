@@ -151,7 +151,7 @@ module Yast
 
       tl_item = ::CWM::PagerTreeItem.new(true_love_tab)
       ln_item = ::CWM::PagerTreeItem.new(lucky_number_tab, children: [tl_item])
-      tabs = ::CWM::TreePager.new(ln_item)
+      tabs = ::CWM::TreePager.new(ln_item, label: "")
 
       contents = VBox(tabs)
 
