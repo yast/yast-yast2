@@ -32,6 +32,7 @@ module CWM
     end
   end
 
+  # A tree of nested {TreeItem}s
   class Tree < CustomWidget
     # @return [Enumerable<TreeItem>]
     attr_reader :items
@@ -43,7 +44,7 @@ module CWM
     end
 
     def contents
-      item_terms = items.map { |i| i.ui_term }
+      item_terms = items.map(&:ui_term)
       Tree(Id(widget_id), Opt(:notify), label, item_terms)
     end
 

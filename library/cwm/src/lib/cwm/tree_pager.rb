@@ -39,9 +39,7 @@ module CWM
   protected
 
     def page_for_id(id)
-      if id == @tree.widget_id
-        id = @tree.value
-      end
+      id = @tree.value if id == @tree.widget_id
       super(id)
     end
 
