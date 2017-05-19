@@ -12,9 +12,16 @@ module CWM
     attr_accessor :initial
 
     # @return [WidgetTerm] contents of the tab, can contain {AbstractWidget}s
-    abstract_method :contents
+    attr_reader :contents
     # @return [String] label defines name of tab header
-    abstract_method :label
+    attr_reader :label
+    attr_reader :widget_id
+
+    def initialize(widget_id:, label:, contents:)
+      @widget_id = widget_id
+      @label = label
+      @contents = contents
+    end
 
     # @return [WidgetHash]
     def cwm_definition
