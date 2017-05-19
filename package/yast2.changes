@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 19 12:24:43 UTC 2017 - mvidner@suse.com
+
+- Added CWM::Table (boo#1039901)
+- 3.2.31
+
+-------------------------------------------------------------------
 Thu May 18 13:35:05 UTC 2017 - lslezak@suse.cz
 
 - Translation fix: Ruby gettext cannot extract translatable texts

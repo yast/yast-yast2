@@ -15,6 +15,7 @@ ylib_DATA = \
   lib/cwm/abstract_widget.rb \
   lib/cwm/custom_widget.rb \
   lib/cwm/tabs.rb \
+  lib/cwm/table.rb \
   lib/cwm/widget.rb
 
 
