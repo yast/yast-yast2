@@ -149,9 +149,8 @@ module Yast
       lucky_number_tab = LuckyNumberTab.new
       true_love_tab = TrueLoveTab.new
 
-      tl_item = ::CWM::PagerTreeItem.page(true_love_tab)
-      ln_item = ::CWM::PagerTreeItem.page(lucky_number_tab,
-                                          children: [tl_item])
+      tl_item = ::CWM::PagerTreeItem.new(true_love_tab)
+      ln_item = ::CWM::PagerTreeItem.new(lucky_number_tab, children: [tl_item])
       tabs = ::CWM::TreePager.new(ln_item)
 
       contents = VBox(tabs)
