@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 22 12:01:15 UTC 2017 - mvidner@suse.com
+
+- Added CWM::Pager, CWM::Tree + CWM::TreeItem,
+  CWM::TreePager + CWM::PagerTreeItem (boo#1039901)
+- 3.2.32
+
+-------------------------------------------------------------------
 Fri May 19 12:24:43 UTC 2017 - mvidner@suse.com
 
 - Added CWM::Table (boo#1039901)
