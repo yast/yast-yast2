@@ -15,8 +15,6 @@ module CWM
     attr_reader :contents
     # @return [String] Label of {Tab} or of {PagerTreeItem}
     attr_reader :label
-    # @return [Symbol,String]
-    attr_reader :widget_id
 
     def initialize(widget_id:, label:, contents:)
       @widget_id = widget_id
