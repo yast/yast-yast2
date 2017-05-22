@@ -1,3 +1,4 @@
+require "abstract_method"
 require "cwm/custom_widget"
 require "yast"
 Yast.import "CWM"
@@ -15,16 +16,11 @@ module CWM
     # @return [Boolean] is this the initially selected tab
     attr_accessor :initial
 
-    # @return [WidgetTerm] contents of the tab, can contain {AbstractWidget}s
-    attr_reader :contents
-    # @return [String] Label of {Tab} or of {PagerTreeItem}
-    attr_reader :label
+    # @return [WidgetTerm] contents of the page, can contain {AbstractWidget}s
+    abstract_method :contents
 
-    def initialize(widget_id:, label:, contents:)
-      @widget_id = widget_id
-      @label = label
-      @contents = contents
-    end
+    # @return [String] Label of {Tab} or of {PagerTreeItem}
+    abstract_method :label
 
     # @return [WidgetHash]
     def cwm_definition
