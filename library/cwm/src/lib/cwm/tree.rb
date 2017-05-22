@@ -40,7 +40,7 @@ module CWM
 
     # @param label [String]
     # @param items [Array<TreeItem>]
-    def initialize(* items, label:)
+    def initialize(items, label:)
       @label = label
       @items = items
     end

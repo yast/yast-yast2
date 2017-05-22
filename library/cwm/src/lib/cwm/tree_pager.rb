@@ -28,7 +28,7 @@ module CWM
   class TreePager < Pager
     # @param items [Array<PagerTreeItem>]
     def initialize(*items, label:)
-      @tree = Tree.new(*items, label: label)
+      @tree = Tree.new(items, label: label)
       pages = items.flat_map(&:pages)
       super(*pages)
     end
