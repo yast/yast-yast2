@@ -151,12 +151,12 @@ module Yast
 
       tl_item = ::CWM::PagerTreeItem.new(true_love_tab)
       ln_item = ::CWM::PagerTreeItem.new(lucky_number_tab, children: [tl_item])
-      tabs = ::CWM::TreePager.new(ln_item, label: "")
+      tabs = ::CWM::TreePager.new(ln_item, label: _("It's complicated"))
 
       contents = VBox(tabs)
 
       Yast::Wizard.CreateDialog
-      CWM.show(contents, caption: _("Tabs example"))
+      CWM.show(contents, caption: _("Tree Pager Example"))
       Yast::Wizard.CloseDialog
 
       log.info "Lucky number: #{lucky_number_tab.result}, true love: #{true_love_tab.result}"
