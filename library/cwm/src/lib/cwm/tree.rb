@@ -38,6 +38,8 @@ module CWM
     attr_reader :items
     attr_reader :label
 
+    # @param label [String]
+    # @param items [Array<TreeItem>]
     def initialize(* items, label:)
       @label = label
       @items = items
@@ -57,6 +59,13 @@ module CWM
 
     def value=(val)
       Yast::UI.ChangeWidget(Id(widget_id), :CurrentItem, val)
+    end
+
+    # @param items [Array<TreeItem>]
+    def change_items(items)
+      @items = items
+      item_terms = items.map(&:ui_term)
+      Yast::UI.ChangeWidget(Id(widget_id), :Items, item_terms)
     end
   end
 end
