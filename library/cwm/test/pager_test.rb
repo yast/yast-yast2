@@ -9,9 +9,11 @@ require "yast"
 Yast.import "UI"
 
 class TestPage < CWM::Page
+  attr_reader :label, :contents
   def initialize(n)
-    super(widget_id: "page#{n}", label: "Page #{n}",
-          contents: Yast::Term.new(:Empty, Yast::Term.new(:id, "empty#{n}")))
+    self.widget_id = "page#{n}"
+    @label = "Page #{n}"
+    @contents = Yast::Term.new(:Empty, Yast::Term.new(:id, "empty#{n}"))
   end
 end
 
