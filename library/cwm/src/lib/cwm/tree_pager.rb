@@ -3,6 +3,8 @@ require "cwm/pager"
 
 module CWM
   # A {TreeItem} that knows a {Page}, useful for a {TreePager}.
+  # The UI label and `id` are taken from its {Page}: {Page#label},
+  # {Page#widget_id}
   class PagerTreeItem < TreeItem
     # @return [Page]
     attr_reader :page
@@ -15,6 +17,8 @@ module CWM
             icon: icon, open: open, children: children)
     end
 
+    # @return [Array<Page>] My page and all pages of descendant items
+    #   (needed to initialize a {Pager}).
     def pages
       children.values.flat_map(&:pages).unshift(@page)
     end

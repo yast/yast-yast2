@@ -13,8 +13,9 @@ module CWM
 
     # @return [WidgetTerm] contents of the tab, can contain {AbstractWidget}s
     attr_reader :contents
-    # @return [String] label defines name of tab header
+    # @return [String] Label of {Tab} or of {PagerTreeItem}
     attr_reader :label
+    # @return [Symbol,String]
     attr_reader :widget_id
 
     def initialize(widget_id:, label:, contents:)
