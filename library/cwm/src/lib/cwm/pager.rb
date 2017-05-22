@@ -1,3 +1,5 @@
+require "abstract_method"
+
 module CWM
   # A {Pager} contains several {Page}s and makes only one visible at a time.
   #
@@ -85,25 +87,17 @@ module CWM
       Yast::CWM.ReplaceWidgetHelp(widget_id, help)
     end
 
-    # Mark the currently active page in the selector
-    def mark_page(tab)
-      if Yast::UI.HasSpecialWidget(:DumbTab)
-        Yast::UI.ChangeWidget(Id(widget_id), :CurrentItem, tab.widget_id)
-      else
-        if @current_page
-          Yast::UI.ChangeWidget(
-            Id(@current_page.widget_id),
-            :Label,
-            @current_page.label
-          )
-        end
-        Yast::UI.ChangeWidget(
-          Id(tab.widget_id),
-          :Label,
-          "#{Yast::UI.Glyph(:BulletArrowRight)}  #{tab.label}"
-        )
-      end
-    end
+    # Mark the currently active page in the selector.
+    # This is needed in case the user has switched to a different page
+    # but we need to switch back because the current one failed validation.
+    # @param page [Page]
+    # @return [void]
+    abstract_method :mark_page
+
+    # The contents will probably include a *selector*, such as {Tabs}
+    # or {Tree} and a {ReplacePoint} where {Page}s will appear.
+    # @return [WidgetTerm]
+    abstract_method :contents
 
     # gets id of initial page
     # This default implementation returns first page passed to constructor
@@ -111,22 +105,6 @@ module CWM
       initial = @pages.find(&:initial)
 
       (initial || @pages.first).widget_id
-    end
-
-    def contents
-      if Yast::UI.HasSpecialWidget(:DumbTab)
-        panes = tab_order.map do |tab_id|
-          tab = tab_for_id(tab_id)
-          Item(Id(tab.widget_id), tab.label, tab.widget_id == initial_tab_id)
-        end
-        DumbTab(Id(widget_id), panes, replace_point)
-      else
-        tabbar = tab_order.each_with_object(HBox()) do |tab, res|
-          tab = tab_for_id(tab)
-          res << PushButton(Id(tab.widget_id), tab.label)
-        end
-        VBox(Left(tabbar), Frame("", replace_point))
-      end
     end
 
     def page_for_id(id)
