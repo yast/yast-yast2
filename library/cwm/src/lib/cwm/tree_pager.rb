@@ -1,5 +1,6 @@
 require "cwm/page"
 require "cwm/pager"
+require "cwm/tree"
 
 module CWM
   # A {TreeItem} that knows a {Page}, useful for a {TreePager}.

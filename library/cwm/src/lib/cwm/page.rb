@@ -1,3 +1,7 @@
+require "cwm/custom_widget"
+require "yast"
+Yast.import "CWM"
+
 module CWM
   # A page widget is a group of widgets that are contained within it.
   # Several pages are in turn contained within a {Pager}.

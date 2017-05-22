@@ -54,6 +54,10 @@ RSpec.shared_examples "CWM::CustomWidget" do
   end
 end
 
+RSpec.shared_examples "CWM::Pager" do
+  include_examples "CWM::CustomWidget"
+end
+
 RSpec.shared_examples "CWM::Tab" do
   include_examples "CWM::CustomWidget"
 end

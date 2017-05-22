@@ -1,4 +1,6 @@
 require "abstract_method"
+require "yast"
+Yast.import "CWM"
 
 module CWM
   # A {Pager} contains several {Page}s and makes only one visible at a time.

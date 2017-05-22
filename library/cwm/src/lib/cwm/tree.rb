@@ -1,3 +1,5 @@
+require "cwm/custom_widget"
+
 module CWM
   # A {Tree} widget item
   class TreeItem
