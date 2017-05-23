@@ -3,8 +3,6 @@ require "cwm/custom_widget"
 module CWM
   # A {Tree} widget item
   class TreeItem
-    include Enumerable
-
     # @return what to put in Id
     attr_reader :id
     # @return [String]
