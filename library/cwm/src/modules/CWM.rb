@@ -30,8 +30,6 @@
 #
 require "yast"
 
-require "cwm/widget"
-
 module Yast
   class CWMClass < Module
     def main
@@ -1086,6 +1084,8 @@ module Yast
 
     # @return [Array<::CWM::AbstractWidget>]
     def widgets_in_contents(contents)
+      require "cwm/widget"
+
       contents.each_with_object([]) do |arg, res|
         case arg
         when ::CWM::CustomWidget then res.concat(arg.nested_widgets) << arg
@@ -1098,6 +1098,8 @@ module Yast
     # @param  [::CWM::WidgetTerm] contents
     # @return [::CWM::StringTerm]
     def widgets_contents(contents)
+      require "cwm/widget"
+
       res = contents.clone
 
       (0..(res.size - 1)).each do |index|
