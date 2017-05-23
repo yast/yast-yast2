@@ -10,8 +10,8 @@ module CWM
   # @see examples/object_api_tabs.rb
   class Tabs < Pager
     # {Tabs} does not have instances:
-    # {Tabs.new} overrides {Class.new} and calls
-    # either {DumbTabPager.new} or {PushButtonTabPager.new}.
+    # `Tabs.new` overrides `Class.new` and calls
+    # either {DumbTabPager}.new or {PushButtonTabPager}.new.
     def self.new(*args)
       if Yast::UI.HasSpecialWidget(:DumbTab)
         DumbTabPager.new(*args)
@@ -21,7 +21,8 @@ module CWM
     end
   end
 
-  # A {Pager} for the GUI, using the DumbTab widget
+  # A {Pager} for the GUI, using the DumbTab widget.
+  # Do not instantiate directly, use {Tabs}.
   class DumbTabPager < Pager
   #
 
@@ -42,7 +43,8 @@ module CWM
     end
   end
 
-  # A {Pager} for ncurses, using PushButtons to simulate the tabs
+  # A {Pager} for ncurses, using PushButtons to simulate the tabs.
+  # Do not instantiate directly, use {Tabs}.
   class PushButtonTabPager < Pager
   #
 
