@@ -7,9 +7,7 @@ module CWM
   #
   # {TreePager} is a {Pager}.
   #
-  # {Tabs} is a {Pager} and a {Tab} is its {Page}
-  # (FIXME: We haven't made Tabs a subclass of Pager yet.
-  # That will come after we have TreePager working.
+  # {Tabs} is a {Pager} and a {Tab} is its {Page}.
   #
   # @see examples/object_api_tabs.rb
   class Pager < CustomWidget
