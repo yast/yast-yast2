@@ -22,9 +22,10 @@ module CWM
 
     # @return [WidgetHash]
     def cwm_definition
+      widgets = cwm_widgets
       super.merge(
-        "widgets"       => cwm_widgets,
-        "custom_widget" => Yast::CWM.PrepareDialog(cwm_contents, cwm_widgets)
+        "widgets"       => widgets,
+        "custom_widget" => Yast::CWM.PrepareDialog(cwm_contents, widgets)
       )
     end
 

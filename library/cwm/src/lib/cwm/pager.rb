@@ -80,8 +80,9 @@ module CWM
       return unless page
 
       mark_page(page)
-      Yast::UI.ReplaceWidget(Id(replace_point_id), page.cwm_definition["custom_widget"])
-      Yast::CWM.initWidgets(page.cwm_definition["widgets"])
+      widget_hash = page.cwm_definition
+      Yast::UI.ReplaceWidget(Id(replace_point_id), widget_hash["custom_widget"])
+      Yast::CWM.initWidgets(widget_hash["widgets"])
       @current_page = page
 
       Yast::CWM.ReplaceWidgetHelp(widget_id, help)
