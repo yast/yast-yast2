@@ -27,10 +27,10 @@ module CWM
 
   # A {Pager} that uses a {Tree} to select the {Page}s
   class TreePager < Pager
-    # @param items [Array<PagerTreeItem>]
-    def initialize(*items, label:)
-      @tree = Tree.new(items, label: label)
-      pages = items.flat_map(&:pages)
+    # @param tree [Tree<PagerTreeItem>]
+    def initialize(tree)
+      @tree = tree
+      pages = tree.items.flat_map(&:pages)
       super(*pages)
     end
 

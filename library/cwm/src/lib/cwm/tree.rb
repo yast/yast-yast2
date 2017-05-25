@@ -34,17 +34,6 @@ module CWM
 
   # A tree of nested {TreeItem}s
   class Tree < CustomWidget
-    # @return [Enumerable<TreeItem>]
-    attr_reader :items
-    attr_reader :label
-
-    # @param label [String]
-    # @param items [Array<TreeItem>]
-    def initialize(items, label:)
-      @label = label
-      @items = items
-    end
-
     def contents
       item_terms = items.map(&:ui_term)
       Tree(Id(widget_id), Opt(:notify), label, item_terms)
@@ -61,9 +50,18 @@ module CWM
       Yast::UI.ChangeWidget(Id(widget_id), :CurrentItem, val)
     end
 
+    # An alias for {TreeItem.new}
+    def new_item(*args, **kwargs)
+      TreeItem.new(*args, **kwargs)
+    end
+
+    # @return [Enumerable<TreeItem>]
+    def items
+      []
+    end
+
     # @param items [Array<TreeItem>]
     def change_items(items)
-      @items = items
       item_terms = items.map(&:ui_term)
       Yast::UI.ChangeWidget(Id(widget_id), :Items, item_terms)
     end
