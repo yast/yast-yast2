@@ -17,10 +17,21 @@ describe CWM::TreePager do
     end
   end
 
+  class PagerTestTree < CWM::Tree
+    def label
+      "my tree pager"
+    end
+
+    def items
+      page = TestPage.new(42)
+      [
+        CWM::PagerTreeItem.new(page)
+      ]
+    end
+  end
+
   subject do
-    page = TestPage.new(42)
-    item = CWM::PagerTreeItem.new(page)
-    pager = CWM::TreePager.new(item, label: "my tree pager")
+    pager = CWM::TreePager.new(PagerTestTree.new)
     pager.init
     pager
   end

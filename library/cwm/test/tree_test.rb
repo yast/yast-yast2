@@ -6,16 +6,22 @@ require "cwm/rspec"
 require "cwm/tree"
 
 describe CWM::Tree do
-  subject do
-    CWM::Tree.new(
+  class TestTree < CWM::Tree
+    def label
+      "my tree"
+    end
+
+    def items
       [
-        CWM::TreeItem.new(:i1, "First", icon: "1st.png", open: false),
-        CWM::TreeItem.new(:i2, "Second", open: true, children: [
-                            CWM::TreeItem.new(:i21, "Nested")
-                          ])
-      ], label: "my tree"
-    )
+        new_item(:i1, "First", icon: "1st.png", open: false),
+        new_item(:i2, "Second", open: true, children: [
+                   new_item(:i21, "Nested")
+                 ])
+      ]
+    end
   end
+
+  subject { TestTree.new }
 
   include_examples "CWM::CustomWidget"
 
