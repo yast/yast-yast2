@@ -33,10 +33,16 @@ module Yast
     extend Yast::I18n
     textdomain "base"
 
+    # Runs arguments with respect of changed root in installation. Shows popup when failed and returns nil in such case.
+    # @see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run parameter docs
+    def self.on_target(*args)
+      popup_error { on_target!(*args) }
+    end
+
     # Runs arguments with respect of changed root in installation.
     # @see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run parameter docs
-    # @raise Cheetah::ExecutionFailed
-    def self.on_target(*args)
+    # @raise Cheetah::ExecutionFailed when command failed, see cheetah documentation
+    def self.on_target!(*args)
       root = Yast::WFM.scr_root
 
       if args.last.is_a? ::Hash
@@ -45,17 +51,23 @@ module Yast
         args.push(chroot: root)
       end
 
-      popup_error { Cheetah.run(*args) }
+      Cheetah.run(*args)
+    end
+
+    # Runs arguments without changed root. Shows popup when failed and returns nil in such case.
+    # @see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run parameter docs
+    def self.locally(*args)
+      popup_error { locally!(*args) }
     end
 
     # Runs arguments without changed root.
     # @see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run parameter docs
-    # @raise Cheetah::ExecutionFailed
-    def self.locally(*args)
-      popup_error { Cheetah.run(*args) }
+    # @raise Cheetah::ExecutionFailed when command failed, see cheetah documentation
+    def self.locally!(*args)
+      Cheetah.run(*args)
     end
 
-    def self.popup_error(&block)
+    private_class_method def self.popup_error(&block)
       block.call
     rescue Cheetah::ExecutionFailed => e
       Yast.import "Report"
@@ -72,7 +84,5 @@ module Yast
         }
       )
     end
-
-    private_class_method :popup_error
   end
 end
