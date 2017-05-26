@@ -35,7 +35,7 @@ describe Yast::Execute do
     end
 
     it "raises Cheetah::ExecutionFailed if command execution failed" do
-      expect{Yast::Execute.locally!("false")}.to raise_error(Cheetah::ExecutionFailed)
+      expect { Yast::Execute.locally!("false") }.to raise_error(Cheetah::ExecutionFailed)
     end
   end
 
@@ -66,7 +66,7 @@ describe Yast::Execute do
     end
 
     it "raises Cheetah::ExecutionFailed if command execution failed" do
-      expect{Yast::Execute.on_target!("false")}.to raise_error(Cheetah::ExecutionFailed)
+      expect { Yast::Execute.on_target!("false") }.to raise_error(Cheetah::ExecutionFailed)
     end
   end
 end
