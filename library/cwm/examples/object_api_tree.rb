@@ -137,6 +137,18 @@ private
   end
 end
 
+class ExampleTree < CWM::Tree
+  attr_reader :items
+  def initialize(items)
+    @items = items
+  end
+
+  def label
+    textdomain "example"
+    _("It's complicated")
+  end
+end
+
 module Yast
   class ExampleDialog
     include Yast::I18n
@@ -151,7 +163,7 @@ module Yast
 
       tl_item = ::CWM::PagerTreeItem.new(true_love_tab)
       ln_item = ::CWM::PagerTreeItem.new(lucky_number_tab, children: [tl_item])
-      tabs = ::CWM::TreePager.new(ln_item, label: _("It's complicated"))
+      tabs = ::CWM::TreePager.new(ExampleTree.new([ln_item]))
 
       contents = VBox(tabs)
 
