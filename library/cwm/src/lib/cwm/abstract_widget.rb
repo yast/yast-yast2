@@ -142,6 +142,7 @@ module CWM
 
       res = {}
 
+      res["_cwm_key"] = widget_id
       if respond_to?(:help)
         res["help"] = help
       else

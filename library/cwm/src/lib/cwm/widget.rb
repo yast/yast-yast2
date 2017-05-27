@@ -376,11 +376,12 @@ module CWM
 
     # @return [UITerm]
     def contents
-      ReplacePoint(Id(widget_id), widget_content(@widget))
+      ReplacePoint(Id(widget_id), Empty(Id("____CWM_empty")))
     end
 
+    # Switches to initial widgets
     def init
-      @widget.init if @widget.respond_to?(:init)
+      replace(@widget)
     end
 
     # Replaces content with different widget. All its events are properly
@@ -388,51 +389,37 @@ module CWM
     # @param widget [CWM::AbstractWidget] widget to display and process events
     def replace(widget)
       log.info "replacing with new widget #{widget.inspect}"
-      Yast::UI.ReplaceWidget(Id(widget_id), widget_content(widget))
+      widgets = Yast::CWM.widgets_in_contents([widget])
+      @widgets_hash = widgets.map { |w| Yast::CWM.prepareWidget(w.cwm_definition) }
+      log.info "widgets hash is #{@widgets_hash.inspect}"
+      # VBox as CWM ignore top level term and process string inside it,
+      # so non-container widgets have problem and its value is processed
+      term = Yast::CWM.PrepareDialog(VBox(widget.widget_id), @widgets_hash)
+      log.info "term to use is #{term.inspect}"
+      Yast::UI.ReplaceWidget(Id(widget_id), term)
+      Yast::CWM.initWidgets(@widgets_hash)
       @widget = widget
-      init
+      Yast::CWM.ReplaceWidgetHelp(widget_id, Yast::CWM.MergeHelps(@widgets_hash))
     end
 
-    def help
-      @widget.respond_to?(:help) ? @widget.help : ""
-    end
-
+    # Passes to replace point content
     def handle(event)
-      return unless @widget.respond_to?(:handle)
-
-      if !@widget.handle_all_events
-        return if event["ID"] != @widget.widget_id
-      end
-
-      m = @widget.method(:handle)
-      if m.arity == 0
-        m.call
-      else
-        m.call(event)
-      end
+      Yast::CWM.handleWidgets(@widgets_hash, event)
     end
 
+    # Passes to replace point content
     def validate
-      @widget.respond_to?(:validate) ? @widget.validate : true
+      Yast::CWM.validateWidgets(@widgets_hash, "ID" => widget_id)
     end
 
+    # Passes to replace point content
     def store
-      @widget.store if @widget.respond_to?(:store)
+      Yast::CWM.saveWidgets(@widgets_hash, "ID" => widget_id)
     end
 
+    # Passes to replace point content
     def cleanup
-      @widget.cleanup if @widget.respond_to?(:cleanup)
-    end
-
-  private
-
-    # @param widget [AbstractWidget]
-    # @return [UITerm]
-    def widget_content(widget)
-      definition = widget.cwm_definition
-      definition["_cwm_key"] = widget.widget_id # a bit hacky way to pass widget id
-      definition = Yast::CWM.prepareWidget(definition)
-      definition["widget"]
+      Yast::CWM.cleanupWidgets(@widgets_hash)
     end
   end
 end
