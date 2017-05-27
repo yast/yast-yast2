@@ -79,7 +79,9 @@ module Yast
         :VSquash,
         :HVSquash,
         :HWeight,
-        :VWeight
+        :VWeight,
+        :DumbTab,
+        :ReplacePoint
       ]
     end
 
@@ -137,6 +139,9 @@ module Yast
             arg = ProcessTerm(Convert.to_term(arg), widgets)
           end
         elsif Ops.is_string?(arg) # action
+          Builtins.y2error("find string #{arg} in term #{t.inspect} which is unknown.") unless widgets[arg]
+          Builtins.y2error("Known widgets #{widgets.inspect}") unless widgets[arg]
+
           arg = Ops.get_term(
             widgets,
             [Convert.to_string(arg), "widget"],
