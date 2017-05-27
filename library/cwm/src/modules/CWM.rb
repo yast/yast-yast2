@@ -1090,7 +1090,8 @@ module Yast
         case arg
         when ::CWM::AbstractWidget
           res << arg
-          res.concat(arg.nested_widgets) if arg.respond_to?(:nested_widgets)
+          # if widget have its own content, also search it
+          res.concat(widgets_in_contents(arg.contents)) if arg.respond_to?(:contents)
         when Yast::Term then res.concat(widgets_in_contents(arg))
         end
       end

@@ -43,14 +43,6 @@ module CWM
       super.merge(res)
     end
 
-    # Returns all nested widgets used in contents
-    # @return [Array<AbstractWidget>]
-    def nested_widgets
-      Yast.import "CWM"
-
-      @widgets ||= Yast::CWM.widgets_in_contents(contents)
-    end
-
   protected
 
     # return contents converted to format understandable by CWM module
