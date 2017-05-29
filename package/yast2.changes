@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 29 08:19:46 UTC 2017 - gsouza@suse.com
+
+- bsc#1036440: Warning messages shouldn't open UI in command-line
+  mode
+- 3.1.155.8
+
+-------------------------------------------------------------------
 Tue May  9 11:44:54 UTC 2017 - mvidner@suse.com
 
 - Fixed ArgumentError in Popup.AnyTimedMessage (bsc#988739).
