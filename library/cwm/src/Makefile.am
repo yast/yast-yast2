@@ -13,16 +13,20 @@ module_DATA = \
 ylibdir = @ylibdir@/cwm
 ylib_DATA = \
   lib/cwm/abstract_widget.rb \
+  lib/cwm/common_widgets.rb \
   lib/cwm/custom_widget.rb \
   lib/cwm/page.rb \
   lib/cwm/pager.rb \
+  lib/cwm/replace_point.rb \
   lib/cwm/table.rb \
   lib/cwm/tabs.rb \
   lib/cwm/tree.rb \
   lib/cwm/tree_pager.rb \
   lib/cwm/widget.rb
 
+ylib2dir = @ylibdir@
+ylib2_DATA = lib/cwm.rb
 
-EXTRA_DIST = $(module_DATA) $(ylib_DATA)
+EXTRA_DIST = $(module_DATA) $(ylib_DATA) $(ylib2_DATA)
 
 include $(top_srcdir)/Makefile.am.common

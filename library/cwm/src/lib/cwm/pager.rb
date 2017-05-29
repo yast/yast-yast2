@@ -1,7 +1,8 @@
 require "abstract_method"
 require "yast"
 
-require "cwm/widget"
+require "cwm/custom_widget"
+require "cwm/replace_point"
 
 module CWM
   # A {Pager} contains several {Page}s and makes only one visible at a time.
@@ -96,7 +97,7 @@ module CWM
     end
 
     def replace_point
-      @replace_point = CWM::ReplacePoint.new(id: "_cwm_page_contents_rp", widget: initial_page)
+      @replace_point = ReplacePoint.new(id: "_cwm_page_contents_rp", widget: initial_page)
     end
   end
 end
