@@ -2,7 +2,7 @@
 
 require_relative "example_helper"
 
-require "cwm/widget"
+require "cwm"
 
 Yast.import "CWM"
 Yast.import "Popup"

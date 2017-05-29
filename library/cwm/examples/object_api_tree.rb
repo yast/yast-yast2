@@ -2,7 +2,7 @@
 
 require_relative "example_helper"
 
-require "cwm/widget"
+require "cwm"
 require "cwm/tree_pager"
 
 Yast.import "CWM"

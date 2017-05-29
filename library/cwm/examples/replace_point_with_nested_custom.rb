@@ -4,7 +4,7 @@ require_relative "example_helper"
 
 require "yast"
 
-require "cwm/widget"
+require "cwm"
 
 Yast.import "UI"
 Yast.import "CWM"

@@ -1,3 +1,9 @@
+require "yast"
+require "cwm/custom_widget"
+
+Yast.import "UI"
+Yast.import "CWM"
+
 module CWM
   # Placeholder widget that is used to replace content on demand.
   # The most important method is {#replace} which allows switching content
@@ -7,7 +13,6 @@ module CWM
     # system
     # @param widget [CWM::AbstractWidget] initial widget in placeholder
     def initialize(id: "_placeholder", widget: Empty.new("_initial_placeholder"))
-      Yast.import "CWM"
       self.handle_all_events = true
       self.widget_id = id
       @widget = widget
