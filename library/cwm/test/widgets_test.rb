@@ -62,6 +62,13 @@ end
 
 describe CWM::ReplacePoint do
 
+  let(:widget) { ReplacePointTestWidget.new }
+  subject do
+    res = described_class.new(widget: widget)
+    res.init
+    res
+  end
+
   class ReplacePointTestWidget < CWM::InputField
     def label
       "test"
@@ -95,30 +102,22 @@ describe CWM::ReplacePoint do
       subject = described_class.new(id: "test")
       expect(subject.widget_id).to eq "test"
     end
-
-    it "uses passed widget as initial content" do
-      widget = ReplacePointTestWidget.new
-      subject = described_class.new(widget: widget)
-      expect(widget).to receive(:init)
-      subject.init
-    end
   end
 
   describe "#contents" do
-    it "generates contents including current widget UI definition" do
-      widget = ReplacePointTestWidget.new
-      subject = described_class.new(widget: widget)
-
-      expect(subject.contents).to eq(
-        ReplacePoint(
-          Id(subject.widget_id),
-          InputField(Id(widget.widget_id), Opt(:hstretch), "test")
-        )
-      )
+    it "generates initial content" do
+      expect(subject.contents).to be_a Yast::Term
     end
   end
 
   describe "#init" do
+    it "places passed widget into replace point" do
+      widget = ReplacePointTestWidget.new
+      subject = described_class.new(widget: widget)
+      expect(Yast::UI).to receive(:ReplaceWidget)
+      subject.init
+    end
+
     it "passes init to enclosed widget" do
       widget = ReplacePointTestWidget.new
       subject = described_class.new(widget: widget)
@@ -130,51 +129,34 @@ describe CWM::ReplacePoint do
   describe "#replace" do
     it "changes enclosed widget" do
       subject = described_class.new(widget: CWM::Empty.new(:initial))
-      widget = ReplacePointTestWidget.new
-      expect(widget).to receive(:store)
+      expect(Yast::UI).to receive(:ReplaceWidget)
       subject.replace(widget)
-      subject.store
     end
-  end
 
-  describe "#help" do
-    it "returns help of enclosed widget" do
-      widget = ReplacePointTestWidget.new
-      subject = described_class.new(widget: widget)
-      expect(subject.help).to eq "help"
-    end
-  end
-
-  class ComplexHandleTest < CWM::Empty
-    def handle(_event)
-      nil
+    it "changes help of replace point to help of enclosed widget(-s)" do
+      subject = described_class.new(widget: CWM::Empty.new(:initial))
+      expect(Yast::CWM).to receive(:ReplaceWidgetHelp)
+      subject.replace(widget)
     end
   end
 
   describe "#handle" do
-    # Cannot test arity based dispatcher, because if we mock expect call of widget.handle, it is
-    # replaced by rspec method with -1 arity, causing wrong dispatcher functionality
-
-    it "do nothing if passed event is not widget_id and enclosed widget do not handle all events" do
-      widget = ReplacePointTestWidget.new
-      subject = described_class.new(widget: widget)
-      expect(widget).to_not receive(:handle)
-      subject.handle("ID" => "Not mine")
+    # rspec expect have problem with arity of expected classes
+    # so test failing
+    xit "Passes handle to CWM on active widget" do
+      expect(widget).to receive(:handle)
+      subject.handle("ID" => widget.widget_id)
     end
   end
 
   describe "#validate" do
     it "passes validate to enclosed widget" do
-      widget = ReplacePointTestWidget.new
-      subject = described_class.new(widget: widget)
       expect(subject.validate).to eq false
     end
   end
 
   describe "#store" do
     it "passes store to enclosed widget" do
-      widget = ReplacePointTestWidget.new
-      subject = described_class.new(widget: widget)
       expect(widget).to receive(:store)
       subject.store
     end
@@ -182,8 +164,6 @@ describe CWM::ReplacePoint do
 
   describe "#cleanup" do
     it "passes cleanup to enclosed widget" do
-      widget = ReplacePointTestWidget.new
-      subject = described_class.new(widget: widget)
       expect(widget).to receive(:cleanup)
       subject.cleanup
     end
