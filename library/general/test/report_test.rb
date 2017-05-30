@@ -68,8 +68,8 @@ describe Yast::Report do
       it "prints the message only on console" do
         expect(Yast::CommandLine).to receive("Print")
           .with(/#{message}/)
-        expect(Yast::Popup).to_not receive("Warning")
-        expect(Yast::Popup).to_not receive("TimedWarning")
+        expect(Yast::Popup).to_not receive("Error")
+        expect(Yast::Popup).to_not receive("TimedError")
         subject.Error(message)
       end
     end
