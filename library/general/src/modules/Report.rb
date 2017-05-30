@@ -45,6 +45,7 @@ module Yast
       Yast.import "Mode"
       Yast.import "Popup"
       Yast.import "Summary"
+      Yast.import "CommandLine"
 
       # stored messages
       @errors = []
@@ -486,7 +487,9 @@ module Yast
       Builtins.y2warning(1, "%1", warning_string) if @log_warnings
 
       if @display_warnings
-        if Ops.greater_than(@timeout_warnings, 0)
+        if Mode.commandline
+          CommandLine.Print "Warning: #{warning_string}"
+        elsif Ops.greater_than(@timeout_warnings, 0)
           Popup.TimedWarning(warning_string, @timeout_warnings)
         else
           Popup.Warning(warning_string)
@@ -527,8 +530,7 @@ module Yast
 
       if @display_errors
         if Mode.commandline
-          Yast.import "CommandLine"
-          CommandLine.Print error_string
+          CommandLine.Print "Error: #{error_string}"
         elsif Ops.greater_than(@timeout_errors, 0)
           Popup.TimedError(error_string, @timeout_errors)
         else
