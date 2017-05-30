@@ -11,7 +11,7 @@ describe Yast::Report do
 
   describe ".Warning" do
     let(:show) { true }
-    let (:message) { "Message" }
+    let(:message) { "Message" }
 
     context "while in command-line mode" do
       before(:each) do
@@ -58,7 +58,7 @@ describe Yast::Report do
 
   describe ".Error" do
     let(:show) { true }
-    let (:message) { "Message" }
+    let(:message) { "Message" }
 
     context "while in command-line mode" do
       before(:each) do
