@@ -10,8 +10,8 @@ module_DATA = \
   modules/CWMTab.rb \
   modules/TablePopup.rb
 
-ylibdir = @ylibdir@/cwm
-ylib_DATA = \
+ycwmdir = @ylibdir@/cwm
+ycwm_DATA = \
   lib/cwm/abstract_widget.rb \
   lib/cwm/common_widgets.rb \
   lib/cwm/custom_widget.rb \
@@ -24,9 +24,9 @@ ylib_DATA = \
   lib/cwm/tree_pager.rb \
   lib/cwm/widget.rb
 
-ylib2dir = @ylibdir@
-ylib2_DATA = lib/cwm.rb
+ylibdir = @ylibdir@
+ylib_DATA = lib/cwm.rb
 
-EXTRA_DIST = $(module_DATA) $(ylib_DATA) $(ylib2_DATA)
+EXTRA_DIST = $(module_DATA) $(ylib_DATA) $(ycwm_DATA)
 
 include $(top_srcdir)/Makefile.am.common
