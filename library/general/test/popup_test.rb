@@ -264,7 +264,7 @@ describe Yast::Popup do
       allow(subject).to receive(:RichText).with("<h1>Title</h1>")
       subject.TimedLongErrorGeometry("<h1>Title</h1>", 1, 30, 40)
     end
- 
+
     it "sets dialog width and height" do
       allow(ui).to receive(:TimeoutUserInput)
       allow(subject).to receive(:HSpacing)
