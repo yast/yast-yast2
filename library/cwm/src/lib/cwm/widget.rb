@@ -261,7 +261,7 @@ module CWM
   # Wrapper when combination of old hash based CWM definition needed to be used
   # with new object based one. Useful e.g. when content is provided by other
   # module like CWMFirewallInterfaces.CreateOpenFirewallWidget
-  # @note it does not support common methods and helpers from abstract widget
+  # @note it does not support some of common methods and helpers from abstract widget
   #
   # @example how to initialize object from firewall interface
   #   ::CWM::WrapperWidget.new("firewall",
@@ -269,7 +269,8 @@ module CWM
   #   )
   class WrapperWidget < AbstractWidget
     # Creates new instance with specified id and content
-    # @param widget_id [String] name of widget used as identified, have to be unique
+    # @param widget_id [String] name of widget used as identified, have to be unique.
+    #   It have to be same as real widget id in content, otherwise enable/disable won't work.
     # @param content [Hash<String, Object>] CWM hash definition
     def initialize(widget_id, content)
       self.widget_id = widget_id
@@ -282,32 +283,18 @@ module CWM
     end
 
     def handle_all_events
-      unsupported
+      @content["handle_events"].nil?
     end
 
+    # not supported
+    # @raise [RuntimeError] always when called
     def handle_all_events=(_arg)
-      unsupported
-    end
-
-    def self.widget_type=(_arg)
       raise "Not supported for WrapperWidget"
     end
 
-    def enabled?
-      unsupported
-    end
-
-    def enable
-      unsupported
-    end
-
-    def disable
-      unsupported
-    end
-
-  private
-
-    def unsupported
+    # not supported
+    # @raise [RuntimeError] always when called
+    def self.widget_type=(_arg)
       raise "Not supported for WrapperWidget"
     end
   end
