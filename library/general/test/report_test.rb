@@ -13,44 +13,46 @@ describe Yast::Report do
     let(:show) { true }
     let(:message) { "Message" }
 
+    before do
+        allow(Yast::Mode).to receive(:commandline).and_return(commandline?)
+    end
+
     context "while in command-line mode" do
-      before(:each) do
-        allow(Yast::Mode).to receive(:commandline).and_return(true)
-      end
+      let(:commandline?) { true }
 
       it "prints the message only on console" do
-        expect(Yast::CommandLine).to receive("Print")
+        expect(Yast::CommandLine).to receive(:Print)
           .with(/#{message}/)
-        expect(Yast::Popup).to_not receive("Warning")
-        expect(Yast::Popup).to_not receive("TimedWarning")
+        expect(Yast::Popup).to_not receive(:Warning)
+        expect(Yast::Popup).to_not receive(:TimedWarning)
         subject.Warning(message)
       end
     end
 
     context "while in UI mode and timeout is disabled" do
       let(:timeout) { 0 }
+      let(:commandline?) { false }
 
       before(:each) do
         subject.DisplayWarnings(show, timeout)
-        allow(Yast::Mode).to receive(:commandline).and_return(false)
       end
 
       it "shows a popup" do
-        expect(Yast::Popup).to receive("Warning").with(/#{message}/)
+        expect(Yast::Popup).to receive(:Warning).with(/#{message}/)
         subject.Warning(message)
       end
     end
 
     context "while in UI mode and timeout is enabled" do
       let(:timeout) { 1 }
+      let(:commandline?) { false }
 
       before(:each) do
         subject.DisplayWarnings(show, timeout)
-        allow(Yast::Mode).to receive(:commandline).and_return(false)
       end
 
       it "shows timed popup" do
-        expect(Yast::Popup).to receive("TimedWarning").with(/#{message}/, timeout)
+        expect(Yast::Popup).to receive(:TimedWarning).with(/#{message}/, timeout)
         subject.Warning(message)
       end
     end
@@ -60,44 +62,46 @@ describe Yast::Report do
     let(:show) { true }
     let(:message) { "Message" }
 
+    before do
+        allow(Yast::Mode).to receive(:commandline).and_return(commandline?)
+    end
+    
     context "while in command-line mode" do
-      before(:each) do
-        allow(Yast::Mode).to receive(:commandline).and_return(true)
-      end
+      let(:commandline?) { true }
 
       it "prints the message only on console" do
-        expect(Yast::CommandLine).to receive("Print")
+        expect(Yast::CommandLine).to receive(:Print)
           .with(/#{message}/)
-        expect(Yast::Popup).to_not receive("Error")
-        expect(Yast::Popup).to_not receive("TimedError")
+        expect(Yast::Popup).to_not receive(:Error)
+        expect(Yast::Popup).to_not receive(:TimedError)
         subject.Error(message)
       end
     end
 
     context "while in UI mode and timeout is disabled" do
       let(:timeout) { 0 }
+      let(:commandline?) { false }
 
       before(:each) do
         subject.DisplayErrors(show, timeout)
-        allow(Yast::Mode).to receive(:commandline).and_return(false)
       end
 
       it "shows a popup" do
-        expect(Yast::Popup).to receive("Error").with(/#{message}/)
+        expect(Yast::Popup).to receive(:Error).with(/#{message}/)
         subject.Error(message)
       end
     end
 
     context "while in UI mode and timeout is enabled" do
       let(:timeout) { 1 }
+      let(:commandline?) { false }
 
       before(:each) do
         subject.DisplayErrors(show, timeout)
-        allow(Yast::Mode).to receive(:commandline).and_return(false)
       end
 
       it "shows a timed popup" do
-        expect(Yast::Popup).to receive("TimedError").with(/#{message}/, timeout)
+        expect(Yast::Popup).to receive(:TimedError).with(/#{message}/, timeout)
         subject.Error(message)
       end
     end

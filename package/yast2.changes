@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Mon May 29 08:19:46 UTC 2017 - gsouza@suse.com
 
-- bsc#1036440: Warning messages shouldn't open UI in command-line
-  mode
+- Warning messages shouldn't open UI in command-line (bsc#1036440)
+  mode.
 - 3.1.155.8
 
 -------------------------------------------------------------------
