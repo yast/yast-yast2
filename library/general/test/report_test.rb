@@ -14,7 +14,7 @@ describe Yast::Report do
     let(:message) { "Message" }
 
     before do
-        allow(Yast::Mode).to receive(:commandline).and_return(commandline?)
+      allow(Yast::Mode).to receive(:commandline).and_return(commandline?)
     end
 
     context "while in command-line mode" do
@@ -63,9 +63,9 @@ describe Yast::Report do
     let(:message) { "Message" }
 
     before do
-        allow(Yast::Mode).to receive(:commandline).and_return(commandline?)
+      allow(Yast::Mode).to receive(:commandline).and_return(commandline?)
     end
-    
+   
     context "while in command-line mode" do
       let(:commandline?) { true }
 
