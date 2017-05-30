@@ -6,7 +6,6 @@ require "cwm/common_widgets" # needed for input field
 require "cwm/replace_point"
 require "cwm/rspec"
 
-
 describe CWM::ReplacePoint do
 
   let(:widget) { ReplacePointTestWidget.new }
