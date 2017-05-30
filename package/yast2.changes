@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue May 30 15:12:28 UTC 2017 - jreidinger@suse.com
+
+- Fix CWM::ReplacePoint to work with CWM::Custom widget and use it
+  in all pagers (boo#1039901)
+- 3.2.33
+
+-------------------------------------------------------------------
 Mon May 22 12:01:15 UTC 2017 - mvidner@suse.com
 
 - Added CWM::Pager, CWM::Tree + CWM::TreeItem,
