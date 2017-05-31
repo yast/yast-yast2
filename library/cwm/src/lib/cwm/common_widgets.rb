@@ -271,6 +271,8 @@ module CWM
 
   # A selection of a value via radio buttons.
   # The {#label} method is mandatory.
+  # @note if radio buttons are modified during runtime, like with #change_items
+  #   then handle won't work correctly unless handle_all_events specified
   #
   # @see {ComboBox} for child example
   class RadioButtons < AbstractWidget
@@ -311,6 +313,12 @@ module CWM
       additional = {}
       additional["vspacing"] = vspacing if respond_to?(:vspacing)
       additional["hspacing"] = hspacing if respond_to?(:hspacing)
+      # handle_events are by default widget_id, but in radio buttons, events are
+      # in fact single RadioButton
+      if !handle_all_events
+        event_ids = items.map(&:first)
+        additional["handle_events"] = event_ids
+      end
 
       super.merge(additional)
     end
