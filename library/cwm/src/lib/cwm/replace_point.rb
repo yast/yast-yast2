@@ -12,7 +12,7 @@ module CWM
     # placeholder needed to be in dialog. Parameter type is limited by component
     # system
     # @param widget [CWM::AbstractWidget] initial widget in placeholder
-    def initialize(id: "_placeholder", widget: Empty.new("_initial_placeholder"))
+    def initialize(id: "_placeholder", widget:)
       self.handle_all_events = true
       self.widget_id = id
       @widget = widget
@@ -20,10 +20,10 @@ module CWM
 
     # @return [UITerm]
     def contents
-      # Use for contents empty widget, because if @widget passed to constructor
-      # will be used then CWM itself will handle events for this initial widget.
-      # This is against replace point idea that replace point due to its dynamic
-      # content will handle events itself
+      # In `contents` we must use an Empty Term, otherwise CWMClass
+      # would see an {AbstractWidget} and handle events itself,
+      # which result in double calling of methods like {handle} or {store} for
+      # initial widget.
       ReplacePoint(Id(widget_id), Empty(Id("___cwm_rp_empty")))
     end
 
