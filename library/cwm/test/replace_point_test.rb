@@ -45,7 +45,7 @@ describe CWM::ReplacePoint do
 
   describe ".new" do
     it "has widget_id as passed" do
-      subject = described_class.new(id: "test")
+      subject = described_class.new(id: "test", widget: widget)
       expect(subject.widget_id).to eq "test"
     end
   end
