@@ -30,6 +30,8 @@
 #
 require "yast"
 
+require "cwm/abstract_widget"
+
 module Yast
   class CWMClass < Module
     def main
@@ -77,7 +79,9 @@ module Yast
         :VSquash,
         :HVSquash,
         :HWeight,
-        :VWeight
+        :VWeight,
+        :DumbTab,
+        :ReplacePoint
       ]
     end
 
@@ -135,6 +139,9 @@ module Yast
             arg = ProcessTerm(Convert.to_term(arg), widgets)
           end
         elsif Ops.is_string?(arg) # action
+          Builtins.y2error("find string '#{arg}' without associated widget in StringTerm #{t.inspect}") unless widgets[arg]
+          Builtins.y2milestone("Known widgets #{widgets.inspect}") unless widgets[arg]
+
           arg = Ops.get_term(
             widgets,
             [Convert.to_string(arg), "widget"],
@@ -1084,12 +1091,12 @@ module Yast
 
     # @return [Array<::CWM::AbstractWidget>]
     def widgets_in_contents(contents)
-      require "cwm/widget"
-
       contents.each_with_object([]) do |arg, res|
         case arg
-        when ::CWM::CustomWidget then res.concat(arg.nested_widgets) << arg
-        when ::CWM::AbstractWidget then res << arg
+        when ::CWM::AbstractWidget
+          res << arg
+          # if widget have its own content, also search it
+          res.concat(widgets_in_contents(arg.contents)) if arg.respond_to?(:contents)
         when Yast::Term then res.concat(widgets_in_contents(arg))
         end
       end
@@ -1098,8 +1105,6 @@ module Yast
     # @param  [::CWM::WidgetTerm] contents
     # @return [::CWM::StringTerm]
     def widgets_contents(contents)
-      require "cwm/widget"
-
       res = contents.clone
 
       (0..(res.size - 1)).each do |index|

@@ -24,10 +24,6 @@ module CWM
   # A {Pager} for the GUI, using the DumbTab widget.
   # Do not instantiate directly, use {Tabs}.
   class DumbTabPager < Pager
-  #
-
-  protected
-
     # visually mark currently active tab
     # @param page [Page]
     def mark_page(page)
@@ -37,7 +33,7 @@ module CWM
     def contents
       panes = page_order.map do |page_id|
         page = page_for_id(page_id)
-        Item(Id(page.widget_id), page.label, page.widget_id == initial_page_id)
+        Item(Id(page.widget_id), page.label, page == initial_page)
       end
       DumbTab(Id(widget_id), panes, replace_point)
     end
@@ -46,10 +42,6 @@ module CWM
   # A {Pager} for ncurses, using PushButtons to simulate the tabs.
   # Do not instantiate directly, use {Tabs}.
   class PushButtonTabPager < Pager
-  #
-
-  protected
-
     # visually mark currently active tab
     # @param page [Page]
     def mark_page(page)
