@@ -3,6 +3,7 @@ Wed May 31 08:13:57 UTC 2017 - jreidinger@suse.com
 
 - Fix CWM::ReplacePoint to work with CWM::Custom widget and use it
   in all pagers (boo#1039901)
+- Fix calling handle in CWM::RadioButtons
 - 3.2.34
 
 -------------------------------------------------------------------
