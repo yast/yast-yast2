@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May 31 08:13:56 UTC 2017 - gsouza@suse.com
+
+- Warning messages shouldn't open UI in command-line mode
+  (bsc#1036440).
+- 3.2.33
+
+-------------------------------------------------------------------
 Mon May 22 12:01:15 UTC 2017 - mvidner@suse.com
 
 - Added CWM::Pager, CWM::Tree + CWM::TreeItem,
