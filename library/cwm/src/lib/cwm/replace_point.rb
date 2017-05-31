@@ -20,7 +20,16 @@ module CWM
 
     # @return [UITerm]
     def contents
-      ReplacePoint(Id(widget_id), @widget)
+      # Use for contents empty widget, because if @widget passed to constructor
+      # will be used then CWM itself will handle events for this initial widget.
+      # This is against replace point idea that replace point due to its dynamic
+      # content will handle events itself
+      ReplacePoint(Id(widget_id), Empty(Id("___cwm_rp_empty")))
+    end
+
+    # switches to initial widget
+    def init
+      replace(@widget)
     end
 
     # Replaces content with different widget. All its events are properly
