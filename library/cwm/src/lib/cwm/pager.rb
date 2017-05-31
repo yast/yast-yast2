@@ -74,7 +74,7 @@ module CWM
     abstract_method :mark_page
 
     # The contents will probably include a *selector*, such as {Tabs}
-    # or {Tree} and a {replace_point} where {Page}s will appear.
+    # or {Tree} and must include {#replace_point} where {Page}s will appear.
     # @return [WidgetTerm]
     abstract_method :contents
 
@@ -87,17 +87,12 @@ module CWM
       initial || @pages.first
     end
 
-    # gets id of initial page
-    def initial_page_id
-      initial_page.widget_id
-    end
-
     def page_for_id(id)
       @pages.find { |t| t.widget_id == id }
     end
 
     def replace_point
-      @replace_point = ReplacePoint.new(id: "_cwm_page_contents_rp", widget: initial_page)
+      @replace_point ||= ReplacePoint.new(id: "_cwm_page_contents_rp", widget: initial_page)
     end
   end
 end

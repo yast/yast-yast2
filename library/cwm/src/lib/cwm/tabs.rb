@@ -33,7 +33,7 @@ module CWM
     def contents
       panes = page_order.map do |page_id|
         page = page_for_id(page_id)
-        Item(Id(page.widget_id), page.label, page.widget_id == initial_page_id)
+        Item(Id(page.widget_id), page.label, page == initial_page)
       end
       DumbTab(Id(widget_id), panes, replace_point)
     end

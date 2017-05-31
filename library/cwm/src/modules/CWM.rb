@@ -139,8 +139,8 @@ module Yast
             arg = ProcessTerm(Convert.to_term(arg), widgets)
           end
         elsif Ops.is_string?(arg) # action
-          Builtins.y2error("find string #{arg} in term #{t.inspect} which is unknown.") unless widgets[arg]
-          Builtins.y2error("Known widgets #{widgets.inspect}") unless widgets[arg]
+          Builtins.y2error("find string '#{arg}' without associated widget in StringTerm #{t.inspect}") unless widgets[arg]
+          Builtins.y2milestone("Known widgets #{widgets.inspect}") unless widgets[arg]
 
           arg = Ops.get_term(
             widgets,
