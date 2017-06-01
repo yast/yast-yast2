@@ -3,6 +3,7 @@
 require_relative "example_helper"
 
 require "cwm"
+require "cwm/tree_pager"
 
 Yast.import "CWM"
 Yast.import "Popup"
@@ -136,6 +137,18 @@ private
   end
 end
 
+class ExampleTree < CWM::Tree
+  attr_reader :items
+  def initialize(items)
+    @items = items
+  end
+
+  def label
+    textdomain "example"
+    _("It's complicated")
+  end
+end
+
 module Yast
   class ExampleDialog
     include Yast::I18n
@@ -148,12 +161,14 @@ module Yast
       lucky_number_tab = LuckyNumberTab.new
       true_love_tab = TrueLoveTab.new
 
-      tabs = ::CWM::Tabs.new(lucky_number_tab, true_love_tab)
+      tl_item = ::CWM::PagerTreeItem.new(true_love_tab)
+      ln_item = ::CWM::PagerTreeItem.new(lucky_number_tab, children: [tl_item])
+      tabs = ::CWM::TreePager.new(ExampleTree.new([ln_item]))
 
       contents = VBox(tabs)
 
       Yast::Wizard.CreateDialog
-      CWM.show(contents, caption: _("Tabs example"))
+      CWM.show(contents, caption: _("Tree Pager Example"))
       Yast::Wizard.CloseDialog
 
       log.info "Lucky number: #{lucky_number_tab.result}, true love: #{true_love_tab.result}"

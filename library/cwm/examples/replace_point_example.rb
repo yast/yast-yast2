@@ -4,7 +4,7 @@ require_relative "example_helper"
 
 require "yast"
 
-require "cwm/widget"
+require "cwm"
 
 Yast.import "UI"
 Yast.import "CWM"
@@ -53,7 +53,7 @@ class StoreWidget < CWM::InputField
   end
 end
 
-widgets = [PopupButtonWidget.new, CWM::Empty.new(:empty), StoreWidget.new]
+widgets = [PopupButtonWidget.new, CWM::Empty.new("empty"), StoreWidget.new]
 replace_point = CWM::ReplacePoint.new(widget: widgets.first)
 
 content = Yast::Term.new(:VBox,

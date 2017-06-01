@@ -21,7 +21,14 @@ describe ".etc.fstab" do
       root = File.join(File.dirname(__FILE__), "test_root2")
       change_scr_root(root)
       expect(content).to be_a(Array)
+    end
 
+    it "can read fstab containing just whitespace lines" do
+      reset_scr_root
+      root = File.join(File.dirname(__FILE__), "test_root3")
+      change_scr_root(root)
+      # all lines are returned
+      expect(content.size).to eq(6)
     end
 
     it "returns an array containing nfs entries" do

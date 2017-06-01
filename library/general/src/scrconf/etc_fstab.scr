@@ -42,10 +42,17 @@
  */
 .etc.fstab
 
+/*
+ * Note: the same agent definition is used in
+ * https://github.com/yast/yast-update/blob/e2052274034f5240e9f09bceae7c6d888b18468d/src/modules/RootPart.rb#L812
+ * apply any fixes also there.
+ */
+
 `ag_anyagent(
   `Description (
       (`File("/etc/fstab")),	// real file name
-      "#\n",			// Comment
+      // tab and space is a workaround for white space only lines (bsc#1030425)
+      "#\n\t ",			// Comment
       false,			// read-only
       (`List (
 	`Tuple (
