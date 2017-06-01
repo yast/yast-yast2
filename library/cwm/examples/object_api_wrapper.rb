@@ -16,9 +16,10 @@ module Yast
       textdomain "example"
 
       contents = HBox(
-        ::CWM::WrapperWidget.new("firewall",
-          CWMFirewallInterfaces.CreateOpenFirewallWidget("services" => ["service:sshd", "service:ntp"]))
-      )
+        ::CWM::WrapperWidget.new(
+          CWMFirewallInterfaces.CreateOpenFirewallWidget("services" => ["service:sshd", "service:ntp"]),
+          id: "firewall"
+      ))
 
       Yast::Wizard.CreateDialog
       CWM.show(contents, caption: _("Wrapper"))
