@@ -17,7 +17,7 @@ module CWM
     # @param id [String] name of widget used as identified, have to be unique.
     #   It have to be same as real widget id in content, otherwise enable/disable won't work.
     #   If nil is used, it use default widget_id from class name.
-    # @param content [CWM::StringTerm] CWM hash definition
+    # @param content [CWM::WidgetHash] CWM hash definition
     def initialize(content, id: nil)
       self.widget_id = id if id
       @content = content
