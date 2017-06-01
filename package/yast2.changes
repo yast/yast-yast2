@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jun 01 08:13:57 UTC 2017 - jreidinger@suse.com
+
+- CWM: Add object wrapper to allow running object CWM with old
+  hash style widgets (bsc#1032725)
+- fix nested pagers to have unique ids
+- 3.2.35
+
+-------------------------------------------------------------------
 Wed May 31 08:13:57 UTC 2017 - jreidinger@suse.com
 
 - Fix CWM::ReplacePoint to work with CWM::Custom widget and use it
