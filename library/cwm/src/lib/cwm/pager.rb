@@ -92,7 +92,7 @@ module CWM
     end
 
     def replace_point
-      @replace_point ||= ReplacePoint.new(id: "_cwm_page_contents_rp", widget: initial_page)
+      @replace_point ||= ReplacePoint.new(id: "replace_point_#{widget_id}", widget: initial_page)
     end
   end
 end
