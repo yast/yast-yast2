@@ -19,7 +19,8 @@ module Yast
         ::CWM::WrapperWidget.new(
           CWMFirewallInterfaces.CreateOpenFirewallWidget("services" => ["service:sshd", "service:ntp"]),
           id: "firewall"
-      ))
+        )
+      )
 
       Yast::Wizard.CreateDialog
       CWM.show(contents, caption: _("Wrapper"))
