@@ -19,5 +19,3 @@ describe CWM::WrapperWidget do
     end
   end
 end
-
-
