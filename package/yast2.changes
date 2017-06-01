@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun  1 12:45:01 UTC 2017 - jreidinger@suse.com
+
+- Fix distribution of new CWM::WrapperWidget (bsc#1032725)
+- 3.2.36
+
+-------------------------------------------------------------------
 Thu Jun 01 08:13:57 UTC 2017 - jreidinger@suse.com
 
 - CWM: Add object wrapper to allow running object CWM with old
