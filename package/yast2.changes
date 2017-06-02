@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun  2 15:54:34 UTC 2017 - jlopez@suse.com
+
+- Add EventDispatcher#event_handler to allow custom events
+  management, for example to delegate to a widget. 
+- 3.2.37
+
+-------------------------------------------------------------------
 Thu Jun  1 12:45:01 UTC 2017 - jreidinger@suse.com
 
 - Fix distribution of new CWM::WrapperWidget (bsc#1032725)
