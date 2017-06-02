@@ -37,12 +37,51 @@ module UI
 
       loop do
         input = user_input
-        raise "Unknown action #{input}" unless respond_to?(:"#{input}_handler")
-
-        send(:"#{input}_handler")
-
+        event_handler(input)
         return @_finish_dialog_value if @_finish_dialog_flag
       end
+    end
+
+    # General dialog events handler.
+    # Can be redefined to modify the way of managing events, for example when
+    # some events need to be delegated to a widget.
+    # @example delegate events
+    #    class OKDialog
+    #     include Yast::UIShortcuts
+    #     include UI::EventDispatcher
+    #     Yast.import "UI"
+    #
+    #     def initialize
+    #       @widget = Widget.new
+    #     end
+    #
+    #     def run
+    #       return nil unless Yast::UI.OpenDialog(
+    #         HBox(
+    #           PushButton(Id(:ok), "OK"),
+    #           PushButton(Id(:cancel), "Cancel")
+    #         )
+    #       )
+    #       begin
+    #         return event_loop
+    #       ensure
+    #          Yast::UI.CloseDialog
+    #       end
+    #     end
+    #
+    #     def event_handler(input)
+    #       @widget.handler(input)
+    #       case input
+    #       when :ok
+    #         finish_dialog(:ok)
+    #       when :cancel
+    #         finish_dialog(:cancel)
+    #       end
+    #     end
+    #   end
+    def event_handler(input)
+      raise "Unknown action #{input}" unless respond_to?(:"#{input}_handler")
+      send(:"#{input}_handler")
     end
 
     # Reads input for next event dispath
