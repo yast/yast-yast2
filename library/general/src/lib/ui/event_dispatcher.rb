@@ -37,14 +37,15 @@ module UI
 
       loop do
         input = user_input
-        event_handler(input)
+        handle_event(input)
         return @_finish_dialog_value if @_finish_dialog_flag
       end
     end
 
     # General dialog events handler.
     # Can be redefined to modify the way of managing events, for example when
-    # some events need to be delegated to a widget.
+    # some events need to be delegated to a widget. To use this method in
+    # combination with default *_handler methods, call to super.
     # @example delegate events
     #    class OKDialog
     #     include Yast::UIShortcuts
@@ -69,17 +70,16 @@ module UI
     #       end
     #     end
     #
-    #     def event_handler(input)
-    #       @widget.handler(input)
+    #     def handle_event(input)
     #       case input
-    #       when :ok
-    #         finish_dialog(:ok)
-    #       when :cancel
-    #         finish_dialog(:cancel)
+    #       when :ok, :cancel
+    #         super
+    #       else
+    #         @widget.handle(input)
     #       end
     #     end
     #   end
-    def event_handler(input)
+    def handle_event(input)
       raise "Unknown action #{input}" unless respond_to?(:"#{input}_handler")
       send(:"#{input}_handler")
     end

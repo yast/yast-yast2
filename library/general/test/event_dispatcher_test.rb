@@ -32,12 +32,10 @@ class DispatcherUserInputTestDialog
   end
 end
 
-class DispatcherEventHandlerTestDialog
-  include Yast::UIShortcuts
+class DispatcherHandleEventTestDialog
   include UI::EventDispatcher
-  Yast.import "UI"
 
-  def event_handler(_input)
+  def handle_event(_input)
     finish_dialog(:always_cancel)
   end
 end
@@ -79,10 +77,10 @@ describe UI::EventDispatcher do
       dialog.event_loop
     end
 
-    it "uses custom event_handler to manage events" do
+    it "uses custom handle_event to manage events" do
       mock_ui_events(:ok)
 
-      dialog = DispatcherEventHandlerTestDialog.new
+      dialog = DispatcherHandleEventTestDialog.new
       expect(dialog.event_loop).to eq(:always_cancel)
     end
   end
