@@ -32,6 +32,14 @@ class DispatcherUserInputTestDialog
   end
 end
 
+class DispatcherHandleEventTestDialog
+  include UI::EventDispatcher
+
+  def handle_event(input)
+    finish_dialog(input)
+  end
+end
+
 describe UI::EventDispatcher do
   subject { DispatcherTestDialog.new }
 
@@ -67,6 +75,13 @@ describe UI::EventDispatcher do
       expect(Yast::UI).to_not receive(:UserInput)
 
       dialog.event_loop
+    end
+
+    it "uses custom handle_event to manage other events" do
+      mock_ui_events(:other)
+
+      dialog = DispatcherHandleEventTestDialog.new
+      expect(dialog.event_loop).to eq(:other)
     end
   end
 

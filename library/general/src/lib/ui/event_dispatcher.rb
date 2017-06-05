@@ -2,6 +2,7 @@ require "yast"
 
 module UI
   # Provides switch between event_loop and dispatching to handlers.
+  # A #handle_event method can be defined to delegate some events.
   # @example simple OK/cancel dialog
   #   class OKDialog
   #     include Yast::UIShortcuts
@@ -27,6 +28,10 @@ module UI
   #       finish_dialog(:ok)
   #       log.info "OK button pressed"
   #     end
+  #
+  #     def handle_event(input)
+  #       widget.handler(input)
+  #     end
   #   end
   module EventDispatcher
     # Does UI event dispatching.
@@ -37,9 +42,14 @@ module UI
 
       loop do
         input = user_input
-        raise "Unknown action #{input}" unless respond_to?(:"#{input}_handler")
 
-        send(:"#{input}_handler")
+        if respond_to?(:"#{input}_handler")
+          public_send(:"#{input}_handler")
+        elsif respond_to?(:handle_event)
+          public_send(:handle_event, input)
+        else
+          raise "Unknown action #{input}"
+        end
 
         return @_finish_dialog_value if @_finish_dialog_flag
       end
