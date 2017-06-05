@@ -2,7 +2,8 @@
 Fri Jun  2 15:54:34 UTC 2017 - jlopez@suse.com
 
 - Add EventDispatcher#event_handler to allow custom events
-  management, for example to delegate to a widget. 
+  management, for example to delegate to a widget. Part of
+  (fate#305633)
 - 3.2.37
 
 -------------------------------------------------------------------
