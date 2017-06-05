@@ -36,7 +36,7 @@ class DispatcherHandleEventTestDialog
   include UI::EventDispatcher
 
   def handle_event(_input)
-    finish_dialog(:always_cancel)
+    finish_dialog(:other)
   end
 end
 
@@ -77,11 +77,11 @@ describe UI::EventDispatcher do
       dialog.event_loop
     end
 
-    it "uses custom handle_event to manage events" do
-      mock_ui_events(:ok)
+    it "uses custom handle_event to manage other events" do
+      mock_ui_events(:other)
 
       dialog = DispatcherHandleEventTestDialog.new
-      expect(dialog.event_loop).to eq(:always_cancel)
+      expect(dialog.event_loop).to eq(:other)
     end
   end
 
