@@ -35,8 +35,8 @@ end
 class DispatcherHandleEventTestDialog
   include UI::EventDispatcher
 
-  def handle_event(_input)
-    finish_dialog(:other)
+  def handle_event(input)
+    finish_dialog(input)
   end
 end
 
