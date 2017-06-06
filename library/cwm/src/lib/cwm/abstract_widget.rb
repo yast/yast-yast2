@@ -83,6 +83,15 @@ module CWM
     # @!method help
     #   @return [String] translated help text for the widget
 
+    # @!method dynamic_help
+    #   Dynamic help is useful when content of help text is not static and when
+    #   help is recomputed with {Yast::CWM#ReplaceWidgetHelp}, then it can
+    #   return different result. Examples where it is useful is e.g. replace point which
+    #   have dynamic content and different help text depending on what is displayed.
+    #   Another example is CWM::Table which can have dynamic header depending on conditions.
+    #   In those cases after call of {Yast::CWM#ReplaceWidgetHelp}, it will return new help text
+    #   @return [String] translated help text for the widget.
+
     # @!method label
     #   Derived classes must override this method to specify a label.
     #   @return [String] translated label text for the widget
@@ -145,6 +154,8 @@ module CWM
       res["_cwm_key"] = widget_id
       if respond_to?(:help)
         res["help"] = help
+      elsif respond_to?(:dynamic_help)
+        res["help"] = dynamic_help_method
       else
         res["no_help"] = ""
       end
@@ -210,6 +221,10 @@ module CWM
 
     def handle_method
       fun_ref(method(:handle_wrapper), "symbol (string, map)")
+    end
+
+    def dynamic_help_method
+      fun_ref(method(:dynamic_help), "string ()")
     end
 
     # allows both variant of handle. with event map and without.
