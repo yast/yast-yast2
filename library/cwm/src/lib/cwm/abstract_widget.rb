@@ -222,7 +222,7 @@ module CWM
     end
 
     def help_method
-      fun_ref(method(:dynamic_help), "string ()")
+      fun_ref(method(:help), "string ()")
     end
 
     # allows both variant of handle. with event map and without.
