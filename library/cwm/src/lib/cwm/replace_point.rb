@@ -44,7 +44,7 @@ module CWM
       Yast::UI.ReplaceWidget(Id(widget_id), term)
       Yast::CWM.initWidgets(@widgets_hash)
       @widget = widget
-      Yast::CWM.ReplaceWidgetHelp
+      refresh_help
     end
 
     # Passes to replace point content
@@ -53,7 +53,7 @@ module CWM
     end
 
     # Dynamic help, that compute help of current displayed widgets
-    def dynamic_help
+    def help
       Yast::CWM.MergeHelps(@widgets_hash)
     end
 

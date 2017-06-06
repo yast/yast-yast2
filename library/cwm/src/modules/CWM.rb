@@ -241,11 +241,7 @@ module Yast
         when "help"
           # help can be static string or dynamic callback, that allows to recompute help for
           # widgets with dynamic contents like replace_point
-          if value.is_a?(::String)
-            true
-          else
-            Ops.is(value, "string ()")
-          end
+          Ops.is(value, "string") || Ops.is(value, "string ()")
         else
           # unknown key, always valid
           true

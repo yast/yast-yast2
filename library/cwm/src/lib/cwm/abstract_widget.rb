@@ -1,4 +1,5 @@
 require "abstract_method"
+require "yast"
 
 module CWM
   # A Yast::Term that can be passed as is to Yast::UI methods
@@ -81,16 +82,8 @@ module CWM
     # used by Yast::CWMClass.
 
     # @!method help
+    #   Called only once by default. Also triggered by {#refresh_help}.
     #   @return [String] translated help text for the widget
-
-    # @!method dynamic_help
-    #   Dynamic help is useful when content of help text is not static and when
-    #   help is recomputed with {Yast::CWM#ReplaceWidgetHelp}, then it can
-    #   return different result. Examples where it is useful is e.g. replace point which
-    #   have dynamic content and different help text depending on what is displayed.
-    #   Another example is CWM::Table which can have dynamic header depending on conditions.
-    #   In those cases after call of {Yast::CWM#ReplaceWidgetHelp}, it will return new help text
-    #   @return [String] translated help text for the widget.
 
     # @!method label
     #   Derived classes must override this method to specify a label.
@@ -153,9 +146,7 @@ module CWM
 
       res["_cwm_key"] = widget_id
       if respond_to?(:help)
-        res["help"] = help
-      elsif respond_to?(:dynamic_help)
-        res["help"] = dynamic_help_method
+        res["help"] = help_method
       else
         res["no_help"] = ""
       end
@@ -200,6 +191,13 @@ module CWM
       widget_id == event["ID"]
     end
 
+    # A widget will need to call this if its {#help} text has changed,to make the change effective.
+    def refresh_help
+      Yast.import "CWM"
+
+      Yast::CWM.ReplaceWidgetHelp
+    end
+
     # shortcut from Yast namespace to avoid including whole namespace
     # @todo kill converts in CWM module, to avoid this workaround for funrefs
     # @return [Yast::FunRef]
@@ -223,7 +221,7 @@ module CWM
       fun_ref(method(:handle_wrapper), "symbol (string, map)")
     end
 
-    def dynamic_help_method
+    def help_method
       fun_ref(method(:dynamic_help), "string ()")
     end
 
