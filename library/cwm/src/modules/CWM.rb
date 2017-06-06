@@ -246,6 +246,9 @@ module Yast
           else
             Ops.is(value, "string ()")
           end
+        else
+          # unknown key, always valid
+          true
         end
       else
         success = ValidateBasicType(value, type)
