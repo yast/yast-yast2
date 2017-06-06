@@ -737,6 +737,8 @@ module Yast
     # @param [Array<::CWM::WidgetHash>] widgets a list of widget description maps
     # @return [String] merged helps of the widgets
     def MergeHelps(widgets)
+      return "" unless widgets
+
       helps = widgets.map do |widget|
         help = widget["help"]
         help.respond_to?(:call) ? help.call : help
