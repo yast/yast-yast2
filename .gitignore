@@ -1,3 +1,6 @@
+*.pot
+*.log
+*.trs
 Makefile
 /Makefile.am
 Makefile.am.common
@@ -12,6 +15,7 @@ config.*
 configure
 configure.in
 configure.ac
+coverage/
 install-sh
 pluglib-bindings.ami
 */.dep
