@@ -78,3 +78,25 @@ RSpec.shared_examples "CWM::ComboBox" do
   include_examples "CWM::AbstractWidget"
   include_examples "CWM::ItemsSelection"
 end
+
+RSpec.shared_examples "CWM::Table" do
+  include_examples "CWM::AbstractWidget"
+
+  describe "#header" do
+    it "produces an array of strings" do
+      expect(subject.header).to be_an Enumerable
+      subject.header.each do |header|
+        expect(header).to be_a String
+      end
+    end
+  end
+
+  describe "#items" do
+    it "produces an array of arrays" do
+      expect(subject.items).to be_an Enumerable
+      subject.items.each do |item|
+        expect(item).to be_a Array
+      end
+    end
+  end
+end
