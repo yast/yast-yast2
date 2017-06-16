@@ -1,4 +1,5 @@
 require "abstract_method"
+require "yast"
 
 module CWM
   # A Yast::Term that can be passed as is to Yast::UI methods
@@ -81,6 +82,7 @@ module CWM
     # used by Yast::CWMClass.
 
     # @!method help
+    #   Called only once by default. Also triggered by {#refresh_help}.
     #   @return [String] translated help text for the widget
 
     # @!method label
@@ -144,7 +146,7 @@ module CWM
 
       res["_cwm_key"] = widget_id
       if respond_to?(:help)
-        res["help"] = help
+        res["help"] = help_method
       else
         res["no_help"] = ""
       end
@@ -189,6 +191,13 @@ module CWM
       widget_id == event["ID"]
     end
 
+    # A widget will need to call this if its {#help} text has changed,to make the change effective.
+    def refresh_help
+      Yast.import "CWM"
+
+      Yast::CWM.ReplaceWidgetHelp
+    end
+
     # shortcut from Yast namespace to avoid including whole namespace
     # @todo kill converts in CWM module, to avoid this workaround for funrefs
     # @return [Yast::FunRef]
@@ -210,6 +219,10 @@ module CWM
 
     def handle_method
       fun_ref(method(:handle_wrapper), "symbol (string, map)")
+    end
+
+    def help_method
+      fun_ref(method(:help), "string ()")
     end
 
     # allows both variant of handle. with event map and without.

@@ -1,8 +1,6 @@
 Dump	========================================
 Dump	==========   Common stuff   ============
 Dump	========================================
-Log	Error on key help of widget w1: Empty help
-Log	Error on key help of widget w2: Empty help
 Dump	W1: $["_cwm_key":"w1", "custom_widget":nil, "handle":<YCPRef:symbol w1_handle (string, map<any,any>)>, "init":<YCPRef:void w1_init (string)>, "label":"Check&Box", "opt":[`notify, `immediate], "validate_function":<YCPRef:boolean w1_validate (string, map<any,any>)>, "validate_type":`function, "widget":`CheckBox (`id ("w1"), `opt (`notify, `immediate), "Check&Box")]
 Dump	W2: $["_cwm_key":"w2", "custom_widget":nil, "handle":<YCPRef:symbol w2_handle (string, map<any,any>)>, "label":"Text&Entry", "store":<YCPRef:void w2_store (string, map<any,any>)>, "validate_function":<YCPRef:boolean w2_validate (string, map<any,any>)>, "validate_type":`function, "widget":`InputField (`id ("w2"), `opt (`hstretch), "Text&Entry")]
 Dump	========================================

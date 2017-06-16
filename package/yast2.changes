@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Jun  6 10:33:22 UTC 2017 - jreidinger@suse.com
+
+- Fix showing help text when CWM::ReplacePoint contains another
+  CWM::ReplacePoint. Fix including new
+  CWM::AbstractWidget#refresh_help functionality for widgets where
+  help text can change during its lifetime. (boo#1039901)
+- 3.2.38
+
+-------------------------------------------------------------------
 Fri Jun  2 15:54:34 UTC 2017 - jlopez@suse.com
 
 - Add EventDispatcher#event_handler to allow custom events
