@@ -18,6 +18,7 @@ ycwm_DATA = \
   lib/cwm/page.rb \
   lib/cwm/pager.rb \
   lib/cwm/replace_point.rb \
+  lib/cwm/rspec.rb \
   lib/cwm/table.rb \
   lib/cwm/tabs.rb \
   lib/cwm/tree.rb \
