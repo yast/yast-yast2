@@ -20,5 +20,6 @@ describe CWM::Table do
   end
   subject { MyTable.new }
 
+  include_examples "CWM::Table"
   include_examples "CWM::CustomWidget"
 end
