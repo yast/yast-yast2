@@ -2,23 +2,32 @@ require "yast"
 
 Yast.import "CWM"
 
-# FIXME: move this to yast-yast2 as soon as the API stabilizes
 module CWM
-  # relate to UI::Dialog ?
-  # just #run, .run
-  # The important contract with the outside is:
-  # who manages the dialog windows and buttons
-  # Kinds: pop-up, full-size, wizard
+  # An OOP API and the pieces missing from {YastClass::CWM#show Yast::CWM.show}:
+  # - creating and closing a wizard dialog
+  # - Back/Abort/Next buttons
+  #
+  # @see UI::Dialog
+  # @see CWM::AbstractWidget
   class Dialog
     include Yast::Logger
     include Yast::I18n
     include Yast::UIShortcuts
+
+    # @return [String,nil] Set a title, or keep the existing title
+    abstract_method :title
+
+    # @return [CWM::WidgetTerm]
+    abstract_method :contents
 
     # A shortcut for `.new(*args).run`
     def self.run(*args)
       new(*args).run
     end
 
+    # The entry point.
+    # Will open (and close) a wizard dialog unless one already exists.
+    # @return [Symbol]
     def run
       if should_open_dialog?
         wizard_create_dialog { run_assuming_open }
@@ -35,7 +44,6 @@ module CWM
     end
 
     def run_assuming_open
-      # should have #init/#store ?
       Yast::CWM.show(
         contents,
         caption:        title,
@@ -50,31 +58,28 @@ module CWM
       !Yast::Wizard.IsWizardDialog
     end
 
-    # @return [CWM::WidgetTerm]
-    abstract_method :contents
-
-    # @return [String,nil] Set a title, or keep the existing title
-    abstract_method :title
-
     # The :back button
-    # @return [String,true,nil] button label, use default label, or `nil` to omit the button
+    # @return [String,true,nil] button label,
+    #   `true` to use the default label, or `nil` to omit the button
     def back_button
       true
     end
 
     # The :abort button
-    # @return [String,true,nil] button label, use default label, or `nil` to omit the button
+    # @return [String,true,nil] button label,
+    #   `true` to use the default label, or `nil` to omit the button
     def abort_button
       true
     end
 
     # The :next button
-    # @return [String,true,nil] button label, use default label, or `nil` to omit the button
+    # @return [String,true,nil] button label,
+    #   `true` to use the default label, or `nil` to omit the button
     def next_button
       true
     end
 
-    # @return
+    # @return [Array<Symbol>]
     def skip_store_for
       []
     end
