@@ -15,6 +15,7 @@ ycwm_DATA = \
   lib/cwm/abstract_widget.rb \
   lib/cwm/common_widgets.rb \
   lib/cwm/custom_widget.rb \
+  lib/cwm/dialog.rb \
   lib/cwm/page.rb \
   lib/cwm/pager.rb \
   lib/cwm/replace_point.rb \

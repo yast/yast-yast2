@@ -122,3 +122,41 @@ RSpec.shared_examples "CWM::Table" do
     end
   end
 end
+
+RSpec.shared_examples "CWM::Dialog" do
+  describe "#contents" do
+    it "produces a Term" do
+      expect(subject.contents).to be_a Yast::Term
+    end
+  end
+
+  describe "#title" do
+    it "produces a String or nil" do
+      expect(subject.title).to be_a(String).or be_nil
+    end
+  end
+
+  describe "#back_button" do
+    it "produces a String or true or nil" do
+      expect(subject.back_button).to be_a(String).or be(true).or be_nil
+    end
+  end
+
+  describe "#abort_button" do
+    it "produces a String or true or nil" do
+      expect(subject.abort_button).to be_a(String).or be(true).or be_nil
+    end
+  end
+
+  describe "#next_button" do
+    it "produces a String or true or nil" do
+      expect(subject.next_button).to be_a(String).or be(true).or be_nil
+    end
+  end
+
+  describe "#skip_store_for" do
+    it "produces an Array" do
+      expect(subject.skip_store_for).to be_an Array
+    end
+  end
+end
