@@ -58,8 +58,13 @@ RSpec.shared_examples "CWM::Pager" do
   include_examples "CWM::CustomWidget"
 end
 
-RSpec.shared_examples "CWM::Tab" do
+RSpec.shared_examples "CWM::Page" do
   include_examples "CWM::CustomWidget"
+end
+
+# Tab is an alias for Page
+RSpec.shared_examples "CWM::Tab" do
+  include_examples "CWM::Page"
 end
 
 RSpec.shared_examples "CWM::ItemsSelection" do
@@ -77,6 +82,23 @@ end
 RSpec.shared_examples "CWM::ComboBox" do
   include_examples "CWM::AbstractWidget"
   include_examples "CWM::ItemsSelection"
+end
+
+RSpec.shared_examples "CWM::PushButton" do
+  include_examples "CWM::AbstractWidget"
+end
+
+RSpec.shared_examples "CWM::RadioButtons" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ItemsSelection"
+end
+
+RSpec.shared_examples "CWM::ValueBasedWidget" do
+end
+
+RSpec.shared_examples "CWM::RichText" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ValueBasedWidget"
 end
 
 RSpec.shared_examples "CWM::Table" do
