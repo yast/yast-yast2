@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Jun 19 08:32:41 UTC 2017 - mvidner@suse.com
+
+- Added CWM::Dialog
+- RSpec.shared_examples for CWM: Page, PushButton, RadioButtons,
+  RichText.
+- 3.2.39
+
+-------------------------------------------------------------------
 Tue Jun  6 10:33:22 UTC 2017 - jreidinger@suse.com
 
 - Fix showing help text when CWM::ReplacePoint contains another
