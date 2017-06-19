@@ -1,3 +1,3 @@
 # Makefile.am for yast2/library/sequencer
 
-SUBDIRS = src testsuite
+SUBDIRS = src test testsuite
