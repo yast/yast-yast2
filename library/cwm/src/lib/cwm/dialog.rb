@@ -14,8 +14,10 @@ module CWM
     include Yast::I18n
     include Yast::UIShortcuts
 
-    # @return [String,nil] Set a title, or keep the existing title
-    abstract_method :title
+    # @return [String,nil] The dialog title. `nil`: keep the existing title.
+    def title
+      nil
+    end
 
     # @return [CWM::WidgetTerm]
     abstract_method :contents
@@ -30,28 +32,10 @@ module CWM
     # @return [Symbol]
     def run
       if should_open_dialog?
-        wizard_create_dialog { run_assuming_open }
+        wizard_create_dialog { cwm_show }
       else
-        run_assuming_open
+        cwm_show
       end
-    end
-
-    def wizard_create_dialog(&block)
-      Yast::Wizard.CreateDialog
-      block.call
-    ensure
-      Yast::Wizard.CloseDialog
-    end
-
-    def run_assuming_open
-      Yast::CWM.show(
-        contents,
-        caption:        title,
-        back_button:    replace_true(back_button, Yast::Label.BackButton),
-        abort_button:   replace_true(abort_button, Yast::Label.AbortButton),
-        next_button:    replace_true(next_button, Yast::Label.NextButton),
-        skip_store_for: skip_store_for
-      )
     end
 
     def should_open_dialog?
@@ -80,11 +64,34 @@ module CWM
     end
 
     # @return [Array<Symbol>]
+    #   Events for which `store` won't be called, see {CWMClass#show}
     def skip_store_for
       []
     end
 
   private
+
+    # Create a wizard dialog, run the *block*, ensure the dialog is closed.
+    # @param block
+    def wizard_create_dialog(&block)
+      Yast::Wizard.CreateDialog
+      block.call
+    ensure
+      Yast::Wizard.CloseDialog
+    end
+
+    # Call {CWMClass#show} with appropriate arguments
+    # @return [Symbol] wizard sequencer symbol
+    def cwm_show
+      Yast::CWM.show(
+        contents,
+        caption:        title,
+        back_button:    replace_true(back_button, Yast::Label.BackButton),
+        abort_button:   replace_true(abort_button, Yast::Label.AbortButton),
+        next_button:    replace_true(next_button, Yast::Label.NextButton),
+        skip_store_for: skip_store_for
+      )
+    end
 
     def replace_true(value, replacement)
       if value == true
