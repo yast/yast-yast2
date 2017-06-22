@@ -50,6 +50,12 @@ describe UI::Sequence do
     end
     subject { TestSequence.new }
 
+    class UnrelatedTestSequence < UI::Sequence
+      def first
+      end
+      skip_stack :first
+    end
+
     it "defines the aliases from instance methods" do
       seq = {
         "ws_start" => "skipped",
@@ -64,6 +70,19 @@ describe UI::Sequence do
       }
 
       expect(subject.from_methods(seq)).to eq(wanted)
+    end
+
+    it "does not confuse skip_stack across classes" do
+      subj = UnrelatedTestSequence.new
+      seq = {
+        "ws_start" => "first",
+        "first"    => { next: :next }
+      }
+      wanted = {
+        "first" => [subj.method(:first), true]
+      }
+
+      expect(subj.from_methods(seq)).to eq(wanted)
     end
   end
 end
