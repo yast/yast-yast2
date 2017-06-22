@@ -19,17 +19,15 @@
 # To contact Novell about this file by physical or electronic mail, you may
 # find current contact information at www.novell.com.
 
-# File:	Greasemonkey.ycp
-# Package:	yast2-storage
-# Summary:	Expert Partitioner
-# Authors:	Arvin Schnell <aschnell@suse.de>
-#
-# Lets see if this turns out to be useful.
 require "yast"
 
 module UI
   # UI layout helpers.
   #
+  # These started out in the Expert Partitioner in yast2-storage.
+  # The use case is reusing pieces of this legacy code in the new
+  # yast2-partitioner.
+  # That is why the API and the implementation look old.
   module Greasemonkey
     include Yast
     extend Yast
@@ -52,6 +50,24 @@ module UI
     # The compatibility API needs CamelCase method names
     # rubocop:disable MethodName
 
+    # Wrap terms in a VBox with small vertical spacings in between.
+    # @param old [Yast::Term]
+    # @return    [Yast::Term]
+    # @example
+    #   term(
+    #     :VStackFrames,
+    #     Frame("f1"),
+    #     Frame("f2"),
+    #     Frame("f3")
+    #   )
+    #     ->
+    #   VBox(
+    #     Frame("f1"),
+    #     VSpacing(0.45),
+    #     Frame("f2"),
+    #     VSpacing(0.45),
+    #     Frame("f3")
+    #   )
     def VStackFrames(old)
       old = deep_copy(old)
       frames = Convert.convert(
