@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 22 11:27:46 UTC 2017 - jreidinger@suse.com
+
+- Add hint for UI about application name and its icon (bsc#1037891)
+- 3.2.39
+
+-------------------------------------------------------------------
 Tue Jun  6 10:33:22 UTC 2017 - jreidinger@suse.com
 
 - Fix showing help text when CWM::ReplacePoint contains another
