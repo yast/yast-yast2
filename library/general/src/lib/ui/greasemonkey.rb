@@ -30,7 +30,6 @@ require "yast"
 module UI
   # UI layout helpers.
   #
-  # rubocop:disable Metrics/ModuleLength
   module Greasemonkey
     include Yast
     extend Yast
