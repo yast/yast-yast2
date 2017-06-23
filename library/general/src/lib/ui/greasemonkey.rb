@@ -29,10 +29,12 @@ module UI
   # yast2-partitioner.
   # That is why the API and the implementation look old.
   module Greasemonkey
-    include Yast
-    extend Yast
     include Yast::UIShortcuts
     extend Yast::UIShortcuts
+
+    Builtins = Yast::Builtins
+    Convert = Yast::Convert
+    Ops = Yast::Ops
 
     Yast.import "Directory"
 
@@ -69,7 +71,6 @@ module UI
     #     Frame("f3")
     #   )
     def VStackFrames(old)
-      old = deep_copy(old)
       frames = Convert.convert(
         Builtins.argsof(old),
         from: "list",
@@ -81,8 +82,7 @@ module UI
         new = Builtins.add(new, VSpacing(0.45)) if Builtins.size(new) != 0
         new = Builtins.add(new, frame)
       end
-
-      deep_copy(new)
+      new
     end
     module_function :VStackFrames
 
@@ -93,7 +93,6 @@ module UI
     #      ->
     #   Frame("Title", MarginBox(1.45, 0.45, "arg1", "arg2"))
     def FrameWithMarginBox(old)
-      old = deep_copy(old)
       title = Ops.get_string(old, 0, "error")
       args = Builtins.sublist(Builtins.argsof(old), 1)
       Frame(
@@ -126,7 +125,6 @@ module UI
     #     ]
     #   )
     def ComboBoxSelected(old)
-      old = deep_copy(old)
       args = Builtins.argsof(old)
 
       tmp = Builtins.sublist(args, 0, Ops.subtract(Builtins.size(args), 2))
@@ -148,7 +146,6 @@ module UI
     #     ->
     #   Left(RadioButton(Id(...), "args"))
     def LeftRadioButton(old)
-      old = deep_copy(old)
       Left(Builtins.toterm(:RadioButton, Builtins.argsof(old)))
     end
     module_function :LeftRadioButton
@@ -165,7 +162,6 @@ module UI
     #     HBox(HSpacing(4), "contents")
     #   )
     def LeftRadioButtonWithAttachment(old)
-      old = deep_copy(old)
       args = Builtins.argsof(old)
 
       tmp1 = Builtins.sublist(args, 0, Ops.subtract(Builtins.size(args), 1))
@@ -189,7 +185,6 @@ module UI
     #     ->
     #   Left(CheckBox(Id(...), "args"))
     def LeftCheckBox(old)
-      old = deep_copy(old)
       Left(Builtins.toterm(:CheckBox, Builtins.argsof(old)))
     end
     module_function :LeftCheckBox
@@ -206,7 +201,6 @@ module UI
     #     HBox(HSpacing(4), "contents")
     #   )
     def LeftCheckBoxWithAttachment(old)
-      old = deep_copy(old)
       args = Builtins.argsof(old)
 
       tmp1 = Builtins.sublist(args, 0, Ops.subtract(Builtins.size(args), 1))
@@ -235,12 +229,11 @@ module UI
     #     )
     #   )
     def IconAndHeading(old)
-      old = deep_copy(old)
       args = Builtins.argsof(old)
 
       title = Ops.get_string(args, 0, "")
       icon = Ops.add(
-        Ops.add(Directory.icondir, "22x22/apps/"),
+        Ops.add(Yast::Directory.icondir, "22x22/apps/"),
         Ops.get_string(args, 1, "")
       )
 
@@ -252,7 +245,6 @@ module UI
     # @param old [Yast::Term]
     # @return    [Yast::Term]
     def Transform(old)
-      old = deep_copy(old)
       s = Builtins.symbolof(old)
 
       handler = Greasemonkey.method(s) if @handlers.include?(s)
@@ -262,8 +254,7 @@ module UI
         arg = Transform(Convert.to_term(arg)) if Ops.is_term?(arg)
         Builtins.add(tmp, arg)
       end
-
-      deep_copy(new)
+      new
     end
     module_function :Transform
 
