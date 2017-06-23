@@ -67,7 +67,8 @@ exit_code=0
 # --fullscreen
 # --noborder
 # well also for gtk and ncurses
-Y2UI_ARGS=""
+# add hints for ui about app name and icon
+Y2UI_ARGS="-name YaST2 -icon yast"
 GNOME_SHELL="$ybindir/y2controlcenter-gnome"
 KDE_SHELL="$ybindir/y2controlcenter"
 

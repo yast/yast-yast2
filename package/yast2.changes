@@ -1,9 +1,15 @@
 -------------------------------------------------------------------
-Mon Jun 19 08:32:41 UTC 2017 - mvidner@suse.com
+Fri Jun 23 07:26:03 UTC 2017 - mvidner@suse.com
 
 - Added CWM::Dialog
 - RSpec.shared_examples for CWM: Page, PushButton, RadioButtons,
   RichText.
+- 3.2.40
+
+-------------------------------------------------------------------
+Thu Jun 22 11:27:46 UTC 2017 - jreidinger@suse.com
+
+- Add hint for UI about application name and its icon (bsc#1037891)
 - 3.2.39
 
 -------------------------------------------------------------------
