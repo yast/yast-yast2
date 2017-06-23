@@ -86,6 +86,12 @@ module UI
     end
     module_function :VStackFrames
 
+    # @param old [Yast::Term]
+    # @return    [Yast::Term]
+    # @example
+    #   term(:FrameWithMarginBox, "Title", "arg1", "arg2")
+    #      ->
+    #   Frame("Title", MarginBox(1.45, 0.45, "arg1", "arg2"))
     def FrameWithMarginBox(old)
       old = deep_copy(old)
       title = Ops.get_string(old, 0, "error")
@@ -97,18 +103,28 @@ module UI
     end
     module_function :FrameWithMarginBox
 
-    # ComboBoxSelected
-    #
-    # `ComboBoxSelected(`id(`wish), `opt(`notify), "Wish",
-    #                   [ `item(`id(`time), "Time"),
-    #                     `item(`id(`love), "Love"),
-    #                     `item(`id(`money), "Money") ],
-    #                   `id(`love))
-    #
-    # `ComboBox(`id(`wish), `opt(`notify), "Wish",
-    #           [ `item(`id(`time), "Time", false),
-    #             `item(`id(`love), "Love", true),
-    #             `item(`id(`money), "Money", false) ])
+    # @param old [Yast::Term]
+    # @return    [Yast::Term]
+    # @example
+    #   term(
+    #     :ComboBoxSelected,
+    #     Id(:wish), Opt(:notify), "Wish",
+    #     [
+    #       Item(Id(:time), "Time"),
+    #       Item(Id(:love), "Love"),
+    #       Item(Id(:money), "Money")
+    #     ],
+    #     Id(:love)
+    #   )
+    #     ->
+    #   ComboBox(
+    #     Id(:wish), Opt(:notify), "Wish",
+    #     [
+    #       Item(Id(:time), "Time", false),
+    #       Item(Id(:love), "Love", true),
+    #       Item(Id(:money), "Money", false)
+    #     ]
+    #   )
     def ComboBoxSelected(old)
       old = deep_copy(old)
       args = Builtins.argsof(old)
@@ -125,25 +141,29 @@ module UI
     end
     module_function :ComboBoxSelected
 
-    # LeftRadioButton
-    #
-    # `LeftRadioButton(`id(), `opt(), "text")
-    #
-    # `Left(`RadioButton(`id(), `opt(), "text"))
+    # @param old [Yast::Term]
+    # @return    [Yast::Term]
+    # @example
+    #   term(:LeftRadioButton, Id(...), "args")
+    #     ->
+    #   Left(RadioButton(Id(...), "args"))
     def LeftRadioButton(old)
       old = deep_copy(old)
       Left(Builtins.toterm(:RadioButton, Builtins.argsof(old)))
     end
     module_function :LeftRadioButton
 
-    # LeftRadioButtonWithAttachment
-    #
-    # `LeftRadioButtonWithAttachment(`id(), `opt(), "text", contents)
-    #
-    # `VBox(
-    #    `Left(`Radiobutton(`id(), `opt(), "text")),
-    #    `HBox(`HSpacing(4), contents)
-    # )
+    # NOTE that it does not expand the nested
+    # Greasemonkey term LeftRadioButton! {#transform} does that.
+    # @param old [Yast::Term]
+    # @return    [Yast::Term]
+    # @example
+    #   term(:LeftRadioButtonWithAttachment, "foo", "bar", "contents")
+    #     ->
+    #   VBox(
+    #     term(:LeftRadioButton, "foo", "bar"),
+    #     HBox(HSpacing(4), "contents")
+    #   )
     def LeftRadioButtonWithAttachment(old)
       old = deep_copy(old)
       args = Builtins.argsof(old)
@@ -162,25 +182,29 @@ module UI
     end
     module_function :LeftRadioButtonWithAttachment
 
-    # LeftCheckBox
-    #
-    # `LeftCheckBox(`id(), `opt(), "text")
-    #
-    # `Left(`CheckBox(`id(), `opt(), "text"))
+    # @param old [Yast::Term]
+    # @return    [Yast::Term]
+    # @example
+    #   term(:LeftCheckBox, Id(...), "args")
+    #     ->
+    #   Left(CheckBox(Id(...), "args"))
     def LeftCheckBox(old)
       old = deep_copy(old)
       Left(Builtins.toterm(:CheckBox, Builtins.argsof(old)))
     end
     module_function :LeftCheckBox
 
-    # LeftCheckBoxWithAttachment
-    #
-    # `LeftCheckBoxWithAttachment(`id(), `opt(), "text", contents)
-    #
-    # `VBox(
-    #    `Left(`Radiobutton(`id(), `opt(), "text")),
-    #    `HBox(`HSpacing(4), contents)
-    # )
+    # NOTE that it does not expand the nested
+    # Greasemonkey term LeftCheckBox! {#transform} does that.
+    # @param old [Yast::Term]
+    # @return    [Yast::Term]
+    # @example
+    #   term(:LeftCheckBoxWithAttachment, "foo", "bar", "contents")
+    #     ->
+    #   VBox(
+    #     term(:LeftCheckBox, "foo", "bar"),
+    #     HBox(HSpacing(4), "contents")
+    #   )
     def LeftCheckBoxWithAttachment(old)
       old = deep_copy(old)
       args = Builtins.argsof(old)
@@ -199,12 +223,17 @@ module UI
     end
     module_function :LeftCheckBoxWithAttachment
 
-    # IconAndHeading
-    #
-    # `IconAndHeading("title", "icon")
-    #
-    # `Left(`HBox(`Image("icon", ""),
-    #             `Heading("title")));
+    # @param old [Yast::Term]
+    # @return    [Yast::Term]
+    # @example
+    #   term(:IconAndHeading, "title", "icon")
+    #     ->
+    #   Left(
+    #     HBox(
+    #       Image("/usr/share/YaST2/theme/current/icons/22x22/apps/icon", ""),
+    #       Heading("title")
+    #     )
+    #   )
     def IconAndHeading(old)
       old = deep_copy(old)
       args = Builtins.argsof(old)
@@ -219,6 +248,9 @@ module UI
     end
     module_function :IconAndHeading
 
+    # Recursively apply all Greasemonkey methods on *old*
+    # @param old [Yast::Term]
+    # @return    [Yast::Term]
     def Transform(old)
       old = deep_copy(old)
       s = Builtins.symbolof(old)
