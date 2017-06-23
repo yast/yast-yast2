@@ -3,7 +3,7 @@ require "yast"
 Yast.import "CWM"
 
 module CWM
-  # An OOP API and the pieces missing from {YastClass::CWM#show Yast::CWM.show}:
+  # An OOP API and the pieces missing from {Yast::CWMClass#show Yast::CWM.show}:
   # - creating and closing a wizard dialog
   # - Back/Abort/Next buttons
   #
@@ -64,7 +64,7 @@ module CWM
     end
 
     # @return [Array<Symbol>]
-    #   Events for which `store` won't be called, see {CWMClass#show}
+    #   Events for which `store` won't be called, see {Yast::CWMClass#show}
     def skip_store_for
       []
     end
@@ -80,7 +80,7 @@ module CWM
       Yast::Wizard.CloseDialog
     end
 
-    # Call {CWMClass#show} with appropriate arguments
+    # Call {Yast::CWMClass#show} with appropriate arguments
     # @return [Symbol] wizard sequencer symbol
     def cwm_show
       Yast::CWM.show(
