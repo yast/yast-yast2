@@ -23,7 +23,7 @@ describe "CWM::Dialog" do
 
       expect(subject.class.run).to eq(:launch)
     end
-    
+
     it "does not open a dialog when not needed, and calls CWM#show" do
       expect(Yast::Wizard).to receive(:IsWizardDialog).and_return(true)
       expect(Yast::Wizard).to_not receive(:CreateDialog)
@@ -31,7 +31,7 @@ describe "CWM::Dialog" do
       expect(Yast::CWM).to receive(:show).and_return(:launch)
 
       expect(subject.class.run).to eq(:launch)
-    end    
+    end
   end
 
   describe "#replace_true" do
