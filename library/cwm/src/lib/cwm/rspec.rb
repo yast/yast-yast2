@@ -58,8 +58,13 @@ RSpec.shared_examples "CWM::Pager" do
   include_examples "CWM::CustomWidget"
 end
 
-RSpec.shared_examples "CWM::Tab" do
+RSpec.shared_examples "CWM::Page" do
   include_examples "CWM::CustomWidget"
+end
+
+# Tab is an alias for Page
+RSpec.shared_examples "CWM::Tab" do
+  include_examples "CWM::Page"
 end
 
 RSpec.shared_examples "CWM::ItemsSelection" do
@@ -77,6 +82,23 @@ end
 RSpec.shared_examples "CWM::ComboBox" do
   include_examples "CWM::AbstractWidget"
   include_examples "CWM::ItemsSelection"
+end
+
+RSpec.shared_examples "CWM::PushButton" do
+  include_examples "CWM::AbstractWidget"
+end
+
+RSpec.shared_examples "CWM::RadioButtons" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ItemsSelection"
+end
+
+RSpec.shared_examples "CWM::ValueBasedWidget" do
+end
+
+RSpec.shared_examples "CWM::RichText" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ValueBasedWidget"
 end
 
 RSpec.shared_examples "CWM::Table" do
@@ -97,6 +119,44 @@ RSpec.shared_examples "CWM::Table" do
       subject.items.each do |item|
         expect(item).to be_a Array
       end
+    end
+  end
+end
+
+RSpec.shared_examples "CWM::Dialog" do
+  describe "#contents" do
+    it "produces a Term" do
+      expect(subject.contents).to be_a Yast::Term
+    end
+  end
+
+  describe "#title" do
+    it "produces a String or nil" do
+      expect(subject.title).to be_a(String).or be_nil
+    end
+  end
+
+  describe "#back_button" do
+    it "produces a String or true or nil" do
+      expect(subject.back_button).to be_a(String).or be(true).or be_nil
+    end
+  end
+
+  describe "#abort_button" do
+    it "produces a String or true or nil" do
+      expect(subject.abort_button).to be_a(String).or be(true).or be_nil
+    end
+  end
+
+  describe "#next_button" do
+    it "produces a String or true or nil" do
+      expect(subject.next_button).to be_a(String).or be(true).or be_nil
+    end
+  end
+
+  describe "#skip_store_for" do
+    it "produces an Array" do
+      expect(subject.skip_store_for).to be_an Array
     end
   end
 end

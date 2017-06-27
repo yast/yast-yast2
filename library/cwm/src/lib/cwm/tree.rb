@@ -50,7 +50,7 @@ module CWM
       Yast::UI.ChangeWidget(Id(widget_id), :CurrentItem, val)
     end
 
-    # An alias for {TreeItem.new}
+    # An alias for {TreeItem#initialize TreeItem.new}
     def new_item(*args, **kwargs)
       TreeItem.new(*args, **kwargs)
     end
