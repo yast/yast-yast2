@@ -1,6 +1,7 @@
 -------------------------------------------------------------------
 Fri Jun 23 07:26:03 UTC 2017 - mvidner@suse.com
 
+- Support for the new Expert Partitioner (boo#1039901):
 - Added UI::Sequence, UI::Greasemonkey
 - Added CWM::Dialog
 - RSpec.shared_examples for CWM: Page, PushButton, RadioButtons,
