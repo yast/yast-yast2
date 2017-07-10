@@ -33,16 +33,4 @@ describe "CWM::Dialog" do
       expect(subject.class.run).to eq(:launch)
     end
   end
-
-  describe "#replace_true" do
-    it "replaces true" do
-      expect(subject.send(:replace_true, true, :new)).to eq :new
-    end
-
-    it "does not replace others" do
-      expect(subject.send(:replace_true, nil, :new)).to eq nil
-      expect(subject.send(:replace_true, false, :new)).to eq false
-      expect(subject.send(:replace_true, :old, :new)).to eq :old
-    end
-  end
 end

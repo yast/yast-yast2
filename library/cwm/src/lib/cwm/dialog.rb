@@ -1,6 +1,8 @@
 require "yast"
+require "abstract_method"
 
 Yast.import "CWM"
+Yast.import "Wizard"
 
 module CWM
   # An OOP API and the pieces missing from {Yast::CWMClass#show Yast::CWM.show}:
@@ -43,24 +45,24 @@ module CWM
     end
 
     # The :back button
-    # @return [String,true,nil] button label,
-    #   `true` to use the default label, or `nil` to omit the button
+    # @return [String, nil] button label,
+    #   `nil` to use the default label, `""` to omit the button
     def back_button
-      true
+      nil
     end
 
     # The :abort button
-    # @return [String,true,nil] button label,
-    #   `true` to use the default label, or `nil` to omit the button
+    # @return [String, nil] button label,
+    #   `nil` to use the default label, `""` to omit the button
     def abort_button
-      true
+      nil
     end
 
     # The :next button
-    # @return [String,true,nil] button label,
-    #   `true` to use the default label, or `nil` to omit the button
+    # @return [String, nil] button label,
+    #   `nil` to use the default label, `""` to omit the button
     def next_button
-      true
+      nil
     end
 
     # @return [Array<Symbol>]
@@ -86,19 +88,11 @@ module CWM
       Yast::CWM.show(
         contents,
         caption:        title,
-        back_button:    replace_true(back_button, Yast::Label.BackButton),
-        abort_button:   replace_true(abort_button, Yast::Label.AbortButton),
-        next_button:    replace_true(next_button, Yast::Label.NextButton),
+        back_button:    back_button,
+        abort_button:   abort_button,
+        next_button:    next_button,
         skip_store_for: skip_store_for
       )
-    end
-
-    def replace_true(value, replacement)
-      if value == true
-        replacement
-      else
-        value
-      end
     end
   end
 end
