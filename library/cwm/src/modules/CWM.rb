@@ -932,9 +932,12 @@ module Yast
     # Display the dialog and run its event loop using new widget API
     # @param [::CWM::WidgetTerm] contents is UI term including instances of {CWM::AbstractWidget}
     # @param [String] caption of dialog
-    # @param [String] back_button label for dialog back button
-    # @param [String] next_button label for dialog next button
-    # @param [String] abort_button label for dialog abort button
+    # @param [String, nil] back_button label for dialog back button,
+    #   `nil` to use the default label, `""` to omit the button
+    # @param [String, nil] next_button label for dialog next button,
+    #   `nil` to use the default label, `""` to omit the button
+    # @param [String, nil] abort_button label for dialog abort button,
+    #   `nil` to use the default label, `""` to omit the button
     # @param [Array] skip_store_for list of events for which the value of the widget will not be stored.
     #   Useful mainly when some widget returns an event that should not trigger the storing,
     #   like a reset button or a redrawing.  It will skip also validation, because it is not needed
