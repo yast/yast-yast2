@@ -27,7 +27,7 @@ module Yast
           SCR.Execute(Path.new(".target.bash_output"), command)
         end
         OpenStruct.new(result.merge!(command: command))
-      rescue Timeout::Error
+      rescue ::Timeout::Error
         raise SystemctlError, "Timeout #{TIMEOUT} seconds: #{command}"
       end
 
