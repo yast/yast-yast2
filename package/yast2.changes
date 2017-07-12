@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 12 13:38:08 UTC 2017 - jreidinger@suse.com
+
+- convert Object#timeout usage to Timeout.timeout as ruby2.4 makes
+  it obsolete ( ruby2.4 will be for SLE15 so part of bsc#1044312)
+- 3.3.1
+
+-------------------------------------------------------------------
 Mon Jul 10 08:09:15 UTC 2017 - jreidinger@suse.com
 
 - Fix omitting button in CWM::Dialog and make API consistent with
