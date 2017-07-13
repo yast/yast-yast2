@@ -1,12 +1,66 @@
-# Simple example to demonstrate object API for CWM
+# Simple example to demonstrate object oriented replace_point widget
 
 require_relative "example_helper"
 
+require "yast"
+
 require "cwm"
 
+Yast.import "UI"
 Yast.import "CWM"
-Yast.import "Popup"
 Yast.import "Wizard"
+Yast.import "Popup"
+
+class SwitchWidget < CWM::PushButton
+  def initialize(replace_point, widgets)
+    @replace_point = replace_point
+    @widgets = widgets
+  end
+
+  def label
+    "Switch"
+  end
+
+  def handle
+    @widgets.rotate!
+    @replace_point.replace(@widgets.first)
+  end
+end
+
+class PopupButtonWidget < CWM::PushButton
+  def label
+    "Popup"
+  end
+
+  def handle
+    Yast::Popup.Message("Click!")
+  end
+end
+
+class WrappedPopup < CWM::CustomWidget
+  def contents
+    VBox(
+      PopupButtonWidget.new
+    )
+  end
+end
+
+class StoreWidget < CWM::InputField
+  def label
+    "write here"
+  end
+
+  def validate
+    return true unless value.empty?
+
+    Yast::Popup.Error("Empty value!")
+    false
+  end
+
+  def store
+    Yast::Popup.Message(value)
+  end
+end
 
 class LuckyNumberWidget < CWM::IntField
   attr_reader :result, :minimum, :maximum
@@ -82,23 +136,13 @@ class Page < CWM::CustomWidget
   end
 end
 
-module Yast
-  class ExampleDialog
-    include Yast::I18n
-    include Yast::UIShortcuts
-    include Yast::Logger
-    def run
-      textdomain "example"
+widgets = [PopupButtonWidget.new, WrappedPopup.new, StoreWidget.new, Page.new]
+replace_point = CWM::ReplacePoint.new(widget: widgets.first)
 
-      generate_widget = Page.new
+content = Yast::Term.new(:VBox,
+  SwitchWidget.new(replace_point, widgets),
+  replace_point)
 
-      contents = HBox(generate_widget)
-
-      Yast::Wizard.CreateDialog
-      CWM.show(contents, caption: _("Lucky number"))
-      Yast::Wizard.CloseDialog
-    end
-  end
-end
-
-Yast::ExampleDialog.new.run
+Yast::Wizard.CreateDialog
+Yast::CWM.show(content)
+Yast::Wizard.CloseDialog

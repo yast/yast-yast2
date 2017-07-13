@@ -273,6 +273,21 @@ describe Yast::Popup do
       expect(subject).to receive(:VSpacing).with(40)
       subject.TimedLongErrorGeometry("Title", 1, 30, 40)
     end
+
+    context "when arguments are bad" do
+      it "raises exception when the block parameter is missing" do
+        # no block passed
+        expect { subject.Feedback("Label", "Message") }.to raise_error(ArgumentError, /block must be supplied/)
+      end
+    end
+  end
+
+  describe ".AnyTimedMessage" do
+    it "is an adapter for anyTimedMessageInternal" do
+      expect(subject).to receive(:anyTimedMessageInternal)
+        .with("headline", "message", Integer)
+      expect(subject.AnyTimedMessage("headline", "message", 5)).to eq nil
+    end
   end
 
   #

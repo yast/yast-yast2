@@ -5,8 +5,6 @@ require_relative "test_helper"
 require "cwm/rspec"
 require "cwm/page"
 require "cwm/pager"
-require "yast"
-Yast.import "UI"
 
 class TestPage < CWM::Page
   attr_reader :label, :contents

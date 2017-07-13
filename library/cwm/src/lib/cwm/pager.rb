@@ -1,6 +1,8 @@
 require "abstract_method"
 require "yast"
-Yast.import "CWM"
+
+require "cwm/custom_widget"
+require "cwm/replace_point"
 
 module CWM
   # A {Pager} contains several {Page}s and makes only one visible at a time.
@@ -20,14 +22,11 @@ module CWM
 
     # initializes pages, show page which is initial
     def init
-      switch_page(initial_page_id)
+      mark_page(initial_page)
+      @current_page = initial_page
     end
 
     def handle(event)
-      # pass it to content of page at first, maybe something stop passing
-      res = Yast::CWM.handleWidgets(@current_page.cwm_widgets, event)
-      return res if res
-
       new_id = event["ID"]
       page = page_for_id(new_id)
 
@@ -35,30 +34,16 @@ module CWM
 
       return nil if @current_page.widget_id == new_id
 
-      unless validate
+      unless replace_point.validate
         mark_page(@current_page)
         return nil
       end
 
-      store_page(@current_page.widget_id)
+      replace_point.store
 
-      switch_page(new_id)
+      switch_page(page)
 
       nil
-    end
-
-    # store content of current page
-    def store
-      store_page(@current_page.widget_id)
-    end
-
-    # validates current page
-    def validate
-      Yast::CWM.validateWidgets(@current_page.cwm_definition["widgets"], "ID" => @current_page.widget_id)
-    end
-
-    def help
-      @current_page ? @current_page.help : ""
     end
 
   protected
@@ -70,22 +55,15 @@ module CWM
     end
 
     # stores page with given id
-    def store_page(page_id)
-      Yast::CWM.saveWidgets(page_for_id(page_id).cwm_definition["widgets"], "ID" => page_id)
+    def store_page
+      replace_point.store
     end
 
     # switch to target page
-    def switch_page(page_id)
-      page = page_for_id(page_id)
-      return unless page
-
+    def switch_page(page)
       mark_page(page)
-      widget_hash = page.cwm_definition
-      Yast::UI.ReplaceWidget(Id(replace_point_id), widget_hash["custom_widget"])
-      Yast::CWM.initWidgets(widget_hash["widgets"])
       @current_page = page
-
-      Yast::CWM.ReplaceWidgetHelp(widget_id, help)
+      replace_point.replace(page)
     end
 
     # Mark the currently active page in the selector.
@@ -96,30 +74,25 @@ module CWM
     abstract_method :mark_page
 
     # The contents will probably include a *selector*, such as {Tabs}
-    # or {Tree} and a {ReplacePoint} where {Page}s will appear.
+    # or {Tree} and must include {#replace_point} where {Page}s will appear.
     # @return [WidgetTerm]
     abstract_method :contents
 
-    # gets id of initial page
-    # This default implementation returns first page passed to constructor
-    def initial_page_id
+    # gets initial page
+    # This default page which return true for method initial otherwise first page passed
+    # to constructor
+    def initial_page
       initial = @pages.find(&:initial)
 
-      (initial || @pages.first).widget_id
+      initial || @pages.first
     end
 
     def page_for_id(id)
       @pages.find { |t| t.widget_id == id }
     end
 
-  private
-
-    def replace_point_id
-      :_cwm_page_contents_rp
-    end
-
     def replace_point
-      ReplacePoint(Id(replace_point_id), VBox(VStretch(), HStretch()))
+      @replace_point ||= ReplacePoint.new(id: "replace_point_#{widget_id}", widget: initial_page)
     end
   end
 end

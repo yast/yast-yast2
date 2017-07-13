@@ -5,6 +5,7 @@ TESTS = \
   directory_test.rb \
   event_dispatcher_test.rb \
   finish_client_test.rb \
+  greasemonkey_test.rb \
   hooks_test.rb \
   linuxrc_test.rb \
   os_release_test.rb \

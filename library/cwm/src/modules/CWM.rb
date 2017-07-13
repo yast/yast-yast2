@@ -30,6 +30,8 @@
 #
 require "yast"
 
+require "cwm/abstract_widget"
+
 module Yast
   class CWMClass < Module
     def main
@@ -77,7 +79,9 @@ module Yast
         :VSquash,
         :HVSquash,
         :HWeight,
-        :VWeight
+        :VWeight,
+        :DumbTab,
+        :ReplacePoint
       ]
     end
 
@@ -135,6 +139,9 @@ module Yast
             arg = ProcessTerm(Convert.to_term(arg), widgets)
           end
         elsif Ops.is_string?(arg) # action
+          Builtins.y2error("find string '#{arg}' without associated widget in StringTerm #{t.inspect}") unless widgets[arg]
+          Builtins.y2milestone("Known widgets #{widgets.inspect}") unless widgets[arg]
+
           arg = Ops.get_term(
             widgets,
             [Convert.to_string(arg), "widget"],
@@ -209,7 +216,6 @@ module Yast
         "widget"        => "symbol",
         "custom_widget" => "term",
         "handle_events" => "list",
-        "help"          => "string",
         "label"         => "string",
         "opt"           => "list",
         "ui_timeout"    => "integer",
@@ -223,22 +229,22 @@ module Yast
       type = Ops.get(types, key)
       success = true
       if type.nil?
-        if key == "widget_func"
-          success = Ops.is(value, "term ()")
-        elsif key == "init"
-          success = Ops.is(value, "void (string)")
-        elsif key == "handle"
-          success = Ops.is(value, "symbol (string, map)")
-        elsif key == "store"
-          success = Ops.is(value, "void (string, map)")
-        elsif key == "cleanup"
-          success = Ops.is(value, "void (string)")
-        elsif key == "validate_function"
-          success = Ops.is(value, "boolean (string, map)")
-        elsif key == "items"
-          success = Ops.is(value, "list <list <string>>")
-        elsif key == "_cwm_do_validate"
-          success = Ops.is(value, "boolean (string, map <string, any>)")
+        success = case key
+        when "widget_func" then Ops.is(value, "term ()")
+        when "init" then Ops.is(value, "void (string)")
+        when "handle" then Ops.is(value, "symbol (string, map)")
+        when "store" then Ops.is(value, "void (string, map)")
+        when "cleanup" then Ops.is(value, "void (string)")
+        when "validate_function" then Ops.is(value, "boolean (string, map)")
+        when "items" then Ops.is(value, "list <list <string>>")
+        when "_cwm_do_validate" then Ops.is(value, "boolean (string, map <string, any>)")
+        when "help"
+          # help can be static string or dynamic callback, that allows to recompute help for
+          # widgets with dynamic contents like replace_point
+          Ops.is(value, "string") || Ops.is(value, "string ()")
+        else
+          # unknown key, always valid
+          true
         end
       else
         success = ValidateBasicType(value, type)
@@ -271,9 +277,6 @@ module Yast
         elsif Builtins.size(Builtins.filterchars(s, "&")) != 1
           error = "Label has no shortcut or more than 1 shortcuts"
         end
-      elsif key == "help"
-        s = Convert.to_string(value)
-        error = "Empty help" if s.nil?
       elsif key == "widget"
         s = Convert.to_symbol(value)
         error = "No widget specified" if s.nil?
@@ -461,13 +464,6 @@ module Yast
           []
         else
           ["label", "widget"]
-        end
-        if !Builtins.haskey(v, "no_help")
-          to_check = Convert.convert(
-            Builtins.merge(to_check, ["help"]),
-            from: "list",
-            to:   "list <string>"
-          )
         end
         Builtins.foreach(to_check) do |key|
           if key != "label" ||
@@ -737,10 +733,14 @@ module Yast
     # @param [Array<::CWM::WidgetHash>] widgets a list of widget description maps
     # @return [String] merged helps of the widgets
     def MergeHelps(widgets)
-      widgets = deep_copy(widgets)
-      helps = Builtins.maplist(widgets) { |w| Ops.get_string(w, "help") }
-      helps = Builtins.filter(helps) { |h| !h.nil? }
-      Builtins.mergestring(helps, "\n")
+      return "" unless widgets
+
+      helps = widgets.map do |widget|
+        help = widget["help"]
+        help.respond_to?(:call) ? help.call : help
+      end
+      helps.compact!
+      helps.join("\n")
     end
 
     # Prepare the dialog, replace strings in the term with appropriate
@@ -761,12 +761,20 @@ module Yast
     end
 
     # Replace help for a particular widget
-    # @param [String] widget string widget ID of widget to replace help
-    # @param [String] help string new help to the widget
-    def ReplaceWidgetHelp(widget, help)
-      @current_dialog_widgets = Builtins.maplist(@current_dialog_widgets) do |w|
-        Ops.set(w, "help", help) if Ops.get_string(w, "_cwm_key", "") == widget
-        deep_copy(w)
+    # @param [String] widget string widget ID of widget to replace help,
+    # if nil is passed, then just regenerate help. Useful for refresh dynamic help content.
+    # @param [String] help string new help to the widget. If widget is nil, then this argument is ignored
+    #
+    # @example change help content for widget w which had static help
+    #   Yast::CWM.ReplaceWidgetHelp("my_widget", "my new free-cool-in help")
+    # @example refresh help for widget with dynamic content
+    #   Yast::CWM.ReplaceWidgetHelp
+    def ReplaceWidgetHelp(widget = nil, help = "")
+      if widget
+        @current_dialog_widgets = Builtins.maplist(@current_dialog_widgets) do |w|
+          Ops.set(w, "help", help) if Ops.get_string(w, "_cwm_key", "") == widget
+          deep_copy(w)
+        end
       end
       help = MergeHelps(@current_dialog_widgets)
       Wizard.RestoreHelp(help)
@@ -924,9 +932,12 @@ module Yast
     # Display the dialog and run its event loop using new widget API
     # @param [::CWM::WidgetTerm] contents is UI term including instances of {CWM::AbstractWidget}
     # @param [String] caption of dialog
-    # @param [String] back_button label for dialog back button
-    # @param [String] next_button label for dialog next button
-    # @param [String] abort_button label for dialog abort button
+    # @param [String, nil] back_button label for dialog back button,
+    #   `nil` to use the default label, `""` to omit the button
+    # @param [String, nil] next_button label for dialog next button,
+    #   `nil` to use the default label, `""` to omit the button
+    # @param [String, nil] abort_button label for dialog abort button,
+    #   `nil` to use the default label, `""` to omit the button
     # @param [Array] skip_store_for list of events for which the value of the widget will not be stored.
     #   Useful mainly when some widget returns an event that should not trigger the storing,
     #   like a reset button or a redrawing.  It will skip also validation, because it is not needed
@@ -1084,12 +1095,12 @@ module Yast
 
     # @return [Array<::CWM::AbstractWidget>]
     def widgets_in_contents(contents)
-      require "cwm/widget"
-
       contents.each_with_object([]) do |arg, res|
         case arg
-        when ::CWM::CustomWidget then res.concat(arg.nested_widgets) << arg
-        when ::CWM::AbstractWidget then res << arg
+        when ::CWM::AbstractWidget
+          res << arg
+          # if widget have its own content, also search it
+          res.concat(widgets_in_contents(arg.contents)) if arg.respond_to?(:contents)
         when Yast::Term then res.concat(widgets_in_contents(arg))
         end
       end
@@ -1098,8 +1109,6 @@ module Yast
     # @param  [::CWM::WidgetTerm] contents
     # @return [::CWM::StringTerm]
     def widgets_contents(contents)
-      require "cwm/widget"
-
       res = contents.clone
 
       (0..(res.size - 1)).each do |index|

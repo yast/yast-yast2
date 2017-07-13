@@ -1,4 +1,80 @@
 -------------------------------------------------------------------
+Wed Jul 12 13:38:08 UTC 2017 - jreidinger@suse.com
+
+- convert Object#timeout usage to Timeout.timeout as ruby2.4 makes
+  it obsolete ( ruby2.4 will be for SLE15 so part of bsc#1044312)
+- 3.3.1
+
+-------------------------------------------------------------------
+Mon Jul 10 08:09:15 UTC 2017 - jreidinger@suse.com
+
+- Fix omitting button in CWM::Dialog and make API consistent with
+  CWM.show (boo#1039901)
+- 3.3.0
+
+-------------------------------------------------------------------
+Fri Jun 23 07:26:03 UTC 2017 - mvidner@suse.com
+
+- Support for the new Expert Partitioner (boo#1039901):
+- Added UI::Sequence, UI::Greasemonkey
+- Added CWM::Dialog
+- RSpec.shared_examples for CWM: Page, PushButton, RadioButtons,
+  RichText.
+- 3.2.40
+
+-------------------------------------------------------------------
+Thu Jun 22 11:27:46 UTC 2017 - jreidinger@suse.com
+
+- Add hint for UI about application name and its icon (bsc#1037891)
+- 3.2.39
+
+-------------------------------------------------------------------
+Tue Jun  6 10:33:22 UTC 2017 - jreidinger@suse.com
+
+- Fix showing help text when CWM::ReplacePoint contains another
+  CWM::ReplacePoint. Fix including new
+  CWM::AbstractWidget#refresh_help functionality for widgets where
+  help text can change during its lifetime. (boo#1039901)
+- 3.2.38
+
+-------------------------------------------------------------------
+Fri Jun  2 15:54:34 UTC 2017 - jlopez@suse.com
+
+- Add EventDispatcher#event_handler to allow custom events
+  management, for example to delegate to a widget. Part of
+  (fate#305633)
+- 3.2.37
+
+-------------------------------------------------------------------
+Thu Jun  1 12:45:01 UTC 2017 - jreidinger@suse.com
+
+- Fix distribution of new CWM::WrapperWidget (bsc#1032725)
+- 3.2.36
+
+-------------------------------------------------------------------
+Thu Jun 01 08:13:57 UTC 2017 - jreidinger@suse.com
+
+- CWM: Add object wrapper to allow running object CWM with old
+  hash style widgets (bsc#1032725)
+- fix nested pagers to have unique ids
+- 3.2.35
+
+-------------------------------------------------------------------
+Wed May 31 08:13:57 UTC 2017 - jreidinger@suse.com
+
+- Fix CWM::ReplacePoint to work with CWM::Custom widget and use it
+  in all pagers (boo#1039901)
+- Fix calling handle in CWM::RadioButtons
+- 3.2.34
+
+-------------------------------------------------------------------
+Wed May 31 08:13:56 UTC 2017 - gsouza@suse.com
+
+- Warning messages shouldn't open UI in command-line mode
+  (bsc#1036440).
+- 3.2.33
+
+-------------------------------------------------------------------
 Mon May 22 12:01:15 UTC 2017 - mvidner@suse.com
 
 - Added CWM::Pager, CWM::Tree + CWM::TreeItem,
@@ -696,14 +772,14 @@ Wed Aug 19 07:44:30 UTC 2015 - mfilka@suse.com
 
 - bnc#941881
   - displays hostname / domain as set in /etc/hostnmae
-- 3.1.146 
+- 3.1.146
 
 -------------------------------------------------------------------
 Mon Aug 10 07:37:45 UTC 2015 - mfilka@suse.com
 
 - bnc#916013
   - keeps routing state when firewall is enabled/disabled
-- 3.1.145 
+- 3.1.145
 
 -------------------------------------------------------------------
 Mon Aug  3 14:29:05 UTC 2015 - ancor@suse.com
@@ -785,7 +861,7 @@ Mon Jun 22 14:52:04 UTC 2015 - cwh@suse.com
 
 - bnc#922765
   - changed default TLD from .site to .suse
-- 3.1.134 
+- 3.1.134
 
 -------------------------------------------------------------------
 Thu Jun 18 14:08:32 UTC 2015 - ancor@suse.com
@@ -893,7 +969,7 @@ Mon Feb  2 08:27:21 UTC 2015 - jreidinger@suse.com
 -------------------------------------------------------------------
 Thu Jan 29 10:21:26 UTC 2015 - jreidinger@suse.com
 
-- remove depreacated legacy Patch callbacks 
+- remove depreacated legacy Patch callbacks
 
 -------------------------------------------------------------------
 Tue Jan 27 14:16:20 UTC 2015 - jreidinger@suse.com
@@ -1202,7 +1278,7 @@ Tue Jun 24 12:59:43 UTC 2014 - jreidinger@suse.com
 Mon Jun 23 10:38:15 UTC 2014 - mfilka@suse.com
 
 - bnc#864619
-  - old network service is also disabled when switching to new one. 
+  - old network service is also disabled when switching to new one.
 - 3.1.80
 
 -------------------------------------------------------------------
@@ -1232,7 +1308,7 @@ Mon Jun  9 11:53:58 UTC 2014 - mfilka@suse.com
 
 - bnc#864619
   - stop wicked service(s) properly when switching network services
-- 3.1.76 
+- 3.1.76
 
 -------------------------------------------------------------------
 Wed Jun  4 12:47:17 CEST 2014 - locilka@suse.com
@@ -1589,7 +1665,7 @@ Tue Mar 25 08:09:09 CET 2014 - jsuchome@suse.cz
 -------------------------------------------------------------------
 Mon Mar 24 12:16:08 UTC 2014 - vmoravec@suse.com
 
-- Add support for systemd target with SystemdTarget module 
+- Add support for systemd target with SystemdTarget module
 
 -------------------------------------------------------------------
 Thu Mar 13 14:34:42 CET 2014 - gs@suse.de
@@ -1661,7 +1737,7 @@ Tue Jan 21 14:57:14 UTC 2014 - jreidinger@suse.com
 Tue Jan 21 08:26:38 UTC 2014 - mfilka@suse.com
 
 - fate#316768
-  - use wicked tools for network service restart / reload when 
+  - use wicked tools for network service restart / reload when
     running in installation mode
 - 3.1.15
 
@@ -1804,7 +1880,7 @@ Tue Oct 22 10:57:46 CEST 2013 - locilka@suse.com
 -------------------------------------------------------------------
 Wed Oct  9 13:45:40 UTC 2013 - jreidinger@suse.com
 
-- Install binaries to /usr/sbin instead of /sbin to be consistent 
+- Install binaries to /usr/sbin instead of /sbin to be consistent
   with rest of world and use common specs. Symlinks are kept for
   backward compatibility.
 - do not create sym links in sbin for zast or camel case yast
@@ -1827,7 +1903,7 @@ Tue Sep  3 08:47:37 UTC 2013 - mfilka@suse.com
 
 - bnc#837517
     - fixed misinterpreting IPv6 prefixes when converting to netmask
-- 3.0.8 
+- 3.0.8
 
 -------------------------------------------------------------------
 Thu Aug 29 05:57:29 UTC 2013 - jreidinger@suse.com
@@ -1847,7 +1923,7 @@ Thu Aug 22 11:22:26 CEST 2013 - jsuchome@suse.cz
 
 - prevent accessing /etc/os-release during tests from Product.rb
   constructor
-- 3.0.5 
+- 3.0.5
 
 -------------------------------------------------------------------
 Thu Aug 22 08:17:06 CEST 2013 - jsuchome@suse.cz
@@ -1869,7 +1945,7 @@ Fri Aug  9 07:02:01 UTC 2013 - mfilka@suse.com
 - bnc#798620
     - disabled starting firewall during second stage. It could
     cause deadlock in systemd initialization sequence.
-- 3.0.2 
+- 3.0.2
 
 -------------------------------------------------------------------
 Thu Aug  8 13:57:09 CEST 2013 - tgoettlicher@suse.de
@@ -1880,7 +1956,7 @@ Thu Aug  8 13:57:09 CEST 2013 - tgoettlicher@suse.de
 Mon Aug  5 10:47:14 CEST 2013 - jsuchome@suse.cz
 
 - added support for handling product profiles (port of fate#310730)
-- 3.0.1 
+- 3.0.1
 
 -------------------------------------------------------------------
 Wed Jul 31 08:45:41 UTC 2013 - yast-devel@opensuse.org
@@ -1901,7 +1977,7 @@ Thu Jul 18 11:57:12 UTC 2013 - mfilka@suse.com
 
 - added net device type detection based on sysfs
 - fixed type detection workflow
-- 2.24.5 
+- 2.24.5
 
 -------------------------------------------------------------------
 Fri Jul 12 08:20:12 UTC 2013 - mfilka@suse.com
@@ -1915,8 +1991,8 @@ Fri Jul 12 08:20:12 UTC 2013 - mfilka@suse.com
 -------------------------------------------------------------------
 Fri Jun 28 12:08:50 UTC 2013 - mfilka@suse.com
 
-- bnc#817797 
-    - data imported into NetworkInterfaces cannot be overwritten by 
+- bnc#817797
+    - data imported into NetworkInterfaces cannot be overwritten by
     subsequent Read anymore
 - 2.24.3
 
@@ -1942,7 +2018,7 @@ Mon May 27 14:16:53 CEST 2013 - locilka@suse.com
 Tue May 21 15:24:25 CEST 2013 - jsuchome@suse.cz
 
 - do not propose desktop kernel for minimal installation
-  (bnc#819335) 
+  (bnc#819335)
 - 2.24.0
 
 -------------------------------------------------------------------
@@ -2076,7 +2152,7 @@ Fri Dec  7 12:08:58 UTC 2012 - lslezak@suse.cz
 -------------------------------------------------------------------
 Thu Nov 29 17:04:52 CET 2012 - tgoettlicher@suse.de
 
-- fixed bnc#791294: frame for firewall settings 
+- fixed bnc#791294: frame for firewall settings
 - 2.23.14
 
 -------------------------------------------------------------------
@@ -2115,13 +2191,13 @@ Tue Oct 30 08:26:28 CET 2012 - jsuchome@suse.cz
 
 - Kernel::InformAboutKernelChange - always return boolean
 - fixed build dependencies
-- 2.23.10 
+- 2.23.10
 
 -------------------------------------------------------------------
 Mon Oct 29 14:52:40 CET 2012 - jsuchome@suse.cz
 
 - use Kernel::InformAboutKernelChange after package installation
-- do not read SuSEconfig log 
+- do not read SuSEconfig log
 - 2.23.9
 
 -------------------------------------------------------------------
@@ -2129,25 +2205,25 @@ Thu Oct 25 14:12:12 CEST 2012 - jsuchome@suse.cz
 
 - added Kernel::InformAboutKernelChange - replacement for only
   non-SuSEconfig part of inst_suseconfig
-- 2.23.8 
+- 2.23.8
 
 -------------------------------------------------------------------
 Fri Oct 19 11:36:26 CEST 2012 - jsuchome@suse.cz
 
-- added Syslog module, simple API to write into system log 
+- added Syslog module, simple API to write into system log
 - 2.23.7
 
 -------------------------------------------------------------------
 Thu Oct 11 14:49:04 CEST 2012 - jsuchome@suse.cz
 
-- removed calls to /sbin/SuSEconfig, packages should care of 
+- removed calls to /sbin/SuSEconfig, packages should care of
   updating configurations on their own
 
 -------------------------------------------------------------------
 Mon Oct 01 06:17:16 UTC 2012 - mfilka@suse.com
 
 - extended support for IPv6
-- 2.23.6 
+- 2.23.6
 
 -------------------------------------------------------------------
 Mon Sep 24 17:38:52 CEST 2012 - locilka@suse.com
@@ -2159,7 +2235,7 @@ Mon Sep 24 17:38:52 CEST 2012 - locilka@suse.com
 Tue Sep 18 22:32:59 CEST 2012 - jsuchome@suse.cz
 
 - added San Marino to the list of countries (bnc#780639)
-- 2.23.5 
+- 2.23.5
 
 -------------------------------------------------------------------
 Mon Aug 27 08:51:54 CEST 2012 - tgoettlicher@suse.de
@@ -2178,25 +2254,25 @@ Fri Aug 17 15:47:42 CEST 2012 - locilka@suse.com
 Tue Aug  7 14:53:33 CEST 2012 - jsuchome@suse.cz
 
 - fixed checking for systemd status (bnc#774799)
-- 2.23.3 
+- 2.23.3
 
 -------------------------------------------------------------------
 Tue Jun 26 11:45:26 CEST 2012 - gs@suse.de
 
 - added color schemes "highcontrast" and "inverted" to description
-  of Y2NCURSES_COLOR_THEME in sysconfig.yast2 
+  of Y2NCURSES_COLOR_THEME in sysconfig.yast2
 
 -------------------------------------------------------------------
 Fri Jun 22 11:25:10 UTC 2012 - tgoettlicher@suse.de
 
 - search for UI plugins at new and old location
-- 2.23.2 
+- 2.23.2
 
 -------------------------------------------------------------------
 Thu May 10 07:17:40 UTC 2012 - mfilka@suse.com
 
 - removed ShellSafeWrite as it is not needed anymore with new ag_ini - bnc#750325
-- 2.23.0 
+- 2.23.0
 
 -------------------------------------------------------------------
 Thu Mar 29 14:02:47 CEST 2012 - jsuchome@suse.cz
@@ -2209,7 +2285,7 @@ Wed Mar 28 11:58:34 CEST 2012 - gs@suse.de
 
 - Revert the change in FileUtils::Exists() (change is not needed
   here but will cause failure of testsuites)
-- 2.22.5 
+- 2.22.5
 
 -------------------------------------------------------------------
 Wed Feb 22 12:57:01 UTC 2012 - mfilka@suse.com
@@ -2218,7 +2294,7 @@ Wed Feb 22 12:57:01 UTC 2012 - mfilka@suse.com
 - improve Exists(), don't return 'true' if SCR::Read() returned nil
 - fixed testsuite for WorkFlow.ycp - corrupted due to above Exists() fix
 - added String::YesNo
-- 2.22.4 
+- 2.22.4
 
 -------------------------------------------------------------------
 Tue Jan 31 14:44:38 CET 2012 - tgoettlicher@suse.de
@@ -2567,35 +2643,35 @@ Mon Jan  3 16:49:18 UTC 2011 - lslezak@suse.cz
 Wed Dec 22 18:58:19 CET 2010 - mzugec@suse.cz
 
 - ifcfg-ethX.Y style config files for VLAN(fate#309240)
-- 2.20.7 
+- 2.20.7
 
 -------------------------------------------------------------------
 Mon Dec 20 11:27:17 CET 2010 - mzugec@suse.cz
 
 - fate#306855: FCoE boot support
-- 2.20.6 
+- 2.20.6
 
 -------------------------------------------------------------------
 Tue Nov 16 15:45:30 CET 2010 - mzugec@suse.cz
 
 - save log file into home directory by default (bnc#653601)
-- 2.20.5 
+- 2.20.5
 
 -------------------------------------------------------------------
 Fri Nov 12 15:42:50 CET 2010 - mzugec@suse.cz
 
-- FileChanges: fixed testsuite 
+- FileChanges: fixed testsuite
 
 -------------------------------------------------------------------
 Fri Nov 12 11:03:58 CET 2010 - mzugec@suse.cz
 
 - yast2 added bind-utils dependency (bnc#651893)
-- 2.20.4 
+- 2.20.4
 
 -------------------------------------------------------------------
 Fri Nov 12 10:23:17 CET 2010 - mzugec@suse.cz
 
-- FileChanges: test rpm command exit value 
+- FileChanges: test rpm command exit value
 
 -------------------------------------------------------------------
 Fri Nov  5 12:40:03 UTC 2010 - lslezak@suse.cz
@@ -2621,14 +2697,14 @@ Mon Oct 18 15:04:37 UTC 2010 - lslezak@suse.cz
 -------------------------------------------------------------------
 Wed Oct 13 10:07:55 CEST 2010 - jsuchome@suse.cz
 
-- open LongError popup instead of Error if the message is too long 
+- open LongError popup instead of Error if the message is too long
   (bnc#611596)
 
 -------------------------------------------------------------------
 Thu Oct  7 07:21:57 UTC 2010 - lslezak@suse.cz
 
 - just log problemDeltaDownload callbacks - libzypp automatically
-  tries full rpm if patch/delta cannot be downloaded, displaying 
+  tries full rpm if patch/delta cannot be downloaded, displaying
   error popup breaks unattended installation (bnc#377569)
 - 2.20.0
 
@@ -2642,7 +2718,7 @@ Mon Jul 19 14:56:51 CEST 2010 - mzugec@suse.cz
 Fri Apr 30 13:32:22 CEST 2010 - jsuchome@suse.cz
 
 - ag_anyxml: do not die on broken XML (bnc#600928)
-- 2.19.13 
+- 2.19.13
 
 -------------------------------------------------------------------
 Thu Apr 29 12:15:50 CEST 2010 - jsrain@suse.cz
@@ -2660,9 +2736,9 @@ Mon Apr 19 07:49:25 UTC 2010 - lslezak@suse.cz
 Thu Apr  8 13:11:14 CEST 2010 - gs@suse.de
 
 - yast2 start script: don't start YaST on console in UTF-8 mode
-  by default and don't fix settings, but respect and trust the 
+  by default and don't fix settings, but respect and trust the
   locale ('testutf8' is removed, see bnc#556555 and bnc#436378).
-- 2.19.11  
+- 2.19.11
 
 -------------------------------------------------------------------
 Fri Mar 26 02:19:19 EDT 2010 - cmeng@novell.com
@@ -2673,12 +2749,12 @@ Fri Mar 26 02:19:19 EDT 2010 - cmeng@novell.com
 Mon Mar 22 09:12:32 CET 2010 - mzugec@suse.cz
 
 - L3: autoinstallation with manual setup (bnc#568653)
-- 2.19.10 
+- 2.19.10
 
 -------------------------------------------------------------------
 Tue Mar 16 15:28:33 CET 2010 - jsuchome@suse.cz
 
-- SERVICES.pm moved to webyast-services-ws (bnc#587876) 
+- SERVICES.pm moved to webyast-services-ws (bnc#587876)
 - 2.19.9
 
 -------------------------------------------------------------------
@@ -2697,7 +2773,7 @@ Wed Mar 10 15:43:17 CET 2010 - mvidner@suse.cz
 -------------------------------------------------------------------
 Wed Mar  3 23:08:31 CET 2010 - jsuchome@suse.cz
 
-- SERVICES.pm: added support for enabling/disabling service 
+- SERVICES.pm: added support for enabling/disabling service
 - 2.19.7
 
 -------------------------------------------------------------------
@@ -2746,13 +2822,13 @@ Fri Jan 15 11:44:39 CET 2010 - aschnell@suse.de
 Thu Jan 14 17:53:48 CET 2010 - mzugec@suse.cz
 
 - NetworkStorage: adapt functions needed for iBFT (bnc#551380)
-- 2.19.3 
+- 2.19.3
 
 -------------------------------------------------------------------
 Thu Jan 14 16:48:19 CET 2010 - kmachalkova@suse.cz
 
 - Added Recommends: xdg-utils. xdg-su is now used in .desktop files
-  of root-only YaST modules (bnc#540627) 
+  of root-only YaST modules (bnc#540627)
 - 2.19.2
 
 -------------------------------------------------------------------
@@ -2788,7 +2864,7 @@ Thu Nov 26 19:40:24 CET 2009 - locilka@suse.cz
 -------------------------------------------------------------------
 Thu Nov 26 18:10:42 CET 2009 - kmachalkova@suse.cz
 
-- Fixed striping trailing \n from Hostname::CurrentHostname() 
+- Fixed striping trailing \n from Hostname::CurrentHostname()
   (bnc#553213)
 - 2.19.0
 
@@ -2820,13 +2896,13 @@ Fri Nov  6 14:05:03 CET 2009 - jsrain@suse.cz
 Mon Oct 26 16:53:20 CET 2009 - mzugec@suse.cz
 
 - NetworkPopup: display link state (FaTE#307166)
-- 2.18.28 
+- 2.18.28
 
 -------------------------------------------------------------------
 Wed Oct 21 15:02:15 CEST 2009 - mzugec@suse.cz
 
 - Internet.ycp: skip interface status test in case of NM (bnc#535837)
-- 2.18.27 
+- 2.18.27
 
 -------------------------------------------------------------------
 Mon Oct 19 16:53:58 CEST 2009 - lslezak@suse.cz
@@ -2837,7 +2913,7 @@ Mon Oct 19 16:53:58 CEST 2009 - lslezak@suse.cz
 Fri Sep 25 17:52:49 CEST 2009 - mzugec@suse.cz
 
 - separation of netmask and prefix validation in Netmask module
-- 2.18.26 
+- 2.18.26
 
 -------------------------------------------------------------------
 Mon Sep 14 13:46:56 CEST 2009 - mvidner@suse.cz
@@ -2849,7 +2925,7 @@ Mon Sep 14 13:46:56 CEST 2009 - mvidner@suse.cz
 Mon Sep  7 15:20:03 CEST 2009 - jsuchome@suse.cz
 
 - package new YaPI file SERVICES.pm (fate #306696)
-- 2.18.24 
+- 2.18.24
 
 -------------------------------------------------------------------
 Fri Sep  4 18:29:35 CEST 2009 - kmachalkova@suse.cz
@@ -2925,12 +3001,12 @@ Wed Jun  3 12:25:28 CEST 2009 - jsrain@suse.cz
 Mon Jun  1 11:52:53 CEST 2009 - mzugec@suse.cz
 
 - new variable Internet::test to store status of test (bnc#506721)
-- 2.18.17 
+- 2.18.17
 
 -------------------------------------------------------------------
 Tue May 26 19:02:36 CEST 2009 - juhliarik@suse.cz
 
-- added fix for problem with parsing command line (bnc#462276) 
+- added fix for problem with parsing command line (bnc#462276)
 
 -------------------------------------------------------------------
 Fri May 22 10:47:43 CEST 2009 - mvidner@suse.cz
@@ -2946,7 +3022,7 @@ Wed May 20 12:45:47 CEST 2009 - aschnell@suse.de
 
 -------------------------------------------------------------------
 Tue May  5 14:18:28 CEST 2009 - jsrain@suse.cz
- 
+
 - remove all passwords from install.inf in save_y2log (bnc#500130)
 
 -------------------------------------------------------------------
@@ -2985,7 +3061,7 @@ Wed Apr  8 11:27:13 CEST 2009 - lslezak@suse.cz
 Tue Apr  7 15:31:35 CEST 2009 - jreidinger@suse.cz
 
 - Add to CWM widget for unified table CWMTable
-- 2.18.14 
+- 2.18.14
 
 -------------------------------------------------------------------
 Fri Apr  3 13:26:58 CEST 2009 - lslezak@suse.cz
@@ -3042,7 +3118,7 @@ Tue Feb 24 18:24:42 CET 2009 - mzugec@suse.cz
 
 - - NetworkInterfaces - possible to not use LABEL for aliases
 (bnc#471253)
-- 2.18.12 
+- 2.18.12
 
 -------------------------------------------------------------------
 Tue Feb 24 14:34:50 CET 2009 - locilka@suse.cz
@@ -3059,7 +3135,7 @@ Mon Feb 23 12:43:46 CET 2009 - locilka@suse.cz
 -------------------------------------------------------------------
 Wed Feb 18 18:05:49 CET 2009 - mzugec@suse.cz
 
-- NetworkInterfaces.GetDeviceTypes-added bond for s390 (bnc#476490) 
+- NetworkInterfaces.GetDeviceTypes-added bond for s390 (bnc#476490)
 - 2.18.10
 
 -------------------------------------------------------------------
@@ -3072,7 +3148,7 @@ Wed Feb 18 15:37:29 CET 2009 - jsrain@suse.cz
 Mon Feb 16 10:45:05 CET 2009 - mzugec@suse.cz
 
 - assign to GetInstArgs.args first map, not first argument (bnc#475169)
-- 2.18.9 
+- 2.18.9
 
 -------------------------------------------------------------------
 Thu Feb 12 12:52:47 CET 2009 - coolo@suse.de
@@ -3130,7 +3206,7 @@ Tue Jan 27 16:35:14 CET 2009 - aschnell@suse.de
 Mon Jan 26 14:09:34 CET 2009 - mzugec@suse.cz
 
 - new Wizard::OpenCancelOKDialog() function
-- 2.18.2 
+- 2.18.2
 
 -------------------------------------------------------------------
 Mon Jan 26 13:08:55 CET 2009 - locilka@suse.cz
@@ -3225,7 +3301,7 @@ Wed Dec  3 15:55:44 CET 2008 - kmachalkova@suse.cz
 
 - Take translations of group and module names in ncurses CC from
   system-wide desktop_translations.mo - they are not part of YaST
-  .desktop files anymore (bnc#450494) 
+  .desktop files anymore (bnc#450494)
 
 -------------------------------------------------------------------
 Wed Dec 03 14:39:30 CET 2008 - aschnell@suse.de
@@ -3243,18 +3319,18 @@ Wed Dec  3 10:28:01 CET 2008 - lslezak@suse.cz
 -------------------------------------------------------------------
 Tue Dec  2 15:18:00 CET 2008 - mzugec@suse.cz
 
-- NetworkStorage:: for LVM detection use pvs instead of pvscan 
+- NetworkStorage:: for LVM detection use pvs instead of pvscan
 
 -------------------------------------------------------------------
 Tue Dec  2 14:05:30 CET 2008 - mzugec@suse.cz
 
 - improved rootfs on network-based disk detection (bnc#445004)
-- 2.17.54 
+- 2.17.54
 
 -------------------------------------------------------------------
 Mon Dec  1 11:44:18 CET 2008 - mzugec@suse.cz
 
-- Confirm::Detection() - exception for s390 (bnc#429562) 
+- Confirm::Detection() - exception for s390 (bnc#429562)
 
 -------------------------------------------------------------------
 Fri Nov 28 16:55:00 CET 2008 - locilka@suse.cz
@@ -3289,7 +3365,7 @@ Fri Nov 14 16:26:33 CET 2008 - sh@suse.de
 
 - Consistent behaviour for Wizard::HideAbortButton() (bnc #444176)
   Still broken usability-wise, but now broken in a consistent way
-- V 2.17.50 
+- V 2.17.50
 
 -------------------------------------------------------------------
 Wed Nov 12 18:28:46 CET 2008 - jdsn@suse.de
@@ -3314,7 +3390,7 @@ Fri Nov  7 12:40:08 CET 2008 - lslezak@suse.cz
 -------------------------------------------------------------------
 Thu Nov  6 18:45:38 CET 2008 - jdsn@suse.de
 
-- disable x11 setup on Itanium/ia64 (bnc#439612) 
+- disable x11 setup on Itanium/ia64 (bnc#439612)
 - 2.17.46
 
 -------------------------------------------------------------------
@@ -3332,9 +3408,9 @@ Wed Nov 05 14:25:37 CET 2008 - aschnell@suse.de
 -------------------------------------------------------------------
 Tue Nov  4 16:02:34 CET 2008 - mzugec@suse.cz
 
-- UI::TimeoutUserInput() instead of UI::UserInput() for Hardware 
+- UI::TimeoutUserInput() instead of UI::UserInput() for Hardware
   Detection (bnc#429562)
-- 2.17.43 
+- 2.17.43
 
 -------------------------------------------------------------------
 Thu Oct 30 16:44:23 CET 2008 - lslezak@suse.cz
@@ -3346,7 +3422,7 @@ Thu Oct 30 16:44:23 CET 2008 - lslezak@suse.cz
 -------------------------------------------------------------------
 Mon Oct 27 13:00:20 CET 2008 - visnov@suse.cz
 
-- SlideShow: check stage progress against overflow 
+- SlideShow: check stage progress against overflow
 - 2.17.41
 
 -------------------------------------------------------------------
@@ -3360,8 +3436,8 @@ Mon Oct 20 17:59:57 CEST 2008 - lslezak@suse.cz
 -------------------------------------------------------------------
 Mon Oct 20 12:33:54 CEST 2008 - kmachalkova@suse.cz
 
-- bash ag_showexports moved from yast2-nfs-client package here 
-  (bnc#257910) 
+- bash ag_showexports moved from yast2-nfs-client package here
+  (bnc#257910)
 
 -------------------------------------------------------------------
 Thu Oct 16 15:15:02 CEST 2008 - locilka@suse.cz
@@ -3425,13 +3501,13 @@ Thu Oct  2 22:15:31 CEST 2008 - locilka@suse.cz
 -------------------------------------------------------------------
 Thu Oct  2 14:31:38 CEST 2008 - mzugec@suse.de
 
-- Service  - log output in case of error 
+- Service  - log output in case of error
 
 -------------------------------------------------------------------
 Thu Oct  2 11:31:35 CEST 2008 - kmachalkova@suse.cz
 
-- Hostname.ycp: Improved FQDN lookup - read /etc/HOSTNAME and use 
-  'linux.site' if all else fails (bnc#429792) 
+- Hostname.ycp: Improved FQDN lookup - read /etc/HOSTNAME and use
+  'linux.site' if all else fails (bnc#429792)
 
 -------------------------------------------------------------------
 Wed Oct  1 17:07:00 CEST 2008 - visnov@suse.cz
@@ -3453,7 +3529,7 @@ Mon Sep 29 16:52:39 CEST 2008 - visnov@suse.cz
 -------------------------------------------------------------------
 Fri Sep 29 14:55:50 CEST 2008 - tgoettlicher@suse.de
 
-- Fixed bnc #418443: Yast modules windows have no title 
+- Fixed bnc #418443: Yast modules windows have no title
 - 2.17.34
 
 -------------------------------------------------------------------
@@ -3504,7 +3580,7 @@ Tue Sep 23 11:37:32 CEST 2008 - locilka@suse.cz
 -------------------------------------------------------------------
 Tue Sep 23 10:17:23 CEST 2008 - kmachalkova@suse.cz
 
-- Added Service::Find function - return the first of the list of 
+- Added Service::Find function - return the first of the list of
   services which is available (has init script)
   (needed for bnc#423026)
 - 2.17.28
@@ -3606,7 +3682,7 @@ Tue Sep  9 15:38:57 CEST 2008 - locilka@suse.cz
 Tue Sep  9 15:26:12 CEST 2008 - mzugec@suse.de
 
 - fixed NetworkInterfaces::FreeDevice() function
-- 2.17.20 
+- 2.17.20
 
 -------------------------------------------------------------------
 Tue Sep  9 10:24:41 CEST 2008 - locilka@suse.cz
@@ -3617,14 +3693,14 @@ Tue Sep  9 10:24:41 CEST 2008 - locilka@suse.cz
 -------------------------------------------------------------------
 Mon Sep  8 10:02:12 CEST 2008 - mzugec@suse.cz
 
-- fix for testsuite 
+- fix for testsuite
 
 -------------------------------------------------------------------
 Fri Sep  5 14:23:55 CEST 2008 - mzugec@suse.cz
 
-- added support for InfiniBand network devices (fate#304870), 
+- added support for InfiniBand network devices (fate#304870),
   (fate#304115)
-- 2.17.18 
+- 2.17.18
 
 -------------------------------------------------------------------
 Thu Sep  4 17:48:02 CEST 2008 - locilka@suse.cz
@@ -3689,7 +3765,7 @@ Fri Aug 22 10:18:51 CEST 2008 - jsrain@suse.cz
 -------------------------------------------------------------------
 Wed Aug 20 12:46:23 CEST 2008 - ug@suse.de
 
-- fixed the Linuxrc::SaveInstallInf function to copy the 
+- fixed the Linuxrc::SaveInstallInf function to copy the
   install.inf
 - 2.17.13
 
@@ -3715,7 +3791,7 @@ Tue Aug 12 17:44:57 CEST 2008 - mvidner@suse.cz
 -------------------------------------------------------------------
 Mon Aug 11 13:54:29 CEST 2008 - kmachalkova@suse.cz
 
-- Hostname::Current.*: Do not split FQDN into pieces if it is of the 
+- Hostname::Current.*: Do not split FQDN into pieces if it is of the
   form of IP address (bnc#415109)
 - CWMFirewallInterfaces: widget-exists check added
 - 2.17.11
@@ -3734,7 +3810,7 @@ Fri Aug  8 13:19:03 CEST 2008 - locilka@suse.cz
 -------------------------------------------------------------------
 Fri Aug  8 10:28:38 CEST 2008 - jsuchome@suse.cz
 
-- anyxml agent documentation added to anyxml.scr (bnc#405291) 
+- anyxml agent documentation added to anyxml.scr (bnc#405291)
 
 -------------------------------------------------------------------
 Wed Aug  6 14:23:14 CEST 2008 - tgoettlicher@suse.de
@@ -3769,7 +3845,7 @@ Tue Jul 22 20:12:41 CEST 2008 - locilka@suse.cz
 -------------------------------------------------------------------
 Thu Jul 17 12:25:25 CEST 2008 - jsuchome@suse.cz
 
-- ag_anyxml: return every value as string (bnc#409491) 
+- ag_anyxml: return every value as string (bnc#409491)
 
 -------------------------------------------------------------------
 Wed Jul 16 18:41:13 CEST 2008 - locilka@suse.cz
@@ -3829,7 +3905,7 @@ Tue Jul  1 17:43:02 CEST 2008 - mzugec@suse.de
 
 - new function is NetworkService::Networkv6Running()
 - rewrite IP/PREFIXLEN for aliases in NetworkInterfaces
-- 2.17.5 
+- 2.17.5
 
 -------------------------------------------------------------------
 Fri Jun 27 10:53:23 CEST 2008 - lslezak@suse.cz
@@ -14898,4 +14974,3 @@ Fri May 19 12:55:32 CEST 2000 - kkaempf@suse.de
 Wed May 17 12:59:02 CEST 2000 - kkaempf@suse.de
 
 - Initial version based on SuSE 6.4 (i386)
-

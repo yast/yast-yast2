@@ -6,24 +6,21 @@ module CWM
   # Useful mainly when a specialized widget including more subwidgets should be
   # reusable at more places.
   #
+  #
   # @example custom widget child
   #   class MyWidget < CWM::CustomWidget
-  #     def initialize
-  #       self.handle_all_events = true
-  #     end
-  #
   #     def contents
   #       HBox(
-  #         PushButton(Id(:reset), _("Reset")),
+  #         MyPushButton.new,
   #         PushButton(Id(:undo), _("Undo"))
   #       )
   #     end
   #
   #     def handle(event)
   #       case event["ID"]
-  #       when :reset then ...
   #       when :undo then ...
-  #       else ...
+  #       else
+  #         # handle for MyPushButton lives in that PushButton
   #       end
   #       nil
   #     end
@@ -33,7 +30,8 @@ module CWM
 
     # @!method contents
     #   Must be defined by subclasses
-    #   @return [UITerm] a UI term; {AbstractWidget} are not allowed inside
+    #   @return [WidgetTerm] a UI term that can include another AbstractWidgets
+    #   @see example/object_api_nested.rb
     abstract_method :contents
 
     # @return [WidgetHash]
@@ -43,14 +41,6 @@ module CWM
       res["handle_events"] = ids_in_contents unless handle_all_events
 
       super.merge(res)
-    end
-
-    # Returns all nested widgets used in contents
-    # @return [Array<AbstractWidget>]
-    def nested_widgets
-      Yast.import "CWM"
-
-      Yast::CWM.widgets_in_contents(contents)
     end
 
   protected

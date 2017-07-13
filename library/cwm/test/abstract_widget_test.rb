@@ -69,8 +69,8 @@ describe CWM::AbstractWidget do
       end
     end
 
-    it "returns hash with \"help\" key and #help result as value" do
-      expect(THelp.new.cwm_definition["help"]).to eq "helpful string"
+    it "returns hash with \"help\" key and reference to #help as result" do
+      expect(THelp.new.cwm_definition["help"].call).to eq "helpful string"
     end
 
     class TNoHelp < CWM::AbstractWidget
