@@ -2,7 +2,7 @@
 Thu Jul 13 10:45:59 UTC 2017 - jreidinger@suse.com
 
 - Add Yast::Execute.on_target! and Yast::Execute.locally! variants
-  which throws cheetah exception when command failed (bsc#1048512)
+  which raise a Cheetah exception if the command fails (bsc#1048512)
 - 3.3.2
 
 -------------------------------------------------------------------
