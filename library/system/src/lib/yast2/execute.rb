@@ -24,8 +24,10 @@ require "yast"
 require "cheetah"
 
 module Yast
-  # Module for executing scripts/programs in safe way. Uses cheetah as backend,
-  # but adds support for chrooting in installation.
+  # A module for executing scripts/programs in a safe way
+  # (not prone to shell quoting bugs).
+  # It uses {http://www.rubydoc.info/github/openSUSE/cheetah/ Cheetah}
+  # as the backend, but adds support for chrooting during the installation.
   class Execute
     # use y2log by default
     Cheetah.default_options = { logger: Y2Logger.instance }
@@ -33,10 +35,22 @@ module Yast
     extend Yast::I18n
     textdomain "base"
 
-    # Runs arguments with respect of changed root in installation.
-    # @see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run parameter docs
-    # @raise Cheetah::ExecutionFailed
+    # Runs with chroot; a failure becomes a popup.
+    # Runs a command described by *args*,
+    # in a `chroot(2)` specified by the installation (WFM.scr_root).
+    # Shows a {ReportClass#Error popup} if the command fails
+    # and returns `nil` in such case.
+    # @param args see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run
     def self.on_target(*args)
+      popup_error { on_target!(*args) }
+    end
+
+    # Runs with chroot; a failure becomes an exception.
+    # Runs a command described by *args*,
+    # in a `chroot(2)` specified by the installation (WFM.scr_root).
+    # @param args see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run
+    # @raise Cheetah::ExecutionFailed if the command fails
+    def self.on_target!(*args)
       root = Yast::WFM.scr_root
 
       if args.last.is_a? ::Hash
@@ -45,17 +59,31 @@ module Yast
         args.push(chroot: root)
       end
 
-      popup_error { Cheetah.run(*args) }
+      Cheetah.run(*args)
     end
 
-    # Runs arguments without changed root.
-    # @see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run parameter docs
-    # @raise Cheetah::ExecutionFailed
+    # Runs without chroot; a failure becomes a popup.
+    # Runs a command described by *args*,
+    # *disregarding* a `chroot(2)` specified by the installation (WFM.scr_root).
+    # Shows a {ReportClass#Error popup} if the command fails
+    # and returns `nil` in such case.
+    # @param args see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run
     def self.locally(*args)
-      popup_error { Cheetah.run(*args) }
+      popup_error { locally!(*args) }
     end
 
-    def self.popup_error(&block)
+    # Runs without chroot; a failure becomes an exception.
+    # Runs a command described by *args*,
+    # *disregarding* a `chroot(2)` specified by the installation (WFM.scr_root).
+    # In other words, this is just an alias for `Cheetah.run`, provided for
+    # API orthogonality.
+    # @param args see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run
+    # @raise Cheetah::ExecutionFailed if the command fails
+    def self.locally!(*args)
+      Cheetah.run(*args)
+    end
+
+    private_class_method def self.popup_error(&block)
       block.call
     rescue Cheetah::ExecutionFailed => e
       Yast.import "Report"
@@ -72,7 +100,5 @@ module Yast
         }
       )
     end
-
-    private_class_method :popup_error
   end
 end
