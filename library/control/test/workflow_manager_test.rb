@@ -267,7 +267,7 @@ describe Yast::WorkflowManager do
     end
   end
 
-  describe "#addon_control_file" do
+  describe "#control_file" do
     # setup fake products and their packages
     let(:repo_id) { 42 }
     let(:product_package) { "foo-release" }
@@ -290,43 +290,45 @@ describe Yast::WorkflowManager do
       allow(File).to receive(:exist?).and_call_original
     end
 
-    it "returns nil if the repository does not provide any product" do
-      expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([])
-      expect(subject.addon_control_file(repo_id)).to be nil
-    end
+    context "when repository id is passed" do
+      it "returns nil if the repository does not provide any product" do
+        expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([])
+        expect(subject.control_file(repo_id)).to be nil
+      end
 
-    it "returns nil if the product does not refer to a release package" do
-      product = { "name" => "foo", "source" => repo_id }
-      expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
-      expect(subject.addon_control_file(repo_id)).to be nil
-    end
+      it "returns nil if the product does not refer to a release package" do
+        product = { "name" => "foo", "source" => repo_id }
+        expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+        expect(subject.control_file(repo_id)).to be nil
+      end
 
-    it "returns nil if the product belongs to a different repository" do
-      product = { "name" => "foo", "source" => repo_id + 1 }
-      expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
-      expect(subject.addon_control_file(repo_id)).to be nil
-    end
+      it "returns nil if the product belongs to a different repository" do
+        product = { "name" => "foo", "source" => repo_id + 1 }
+        expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+        expect(subject.control_file(repo_id)).to be nil
+      end
 
-    it "returns nil if the release package cannot be found" do
-      expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([])
-      expect(subject.addon_control_file(repo_id)).to be nil
-    end
+      it "returns nil if the release package cannot be found" do
+        expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([])
+        expect(subject.control_file(repo_id)).to be nil
+      end
 
-    it "returns nil if the release package does not have any dependencies" do
-      release = { "name" => "foo", "source" => repo_id }
-      expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
-      expect(subject.addon_control_file(repo_id)).to be nil
-    end
+      it "returns nil if the release package does not have any dependencies" do
+        release = { "name" => "foo", "source" => repo_id }
+        expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+        expect(subject.control_file(repo_id)).to be nil
+      end
 
-    it "returns nil if the release package does not have any installerextension() provides" do
-      release = { "name" => "foo", "source" => repo_id, "deps" => ["provides" => "foo"] }
-      expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
-      expect(subject.addon_control_file(repo_id)).to be nil
+      it "returns nil if the release package does not have any installerextension() provides" do
+        release = { "name" => "foo", "source" => repo_id, "deps" => ["provides" => "foo"] }
+        expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+        expect(subject.control_file(repo_id)).to be nil
+      end
     end
 
     it "returns nil if the installer extension package is not found" do
       expect(Yast::Pkg).to receive(:ResolvableProperties).with(ext_package, :package, "").and_return([])
-      expect(subject.addon_control_file(repo_id)).to be nil
+      expect(subject.control_file(repo_id)).to be nil
     end
 
     context "downloading the installer extension package fails" do
@@ -337,11 +339,11 @@ describe Yast::WorkflowManager do
 
       it "reports an error" do
         expect(Yast::Report).to receive(:Error)
-        subject.addon_control_file(repo_id)
+        subject.control_file(repo_id)
       end
 
       it "returns nil" do
-        expect(subject.addon_control_file(repo_id)).to be nil
+        expect(subject.control_file(repo_id)).to be nil
       end
     end
 
@@ -353,11 +355,11 @@ describe Yast::WorkflowManager do
 
       it "reports an error" do
         expect(Yast::Report).to receive(:Error)
-        subject.addon_control_file(repo_id)
+        subject.control_file(repo_id)
       end
 
       it "returns nil" do
-        expect(subject.addon_control_file(repo_id)).to be nil
+        expect(subject.control_file(repo_id)).to be nil
       end
     end
 
@@ -366,18 +368,18 @@ describe Yast::WorkflowManager do
       expect(Packages::PackageExtractor).to receive(:new).with(instance_of(String)).and_call_original
       expect_any_instance_of(Packages::PackageExtractor).to receive(:extract).with(instance_of(String))
       allow(File).to receive(:exist?)
-      subject.addon_control_file(repo_id)
+      subject.control_file(repo_id)
     end
 
     it "returns nil if the extracted package does not contain installation.xml" do
       expect(File).to receive(:exist?).with(/installation\.xml\z/).and_return(false)
-      expect(subject.addon_control_file(repo_id)).to be nil
+      expect(subject.control_file(repo_id)).to be nil
     end
 
     it "returns the installation.xml path if the extracted package contains it" do
       expect(File).to receive(:exist?).with(/installation.xml\z/).and_return(true)
       # the returned path contains "/installation.xml" at the end
-      expect(subject.addon_control_file(repo_id)).to end_with("/installation.xml")
+      expect(subject.control_file(repo_id)).to end_with("/installation.xml")
     end
   end
 
