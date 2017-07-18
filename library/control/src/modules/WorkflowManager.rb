@@ -861,6 +861,8 @@ module Yast
       base = deep_copy(base)
       addon = deep_copy(addon)
 
+      log.info "merging workflow #{addon.inspect} to #{base.inspect}"
+
       # Merging - removing steps, settings
       removes = Ops.get_list(addon, "remove_modules", [])
 
@@ -914,6 +916,7 @@ module Yast
         end
       end
 
+      log.info "result of merge #{base.inspect}"
       deep_copy(base)
     end
 
@@ -932,6 +935,8 @@ module Yast
         found = false
         new_workflows = []
         arch_all_wf = {}
+        log.info "workflow to update #{workflow.inspect}"
+
         Builtins.foreach(ProductControl.workflows) do |w|
           if Ops.get_string(w, "stage", "") != stage ||
               Ops.get_string(w, "mode", "") != mode
@@ -968,6 +973,9 @@ module Yast
 
           new_workflows = Builtins.add(new_workflows, workflow)
         end
+
+        log.info "new workflow after update #{new_workflows}"
+
         ProductControl.workflows = deep_copy(new_workflows)
       end
 
