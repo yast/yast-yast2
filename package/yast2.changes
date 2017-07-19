@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 18 10:14:07 UTC 2017 - igonzalezsosa@suse.com
+
+- Add YaST2 logs to the default list of files for System Log browser
+  (bsc#1049138)
+- 3.2.37
+
+-------------------------------------------------------------------
 Thu Jun  1 12:45:01 UTC 2017 - jreidinger@suse.com
 
 - Fix distribution of new CWM::WrapperWidget (bsc#1032725)
