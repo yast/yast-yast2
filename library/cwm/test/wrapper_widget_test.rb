@@ -8,7 +8,12 @@ describe CWM::WrapperWidget do
   describe "#cwm_definition" do
     it "returns passed hash content" do
       content = { "test" => "test" }
-      expect(described_class.new(content).cwm_definition).to eq content
+      expect(described_class.new(content).cwm_definition["test"]).to eq "test"
+    end
+
+    it "return hash that has _cwm_key key with widget id" do
+      content = { "test" => "test" }
+      expect(described_class.new(content, id: "test").cwm_definition["_cwm_key"]).to eq "test"
     end
   end
 

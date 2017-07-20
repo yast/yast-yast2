@@ -25,7 +25,7 @@ module CWM
 
     # returns given hash specification
     def cwm_definition
-      @content
+      @content.merge("_cwm_key" => widget_id)
     end
 
     def handle_all_events
