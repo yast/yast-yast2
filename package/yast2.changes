@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
 Thu Jul 20 08:17:41 UTC 2017 - jreidinger@suse.com
 
-- CWM: add to wrapper widget its key to definition otherwise widget
-  won't work with any pager like tabs (bsc#1049595)
+- CWM::WrapperWidget#cwm_defintion: also include widget id,
+  otherwise the widget would not show in a Pager, eg. Tabs
+  (bsc#1049595)
 - 3.3.4
 
 -------------------------------------------------------------------
