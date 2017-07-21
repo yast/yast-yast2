@@ -88,9 +88,26 @@ RSpec.shared_examples "CWM::PushButton" do
   include_examples "CWM::AbstractWidget"
 end
 
+RSpec.shared_examples "CWM spacing" do |method|
+  describe "##{method}" do
+    it "returns and Integer or a Float number if defined" do
+      if subject.respond_to?(method)
+        expect(subject.send(method)).to be_an(Integer).or be_a(Float)
+      end
+    end
+
+    it "returns a positive number or zero if defined" do
+      expect(subject.send(method)).to be >= 0 if subject.respond_to?(method)
+    end
+  end
+end
+
 RSpec.shared_examples "CWM::RadioButtons" do
   include_examples "CWM::AbstractWidget"
   include_examples "CWM::ItemsSelection"
+
+  include_examples "CWM spacing", :hspacing
+  include_examples "CWM spacing", :vspacing
 end
 
 RSpec.shared_examples "CWM::ValueBasedWidget" do
