@@ -35,7 +35,6 @@ module_DATA = \
   modules/Hooks.rb
 
 scrconf_DATA = \
-  scrconf/content.scr \
   scrconf/cfg_hotplug.scr \
   scrconf/proc_meminfo.scr \
   scrconf/etc_sysctl_conf.scr \
@@ -46,7 +45,6 @@ scrconf_DATA = \
   scrconf/cfg_features.scr \
   scrconf/etc_ssh_sshd_config.scr \
   scrconf/cfg_displaymanager.scr \
-  scrconf/contentfile.scr \
   scrconf/cfg_yast2.scr \
   scrconf/cfg_xversion.scr \
   scrconf/yast2_groups.scr \
@@ -70,8 +68,7 @@ scrconf_DATA = \
 agent_SCRIPTS = \
   servers_non_y2/ag_netd \
   servers_non_y2/ag_anyxml \
-  servers_non_y2/ag_freespace \
-  servers_non_y2/ag_content
+  servers_non_y2/ag_freespace
 
 ydata_DATA = \
   data/country.ycp \
