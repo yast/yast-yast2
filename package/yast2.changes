@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 27 12:28:09 UTC 2017 - jreidinger@suse.com
+
+- drop reading /content file (FATE#322386)
+- 3.3.5
+
+-------------------------------------------------------------------
 Fri Jul 21 14:18:57 UTC 2017 - lslezak@suse.cz
 
 - cwm/rspec.rb: added tests in "CWM::RadioButtons" group for
