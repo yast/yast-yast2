@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 20 11:27:46 UTC 2017 - jreidinger@suse.com
+
+- Add hint for UI about application name and its icon (bsc#1037891)
+- 3.2.37.1
+
+-------------------------------------------------------------------
 Tue Jul 18 10:14:07 UTC 2017 - igonzalezsosa@suse.com
 
 - Add YaST2 logs to the default list of files for System Log browser
