@@ -398,28 +398,40 @@ module Yast
     # Download and extract the control file (installation.xml) from the add-on
     # repository.
     #
-    # @param src_id [Fixnum] repository ID
+    # @param source [String, Fixnum] source where to get control file. It can be fixnum for
+    #   addon type or package name for package type
     # @return [String, nil] path to downloaded installation.xml file or nil
     #   or nil when no workflow is defined or the workflow package is missing
-    def addon_control_file(src_id)
-      product = find_product(src_id)
-      return nil unless product && product["product_package"]
+    def control_file(source)
+      package = case source
+      when ::Integer
+        product = find_product(source)
+        return nil unless product && product["product_package"]
 
-      # the dependencies are bound to the product's -release package
-      release_package = Pkg.ResolvableDependencies(product["product_package"], :package, "").first
+        product_package = product["product_package"]
 
-      # find the package name with installer update in its Provide dependencies
-      control_file_package = find_control_package(release_package)
-      return nil unless control_file_package
+        # the dependencies are bound to the product's -release package
+        release_package = Pkg.ResolvableDependencies(product_package, :package, "").first
+
+        # find the package name with installer update in its Provide dependencies
+        control_file_package = find_control_package(release_package)
+        return nil unless control_file_package
+
+        control_file_package
+      when ::String
+        source
+      else
+        raise ArgumentError, "Invalid argument source #{source.inspect}"
+      end
 
       # get the repository ID of the package
-      src = package_repository(control_file_package)
+      src = package_repository(package)
       return nil unless src
 
-      # ensure the previous content is removed, the src_id should avoid
+      # ensure the previous content is removed, the src should avoid
       # collisions but rather be safe...
-      dir = addon_control_dir(src_id, cleanup: true)
-      fetch_package(src, control_file_package, dir)
+      dir = addon_control_dir(src, cleanup: true)
+      fetch_package(src, package, dir)
 
       path = File.join(dir, "installation.xml")
       return nil unless File.exist?(path)
@@ -452,21 +464,28 @@ module Yast
     # Returns requested control filename. Parameter 'name' is ignored
     # for Add-Ons.
     #
-    # @param [Symbol] type `addon or `pattern
+    # @param [Symbol] type :addon or :package
     # @param [Fixnum] src_id with Source ID
-    # @param [String] name with unique identification
-    # @return [String] path to already cached workflow file, control file is downloaded if not yet chached
-    def GetCachedWorkflowFilename(type, src_id, _name)
-      if type == :addon
-        disk_filename = GenerateAdditionalControlFilePath(src_id, "")
+    # @param [String] name with unique identification, ignored for addon
+    # @return [String] path to already cached workflow file, control file is downloaded if not yet cached
+    #   or nil if failed to get filename
+    def GetCachedWorkflowFilename(type, src_id, name = "")
+      if ![:package, :addon].include?(type)
+        Builtins.y2error("Unknown workflow type: %1", type)
+        return nil
+      end
 
-        # A cached copy exists
-        if FileUtils.Exists(disk_filename)
-          Builtins.y2milestone("Using cached file %1", disk_filename)
-          return disk_filename
-          # Trying to get the file from source
-        else
-          Builtins.y2milestone("File %1 not cached", disk_filename)
+      disk_filename = GenerateAdditionalControlFilePath(src_id, name)
+
+      # A cached copy exists
+      if FileUtils.Exists(disk_filename)
+        Builtins.y2milestone("Using cached file %1", disk_filename)
+        return disk_filename
+        # Trying to get the file from source
+      else
+        Builtins.y2milestone("File %1 not cached", disk_filename)
+        case type
+        when :addon
           # using a file from source, works only for SUSE tags repositories
           use_filename = Pkg.SourceProvideDigestedFile(
             src_id,
@@ -477,25 +496,22 @@ module Yast
 
           # The most generic way it to use the package referenced by the "installerextension()"
           # provides, this works with all repository types, including the RPM-MD repositories.
-          use_filename ||= addon_control_file(src_id)
-
-          # File exists?
-          return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
+          use_filename ||= control_file(src_id)
+        when :package
+          use_filename = control_file(name)
         end
 
-        # New workflow types can be added here
-      else
-        Builtins.y2error("Unknown workflow type: %1", type)
-        return nil
+        # File exists?
+        return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
       end
     end
 
     # Stores new workflow (if such workflow exists) into the Worflow Store.
     #
-    # @param [Symbol] type `addon or `pattern
+    # @param [Symbol] type :addon or :package
     # @param intger src_id with source ID
     # @param [String] name with unique identification name of the object
-    #        ("" for `addon, pattern name for `pattern)
+    #        ("" for `addon, package name for :package)
     # @return [Boolean] whether successful (true also in case of no workflow file)
     #
     # @example
@@ -507,20 +523,14 @@ module Yast
         src_id,
         name
       )
-      if !Builtins.contains([:addon, :pattern], type)
+      if !Builtins.contains([:addon, :package], type)
         Builtins.y2error("Unknown workflow type: %1", type)
         return false
       end
 
+      name = "" if type == :addon
       # new xml filename
-      used_filename = nil
-
-      if type == :addon
-        used_filename = GetCachedWorkflowFilename(:addon, src_id, "")
-      elsif type == :pattern
-        Builtins.y2error("Not implemented yet")
-        return false
-      end
+      used_filename = GetCachedWorkflowFilename(type, src_id, name)
 
       if !used_filename.nil? && used_filename != ""
         @unmerged_changes = true
@@ -535,14 +545,15 @@ module Yast
     # Removes workflow (if such workflow exists) from the Worflow Store.
     # Alose removes the cached file but in the installation.
     #
-    # @param [Symbol] type `addon or `pattern
-    # @param intger src_id with source ID
-    # @param [String] name with unique identification name of the object
+    # @param [Symbol] type :addon or :package
+    # @param [Integer] src_id with source ID
+    # @param [String] name with unique identification name of the object.
+    #   For :addon it should be empty string
     #
     # @return [Boolean] whether successful (true also in case of no workflow file)
     #
     # @example
-    #	RemoveWorkflow (`addon, 4, "");
+    #	RemoveWorkflow (:addon, 4, "");
     def RemoveWorkflow(type, src_id, name)
       Builtins.y2milestone(
         "Removing Workflow:  Type %1, ID %2, Name %3",
@@ -550,20 +561,14 @@ module Yast
         src_id,
         name
       )
-      if !Builtins.contains([:addon, :pattern], type)
+      if !Builtins.contains([:addon, :package], type)
         Builtins.y2error("Unknown workflow type: %1", type)
         return false
       end
 
+      name = "" if type == :addon
       # cached xml file
-      used_filename = nil
-
-      if type == :addon
-        used_filename = GenerateAdditionalControlFilePath(src_id, "")
-      else
-        Builtins.y2error("Not implemented yet")
-        return false
-      end
+      used_filename = GenerateAdditionalControlFilePath(src_id, name)
 
       if !used_filename.nil? && used_filename != ""
         @unmerged_changes = true
@@ -842,6 +847,8 @@ module Yast
       base = deep_copy(base)
       addon = deep_copy(addon)
 
+      log.info "merging workflow #{addon.inspect} to #{base.inspect}"
+
       # Merging - removing steps, settings
       removes = Ops.get_list(addon, "remove_modules", [])
 
@@ -895,6 +902,7 @@ module Yast
         end
       end
 
+      log.info "result of merge #{base.inspect}"
       deep_copy(base)
     end
 
@@ -913,6 +921,8 @@ module Yast
         found = false
         new_workflows = []
         arch_all_wf = {}
+        log.info "workflow to update #{workflow.inspect}"
+
         Builtins.foreach(ProductControl.workflows) do |w|
           if Ops.get_string(w, "stage", "") != stage ||
               Ops.get_string(w, "mode", "") != mode
@@ -949,6 +959,9 @@ module Yast
 
           new_workflows = Builtins.add(new_workflows, workflow)
         end
+
+        log.info "new workflow after update #{new_workflows}"
+
         ProductControl.workflows = deep_copy(new_workflows)
       end
 
