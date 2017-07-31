@@ -464,10 +464,11 @@ module Yast
     # Returns requested control filename. Parameter 'name' is ignored
     # for Add-Ons.
     #
-    # @param [Symbol] type :addon or :pattern or :package, pattern not implemented
+    # @param [Symbol] type :addon or :package
     # @param [Fixnum] src_id with Source ID
     # @param [String] name with unique identification, ignored for addon
-    # @return [String] path to already cached workflow file, control file is downloaded if not yet chached
+    # @return [String] path to already cached workflow file, control file is downloaded if not yet cached
+    #   or nil if failed to get filename
     def GetCachedWorkflowFilename(type, src_id, name = "")
       if ![:package, :addon].include?(type)
         Builtins.y2error("Unknown workflow type: %1", type)
@@ -498,8 +499,6 @@ module Yast
           use_filename ||= control_file(src_id)
         when :package
           use_filename = control_file(name)
-        else
-          raise ArgumentError, "invalid argument type #{type.inspect}"
         end
 
         # File exists?
@@ -509,10 +508,10 @@ module Yast
 
     # Stores new workflow (if such workflow exists) into the Worflow Store.
     #
-    # @param [Symbol] type :addon or :pattern
+    # @param [Symbol] type :addon or :package
     # @param intger src_id with source ID
     # @param [String] name with unique identification name of the object
-    #        ("" for `addon, pattern name or package name for :pattern respective :package)
+    #        ("" for `addon, package name for :package)
     # @return [Boolean] whether successful (true also in case of no workflow file)
     #
     # @example
@@ -524,21 +523,14 @@ module Yast
         src_id,
         name
       )
-      if !Builtins.contains([:addon, :pattern, :package], type)
+      if !Builtins.contains([:addon, :package], type)
         Builtins.y2error("Unknown workflow type: %1", type)
         return false
       end
 
-      # new xml filename
-      used_filename = nil
-
       name = "" if type == :addon
-      if [:addon, :package].include?(type)
-        used_filename = GetCachedWorkflowFilename(type, src_id, name)
-      elsif type == :pattern
-        Builtins.y2error("Not implemented yet")
-        return false
-      end
+      # new xml filename
+      used_filename = GetCachedWorkflowFilename(type, src_id, name)
 
       if !used_filename.nil? && used_filename != ""
         @unmerged_changes = true
@@ -553,14 +545,15 @@ module Yast
     # Removes workflow (if such workflow exists) from the Worflow Store.
     # Alose removes the cached file but in the installation.
     #
-    # @param [Symbol] type :addon or :pattern or :package
+    # @param [Symbol] type :addon or :package
     # @param [Integer] src_id with source ID
-    # @param [String] name with unique identification name of the object
+    # @param [String] name with unique identification name of the object.
+    #   For :addon it should be empty string
     #
     # @return [Boolean] whether successful (true also in case of no workflow file)
     #
     # @example
-    #	RemoveWorkflow (`addon, 4, "");
+    #	RemoveWorkflow (:addon, 4, "");
     def RemoveWorkflow(type, src_id, name)
       Builtins.y2milestone(
         "Removing Workflow:  Type %1, ID %2, Name %3",
@@ -568,21 +561,14 @@ module Yast
         src_id,
         name
       )
-      if !Builtins.contains([:addon, :pattern, :package], type)
+      if !Builtins.contains([:addon, :package], type)
         Builtins.y2error("Unknown workflow type: %1", type)
         return false
       end
 
-      # cached xml file
-      used_filename = nil
-
       name = "" if type == :addon
-      if [:addon, :package].include?(type)
-        used_filename = GenerateAdditionalControlFilePath(src_id, name)
-      else
-        Builtins.y2error("Not implemented yet")
-        return false
-      end
+      # cached xml file
+      used_filename = GenerateAdditionalControlFilePath(src_id, name)
 
       if !used_filename.nil? && used_filename != ""
         @unmerged_changes = true
