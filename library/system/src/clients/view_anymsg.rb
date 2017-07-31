@@ -48,6 +48,13 @@ module Yast
   class ViewAnymsgClient < Client
     using Yast::CoreExt::AnsiString
 
+    # [String] Default list of log files
+    DEFAULT_FILENAMES = [
+      "/var/log/boot.log",
+      "/var/log/messages",
+      "/var/log/YaST2/y2log"
+    ].freeze
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -77,15 +84,13 @@ module Yast
       @filenames = Convert.to_string(
         SCR.Read(path(".target.string"), Ops.add(@vardir, "/filenames"))
       )
-      if !@filenames || @filenames.empty?
-        @filenames = ""
-        @filenames << "/var/log/boot.log\n"
-        @filenames << "/var/log/messages\n"
-      end
+
+      @filenames ||= ""
 
       # convert \n separated string to ycp list.
 
       @all_files = Builtins.splitstring(@filenames, "\n")
+      @all_files |= DEFAULT_FILENAMES
 
       @set_default = false
       @combo_files = []

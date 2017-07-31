@@ -3,6 +3,33 @@ Mon Jul 31 08:23:57 UTC 2017 - jreidinger@suse.com
 
 - WorkflowManager: allow to extend workflow from rpm package
   (needed for FATE#323450)
+- 3.3.6
+
+-------------------------------------------------------------------
+Thu Jul 27 12:28:09 UTC 2017 - jreidinger@suse.com
+
+- drop reading /content file (FATE#322386)
+- 3.3.5
+
+-------------------------------------------------------------------
+Fri Jul 21 14:18:57 UTC 2017 - lslezak@suse.cz
+
+- cwm/rspec.rb: added tests in "CWM::RadioButtons" group for
+  optional #hspacing and #vspacing methods
+
+-------------------------------------------------------------------
+Thu Jul 20 08:17:41 UTC 2017 - jreidinger@suse.com
+
+- CWM::WrapperWidget#cwm_defintion: also include widget id,
+  otherwise the widget would not show in a Pager, eg. Tabs
+  (bsc#1049595)
+- 3.3.4
+
+-------------------------------------------------------------------
+Tue Jul 18 10:14:07 UTC 2017 - igonzalezsosa@suse.com
+
+- Add YaST2 logs to the default list of files for System Log browser
+  (bsc#1049138)
 - 3.3.3
 
 -------------------------------------------------------------------
