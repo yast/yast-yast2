@@ -22,7 +22,7 @@ module Yast
 
       it "raises exception if the execution has timed out" do
         stub_const("Yast::Systemctl::TIMEOUT", 1)
-        allow(SCR).to receive(:Execute) { sleep 1.1 }
+        allow(SCR).to receive(:Execute) { sleep 5 }
         expect(SCR).to receive(:Execute)
         expect { Systemctl.execute("disable cups.service") }.to raise_error(SystemctlError)
       end
