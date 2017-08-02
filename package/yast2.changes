@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Aug  2 15:39:25 UTC 2017 - jlopez@suse.com
+
+- More robust systemctl test to avoid possible timeout error
+
+-------------------------------------------------------------------
 Mon Jul 31 08:23:57 UTC 2017 - jreidinger@suse.com
 
 - WorkflowManager: allow to extend workflow from rpm package
