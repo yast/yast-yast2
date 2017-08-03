@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug  3 07:39:49 UTC 2017 - lslezak@suse.cz
+
+- run_ifconfig.scr - make "inet" section optional, handle
+  additional whitespace characters (bsc#811760)
+- 3.3.7
+
+-------------------------------------------------------------------
 Wed Aug  2 15:39:25 UTC 2017 - jlopez@suse.com
 
 - More robust systemctl test to avoid possible timeout error
