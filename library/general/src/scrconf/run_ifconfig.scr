@@ -15,7 +15,7 @@
  *   Read(.run.ifconfig)
  *   ([$["name":"eth0",
  *       "value":$["flags":["UP", "BROADCAST", "RUNNING", "MULTICAST",
- *                          " MTU:1500", " Metric:1"],
+ *                          "MTU:1500", "Metric:1"],
  *                 "inet":$["addr":168427678,
  *                          "bcast":168493055,
  *                          "mask":4294901760],
@@ -24,7 +24,7 @@
  *     ],
  *     $["name":"lo",
  *       "value":$["flags":["UP", "LOOPBACK", "RUNNING",
- *                          " MTU:3924", " Metric:1"],
+ *                          "MTU:3924", "Metric:1"],
  *                 "inet":$["addr":2130706433,
  *                          "mask":4278190080],
  *                 "link":"Link encap:Local Loopback  "]
@@ -53,8 +53,8 @@
 	    `Tuple(
 		`name(`String("^\t ")),
 		`value(`Tuple(
-		    `Whitespace(), `link(`String("^\n")), "\n",
-		    `Whitespace(), "inet", `inet(
+		    `Whitespace(), `link(`String("^\n", " ")), "\n",
+		    `Optional(`Sequence(`Whitespace(), "inet", `inet(
 			`Tuple (
 			    `Optional (`Whitespace ()),
 			    `Choice (
@@ -80,9 +80,10 @@
 				    ]
 				),
 			    `Continue (`Whitespace ())
-			    )
-			), "\n",
-		    `Whitespace(), `flags(`List(`Sequence(`Optional(`Whitespace()), `String("^ \n")), " ")), "\n",
+			    )),
+			"\n")),
+
+		    `Whitespace(), `flags(`List(`Sequence(`Optional(`Whitespace()), `String("^ \n")), `Separator("\t "))), "\n",
 		    // the rest is not important
 		    `List(
 			`Sequence(`Whitespace(), `String("^\n")),
