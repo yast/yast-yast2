@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Aug  4 12:15:23 UTC 2017 - lslezak@suse.cz
+
+- Force using Term::ReadLine::Perl library instead of the broken
+  Term::ReadLine::Gnu default to avoid ugly error message printed
+  in command line mode (bsc#966042)
+- 3.3.8
+
+-------------------------------------------------------------------
 Thu Aug  3 07:39:49 UTC 2017 - lslezak@suse.cz
 
 - run_ifconfig.scr - make "inet" section optional, handle
