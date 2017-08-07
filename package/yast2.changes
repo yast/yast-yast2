@@ -11,7 +11,7 @@ Tue Mar 28 10:19:44 WEST 2017 - knut.anderssen@suse.com
 - backported
   - SlideShow: Escape plain text release notes being shown properly
     in RichText (bsc#1028721).
-- 3.1.215
+- 3.1.215.1
 
 -------------------------------------------------------------------
 Thu Mar 16 13:48:06 CET 2017 - schubi@suse.de
@@ -19,13 +19,42 @@ Thu Mar 16 13:48:06 CET 2017 - schubi@suse.de
 - UnitFileState will be used for evaluating enable state of
   services. If it has an invalid value "systemctl is-enabled...."
   has to be called instead. (bnc#1012047)
-- 3.1.214
+- 3.1.214.1
 
 -------------------------------------------------------------------
 Wed Mar 15 14:19:44 UTC 2017 - ancor@suse.com
 
 - Added FileChanges.created_files (part of fix for bsc#1027582)
 - 3.1.213
+
+-------------------------------------------------------------------
+Fri Mar 10 09:20:51 UTC 2017 - mfilka@suse.com
+
+- bnc#1026027
+  - removed insserv calls
+- Fixed tests to pass with the latest yast2-core package
+  (related to the bsc#932331 fix)
+- 3.1.210.6
+
+-------------------------------------------------------------------
+Fri Jan 20 18:58:27 UTC 2017 - jreidinger@suse.com
+
+- Fix error popup when replacing widget with CWM::ReplacePoint
+  (FATE#322328)
+- 3.1.210.5
+
+-------------------------------------------------------------------
+Thu Jan 19 13:49:10 UTC 2017 - jreidinger@suse.com
+
+- Added a CWM::ReplacePoint widget
+- 3.1.210.4
+
+-------------------------------------------------------------------
+Wed Jan 18 13:56:27 UTC 2017 - jreidinger@suse.com
+
+- CWM: when skipping storing of widget values, skip also its
+  validation (FATE#322328)
+- 3.1.210.3
 
 -------------------------------------------------------------------
 Thu Jan  5 11:35:23 UTC 2017 - mfilka@suse.com
@@ -35,14 +64,19 @@ Thu Jan  5 11:35:23 UTC 2017 - mfilka@suse.com
     Such file cannot be mapped to any existing device and providing
     empty device name could lead to unexpected crashes in other
     parts of yast.
-- 3.1.212
 
 -------------------------------------------------------------------
 Tue Dec 20 16:28:45 UTC 2016 - igonzalezsosa@suse.com
 
 - Add a method to read the ID property from the /etc/os-release
   file (related to bsc#1016004)
-- 3.1.211
+- 3.1.210.2
+
+-------------------------------------------------------------------
+Wed Dec 14 12:44:39 UTC 2016 - jreidinger@suse.com
+
+- add generic cwm widget for keyboard layout (used for FATE#321754)
+- 3.1.210.1
 
 -------------------------------------------------------------------
 Wed Nov 23 15:23:24 UTC 2016 - igonzalezsosa@suse.com
