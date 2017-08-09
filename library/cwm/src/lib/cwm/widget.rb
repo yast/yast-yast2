@@ -821,4 +821,76 @@ module CWM
       ReplacePoint(Id(replace_point_id), VBox(VStretch(), HStretch()))
     end
   end
+
+  # Placeholder widget that is used to replace content on demand.
+  # The most important method is {#replace} which allows switching content
+  class ReplacePoint < CustomWidget
+    # @param id [Object] id of widget. Needed to redefine only if more than one
+    # placeholder needed to be in dialog. Parameter type is limited by component
+    # system
+    # @param widget [CWM::AbstractWidget] initial widget in placeholder
+    def initialize(id: "_placeholder", widget: Empty.new("_initial_placeholder"))
+      self.handle_all_events = true
+      self.widget_id = id
+      @widget = widget
+    end
+
+    def contents
+      ReplacePoint(Id(widget_id), widget_content(@widget))
+    end
+
+    def init
+      @widget.init if @widget.respond_to?(:init)
+    end
+
+    # Replaces content with different widget. All its events are properly
+    # handled.
+    # @param widget [CWM::AbstractWidget] widget to display and process events
+    def replace(widget)
+      log.info "replacing with new widget #{widget.inspect}"
+      Yast::UI.ReplaceWidget(Id(widget_id), widget_content(widget))
+      @widget = widget
+      init
+    end
+
+    def help
+      @widget.respond_to?(:help) ? @widget.help : ""
+    end
+
+    def handle(event)
+      return unless @widget.respond_to?(:handle)
+
+      if !@widget.handle_all_events
+        return if event["ID"] != @widget.widget_id
+      end
+
+      m = @widget.method(:handle)
+      if m.arity == 0
+        m.call
+      else
+        m.call(event)
+      end
+    end
+
+    def validate
+      @widget.respond_to?(:validate) ? @widget.validate : true
+    end
+
+    def store
+      @widget.store if @widget.respond_to?(:store)
+    end
+
+    def cleanup
+      @widget.cleanup if @widget.respond_to?(:cleanup)
+    end
+
+  private
+
+    def widget_content(widget)
+      definition = widget.cwm_definition
+      definition["_cwm_key"] = widget.widget_id # a bit hacky way to pass widget id
+      definition = Yast::CWM.prepareWidget(definition)
+      definition["widget"]
+    end
+  end
 end
