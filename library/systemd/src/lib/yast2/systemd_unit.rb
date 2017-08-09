@@ -49,7 +49,8 @@ module Yast
 
     attr_reader :name, :unit_name, :unit_type, :input_properties, :error, :properties
 
-    # FIXME with ruby 2.4 delegating ostruct with Forwardable start to write warning (bsc#1049433)
+    # with ruby 2.4 delegating ostruct with Forwardable start to write warning
+    # so define it manually (bsc#1049433)
     [:id, :path, :description, :active?, :enabled?, :loaded?].each do |m|
       define_method(m) { properties.public_send(m) }
     end
