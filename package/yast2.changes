@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug  9 14:06:05 UTC 2017 - jreidinger@suse.com
+
+- workaround false warning from Forwardable when using OpenStruct
+  in ruby 2.4 (bsc#1049433)
+- 3.3.8
+
+-------------------------------------------------------------------
 Thu Aug  3 07:39:49 UTC 2017 - lslezak@suse.cz
 
 - run_ifconfig.scr - make "inet" section optional, handle

@@ -1,7 +1,6 @@
 require "yast2/systemctl"
 
 require "ostruct"
-require "forwardable"
 
 module Yast
   ###
@@ -48,11 +47,13 @@ module Yast
       path:            "FragmentPath"
     }.freeze
 
-    extend Forwardable
-
-    def_delegators :@properties, :id, :path, :description, :active?, :enabled?, :loaded?
-
     attr_reader :name, :unit_name, :unit_type, :input_properties, :error, :properties
+
+    # with ruby 2.4 delegating ostruct with Forwardable start to write warning
+    # so define it manually (bsc#1049433)
+    [:id, :path, :description, :active?, :enabled?, :loaded?].each do |m|
+      define_method(m) { properties.public_send(m) }
+    end
 
     def initialize(full_unit_name, properties = {})
       @unit_name, @unit_type = full_unit_name.split(".")
