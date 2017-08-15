@@ -6,7 +6,7 @@ require "forwardable"
 module Yast
   ###
   #  Use this class always as a parent class for implementing various systemd units.
-  #  Do not use it directly for add-hoc implemenation of systemd units.
+  #  Do not use it directly for ad-hoc implementation of systemd units.
   #
   #  @example Create a systemd service unit
   #
@@ -52,8 +52,21 @@ module Yast
 
     def_delegators :@properties, :id, :path, :description, :active?, :enabled?, :loaded?
 
-    attr_reader :name, :unit_name, :unit_type, :input_properties, :error, :properties
+    # @return [String] eg. "apache2"
+    #   (the canonical one, may be different from unit_name)
+    attr_reader :name
+    # @return [String] eg. "apache2"
+    attr_reader :unit_name
+    # @return [String] eg. "service"
+    attr_reader :unit_type
+    # @return [Hash{Symbol => String}]
+    attr_reader :input_properties
+    # @return [String]
+    attr_reader :error
+    # @return [Properties]
+    attr_reader :properties
 
+    # @param properties [Hash{Symbol => String}]
     def initialize(full_unit_name, properties = {})
       @unit_name, @unit_type = full_unit_name.split(".")
       raise "Missing unit type suffix" unless unit_type
@@ -72,6 +85,8 @@ module Yast
       properties
     end
 
+    # Run 'systemctl show' to read the unit properties
+    # @return [Properties]
     def show
       # Using different handler during first stage (installation, update, ...)
       Stage.initial ? InstallationProperties.new(self) : Properties.new(self)
@@ -117,6 +132,8 @@ module Yast
       run_command! { command("reload-or-try-restart") }
     end
 
+    # @param command_name [String]
+    # @return [#command,#stdout,#stderr,#exit]
     def command(command_name, options = {})
       command = "#{command_name} #{unit_name}.#{unit_type} #{options[:options]}"
       log.info "`#{Systemctl::CONTROL} #{command}`"
@@ -125,6 +142,9 @@ module Yast
 
   private
 
+    # Run a command, pass its stderr to {#error}, {#refresh!}.
+    # @yieldreturn [#command,#stdout,#stderr,#exit]
+    # @return [Boolean] success? (exit was zero)
     def run_command!
       error.clear
       command_result = yield
@@ -137,6 +157,7 @@ module Yast
     class Properties < OpenStruct
       include Yast::Logger
 
+      # @param systemd_unit [SystemdUnit]
       def initialize(systemd_unit)
         super()
         self[:systemd_unit] = systemd_unit

@@ -1,13 +1,16 @@
 require "yast2/systemd_unit"
 
 module Yast
-  ###
-  #  Systemd.service unit control API
+  class SystemdServiceNotFound < StandardError
+    def initialize(service_name)
+      super "Service unit '#{service_name}' not found"
+    end
+  end
+
+  # Systemd.service unit control API
   #
-  #  @example How to use it in other yast libraries
-  #
+  # @example How to use it in other yast libraries
   #    require 'yast'
-  #
   #    Yast.import 'SystemdService'
   #
   #    ## Get a service unit by its name
@@ -62,18 +65,11 @@ module Yast
   #
   #    service = Yast::SystemdService.find('sshd', :type=>'Type')
   #    service.properties.type  # 'simple'
-  #
-  ##
-
-  class SystemdServiceNotFound < StandardError
-    def initialize(service_name)
-      super "Service unit '#{service_name}' not found"
-    end
-  end
-
   class SystemdServiceClass < Module
     UNIT_SUFFIX = ".service".freeze
 
+    # @param service_name [String] "foo" or "foo.service"
+    # @return [Service,nil]
     def find(service_name, properties = {})
       service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
       service = Service.new(service_name, properties)
@@ -81,10 +77,14 @@ module Yast
       service
     end
 
+    # @param service_name [String] "foo" or "foo.service"
+    # @return [Service]
+    # @raise [SystemdServiceNotFound]
     def find!(service_name, properties = {})
       find(service_name, properties) || raise(SystemdServiceNotFound, service_name)
     end
 
+    # @return [Array<Service>]
     def all(properties = {})
       Systemctl.service_units.map do |service_unit|
         Service.new(service_unit, properties)
@@ -97,6 +97,7 @@ module Yast
       # Available only on installation system
       START_SERVICE_INSTSYS_COMMAND = "/bin/service_start".freeze
 
+      # @return [String]
       def pid
         properties.pid
       end
