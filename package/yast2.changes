@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Aug 25 11:10:29 UTC 2017 - igonzalezsosa@suse.com
+
+- Restore Packages::Repository and Packages::Product in order
+  to retain compatibility with yast2-packager 3.3.2 which is
+  the version on Factory until storage-ng is finally
+  merged (bsc#1055677)
+- 3.3.10
+
+-------------------------------------------------------------------
 Fri Aug 11 14:16:33 UTC 2017 - igonzalezsosa@suse.com
 
 - Move Packages::Repository and Packages::Product to yast2-packager
