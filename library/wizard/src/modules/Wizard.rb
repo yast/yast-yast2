@@ -32,9 +32,7 @@ require "yast"
 
 module Yast
   class WizardClass < Module
-
-    # Default icon name to use.
-    DefaultIconName = "yast"
+    DEFAULT_ICON_NAME = "yast".freeze
 
     def main
       Yast.import "UI"
@@ -69,7 +67,7 @@ module Yast
       @relnotes_button_id = ""
 
       # Current icon name to set.
-      @icon_name = DefaultIconName
+      @icon_name = DEFAULT_ICON_NAME
     end
 
     def haveFancyUI
@@ -1870,14 +1868,19 @@ module Yast
     # This should be called only immediately before opening a dialog; premature
     # UI calls can interfere with the CommandLine mode.
     def set_icon
-      icon_glob = File.join("{" + Directory.icondir + ",/usr/share/icons/hicolor}",
-                            "{64x64,48x48,32x32,22x22,16x16}", "apps", "#{@icon_name}.png")
+      icon_glob = File.join(
+        "{" + Directory.icondir + ",/usr/share/icons/hicolor}", 
+        "{64x64,48x48,32x32,22x22,16x16}", "apps", "#{@icon_name}.png"
+      )
       icon_path = ""
-      Dir.glob(icon_glob) { |p| icon_path = p; break }
+      Dir.glob(icon_glob) do |path|
+        icon_path = path
+        break
+      end
 
       if icon_path.empty?
         Builtins.y2warning("Cannot set application icon to \"%1.png\"", @icon_name)
-        @icon_name = DefaultIconName
+        @icon_name = DEFAULT_ICON_NAME
         return false
       end
 
