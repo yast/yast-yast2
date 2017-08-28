@@ -27,6 +27,7 @@ module Yast
       # @return [#command,#stdout,#stderr,#exit]
       # @raise [SystemctlError] if it times out
       def execute(command)
+        log.info("systemctl #{command}")
         command = SYSTEMCTL + command
         log.debug "Executing `systemctl` command: #{command}"
         result = timeout(TIMEOUT) { SCR.Execute(Path.new(".target.bash_output"), command) }
