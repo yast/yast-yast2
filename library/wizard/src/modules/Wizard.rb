@@ -1869,7 +1869,7 @@ module Yast
     # UI calls can interfere with the CommandLine mode.
     def set_icon
       icon_glob = File.join(
-        "{" + Directory.icondir + ",/usr/share/icons/hicolor}", 
+        "{" + Directory.icondir + ",/usr/share/icons/hicolor}",
         "{64x64,48x48,32x32,22x22,16x16}", "apps", "#{@icon_name}.png"
       )
       icon_path = ""
