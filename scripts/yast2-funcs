@@ -129,7 +129,7 @@ function set_qt_env()
 
 function set_inst_qt_env()
 {
-    export XCURSOR_THEME="DMZ"
+    export XCURSOR_THEME="DMZ-White"
     export Y2STYLE="installation.qss"
     export QT_HOME_DIR="/tmp/.qt/"
     if [ "$Screenmode" != "" ] && [ "$Screenmode" != "default" ]; then
@@ -150,7 +150,7 @@ function clr_inst_qt_env()
 
 function set_inst_gtk_env()
 {
-    export XCURSOR_THEME="DMZ"
+    export XCURSOR_THEME="DMZ-White"
 }
 
 
