@@ -99,10 +99,17 @@ module Yast
 
     describe ".new" do
       it "creates a new SystemdUnit instance with unit name and type parsed from first parameter" do
-        instance = SystemdUnit.new("random.socket")
-        expect { SystemdUnit.new("random.socket") }.not_to raise_error
+        instance = nil
+        expect { instance = SystemdUnit.new("random.socket") }.not_to raise_error
         expect(instance.unit_name).to eq("random")
         expect(instance.unit_type).to eq("socket")
+      end
+
+      it "correctly parses a name with many dots" do
+        instance = nil
+        expect { instance = SystemdUnit.new("dbus-org.freedesktop.hostname1.service") }.not_to raise_error
+        expect(instance.unit_name).to eq("dbus-org.freedesktop.hostname1")
+        expect(instance.unit_type).to eq("service")
       end
 
       it "raises an exception if an incomplete unit name is passed" do

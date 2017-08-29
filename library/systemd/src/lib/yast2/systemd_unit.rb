@@ -76,8 +76,8 @@ module Yast
 
     # @param propmap [Hash{Symbol => String}]
     def initialize(full_unit_name, propmap = {})
-      @unit_name, @unit_type = full_unit_name.split(".")
-      raise "Missing unit type suffix" unless unit_type
+      @unit_name, dot, @unit_type = full_unit_name.rpartition(".")
+      raise "Missing unit type suffix" if dot.empty?
 
       log.warn "Unsupported unit type '#{unit_type}'" unless SUPPORTED_TYPES.include?(unit_type)
       @propmap = propmap.merge!(DEFAULT_PROPMAP)
