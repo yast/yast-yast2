@@ -86,6 +86,11 @@ module Yast
       find(service_name, propmap) || raise(SystemdServiceNotFound, service_name)
     end
 
+    def find_many(service_names, propmap = {})
+      # naive impl first, then optimize it
+      service_names.map { |n| find(n, propmap) }
+    end
+
     # @param propmap [SystemdUnit::PropMap]
     # @return [Array<Service>]
     def all(propmap = {})
