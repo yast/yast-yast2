@@ -73,7 +73,7 @@ module Yast
     describe "#properties" do
       it "always returns struct including default properties" do
         unit = SystemdUnit.new("iscsi.socket")
-        expect(unit.properties.to_h.keys).to include(*SystemdUnit::DEFAULT_PROPERTIES.keys)
+        expect(unit.properties.to_h.keys).to include(*SystemdUnit::DEFAULT_PROPMAP.keys)
       end
 
       it "provides status properties methods" do
@@ -106,7 +106,7 @@ module Yast
       end
 
       it "raises an exception if an incomplete unit name is passed" do
-        expect { SystemdUnit.new("sshd") }.to raise_error
+        expect { SystemdUnit.new("sshd") }.to raise_error(RuntimeError)
       end
 
       it "allows to create supported units" do

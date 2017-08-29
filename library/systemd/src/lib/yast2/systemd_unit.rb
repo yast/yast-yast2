@@ -12,13 +12,13 @@ module Yast
   #
   #     class Service < Yast::SystemdUnit
   #       SUFFIX = ".service"
-  #       PROPERTIES = {
-  #         :before => "Before"
+  #       PROPMAP = {
+  #         before: "Before"
   #       }
   #
-  #       def initialize service_name, properties={}
+  #       def initialize service_name, propmap={}
   #         service_name += SUFFIX unless service_name.end_with?(SUFFIX)
-  #         super(service_name, PROPERTIES.merge(properties))
+  #         super(service_name, PROPMAP.merge(propmap))
   #       end
   #
   #       def before
@@ -37,7 +37,15 @@ module Yast
     SUPPORTED_TYPES  = %w(service socket target).freeze
     SUPPORTED_STATES = %w(enabled disabled).freeze
 
-    DEFAULT_PROPERTIES = {
+    # A Property Map is a plain Hash(Symbol => String).
+    # It
+    # 1. enumerates the properties we're interested in
+    # 2. maps their Ruby names (snake_case) to systemd names (CamelCase)
+    class PropMap < Hash
+    end
+
+    # @return [PropMap]
+    DEFAULT_PROPMAP = {
       id:              "Id",
       pid:             "MainPID",
       description:     "Description",
@@ -59,23 +67,23 @@ module Yast
     attr_reader :unit_name
     # @return [String] eg. "service"
     attr_reader :unit_type
-    # @return [Hash{Symbol => String}]
-    attr_reader :input_properties
+    # @return [PropMap]
+    attr_reader :propmap
     # @return [String]
     attr_reader :error
     # @return [Properties]
     attr_reader :properties
 
-    # @param properties [Hash{Symbol => String}]
-    def initialize(full_unit_name, properties = {})
+    # @param propmap [Hash{Symbol => String}]
+    def initialize(full_unit_name, propmap = {})
       @unit_name, @unit_type = full_unit_name.split(".")
       raise "Missing unit type suffix" unless unit_type
 
       log.warn "Unsupported unit type '#{unit_type}'" unless SUPPORTED_TYPES.include?(unit_type)
-      @input_properties = properties.merge!(DEFAULT_PROPERTIES)
+      @propmap = propmap.merge!(DEFAULT_PROPMAP)
 
       @properties = show
-      @error = self.properties.error
+      @error = properties.error
       @name = id.to_s.split(".").first || unit_name
     end
 
@@ -211,13 +219,13 @@ module Yast
       end
 
       def extract_properties
-        systemd_unit.input_properties.each do |name, property|
+        systemd_unit.propmap.each do |name, property|
           self[name] = raw[/#{property}=(.+)/, 1]
         end
       end
 
       def load_systemd_properties
-        properties = systemd_unit.input_properties.map do |_, property_name|
+        properties = systemd_unit.propmap.map do |_, property_name|
           " --property=#{property_name} "
         end
         systemd_unit.command("show", options: properties.join)

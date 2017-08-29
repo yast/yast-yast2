@@ -69,25 +69,28 @@ module Yast
     UNIT_SUFFIX = ".service".freeze
 
     # @param service_name [String] "foo" or "foo.service"
+    # @param propmap [SystemdUnit::PropMap]
     # @return [Service,nil]
-    def find(service_name, properties = {})
+    def find(service_name, propmap = {})
       service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
-      service = Service.new(service_name, properties)
+      service = Service.new(service_name, propmap)
       return nil if service.properties.not_found?
       service
     end
 
     # @param service_name [String] "foo" or "foo.service"
+    # @param propmap [SystemdUnit::PropMap]
     # @return [Service]
     # @raise [SystemdServiceNotFound]
-    def find!(service_name, properties = {})
-      find(service_name, properties) || raise(SystemdServiceNotFound, service_name)
+    def find!(service_name, propmap = {})
+      find(service_name, propmap) || raise(SystemdServiceNotFound, service_name)
     end
 
+    # @param propmap [SystemdUnit::PropMap]
     # @return [Array<Service>]
-    def all(properties = {})
+    def all(propmap = {})
       Systemctl.service_units.map do |service_unit|
-        Service.new(service_unit, properties)
+        Service.new(service_unit, propmap)
       end
     end
 
