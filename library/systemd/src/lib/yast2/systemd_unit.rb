@@ -83,7 +83,9 @@ module Yast
       @propmap = propmap.merge!(DEFAULT_PROPMAP)
 
       @properties = show
+      # eg "Failed to get properties: Unit name apache2@.service is not valid."
       @error = properties.error
+      # Id is not present when the unit name is not valid
       @name = id.to_s.split(".").first || unit_name
     end
 
