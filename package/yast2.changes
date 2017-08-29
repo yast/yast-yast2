@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Aug 29 14:57:52 UTC 2017 - lslezak@suse.cz
+
+- Fixed the cursor theme in the installation (the DMZ theme has
+  been replaced by DMZ-White and DMZ-Black) (bsc#1051664)
+- 4.0.0
+
+-------------------------------------------------------------------
 Fri Aug 25 11:10:29 UTC 2017 - igonzalezsosa@suse.com
 
 - Restore Packages::Repository and Packages::Product in order
