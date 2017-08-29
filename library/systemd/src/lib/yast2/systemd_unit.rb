@@ -75,14 +75,14 @@ module Yast
     attr_reader :properties
 
     # @param propmap [Hash{Symbol => String}]
-    def initialize(full_unit_name, propmap = {})
+    def initialize(full_unit_name, propmap = {}, property_text = nil)
       @unit_name, dot, @unit_type = full_unit_name.rpartition(".")
       raise "Missing unit type suffix" if dot.empty?
 
       log.warn "Unsupported unit type '#{unit_type}'" unless SUPPORTED_TYPES.include?(unit_type)
       @propmap = propmap.merge!(DEFAULT_PROPMAP)
 
-      @properties = show
+      @properties = show(property_text)
       # eg "Failed to get properties: Unit name apache2@.service is not valid."
       @error = properties.error
       # Id is not present when the unit name is not valid
@@ -97,9 +97,9 @@ module Yast
 
     # Run 'systemctl show' to read the unit properties
     # @return [Properties]
-    def show
+    def show(property_text = nil)
       # Using different handler during first stage (installation, update, ...)
-      Stage.initial ? InstallationProperties.new(self) : Properties.new(self)
+      Stage.initial ? InstallationProperties.new(self, property_text) : Properties.new(self, property_text)
     end
 
     def status
@@ -167,13 +167,19 @@ module Yast
       include Yast::Logger
 
       # @param systemd_unit [SystemdUnit]
-      def initialize(systemd_unit)
+      def initialize(systemd_unit, property_text)
         super()
         self[:systemd_unit] = systemd_unit
-        raw_output   = load_systemd_properties
-        self[:raw]   = raw_output.stdout
-        self[:error] = raw_output.stderr
-        self[:exit]  = raw_output.exit
+        if property_text.nil?
+          raw_output   = load_systemd_properties
+          self[:raw]   = raw_output.stdout
+          self[:error] = raw_output.stderr
+          self[:exit]  = raw_output.exit
+        else
+          self[:raw]   = property_text
+          self[:error] = ""
+          self[:exit]  = 0
+        end
 
         if !exit.zero? || !error.empty?
           message = "Failed to get properties for unit '#{systemd_unit.unit_name}' ; "
@@ -250,7 +256,7 @@ module Yast
     class InstallationProperties < OpenStruct
       include Yast::Logger
 
-      def initialize(systemd_unit)
+      def initialize(systemd_unit, _property_text)
         super()
         self[:systemd_unit] = systemd_unit
         self[:status]       = read_status

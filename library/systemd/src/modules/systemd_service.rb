@@ -87,8 +87,20 @@ module Yast
     end
 
     def find_many(service_names, propmap = {})
-      # naive impl first, then optimize it
-      service_names.map { |n| find(n, propmap) }
+      # FIXME: move this to SystemdUnit / Service ?
+      snames = service_names.map { |n| n + UNIT_SUFFIX unless n.end_with?(UNIT_SUFFIX) }
+      snames_s = snames.join(" ")
+      pnames_s = SystemdUnit::DEFAULT_PROPMAP.merge(propmap).values.join(",")
+      out = Systemctl.execute("show  --property=#{pnames_s} #{snames_s}")
+      raise "FIXME: #{out.exit}, #{out.stderr}" unless out.exit.zero? && out.stderr.empty?
+      property_texts = out.stdout.split("\n\n")
+      raise "FIXME MISMATCH" unless snames.size == property_texts.size
+
+      snames.zip(property_texts).map do |service_name, property_text|
+        service = Service.new(service_name, propmap, property_text)
+        next nil if service.properties.not_found?
+        service
+      end
     end
 
     # @param propmap [SystemdUnit::PropMap]
