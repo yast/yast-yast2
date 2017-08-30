@@ -90,6 +90,7 @@ ylib2_DATA = \
   lib/ui/event_dispatcher.rb \
   lib/ui/greasemonkey.rb \
   lib/ui/service_status.rb \
+  lib/ui/text_helpers.rb \
   lib/ui/widgets.rb
 
 EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylib_DATA) $(ylib2_DATA)

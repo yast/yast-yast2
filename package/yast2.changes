@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug 30 14:02:08 UTC 2017 - knut.anderssen@suse.com
+
+- Added UI:TextHelpers with a wrap_text method moved from
+  yast2-network (bsc#1055643)
+- 4.0.1
+
+-------------------------------------------------------------------
 Tue Aug 29 14:57:52 UTC 2017 - lslezak@suse.cz
 
 - Fixed the cursor theme in the installation (the DMZ theme has
