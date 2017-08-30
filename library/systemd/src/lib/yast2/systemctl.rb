@@ -23,6 +23,8 @@ module Yast
     TIMEOUT         = 30 # seconds
 
     class << self
+      BASH_SCR_PATH = Yast::Path.new(".target.bash_output")
+
       # @param command [String]
       # @return [#command,#stdout,#stderr,#exit]
       # @raise [SystemctlError] if it times out
@@ -30,7 +32,7 @@ module Yast
         log.info("systemctl #{command}")
         command = SYSTEMCTL + command
         log.debug "Executing `systemctl` command: #{command}"
-        result = timeout(TIMEOUT) { SCR.Execute(Path.new(".target.bash_output"), command) }
+        result = timeout(TIMEOUT) { SCR.Execute(BASH_SCR_PATH, command) }
         OpenStruct.new(result.merge!(command: command))
       rescue Timeout::Error
         raise SystemctlError, "Timeout #{TIMEOUT} seconds: #{command}"
