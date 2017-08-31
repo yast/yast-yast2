@@ -943,7 +943,8 @@ module Yast
     #   like a reset button or a redrawing.  It will skip also validation, because it is not needed
     #   as nothing is stored.
     # @return [Symbol] wizard sequencer symbol
-    def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil, skip_store_for: [])
+    def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil, skip_store_for: [],
+      disable_buttons: [])
       widgets = widgets_in_contents(contents)
       options = {
         "contents"     => widgets_contents(contents),
@@ -955,6 +956,7 @@ module Yast
       options["next_button"] = next_button if next_button
       options["abort_button"] = abort_button if abort_button
       options["skip_store_for"] = skip_store_for
+      options["disable_buttons"] = disable_buttons
 
       ShowAndRun(options)
     end
