@@ -419,4 +419,33 @@ describe Yast::WorkflowManager do
       subject.addon_control_dir(src_id)
     end
   end
+
+  describe "#merge_product_workflow" do
+    let(:product) do
+      instance_double("Y2Packager::Product", label: "SLES", installation_package: "package")
+    end
+
+    before do
+      subject.main
+      allow(subject).to receive(:AddWorkflow)
+      allow(subject).to receive(:MergeWorkflows)
+      allow(subject).to receive(:RedrawWizardSteps)
+    end
+
+    it "merges installation package workflow" do
+      expect(subject).to receive(:AddWorkflow).with(:package, 0, "package")
+      subject.merge_product_workflow(product)
+    end
+
+    context "when other product's workflow was previously merged" do
+      before do
+        subject.merge_product_workflow(product)
+      end
+
+      it "removes the previous workflow" do
+        expect(subject).to receive(:RemoveWorkflow).with(:package, 0, "package")
+        subject.merge_product_workflow(product)
+      end
+    end
+  end
 end
