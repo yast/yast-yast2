@@ -4,6 +4,7 @@ Thu Aug 31 15:30:24 UTC 2017 - igonzalezsosa@suse.com
 - Add support to disable buttons on CWM::Dialog
 - Add a method WorkflowManager#merge_product_workflow which allows
   to merge a product workflow (fate#322267)
+- 4.0.2
 
 -------------------------------------------------------------------
 Wed Aug 30 14:02:08 UTC 2017 - knut.anderssen@suse.com
