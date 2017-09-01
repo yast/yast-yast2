@@ -28,12 +28,22 @@
 
 require "yast"
 require "date"
+require "yast2/execute"
 
 module Yast2
   # Represents the fact that Snapper is not configured for "/" (root).
   class SnapperNotConfigured < StandardError
     def initialize
       super "Programming error: Snapper is not configured yet."
+    end
+  end
+
+  # Represents that a Snapper configuration was attempted at the wrong time or
+  # system, since it's only possible in a fresh installation after software
+  # installation.
+  class SnapperNotConfigurable < StandardError
+    def initialize
+      super "Programming error: Snapper cannot be configured in this point."
     end
   end
 
@@ -59,6 +69,7 @@ module Yast2
     include Yast::Logger
 
     Yast.import "Linuxrc"
+    Yast.import "Mode"
 
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | grep \"^root \" >/dev/null".freeze
     CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description \"%{description}\"".freeze
@@ -122,6 +133,37 @@ module Yast2
         log.info("Checking if Snapper is configured: \"#{FIND_CONFIG_CMD}\" returned: #{out}")
         @configured = out["exit"] == 0
       end
+
+      # Performs the final steps to configure snapper for the root filesystem on a
+      # fresh installation.
+      #
+      # First part of the configuration must have been already done while the root
+      # filesystem is created.
+      #
+      # This part here is what is left to do after the package installation in the
+      # target system is complete.
+      #
+      # @raise [SnapperNotConfigurable] unless called in an already chrooted fresh
+      #   installation
+      def configure_snapper
+        raise SnapperNotConfigurable if !Yast::Mode.installation || non_switched_installation?
+        @configured = nil
+
+        installation_helper_step_4
+        write_snapper_config
+        update_etc_sysconfig_yast2
+        setup_snapper_quota
+      end
+
+      # Whether Snapper should be configured at the end of installation
+      #
+      # @return [Boolean]
+      def configure_on_install?
+        !!@configure_on_install
+      end
+
+      # @see #configure_on_install?
+      attr_writer :configure_on_install
 
       # Returns whether creating the given snapshot type is allowed
       # Information is taken from Linuxrc (DISABLE_SNAPSHOTS)
@@ -297,6 +339,26 @@ module Yast2
         Yast.import "Installation"
 
         Yast::Installation.destdir
+      end
+
+      def installation_helper_step_4
+        Yast::Execute.on_target("/usr/lib/snapper/installation-helper", "--step", "4")
+      end
+
+      def write_snapper_config
+        config = [
+          "NUMBER_CLEANUP=yes", "NUMBER_LIMIT=2-10", "NUMBER_LIMIT_IMPORTANT=4-10", "TIMELINE_CREATE=no"
+        ]
+        Yast::Execute.on_target("/usr/bin/snapper", "--no-dbus", "set-config", *config)
+      end
+
+      def update_etc_sysconfig_yast2
+        Yast::SCR.Write(Yast.path(".sysconfig.yast2.USE_SNAPPER"), "yes")
+        Yast::SCR.Write(Yast.path(".sysconfig.yast2"), nil)
+      end
+
+      def setup_snapper_quota
+        Yast::Execute.on_target("/usr/bin/snapper", "--no-dbus", "setup-quota")
       end
     end
   end
