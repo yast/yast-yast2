@@ -66,6 +66,8 @@ module Yast
   #    service = Yast::SystemdService.find('sshd', :type=>'Type')
   #    service.properties.type  # 'simple'
   class SystemdServiceClass < Module
+    include Yast::Logger
+
     UNIT_SUFFIX = ".service".freeze
 
     # @param service_name [String] "foo" or "foo.service"
@@ -86,21 +88,34 @@ module Yast
       find(service_name, propmap) || raise(SystemdServiceNotFound, service_name)
     end
 
-    def find_many(service_names, propmap = {})
-      # FIXME: move this to SystemdUnit / Service ?
+    # @param service_names [Array<String>] "foo" or "foo.service"
+    # @param propmap [SystemdUnit::PropMap]
+    # @return [Array<Service>]
+    # @raise [SystemdServiceNotFound] if an unexpected problem occurs
+    def find_many!(service_names, propmap = {})
       snames = service_names.map { |n| n + UNIT_SUFFIX unless n.end_with?(UNIT_SUFFIX) }
       snames_s = snames.join(" ")
       pnames_s = SystemdUnit::DEFAULT_PROPMAP.merge(propmap).values.join(",")
       out = Systemctl.execute("show  --property=#{pnames_s} #{snames_s}")
-      raise "FIXME: #{out.exit}, #{out.stderr}" unless out.exit.zero? && out.stderr.empty?
+      log.error "returned #{out.exit}, #{out.stderr}" unless out.exit.zero? && out.stderr.empty?
       property_texts = out.stdout.split("\n\n")
-      raise "FIXME MISMATCH" unless snames.size == property_texts.size
+      raise(SystemdServiceNotFound, "?") unless snames.size == property_texts.size
 
       snames.zip(property_texts).map do |service_name, property_text|
         service = Service.new(service_name, propmap, property_text)
         next nil if service.properties.not_found?
         service
       end
+    end
+
+    # @param service_names [Array<String>] "foo" or "foo.service"
+    # @param propmap [SystemdUnit::PropMap]
+    # @return [Array<Service,nil>]
+    def find_many(service_names, propmap = {})
+      find_many!(service_names, propmap)
+    rescue SystemdServiceNotFound
+      log.info "Retrying one by one"
+      service_names.map { |n| find(n, propmap) }
     end
 
     # @param propmap [SystemdUnit::PropMap]
