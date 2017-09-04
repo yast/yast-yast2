@@ -71,6 +71,11 @@ module CWM
       []
     end
 
+    # @return [Array<Symbol>] Buttons to disable (:back, :next
+    def disable_buttons
+      []
+    end
+
   private
 
     # Create a wizard dialog, run the *block*, ensure the dialog is closed.
@@ -87,11 +92,12 @@ module CWM
     def cwm_show
       Yast::CWM.show(
         contents,
-        caption:        title,
-        back_button:    back_button,
-        abort_button:   abort_button,
-        next_button:    next_button,
-        skip_store_for: skip_store_for
+        caption:         title,
+        back_button:     back_button,
+        abort_button:    abort_button,
+        next_button:     next_button,
+        skip_store_for:  skip_store_for,
+        disable_buttons: disable_buttons
       )
     end
   end

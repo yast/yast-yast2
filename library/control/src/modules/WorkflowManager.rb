@@ -116,6 +116,10 @@ module Yast
       @system_workflows_prepared = false
 
       @control_files_dir = "additional-control-files"
+
+      # base product that got its workflow merged
+      # @see #merge_product_workflow
+      self.merged_base_product = nil
     end
 
     # Returns list of additional inst_finish steps requested by
@@ -1476,6 +1480,24 @@ module Yast
       }
     end
 
+    # Merge product's workflow
+    #
+    # @param product [Y2Packager::Product] Base product
+    def merge_product_workflow(product)
+      return false unless product.installation_package
+
+      log.info "Merging #{product.label} workflow"
+
+      if merged_base_product
+        Yast::WorkflowManager.RemoveWorkflow(:package, 0, merged_base_product.installation_package)
+      end
+
+      AddWorkflow(:package, 0, product.installation_package)
+      MergeWorkflows()
+      RedrawWizardSteps()
+      self.merged_base_product = product
+    end
+
     publish variable: :additional_finish_steps_before_chroot, type: "list <string>"
     publish variable: :additional_finish_steps_after_chroot, type: "list <string>"
     publish variable: :additional_finish_steps_before_umount, type: "list <string>"
@@ -1502,6 +1524,9 @@ module Yast
     publish function: :DumpCurrentSettings, type: "map <string, any> ()"
 
   private
+
+    # @return [Y2Packager::Product,nil] Product or nil if no base product workflow was merged.
+    attr_accessor :merged_base_product
 
     # Find the product from a repository.
     # @param repo_id [Fixnum] repository ID
