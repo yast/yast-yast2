@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep  4 11:32:04 UTC 2017 - ancor@suse.com
+
+- Added methods to Yast2::FsSnapshot allowing to finish the
+  Snapper configuration (part of fate#318196).
+- 4.0.3
+
+-------------------------------------------------------------------
 Thu Aug 31 15:30:24 UTC 2017 - igonzalezsosa@suse.com
 
 - Add support to disable buttons on CWM::Dialog
