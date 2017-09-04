@@ -43,7 +43,7 @@ module Yast2
   # installation.
   class SnapperNotConfigurable < StandardError
     def initialize
-      super "Programming error: Snapper cannot be configured in this point."
+      super "Programming error: Snapper cannot be configured at this point."
     end
   end
 
@@ -341,6 +341,11 @@ module Yast2
         Yast::Installation.destdir
       end
 
+      # Executes the fourth step of the installation-helper of Snapper.
+      #
+      # Unfortunatelly the steps of the Snapper helper are not much descriptive.
+      # The step 4 must be executed in the target system after installing the
+      # packages and before using snapper for the first time.
       def installation_helper_step_4
         Yast::Execute.on_target("/usr/lib/snapper/installation-helper", "--step", "4")
       end
