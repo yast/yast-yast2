@@ -37,6 +37,14 @@ module Yast
     SUPPORTED_TYPES  = %w(service socket target).freeze
     SUPPORTED_STATES = %w(enabled disabled).freeze
 
+    # Values of {#active_state} fow which we consider a unit "active".
+    #
+    # systemctl.c:check_unit_active uses (active, reloading)
+    # For bsc#884756 we also consider "activating" to be active.
+    #
+    # (The remaining states are "deactivating", "inactive", "failed".)
+    ACTIVE_STATES = ["active", "activating", "reloading"].freeze
+
     # A Property Map is a plain Hash(Symbol => String).
     # It
     # 1. enumerates the properties we're interested in
@@ -190,7 +198,7 @@ module Yast
         end
 
         extract_properties
-        self[:active?]    = active_state == "active" || active_state == "activating"
+        self[:active?]    = ACTIVE_STATES.include?(active_state)
         self[:running?]   = sub_state    == "running"
         self[:loaded?]    = load_state   == "loaded"
         self[:not_found?] = load_state   == "not-found"
