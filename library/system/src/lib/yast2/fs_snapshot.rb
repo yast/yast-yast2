@@ -343,7 +343,7 @@ module Yast2
 
       # Executes the fourth step of the installation-helper of Snapper.
       #
-      # Unfortunatelly the steps of the Snapper helper are not much descriptive.
+      # Unfortunately the steps of the Snapper helper are not much descriptive.
       # The step 4 must be executed in the target system after installing the
       # packages and before using snapper for the first time.
       def installation_helper_step_4
