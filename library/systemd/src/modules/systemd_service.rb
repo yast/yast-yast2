@@ -66,6 +66,7 @@ module Yast
   #    service = Yast::SystemdService.find('sshd', :type=>'Type')
   #    service.properties.type  # 'simple'
   class SystemdServiceClass < Module
+    Yast.import "Stage"
     include Yast::Logger
 
     UNIT_SUFFIX = ".service".freeze
@@ -90,16 +91,18 @@ module Yast
 
     # @param service_names [Array<String>] "foo" or "foo.service"
     # @param propmap [SystemdUnit::PropMap]
-    # @return [Array<Service,nil>] `nil` if not found
+    # @return [Array<Service,nil>] `nil` if not found, [] if no can do
     # @raise [SystemdServiceNotFound] if an unexpected problem occurs
-    def find_many!(service_names, propmap = {})
+    def find_many_at_once(service_names, propmap = {})
+      return [] if Stage.initial
+
       snames = service_names.map { |n| n + UNIT_SUFFIX unless n.end_with?(UNIT_SUFFIX) }
       snames_s = snames.join(" ")
       pnames_s = SystemdUnit::DEFAULT_PROPMAP.merge(propmap).values.join(",")
       out = Systemctl.execute("show  --property=#{pnames_s} #{snames_s}")
       log.error "returned #{out.exit}, #{out.stderr}" unless out.exit.zero? && out.stderr.empty?
       property_texts = out.stdout.split("\n\n")
-      raise(SystemdServiceNotFound, "?") unless snames.size == property_texts.size
+      return [] unless snames.size == property_texts.size
 
       snames.zip(property_texts).map do |service_name, property_text|
         service = Service.new(service_name, propmap, property_text)
@@ -110,10 +113,11 @@ module Yast
 
     # @param service_names [Array<String>] "foo" or "foo.service"
     # @param propmap [SystemdUnit::PropMap]
-    # @return [Array<Service,nil>]
+    # @return [Array<Service,nil>] `nil` if not found
     def find_many(service_names, propmap = {})
-      find_many!(service_names, propmap)
-    rescue SystemdServiceNotFound
+      services = find_many_at_once(service_names, propmap)
+      return services unless services.empty?
+
       log.info "Retrying one by one"
       service_names.map { |n| find(n, propmap) }
     end

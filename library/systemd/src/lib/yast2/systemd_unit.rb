@@ -112,7 +112,7 @@ module Yast
     # @return [Properties]
     def show(property_text = nil)
       # Using different handler during first stage (installation, update, ...)
-      Stage.initial ? InstallationProperties.new(self, property_text) : Properties.new(self, property_text)
+      Stage.initial ? InstallationProperties.new(self) : Properties.new(self, property_text)
     end
 
     def status
@@ -271,7 +271,7 @@ module Yast
     class InstallationProperties < OpenStruct
       include Yast::Logger
 
-      def initialize(systemd_unit, _property_text)
+      def initialize(systemd_unit)
         super()
         self[:systemd_unit] = systemd_unit
         self[:status]       = read_status
