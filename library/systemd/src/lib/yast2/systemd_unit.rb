@@ -78,11 +78,15 @@ module Yast
     # @return [PropMap]
     attr_reader :propmap
     # @return [String]
+    #   eg "Failed to get properties: Unit name apache2@.service is not valid."
     attr_reader :error
     # @return [Properties]
     attr_reader :properties
 
-    # @param propmap [Hash{Symbol => String}]
+    # @param full_unit_name [String] eg "foo.service"
+    # @param propmap [PropMap]
+    # @param property_text [String,nil]
+    #   if provided, use it instead of calling `systemctl show`
     def initialize(full_unit_name, propmap = {}, property_text = nil)
       @unit_name, dot, @unit_type = full_unit_name.rpartition(".")
       raise "Missing unit type suffix" if dot.empty?
@@ -91,7 +95,6 @@ module Yast
       @propmap = propmap.merge!(DEFAULT_PROPMAP)
 
       @properties = show(property_text)
-      # eg "Failed to get properties: Unit name apache2@.service is not valid."
       @error = properties.error
       # Id is not present when the unit name is not valid
       @name = id.to_s.split(".").first || unit_name
@@ -103,7 +106,9 @@ module Yast
       properties
     end
 
-    # Run 'systemctl show' to read the unit properties
+    # Run 'systemctl show' and parse the unit properties
+    # @param property_text [String,nil]
+    #   if provided, use it instead of calling `systemctl show`
     # @return [Properties]
     def show(property_text = nil)
       # Using different handler during first stage (installation, update, ...)
@@ -175,6 +180,8 @@ module Yast
       include Yast::Logger
 
       # @param systemd_unit [SystemdUnit]
+      # @param property_text [String,nil]
+      #   if provided, use it instead of calling `systemctl show`
       def initialize(systemd_unit, property_text)
         super()
         self[:systemd_unit] = systemd_unit

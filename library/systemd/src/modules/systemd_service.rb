@@ -72,7 +72,7 @@ module Yast
 
     # @param service_name [String] "foo" or "foo.service"
     # @param propmap [SystemdUnit::PropMap]
-    # @return [Service,nil]
+    # @return [Service,nil] `nil` if not found
     def find(service_name, propmap = {})
       service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
       service = Service.new(service_name, propmap)
@@ -90,7 +90,7 @@ module Yast
 
     # @param service_names [Array<String>] "foo" or "foo.service"
     # @param propmap [SystemdUnit::PropMap]
-    # @return [Array<Service>]
+    # @return [Array<Service,nil>] `nil` if not found
     # @raise [SystemdServiceNotFound] if an unexpected problem occurs
     def find_many!(service_names, propmap = {})
       snames = service_names.map { |n| n + UNIT_SUFFIX unless n.end_with?(UNIT_SUFFIX) }
