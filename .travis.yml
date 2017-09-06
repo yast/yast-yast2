@@ -4,6 +4,7 @@ services:
   - docker
 
 before_install:
+  # uses ./Dockerfile
   - docker build -t yast-yast2-image .
   # list the installed packages (just for easier debugging)
   - docker run --rm -it yast-yast2-image rpm -qa | sort
