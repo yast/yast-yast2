@@ -91,9 +91,12 @@ module Yast
 
     # @param service_names [Array<String>] "foo" or "foo.service"
     # @param propmap [SystemdUnit::PropMap]
-    # @return [Array<Service,nil>] `nil` if not found, [] if no can do
-    # @raise [SystemdServiceNotFound] if an unexpected problem occurs
-    def find_many_at_once(service_names, propmap = {})
+    # @return [Array<Service,nil>] `nil` if a service is not found,
+    #   [] if this helper cannot be used:
+    #   either we're in the inst-sys without systemctl,
+    #   or it has returned fewer services than requested
+    #   (and we cannot match them up)
+    private def find_many_at_once(service_names, propmap = {})
       return [] if Stage.initial
 
       snames = service_names.map { |n| n + UNIT_SUFFIX unless n.end_with?(UNIT_SUFFIX) }
