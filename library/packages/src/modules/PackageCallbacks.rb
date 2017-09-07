@@ -406,6 +406,7 @@ module Yast
     # Handle GPG check result (pkgGpgCheck)
     #
     # If insecure mode is set to '1', the check result is ignored. Otherwise, no decision is made.
+    # When running on an installed system, it always return "".
     #
     # @param data [Hash] Output from `pkgGpgCheck` callback.
     # @option data [Integer] "CheckPackageResult" Check result code according to libzypp.
@@ -416,7 +417,8 @@ module Yast
     #   a blank string is returned (so no decision is made).
     def pkg_gpg_check(data)
       log.debug("pkgGpgCheck data: #{data}")
-      Linuxrc.InstallInf("Insecure") == "1" ? "I" : ""
+      return "I" if Stage.initial && Linuxrc.InstallInf("Insecure") == "1"
+      ""
     end
 
     #  After package install.

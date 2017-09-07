@@ -213,26 +213,40 @@ describe Yast::PackageCallbacks do
 
     before do
       allow(Yast::Linuxrc).to receive(:InstallInf).with("Insecure").and_return(insecure)
+      allow(Yast::Stage).to receive(:initial).and_return(initial)
     end
 
-    context "when insecure is not set" do
-      let(:insecure) { nil }
+    context "during installation" do
+      let(:initial) { true }
 
-      it "returns ''" do
-        expect(subject.pkg_gpg_check(data)).to eq("")
+      context "and when insecure is not set" do
+        let(:insecure) { nil }
+
+        it "returns ''" do
+          expect(subject.pkg_gpg_check(data)).to eq("")
+        end
+      end
+
+      context "and when Insecure is set to '1'" do
+        let(:insecure) { "1" }
+
+        it "returns 'I'" do
+          expect(subject.pkg_gpg_check(data)).to eq("I")
+        end
+      end
+
+      context "and when Insecure is set but different to '1'" do
+        let(:insecure) { "0" }
+
+        it "returns ''" do
+          expect(subject.pkg_gpg_check(data)).to eq("")
+        end
       end
     end
 
-    context "when Insecure is set to '1'" do
+    context "on an installed system" do
+      let(:initial) { false }
       let(:insecure) { "1" }
-
-      it "returns 'I'" do
-        expect(subject.pkg_gpg_check(data)).to eq("I")
-      end
-    end
-
-    context "when Insecure is set but different to '1'" do
-      let(:insecure) { "0" }
 
       it "returns ''" do
         expect(subject.pkg_gpg_check(data)).to eq("")
