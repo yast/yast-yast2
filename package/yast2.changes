@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep  7 12:15:56 UTC 2017 - igonzalezsosa@suse.com
+
+- Fix handling of PGP signatures when running in insecure mode
+  (bsc#1054663)
+- 4.0.4
+
+-------------------------------------------------------------------
 Mon Sep  4 11:32:04 UTC 2017 - ancor@suse.com
 
 - Added methods to Yast2::FsSnapshot allowing to finish the
