@@ -417,8 +417,8 @@ module Yast
     #   a blank string is returned (so no decision is made).
     def pkg_gpg_check(data)
       log.debug("pkgGpgCheck data: #{data}")
-      return "I" if Stage.initial && Linuxrc.InstallInf("Insecure") == "1"
-      ""
+      insecure = Stage.initial && Linuxrc.InstallInf("Insecure") == "1"
+      insecure ? "I" : ""
     end
 
     #  After package install.
