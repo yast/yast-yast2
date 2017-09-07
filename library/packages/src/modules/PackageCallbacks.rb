@@ -2899,6 +2899,7 @@ module Yast
       Pkg.CallbackStartPackage(nil)
       Pkg.CallbackProgressPackage(nil)
       Pkg.CallbackDonePackage(nil)
+      Pkg.CallbackPkgGpgCheck(nil)
 
       nil
     end
