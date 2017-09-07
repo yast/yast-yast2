@@ -45,11 +45,13 @@ module Yast
 
     UNIT_SUFFIX    = ".target".freeze
     DEFAULT_TARGET = "default.target".freeze
-    PROPERTIES     = { allow_isolate: "AllowIsolate" }.freeze
+    # @return [SystemdUnit::PropMap]
+    PROPMAP        = { allow_isolate: "AllowIsolate" }.freeze
 
-    def find(target_name, properties = {})
+    # @param propmap [SystemdUnit::PropMap]
+    def find(target_name, propmap = {})
       target_name += UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)
-      target = Target.new(target_name, PROPERTIES.merge(properties))
+      target = Target.new(target_name, PROPMAP.merge(propmap))
 
       if target.properties.not_found?
         log.error "Target #{target_name} not found: #{target.properties.inspect}"
@@ -59,13 +61,15 @@ module Yast
       target
     end
 
-    def find!(target_name, properties = {})
-      find(target_name, properties) || raise(SystemdTargetNotFound, target_name)
+    # @param propmap [SystemdUnit::PropMap]
+    def find!(target_name, propmap = {})
+      find(target_name, propmap) || raise(SystemdTargetNotFound, target_name)
     end
 
-    def all(properties = {})
+    # @param propmap [SystemdUnit::PropMap]
+    def all(propmap = {})
       targets = Systemctl.target_units.map do |target_unit_name|
-        find(target_unit_name, properties)
+        find(target_unit_name, propmap)
       end
       targets.compact
     end

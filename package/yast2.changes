@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Aug 30 13:29:54 UTC 2017 - mvidner@suse.com
+
+- systemd services (bsc#1045658)
+  - add SystemdService.find_many for a speed-up
+  - SystemdUnit fix for units with multiple dots in name
+  - consistent logging of systemctl calls
+- 3.2.37.2
+
+-------------------------------------------------------------------
 Thu Jul 20 11:27:46 UTC 2017 - jreidinger@suse.com
 
 - Add hint for UI about application name and its icon (bsc#1037891)

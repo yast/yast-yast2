@@ -1,13 +1,16 @@
 require "yast2/systemd_unit"
 
 module Yast
-  ###
-  #  Systemd.service unit control API
+  class SystemdServiceNotFound < StandardError
+    def initialize(service_name)
+      super "Service unit '#{service_name}' not found"
+    end
+  end
+
+  # Systemd.service unit control API
   #
-  #  @example How to use it in other yast libraries
-  #
+  # @example How to use it in other yast libraries
   #    require 'yast'
-  #
   #    Yast.import 'SystemdService'
   #
   #    ## Get a service unit by its name
@@ -62,32 +65,71 @@ module Yast
   #
   #    service = Yast::SystemdService.find('sshd', :type=>'Type')
   #    service.properties.type  # 'simple'
-  #
-  ##
-
-  class SystemdServiceNotFound < StandardError
-    def initialize(service_name)
-      super "Service unit '#{service_name}' not found"
-    end
-  end
-
   class SystemdServiceClass < Module
+    Yast.import "Stage"
+    include Yast::Logger
+
     UNIT_SUFFIX = ".service".freeze
 
-    def find(service_name, properties = {})
+    # @param service_name [String] "foo" or "foo.service"
+    # @param propmap [SystemdUnit::PropMap]
+    # @return [Service,nil] `nil` if not found
+    def find(service_name, propmap = {})
       service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
-      service = Service.new(service_name, properties)
+      service = Service.new(service_name, propmap)
       return nil if service.properties.not_found?
       service
     end
 
-    def find!(service_name, properties = {})
-      find(service_name, properties) || raise(SystemdServiceNotFound, service_name)
+    # @param service_name [String] "foo" or "foo.service"
+    # @param propmap [SystemdUnit::PropMap]
+    # @return [Service]
+    # @raise [SystemdServiceNotFound]
+    def find!(service_name, propmap = {})
+      find(service_name, propmap) || raise(SystemdServiceNotFound, service_name)
     end
 
-    def all(properties = {})
+    # @param service_names [Array<String>] "foo" or "foo.service"
+    # @param propmap [SystemdUnit::PropMap]
+    # @return [Array<Service,nil>] `nil` if a service is not found,
+    #   [] if this helper cannot be used:
+    #   either we're in the inst-sys without systemctl,
+    #   or it has returned fewer services than requested
+    #   (and we cannot match them up)
+    private def find_many_at_once(service_names, propmap = {})
+      return [] if Stage.initial
+
+      snames = service_names.map { |n| n + UNIT_SUFFIX unless n.end_with?(UNIT_SUFFIX) }
+      snames_s = snames.join(" ")
+      pnames_s = SystemdUnit::DEFAULT_PROPMAP.merge(propmap).values.join(",")
+      out = Systemctl.execute("show  --property=#{pnames_s} #{snames_s}")
+      log.error "returned #{out.exit}, #{out.stderr}" unless out.exit.zero? && out.stderr.empty?
+      property_texts = out.stdout.split("\n\n")
+      return [] unless snames.size == property_texts.size
+
+      snames.zip(property_texts).map do |service_name, property_text|
+        service = Service.new(service_name, propmap, property_text)
+        next nil if service.properties.not_found?
+        service
+      end
+    end
+
+    # @param service_names [Array<String>] "foo" or "foo.service"
+    # @param propmap [SystemdUnit::PropMap]
+    # @return [Array<Service,nil>] `nil` if not found
+    def find_many(service_names, propmap = {})
+      services = find_many_at_once(service_names, propmap)
+      return services unless services.empty?
+
+      log.info "Retrying one by one"
+      service_names.map { |n| find(n, propmap) }
+    end
+
+    # @param propmap [SystemdUnit::PropMap]
+    # @return [Array<Service>]
+    def all(propmap = {})
       Systemctl.service_units.map do |service_unit|
-        Service.new(service_unit, properties)
+        Service.new(service_unit, propmap)
       end
     end
 
@@ -97,6 +139,7 @@ module Yast
       # Available only on installation system
       START_SERVICE_INSTSYS_COMMAND = "/bin/service_start".freeze
 
+      # @return [String]
       def pid
         properties.pid
       end
