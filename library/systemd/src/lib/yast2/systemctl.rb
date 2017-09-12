@@ -4,12 +4,15 @@ require "timeout"
 module Yast
   # Exception when systemctl command failed
   class SystemctlError < StandardError
-    def initialize(struct)
-      super "Systemctl command failed: #{struct}"
+    # @param details [#to_s]
+    def initialize(details)
+      super "Systemctl command failed: #{details}"
     end
   end
 
-  # Wrapper around systemctl command
+  # Wrapper around `systemctl` command.
+  # - uses non-interactive flags
+  # - has a timeout
   module Systemctl
     include Yast::Logger
 
@@ -20,17 +23,22 @@ module Yast
     TIMEOUT         = 30 # seconds
 
     class << self
+      BASH_SCR_PATH = Yast::Path.new(".target.bash_output")
+
+      # @param command [String]
+      # @return [#command,#stdout,#stderr,#exit]
+      # @raise [SystemctlError] if it times out
       def execute(command)
+        log.info("systemctl #{command}")
         command = SYSTEMCTL + command
         log.debug "Executing `systemctl` command: #{command}"
-        result = ::Timeout.timeout(TIMEOUT) do
-          SCR.Execute(Path.new(".target.bash_output"), command)
-        end
+        result = ::Timeout.timeout(TIMEOUT) { SCR.Execute(BASH_SCR_PATH, command) }
         OpenStruct.new(result.merge!(command: command))
       rescue ::Timeout::Error
         raise SystemctlError, "Timeout #{TIMEOUT} seconds: #{command}"
       end
 
+      # @return [Array<String>] like ["a.socket", "b.socket"]
       def socket_units
         sockets_from_files = list_unit_files(type: :socket).lines.map do |line|
           first_column(line)
@@ -43,6 +51,7 @@ module Yast
         (sockets_from_files | sockets_from_units).compact
       end
 
+      # @return [Array<String>] like ["a.service", "b.service"]
       def service_units
         services_from_files = list_unit_files(type: :service).lines.map do |line|
           first_column(line)
@@ -55,6 +64,7 @@ module Yast
         (services_from_files | services_from_units).compact
       end
 
+      # @return [Array<String>] like ["a.target", "b.target"]
       def target_units
         targets_from_files = list_unit_files(type: :target).lines.map do |line|
           first_column(line)

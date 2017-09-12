@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Sep  7 13:29:54 UTC 2017 - mvidner@suse.com
+
+- systemd services (bsc#1045658)
+  - add SystemdService.find_many for a speed-up
+  - SystemdUnit fix for units with multiple dots in name
+  - consistent logging of systemctl calls
+- 4.0.5
+
+-------------------------------------------------------------------
 Thu Sep  7 12:15:56 UTC 2017 - igonzalezsosa@suse.com
 
 - Fix handling of PGP signatures when running in insecure mode
