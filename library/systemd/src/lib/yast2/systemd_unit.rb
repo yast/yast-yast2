@@ -255,7 +255,8 @@ module Yast
 
       def load_systemd_properties
         names = systemd_unit.propmap.values
-        systemd_unit.command("show", options: "--property=" + names.join(","))
+        opts = names.map { |property_name| " --property=#{property_name} " }
+        systemd_unit.command("show", options: opts.join)
       end
     end
 
