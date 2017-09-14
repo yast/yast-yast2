@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep 14 07:51:58 UTC 2017 - mvidner@suse.com
+
+- systemd services (bsc#1045658)
+  - reverted a command change that broke brittle tests
+- 4.0.6
+
+-------------------------------------------------------------------
 Thu Sep  7 13:29:54 UTC 2017 - mvidner@suse.com
 
 - systemd services (bsc#1045658)
