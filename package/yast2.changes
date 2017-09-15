@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 15 11:10:39 UTC 2017 - jreidinger@suse.com
+
+- fix starting gnome control center (bsc#1058376)
+- 4.0.7
+
+-------------------------------------------------------------------
 Thu Sep 14 07:51:58 UTC 2017 - mvidner@suse.com
 
 - systemd services (bsc#1045658)
