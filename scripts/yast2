@@ -136,6 +136,8 @@ select_control_center()
     y2ccbin=""
     case "$WANTED_SHELL" in
 	gtk)
+            # gnome control center use different format of arguments (bsc#1058376)
+            Y2UI_ARGS="--gtk-name=YaST2 --class=yast"
 	    y2ccbin="$GNOME_SHELL"
 	    ;;
 	*)
