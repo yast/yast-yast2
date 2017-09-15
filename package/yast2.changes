@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 15 16:35:08 UTC 2018 - jreidinger@suse.com
+
+- fix starting gnome control center (bsc#1058376 and bsc#1075535)
+- 3.2.42
+
+-------------------------------------------------------------------
 Thu Dec 21 16:29:18 UTC 2017 - shundhammer@suse.com
 
 - Added missing files to Makefile.am (bsc#1064437)
