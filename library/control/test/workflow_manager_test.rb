@@ -448,4 +448,34 @@ describe Yast::WorkflowManager do
       end
     end
   end
+
+  describe "#merge_modules_extensions" do
+    let(:packages) { ["package_a", "package_b"] }
+
+    before do
+      subject.main
+      allow(subject).to receive(:AddWorkflow)
+      allow(subject).to receive(:MergeWorkflows)
+      allow(subject).to receive(:RedrawWizardSteps)
+    end
+
+    it "merges module extension package workflow" do
+      expect(subject).to receive(:AddWorkflow).with(:package, 0, "package_a")
+      expect(subject).to receive(:AddWorkflow).with(:package, 0, "package_b")
+      subject.merge_modules_extensions(packages)
+    end
+
+    context "when running method again it" do
+      before do
+        subject.merge_modules_extensions(["package_c", "package_a"])
+      end
+
+      it "removes the previous packages workflow" do
+        expect(subject).to receive(:RemoveWorkflow).with(:package, 0, "package_c")
+        expect(subject).to receive(:RemoveWorkflow).with(:package, 0, "package_a")
+        subject.merge_modules_extensions(packages)
+      end
+    end
+  end
+
 end
