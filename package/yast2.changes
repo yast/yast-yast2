@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Sep 26 10:31:03 UTC 2017 - jreidinger@suse.com
+
+- Add support for merging to workflow extensions from modules
+  (bsc#1049297)
+- 4.0.8
+
+-------------------------------------------------------------------
 Fri Sep 15 11:10:39 UTC 2017 - jreidinger@suse.com
 
 - fix starting gnome control center (bsc#1058376)
