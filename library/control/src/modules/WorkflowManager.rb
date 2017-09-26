@@ -120,6 +120,8 @@ module Yast
       # base product that got its workflow merged
       # @see #merge_product_workflow
       self.merged_base_product = nil
+
+      self.merged_modules_extensions = []
     end
 
     # Returns list of additional inst_finish steps requested by
@@ -1498,6 +1500,25 @@ module Yast
       self.merged_base_product = product
     end
 
+    # Merge modules extensions
+    #
+    # @param packages [Array<String>] packages that extends workflow
+    def merge_modules_extensions(packages)
+      log.info "Merging #{packages} workflow"
+
+      merged_modules_extensions.each do |pkg|
+        Yast::WorkflowManager.RemoveWorkflow(:package, 0, pkg)
+      end
+
+      packages.each do |pkg|
+        AddWorkflow(:package, 0, pkg)
+      end
+      MergeWorkflows()
+      RedrawWizardSteps()
+
+      self.merged_modules_extensions = packages
+    end
+
     publish variable: :additional_finish_steps_before_chroot, type: "list <string>"
     publish variable: :additional_finish_steps_after_chroot, type: "list <string>"
     publish variable: :additional_finish_steps_before_umount, type: "list <string>"
@@ -1527,6 +1548,9 @@ module Yast
 
     # @return [Y2Packager::Product,nil] Product or nil if no base product workflow was merged.
     attr_accessor :merged_base_product
+
+    # @return [Array<String>] list of modules that have registered extensions
+    attr_accessor :merged_modules_extensions
 
     # Find the product from a repository.
     # @param repo_id [Fixnum] repository ID
