@@ -31,7 +31,6 @@ require "yast"
 
 module Yast
   class LinuxrcClass < Module
-
     include Yast::Logger
 
     # Disables filesystem snapshots (fate#317973)
@@ -257,7 +256,7 @@ module Yast
         when "ssh"
           SCR.Write(path(".etc.install_inf.UseSSH"), 0)
         when "braille"
-           SCR.Write(path(".etc.install_inf.Braille"), 0)
+          SCR.Write(path(".etc.install_inf.Braille"), 0)
         when "display-ip"
           SCR.Write(path(".etc.install_inf.DISPLAY_IP"), 0)
         else
