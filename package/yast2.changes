@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct  5 13:04:46 UTC 2017 - mvidner@suse.com
+
+- Stop using tmpnam, it is no longer supported in perl 5.26
+  (bsc#1061620)
+- 4.0.9
+
+-------------------------------------------------------------------
 Tue Sep 26 10:31:03 UTC 2017 - jreidinger@suse.com
 
 - Add support for merging to workflow extensions from modules
