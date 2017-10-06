@@ -2757,7 +2757,6 @@ module Yast
     publish function: :AddServiceSupportIntoZone, type: "void (string, string)", private: true
     publish variable: :check_and_install_package, type: "boolean", private: true
     publish function: :SetInstallPackagesIfMissing, type: "void (boolean)"
-    publish variable: :needed_packages_installed, type: "boolean", private: true
     publish function: :SuSEFirewallIsInstalled, type: "boolean ()"
     publish variable: :fw_service_can_be_configured, type: "boolean", private: true
     publish function: :GetModified, type: "boolean ()"
