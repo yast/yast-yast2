@@ -18,6 +18,37 @@ FakeFirewall.main
 
 describe FakeFirewall do
 
+  describe "#SuSEFirewallIsSelectedOrInstalled" do
+    context "while in inst-sys" do
+      it "returns whether SuSEfirewall2 is selected for installation or already installed" do
+        expect(Yast::Stage).to receive(:stage).and_return("initial").at_least(:once)
+
+        # Value is not cached
+        expect(Yast::Pkg).to receive(:IsSelected).and_return(true, false, false).exactly(3).times
+        # Fallback: if not selected, checks whether the package is installed
+        expect(subject).to receive(:SuSEFirewallIsInstalled).and_return(false, true).twice
+
+        # Selected
+        expect(subject.SuSEFirewallIsSelectedOrInstalled).to eq(true)
+        # Not selected and not installed
+        expect(subject.SuSEFirewallIsSelectedOrInstalled).to eq(false)
+        # Not selected, but installed
+        expect(subject.SuSEFirewallIsSelectedOrInstalled).to eq(true)
+      end
+    end
+
+    context "while on a running system or AutoYast config" do
+      it "returns whether SuSEfirewall2 was or could have been installed" do
+        expect(Yast::Stage).to receive(:stage).and_return("normal").twice
+
+        expect(subject).to receive(:SuSEFirewallIsInstalled).and_return(false, true).twice
+
+        expect(subject.SuSEFirewallIsSelectedOrInstalled).to eq(false)
+        expect(subject.SuSEFirewallIsSelectedOrInstalled).to eq(true)
+      end
+    end
+  end
+
   describe "#SuSEFirewallIsInstalled" do
     before(:each) do
       reset_SuSEFirewallIsInstalled_cache
@@ -58,10 +89,11 @@ describe FakeFirewall do
       it "returns whether SuSEfirewall2 is installed" do
         expect(Yast::Mode).to receive(:mode).and_return("autoinst_config").at_least(:once)
 
-        # Value is cached
         expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
 
         expect(subject.SuSEFirewallIsInstalled).to eq(false)
+        expect(subject.SuSEFirewallIsInstalled).to eq(true)
+        # Value is cached if true
         expect(subject.SuSEFirewallIsInstalled).to eq(true)
       end
     end
