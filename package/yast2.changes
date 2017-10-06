@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Thu Oct 26 11:02:12 UTC 2017 - knut.anderssen@suse.com
+
+- Adapted SuSEFirewallIsInstalled() to return true only when the
+  package is already installed or checked and installed in normal
+  mode.
+- Added SuSEFirewallIsSelectedOrInstalled() which behaves as the
+  old SuSEFirewallIsInstalled() method.
+  (bnc#1037214)
+- Adapted calls to use SuSEFirewallIsSelectedOrInstalled() when
+  the methods can be called even with just Pkg selection.
+
+-------------------------------------------------------------------
 Thu Oct 19 14:42:09 CEST 2017 - locilka@suse.com
 
 - Fixing disabling vnc, ssh, ... installation to handle service
