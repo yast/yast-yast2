@@ -1511,7 +1511,7 @@ module Yast
       end
 
       # bnc #887406
-      if !FileUtils.Exists(CONFIG_FILE) || !SuSEFirewallIsInstalled()
+      if !FileUtils.Exists(CONFIG_FILE) || !SuSEFirewallIsSelectedOrInstalled()
         log.warn "No firewall config -> firewall can't be read"
         FillUpEmptyConfig()
         return false
