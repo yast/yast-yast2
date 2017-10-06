@@ -537,11 +537,13 @@ module Yast
     #
     # @return [Boolean] whether the selected firewall backend is installed
     def SuSEFirewallIsSelectedOrInstalled
-      if Stage.initial
-        @needed_packages_selected = Pkg.IsSelected(@FIREWALL_PACKAGE)
-        log.info "Selected for installation -> #{@needed_packages_installed}"
+      return true if @needed_packages_installed
 
-        return true if @needed_packages_selected
+      if Stage.initial
+        packages_selected = Pkg.IsSelected(@FIREWALL_PACKAGE)
+        log.info "Selected for installation -> #{packages_selected}"
+
+        return true if packages_selected
       end
 
       SuSEFirewallIsInstalled()
@@ -551,6 +553,8 @@ module Yast
     #
     # @return [Boolean] whether the selected firewall backend is installed
     def SuSEFirewallIsInstalled
+      return true if @needed_packages_installed
+
       if Mode.normal
         @needed_packages_installed = PackageSystem.CheckAndInstallPackages([@FIREWALL_PACKAGE])
         log.info "CheckAndInstallPackages -> #{@needed_packages_installed}"
