@@ -32,6 +32,8 @@ describe FakeFirewall do
 
         expect(subject.SuSEFirewallIsInstalled).to eq(false)
         expect(subject.SuSEFirewallIsInstalled).to eq(true)
+        # Value is cached if true
+        expect(subject.SuSEFirewallIsInstalled).to eq(true)
       end
     end
 
@@ -43,6 +45,11 @@ describe FakeFirewall do
         expect(Yast::PackageSystem).to receive(:CheckAndInstallPackages).and_return(true, false).twice
 
         expect(subject.SuSEFirewallIsInstalled).to eq(true)
+        # Value is cached if true
+        expect(subject.SuSEFirewallIsInstalled).to eq(true)
+
+        reset_SuSEFirewallIsInstalled_cache
+
         expect(subject.SuSEFirewallIsInstalled).to eq(false)
       end
     end
