@@ -60,7 +60,7 @@ module Yast
     # @param [Boolean] start_service at Write() process
     # @see #GetStartService()
     def SetStartService(start_service)
-      if !SuSEFirewallIsInstalled()
+      if !SuSEFirewallIsSelectedOrInstalled()
         Builtins.y2warning("Cannot set SetStartService")
         return nil
       end
