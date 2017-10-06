@@ -230,4 +230,39 @@ describe Yast::Linuxrc do
       end
     end
   end
+
+  describe "#disable_remote" do
+    before(:each) do
+      allow(Yast::SCR).to receive(:Write)
+        .with(path(".etc.install_inf"), nil)
+    end
+
+    context "when vnc will be disabled" do
+      it "updates install.inf" do
+        expect(Yast::SCR).to receive(:Write)
+          .with(path(".etc.install_inf.VNC"), 0)
+        expect(Yast::SCR).to receive(:Write)
+          .with(path(".etc.install_inf.VNCPassword"), "")
+        subject.disable_remote(["vnc"])
+      end
+    end
+
+    context "when ssh will be disabled" do
+      it "updates install.inf" do
+        expect(Yast::SCR).to receive(:Write)
+          .with(path(".etc.install_inf.UseSSH"), 0)
+        subject.disable_remote(["ssh"])
+      end
+    end
+
+    context "when braille and dispaly_ip will be disabled" do
+      it "updates install.inf" do
+        expect(Yast::SCR).to receive(:Write)
+          .with(path(".etc.install_inf.Braille"), 0)
+        expect(Yast::SCR).to receive(:Write)
+          .with(path(".etc.install_inf.DISPLAY_IP"), 0)
+        subject.disable_remote(["braille", "display-ip"])
+      end
+    end
+  end
 end
