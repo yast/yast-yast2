@@ -31,6 +31,8 @@ require "yast"
 
 module Yast
   class LinuxrcClass < Module
+    include Yast::Logger
+
     # Disables filesystem snapshots (fate#317973)
     # Possible values: all, post, pre, single
     DISABLE_SNAPSHOTS = "disable_snapshots".freeze
@@ -239,6 +241,32 @@ module Yast
       ret
     end
 
+    # Reset settings for vnc, ssh,... in install.inf which have been made
+    # by linuxrc settings.
+    #
+    # @param [Array<String>] list of services which will be disabled.
+    def disable_remote(services)
+      return if !services || services.empty?
+      log.warn "Disabling #{services} due missing packages."
+      services.each do |service|
+        case service
+        when "vnc"
+          SCR.Write(path(".etc.install_inf.VNC"), 0)
+          SCR.Write(path(".etc.install_inf.VNCPassword"), "")
+        when "ssh"
+          SCR.Write(path(".etc.install_inf.UseSSH"), 0)
+        when "braille"
+          SCR.Write(path(".etc.install_inf.Braille"), 0)
+        when "display-ip"
+          SCR.Write(path(".etc.install_inf.DISPLAY_IP"), 0)
+        else
+          log.error "#{service} not supported"
+        end
+      end
+      SCR.Write(path(".etc.install_inf"), nil) # Flush the cache
+      ResetInstallInf()
+    end
+
     publish function: :ResetInstallInf, type: "void ()"
     publish function: :InstallInf, type: "string (string)"
     publish function: :manual, type: "boolean ()"
@@ -253,6 +281,7 @@ module Yast
     publish function: :SaveInstallInf, type: "boolean (string)"
     publish function: :keys, type: "list <string> ()"
     publish function: :value_for, type: "string (string)"
+    publish function: :disable_remote, type: "list <string> ()"
 
   private
 

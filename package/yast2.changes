@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct  5 14:04:46 UTC 2017 - schubi@suse.de
+
+- Disable vnc, ssh,... installation in install.inf if it is not
+  supported. (bnc#1055279, bnc#1058071)
+- 4.0.10
+
+-------------------------------------------------------------------
 Thu Oct  5 13:04:46 UTC 2017 - mvidner@suse.com
 
 - Stop using tmpnam, it is no longer supported in perl 5.26
