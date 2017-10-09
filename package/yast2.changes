@@ -1,4 +1,17 @@
 -------------------------------------------------------------------
+Fri Oct  6 11:02:12 UTC 2017 - knut.anderssen@suse.com
+
+- Adapted SuSEFirewallIsInstalled() to return true only when the
+  package is already installed or checked and installed in normal
+  mode.
+- Added SuSEFirewallIsSelectedOrInstalled() which behaves as the
+  old SuSEFirewallIsInstalled() method.
+  (bnc#1037214)
+- Adapted calls to use SuSEFirewallIsSelectedOrInstalled() when
+  the methods can be called even with just Pkg selection.
+- 3.2.38
+
+-------------------------------------------------------------------
 Thu Sep 14 07:51:58 UTC 2017 - mvidner@suse.com
 
 - systemd services (bsc#1045658)
