@@ -244,12 +244,16 @@ module Yast
     # Reset settings for vnc, ssh,... in install.inf which have been made
     # by linuxrc settings.
     #
-    # @param [Array<String>] list of services which will be disabled.
+    # @param [Array<String>] list of remote-management services that will be disabled.
     def disable_remote(services)
       return if !services || services.empty?
-      log.warn "Disabling #{services} due missing packages."
+
+      log.warn "Disabling #{services} due to missing packages."
       services.each do |service|
-        case service
+        # Service IDs are also used in another context in the code
+        # Making sure we always compare apples with apples
+        case polish(service.dup)
+
         when "vnc"
           SCR.Write(path(".etc.install_inf.VNC"), 0)
           SCR.Write(path(".etc.install_inf.VNCPassword"), "")
@@ -257,10 +261,11 @@ module Yast
           SCR.Write(path(".etc.install_inf.UseSSH"), 0)
         when "braille"
           SCR.Write(path(".etc.install_inf.Braille"), 0)
-        when "display-ip"
+        when "displayip"
           SCR.Write(path(".etc.install_inf.DISPLAY_IP"), 0)
         else
-          log.error "#{service} not supported"
+          log.error "Unknown service #{service}"
+          raise ArgumentError.new "Cannot disable #{service}: Unknown service."
         end
       end
       SCR.Write(path(".etc.install_inf"), nil) # Flush the cache
