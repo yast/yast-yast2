@@ -239,8 +239,10 @@ describe Yast::Linuxrc do
 
     context "when vnc should be disabled" do
       it "updates install.inf" do
+        # twice, because there are two services, thus two calls to do the same
         expect(Yast::SCR).to receive(:Write)
           .with(path(".etc.install_inf.VNC"), 0).twice
+        # twice, because there are two services, thus two calls to do the same
         expect(Yast::SCR).to receive(:Write)
           .with(path(".etc.install_inf.VNCPassword"), "").twice
         subject.disable_remote(["vnc", "VNC"])
@@ -249,6 +251,7 @@ describe Yast::Linuxrc do
 
     context "when ssh should be disabled" do
       it "updates install.inf" do
+        # twice, because there are two services, thus two calls to do the same
         expect(Yast::SCR).to receive(:Write)
           .with(path(".etc.install_inf.UseSSH"), 0).twice
         subject.disable_remote(["sSh", "ssh"])
@@ -259,6 +262,7 @@ describe Yast::Linuxrc do
       it "updates install.inf" do
         expect(Yast::SCR).to receive(:Write)
           .with(path(".etc.install_inf.Braille"), 0)
+        # twice, because there are two services, thus two calls to do the same
         expect(Yast::SCR).to receive(:Write)
           .with(path(".etc.install_inf.DISPLAY_IP"), 0).twice
         subject.disable_remote(["braille", "display-ip", "DiSplaY_IP"])
