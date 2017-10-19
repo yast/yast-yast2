@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Oct 19 14:42:09 CEST 2017 - locilka@suse.com
+
+- Fixing disabling vnc, ssh, ... installation to handle service
+  names independently on using upper/lower case as they are used
+  in different context at different places of the code
+  (bsc#1055279).
+- 4.0.11
+
+-------------------------------------------------------------------
 Thu Oct  5 14:04:46 UTC 2017 - schubi@suse.de
 
 - Disable vnc, ssh,... installation in install.inf if it is not
