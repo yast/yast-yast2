@@ -265,7 +265,7 @@ module Yast
           SCR.Write(path(".etc.install_inf.DISPLAY_IP"), 0)
         else
           log.error "Unknown service #{service}"
-          raise ArgumentError.new "Cannot disable #{service}: Unknown service."
+          raise ArgumentError, "Cannot disable #{service}: Unknown service."
         end
       end
       SCR.Write(path(".etc.install_inf"), nil) # Flush the cache
