@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 23 18:24:53 CEST 2017 - snwint@suse.de
+
+- log calculated proposal in yaml format into separate files (fate#318196)
+- 4.0.12
+
+-------------------------------------------------------------------
 Thu Oct 19 14:42:09 CEST 2017 - locilka@suse.com
 
 - Fixing disabling vnc, ssh, ... installation to handle service
