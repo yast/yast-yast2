@@ -36,7 +36,7 @@ ylib_DATA = \
 
 yfwlibdir = @ylibdir@/y2firewalld
 yfwlib_DATA = \
-  lib/y2firewalld/api.rb \
+  lib/y2firewalld/api.rb
 
 EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA) $(yfwlib_DATA)
 
