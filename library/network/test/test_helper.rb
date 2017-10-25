@@ -3,6 +3,8 @@ require "fileutils"
 
 Yast.import "NetworkInterfaces"
 
+DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data")
+
 module NetworkStubs
   IPV6_IFCFG = [
     {

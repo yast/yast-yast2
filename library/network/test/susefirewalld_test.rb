@@ -24,7 +24,7 @@ end
 need_API_mock = true
 
 # Re-instansiate our objects
-FakeFirewallD = Yast::FirewallClass.create(:fwd)
+FakeFirewallD = Yast::SuSEFirewalldClass.new
 
 describe FakeFirewallD do
 

@@ -38,7 +38,6 @@ module Yast
   # SuSEFirewalld Class. Trying to provide relevent pieces of SF2 functionality via
   # firewalld.
   class SuSEFirewalldClass < SuSEFirewallClass
-    include Firewalld
     require "set"
     attr_reader :special_all_interface_zone
 
@@ -177,7 +176,7 @@ module Yast
     # @param [Hash<String, Object>] import_settings with configuration
     def Import(import_settings)
       Read()
-      import_settings = deep_copy(import_settings)
+      import_settings = deep_copy(import_settings || {})
       # Sanitize it
       import_settings.keys.each do |k|
         if !GetKnownFirewallZones().include?(k) && !KEY_SETTINGS.include?(k)
@@ -247,16 +246,14 @@ module Yast
         "Firewall configuration has been read: %1.",
         @SETTINGS
       )
+            # Always call NI::Read, bnc #396646
+      NetworkInterfaces.Read
+
       # to read configuration only once
       @configuration_has_been_read = true
-
-      # Always call NI::Read, bnc #396646
-      NetworkInterfaces.Read
     end
 
-    def ReadCurrentConfiguration
-      # We need to start the service before we query the firewalld rules
-      StartServices() unless IsStarted()
+    def read_zones
       # Get all the information from zones and load them to @SETTINGS["zones"]
       # The following may seem somewhat complicated or fragile but it is more
       # efficient to only invoke a single firewall-cmd command instead of
@@ -289,10 +286,16 @@ module Yast
           end
         end
       end
+    end
+
+    def ReadCurrentConfiguration
+      if SuSEFirewallIsInstalled()
+        read_zones
+        @SETTINGS["logging"] = @fwd_api.log_denied_packets
+      end
 
       @SETTINGS["enable_firewall"] = IsEnabled()
       @SETTINGS["start_firewall"] = IsStarted()
-      @SETTINGS["logging"] = @fwd_api.log_denied_packets
 
       true
     end
@@ -300,9 +303,6 @@ module Yast
     def WriteConfiguration
       # just disabled
       return true if !SuSEFirewallIsInstalled()
-
-      # Can't do anything if service is not running
-      return false if !IsStarted()
 
       return false if !GetModified()
 
@@ -941,37 +941,8 @@ module Yast
       SetAllowedServicesForZoneProto(allowed_services, zone, protocol)
     end
 
-    # Function sets if firewall should support routing.
-    #
-    # @param [Boolean] set_route set to support route or not
-    # FirewallD does not have something similar to FW_ROUTE
-    # so this API call is not applicable to FirewallD
-    def SetSupportRoute(set_route)
-      @SETTINGS[:routing] = set_route
-    end
-
-    # Function returns if firewall supports routing.
-    #
-    # @return	[Boolean] if route is supported
-    # FirewallD does not have something similar to FW_ROUTE
-    # so this API call is not applicable to FirewallD
-    def GetSupportRoute
-      @SETTINGS[:routing]
-    end
-
     def ArePortsOrServicesAllowed(needed_ports, protocol, zone, _check_for_aliases)
       super(needed_ports, protocol, zone, false)
-    end
-
-    # Sets whether ports need to be open already during boot
-    # bsc#916376. For FirewallD we simply return whatever it
-    # was passed as argument since FirewallD always does a
-    # full init on boot but we still need to be API compliant.
-    #
-    # @param [Boolean] new_state
-    # @return [Boolean] current state
-    def full_init_on_boot(new_state)
-      new_state
     end
 
     # Local function allows ports for requested protocol and zone.
@@ -1003,6 +974,47 @@ module Yast
       SetAllowedServicesForZoneProto(allowed_services, zone, protocol)
 
       nil
+    end
+
+    # Firewall Expert Rulezz
+
+    # Returns list of rules describing protocols and ports that are allowed
+    # to be accessed from listed hosts. All is returned as a single string.
+    # Zone needs to be defined.
+    #
+    # @param [String] zone
+    # @return [String] with rules
+    def GetAcceptExpertRules(zone)
+      zone = Builtins.toupper(zone)
+
+      # Check for zone
+      if !Builtins.contains(GetKnownFirewallZones(), zone)
+        Builtins.y2error("Unknown firewall zone: %1", zone)
+        return nil
+      end
+
+      Ops.get_string(@SETTINGS, Ops.add("FW_SERVICES_ACCEPT_", zone), "")
+    end
+
+
+    # Sets expert allow rules for zone.
+    #
+    # @param [String] zone
+    # @param [String] expert_rules whitespace-separated expert_rules
+    # @return [Boolean] if successful
+    def SetAcceptExpertRules(zone, expert_rules)
+      zone = Builtins.toupper(zone)
+
+      # Check for zone
+      if !Builtins.contains(GetKnownFirewallZones(), zone)
+        Builtins.y2error("Unknown firewall zone: %1", zone)
+        return false
+      end
+
+      Ops.set(@SETTINGS, Ops.add("FW_SERVICES_ACCEPT_", zone), expert_rules)
+      SetModified()
+
+      true
     end
 
   private
@@ -1290,6 +1302,7 @@ module Yast
     publish function: :GetServices, type: "map <string, map <string, boolean>> (list <string>)"
     publish function: :GetListOfKnownInterfaces, type: "list <string> ()"
     publish function: :GetServicesInZones, type: "map <string, map <string, boolean>> (list <string>)"
+    publish function: :SetAcceptExpertRules, type: "boolean (string, string)"
     publish function: :IsKnownZone, type: "boolean (string)", private: true
     publish function: :SetModified, type: "void ()"
     publish function: :ResetModified, type: "void ()"
@@ -1320,13 +1333,10 @@ module Yast
     publish function: :RemoveAllowedPortsOrServices, type: "void (list <string>, string, string, boolean)", private: true
     publish function: :AddAllowedPortsOrServices, type: "void (list <string>, string, string)", private: true
     publish function: :IsOtherFirewallRunning, type: "boolean ()"
-    publish function: :SetSupportRoute, type: "void (boolean)"
-    publish function: :GetSupportRoute, type: "boolean ()"
     publish function: :ArePortsOrServicesAllowed, type: "boolean (list <string>, string, string, boolean)", private: true
     publish function: :HaveService, type: "boolean (string, string, string)"
     publish function: :AddService, type: "boolean (string, string, string)"
     publish function: :RemoveService, type: "boolean (string, string, string)"
     publish function: :AddXenSupport, type: "void ()"
-    publish function: :full_init_on_boot, type: "boolean (boolean)"
   end
 end
