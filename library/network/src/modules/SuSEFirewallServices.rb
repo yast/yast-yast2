@@ -31,49 +31,6 @@
 # Manages services for SuSEFirewall2 and FirewallD
 
 require "yast"
-require "network/susefirewall2services"
 require "network/susefirewalldservices"
 
-module Yast
-  class FirewallServicesClass < Module
-    include Yast::Logger
-
-    # Create appropriate firewall services class based on factors such as which
-    # backend is selected by user or running on the system.
-    #
-    # @note If the backend_sym parameter is :fwd (ie, FirewallD is the desired
-    # @note firewall backend), then the method will also start the FirewallD service.
-    #
-    # @param backend_sym [Symbol] if not nil, explicitely select :sf2 or :fwd
-    # @return SuSEFirewall2ServicesClass or SuSEfirewalldServicesClass instance
-    def self.create(backend_sym = nil)
-      Yast.import "SuSEFirewall"
-
-      # If backend is specificed, go ahead and create an instance. Otherwise, try
-      # to detect which backend is enabled and create the appropriate instance.
-      case backend_sym
-      when :sf2
-        SuSEFirewall2ServicesClass.new
-      when :fwd
-        # We need to start the backend first
-        if !SuSEFirewall.IsStarted()
-          log.info "Starting the FirewallD service"
-          SuSEFirewall.StartServices()
-        end
-        SuSEFirewalldServicesClass.new
-      when nil
-        # Instantiate one based on the running backend
-        if SuSEFirewall.is_a?(SuSEFirewall2Class)
-          SuSEFirewall2ServicesClass.new
-        else
-          SuSEFirewalldServicesClass.new
-        end
-      else
-        raise "Invalid symbol for firewall backend #{backend_sym.inspect}"
-      end
-    end
-  end
-end
-
-Yast::SuSEFirewallServices = Yast::FirewallServicesClass.create
-Yast::SuSEFirewallServices.main if Yast::SuSEFirewallServices.is_a?(Yast::SuSEFirewall2ServicesClass)
+Yast::SuSEFirewallServices = Yast::SuSEFirewalldServicesClass.new
