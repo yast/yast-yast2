@@ -198,7 +198,7 @@ module Yast
     # @note This is a stable API function
     # @param [String] section string section of the feature
     # @param features string feature name
-    # @return [Object] the feature value
+    # @return [Object] the feature value, "" if not found
     def GetFeature(section, feature)
       InitIfNeeded()
       ret = Ops.get(@features, [section, feature])
@@ -210,7 +210,7 @@ module Yast
     # @note This is a stable API function
     # @param [String] section string section of the feature
     # @param features string feature name
-    # @return [String] the feature value
+    # @return [String] the feature value, "" if not found
     def GetStringFeature(section, feature)
       value = GetFeature(section, feature)
 
@@ -225,7 +225,7 @@ module Yast
     end
 
     # Get value of a feature
-    # If the feature is missing false is returned. So it is not possible to
+    # If the feature is missing `false` is returned. So it is not possible to
     # distingush between a missing value and a false value.
     # @note This is a stable API function
     # @param [String] section string section of the feature
@@ -242,7 +242,7 @@ module Yast
     # @note This is a stable API function
     # @param [String] section string section of the feature
     # @param features string feature name
-    # @return [Fixnum] the feature value
+    # @return [Fixnum] the feature value, nil if not found
     def GetIntegerFeature(section, feature)
       value = GetFeature(section, feature)
       if Ops.is_integer?(value)
