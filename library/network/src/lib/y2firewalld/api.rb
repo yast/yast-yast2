@@ -339,7 +339,7 @@ module Y2Firewalld
     # @see #command
     # @return [String] stdout result of the command executed
     def query(args)
-      Yast::Execute.on_target(command, *args.split(" "), stdout: :capture)
+      Yast::Execute.on_target(command, *args.split(" "), stdout: :capture).to_s
     end
   end
 end
