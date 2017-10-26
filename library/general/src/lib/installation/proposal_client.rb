@@ -1,4 +1,5 @@
 require "yast"
+require "y2storage"
 
 module Installation
   # Abstract class that simplifies writing proposal clients for installation.
@@ -83,7 +84,9 @@ module Installation
 
       case func
       when "MakeProposal"
-        make_proposal(param)
+        result = make_proposal(param)
+        log_proposal_as_yaml
+        result
       when "AskUser"
         ask_user(param)
       when "Description"
@@ -286,6 +289,15 @@ module Installation
 
     def write
       # doing nothing is OK. or is it? clarify the API, the docs, actual usage!
+    end
+
+    # Log current device graph in yaml format.
+    def log_proposal_as_yaml
+      dg = Y2Storage::StorageManager.instance.staging
+      time_suffix = Time.now.strftime("_%F_%H:%M:%S.%N")
+      file_name = "/var/log/YaST2/proposed_devicegraph#{time_suffix}.yml"
+      log.info "Save proposed device graph to #{file_name}"
+      Y2Storage::YamlWriter.write(dg, file_name)
     end
   end
 end
