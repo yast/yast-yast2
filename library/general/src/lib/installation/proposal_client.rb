@@ -291,7 +291,7 @@ module Installation
       # doing nothing is OK. or is it? clarify the API, the docs, actual usage!
     end
 
-  private
+  protected
 
     # Log current device graph in yaml format.
     def log_proposal_as_yaml
