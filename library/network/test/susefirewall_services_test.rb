@@ -21,9 +21,9 @@ describe FakeFirewallServices do
     stub_const("Yast::SuSEFirewalldServicesClass::SERVICES_DIR", SERVICES_DATA_PATH)
   end
 
-#  around do |example|
-#    change_scr_root(DATA_PATH, &example)
-#  end
+  #  around do |example|
+  #    change_scr_root(DATA_PATH, &example)
+  #  end
 
   describe "#ServiceDefinedByPackage" do
     it "distinguishes whether service is defined by package" do
@@ -66,14 +66,15 @@ describe FakeFirewallServices do
     end
   end
 
-  describe "#all_services", :skip => true do
+  describe "#all_services", skip: true do
     it "reads all services from disk and returns them" do
       # Listing services directly from test-dir
-      services_on_disk = SERVICES_DATA_PATH.map {|p| Dir.entries(p)}.flatten.reject do |s|
+      services_on_disk = SERVICES_DATA_PATH.map { |p| Dir.entries(p) }.flatten
+      services_on_disk.map! { |s| s.gsub(".xml", "") }.reject do |s|
         Yast::SuSEFirewalldServicesClass::IGNORED_SERVICES.include?(s)
-      end.map {|s| s.gsub(".xml","") }
-      services_on_disk.map! do |s|
-        Yast::SuSEFirewalldServicesClass::DEFINED_BY_PKG_PREFIX + s
+      end
+      services_on_disk.map! do |service|
+        Yast::SuSEFirewalldServicesClass::DEFINED_BY_PKG_PREFIX + service
       end
 
       services = subject.all_services
@@ -85,10 +86,10 @@ describe FakeFirewallServices do
 
   describe "#IsKnownService" do
     before do
-      allow(subject).to receive(:all_services).and_return({
+      allow(subject).to receive(:all_services).and_return(
         "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("tcp_ports" => ["a", "b"]),
         "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("udp_ports" => ["x", "y"])
-      })
+      )
     end
 
     it "returns whether service exists" do
@@ -103,10 +104,10 @@ describe FakeFirewallServices do
 
   describe "#GetListOfServicesAddedByPackage" do
     before do
-      allow(subject).to receive(:all_services).and_return({
+      allow(subject).to receive(:all_services).and_return(
         "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("tcp_ports" => ["a", "b"]),
         "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("udp_ports" => ["x", "y"])
-      })
+      )
     end
 
     it "return list of known services" do
@@ -116,10 +117,10 @@ describe FakeFirewallServices do
 
   context "while getting detailed info about a particular service" do
     before do
-      allow(subject).to receive(:all_services).and_return({
-        "service:special-service"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE
+      allow(subject).to receive(:all_services).and_return(
+        "service:special-service" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE
           .merge("tcp_ports" => ["port_1", "port_2"], "udp_ports" => ["zzz", "bbb", "aaa"])
-      })
+      )
     end
 
     describe "#GetNeededTCPPorts" do
@@ -160,10 +161,10 @@ describe FakeFirewallServices do
 
     describe "#GetNeededPortsAndProtocols" do
       before do
-       allow(subject).to receive(:all_services).and_return({
-          "service:special-service"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE
+        allow(subject).to receive(:all_services).and_return(
+          "service:special-service" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE
             .merge("tcp_ports" => ["port_1", "port_2"], "udp_ports" => ["zzz", "bbb", "aaa"])
-        })
+        )
       end
 
       it "returns hash of ports and protocols required by a service" do

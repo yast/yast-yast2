@@ -246,7 +246,7 @@ module Yast
         "Firewall configuration has been read: %1.",
         @SETTINGS
       )
-            # Always call NI::Read, bnc #396646
+      # Always call NI::Read, bnc #396646
       NetworkInterfaces.Read
 
       # to read configuration only once
@@ -995,7 +995,6 @@ module Yast
 
       Ops.get_string(@SETTINGS, Ops.add("FW_SERVICES_ACCEPT_", zone), "")
     end
-
 
     # Sets expert allow rules for zone.
     #

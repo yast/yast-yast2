@@ -25,8 +25,8 @@
 # Summary:  FirewallD offline API
 # Authors:  Knut Anderssen <kanderssen@suse.de>
 
-require 'yast'
-require 'yast2/execute'
+require "yast"
+require "yast2/execute"
 
 Yast.import "Stage"
 
@@ -34,36 +34,43 @@ module Y2Firewalld
   class Error < RuntimeError
   end
 
+  # Firewalld command line API supporting two modes (:offline and :running)
+  #
+  # The :offline mode is usefull in environments where the daemon is not running or
+  # the DBUS API is not accesible, in other case the :running mode should be
+  # used.
   class Api
     include Yast::Logger
     extend Forwardable
 
-    COMMAND = {:offline => "firewall-offline-cmd", :running => "firewall-cmd"}.freeze
+    # Map firewalld modes with they command line commands
+    COMMAND = { offline: "firewall-offline-cmd", running: "firewall-cmd" }.freeze
 
+    # Determines the mode in which firewalld is running and as consequence the
+    # command to be used.
     attr_accessor :mode
 
+    # Constructor
     def initialize(mode: nil)
       @mode =
-        if mode == :running || is_running?
+        if mode == :running || running?
           :running
         else
           :offline
         end
     end
 
-    def offline_mode?
+    # Whether the mode is :offline or not
+    #
+    # @return [Boolean] true if current mode if :offline; false otherwise
+    def offline?
       @mode == :offline
     end
 
-    def command
-      COMMAND[@mode]
-    end
-
-    def query(args)
-      Yast::Execute.on_target(command, *args.split(" "), stdout: :capture)
-    end
-
-    def is_running?
+    # Whether firewalld is running or not
+    #
+    # @return [Boolean] true if the state is running; false otherwise
+    def running?
       return false if Yast::Stage.initial
 
       state == "running"
@@ -80,21 +87,21 @@ module Y2Firewalld
 
     # @return [Boolean] The firewalld reload result (exit code)
     def reload
-      return false if offline_mode?
+      return false if offline?
 
       query("--reload")
     end
 
     # @return [Boolean] The firewalld complete-reload result (exit code)
     def complete_reload
-      return false if offline_mode?
+      return false if offline?
 
       query("--complete-reload")
     end
 
     # @return [Boolean] The firewalld runtime-to-permanent result (exit code)
     def make_permanent
-      return false if offline_mode?
+      return false if offline?
 
       query("--runtime-to-permanent")
     end
@@ -317,6 +324,22 @@ module Y2Firewalld
     # @return [String] packet type which is being logged when denied
     def log_denied_packets
       query("--get-log-denied").strip
+    end
+
+  private
+
+    # Command to be used depending on the current mode.
+    # @return [String] command for the current mode.
+    def command
+      COMMAND[@mode]
+    end
+
+    # Executes the command for the current mode with the given arguments.
+    #
+    # @see #command
+    # @return [String] stdout result of the command executed
+    def query(args)
+      Yast::Execute.on_target(command, *args.split(" "), stdout: :capture)
     end
   end
 end
