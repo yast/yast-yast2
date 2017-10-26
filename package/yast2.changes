@@ -1,5 +1,18 @@
 -------------------------------------------------------------------
-Thu Oct 26 11:02:12 UTC 2017 - knut.anderssen@suse.com
+Thu Oct 26 09:03:03 UTC 2017 - knut.anderssen@suse.com
+
+- Network (Firewall):
+  - Added support for firewalld offline command
+  - Dropped SuSEFirewall (module) support for SuSEFirewall2 backend
+  - Adapted some SuSEFirewalldClass methods to work properly during
+    installation.
+  - Skiped some tests to make it build properly (should be replaced
+    by new ones with a new API design)
+  (fate#323460)
+- 4.0.12
+
+-------------------------------------------------------------------
+Thu Oct 26 09:02:12 UTC 2017 - knut.anderssen@suse.com
 
 - Adapted SuSEFirewallIsInstalled() to return true only when the
   package is already installed or checked and installed in normal
