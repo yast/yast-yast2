@@ -291,8 +291,6 @@ module Installation
       # doing nothing is OK. or is it? clarify the API, the docs, actual usage!
     end
 
-  protected
-
     # Log current device graph in yaml format.
     def log_proposal_as_yaml
       dg = Y2Storage::StorageManager.instance.staging
