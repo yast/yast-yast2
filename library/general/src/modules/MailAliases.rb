@@ -42,21 +42,16 @@
 #
 require "yast"
 
+require "cfa/aliases"
+
 module Yast
   class MailAliasesClass < Module
     def main
-      # no translatable strings, no textdomain.
-      Yast.import "MailTable"
-
-      # ----------------------------------------------------------------
-
       # List of maps: $[comment:, alias:, destinations:] (all are strings)
       # Except root.
       @aliases = []
       # Separated/joined with aliases by read/write/set/export
       @root_alias = ""
-      # Separated/joined with aliases by read/write/set/export
-      @root_alias_comment = ""
     end
 
     # Useful for autoinstall: the provided aliases will be (with
@@ -68,11 +63,9 @@ module Yast
     # Separates aliases into aliases, root_alias and root_alias_comment
     def FilterRootAlias
       @root_alias = ""
-      @root_alias_comment = ""
       @aliases = Builtins.filter(@aliases) do |e|
         if Ops.get_string(e, "alias", "") == "root"
           @root_alias = Ops.get_string(e, "destinations", "")
-          @root_alias_comment = Ops.get_string(e, "comment", "")
           next false
         end
         true
@@ -84,12 +77,13 @@ module Yast
     # Read the aliases table (and separate the root alias)
     # @return success?
     def ReadAliases
-      a_raw = MailTable.Read("aliases")
-      @aliases = Builtins.maplist(a_raw) do |e|
+      @cfa_aliases = CFA::Aliases.new
+      @cfa_aliases.load
+      @aliases = @cfa_aliases.aliases.map do |k,v|
         {
-          "comment"      => Ops.get_string(e, "comment", ""),
-          "alias"        => Ops.get_string(e, "key", ""),
-          "destinations" => Ops.get_string(e, "value", "")
+          "comment"      => "", #not used
+          "alias"        => k,
+          "destinations" => v
         }
       end
       FilterRootAlias()
@@ -107,74 +101,21 @@ module Yast
 
           "alias"        => "root",
           "destinations" => @root_alias,
-          "comment"      => @root_alias_comment
+          "comment"      => ""
 
         )
       end
       deep_copy(ret)
     end
 
-    # ----------------------------------------------------------------
-
-    # Merges mail tables, which are order-preserving maps.
-    # First are the entries of the old map, with values updated
-    # from the new one, then the rest of the new map.
-    # @param [Array<Hash>] new	new table
-    # @param [Array<Hash>] old	old table
-    # @return		merged table
-    def mergeTables(new, old)
-      new = deep_copy(new)
-      old = deep_copy(old)
-      # make a true map
-      new_m = Builtins.listmap(new) do |e|
-        {
-          Ops.get_string(e, "key", "") => [
-            Ops.get_string(e, "comment", ""),
-            Ops.get_string(e, "value", "")
-          ]
-        }
-      end
-      # update old values
-      replaced = Builtins.maplist(old) do |e|
-        k = Ops.get_string(e, "key", "")
-        cv = Ops.get_list(new_m, k, [])
-        if Ops.greater_than(Builtins.size(cv), 0)
-          Ops.set(new_m, k, []) # ok, newly constructed
-          next {
-            "key"     => k,
-            "comment" => Ops.get_string(cv, 0, ""),
-            "value"   => Ops.get_string(cv, 1, "")
-          }
-        else
-          next {
-            "key"     => k,
-            "comment" => Ops.get_string(e, "comment", ""),
-            "value"   => Ops.get_string(e, "value", "")
-          }
-        end
-      end
-      # remove already updated values
-      filtered = Builtins.filter(new) do |e|
-        Ops.greater_than(
-          Builtins.size(Ops.get_list(new_m, Ops.get_string(e, "key", ""), [])),
-          0
-        )
-      end
-      Builtins.flatten([replaced, filtered])
-    end
-
     # Part of Write.
     # @return success
     # @see #SetRootAlias
     def WriteAliases
-      a_raw = Builtins.maplist(MergeRootAlias(@aliases)) do |e|
-        {
-          "comment" => Ops.get_string(e, "comment", ""),
-          "key"     => Ops.get_string(e, "alias", ""),
-          "value"   => Ops.get_string(e, "destinations", "")
-        }
-      end
-      MailTable.Write("aliases", a_raw)
+      @cfa_aliases ||= CFA::Aliases.new
+      @cfa_aliases.aliases = MergeRootAlias(@aliases)
+      @cfa_aliases.save
+
       true
     end
 
@@ -199,11 +140,8 @@ module Yast
       return false if !ReadAliases()
 
       @root_alias = destinations
-      @root_alias_comment = "" # TODO: "created by the ... yast2 module"?
 
       return false if !WriteAliases()
-
-      return false if !MailTable.Flush("aliases")
       true
     end
 

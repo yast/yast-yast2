@@ -1,4 +1,5 @@
 TESTS = \
+  aliases_test.rb \
   asciifile_test.rb \
   auto_client_test.rb \
   dialog_test.rb \
@@ -8,6 +9,7 @@ TESTS = \
   greasemonkey_test.rb \
   hooks_test.rb \
   linuxrc_test.rb \
+  MailAliases_test.rb \
   os_release_test.rb \
   popup_test.rb \
   proposal_client_test.rb \

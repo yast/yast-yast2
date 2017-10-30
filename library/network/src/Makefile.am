@@ -13,7 +13,7 @@ module_DATA = \
   modules/NetworkService.rb \
   modules/SuSEFirewallExpertRules.rb \
   modules/SuSEFirewallServices.rb \
-  modules/SLPAPI.pm \
+  modules/SLPAPI.rb \
   modules/DnsServerAPI.pm
 
 scrconf_DATA = \

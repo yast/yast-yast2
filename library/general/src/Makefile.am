@@ -30,8 +30,6 @@ module_DATA = \
   modules/Popup.rb \
   modules/MailAliases.rb \
   modules/Stage.rb \
-  modules/MailTable.pm \
-  modules/MailTableInclude.pm \
   modules/Hooks.rb
 
 scrconf_DATA = \
@@ -93,7 +91,12 @@ ylib2_DATA = \
   lib/ui/text_helpers.rb \
   lib/ui/widgets.rb
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylib_DATA) $(ylib2_DATA)
+ylib3dir = "${yast2dir}/lib/cfa"
+ylib3_DATA = \
+  lib/cfa/aliases.rb
+
+
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylib_DATA) $(ylib2_DATA) $(ylib3_DATA)
 
 
 include $(top_srcdir)/Makefile.am.common
