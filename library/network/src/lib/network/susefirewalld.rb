@@ -30,7 +30,7 @@
 #
 # Module for handling SuSEfirewall2
 require "yast"
-require "y2firewalld/api"
+require "y2firewall/firewalld/api"
 require "network/susefirewall"
 
 module Yast
@@ -72,7 +72,7 @@ module Yast
       textdomain "base"
 
       # firewalld API interface.
-      @fwd_api = Y2Firewalld::Api.new
+      @fwd_api = Y2Firewall::Firewalld::Api.new
       # firewalld service
       @firewall_service = "firewalld"
       # firewalld package
