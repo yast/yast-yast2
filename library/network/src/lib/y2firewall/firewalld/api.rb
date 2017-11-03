@@ -27,6 +27,7 @@ require "yast2/execute"
 
 Yast.import "Stage"
 Yast.import "Service"
+Yast.import "PackageSystem"
 
 module Y2Firewall
   class Firewalld
@@ -45,6 +46,8 @@ module Y2Firewall
 
       # Map firewalld modes with their command line tools
       COMMAND = { offline: "firewall-offline-cmd", running: "firewall-cmd" }.freeze
+      # FIXME: Do not like to define twice
+      PACKAGE = "firewalld".freeze
 
       # Determines the mode in which firewalld is running and as consequence the
       # command to be used.
@@ -83,7 +86,7 @@ module Y2Firewall
       # @return [Boolean] true if the state is running; false otherwise
       def running?
         return false if Yast::Stage.initial
-        return false if !Yast::PackageSystem.Installed(Firewalld::PACKAGE)
+        return false if !Yast::PackageSystem.Installed(PACKAGE)
 
         state == "running"
       end

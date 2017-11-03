@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov  3 15:39:25 UTC 2017 - knut.anderssen@suse.com
+
+- Firewalld API: running? return false if the package is not
+  installed (fate#323460)
+- 4.0.13
+
+-------------------------------------------------------------------
 Thu Oct 26 09:03:03 UTC 2017 - knut.anderssen@suse.com
 
 - Network (Firewall):
