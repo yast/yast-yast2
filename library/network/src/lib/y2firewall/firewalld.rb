@@ -23,11 +23,18 @@
 # ***************************************************************************
 
 require "y2firewall/firewalld/api"
+require "singleton"
+
+Yast.import "PackageSystem"
 
 module Y2Firewall
   # Main class to interact with Firewalld
   class Firewalld
+    include Singleton
+    include Yast::Logger
     extend Forwardable
+
+    # Y2Firewall::Firewalld::Api instance
     attr_accessor :api
 
     PACKAGE = "firewalld".freeze
@@ -35,41 +42,60 @@ module Y2Firewall
 
     def_delegators :@api, :enable!, :disable!
 
+    # Constructor
     def initialize
       @api = Y2Firewall::Firewalld::Api.new
     end
 
+    # Return whether firewalld is running or not
+    # @return [Boolean] true if it is running; false otherwise
     def running?
       api.running?
     end
 
+    # Return wheter the firewalld package is installed or not
+    #
+    # @return [Boolean] true if it is installed; false otherwise
     def installed?
       return true if @installed
 
-      @installed = PackageSystem.Installed(PACKAGE)
+      @installed = Yast::PackageSystem.Installed(PACKAGE)
     end
 
+    # Chech whether the firewalld service is enable or not
+    #
+    # @return [Boolean] true if it is enable; false otherwise
     def enabled?
       return false unless installed?
 
       Yast::Service.Enabled?(SERVICE)
     end
 
-    class << self
-      # Singleton instance
-      def instance
-        create_instance unless @instance
-        @instance
-      end
+    # Restart the firewalld service
+    #
+    # @return [Boolean] true if it has been restarted; false otherwise
+    def restart!
+      return false unless installed?
 
-      # Enforce a new clean instance
-      def create_instance
-        @instance = new
-      end
+      Yast::Service.Restart(SERVICE)
+    end
 
-      # Make sure only .instance and .create_instance can be used to
-      # create objects
-      private :new, :allocate
+    # Stop the firewalld service
+    #
+    # @return [Boolean] true if it has been stopped; false otherwise
+    def stop!
+      return false if !installed? || !running?
+
+      Yast::Service.Stop(SERVICE)
+    end
+
+    # Start the firewalld service
+    #
+    # @return [Boolean] true if it has been started; false otherwise
+    def start!
+      return false if !installed? || running?
+
+      Yast::Service.Start(SERVICE)
     end
   end
 end

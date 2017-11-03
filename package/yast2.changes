@@ -6,8 +6,8 @@ Thu Oct 26 09:03:03 UTC 2017 - knut.anderssen@suse.com
   - Dropped SuSEFirewall (module) support for SuSEFirewall2 backend
   - Adapted some SuSEFirewalldClass methods to work properly during
     installation.
-  - Skiped some tests to make it build properly (should be replaced
-    by new ones with a new API design)
+  - Skipped some tests to make it build properly (should be
+    replaced by new ones with a new API design)
   (fate#323460)
 - 4.0.12
 
