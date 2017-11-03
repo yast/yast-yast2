@@ -318,7 +318,7 @@ module Yast
         end
         # Configure the zones
         GetKnownFirewallZones().each do |zone|
-          if zone_attr_modified?(zone)
+          if !zone_attr_modified?(zone)
             Builtins.y2milestone("zone=#{zone} hasn't been modified. Skipping...")
             next
           end
