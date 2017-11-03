@@ -24,7 +24,7 @@ end
 need_API_mock = true
 
 # Re-instansiate our objects
-FakeFirewallD = Yast::FirewallClass.create(:fwd)
+FakeFirewallD = Yast::SuSEFirewalldClass.new
 
 describe FakeFirewallD do
 
@@ -34,26 +34,19 @@ describe FakeFirewallD do
     end
 
     context "while in inst-sys" do
-      it "returns whether FirewallD is selected for installation or already installed" do
-        expect(Yast::Stage).to receive(:stage).and_return("initial").at_least(:once)
+      it "returns whether FirewallD is installed or not" do
+        expect(Yast::Mode).to receive(:mode).and_return("installation").at_least(:twice)
 
-        # Value is not cached
-        expect(Yast::Pkg).to receive(:IsSelected).and_return(true, false, false).exactly(3).times
-        # Fallback: if not selected, checks whether the package is installed
+        # Checks whether the package is installed
         expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true).twice
 
-        # Selected
-        expect(subject.SuSEFirewallIsInstalled).to eq(true)
-        # Not selected and not installed
         expect(subject.SuSEFirewallIsInstalled).to eq(false)
-        # Not selected, but installed
         expect(subject.SuSEFirewallIsInstalled).to eq(true)
       end
     end
 
     context "while on a running system (normal configuration)" do
       it "returns whether FirewallD was or could have been installed" do
-        expect(Yast::Stage).to receive(:stage).and_return("normal").at_least(:once)
         expect(Yast::Mode).to receive(:mode).and_return("normal").at_least(:once)
 
         expect(Yast::PackageSystem).to receive(:CheckAndInstallPackages).and_return(true, false)
@@ -70,7 +63,6 @@ describe FakeFirewallD do
 
     context "while in AutoYast config" do
       it "returns whether FirewallD is installed" do
-        expect(Yast::Stage).to receive(:stage).and_return("normal").at_least(:once)
         expect(Yast::Mode).to receive(:mode).and_return("autoinst_config").at_least(:once)
 
         expect(Yast::PackageSystem).to receive(:Installed).and_return(false, true)

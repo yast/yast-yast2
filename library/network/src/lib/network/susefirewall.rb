@@ -40,6 +40,7 @@ module Yast
     Yast.import "NetworkInterfaces"
     Yast.import "PackageSystem"
     Yast.import "PortRanges"
+    Yast.import "Service"
 
     include Yast::Logger
 
@@ -60,7 +61,7 @@ module Yast
     # @param [Boolean] start_service at Write() process
     # @see #GetStartService()
     def SetStartService(start_service)
-      if !SuSEFirewallIsInstalled()
+      if !SuSEFirewallIsSelectedOrInstalled()
         Builtins.y2warning("Cannot set SetStartService")
         return nil
       end
@@ -97,7 +98,7 @@ module Yast
     #
     # @param	boolean start_service at Write() process
     def SetEnableService(enable_service)
-      if !SuSEFirewallIsInstalled()
+      if !SuSEFirewallIsSelectedOrInstalled()
         Builtins.y2warning("Cannot set SetEnableService")
         return nil
       end
@@ -536,21 +537,31 @@ module Yast
     # installation)
     #
     # @return [Boolean] whether the selected firewall backend is installed
-    def SuSEFirewallIsInstalled
-      # Always recheck the status in inst-sys, user/solver might have change
-      # the list of packages selected for installation
-      # bnc#892935: in inst_finish, the package is already installed
+    def SuSEFirewallIsSelectedOrInstalled
+      return true if @needed_packages_installed
+
       if Stage.initial
-        @needed_packages_installed = Pkg.IsSelected(@FIREWALL_PACKAGE) || PackageSystem.Installed(@FIREWALL_PACKAGE)
-        log.info "Selected for installation/installed -> #{@needed_packages_installed}"
-      elsif @needed_packages_installed.nil?
-        if Mode.normal
-          @needed_packages_installed = PackageSystem.CheckAndInstallPackages([@FIREWALL_PACKAGE])
-          log.info "CheckAndInstallPackages -> #{@needed_packages_installed}"
-        else
-          @needed_packages_installed = PackageSystem.Installed(@FIREWALL_PACKAGE)
-          log.info "Installed -> #{@needed_packages_installed}"
-        end
+        packages_selected = Pkg.IsSelected(@FIREWALL_PACKAGE)
+        log.info "Selected for installation -> #{packages_selected}"
+
+        return true if packages_selected
+      end
+
+      SuSEFirewallIsInstalled()
+    end
+
+    # Returns whether all needed packages are installed
+    #
+    # @return [Boolean] whether the selected firewall backend is installed
+    def SuSEFirewallIsInstalled
+      return true if @needed_packages_installed
+
+      if Mode.normal
+        @needed_packages_installed = PackageSystem.CheckAndInstallPackages([@FIREWALL_PACKAGE])
+        log.info "CheckAndInstallPackages -> #{@needed_packages_installed}"
+      else
+        @needed_packages_installed = PackageSystem.Installed(@FIREWALL_PACKAGE)
+        log.info "Installed -> #{@needed_packages_installed}"
       end
 
       @needed_packages_installed

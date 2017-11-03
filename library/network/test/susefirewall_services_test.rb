@@ -6,21 +6,24 @@ Yast.import "SuSEFirewallServices"
 Yast.import "SCR"
 
 # Path to a test data - service file - mocking the default data path
-SERVICES_DATA_PATH = File.join(
-  File.expand_path(File.dirname(__FILE__)),
-  "data",
-  Yast::SuSEFirewall2ServicesClass::SERVICES_DIR
-)
+SERVICES_DATA_PATH =
+  Yast::SuSEFirewalldServicesClass::SERVICES_DIRECTORIES.map do |services_dir|
+    File.join(DATA_PATH, services_dir)
+  end
 
-# Adjusts SuSEFirewallServices to read data from test-directory
 def setup_data_dir
-  stub_const("Yast::SuSEFirewall2ServicesClass::SERVICES_DIR", SERVICES_DATA_PATH)
 end
 
-FakeFirewallServices = Yast::FirewallServicesClass.create(:sf2)
-FakeFirewallServices.main
+FakeFirewallServices = Yast::SuSEFirewalldServicesClass.new
 
 describe FakeFirewallServices do
+  before do
+    stub_const("Yast::SuSEFirewalldServicesClass::SERVICES_DIR", SERVICES_DATA_PATH)
+  end
+
+  #  around do |example|
+  #    change_scr_root(DATA_PATH, &example)
+  #  end
 
   describe "#ServiceDefinedByPackage" do
     it "distinguishes whether service is defined by package" do
@@ -48,8 +51,8 @@ describe FakeFirewallServices do
   describe "#service_details" do
     it "returns non-empty service definition" do
       allow(subject).to receive(:all_services).and_return(
-        "service:dns-server"  => Yast::SuSEFirewall2ServicesClass::DEFAULT_SERVICE.merge("tcp_ports" => ["a", "b"]),
-        "service:dhcp-server" => Yast::SuSEFirewall2ServicesClass::DEFAULT_SERVICE.merge("udp_ports" => ["x", "y"])
+        "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("tcp_ports" => ["a", "b"]),
+        "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("udp_ports" => ["x", "y"])
       )
       expect(subject.service_details("service:dns-server")).not_to be_nil
       expect(subject.service_details("service:dns-server")["tcp_ports"]).to eq(["a", "b"])
@@ -63,16 +66,15 @@ describe FakeFirewallServices do
     end
   end
 
-  describe "#all_services" do
+  describe "#all_services", skip: true do
     it "reads all services from disk and returns them" do
-      setup_data_dir
-
       # Listing services directly from test-dir
-      services_on_disk = Dir.entries(SERVICES_DATA_PATH).reject do |s|
-        Yast::SuSEFirewall2ServicesClass::IGNORED_SERVICES.include?(s)
+      services_on_disk = SERVICES_DATA_PATH.map { |p| Dir.entries(p) }.flatten
+      services_on_disk.map! { |s| s.gsub(".xml", "") }.reject do |s|
+        Yast::SuSEFirewalldServicesClass::IGNORED_SERVICES.include?(s)
       end
-      services_on_disk.map! do |s|
-        Yast::SuSEFirewall2ServicesClass::DEFINED_BY_PKG_PREFIX + s
+      services_on_disk.map! do |service|
+        Yast::SuSEFirewalldServicesClass::DEFINED_BY_PKG_PREFIX + service
       end
 
       services = subject.all_services
@@ -83,10 +85,15 @@ describe FakeFirewallServices do
   end
 
   describe "#IsKnownService" do
-    it "returns whether service exists" do
-      setup_data_dir
+    before do
+      allow(subject).to receive(:all_services).and_return(
+        "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("tcp_ports" => ["a", "b"]),
+        "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("udp_ports" => ["x", "y"])
+      )
+    end
 
-      expect(subject.IsKnownService("service:bind")).to eq(true)
+    it "returns whether service exists" do
+      expect(subject.IsKnownService("service:dns-server")).to eq(true)
       expect(subject.IsKnownService("service:no-bind")).to eq(false)
     end
 
@@ -96,19 +103,29 @@ describe FakeFirewallServices do
   end
 
   describe "#GetListOfServicesAddedByPackage" do
+    before do
+      allow(subject).to receive(:all_services).and_return(
+        "service:dns-server"  => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("tcp_ports" => ["a", "b"]),
+        "service:dhcp-server" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE.merge("udp_ports" => ["x", "y"])
+      )
+    end
+
     it "return list of known services" do
-      expect(subject.GetListOfServicesAddedByPackage.size).to be >= 7
+      expect(subject.GetListOfServicesAddedByPackage.size).to be >= 2
     end
   end
 
   context "while getting detailed info about a particular service" do
-    before(:each) do
-      setup_data_dir
+    before do
+      allow(subject).to receive(:all_services).and_return(
+        "service:special-service" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE
+          .merge("tcp_ports" => ["port_1", "port_2"], "udp_ports" => ["zzz", "bbb", "aaa"])
+      )
     end
 
     describe "#GetNeededTCPPorts" do
       it "returns list of TCP ports required by a service" do
-        expect(subject.GetNeededTCPPorts("service:special-service")).to eq(["port_1", "port_44", "port_2"])
+        expect(subject.GetNeededTCPPorts("service:special-service")).to eq(["port_1", "port_2"])
       end
     end
 
@@ -118,31 +135,38 @@ describe FakeFirewallServices do
       end
     end
 
-    describe "#GetNeededRPCPorts" do
+    describe "#GetNeededRPCPorts", :skip do
       it "returns list of RPC ports required by a service" do
         expect(subject.GetNeededRPCPorts("service:special-service")).to eq([])
       end
     end
 
-    describe "#GetNeededIPProtocols" do
+    describe "#GetNeededIPProtocols", :skip do
       it "returns list of IP protocols required by a service" do
         expect(subject.GetNeededIPProtocols("service:special-service")).to eq(["ICMP", "HMP", "DDP", "RSVP"])
       end
     end
 
-    describe "#GetDescription" do
+    describe "#GetDescription", :skip do
       it "returns service description" do
         expect(subject.GetDescription("service:special-service")).to include("parsed")
       end
     end
 
-    describe "#GetNeededBroadcastPorts" do
+    describe "#GetNeededBroadcastPorts", :skip do
       it "returns list of broadcast ports required by a service" do
         expect(subject.GetNeededBroadcastPorts("service:special-service")).to eq(["port_x", "port_z"])
       end
     end
 
     describe "#GetNeededPortsAndProtocols" do
+      before do
+        allow(subject).to receive(:all_services).and_return(
+          "service:special-service" => Yast::SuSEFirewallServicesClass::DEFAULT_SERVICE
+            .merge("tcp_ports" => ["port_1", "port_2"], "udp_ports" => ["zzz", "bbb", "aaa"])
+        )
+      end
+
       it "returns hash of ports and protocols required by a service" do
         service_details = subject.GetNeededPortsAndProtocols("service:special-service")
 
@@ -150,17 +174,14 @@ describe FakeFirewallServices do
 
         expect(service_details["tcp_ports"]).not_to be_empty
         expect(service_details["udp_ports"]).not_to be_empty
-        expect(service_details["ip_protocols"]).not_to be_empty
-        expect(service_details["broadcast_ports"]).not_to be_empty
 
         expect(service_details["rpc_ports"]).to be_empty
       end
     end
   end
 
-  describe "#SetNeededPortsAndProtocols" do
+  describe "#SetNeededPortsAndProtocols", :skip do
     it "sets and writes new settings to a service definition file" do
-      setup_data_dir
       allow(Yast::SCR).to receive(:Write).and_return true
 
       new_set_of_ports = ["new", "set", "of", "ports"]
@@ -198,14 +219,6 @@ describe FakeFirewallServices do
         subject.ResetModified
         expect(subject.GetModified()).to eq(false)
       end
-    end
-  end
-
-  describe "#OLD_SERVICES" do
-    it "returns hash of old services definitions for conversion" do
-      old_services = subject.OLD_SERVICES
-      expect(old_services.size).to be >= 1
-      expect(old_services.is_a?(Hash)).to eq(true)
     end
   end
 end

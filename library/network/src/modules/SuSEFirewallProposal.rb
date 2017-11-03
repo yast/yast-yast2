@@ -446,8 +446,6 @@ module Yast
         SuSEFirewall.AddXenSupport
       end
 
-      propose_iscsi if Linuxrc.useiscsi
-
       SetKnownInterfaces(SuSEFirewall.GetListOfKnownInterfaces)
 
       nil
@@ -759,16 +757,6 @@ module Yast
       { "output" => output, "warning" => warning }
     end
 
-    # Proposes firewall settings for iSCSI
-    def propose_iscsi
-      log.info "iSCSI has been used during installation, proposing FW full_init_on_boot"
-
-      # bsc#916376: ports need to be open already during boot
-      SuSEFirewall.full_init_on_boot(true)
-
-      nil
-    end
-
     publish function: :OpenServiceOnNonDialUpInterfaces, type: "void (string, list <string>)"
     publish function: :SetChangedByUser, type: "void (boolean)"
     publish function: :GetChangedByUser, type: "boolean ()"
@@ -777,7 +765,6 @@ module Yast
     publish function: :Reset, type: "void ()"
     publish function: :Propose, type: "void ()"
     publish function: :ProposalSummary, type: "map <string, string> ()"
-    publish function: :propose_iscsi, type: "void ()"
   end
 
   SuSEFirewallProposal = SuSEFirewallProposalClass.new

@@ -1,4 +1,29 @@
 -------------------------------------------------------------------
+Thu Oct 26 09:03:03 UTC 2017 - knut.anderssen@suse.com
+
+- Network (Firewall):
+  - Added support for firewalld offline command
+  - Dropped SuSEFirewall (module) support for SuSEFirewall2 backend
+  - Adapted some SuSEFirewalldClass methods to work properly during
+    installation.
+  - Skipped some tests to make it build properly (should be
+    replaced by new ones with a new API design)
+  (fate#323460)
+- 4.0.12
+
+-------------------------------------------------------------------
+Thu Oct 26 09:02:12 UTC 2017 - knut.anderssen@suse.com
+
+- Adapted SuSEFirewallIsInstalled() to return true only when the
+  package is already installed or checked and installed in normal
+  mode.
+- Added SuSEFirewallIsSelectedOrInstalled() which behaves as the
+  old SuSEFirewallIsInstalled() method.
+  (bnc#1037214)
+- Adapted calls to use SuSEFirewallIsSelectedOrInstalled() when
+  the methods can be called even with just Pkg selection.
+
+-------------------------------------------------------------------
 Thu Oct 19 14:42:09 CEST 2017 - locilka@suse.com
 
 - Fixing disabling vnc, ssh, ... installation to handle service

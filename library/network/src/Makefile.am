@@ -34,6 +34,15 @@ ylib_DATA = \
   lib/network/susefirewall2services.rb \
   lib/network/susefirewalldservices.rb
 
-EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA)
+yfwlibdir = @ylibdir@/y2firewall
+yfwlib_DATA = \
+  lib/y2firewall/firewalld.rb
+
+yfwdlibdir = @ylibdir@/y2firewall/firewalld
+yfwdlib_DATA = \
+  lib/y2firewall/firewalld/api.rb
+
+
+EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA) $(yfwlib_DATA) $(yfwdlibdir_DATA)
 
 include $(top_srcdir)/Makefile.am.common
