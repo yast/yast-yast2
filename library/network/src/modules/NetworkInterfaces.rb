@@ -41,8 +41,6 @@ module Yast
     ID_REGEX = "([^#{ALIAS_SEPARATOR}]*)".freeze
     ALIAS_REGEX = "(.*)".freeze
     DEVNAME_REGEX = "#{TYPE_REGEX}-?#{ID_REGEX}".freeze
-    # Supported hotplug types
-    HOTPLUG_TYPES = ["pcmcia", "usb"].freeze
 
     # @attribute Name
     # @return [String]
@@ -113,30 +111,12 @@ module Yast
       # Predefined network device regular expressions
       @DeviceRegex = {
         # device types
-        "netcard" => Ops.add(
-          Ops.add(
-            Ops.get(@CardRegex, "netcard", ""),
-            HotplugRegex(["ath", "eth", "tr", "wlan"])
-          ),
-          "|usb-usb|usb-usb-"
-        ),
-        "modem"   => Ops.get(@CardRegex, "modem", ""),
-        "isdn"    => Ops.add(
-          Ops.get(@CardRegex, "isdn", ""),
-          HotplugRegex(["isdn", "ippp"])
-        ),
-        "dsl"     => Ops.get(@CardRegex, "dsl", ""),
+        "netcard" => @CardRegex["netcard"],
+        "modem"   => @CardRegex["modem"],
+        "isdn"    => @CardRegex["isdn"],
+        "dsl"     => @CardRegex["dsl"],
         # device groups
-        "dialup"  => Ops.add(
-          Ops.add(
-            Ops.add(
-              Ops.add(Ops.get(@CardRegex, "modem", ""), "|"),
-              Ops.get(@CardRegex, "dsl", "")
-            ),
-            "|"
-          ),
-          Ops.get(@CardRegex, "isdn", "")
-        )
+        "dialup"  => @CardRegex["modem"] + "|" + @CardRegex["dsl"] + "|" + @CardRegex["isdn"]
       }
 
       # Types in order from fastest to slowest.
@@ -200,19 +180,6 @@ module Yast
         "WIRELESS_KEY_2",
         "WIRELESS_KEY_3"
       ]
-    end
-
-    # Create a list of hot-pluggable device names for the given devices
-    def HotplugRegex(devs)
-      return "" unless devs
-
-      ret = ""
-      devs.each do |dev|
-        HOTPLUG_TYPES.each do |hot|
-          ret += "|#{dev}-#{hot}|#{dev}-#{hot}-"
-        end
-      end
-      ret
     end
 
     def IsEmpty(value)
@@ -506,12 +473,10 @@ module Yast
       Builtins.sformat("%1#%2", device_name(typ, num), anum)
     end
 
-    # Test hotplugability of a device
-    # @param [String] type device type
-    # @return true if hotpluggable
-    def IsHotplug(type)
-      return false if type == "" || type.nil?
-      HOTPLUG_TYPES.any? { |t| type.end_with?(t) }
+    # @deprecated Formerly hotpluggable devices required a special ifcfg name
+    # @return false
+    def IsHotplug(_type)
+      false
     end
 
     # Test whether device is connected (Link:up)
@@ -530,23 +495,18 @@ module Yast
       Builtins.deletechars(Ops.get_string(ret, "stdout", ""), "\n") == "1"
     end
 
+    # @deprecated hotpluggable devices no longer need a special type
     # Return real type of the device (incl. PCMCIA, USB, ...)
     # @param [String] type basic device type
     # @param [String] hotplug hot plug type
     # @return real type
-    # @example RealType("eth", "usb") -> "eth-usb"
-    def RealType(type, hotplug)
-      Builtins.y2debug("type=%1", type)
+    # @example RealType("eth", "usb") -> "eth"
+    def RealType(type, _hotplug)
       if type == "" || type.nil?
         Builtins.y2error("Wrong type: %1", type)
         return "eth"
       end
-
-      return type if hotplug == "" || hotplug.nil?
-
-      realtype = Ops.add(Ops.add(type, "-"), hotplug)
-      Builtins.y2debug("realtype=%1", realtype)
-      realtype
+      type
     end
 
     # ---------------------------------------------------------------------------
@@ -1388,13 +1348,6 @@ module Yast
       count = 0
       ret = []
 
-      # Hotpluggable devices
-      if IsHotplug(type) && !curdevs.include?("")
-        log.debug("Added simple hotplug device")
-        count += 1
-        ret << ""
-      end
-
       # Remaining numbered devices
       while count < num
         if !curdevs.include?(i.to_s)
@@ -1675,29 +1628,9 @@ module Yast
       ret
     end
 
-    # Clean the hotplug devices compatibility symlink,
-    # usually ifcfg-eth-pcmcia -> ifcfg-eth-pcmcia-0.
-    # @return true if success
+    # @deprecated No longer needed
+    # @return true
     def CleanHotplugSymlink
-      types = ["eth-pcmcia", "eth-usb", "tr-pcmcia", "tr-usb"]
-      Builtins.maplist(types) do |t|
-        link = Ops.add("/etc/sysconfig/network/ifcfg-", t)
-        Builtins.y2debug("link=%1", link)
-        lstat = Convert.to_map(SCR.Read(path(".target.lstat"), link))
-        if Ops.get_boolean(lstat, "islink", false) == true
-          file = Convert.to_string(SCR.Read(path(".target.symlink"), link))
-          file = Ops.add("/etc/sysconfig/network/", file)
-          Builtins.y2debug("file=%1", file)
-          if Ops.greater_than(SCR.Read(path(".target.size"), file), -1)
-            Builtins.y2milestone("Cleaning hotplug symlink")
-            Builtins.y2milestone("Devices[%1]=%2", t, Ops.get(@Devices, t, {}))
-            Ops.set(@Devices, t, Builtins.remove(Ops.get(@Devices, t, {}), ""))
-            Builtins.y2milestone("Devices[%1]=%2", t, Ops.get(@Devices, t, {}))
-          end
-        end
-      end
-
-      Builtins.y2debug("Devices=%1", @Devices)
       true
     end
 
