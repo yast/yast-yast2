@@ -66,7 +66,6 @@ module Yast
       Yast.import "Map"
       Yast.import "Mode"
       Yast.import "Netmask"
-      Yast.import "TypeRepository"
       Yast.import "FileUtils"
       Yast.import "IP"
 
@@ -183,8 +182,7 @@ module Yast
     end
 
     def IsEmpty(value)
-      value = deep_copy(value)
-      TypeRepository.IsEmpty(value)
+      value.nil? ? true : value.empty?
     end
 
     def ifcfg_part(ifcfg, part)
