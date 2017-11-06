@@ -143,9 +143,6 @@ module Yast
       # @see #FastestRegexps
       @FastestTypes = { 1 => "dsl", 2 => "isdn", 3 => "modem", 4 => "netcard" }
 
-      # @see #Push
-      @stack = {}
-
       # -------------------- components of configuration names --------------------
 
       # ifcfg name = type + id + alias_id
@@ -1782,28 +1779,6 @@ module Yast
       ret
     end
 
-    # DSL needs to save its config while the underlying network card is
-    # being configured.
-    def Push
-      Builtins.y2error("Stack not empty: %1", @stack) if @stack != {}
-      Ops.set(@stack, "Name", @Name)
-      Ops.set(@stack, "Current", @Current)
-      Ops.set(@stack, "operation", @operation)
-      Builtins.y2milestone("PUSH: %1", @stack)
-
-      nil
-    end
-
-    def Pop
-      Builtins.y2milestone("POP: %1", @stack)
-      @Name = Ops.get_string(@stack, "Name", "")
-      @Current = Ops.get_map(@stack, "Current", {})
-      @operation = Ops.get_symbol(@stack, "operation")
-      @stack = {}
-
-      nil
-    end
-
     # #46803: forbid "/" (filename), maybe also "-" (separator) "_" (escape)
     def ValidCharsIfcfg
       String.ValidCharsFilename
@@ -1854,13 +1829,10 @@ module Yast
     publish function: :SetValue, type: "boolean (string, string, string)"
     publish function: :GetIP, type: "list <string> (string)"
     publish function: :Locate, type: "list <string> (string, string)"
-    publish function: :UpdateModemSymlink, type: "boolean ()"
     publish function: :CleanHotplugSymlink, type: "boolean ()"
     publish function: :List, type: "list <string> (string)"
     publish function: :Fastest, type: "string ()"
     publish function: :FastestType, type: "string (string)"
-    publish function: :Push, type: "void ()"
-    publish function: :Pop, type: "void ()"
     publish function: :ValidCharsIfcfg, type: "string ()"
     publish function: :ListDevicesExcept, type: "list <string> (string)"
   end
