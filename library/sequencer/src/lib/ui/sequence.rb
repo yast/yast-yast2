@@ -6,6 +6,73 @@ module UI
   # {Yast::SequencerClass Yast::Sequencer}.
   # In the simple case it runs a sequence of dialogs
   # connected by Back and Next buttons.
+  #
+  # @example simple two steps sequence
+  #   class SimpleSequence < UI::Sequence
+  #     SEQUENCE_HASH = {
+  #       START   => "step1",
+  #       "step1" => {
+  #         next: "step2",
+  #       },
+  #       "step2" => {
+  #         next: :finish
+  #       }
+  #     }
+  #
+  #     def step1
+  #       :next
+  #     end
+  #
+  #     def step2
+  #       :next
+  #     end
+  #
+  #     def run
+  #       super(sequence: SEQUENCE_HASH)
+  #     end
+  #   end
+  #
+  # @example complex sequence with branching and auto steps that are skipped when going back
+  #   class ComplexSequence < UI::Sequence
+  #     SEQUENCE_HASH = {
+  #       START   => "step1",
+  #       "step1" => {
+  #         next: "auto_step",
+  #       },
+  #       "auto_step" => {
+  #         next: "finish_step",
+  #         alternative: "alternative_finish"
+  #       },
+  #       "finish_step" => {
+  #         next: :finish
+  #       },
+  #       "alternative_finish" => {
+  #         next: :finish
+  #       }
+  #     }
+  #
+  #     def step1
+  #       :next
+  #     end
+  #
+  #     skip_stack :auto_step
+  #     def auto_step
+  #       rand(2) == 0 ? :next : :alternative
+  #     end
+  #
+  #     def finish_step
+  #       :next
+  #     end
+  #
+  #     def alternative_finish
+  #       :back
+  #     end
+  #
+  #     def run
+  #       super(sequence: SEQUENCE_HASH)
+  #     end
+  #   end
+  #
   class Sequence
     include Yast::I18n
 
@@ -24,6 +91,18 @@ module UI
     # - auto :abort (see {#abortable})
     # - *aliases* are assumed to be method names if unspecified
     #   (see {#from_methods})
+    #
+    # @example sequence with branching with child having methods step1 and step2, where step 1 can finish sequence or run step 2
+    #   run({
+    #     START   => "step1",
+    #     "step1" => {
+    #       next:  :finish,
+    #       step2: "step2",
+    #     },
+    #     "step2" => {
+    #       next:  :finish
+    #     }
+    #   })
     def run(aliases: nil, sequence:)
       aliases ||= from_methods(sequence)
       self.class.run(aliases, abortable(sequence))
@@ -31,6 +110,19 @@ module UI
 
     # Add !{abort: :abort} transitions if missing
     # (an :abort from a dialog should :abort the whole sequence)
+    #
+    # @example output
+    #   input = {
+    #     START => "step1",
+    #     "step1" => { next: "step2" },
+    #     "step2" => { next: :finish }
+    #   }
+    #   output = {
+    #     START => "step1",
+    #     "step1" => { next: "step2", abort: :abort },
+    #     "step2" => { next: :finish, abort: :abort }
+    #   }
+    #   input == output # => true
     def abortable(sequence_hash)
       sequence_hash.map do |name, destination|
         if name == START
