@@ -11,19 +11,17 @@ module UI
   #   class SimpleSequence < UI::Sequence
   #     SEQUENCE_HASH = {
   #       START   => "step1",
-  #       "step1" => {
-  #         next: "step2",
-  #       },
-  #       "step2" => {
-  #         next: :finish
-  #       }
+  #       "step1" => { next: "step2" },
+  #       "step2" => { next: :finish }
   #     }
   #
   #     def step1
+  #       # cool stuff
   #       :next
   #     end
   #
   #     def step2
+  #       # cool stuff
   #       :next
   #     end
   #
@@ -36,35 +34,33 @@ module UI
   #   class ComplexSequence < UI::Sequence
   #     SEQUENCE_HASH = {
   #       START   => "step1",
-  #       "step1" => {
-  #         next: "auto_step",
-  #       },
+  #       "step1" => { next: "auto_step" },
   #       "auto_step" => {
   #         next: "finish_step",
   #         alternative: "alternative_finish"
   #       },
-  #       "finish_step" => {
-  #         next: :finish
-  #       },
-  #       "alternative_finish" => {
-  #         next: :finish
-  #       }
+  #       "finish_step" => { next: :finish },
+  #       "alternative_finish" => { next: :finish }
   #     }
   #
   #     def step1
+  #       # cool stuff
   #       :next
   #     end
   #
   #     skip_stack :auto_step
   #     def auto_step
+  #       # cool stuff
   #       rand(2) == 0 ? :next : :alternative
   #     end
   #
   #     def finish_step
+  #       # cool stuff
   #       :next
   #     end
   #
   #     def alternative_finish
+  #       # cool stuff
   #       :back
   #     end
   #
@@ -93,7 +89,7 @@ module UI
     #   (see {#from_methods})
     #
     # @example sequence with branching with child having methods step1 and step2, where step 1 can finish sequence or run step 2
-    #   run({
+    #   run(sequence: {
     #     START   => "step1",
     #     "step1" => {
     #       next:  :finish,
@@ -122,7 +118,7 @@ module UI
     #     "step1" => { next: "step2", abort: :abort },
     #     "step2" => { next: :finish, abort: :abort }
     #   }
-    #   input == output # => true
+    #   abortable(input) == output # => true
     def abortable(sequence_hash)
       sequence_hash.map do |name, destination|
         if name == START
