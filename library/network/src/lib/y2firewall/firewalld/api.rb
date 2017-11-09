@@ -212,6 +212,13 @@ module Y2Firewall
         run_command("--zone=#{zone}", "--remove-interface=#{interface}", permanent: permanent)
       end
 
+      # @param zone [String] The firewall zone
+      # @param interface [String] The network interface
+      # @return [Boolean] True if interface was changed
+      def change_interface(zone, interface, permanent: permanent?)
+        run_command("--zone=#{zone}", "--change-interface=#{interface}", permanent: permanent)
+      end
+
       ### Services ###
 
       # @return [Array<String>] List of firewall services
