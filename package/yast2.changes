@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov  9 09:26:19 UTC 2017 - knut.anderssen@suse.com
+
+- fate#323460
+  - Firewalld API: added change_interface method
+- 4.0.14
+
+-------------------------------------------------------------------
 Fri Nov  3 15:39:25 UTC 2017 - knut.anderssen@suse.com
 
 - Firewalld API: running? return false if the package is not

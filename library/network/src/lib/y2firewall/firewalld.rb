@@ -68,13 +68,13 @@ module Y2Firewall
     def enabled?
       return false unless installed?
 
-      Yast::Service.Enabled?(SERVICE)
+      Yast::Service.Enabled(SERVICE)
     end
 
     # Restart the firewalld service
     #
     # @return [Boolean] true if it has been restarted; false otherwise
-    def restart!
+    def restart
       return false unless installed?
 
       Yast::Service.Restart(SERVICE)
@@ -83,7 +83,7 @@ module Y2Firewall
     # Stop the firewalld service
     #
     # @return [Boolean] true if it has been stopped; false otherwise
-    def stop!
+    def stop
       return false if !installed? || !running?
 
       Yast::Service.Stop(SERVICE)
@@ -92,7 +92,7 @@ module Y2Firewall
     # Start the firewalld service
     #
     # @return [Boolean] true if it has been started; false otherwise
-    def start!
+    def start
       return false if !installed? || running?
 
       Yast::Service.Start(SERVICE)
