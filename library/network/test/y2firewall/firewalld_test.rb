@@ -30,15 +30,30 @@ describe Y2Firewall::Firewalld do
   let(:firewalld) { described_class.instance }
 
   describe "#installed?" do
+    it "returns false it the firewalld is not installed" do
+      allow(Yast::PackageSystem).to receive("Installed")
+        .with(described_class::PACKAGE).and_return(false)
+
+      expect(firewalld.installed?).to eq(false)
+    end
+
     it "returns true it the firewalld is installed" do
       allow(Yast::PackageSystem).to receive("Installed")
         .with(described_class::PACKAGE).and_return true
+
       expect(firewalld.installed?).to eq(true)
     end
   end
 
   describe "#enabled?" do
     it "returns true if the firewalld service is enable" do
+      allow(Yast::Service).to receive("Enabled")
+        .with(described_class::SERVICE).and_return(true)
+
+      expect(firewalld.enabled?).to eq(true)
+    end
+
+    it "returns false if the firewalld service is disable" do
       allow(Yast::Service).to receive("Enabled")
         .with(described_class::SERVICE).and_return(false)
 
@@ -47,66 +62,107 @@ describe Y2Firewall::Firewalld do
   end
 
   describe "#restart" do
-    it "returns false if the service is not installed" do
-      allow(firewalld).to receive("installed?").and_return false
+    let(:installed) { false }
 
-      firewalld.restart
+    before do
+      allow(firewalld).to receive("installed?").and_return(installed)
     end
 
-    it "restarts the firewalld service" do
-      expect(Yast::Service).to receive("Restart").with(described_class::SERVICE)
+    context "when firewalld service is not installed" do
+      it "returns false" do
+        expect(Yast::Service).to_not receive("Restart")
 
-      firewalld.restart
+        expect(firewalld.restart).to eq(false)
+      end
+    end
+
+    context "when firewalld service is installed" do
+      let(:installed) { true }
+
+      it "restarts the firewalld service" do
+        expect(Yast::Service).to receive("Restart").with(described_class::SERVICE)
+
+        firewalld.restart
+      end
     end
   end
 
   describe "#start" do
-    it "returns false if the service is not installed" do
-      allow(firewalld).to receive("installed?").and_return false
+    let(:installed) { false }
+    let(:running) { false }
 
-      firewalld.start
+    before do
+      allow(firewalld).to receive("installed?").and_return(installed)
+      allow(firewalld).to receive("running?").and_return(running)
     end
 
-    it "returns false if the service is not running" do
-      allow(firewalld).to receive("running?").and_return false
+    context "when firewalld service is not installed" do
+      it "returns false" do
+        expect(Yast::Service).to_not receive("Start")
 
-      firewalld.start
+        firewalld.start
+      end
     end
-    it "starts the firewalld service" do
-      expect(Yast::Service).to receive("Start").with(described_class::SERVICE)
 
-      firewalld.start
+    context "when firewalld service is installed" do
+      let(:installed) { true }
+
+      context "and the service is already running" do
+        let(:running) { true }
+        it "returns false" do
+          expect(Yast::Service).to_not receive("Start")
+
+          expect(firewalld.start).to eq(false)
+        end
+      end
+
+      context "and the service is not running" do
+        it "starts firewalld service" do
+          expect(Yast::Service).to receive("Start").with(described_class::SERVICE)
+
+          firewalld.start
+        end
+      end
     end
   end
 
   describe "#stop" do
+    let(:installed) { false }
+    let(:running) { false }
+
     before do
-      allow(firewalld).to receive("installed?").and_return true
-      allow(firewalld).to receive("running?").and_return true
+      allow(firewalld).to receive("installed?").and_return(installed)
+      allow(firewalld).to receive("running?").and_return(running)
     end
 
-    it "returns false if the service is not installed" do
-      allow(firewalld).to receive("installed?").and_return false
+    context "when firewalld service is not installed" do
+      it "returns false" do
+        expect(Yast::Service).to_not receive("Stop")
 
-      firewalld.stop
+        firewalld.stop
+      end
     end
 
-    it "returns false if the service is not running" do
-      allow(firewalld).to receive("running?").and_return false
+    context "when firewalld service is installed" do
+      let(:installed) { true }
 
-      firewalld.stop
-    end
+      context "and firewalld service is not running" do
+        it "returns false" do
+          expect(Yast::Service).to_not receive("Stop")
 
-    it "stops the firewalld service" do
-      expect(Yast::Service).to receive("Stop").with(described_class::SERVICE)
+          expect(firewalld.stop).to eq(false)
+        end
+      end
 
-      firewalld.stop
-    end
-  end
+      context "and firewalld service is running" do
+        let(:running) { true }
 
-  describe "#api" do
-    it "returns an Y2Firewall::Firewalld::Api instance" do
-      expect(firewalld.api).to be_a Y2Firewall::Firewalld::Api
+        it "stops firewalld service" do
+          expect(Yast::Service).to receive("Stop").with(described_class::SERVICE)
+
+          firewalld.stop
+        end
+      end
     end
   end
 
@@ -115,6 +171,12 @@ describe Y2Firewall::Firewalld do
       expect(firewalld.api).to receive(:running?).and_return(true)
 
       firewalld.running?
+    end
+  end
+
+  describe "#api" do
+    it "returns an Y2Firewall::Firewalld::Api instance" do
+      expect(firewalld.api).to be_a Y2Firewall::Firewalld::Api
     end
   end
 end
