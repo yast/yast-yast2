@@ -35,4 +35,44 @@ describe Yast2::Popup do
       expect { subject.stop_feedback }.to raise_error(RuntimeError)
     end
   end
+
+  describe ".start_feedback" do
+    it "opens dialog" do
+      allow(ui).to receive(:OpenDialog).and_return(true)
+
+      subject.start_feedback("test")
+    end
+
+    it "raises ArgumentError if message is not string" do
+      expect { subject.start_feedback(nil) }.to raise_error(ArgumentError)
+    end
+
+    it "raises ArgumentError if headline is not string" do
+      expect { subject.start_feedback("test", headline: nil) }.to raise_error(ArgumentError)
+    end
+
+    it "raises RuntimeError if dialogs fails to open" do
+      allow(ui).to receive(:OpenDialog).and_return(false)
+
+      expect { subject.start_feedback("test") }.to raise_error(RuntimeError)
+    end
+
+    it "contains heading if headline is non-empty" do
+      allow(ui).to receive(:OpenDialog) do |arg|
+        expect(arg.nested_find { |w| w.is_a?(Yast::Term) && w.value == :Heading }).to be_a(Yast::Term)
+        true
+      end
+
+      subject.start_feedback("test", headline: "head")
+    end
+
+    it "does not contain heading if headline is empty" do
+      allow(ui).to receive(:OpenDialog) do |arg|
+        expect(arg.nested_find { |w| w.is_a?(Yast::Term) && w.value == :Heading }).to eq nil
+        true
+      end
+
+      subject.start_feedback("test", headline: "")
+    end
+  end
 end

@@ -116,6 +116,10 @@ module Yast2
           raise ArgumentError, "Invalid value #{message.inspect} of parameter message"
         end
 
+        if !headline.is_a?(::String)
+          raise ArgumentError, "Invalid value #{headline.inspect} of parameter headline"
+        end
+
         body = VBox(
           VSpacing(0.4),
           *headline_widgets(headline),
