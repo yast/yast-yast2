@@ -35,7 +35,7 @@ module Yast2
       # @param buttons [Hash<Symbol, String>, Symbol] buttons shown.
       #   - Explicit way: a **Hash** button_id => button_text,
       #     shown in source code order.
-      #     Beware that `:details` and `:stop` are reserved.
+      #     Beware that symbols starting with `:__` are reserved.
       #   - Shorthand way: a **Symbol**, one of:
       #     - `:ok`              -> `{ ok: Label.OKButton}`
       #     - `:continue_cancel` -> `{ continue: Label.ContinueButton,
@@ -65,19 +65,22 @@ module Yast2
       #   Yast::Popup.TimedError(text, seconds)
       #   Yast2::Popup.show(text, headline: :error, timeout: seconds)
       #
-      #   Yast::Popup.TimedErrorAnyQuestion(headline, message, yes_button_message, no_button_message, focus, timeout_seconds)
-      #   Yast2::Popup.show(message, headline: headline, timeout: timeout_seconds, buttons: { yes: yes_button_message, no: no_button_message), focus: :yes)
+      #   Yast::Popup.TimedErrorAnyQuestion(headline, message, yes_button_message, no_button_message,
+      #     focus, timeout_seconds)
+      #   Yast2::Popup.show(message, headline: headline, timeout: timeout_seconds,
+      #     buttons: { yes: yes_button_message, no: no_button_message), focus: :yes)
       #
       #   Yast::Popup.TimedLongNotify(message, timeout_seconds)
       #   Yast2::Popup.show(message, richtext: true, timeout: timeout_seconds)
+      #
       def show(message, details: "", headline: "", timeout: 0, focus: nil, buttons: :ok, richtext: :auto, style: :notice)
         textdomain "base"
         buttons = generate_buttons(buttons)
         headline = generate_headline(headline)
         # add default focus button before adding details, as details should not be focussed
         focus = buttons.keys.first if focus.nil?
-        buttons = add_details_button(buttons) unless details.empty?
-        buttons = add_stop_button(buttons) if timeout > 0
+        add_details_button(buttons) unless details.empty?
+        add_stop_button(buttons) if timeout > 0
         check_arguments!(message, details, timeout, focus, buttons)
         content_res = content(body(headline, message, richtext, timeout), buttons)
 
@@ -89,6 +92,19 @@ module Yast2
       # @param headline [String] popup headline. If `""`, no headline is shown.
       # @return the result of the block
       def feedback(message, headline: "", &block)
+        start_feedback(message, headline: headline)
+        begin
+          block.call
+        ensure
+          stop_feedback
+        end
+      end
+
+      # Starts showing feedback. Finish it with {#stop_feedback}. Non-block variant of #{feedback}.
+      # @param message [String] message to show
+      # @param headline [String] sets popup headline. String is shown.
+      #   If empty string is passed no headline is shown.
+      def start_feedback(message, headline: "")
         headline = generate_headline(headline)
         if !message.is_a?(::String)
           raise ArgumentError, "Invalid value #{message.inspect} of parameter message"
@@ -103,11 +119,12 @@ module Yast2
 
         res = Yast::UI.OpenDialog(content_res)
         raise "Failed to open dialog, see logs." unless res
-        begin
-          block.call
-        ensure
-          Yast::UI.CloseDialog
-        end
+      end
+
+      # Stops showing feedback. Use together with #{start_feedback}.
+      # @see feedback
+      def stop_feedback
+        Yast::UI.CloseDialog
       end
 
     private
@@ -165,12 +182,12 @@ module Yast2
 
       def add_details_button(buttons)
         # use this way merge to have details as first place button
-        { details: _("&Details...") }.merge(buttons)
+        buttons[:__details] = _("&Details...")
       end
 
       def add_stop_button(buttons)
         # use this way merge to have details as first place button
-        buttons.merge(stop: Yast::Label.StopButton)
+        buttons[:__stop] = Yast::Label.StopButton
       end
 
       def headline_widgets(headline)
@@ -183,7 +200,7 @@ module Yast2
 
       def timeout_widget(timeout)
         if timeout > 0
-          Label(Id(:label), timeout.to_s)
+          Label(Id(:__timeout_label), timeout.to_s)
         else
           Empty()
         end
@@ -264,9 +281,9 @@ module Yast2
 
       def event_loop(content, focus, timeout, details, style)
         res = Yast::UI.OpenDialog(dialog_options(style), content)
-        remaining_time = timeout
         raise "Failed to open dialog, see logs." unless res
         begin
+          remaining_time = timeout
           Yast::UI.SetFocus(focus)
           loop do
             res = timeout > 0 ? Yast::UI.TimeoutUserInput(1000) : Yast::UI.UserInput
@@ -294,17 +311,17 @@ module Yast2
 
       def handle_event(res, details, remaining_time, focus)
         case res
-        when :details
+        when :__details
           show(details)
           nil
         when :timeout
           if remaining_time <= 0
-            :focus
+            focus
           else
-            Yast::UI.ChangeWidget(:label, :Value, remaining_time.to_s)
+            Yast::UI.ChangeWidget(:__timeout_label, :Value, remaining_time.to_s)
             nil
           end
-        when :stop
+        when :__stop
           loop do
             res = Yast::UI.UserInput
             res = handle_event(res, details, remaining_time, focus)
