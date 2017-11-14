@@ -88,7 +88,7 @@ module Yast2
       end
 
       # Shows a feedback popup while the given block is running.
-      # @param message [String] message to show
+      # @param message [String] message to show. The only mandatory argument.
       # @param headline [String] popup headline. If `""`, no headline is shown.
       # @return the result of the block
       def feedback(message, headline: "", &block)
@@ -98,6 +98,12 @@ module Yast2
         ensure
           stop_feedback
         end
+      end
+
+      # Updates feedback message. Headline cannot be modified.
+      # @param message [String] message to show. The only mandatory argument.
+      def update_feedback(message)
+        Yast::UI.ChangeWidget(Id(:__feedback_message), :Value, message)
       end
 
       # Starts showing feedback. Finish it with {#stop_feedback}. Non-block variant of #{feedback}.
@@ -113,7 +119,7 @@ module Yast2
         body = VBox(
           VSpacing(0.4),
           *headline_widgets(headline),
-          Left(Label(message))
+          Left(Label(Id(:__feedback_message), message))
         )
         content_res = content(body, {})
 
