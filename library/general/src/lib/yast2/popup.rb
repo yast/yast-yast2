@@ -130,6 +130,9 @@ module Yast2
       # Stops showing feedback. Use together with #{start_feedback}.
       # @see feedback
       def stop_feedback
+        if !Yast::UI.WidgetExists(Id(:__feedback_message))
+          raise "Trying to stop feedback, but dialog is not feedback dialog"
+        end
         Yast::UI.CloseDialog
       end
 
