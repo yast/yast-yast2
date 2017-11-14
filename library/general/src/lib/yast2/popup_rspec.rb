@@ -16,5 +16,6 @@ end
 def expect_to_show_feedback
   expect(Yast2::Popup).to receive(:feedback).and_call_original
   allow(Yast::UI).to receive(:OpenDialog).and_return true
+  allow(Yast::UI).to receive(:WidgetExists).and_return true
   allow(Yast::UI).to receive(:CloseDialog)
 end
