@@ -1,4 +1,4 @@
-require_relative "test_helper"
+require_relative "../test_helper"
 
 require "yast2/popup"
 require "yast2/popup_rspec"
