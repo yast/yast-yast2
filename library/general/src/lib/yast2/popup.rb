@@ -6,12 +6,13 @@ Yast.import "Label"
 Yast.import "UI"
 
 module Yast2
-  # Class responsible for showing popups. It have small, but consistent API.
-  # Intended as replacement for Yast::Popup module.
-  # @note as UI is not easy to test, it is recommended after modifications to this class run
-  #   examples/popup_series_tester.sh which tests common combination of options.
-  # @note for rspec tests use popup_rspec where is helper for easier mocking that still does
-  # argument verifications.
+  # Class responsible for showing popups. It has a small but consistent API.
+  # Intended as a replacement for {Yast::Popup} module.
+  # @note as the UI is not easy to test, it is recommended to run
+  #   `examples/popup_series_tester.sh` after modifying this code,
+  #   to tests common combinations of options.
+  # @note for RSpec tests, `require "yast2/popup_rspec"` for easier mocking
+  #   that still does argument verifications.
   class Popup
     class << self
       include Yast::I18n
@@ -22,26 +23,28 @@ module Yast2
       RICHTEXT_WIDTH = 60
       RICHTEXT_HEIGHT = 10
 
-      # Shows popup and return which symbol of pressed button
-      # @param message [String] message to show
-      # @param details [String] hidden details that can be shown, if empty then it is nil shown
-      # @param headline [String, :error, :warning] sets popup headline. When String is passed it is shown as it is.
-      #   When empty string is passed no headline is shown.
-      #   If Symbol is passed it have to be from predefined set of symbols.
-      #   Note: Symbol it is just predefined strings, does not modify style of popup.
-      # @param timeout [Integer] how long wait till autoclose dialog. 0 means wait forever.
-      # @param buttons [Hash<Symbol, String>, Symbol] specified which buttons popup will have.
-      #   it can be hash in format button_id => button_text, showed in same order as in hash.
-      #   Beware that :details and :stop id is reserved.
-      #   The second option is symbol that specify one of predefined set of buttons.
-      #   Current set of predefined buttons are
-      #   `:ok` -> `{ ok: Label.OKButton}`
-      #   `continue_cancel` ->   `{ continue: Label.ContinueButton, cancel: Label.CancelButton }`
-      #   `:yes_no` -> `{ yes: Label.YesButton, no: Label.NoButton }`
-      # @param focus [Symbol, nil] what button focus.
-      #   Also it is button which is returned if timeout exceed.
-      #   if it is nil, then choose the first button. See buttons parameter.
-      # @param richtext [Boolean, :auto] if use richtext widget.
+      # Show a popup, wait for a button press (or a timeout), return the button ID.
+      # @param message [String] message to show. The only mandatory argument.
+      # @param details [String] details that will be shown in another popup
+      #   on pressing a "Details..." button. (`""` -> no button)
+      # @param headline [String, :error, :warning] sets popup headline.
+      #   A String is shown as is (`""` -> no headline shown).
+      #   `:error` and `:warning` produce the corresponding translated string.
+      #   Note: a Symbol means just predefined strings, not affecting popup style.
+      # @param timeout [Integer] how many seconds until autoclosing. 0 means forever.
+      # @param buttons [Hash<Symbol, String>, Symbol] buttons shown.
+      #   - Explicit way: a **Hash** button_id => button_text,
+      #     shown in source code order.
+      #     Beware that `:details` and `:stop` are reserved.
+      #   - Shorthand way: a **Symbol**, one of:
+      #     - `:ok`              -> `{ ok: Label.OKButton}`
+      #     - `:continue_cancel` -> `{ continue: Label.ContinueButton,
+      #                                cancel:   Label.CancelButton }`
+      #     - `:yes_no`          -> `{ yes: Label.YesButton, no: Label.NoButton }`
+      # @param focus [Symbol, nil] which button gets the focus.
+      #   Also it is the button which is returned if the timeout is exceeded.
+      #   `nil` means the first button. See buttons parameter.
+      # @param richtext [Boolean, :auto] whether to use richtext widget.
       #   Useful when report contain richtext tags or is long, so it have to be scrollable.
       #   If :auto is used, then it detect too long text and use richtext for it and! escape
       #   richtext tags, so if text is really richtext then use true.
@@ -64,7 +67,7 @@ module Yast2
       #
       #   Yast::Popup.TimedErrorAnyQuestion(headline, message, yes_button_message, no_button_message, focus, timeout_seconds)
       #   Yast2::Popup.show(message, headline: headline, timeout: timeout_seconds, buttons: { yes: yes_button_message, no: no_button_message), focus: :yes)
-
+      #
       #   Yast::Popup.TimedLongNotify(message, timeout_seconds)
       #   Yast2::Popup.show(message, richtext: true, timeout: timeout_seconds)
       def show(message, details: "", headline: "", timeout: 0, focus: nil, buttons: :ok, richtext: :auto, style: :notice)
@@ -81,12 +84,10 @@ module Yast2
         event_loop(content_res, focus, timeout, details, style)
       end
 
-      # Shows feedback till given block does not finish.
+      # Shows a feedback popup while the given block is running.
       # @param message [String] message to show
-      # @param headline [String] sets popup headline. String is shown.
-      #   If empty string is passed no headline is shown.
-      # @yield [] operation that needs to show feedback
-      # @return result of block
+      # @param headline [String] popup headline. If `""`, no headline is shown.
+      # @return the result of the block
       def feedback(message, headline: "", &block)
         headline = generate_headline(headline)
         if !message.is_a?(::String)
