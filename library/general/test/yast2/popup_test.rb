@@ -85,7 +85,7 @@ describe Yast2::Popup do
     end
 
     it "shows message" do
-      expect(ui).to receive(:OpenDialog) do |opts, content|
+      expect(ui).to receive(:OpenDialog) do |_opts, content|
         expect(content.nested_find { |w| w == "test" }).to_not eq nil
 
         true
@@ -96,9 +96,9 @@ describe Yast2::Popup do
 
     context "details parameter is not empty" do
       it "shows details button" do
-        expect(ui).to receive(:OpenDialog) do |opts, content|
+        expect(ui).to receive(:OpenDialog) do |_opts, content|
           widget = content.nested_find do |w|
-             w.is_a?(Yast::Term) &&
+            w.is_a?(Yast::Term) &&
               w.value == :PushButton &&
               w.params.include?("&Details...")
           end
