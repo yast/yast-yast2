@@ -75,4 +75,48 @@ describe Yast2::Popup do
       subject.start_feedback("test", headline: "")
     end
   end
+
+  describe ".show" do
+    before do
+      allow(ui).to receive(:OpenDialog).and_return(true)
+      allow(ui).to receive(:SetFocus)
+      allow(ui).to receive(:CloseDialog)
+      allow(ui).to receive(:UserInput).and_return(:cancel)
+    end
+
+    it "shows message" do
+      expect(ui).to receive(:OpenDialog) do |opts, content|
+        expect(content.nested_find { |w| w == "test" }).to_not eq nil
+
+        true
+      end
+
+      subject.show("test")
+    end
+
+    context "details parameter is not empty" do
+      it "shows details button" do
+        expect(ui).to receive(:OpenDialog) do |opts, content|
+          widget = content.nested_find do |w|
+             w.is_a?(Yast::Term) &&
+              w.value == :PushButton &&
+              w.params.include?("&Details...")
+          end
+          expect(widget).to_not eq nil
+
+          true
+        end
+
+        subject.show("test", details: "more tests")
+      end
+
+      it "opens additional dialog when clicked on details" do
+        expect(ui).to receive(:UserInput).and_return(:__details, :cancel, :cancel)
+
+        expect(ui).to receive(:OpenDialog).and_return(true).twice
+
+        subject.show("test", details: "more tests")
+      end
+    end
+  end
 end

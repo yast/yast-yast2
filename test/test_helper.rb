@@ -10,6 +10,9 @@ ADDITIONAL_Y2DIRS = [
 inc_dirs.concat(ADDITIONAL_Y2DIRS)
 ENV["Y2DIR"] = inc_dirs.join(":")
 
+ENV["LC_ALL"] = "C"
+ENV["LANG"] = "C"
+
 require "yast"
 require "yast/rspec"
 
