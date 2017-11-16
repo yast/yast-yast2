@@ -118,5 +118,52 @@ describe Yast2::Popup do
         subject.show("test", details: "more tests")
       end
     end
+
+    context "richtext parameter is false" do
+      it "shows message in Label widget for short text" do
+        expect(ui).to receive(:OpenDialog) do |_opts, content|
+          widget = content.nested_find do |w|
+            w.is_a?(Yast::Term) &&
+              w.value == :Label &&
+              w.params.include?("test")
+          end
+          expect(widget).to_not eq nil
+
+          true
+        end
+
+        subject.show("test")
+      end
+
+      it "shows message in Richtext widget for long text" do
+        expect(ui).to receive(:OpenDialog) do |_opts, content|
+          widget = content.nested_find do |w|
+            w.is_a?(Yast::Term) &&
+              w.value == :RichText &&
+              w.params.include?("test<br>" * 50)
+          end
+          expect(widget).to_not eq nil
+
+          true
+        end
+
+        subject.show("test\n" * 50)
+      end
+
+      it "does not interpret richtext tags" do
+        expect(ui).to receive(:OpenDialog) do |_opts, content|
+          widget = content.nested_find do |w|
+            w.is_a?(Yast::Term) &&
+              w.value == :RichText &&
+              w.params.include?("&lt;b&gt;test&lt;/b&gt;<br>" * 50)
+          end
+          expect(widget).to_not eq nil
+
+          true
+        end
+
+        subject.show("<b>test</b>\n" * 50)
+      end
+    end
   end
 end

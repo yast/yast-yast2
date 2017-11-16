@@ -44,13 +44,12 @@ module Yast2
       # @param focus [Symbol, nil] which button gets the focus.
       #   Also it is the button which is returned if the timeout is exceeded.
       #   `nil` means the first button. See buttons parameter.
-      # @param richtext [Boolean, :auto] whether to use richtext widget.
-      #   Useful when report contain richtext tags or is long, so it have to be scrollable.
-      #   If :auto is used, then it detect too long text and use richtext for it and! escape
-      #   richtext tags, so if text is really richtext then use true.
+      # @param richtext [Boolean] whether to interpret richtext tags in message. If it it true,
+      #   then always Richtext widget is used. If it is false, for short text Label widget is used
+      #   and for long text Richtext widget is used, but richtext tags are not interpreted.
       # @param style [:notice, :important, :warning] popup dialog styling. :notice is common one,
-      #    :important is brighter and :warning is style when something goes wrong.
-      #    See Yast::UI.OpenDialog options :infocolor and :warncolor.
+      #   :important is brighter and :warning is style when something goes wrong.
+      #   See Yast::UI.OpenDialog options :infocolor and :warncolor.
       # @return [Symbol] symbol of pressed button. If timeout appear,
       #   then button set in focus parameter is returned. If user click on 'x' button in window
       #   then `:cancel` symbol is returned.
@@ -73,7 +72,7 @@ module Yast2
       #   Yast::Popup.TimedLongNotify(message, timeout_seconds)
       #   Yast2::Popup.show(message, richtext: true, timeout: timeout_seconds)
       #
-      def show(message, details: "", headline: "", timeout: 0, focus: nil, buttons: :ok, richtext: :auto, style: :notice)
+      def show(message, details: "", headline: "", timeout: 0, focus: nil, buttons: :ok, richtext: false, style: :notice)
         textdomain "base"
         buttons = generate_buttons(buttons)
         headline = generate_headline(headline)
@@ -224,8 +223,7 @@ module Yast2
       end
 
       def message_widget(message, richtext)
-        case richtext
-        when true
+        if richtext
           HBox(
             VSpacing(RICHTEXT_HEIGHT),
             VBox(
@@ -233,16 +231,12 @@ module Yast2
               RichText(message)
             )
           )
-        when false
-          Left(Label(message))
-        when :auto
+        else
           if message.lines.size >= LINES_THRESHOLD
             message_widget(plain_to_richtext(message), true)
           else
-            message_widget(message, false)
+            Left(Label(message))
           end
-        else
-          raise ArgumentError, "Invalid richtext paramter #{richtext.inspect}"
         end
       end
 

@@ -22,9 +22,7 @@ Yast2::Popup.show("Own buttons", buttons: { button1: "button 1", button2: "butto
 
 Yast2::Popup.show("Richtext is set to <b>false</b>", richtext: false)
 
-Yast2::Popup.show("Richtext is set to <b>:auto</b>", richtext: :auto)
-
-Yast2::Popup.show("Long text. Richtext is set to <b>:auto</b>\n" * 50, richtext: :auto)
+Yast2::Popup.show("Long text. Richtext is set to <b>false</b>\n" * 50, richtext: false)
 
 Yast2::Popup.show("Richtext is set to <b>true</b>", richtext: true)
 
