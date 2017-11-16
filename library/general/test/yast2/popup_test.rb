@@ -212,5 +212,63 @@ describe Yast2::Popup do
         expect { subject.show("test", style: :unknown) }.to raise_error(ArgumentError)
       end
     end
+
+    context "focus parameter is set" do
+      it "focuses button with given id" do
+        expect(ui).to receive(:SetFocus).with(:cancel)
+
+        subject.show("test", buttons: :continue_cancel, focus: :cancel)
+      end
+
+      it "raises ArgumentError if such button does not exists" do
+        expect do
+          subject.show("test", buttons: :continue_cancel, focus: :ok)
+        end.to raise_error(ArgumentError)
+      end
+    end
+
+    context "focus parameter is not set" do
+      it "focuses the first button" do
+        expect(ui).to receive(:SetFocus).with(:continue)
+
+        subject.show("test", buttons: :continue_cancel)
+      end
+    end
+
+    context "buttons parameter is set" do
+      it "shows predefined set of buttons if known symbol is passed" do
+        expect(ui).to receive(:OpenDialog) do |_opts, content|
+          widget = content.nested_find do |w|
+            w.is_a?(Yast::Term) &&
+              w.value == :PushButton &&
+              w.params.include?("&Yes")
+          end
+          expect(widget).to_not eq nil
+
+          true
+        end
+
+        subject.show("test", buttons: :yes_no)
+      end
+
+      it "raises ArgumentError if symbol is unknown" do
+        expect { subject.show("test", buttons: :unknown) }.to raise_error(ArgumentError)
+      end
+
+      it "shows predefined set of buttons if Hash is passed" do
+        expect(ui).to receive(:OpenDialog) do |_opts, content|
+          widget = content.nested_find do |w|
+            w.is_a?(Yast::Term) &&
+              w.value == :PushButton &&
+              w.params.include?("&Button1")
+          end
+          expect(widget).to_not eq nil
+
+          true
+        end
+
+        subject.show("test", buttons: { button1: "&Button1", button2: "B&utton2" })
+      end
+    end
   end
 end
