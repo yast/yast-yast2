@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov 16 16:09:43 UTC 2017 - knut.anderssen@suse.com
+
+- SuSEFirewall: Export minimal firewalld configuration until the
+  AY firewall schema be adapted (bsc#1067193)
+- 4.0.15
+
+-------------------------------------------------------------------
 Thu Nov  9 09:26:19 UTC 2017 - knut.anderssen@suse.com
 
 - fate#323460
