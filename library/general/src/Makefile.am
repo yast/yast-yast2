@@ -95,7 +95,9 @@ ylib2_DATA = \
 
 ylib3dir = "${yast2dir}/lib/yast2"
 ylib3_DATA = \
-  lib/yast2/popup.rb
+  lib/yast2/feedback.rb \
+  lib/yast2/popup.rb \
+  lib/yast2/popup_rspec.rb
 
 EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylib_DATA) $(ylib2_DATA) $(ylib3_DATA)
 

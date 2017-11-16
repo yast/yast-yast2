@@ -86,59 +86,6 @@ module Yast2
         event_loop(content_res, focus, timeout, details, style)
       end
 
-      # Shows a feedback popup while the given block is running.
-      # @param message [String] message to show. The only mandatory argument.
-      # @param headline [String] popup headline. If `""`, no headline is shown.
-      # @return the result of the block
-      def feedback(message, headline: "", &block)
-        start_feedback(message, headline: headline)
-        begin
-          block.call
-        ensure
-          stop_feedback
-        end
-      end
-
-      # Updates feedback message. Headline cannot be modified.
-      # @param message [String] message to show. The only mandatory argument.
-      def update_feedback(message)
-        Yast::UI.ChangeWidget(Id(:__feedback_message), :Value, message)
-      end
-
-      # Starts showing feedback. Finish it with {#stop_feedback}. Non-block variant of #{feedback}.
-      # @param message [String] message to show
-      # @param headline [String] sets popup headline. String is shown.
-      #   If empty string is passed no headline is shown.
-      def start_feedback(message, headline: "")
-        headline = generate_headline(headline)
-        if !message.is_a?(::String)
-          raise ArgumentError, "Invalid value #{message.inspect} of parameter message"
-        end
-
-        if !headline.is_a?(::String)
-          raise ArgumentError, "Invalid value #{headline.inspect} of parameter headline"
-        end
-
-        body = VBox(
-          VSpacing(0.4),
-          *headline_widgets(headline),
-          Left(Label(Id(:__feedback_message), message))
-        )
-        content_res = content(body, {})
-
-        res = Yast::UI.OpenDialog(content_res)
-        raise "Failed to open dialog, see logs." unless res
-      end
-
-      # Stops showing feedback. Use together with #{start_feedback}.
-      # @see feedback
-      def stop_feedback
-        if !Yast::UI.WidgetExists(Id(:__feedback_message))
-          raise "Trying to stop feedback, but dialog is not feedback dialog"
-        end
-        Yast::UI.CloseDialog
-      end
-
     private
 
       include Yast::UIShortcuts

@@ -50,9 +50,3 @@ Yast2::Popup.show(
   richtext: false,
   style:    :important
 )
-
-Yast2::Popup.feedback("feedback for time consuming operation", headline: "Syncing...") do
-  sleep(5)
-  Yast2::Popup.update_feedback("And now another time consuming operation")
-  sleep(5)
-end
