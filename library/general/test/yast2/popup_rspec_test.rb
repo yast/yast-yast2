@@ -14,15 +14,3 @@ describe "expect_to_show_popup_which_return" do
     expect { Yast2::Popup.show("test", buttons: nil) }.to raise_error(ArgumentError)
   end
 end
-
-describe "expect_to_show_feedback" do
-  it "returns value from block" do
-    expect_to_show_feedback
-    expect(Yast2::Popup.feedback("test") { :test }).to eq :test
-  end
-
-  it "let feedback raise argument error if wrong arguments are passed" do
-    expect_to_show_feedback
-    expect { Yast2::Popup.feedback(nil) }.to raise_error(ArgumentError)
-  end
-end
