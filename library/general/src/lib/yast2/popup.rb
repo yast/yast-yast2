@@ -17,7 +17,7 @@ module Yast2
     class << self
       include Yast::I18n
 
-      # Number of lines for richtext: :auto to switch to richtext widget
+      # Number of lines to switch to richtext widget for richtext: false
       LINES_THRESHOLD = 20
 
       RICHTEXT_WIDTH = 60
