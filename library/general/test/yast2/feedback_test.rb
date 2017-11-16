@@ -98,4 +98,3 @@ describe Yast2::Feedback do
     end
   end
 end
-

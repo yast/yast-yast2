@@ -3,6 +3,7 @@ require "yast"
 Yast.import "UI"
 
 module Yast2
+  # Class to show some feedback when doing time consuming operation
   class Feedback
     class << self
       # Shows a feedback popup while the given block is running.
@@ -71,7 +72,7 @@ module Yast2
       Yast::UI.RecalcLayout
     end
 
-    private
+  private
 
     def check_params!(message, headline)
       if !message.is_a?(::String)
@@ -89,13 +90,12 @@ module Yast2
       VBox(
         VSpacing(0.2),
         *headline_widgets(headline),
-        MinSize(30,4,
+        MinSize(30, 4,
           HBox(
             HSpacing(1),
             Left(Label(Id(MESSAGE_ID), message)),
             HSpacing(1)
-          )
-        ),
+          )),
         VSpacing(0.2)
       )
     end

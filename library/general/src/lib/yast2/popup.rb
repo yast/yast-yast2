@@ -178,12 +178,10 @@ module Yast2
               RichText(message)
             )
           )
+        elsif message.lines.size >= LINES_THRESHOLD
+          message_widget(plain_to_richtext(message), true)
         else
-          if message.lines.size >= LINES_THRESHOLD
-            message_widget(plain_to_richtext(message), true)
-          else
-            Left(Label(message))
-          end
+          Left(Label(message))
         end
       end
 
