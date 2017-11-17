@@ -168,7 +168,8 @@ module Yast
     #
     # @return	[Hash{String => Object}] with configuration
     def Export
-      deep_copy(@SETTINGS)
+      # FIXME: Temporal export until a new schema is defined for firewalld
+      @SETTINGS.select { |k, v| KEY_SETTINGS.include?(k) && !v.nil? }
     end
 
     # Function for setting SuSEFirewall configuration from input
