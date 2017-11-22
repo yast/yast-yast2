@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 22 09:38:59 UTC 2017 - knut.anderssen@suse.com
+
+- Added RSpec shared example for CWM::CheckBox (bsc#1068354).
+- 4.0.16
+
+-------------------------------------------------------------------
 Thu Nov 16 16:09:43 UTC 2017 - knut.anderssen@suse.com
 
 - SuSEFirewall: Export minimal firewalld configuration until the
