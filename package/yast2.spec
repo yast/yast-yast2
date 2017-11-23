@@ -52,6 +52,8 @@ BuildRequires:  yast2-ycp-ui-bindings >= 3.2.0
 # these should be installed in the default build anyway
 BuildRequires:  rpm
 BuildRequires:  cpio
+# YaST rake tasks
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:yast-rake)
 
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
