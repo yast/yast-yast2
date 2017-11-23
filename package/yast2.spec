@@ -39,6 +39,8 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
 BuildRequires:  update-desktop-files
 # For running RSpec tests during build
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
+# YaST rake tasks
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:yast-rake)
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
