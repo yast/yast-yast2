@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Fri Nov 24 11:42:49 UTC 2017 - knut.anderssen@suse.com
+
+- Network:
+  - Do not depent on SuSEFirewall to list the known zones anymore.
+  - NetworkInterfaces: Remove ZONE attribute if it is empty when
+    writing.
+- 4.0.17
+
+-------------------------------------------------------------------
 Wed Nov 22 09:38:59 UTC 2017 - knut.anderssen@suse.com
 
 - Added RSpec shared example for CWM::CheckBox (bsc#1068354).
