@@ -23,6 +23,7 @@
 # ***************************************************************************
 
 require "y2firewall/firewalld/api"
+require "y2firewall/firewalld/zone"
 require "singleton"
 
 Yast.import "PackageSystem"
