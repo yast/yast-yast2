@@ -6,19 +6,19 @@ require "forwardable"
 module Yast
   ###
   #  Use this class always as a parent class for implementing various systemd units.
-  #  Do not use it directly for add-hoc implemenation of systemd units.
+  #  Do not use it directly for ad-hoc implementation of systemd units.
   #
   #  @example Create a systemd service unit
   #
   #     class Service < Yast::SystemdUnit
   #       SUFFIX = ".service"
-  #       PROPERTIES = {
-  #         :before => "Before"
+  #       PROPMAP = {
+  #         before: "Before"
   #       }
   #
-  #       def initialize service_name, properties={}
+  #       def initialize service_name, propmap={}
   #         service_name += SUFFIX unless service_name.end_with?(SUFFIX)
-  #         super(service_name, PROPERTIES.merge(properties))
+  #         super(service_name, PROPMAP.merge(propmap))
   #       end
   #
   #       def before
@@ -37,7 +37,29 @@ module Yast
     SUPPORTED_TYPES  = %w(service socket target).freeze
     SUPPORTED_STATES = %w(enabled disabled).freeze
 
-    DEFAULT_PROPERTIES = {
+    # Values of {#active_state} fow which we consider a unit "active".
+    #
+    # systemctl.c:check_unit_active uses (active, reloading)
+    # For bsc#884756 we also consider "activating" to be active.
+    # (The remaining states are "deactivating", "inactive", "failed".)
+    #
+    # Yes, depending on systemd states that are NOT covered by their
+    # interface stability promise is fragile.
+    # But: 10 to 50ms per call of systemctl is-active, times 100 to 300 services
+    # (depending on hardware and software installed, VM or not)
+    # is a 1 to 15 second delay (bsc#1045658).
+    # That is why we try hard to avoid many systemctl calls.
+    ACTIVE_STATES = ["active", "activating", "reloading"].freeze
+
+    # A Property Map is a plain Hash(Symbol => String).
+    # It
+    # 1. enumerates the properties we're interested in
+    # 2. maps their Ruby names (snake_case) to systemd names (CamelCase)
+    class PropMap < Hash
+    end
+
+    # @return [PropMap]
+    DEFAULT_PROPMAP = {
       id:              "Id",
       pid:             "MainPID",
       description:     "Description",
@@ -52,17 +74,35 @@ module Yast
 
     def_delegators :@properties, :id, :path, :description, :active?, :enabled?, :loaded?
 
-    attr_reader :name, :unit_name, :unit_type, :input_properties, :error, :properties
+    # @return [String] eg. "apache2"
+    #   (the canonical one, may be different from unit_name)
+    attr_reader :name
+    # @return [String] eg. "apache2"
+    attr_reader :unit_name
+    # @return [String] eg. "service"
+    attr_reader :unit_type
+    # @return [PropMap]
+    attr_reader :propmap
+    # @return [String]
+    #   eg "Failed to get properties: Unit name apache2@.service is not valid."
+    attr_reader :error
+    # @return [Properties]
+    attr_reader :properties
 
-    def initialize(full_unit_name, properties = {})
-      @unit_name, @unit_type = full_unit_name.split(".")
-      raise "Missing unit type suffix" unless unit_type
+    # @param full_unit_name [String] eg "foo.service"
+    # @param propmap [PropMap]
+    # @param property_text [String,nil]
+    #   if provided, use it instead of calling `systemctl show`
+    def initialize(full_unit_name, propmap = {}, property_text = nil)
+      @unit_name, dot, @unit_type = full_unit_name.rpartition(".")
+      raise "Missing unit type suffix" if dot.empty?
 
       log.warn "Unsupported unit type '#{unit_type}'" unless SUPPORTED_TYPES.include?(unit_type)
-      @input_properties = properties.merge!(DEFAULT_PROPERTIES)
+      @propmap = propmap.merge!(DEFAULT_PROPMAP)
 
-      @properties = show
-      @error = self.properties.error
+      @properties = show(property_text)
+      @error = properties.error
+      # Id is not present when the unit name is not valid
       @name = id.to_s.split(".").first || unit_name
     end
 
@@ -72,9 +112,13 @@ module Yast
       properties
     end
 
-    def show
+    # Run 'systemctl show' and parse the unit properties
+    # @param property_text [String,nil]
+    #   if provided, use it instead of calling `systemctl show`
+    # @return [Properties]
+    def show(property_text = nil)
       # Using different handler during first stage (installation, update, ...)
-      Stage.initial ? InstallationProperties.new(self) : Properties.new(self)
+      Stage.initial ? InstallationProperties.new(self) : Properties.new(self, property_text)
     end
 
     def status
@@ -117,14 +161,18 @@ module Yast
       run_command! { command("reload-or-try-restart") }
     end
 
+    # @param command_name [String]
+    # @return [#command,#stdout,#stderr,#exit]
     def command(command_name, options = {})
       command = "#{command_name} #{unit_name}.#{unit_type} #{options[:options]}"
-      log.info "`#{Systemctl::CONTROL} #{command}`"
       Systemctl.execute(command)
     end
 
   private
 
+    # Run a command, pass its stderr to {#error}, {#refresh!}.
+    # @yieldreturn [#command,#stdout,#stderr,#exit]
+    # @return [Boolean] success? (exit was zero)
     def run_command!
       error.clear
       command_result = yield
@@ -137,13 +185,22 @@ module Yast
     class Properties < OpenStruct
       include Yast::Logger
 
-      def initialize(systemd_unit)
+      # @param systemd_unit [SystemdUnit]
+      # @param property_text [String,nil]
+      #   if provided, use it instead of calling `systemctl show`
+      def initialize(systemd_unit, property_text)
         super()
         self[:systemd_unit] = systemd_unit
-        raw_output   = load_systemd_properties
-        self[:raw]   = raw_output.stdout
-        self[:error] = raw_output.stderr
-        self[:exit]  = raw_output.exit
+        if property_text.nil?
+          raw_output   = load_systemd_properties
+          self[:raw]   = raw_output.stdout
+          self[:error] = raw_output.stderr
+          self[:exit]  = raw_output.exit
+        else
+          self[:raw]   = property_text
+          self[:error] = ""
+          self[:exit]  = 0
+        end
 
         if !exit.zero? || !error.empty?
           message = "Failed to get properties for unit '#{systemd_unit.unit_name}' ; "
@@ -154,7 +211,7 @@ module Yast
         end
 
         extract_properties
-        self[:active?]    = active_state == "active" || active_state == "activating"
+        self[:active?]    = ACTIVE_STATES.include?(active_state)
         self[:running?]   = sub_state    == "running"
         self[:loaded?]    = load_state   == "loaded"
         self[:not_found?] = load_state   == "not-found"
@@ -191,16 +248,15 @@ module Yast
       end
 
       def extract_properties
-        systemd_unit.input_properties.each do |name, property|
+        systemd_unit.propmap.each do |name, property|
           self[name] = raw[/#{property}=(.+)/, 1]
         end
       end
 
       def load_systemd_properties
-        properties = systemd_unit.input_properties.map do |_, property_name|
-          " --property=#{property_name} "
-        end
-        systemd_unit.command("show", options: properties.join)
+        names = systemd_unit.propmap.values
+        opts = names.map { |property_name| " --property=#{property_name} " }
+        systemd_unit.command("show", options: opts.join)
       end
     end
 

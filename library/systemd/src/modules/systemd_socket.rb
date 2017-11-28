@@ -68,20 +68,23 @@ module Yast
   class SystemdSocketClass < Module
     UNIT_SUFFIX = ".socket".freeze
 
-    def find(socket_name, properties = {})
+    # @param propmap [SystemdUnit::PropMap]
+    def find(socket_name, propmap = {})
       socket_name += UNIT_SUFFIX unless socket_name.end_with?(UNIT_SUFFIX)
-      socket = Socket.new(socket_name, properties)
+      socket = Socket.new(socket_name, propmap)
       return nil if socket.properties.not_found?
       socket
     end
 
-    def find!(socket_name, properties = {})
-      find(socket_name, properties) || raise(SystemdSocketNotFound, socket_name)
+    # @param propmap [SystemdUnit::PropMap]
+    def find!(socket_name, propmap = {})
+      find(socket_name, propmap) || raise(SystemdSocketNotFound, socket_name)
     end
 
-    def all(properties = {})
+    # @param propmap [SystemdUnit::PropMap]
+    def all(propmap = {})
       sockets = Systemctl.socket_units.map do |socket_unit|
-        Socket.new(socket_unit, properties)
+        Socket.new(socket_unit, propmap)
       end
       sockets.select { |s| s.properties.supported? }
     end
