@@ -1,4 +1,23 @@
 -------------------------------------------------------------------
+Tue Nov 28 09:50:05 UTC 2017 - mfilka@suse.com
+
+- bnc#956755, bnc#1061306 (mfilka)
+  - fixed storing device information to avoid incorrect "not found"
+    states when querying NetworkInterfaces subsequently
+- knut.anderssen@suse.com:
+  - Adapted SuSEFirewallIsInstalled() to return true only when the
+    package is already installed or checked and installed in normal
+    mode.
+  - Added SuSEFirewallIsSelectedOrInstalled() which behaves as the
+    old SuSEFirewallIsInstalled() method.
+    (bnc#1037214)
+  - Adapted calls to use SuSEFirewallIsSelectedOrInstalled() when
+    the methods can be called even with just Pkg selection.
+- gsouza@suse.com:
+  - Warning messages shouldn't open UI in command-line mode
+- 3.2.37.2
+
+-------------------------------------------------------------------
 Thu Jul 20 11:27:46 UTC 2017 - jreidinger@suse.com
 
 - Add hint for UI about application name and its icon (bsc#1037891)
