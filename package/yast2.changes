@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Nov 28 09:50:05 UTC 2017 - mfilka@suse.com
+
+- bnc#956755, bnc#1061306 (mfilka)
+  - fixed storing device information to avoid incorrect "not found"
+    states when querying NetworkInterfaces subsequently
+- 4.0.18
+
+-------------------------------------------------------------------
 Fri Nov 24 11:42:49 UTC 2017 - knut.anderssen@suse.com
 
 - Network:
