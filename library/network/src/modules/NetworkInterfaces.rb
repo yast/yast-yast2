@@ -791,7 +791,7 @@ module Yast
     # @param [Hash] a map with netconfig (ifcfg) configuration
     #
     def add_device(device, ifcfg)
-      # if possible use dev type as available in /sys otherwise use ifcfg config 
+      # if possible use dev type as available in /sys otherwise use ifcfg config
       # as a fallback for device type detection
       devtype = GetTypeFromIfcfgOrName(device, ifcfg)
       @Devices[devtype] ||= {}
