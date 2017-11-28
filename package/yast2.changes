@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 28 11:44:30 UTC 2017 - jreidinger@suse.com
+
+- Add new Yast2::Popup class providing nicer API for invoking
+  popups (hackweek project)
+- 4.0.19
+
+-------------------------------------------------------------------
 Tue Nov 28 09:50:05 UTC 2017 - mfilka@suse.com
 
 - bnc#956755, bnc#1061306 (mfilka)
