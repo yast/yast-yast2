@@ -113,6 +113,11 @@ end
 RSpec.shared_examples "CWM::ValueBasedWidget" do
 end
 
+RSpec.shared_examples "CWM::CheckBox" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ValueBasedWidget"
+end
+
 RSpec.shared_examples "CWM::RichText" do
   include_examples "CWM::AbstractWidget"
   include_examples "CWM::ValueBasedWidget"
