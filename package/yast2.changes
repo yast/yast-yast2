@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Nov 24 17:55:50 UTC 2017 - mfilka@suse.com
+
+- bnc#956755, bnc#1061306
+  - fixed storing device information to avoid incorrect "not found"
+    states when querying NetworkInterfaces subsequently
+- 3.1.218
+
+-------------------------------------------------------------------
 Fri Oct  6 11:02:12 UTC 2017 - knut.anderssen@suse.com
 
 - Adapted SuSEFirewallIsInstalled() to return true only when the
