@@ -77,14 +77,14 @@ ydata_DATA = \
 fillup_DATA = \
   fillup/sysconfig.yast2
 
-ylibdir = "${yast2dir}/lib/installation"
-ylib_DATA = \
+ylibinstallationdir = "${yast2dir}/lib/installation"
+ylibinstallation_DATA = \
   lib/installation/auto_client.rb \
   lib/installation/finish_client.rb \
   lib/installation/proposal_client.rb
 
-ylib2dir = "${yast2dir}/lib/ui"
-ylib2_DATA = \
+ylibuidir = "${yast2dir}/lib/ui"
+ylibui_DATA = \
   lib/ui/dialog.rb \
   lib/ui/installation_dialog.rb \
   lib/ui/event_dispatcher.rb \
@@ -93,13 +93,13 @@ ylib2_DATA = \
   lib/ui/text_helpers.rb \
   lib/ui/widgets.rb
 
-ylib3dir = "${yast2dir}/lib/yast2"
-ylib3_DATA = \
+ylibyast2dir = "${yast2dir}/lib/yast2"
+ylibyast2_DATA = \
   lib/yast2/feedback.rb \
   lib/yast2/popup.rb \
   lib/yast2/popup_rspec.rb
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylib_DATA) $(ylib2_DATA) $(ylib3_DATA)
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylibinstallation_DATA) $(ylibui_DATA) $(ylibyast2_DATA)
 
 
 include $(top_srcdir)/Makefile.am.common
