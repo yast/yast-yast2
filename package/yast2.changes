@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 29 10:09:45 UTC 2017 - knut.anderssen@suse.com
+
+- Added missing y2firewall/firewalld/zone.rb file to the Makefile
+  (fate#323460).
+- 4.0.21
+
+-------------------------------------------------------------------
 Wed Nov 29 09:10:59 UTC 2017 - ancor@suse.com
 
 - Fixed a bug selecting rows programmatically for CWM::Table
