@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 29 09:10:59 UTC 2017 - ancor@suse.com
+
+- Fixed a bug selecting rows programmatically for CWM::Table
+  (bsc#1070287).
+- 4.0.20
+
+-------------------------------------------------------------------
 Tue Nov 28 11:44:30 UTC 2017 - jreidinger@suse.com
 
 - Add new Yast2::Popup class providing nicer API for invoking

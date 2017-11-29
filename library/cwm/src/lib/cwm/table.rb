@@ -59,7 +59,7 @@ module CWM
     # @param id [Object, Array<Object>] selected id, if multiselection? is true
     #   it require array of ids to select
     def value=(id)
-      Yast::UI.ChangeWidget(Id(widget_id), :SelectedItems, Array[id])
+      Yast::UI.ChangeWidget(Id(widget_id), :SelectedItems, Array(id))
     end
 
     # Replaces content of single cell
