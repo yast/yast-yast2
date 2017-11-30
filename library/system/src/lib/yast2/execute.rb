@@ -28,6 +28,8 @@ module Yast
   # (not prone to shell quoting bugs).
   # It uses {http://www.rubydoc.info/github/openSUSE/cheetah/ Cheetah}
   # as the backend, but adds support for chrooting during the installation.
+  # It also globally switches the default Cheetah logger to
+  # {http://www.rubydoc.info/github/yast/yast-ruby-bindings/Yast%2FLogger Y2Logger}.
   class Execute
     # use y2log by default
     Cheetah.default_options = { logger: Y2Logger.instance }
@@ -40,6 +42,8 @@ module Yast
     # in a `chroot(2)` specified by the installation (WFM.scr_root).
     # Shows a {ReportClass#Error popup} if the command fails
     # and returns `nil` in such case.
+    # It also globally switches the default Cheetah logger to
+    # {http://www.rubydoc.info/github/yast/yast-ruby-bindings/Yast%2FLogger Y2Logger}.
     # @param args see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run
     def self.on_target(*args)
       popup_error { on_target!(*args) }
@@ -48,6 +52,8 @@ module Yast
     # Runs with chroot; a failure becomes an exception.
     # Runs a command described by *args*,
     # in a `chroot(2)` specified by the installation (WFM.scr_root).
+    # It also globally switches the default Cheetah logger to
+    # {http://www.rubydoc.info/github/yast/yast-ruby-bindings/Yast%2FLogger Y2Logger}.
     # @param args see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run
     # @raise Cheetah::ExecutionFailed if the command fails
     def self.on_target!(*args)
@@ -67,6 +73,8 @@ module Yast
     # *disregarding* a `chroot(2)` specified by the installation (WFM.scr_root).
     # Shows a {ReportClass#Error popup} if the command fails
     # and returns `nil` in such case.
+    # It also globally switches the default Cheetah logger to
+    # {http://www.rubydoc.info/github/yast/yast-ruby-bindings/Yast%2FLogger Y2Logger}.
     # @param args see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run
     def self.locally(*args)
       popup_error { locally!(*args) }
@@ -75,8 +83,8 @@ module Yast
     # Runs without chroot; a failure becomes an exception.
     # Runs a command described by *args*,
     # *disregarding* a `chroot(2)` specified by the installation (WFM.scr_root).
-    # In other words, this is just an alias for `Cheetah.run`, provided for
-    # API orthogonality.
+    # It also globally switches the default Cheetah logger to
+    # {http://www.rubydoc.info/github/yast/yast-ruby-bindings/Yast%2FLogger Y2Logger}.
     # @param args see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run
     # @raise Cheetah::ExecutionFailed if the command fails
     def self.locally!(*args)
