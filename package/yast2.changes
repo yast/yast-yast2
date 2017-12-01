@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov 30 06:38:15 UTC 2017 - rbrown@suse.com
+
+- Replace references to /var/adm/fillup-templates with new
+  %_fillupdir macro (boo#1069468).
+- 4.0.22
+
+-------------------------------------------------------------------
 Wed Nov 29 10:09:45 UTC 2017 - knut.anderssen@suse.com
 
 - Added missing y2firewall/firewalld/zone.rb file to the Makefile
