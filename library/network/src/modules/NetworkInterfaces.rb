@@ -29,6 +29,8 @@ module Yast
   # Categorizes the configurations according to type.
   # Presents them one ifcfg at a time through the {#Current} hash.
   class NetworkInterfacesClass < Module
+    attr_reader :Devices
+
     include Logger
 
     Yast.import "String"

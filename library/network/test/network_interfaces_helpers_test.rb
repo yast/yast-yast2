@@ -223,5 +223,24 @@ module Yast
         expect(subject.GetIbTypeFromSysfs("ib0.8001")).to eql("ibchild")
       end
     end
+
+    describe "#devmap" do
+      DEV_MAP = { "IPADDR" => "1.1.1.1" }.freeze
+
+      it "provides a map for existing device" do
+        allow(NetworkInterfaces)
+          .to receive(:GetType)
+          .and_return("eth")
+        allow(NetworkInterfaces)
+          .to receive(:Devices)
+          .and_return("eth" => { "eth0" => DEV_MAP })
+
+        expect(NetworkInterfaces.devmap("eth0")).to be DEV_MAP
+      end
+
+      it "returns nil when no device could be found" do
+        expect(NetworkInterfaces.devmap("eth0")).to be nil
+      end
+    end
   end
 end
