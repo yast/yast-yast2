@@ -829,6 +829,8 @@ module Yast
     # Hash map is direct maping of sysconfig file into hash.
     # Keys are sysconfig options (e.g. { 'IPADDR' => '1.1.1.1' }
     #
+    # @param [String] name is device name as provided by the
+    #                 system (e.g. eth0)
     # @return [Hash] device configuration or nil in case of error
     def devmap(name)
       Devices().fetch(GetType(name), {})[name]
