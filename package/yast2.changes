@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon Dec  4 08:51:41 UTC 2017 - mfilka@suse.com
+
+- bnc#1061306
+  - provided new function for querying net device configuration to
+    avoid internal errors when querying cached devices
+    inconsistently
+- 4.0.23
+
+-------------------------------------------------------------------
 Thu Nov 30 06:38:15 UTC 2017 - rbrown@suse.com
 
 - Replace references to /var/adm/fillup-templates with new
