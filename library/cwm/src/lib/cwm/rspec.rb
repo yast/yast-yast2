@@ -56,6 +56,11 @@ end
 
 RSpec.shared_examples "CWM::Pager" do
   include_examples "CWM::CustomWidget"
+  describe "#current_page" do
+    it "produces a Page" do
+      expect(subject.current_page).to be_a CWM::Page
+    end
+  end
 end
 
 RSpec.shared_examples "CWM::Page" do

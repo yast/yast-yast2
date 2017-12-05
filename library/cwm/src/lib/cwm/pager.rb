@@ -13,6 +13,9 @@ module CWM
   #
   # @see examples/object_api_tabs.rb
   class Pager < CustomWidget
+    # @return [CWM::Page, nil] currently selected page; nil if no page is selected
+    attr_reader :current_page
+
     # @param [Array<CWM::Page>] pages to be shown
     def initialize(*pages)
       @pages = pages
