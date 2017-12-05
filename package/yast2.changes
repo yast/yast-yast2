@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Dec  5 17:01:44 UTC 2017 - jlopez@suse.com
+
+- CWM: make method Pager#current_page public.
+- Necessary for fate#318196.
+- 4.0.24
+
+-------------------------------------------------------------------
 Mon Dec  4 08:51:41 UTC 2017 - mfilka@suse.com
 
 - bnc#1061306
