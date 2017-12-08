@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Dec  8 14:05:59 UTC 2017 - mvidner@suse.com
+
+- Recognize CTC devices named like slc600 (bsc#1058227).
+- Stopped treating old-style hotplug devices specially.
+- 4.0.25
+
+-------------------------------------------------------------------
 Fri Dec  8 11:24:46 UTC 2017 - lslezak@suse.cz
 
 - save_y2logs: save also /linuxrc.config and /etc/os-release files
