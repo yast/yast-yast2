@@ -130,7 +130,7 @@ cd /
 
 FILES='\
   etc/X11/xorg.conf etc/X11/xorg.conf.install \
-  etc/X11/xorg.conf.d \
+  etc/X11/xorg.conf.d linuxrc.config etc/os-release \
 '
 for i in $FILES ; do
   [ -e "$i" ] && LIST="$LIST $i"

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Dec  8 11:24:46 UTC 2017 - lslezak@suse.cz
+
+- save_y2logs: save also /linuxrc.config and /etc/os-release files
+  for easier debugging
+
+-------------------------------------------------------------------
 Tue Dec  5 17:01:44 UTC 2017 - jlopez@suse.com
 
 - CWM: make method Pager#current_page public.
