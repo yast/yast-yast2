@@ -41,8 +41,6 @@ module Yast
     ID_REGEX = "([^#{ALIAS_SEPARATOR}]*)".freeze
     ALIAS_REGEX = "(.*)".freeze
     DEVNAME_REGEX = "#{TYPE_REGEX}-?#{ID_REGEX}".freeze
-    # Supported hotplug types
-    HOTPLUG_TYPES = ["pcmcia", "usb"].freeze
 
     # @attribute Name
     # @return [String]
@@ -68,7 +66,6 @@ module Yast
       Yast.import "Map"
       Yast.import "Mode"
       Yast.import "Netmask"
-      Yast.import "TypeRepository"
       Yast.import "FileUtils"
       Yast.import "IP"
 
@@ -104,7 +101,7 @@ module Yast
       @CardRegex =
         # other: irlan|lo|plip|...
         {
-          "netcard" => "arc|ath|bnep|ci|ctc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
+          "netcard" => "arc|ath|bnep|ci|ctc|slc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
           "modem"   => "ppp|modem",
           "isdn"    => "isdn|ippp",
           "dsl"     => "dsl"
@@ -113,38 +110,17 @@ module Yast
       # Predefined network device regular expressions
       @DeviceRegex = {
         # device types
-        "netcard" => Ops.add(
-          Ops.add(
-            Ops.get(@CardRegex, "netcard", ""),
-            HotplugRegex(["ath", "eth", "tr", "wlan"])
-          ),
-          "|usb-usb|usb-usb-"
-        ),
-        "modem"   => Ops.get(@CardRegex, "modem", ""),
-        "isdn"    => Ops.add(
-          Ops.get(@CardRegex, "isdn", ""),
-          HotplugRegex(["isdn", "ippp"])
-        ),
-        "dsl"     => Ops.get(@CardRegex, "dsl", ""),
+        "netcard" => @CardRegex["netcard"],
+        "modem"   => @CardRegex["modem"],
+        "isdn"    => @CardRegex["isdn"],
+        "dsl"     => @CardRegex["dsl"],
         # device groups
-        "dialup"  => Ops.add(
-          Ops.add(
-            Ops.add(
-              Ops.add(Ops.get(@CardRegex, "modem", ""), "|"),
-              Ops.get(@CardRegex, "dsl", "")
-            ),
-            "|"
-          ),
-          Ops.get(@CardRegex, "isdn", "")
-        )
+        "dialup"  => @CardRegex["modem"] + "|" + @CardRegex["dsl"] + "|" + @CardRegex["isdn"]
       }
 
       # Types in order from fastest to slowest.
       # @see #FastestRegexps
       @FastestTypes = { 1 => "dsl", 2 => "isdn", 3 => "modem", 4 => "netcard" }
-
-      # @see #Push
-      @stack = {}
 
       # -------------------- components of configuration names --------------------
 
@@ -205,22 +181,8 @@ module Yast
       ]
     end
 
-    # Create a list of hot-pluggable device names for the given devices
-    def HotplugRegex(devs)
-      return "" unless devs
-
-      ret = ""
-      devs.each do |dev|
-        HOTPLUG_TYPES.each do |hot|
-          ret += "|#{dev}-#{hot}|#{dev}-#{hot}-"
-        end
-      end
-      ret
-    end
-
     def IsEmpty(value)
-      value = deep_copy(value)
-      TypeRepository.IsEmpty(value)
+      value.nil? ? true : value.empty?
     end
 
     def ifcfg_part(ifcfg, part)
@@ -509,12 +471,10 @@ module Yast
       Builtins.sformat("%1#%2", device_name(typ, num), anum)
     end
 
-    # Test hotplugability of a device
-    # @param [String] type device type
-    # @return true if hotpluggable
-    def IsHotplug(type)
-      return false if type == "" || type.nil?
-      HOTPLUG_TYPES.any? { |t| type.end_with?(t) }
+    # @deprecated Formerly hotpluggable devices required a special ifcfg name
+    # @return false
+    def IsHotplug(_type)
+      false
     end
 
     # Test whether device is connected (Link:up)
@@ -533,23 +493,18 @@ module Yast
       Builtins.deletechars(Ops.get_string(ret, "stdout", ""), "\n") == "1"
     end
 
+    # @deprecated hotpluggable devices no longer need a special type
     # Return real type of the device (incl. PCMCIA, USB, ...)
     # @param [String] type basic device type
     # @param [String] hotplug hot plug type
     # @return real type
-    # @example RealType("eth", "usb") -> "eth-usb"
-    def RealType(type, hotplug)
-      Builtins.y2debug("type=%1", type)
+    # @example RealType("eth", "usb") -> "eth"
+    def RealType(type, _hotplug)
       if type == "" || type.nil?
         Builtins.y2error("Wrong type: %1", type)
         return "eth"
       end
-
-      return type if hotplug == "" || hotplug.nil?
-
-      realtype = Ops.add(Ops.add(type, "-"), hotplug)
-      Builtins.y2debug("realtype=%1", realtype)
-      realtype
+      type
     end
 
     # ---------------------------------------------------------------------------
@@ -1391,13 +1346,6 @@ module Yast
       count = 0
       ret = []
 
-      # Hotpluggable devices
-      if IsHotplug(type) && !curdevs.include?("")
-        log.debug("Added simple hotplug device")
-        count += 1
-        ret << ""
-      end
-
       # Remaining numbered devices
       while count < num
         if !curdevs.include?(i.to_s)
@@ -1678,29 +1626,9 @@ module Yast
       ret
     end
 
-    # Clean the hotplug devices compatibility symlink,
-    # usually ifcfg-eth-pcmcia -> ifcfg-eth-pcmcia-0.
-    # @return true if success
+    # @deprecated No longer needed
+    # @return true
     def CleanHotplugSymlink
-      types = ["eth-pcmcia", "eth-usb", "tr-pcmcia", "tr-usb"]
-      Builtins.maplist(types) do |t|
-        link = Ops.add("/etc/sysconfig/network/ifcfg-", t)
-        Builtins.y2debug("link=%1", link)
-        lstat = Convert.to_map(SCR.Read(path(".target.lstat"), link))
-        if Ops.get_boolean(lstat, "islink", false) == true
-          file = Convert.to_string(SCR.Read(path(".target.symlink"), link))
-          file = Ops.add("/etc/sysconfig/network/", file)
-          Builtins.y2debug("file=%1", file)
-          if Ops.greater_than(SCR.Read(path(".target.size"), file), -1)
-            Builtins.y2milestone("Cleaning hotplug symlink")
-            Builtins.y2milestone("Devices[%1]=%2", t, Ops.get(@Devices, t, {}))
-            Ops.set(@Devices, t, Builtins.remove(Ops.get(@Devices, t, {}), ""))
-            Builtins.y2milestone("Devices[%1]=%2", t, Ops.get(@Devices, t, {}))
-          end
-        end
-      end
-
-      Builtins.y2debug("Devices=%1", @Devices)
       true
     end
 
@@ -1782,28 +1710,6 @@ module Yast
       ret
     end
 
-    # DSL needs to save its config while the underlying network card is
-    # being configured.
-    def Push
-      Builtins.y2error("Stack not empty: %1", @stack) if @stack != {}
-      Ops.set(@stack, "Name", @Name)
-      Ops.set(@stack, "Current", @Current)
-      Ops.set(@stack, "operation", @operation)
-      Builtins.y2milestone("PUSH: %1", @stack)
-
-      nil
-    end
-
-    def Pop
-      Builtins.y2milestone("POP: %1", @stack)
-      @Name = Ops.get_string(@stack, "Name", "")
-      @Current = Ops.get_map(@stack, "Current", {})
-      @operation = Ops.get_symbol(@stack, "operation")
-      @stack = {}
-
-      nil
-    end
-
     # #46803: forbid "/" (filename), maybe also "-" (separator) "_" (escape)
     def ValidCharsIfcfg
       String.ValidCharsFilename
@@ -1854,13 +1760,10 @@ module Yast
     publish function: :SetValue, type: "boolean (string, string, string)"
     publish function: :GetIP, type: "list <string> (string)"
     publish function: :Locate, type: "list <string> (string, string)"
-    publish function: :UpdateModemSymlink, type: "boolean ()"
     publish function: :CleanHotplugSymlink, type: "boolean ()"
     publish function: :List, type: "list <string> (string)"
     publish function: :Fastest, type: "string ()"
     publish function: :FastestType, type: "string (string)"
-    publish function: :Push, type: "void ()"
-    publish function: :Pop, type: "void ()"
     publish function: :ValidCharsIfcfg, type: "string ()"
     publish function: :ListDevicesExcept, type: "list <string> (string)"
   end

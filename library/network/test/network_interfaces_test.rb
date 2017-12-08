@@ -185,21 +185,6 @@ describe Yast::NetworkInterfaces do
     end
   end
 
-  describe "IsHotplug" do
-    it "returns true if given interfaces is a pcmcia interface" do
-      expect(subject.IsHotplug("eth-pcmcia")).to eql(true)
-    end
-    it "returns true if given interfaces is a usb interface" do
-      expect(subject.IsHotplug("eth-usb")).to eql(true)
-    end
-
-    it "return false otherwise" do
-      expect(subject.IsHotplug("eth")).to eql(false)
-      expect(subject.IsHotplug("qeth")).to eql(false)
-      expect(subject.IsHotplug("br")).to eql(false)
-    end
-  end
-
   describe "#GetFreeDevices" do
     it "returns an array with available device numbers" do
       subject.instance_variable_set(:@Devices, "eth" => { "0" => {} })
@@ -208,10 +193,6 @@ describe Yast::NetworkInterfaces do
       expect(subject.GetFreeDevices("eth", 2)).to eql(["0", "2"])
       subject.instance_variable_set(:@Devices, "eth" => { "2" => {} })
       expect(subject.GetFreeDevices("eth", 2)).to eql(["0", "1"])
-      subject.instance_variable_set(:@Devices, "eth-pcmcia" => { "0" => {} })
-      expect(subject.GetFreeDevices("eth-pcmcia", 2)).to eql(["", "1"])
-      subject.instance_variable_set(:@Devices, "eth-pcmcia" => { "" => {} })
-      expect(subject.GetFreeDevices("eth-pcmcia", 2)).to eql(["0", "1"])
     end
   end
 
