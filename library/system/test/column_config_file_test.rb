@@ -14,6 +14,7 @@ require_relative "test_helper"
 require "yast2/column_config_file"
 
 describe ColumnConfigFile do
+  # rubocop:disable Lint/AmbiguousRegexpLiteral
   context "Parser" do
     describe "#parse" do
       context "Demo /etc/fstab with header and footer comments" do

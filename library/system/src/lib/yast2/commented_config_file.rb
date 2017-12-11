@@ -274,7 +274,7 @@ class CommentedConfigFile
     Entry.new(self)
   end
 
-  protected
+protected
 
   # Parse the entries in 'lines'. Header and footer comments should already
   # removed from 'lines'.
@@ -287,6 +287,8 @@ class CommentedConfigFile
   # @param to   [Fixnum] line number of the last  line to parse
   #
   # @return [Boolean] true if success, false if error
+  #
+  # rubocop:disable Style/For
   #
   def parse_entries(lines, from, to)
     clear_entries

@@ -14,6 +14,7 @@ require_relative "test_helper"
 require "yast2/commented_config_file"
 
 describe CommentedConfigFile do
+  # rubocop:disable Lint/AmbiguousRegexpLiteral
   context "when created empty" do
     subject { described_class.new }
 

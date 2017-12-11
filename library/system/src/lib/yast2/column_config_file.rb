@@ -116,6 +116,8 @@ class ColumnConfigFile < CommentedConfigFile
   #
   # @return [Array<Fixnum>] column widths
   #
+  # rubocop:disable Style/For
+  #
   def calc_column_widths
     return [] unless @pad_columns
     @column_widths = []
@@ -136,7 +138,7 @@ class ColumnConfigFile < CommentedConfigFile
     ColumnConfigFile::Entry.new(self)
   end
 
-  protected
+protected
 
   # Count the maximum number of columns amont all entries.
   #
@@ -254,7 +256,7 @@ class ColumnConfigFile < CommentedConfigFile
       format
     end
 
-    protected
+  protected
 
     # Return the column delimiter used for input (parsing).
     #

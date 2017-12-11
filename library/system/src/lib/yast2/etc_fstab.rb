@@ -207,7 +207,7 @@ class EtcFstab < ColumnConfigFile
     -1
   end
 
-  protected
+protected
 
   # Find the correct index for an entry if it depends on any other entry or -1
   # if no other entry depends on this one, i.e. it can safely added to the end
@@ -226,7 +226,7 @@ class EtcFstab < ColumnConfigFile
     -1
   end
 
-  public
+public
 
   # Get the "mount by" type of a device entry in /etc/fstab.
   # See also EtcFstab::Entry.get_mount_by.
