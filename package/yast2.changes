@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Dec 11 17:12:46 CET 2017 - schubi@suse.de
+
+- Warn the user if the infrastructure is not available for running
+  the second stage (bnc#1061754)
+- 4.0.27
+
+-------------------------------------------------------------------
 Mon Dec 11 08:40:33 UTC 2017 - jlopez@suse.com
 
 - Improve tests for CWM::Pager (part of fate#318196).
