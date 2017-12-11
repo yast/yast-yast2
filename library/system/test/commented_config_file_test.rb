@@ -15,6 +15,7 @@ require "yast2/commented_config_file"
 
 describe CommentedConfigFile do
   # rubocop:disable Lint/AmbiguousRegexpLiteral
+
   context "when created empty" do
     subject { described_class.new }
 
@@ -199,7 +200,7 @@ describe CommentedConfigFile do
       context "Demo /etc/fstab with header and footer comments" do
         before(:all) do
           @file = described_class.new
-          @file.read("data/fstab/demo-fstab")
+          @file.read(TEST_DATA + "fstab/demo-fstab")
         end
         subject { @file }
 
@@ -245,7 +246,8 @@ describe CommentedConfigFile do
       context "Demo /etc/fstab without header and footer comments" do
         before(:all) do
           @file = described_class.new
-          @file.read("data/fstab/demo-fstab-no-header")
+          puts("TEST_DATA: #{TEST_DATA}")
+          @file.read(TEST_DATA + "fstab/demo-fstab-no-header")
         end
         subject { @file }
 
@@ -294,17 +296,17 @@ describe CommentedConfigFile do
       end
 
       it "reproduces exactly the original format with header and footer" do
-        orig, formatted = read_twice("data/fstab/demo-fstab")
+        orig, formatted = read_twice(TEST_DATA + "fstab/demo-fstab")
         expect(formatted).to eq orig
       end
 
       it "reproduces exactly the original format without header or footer" do
-        orig, formatted = read_twice("data/fstab/demo-fstab-no-header")
+        orig, formatted = read_twice(TEST_DATA + "fstab/demo-fstab-no-header")
         expect(formatted).to eq orig
       end
 
       it "reproduces exactly the original format for demo-sudoers" do
-        orig, formatted = read_twice("data/fstab/demo-sudoers")
+        orig, formatted = read_twice(TEST_DATA + "fstab/demo-sudoers")
         expect(formatted).to eq orig
       end
     end

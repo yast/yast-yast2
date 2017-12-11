@@ -16,7 +16,7 @@ require "fileutils"
 
 describe EtcFstab do
   context "with demo-fstab" do
-    before(:all) { @fstab = described_class.new("data/fstab/demo-fstab") }
+    before(:all) { @fstab = described_class.new(TEST_DATA + "fstab/demo-fstab") }
     subject { @fstab }
 
     describe "Parser and access methods" do
@@ -287,11 +287,11 @@ describe EtcFstab do
   end
 
   context "with demo-fstab" do
-    before(:all) { @fstab = described_class.new("data/fstab/demo-fstab") }
+    before(:all) { @fstab = described_class.new(TEST_DATA + "fstab/demo-fstab") }
     subject { @fstab }
 
-    let(:save_as_name) { "data/fstab/demo-fstab-2-generated" }
-    let(:modified_reference_name) { "data/fstab/demo-fstab-2-expected" }
+    let(:save_as_name) { TEST_DATA + "fstab/demo-fstab-2-generated" }
+    let(:modified_reference_name) { TEST_DATA + "fstab/demo-fstab-2-expected" }
 
     describe "full-blown read, modify, write cycle" do
       it "reads the file correctly" do

@@ -15,12 +15,13 @@ require "yast2/column_config_file"
 
 describe ColumnConfigFile do
   # rubocop:disable Lint/AmbiguousRegexpLiteral
+
   context "Parser" do
     describe "#parse" do
       context "Demo /etc/fstab with header and footer comments" do
         before(:all) do
           @file = described_class.new
-          @file.read("data/fstab/demo-fstab")
+          @file.read(TEST_DATA + "fstab/demo-fstab")
         end
         subject { @file }
 
@@ -100,12 +101,12 @@ describe ColumnConfigFile do
       end
 
       it "reproduces exactly the original format with header and footer" do
-        orig, formatted = read_twice("data/fstab/demo-fstab")
+        orig, formatted = read_twice(TEST_DATA + "fstab/demo-fstab")
         expect(formatted).to eq orig
       end
 
       it "reproduces exactly the original format without header or footer" do
-        orig, formatted = read_twice("data/fstab/demo-fstab-no-header")
+        orig, formatted = read_twice(TEST_DATA + "fstab/demo-fstab-no-header")
         expect(formatted).to eq orig
       end
     end
