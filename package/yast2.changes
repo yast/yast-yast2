@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Dec 11 08:40:33 UTC 2017 - jlopez@suse.com
+
+- Improve tests for CWM::Pager (part of fate#318196).
+- 4.0.26
+
+-------------------------------------------------------------------
 Fri Dec  8 14:05:59 UTC 2017 - mvidner@suse.com
 
 - Recognize CTC devices named like slc600 (bsc#1058227).
