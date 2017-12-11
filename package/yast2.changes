@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Dec 11 15:07:33 UTC 2017 - shundhammer@suse.com
+
+- Added infrastructure to preserve existing comments in config
+  files: CommentedConfigFile, ColumnConfigFile, EtcFstab
+  (bsc#1064437)
+- 3.2.40
+
+-------------------------------------------------------------------
 Tue Nov 28 09:50:05 UTC 2017 - mfilka@suse.com
 
 - bnc#956755, bnc#1061306 (mfilka)
