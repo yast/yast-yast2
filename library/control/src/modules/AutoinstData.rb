@@ -51,7 +51,6 @@ module Yast
       # AuotYaSt warning message if a second stage is needed
       # but the environment has not been established.
       @autoyast_second_stage_error
-
     end
 
     publish variable: :post_packages, type: "list <string>"
