@@ -1,0 +1,32 @@
+# /etc/fstab: static file system information.
+#
+# [sh @ balrog] ~ %  sudo blkid | column -t
+#
+# /dev/sda1:  LABEL="Win-Boot"    UUID="C6CC71BDCC71A877"                      TYPE="ntfs"
+# /dev/sda2:  LABEL="Win-App"     UUID="3E5E77515E770147"                      TYPE="ntfs"
+#
+# /dev/sdb1:  LABEL="swap"        UUID="be72e905-a417-41a4-a75f-12c0cf774f6a"  TYPE="swap"
+# /dev/sdb2:  LABEL="openSUSE"    UUID="1d0bc24c-ae68-4c4e-82af-b3e184b2ac9d"  TYPE="ext4"
+# /dev/sdb3:  LABEL="Ubuntu"      UUID="f5c15fbd-0417-4711-a0b7-f66b608bad0c"  TYPE="ext4"
+# /dev/sdb5:  LABEL="work"        UUID="7e1d65c8-c6e3-4824-ac1c-c3a4ba90f54f"  TYPE="ext4"
+#
+#
+# <file system>              <mount point>   <type> <options>         <dump>  <pass>
+
+# Linux disk
+/dev/disk/by-label/swap         none       swap  sw                    0  0
+/dev/disk/by-label/Ubuntu       /          ext4  errors=remount-ro     0  1
+/dev/disk/by-label/work         /work      ext4  defaults              0  2
+
+# Network
+home_nas:/share/sh              /nas/sh    nfs   bg,intr,soft,retry=6  0  0
+home_nas:/share/work            /nas/work  nfs   bg,intr,soft,retry=6  0  0
+
+# Windows disk
+/dev/disk/by-label/Win\040Boot  /win/boot  ntfs  umask=007,gid=46      0  0
+/dev/disk/by-label/Win\040App   /win/app   ntfs  umask=007,gid=46      0  0
+
+# Data that keep growing
+LABEL=var                       /var       ext2  defaults              0  0
+LABEL=logs                      /var/log   xfs   defaults              0  0
+
