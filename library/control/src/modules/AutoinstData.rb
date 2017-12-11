@@ -33,55 +33,31 @@ require "yast"
 
 module Yast
   class AutoinstDataClass < Module
+    # This class is used for communication between AutoYaST
+    # and other modules (e.g. packager) without requiring
+    # eachother.
     def main
-      # Moved here from AutoinstGeneral.ycp
-
-      #
-      # Keyboard
-      #
-      # global map keyboard = $[];
-
-      #
-      # Language
-      #
-      # global string language = "";
-
-      #
-      # Mouse, if not autoprobed
-      #
-      @mouse = {}
-
-      #
-      # Clock Settings
-      #
-      # global map Clock = $[];
-
       # Moved here from AutoinstSoftware.ycp
-
       # Packages that should be installed in continue mode
       @post_packages = []
-
       # Patterns that should be installed in continue mode
       @post_patterns = []
 
       # Moved here from AutoinstStorage.ycp
-
+      # This is not needed anymore for storage-ng
       # Show warning for /boot cyl <1024
       @BootCylWarning = true
 
-      # Show warning for /boot on raid
-      @BootRaidWarning = true
+      # AuotYaSt warning message if a second stage is needed
+      # but the environment has not been established.
+      @autoyast_second_stage_error
 
-      # Show warning for /boot on lvm
-      @BootLVMWarning = true
     end
 
-    publish variable: :mouse, type: "map"
     publish variable: :post_packages, type: "list <string>"
     publish variable: :post_patterns, type: "list <string>"
     publish variable: :BootCylWarning, type: "boolean"
-    publish variable: :BootRaidWarning, type: "boolean"
-    publish variable: :BootLVMWarning, type: "boolean"
+    publish variable: :autoyast_second_stage_error, type: "string"
   end
 
   AutoinstData = AutoinstDataClass.new
