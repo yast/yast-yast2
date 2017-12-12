@@ -246,7 +246,6 @@ describe CommentedConfigFile do
       context "Demo /etc/fstab without header and footer comments" do
         before(:all) do
           @file = described_class.new
-          puts("TEST_DATA: #{TEST_DATA}")
           @file.read(TEST_DATA + "fstab/demo-fstab-no-header")
         end
         subject { @file }
