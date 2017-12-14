@@ -195,7 +195,7 @@ module Y2Firewall
       # @param interface [String] The network interface
       # @return [Boolean] True if interface is assigned to zone
       def interface_enabled?(zone, interface)
-        run_command("--zone=#{zone} --query-interface=#{interface}")
+        query_command("--zone=#{zone} --query-interface=#{interface}")
       end
 
       # @param zone [String] The firewall zone
@@ -255,7 +255,7 @@ module Y2Firewall
       # @param service [String] The firewall service
       # @return [Boolean] True if service is enabled in zone
       def service_enabled?(zone, service)
-        run_command("--zone=#{zone}", "--query-service=#{service}")
+        query_command("--zone=#{zone}", "--query-service=#{service}")
       end
 
       # @param service [String] The firewall service
@@ -280,14 +280,14 @@ module Y2Firewall
       # @param port [String] The firewall port
       # @return [Boolean] True if port is enabled in zone
       def port_enabled?(zone, port)
-        run_command("--zone=#{zone}", "--query-port=#{port}")
+        query_command("--zone=#{zone}", "--query-port=#{port}")
       end
 
       # @param zone [String] The firewall zone
       # @param protocol [String] The zone protocol
       # @return [Boolean] True if protocol is enabled in zone
       def protocol_enabled?(zone, protocol)
-        run_command("--zone=#{zone}", "--query-protocol=#{protocol}")
+        query_command("--zone=#{zone}", "--query-protocol=#{protocol}")
       end
 
       # @param zone [String] The firewall zone
@@ -339,7 +339,7 @@ module Y2Firewall
       # @param zone [String] The firewall zone
       # @return [Boolean] True if masquerade is enabled in zone
       def masquerade_enabled?(zone)
-        run_command("--zone=#{zone}", "--query-masquerade")
+        query_command("--zone=#{zone}", "--query-masquerade")
       end
 
       # @param zone [String] The firewall zone
@@ -364,7 +364,7 @@ module Y2Firewall
       # all, unicast, broadcast, multicast and off
       # @return [Boolean] True if desired packet type is being logged when denied
       def log_denied_packets?(kind)
-        run_command("--get-log-denied").strip == kind ? true : false
+        string_command("--get-log-denied").strip == kind ? true : false
       end
 
       # @param kind [String] Denied packets to log. Possible values are:
@@ -377,7 +377,7 @@ module Y2Firewall
 
       # @return [String] packet type which is being logged when denied
       def log_denied_packets
-        run_command("--get-log-denied").strip
+        string_command("--get-log-denied").strip
       end
 
     private
@@ -391,13 +391,44 @@ module Y2Firewall
       # Executes the command for the current mode with the given arguments.
       #
       # @see #command
-      # @return [String] stdout result of the command executed
-      def run_command(*args, permanent: false)
+      # @see Yast::Execute
+      # @param args [Array<String>] list of command optional arguments
+      # @param permanent [Boolean] if true it adds the --permanent option the
+      # @param allowed_exitstatus [Fixnum, .include?, nil] allowed exit codes
+      # which do not cause an exception.
+      # command to be executed
+      def run_command(*args, permanent: false, allowed_exitstatus: nil)
         arguments = permanent ? ["--permanent"] : []
         arguments.concat(args)
         log.info("Executing #{command} with #{arguments.inspect}")
 
-        Yast::Execute.on_target(command, *arguments, stdout: :capture).to_s.chomp
+        Yast::Execute.on_target(
+          command, *arguments, stdout: :capture, allowed_exitstatus: allowed_exitstatus
+        )
+      end
+
+      # Convenience method that run the command for the current mode treating
+      # the output as a string and chomping it
+      #
+      # @see #run_command
+      # @return [String] the chomped output of the run command
+      # @param args [Array<String>] list of command optional arguments
+      # @param permanent [Boolean] if true it adds the --permanent option the
+      # command to be executed
+      def string_command(*args, permanent: false)
+        run_command(*args, permanent: permanent).to_s.chomp
+      end
+
+      # Convenience method which return true whether the run command for the
+      # current mode return the exit status 0.
+      #
+      # @see #run_command
+      # @return [Boolean] true if the exit status of the executed command is 0
+      # @param args [Array<String>] list of command optional arguments
+      def query_command(*args)
+        _output, exit_status = run_command(*args, allowed_exitstatus: [0, 1])
+
+        exit_status == 0
       end
     end
   end
