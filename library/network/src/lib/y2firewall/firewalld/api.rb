@@ -393,7 +393,9 @@ module Y2Firewall
       # @see #command
       # @see Yast::Execute
       # @param args [Array<String>] list of command optional arguments
-      # @param permanent [Boolean] if true it ads the --permanent option the
+      # @param permanent [Boolean] if true it adds the --permanent option the
+      # @param allowed_exitstatus [Fixnum, .include?, nil] allowed exit codes
+      # which do not cause an exception.
       # command to be executed
       def run_command(*args, permanent: false, allowed_exitstatus: nil)
         arguments = permanent ? ["--permanent"] : []
@@ -411,7 +413,7 @@ module Y2Firewall
       # @see #run_command
       # @return [String] the chomped output of the run command
       # @param args [Array<String>] list of command optional arguments
-      # @param permanent [Boolean] if true it ads the --permanent option the
+      # @param permanent [Boolean] if true it adds the --permanent option the
       # command to be executed
       def string_command(*args, permanent: false)
         run_command(*args, permanent: permanent).to_s.chomp
