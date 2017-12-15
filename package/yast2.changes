@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Dec 15 10:26:00 UTC 2017 - knut.anderssen@suse.com
+
+- Firewalld API: Use string command with all api methods which
+  expect string outputs (bsc#1070559)
+- 4.0.29
+
+-------------------------------------------------------------------
 Thu Dec 14 11:35:30 UTC 2017 - knut.anderssen@suse.com
 
 - Firewalld API: Added convenient methods for query commands and

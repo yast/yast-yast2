@@ -143,42 +143,42 @@ module Y2Firewall
 
       # @return [Array<String>] List of firewall zones
       def zones
-        run_command("--get-zones").split(" ")
+        string_command("--get-zones").split(" ")
       end
 
       # @param zone [String] The firewall zone
       # @return [Array<String>] list of zone's interfaces
       def list_interfaces(zone)
-        run_command("--zone=#{zone}", "--list-interfaces").split(" ")
+        string_command("--zone=#{zone}", "--list-interfaces").split(" ")
       end
 
       # @param zone [String] The firewall zone
       # @return [Arrray<String>] list of zone's services
       def list_services(zone)
-        run_command("--zone=#{zone}", "--list-services").split(" ")
+        string_command("--zone=#{zone}", "--list-services").split(" ")
       end
 
       # @param zone [String] The firewall zone
       # @return [Array<String>] list of zone's ports
       def list_ports(zone)
-        run_command("--zone=#{zone}", "--list-ports").split(" ")
+        string_command("--zone=#{zone}", "--list-ports").split(" ")
       end
 
       # @param zone [String] The firewall zone
       # @return [Array<String>] list of zone's protocols
       def list_protocols(zone)
-        run_command("--zone=#{zone}", "--list-protocols").split(" ")
+        string_command("--zone=#{zone}", "--list-protocols").split(" ")
       end
 
       # @param zone [String] The firewall zone
       # @return [Array<String>] list of all information for given zone
       def list_all(zone)
-        run_command("--zone=#{zone}", "--list-all").split(" ")
+        string_command("--zone=#{zone}", "--list-all").split(" ")
       end
 
       # @return [Array<String>] list of all information for all firewall zones
       def list_all_zones
-        run_command("--list-all-zones").split("\n")
+        string_command("--list-all-zones").split("\n")
       end
 
       ### Interfaces ###
@@ -223,26 +223,26 @@ module Y2Firewall
 
       # @return [Array<String>] List of firewall services
       def services
-        run_command("--get-services").split(" ")
+        string_command("--get-services").split(" ")
       end
 
       # @param service [String] The firewall service
       # @return [Array<String>] list of all information for the given service
       def info_service(service)
-        run_command("--info-service", service.to_s).split("\n")
+        string_command("--info-service", service.to_s).split("\n")
       end
 
       # @param service [String] The firewall service
       # @return [String] Short description for service
       def service_short(service)
         # these may not exist on early firewalld releases
-        run_command("--service=#{service}", "--get-short").rstrip
+        string_command("--service=#{service}", "--get-short").rstrip
       end
 
       # @param service [String] the firewall service
       # @return [String] Description for service
       def service_description(service)
-        run_command("--service=#{service}", "--get-description").rstrip
+        string_command("--service=#{service}", "--get-description").rstrip
       end
 
       # @param service [String] The firewall service
@@ -261,19 +261,19 @@ module Y2Firewall
       # @param service [String] The firewall service
       # @return [Array<String>] The firewall service ports
       def service_ports(service)
-        run_command("--service=#{service}", "--get-ports").strip
+        string_command("--service=#{service}", "--get-ports").strip
       end
 
       # @param service [String] The firewall service
       # @return [Array<String>] The firewall service protocols
       def service_protocols(service)
-        run_command("--service=#{service}", "--get-protocols").strip
+        string_command("--service=#{service}", "--get-protocols").strip
       end
 
       # @param service [String] The firewall service
       # @return [Array<String>] The firewall service modules
       def service_modules(service)
-        run_command("--service=#{service}", "--get-modules").strip
+        string_command("--service=#{service}", "--get-modules").strip
       end
 
       # @param zone [String] The firewall zone
