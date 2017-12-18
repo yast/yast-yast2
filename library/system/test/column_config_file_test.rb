@@ -90,23 +90,27 @@ describe ColumnConfigFile do
 
   context "Formatter" do
     describe("#format_lines") do
-      def read_twice(filename)
-        orig = File.read(filename).chomp
+      def read_orig(filename)
+        File.read(filename).chomp
+      end
+
+      def reformat(filename)
         file = described_class.new
         file.read(filename)
         file.max_column_widths = [45, 25, 7, 30, 1, 1]
         file.pad_columns = true
-        formatted = file.to_s
-        [orig, formatted]
+        file.to_s
       end
 
       it "reproduces exactly the original format with header and footer" do
-        orig, formatted = read_twice(TEST_DATA + "fstab/demo-fstab")
+        orig = read_orig(TEST_DATA + "fstab/demo-fstab")
+        formatted = reformat(TEST_DATA + "fstab/demo-fstab")
         expect(formatted).to eq orig
       end
 
       it "reproduces exactly the original format without header or footer" do
-        orig, formatted = read_twice(TEST_DATA + "fstab/demo-fstab-no-header")
+        orig = read_orig(TEST_DATA + "fstab/demo-fstab-no-header")
+        formatted = reformat(TEST_DATA + "fstab/demo-fstab-no-header")
         expect(formatted).to eq orig
       end
     end
