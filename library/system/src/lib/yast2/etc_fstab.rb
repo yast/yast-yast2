@@ -102,7 +102,7 @@ class EtcFstab < ColumnConfigFile
   #
   # @param mount_point [String]
   #
-  # @return [EtcFstab::Entry] or nil if not found
+  # @return [EtcFstab::Entry, nil]
   #
   def find_mount_point(mount_point)
     find { |entry| entry.mount_point == mount_point }
@@ -113,7 +113,7 @@ class EtcFstab < ColumnConfigFile
   #
   # @param device [String]
   #
-  # @return [EtcFstab::Entry] or nil if not found
+  # @return [EtcFstab::Entry, nil]
   #
   def find_device(device)
     find { |entry| entry.device == device }
