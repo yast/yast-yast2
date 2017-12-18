@@ -47,6 +47,13 @@ class EtcFstab < ColumnConfigFile
     super()
     @max_column_widths = [45, 25, 7, 30, 1, 1]
     @pad_columns = true
+
+    # /etc/fstab does not support end-of-line comments.
+    #
+    # There might be a literal '#' character somewhere, though, in particular
+    # in the mount options.
+    @line_comments_enabled = false
+
     read(filename) unless filename.nil?
   end
 

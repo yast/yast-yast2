@@ -78,6 +78,11 @@ describe EtcFstab::Entry do
       expect(subject.mount_opts).to eq ["ro", "foo"]
     end
 
+    it "keeps a literal '#' in the mount options intact" do
+      subject.parse("nas:/work /work cifs password=ab#cd,username=kilroy 0 0")
+      expect(subject.mount_opts).to eq ["password=ab#cd", "username=kilroy"]
+    end
+
     it "throws an exception if the number of columns is wrong" do
       expect { subject.parse("/dev/sda1 /data xfs duh defaults 0 1", 42) }
         .to raise_error(EtcFstab::ParseError, /in line 43/)

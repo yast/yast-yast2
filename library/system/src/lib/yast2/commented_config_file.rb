@@ -91,12 +91,16 @@ class CommentedConfigFile
   # @return [String] The comment marker; "#" by default.
   attr_accessor :comment_marker
 
+  # @return [Boolean] Enable end-of-line-comments? true by default.
+  attr_accessor :line_comments_enabled
+
   def initialize
     @comment_marker = "#"
     @header_comments = nil
     @footer_comments = nil
     @entries = []
     @filename = nil
+    @line_comments_enabled = true
   end
 
   def header_comments?
@@ -178,6 +182,8 @@ class CommentedConfigFile
   # @return [Array<String>] [content, comment]
   #
   def split_off_comment(line)
+    return [line.strip, nil] unless @line_comments_enabled
+
     match = /^(.*)(#{comment_marker}.*)/.match(line)
     return [line.strip, nil] if match.nil?
 

@@ -164,29 +164,55 @@ describe CommentedConfigFile do
     end
 
     describe "#split_off_comment" do
-      it "Splits a simple line with a comment correctly" do
-        expect(subject.split_off_comment("foo = bar # baz")).to eq ["foo = bar", "# baz"]
+      context "with line comments enabled (default)" do
+        it "Splits a simple line with a comment correctly" do
+          expect(subject.split_off_comment("foo = bar # baz")).to eq ["foo = bar", "# baz"]
+        end
+
+        it "Strips leading and trailing whitespace off the content" do
+          expect(subject.split_off_comment("  foo =  bar   # baz")).to eq ["foo =  bar", "# baz"]
+        end
+
+        it "Leaves whitespace in the comment alone" do
+          expect(subject.split_off_comment("foo = bar #  baz  ")).to eq ["foo = bar", "#  baz  "]
+        end
+
+        it "Handles lines without comments well" do
+          expect(subject.split_off_comment("foo = bar")).to eq ["foo = bar", nil]
+        end
+
+        it "Handles comment lines without content well" do
+          expect(subject.split_off_comment("# foo = bar")).to eq ["", "# foo = bar"]
+          expect(subject.split_off_comment("   # foo = bar")).to eq ["", "# foo = bar"]
+        end
+
+        it "Handles empty lines well" do
+          expect(subject.split_off_comment("")).to eq ["", nil]
+        end
       end
 
-      it "Strips leading and trailing whitespace off the content" do
-        expect(subject.split_off_comment("  foo =  bar   # baz")).to eq ["foo =  bar", "# baz"]
-      end
+      context "with line comments disabled (nonstandard configuration)" do
+        before(:all) do
+          @file = described_class.new
+          @file.line_comments_enabled = false
+        end
+        subject { @file }
 
-      it "Leaves whitespace in the comment alone" do
-        expect(subject.split_off_comment("foo = bar #  baz  ")).to eq ["foo = bar", "#  baz  "]
-      end
+        it "Splits a simple line with a comment marker correctly" do
+          expect(subject.split_off_comment("foo = bar # baz")).to eq ["foo = bar # baz", nil]
+        end
 
-      it "Handles lines without comments well" do
-        expect(subject.split_off_comment("foo = bar")).to eq ["foo = bar", nil]
-      end
+        it "Strips leading and trailing whitespace off the content" do
+          expect(subject.split_off_comment("  foo =  bar # baz  ")).to eq ["foo =  bar # baz", nil]
+        end
 
-      it "Handles comment lines without content well" do
-        expect(subject.split_off_comment("# foo = bar")).to eq ["", "# foo = bar"]
-        expect(subject.split_off_comment("   # foo = bar")).to eq ["", "# foo = bar"]
-      end
+        it "Handles lines without comments well" do
+          expect(subject.split_off_comment("foo = bar")).to eq ["foo = bar", nil]
+        end
 
-      it "Handles empty lines well" do
-        expect(subject.split_off_comment("")).to eq ["", nil]
+        it "Handles empty lines well" do
+          expect(subject.split_off_comment("")).to eq ["", nil]
+        end
       end
     end
   end
