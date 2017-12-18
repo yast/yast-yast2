@@ -207,8 +207,6 @@ describe EtcFstab do
   end
 
   context "created empty" do
-    subject { described_class.new }
-
     let(:root) do
       EtcFstab::Entry.new("/dev/sda1", "/", "ext4")
     end
@@ -271,8 +269,6 @@ describe EtcFstab do
     end
 
     describe "#format_lines" do
-      subject { described_class.new }
-
       it "formats a simple entry correctly" do
         entry = subject.create_entry(device: "/dev/sdk3", mount_point: "/work",
           fs_type: "ext4", mount_opts: ["ro", "foo", "bar"])
