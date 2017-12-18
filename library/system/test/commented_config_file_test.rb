@@ -147,6 +147,7 @@ describe CommentedConfigFile do
         expect(subject.empty_line?(" ")).to eq true
         expect(subject.empty_line?("  ")).to eq true
         expect(subject.empty_line?(" \n")).to eq true
+        expect(subject.empty_line?("\n\n")).to eq true
         expect(subject.empty_line?("\t")).to eq true
         expect(subject.empty_line?("\t\n  \t\n")).to eq true
       end
@@ -156,6 +157,9 @@ describe CommentedConfigFile do
         expect(subject.empty_line?("  x")).to eq false
         expect(subject.empty_line?("  x  ")).to eq false
         expect(subject.empty_line?("  \nx  ")).to eq false
+        expect(subject.empty_line?("  x\n  ")).to eq false
+        expect(subject.empty_line?("\nx")).to eq false
+        expect(subject.empty_line?("x\n")).to eq false
       end
     end
 
