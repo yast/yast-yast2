@@ -163,8 +163,9 @@ class CommentedConfigFile
   #
   def empty_line?(line)
     # /m : multi-line mode
+    # \A : start of string; different from ^ in multi-line strings.
     # \z : end of string; different from $ (end of line) in multi-line strings.
-    line =~ /^\s*\z/m ? true : false
+    line =~ /\A\s*\z/m ? true : false
   end
 
   # Split a content line into the real content and any potential line comment:
