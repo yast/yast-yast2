@@ -21,11 +21,13 @@
 
 require "yast"
 require "y2firewall/firewalld/api"
+require "y2firewall/firewalld/relations"
 
 module Y2Firewall
   class Firewalld
     # Class to work with Firewalld zones
     class Zone
+      extend Relations
       include Yast::I18n
       extend Yast::I18n
 
@@ -45,17 +47,7 @@ module Y2Firewall
       # [String] Zone name
       attr_reader   :name
 
-      # [Array <String>] List of zone service names
-      attr_accessor :services
-
-      # [Array <String>] List of zone interface names
-      attr_accessor :interfaces
-
-      # [Array <String>] List zone opened ports
-      attr_accessor :ports
-
-      # [Array <String>] List of zone protocols
-      attr_accessor :protocols
+      has_many :services, :interfaces, :zones, :protocols, :ports
 
       # [Boolean] Whether masquerade is enabled or not
       attr_accessor :masquerade
@@ -122,36 +114,8 @@ module Y2Firewall
         true
       end
 
-      def add_service(name)
-        return services if services.include?(name)
-
-        services << name
-      end
-
-      def remove_service(name)
-        services.delete(name)
-
-        services
-      end
-
       def service_open?(name)
         services.include?(name)
-      end
-
-      def add_interface(name)
-        interfaces << name
-      end
-
-      def remove_interface(name)
-        interfaces.delete(name)
-      end
-
-      def add_port(definition)
-        pots << definition
-      end
-
-      def remove_port(definition)
-        pots.delete(definition)
       end
 
       def masquerade?
@@ -159,169 +123,6 @@ module Y2Firewall
       end
 
     private
-
-      # Obtains the list of interfaces assigned to the zone
-      #
-      # @return [Array <String>] list of interface names
-      def current_interfaces
-        api.list_interfaces(@name)
-      end
-
-      # Obtains the list of services assigned to the zone
-      #
-      # @return [Array <String>] list of service names
-      def current_services
-        api.list_services(@name)
-      end
-
-      # Obtains the list of ports assigned to the zone
-      #
-      # @return [Array <String>] list of ports
-      def current_ports
-        api.list_ports(@name)
-      end
-
-      # Obtains the list of interfaces assigned to this zone
-      #
-      # @return [Array <String>] list of service names
-      def current_protocols
-        api.list_protocols(@name)
-      end
-
-      # Adds the given service to this zone in firewalld
-      #
-      # @param [String] service name
-      def add_service!(service)
-        api.add_service(name, service)
-      end
-
-      # Removes the given service from this firewalld zone
-      #
-      # @params [String] service name
-      def remove_service!(service)
-        api.remove_service(name, service)
-      end
-
-      # Adds the given interface to this zone in firewalld
-      #
-      # @params [String] interface name
-      def add_interface!(interface)
-        api.add_interface(name, interface)
-      end
-
-      # Removes the given interface from this firewalld zone
-      #
-      # @params [String] interface name
-      def remove_interface!(interface)
-        api.remove_interface(name, interface)
-      end
-
-      # Adds all the interfaces that were added to the zone since it was
-      # initialized
-      def add_interfaces!
-        interfaces_to_add.map { |i| add_interface!(i) }
-      end
-
-      # Removes from firewalld all the interfaces that were removed from the
-      # zone since it was initialized
-      def remove_interfaces!
-        interfaces_to_remove.map { |i| remove_interface!(i) }
-      end
-
-      # Adds all the services that were added to the zone since it was
-      # initialized
-      def add_services!
-        services_to_add.map { |i| add_service!(i) }
-      end
-
-      # Removes from firewalld all the services that were removed from the
-      # zone since it was initialized
-      def remove_services!
-        services_to_remove.map { |i| remove_service!(i) }
-      end
-
-      # Adds all the protocols that were added to the zone since it was
-      # initialized
-      def add_protocols!
-        protocols_to_add.map { |i| add_service!(i) }
-      end
-
-      # Removes from firewalld all the protocols that were removed from the
-      # zone since it was initialized
-      def remove_protocols!
-        protocols_to_remove.map { |i| remove_service!(i) }
-      end
-
-      # Adds all the ports that were added to the zone since it was
-      # initialized
-      def add_ports!
-        ports_to_add.map { |i| add_service!(i) }
-      end
-
-      # Removes from firewalld all the ports that were removed from the
-      # zone since it was initialized
-      def remove_ports!
-        ports_to_remove.map { |i| remove_service!(i) }
-      end
-
-      # Obtains all the interfaces that were removed from the zone since
-      # it was initialized
-      # @return [Array <String>] interface names
-      def interfaces_to_remove
-        current_interfaces - interfaces
-      end
-
-      # Obtains all the interfaces that were added to the zone since it was
-      # initialized.
-      # @return [Array <String>] interface names
-      def interfaces_to_add
-        interfaces - current_interfaces
-      end
-
-      # Obtains all the services that were removed from the zone since it was
-      # initialized.
-      #
-      # @return [Array <String>] service names
-      def services_to_remove
-        current_services - services
-      end
-
-      # Obtains all the services that were added to the zone since it was
-      # initialized.
-      # @return [Array <String>] interface names
-      def services_to_add
-        services - current_services
-      end
-
-      # Obtains all the protocols that were removed from the zone since it was
-      # initialized.
-      #
-      # @return [Array <String>] service names
-      def protocols_to_remove
-        current_protocols - protocols
-      end
-
-      # Obtains all the protocols that were added to the zone since it was
-      # initialized.
-      # @return [Array <String>] interface names
-      def protocols_to_add
-        protocols - current_protocols
-      end
-
-      # Obtains all the ports that were removed from the zone since it was
-      # initialized.
-      #
-      # @return [Array <String>] service names
-      def ports_to_remove
-        current_ports - ports
-      end
-
-      # Obtains all the ports that were added to the zone since it was
-      # initialized.
-      # @return [Array <String>] interface names
-      def ports_to_add
-        ports - current_ports
-      end
 
       def firewalld
         Y2Firewall::Firewalld.instance
