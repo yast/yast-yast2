@@ -88,7 +88,7 @@ class ColumnConfigFile < CommentedConfigFile
     super
   end
 
-  # Get the column with for one column.
+  # Get the column width for one column.
   # If padding is not enabled, this returns 0.
   #
   # @param column_no [Fixnum] number of the column (from 0)
@@ -101,7 +101,7 @@ class ColumnConfigFile < CommentedConfigFile
     @column_widths[column_no] || 0
   end
 
-  # Get the maximum column with for a column.
+  # Get the maximum column width for a column.
   #
   # @param column_no [Fixnum] number of the column (from 0)
   #
