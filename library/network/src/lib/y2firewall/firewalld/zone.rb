@@ -47,13 +47,20 @@ module Y2Firewall
       # [String] Zone name
       attr_reader   :name
 
+      # @see Y2Firewall::Firewalld::Relations
       has_many :services, :interfaces, :zones, :protocols, :ports
 
       # [Boolean] Whether masquerade is enabled or not
       attr_accessor :masquerade
 
-      # Constructor
+      alias_method :masquerade?, :masquerade
 
+      # Constructor
+      #
+      # If a :name is given it is used as the zone name if not the default zone
+      # name is used as fallback.
+      #
+      # @param name [String] zone name
       def initialize(name: nil)
         @name = name || api.default_zone
       end
@@ -62,38 +69,26 @@ module Y2Firewall
         KNOWN_ZONES
       end
 
-      # Whether the zone collection of services or interfaces has been
-      # modified
+      # Whether the zone have been modified or not since read
       #
-      # @return [Boolean] true if services or interfaces collections have been
-      # modified; false otherwise
+      # @return [Boolean] true if it was modified; false otherwise
       def modified?
         return true if current_interfaces.sort != interfaces.sort
         return true if current_services.sort   != services.sort
         return true if current_protocols.sort  != protocols.sort
+        return true if current_ports.sort      != ports.sort
 
-        current_ports.sort != ports.sort
+        masquerade? != api.masquerade_enabled?(name)
       end
 
-      # It reinitializes services and interfaces with the current firewalld
-      # configuration.
-      def discard_changes!
-        @services   = current_services
-        @interfaces = current_interfaces
-        @ports      = current_ports
-        @protocols  = current_protocols
-      end
-
-      # Applies all the changes in firewalld but do not reload it
+      # Apply all the changes in firewalld but do not reload it
       def apply_changes!
-        remove_interfaces!
-        add_interfaces!
-        remove_services!
-        add_services!
-        remove_ports!
-        add_ports!
-        remove_protocols!
-        add_protocols!
+        apply_interfaces_changes!
+        apply_services_changes!
+        apply_ports_changes!
+        apply_protocols_changes!
+
+        masquerade? ? api.add_masquerade(name) : api.remove_masquerade(name)
       end
 
       # Convenience method wich reload changes applied to firewalld
@@ -101,10 +96,11 @@ module Y2Firewall
         api.reload
       end
 
+      # Read and modify the state of the object with the current firewalld
+      # configuration for this zone.
       def read
         return unless firewalld.installed?
 
-        ZoneParser.new(self, api.zones, api.list_all_zones)
         @interfaces = api.list_interfaces(name)
         @services   = api.list_services(name)
         @ports      = api.list_ports(name)
@@ -114,20 +110,26 @@ module Y2Firewall
         true
       end
 
-      def service_open?(name)
-        services.include?(name)
-      end
-
-      def masquerade?
-        @masquerade
+      # Return whether a service is present in the list of services or not
+      #
+      # param service [String] name of the service to check
+      # @return [Boolean] true if the given service name is part of services
+      def service_open?(service)
+        services.include?(service)
       end
 
     private
 
+      # Convenience method which return an instance of Y2Firewall::Firewalld
+      #
+      # @return [Y2Firewall::Firewalld] a firewalld instance
       def firewalld
         Y2Firewall::Firewalld.instance
       end
 
+      # Convenience method which return an instance of the firewalld API
+      #
+      # @return [Y2Firewall::Firewalld::API] a firewalld api instance
       def api
         @api ||= firewalld.api
       end

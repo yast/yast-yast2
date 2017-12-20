@@ -1,6 +1,41 @@
 module  Y2Firewall
   class Firewalld
     module Relations
+      # Defines a set of methods to operate over array based firewalld
+      # attributes like services, interfaces, protocols, ports..
+      #
+      # @example
+      #
+      #   class Zone
+      #     extend Relations
+      #
+      #     has_many :services
+      #   end
+      #
+      #   zone = Zone.new
+      #
+      #   # Adds the "ssh" service into the zone object if not present
+      #   zone.add_service("ssh")
+      #   # Removes the "ssh" service from the zone object
+      #   zone.remove_service("ssh")
+      #   # List of current firewalld configured services
+      #   zone.current_services
+      #   # Adds the service "ssh" definitely
+      #   zone.add_service!("ssh")
+      #   # Removes the service "ssh" definitely
+      #   zone.remove_service!("ssh")
+      #   Adds definitely the list of services_to_add
+      #   zone.add_services!
+      #   Removes definitely the list of services_to_add
+      #   zone.remove_services!
+      #   # Returns the list of services added after read
+      #   zone.services_to_add
+      #   # Returns the list of services removed after read
+      #   zone.services_to_remove
+      #   # Apply the changes (remove_services! && add_services!)
+      #   zone.apply_services_changes!
+      #
+      # @param args [Array<Symbol] relation or attribute names
       def has_many(*args)
         args.each do |relation|
           relation_singularized = relation.to_s.gsub(/s$/,"")
@@ -44,6 +79,11 @@ module  Y2Firewall
 
           define_method "#{relation}_to_remove" do
             eval("current_#{relation}") - eval("#{relation}")
+          end
+
+          define_method "apply_#{relation}_changes!" do
+            eval("remove_#{relation}!")
+            eval("add_#{relation}!")
           end
         end
       end
