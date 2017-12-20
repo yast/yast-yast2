@@ -72,6 +72,7 @@ class EtcFstab < ColumnConfigFile
   # @param entry [EtcFstab::Entry]
   #
   def add_entry(entry)
+    raise ArgumentError, "Trying to add nil entry" if entry.nil?
     entry.parent = self
     index = find_sort_index(entry)
     @entries.insert(index, entry)
