@@ -45,7 +45,7 @@ class EtcFstab < ColumnConfigFile
   #
   def initialize(filename = nil)
     super()
-    @max_column_widths = [45, 25, 7, 30, 1, 1]
+    @max_column_widths = [45, 25, 8, 30, 1, 1]
     @pad_columns = true
 
     # /etc/fstab does not support end-of-line comments.
