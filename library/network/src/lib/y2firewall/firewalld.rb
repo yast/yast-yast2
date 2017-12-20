@@ -24,6 +24,7 @@
 
 require "y2firewall/firewalld/api"
 require "y2firewall/firewalld/zone"
+require "y2firewall/firewalld/zone_parser"
 require "singleton"
 
 Yast.import "PackageSystem"
@@ -38,20 +39,61 @@ module Y2Firewall
     # Y2Firewall::Firewalld::Api instance
     attr_accessor :api
 
+    # [Array <Y2Firewall::Firewalld::Zone>] firewalld zones
+    attr_accessor :zones
+
+    # [String] Type of log denied packets (reject & drop rules). Possible
+    # values are: all, unicast, broadcast, multicast and off
+    attr_accessor :log_denied_packets
+
     PACKAGE = "firewalld".freeze
     SERVICE = "firewalld".freeze
 
-    def_delegators :@api, :enable!, :disable!
+    def_delegators :@api, :enable!, :disable!, :reload, :running?
 
     # Constructor
     def initialize
-      @api = Y2Firewall::Firewalld::Api.new
+      @api = Api.new
     end
 
-    # Return whether firewalld is running or not
-    # @return [Boolean] true if it is running; false otherwise
-    def running?
-      api.running?
+    # Read the current firewalld configuration initializing the zones and other
+    # attributes as logging.
+    #
+    # @return [Boolean] true
+    def read
+      @zones = installed? ? ZoneParser.new(api.zones, api.list_all_zones).parse : []
+
+      @log_denied_packets = api.log_denied_packets
+
+      true
+    end
+
+    # Return from the zones list the one which matches the given name
+    #
+    # @param name [String] the zone name
+    # @return [Y2Firewall::Firewalld::Zone, nil] the firewalld zone with the given
+    # name
+    def find_zone(name)
+      @zones.find { |z| z.name == name }
+    end
+
+    # Return true if the logging config or any of the zones where modified
+    # since read
+    #
+    # @return [Boolean] true if the config was modified; false otherwise
+    def modified?
+      return true if @log_denied_packets != api.log_denied_packets
+
+      @zones.any?(&:modified?)
+    end
+
+    # Apply the changes to the modified zones and sets the logging option
+    def write
+      @zones.map { |z| z.apply_changes! if z.modified? }
+
+      api.log_denied_packets = log_denied_packets
+
+      true
     end
 
     # Return wheter the firewalld package is installed or not
@@ -63,7 +105,7 @@ module Y2Firewall
       @installed = Yast::PackageSystem.Installed(PACKAGE)
     end
 
-    # Chech whether the firewalld service is enable or not
+    # Check whether the firewalld service is enable or not
     #
     # @return [Boolean] true if it is enable; false otherwise
     def enabled?
