@@ -229,6 +229,7 @@ protected
     mount_point = new_entry.mount_point
     each_with_index do |entry, index|
       next if entry.equal?(new_entry)
+      next if entry.mount_point.nil?
       return index if entry.mount_point.start_with?(mount_point)
     end
     -1
@@ -272,6 +273,7 @@ public
   # @return [String] String with space characters replaced by \040
   #
   def self.fstab_encode(unencoded)
+    return "" if unencoded.nil?
     unencoded.gsub(" ", '\\\\040')
     # We need four (!) backslashes here because otherwise gsub will assume this
     # is a back-reference to a grouped regexp part in the search expression:
@@ -284,6 +286,7 @@ public
   # @return [String] String with \040 replaced by a space character each
   #
   def self.fstab_decode(encoded)
+    return "" if encoded.nil?
     encoded.gsub('\\040', " ")
     # Unlike in fstab_encode, only two backslashes are needed here because it
     # is in the original expression, so it cannot be a back-reference.
@@ -486,6 +489,13 @@ public
       true # success
     end
 
+    # Sanity check for an entry. This may throw an InvalidEntryError.
+    def sanity_check
+      raise InvalidEntryError, "No device specified" if @device.to_s.empty?
+      raise InvalidEntryError, "No mount point specified" if @mount_point.to_s.empty?
+      raise InvalidEntryError, "No filesystem type specified" if @fs_type.to_s.empty?
+    end
+
     # Populate the columns: Fill the columns with values from the other fields.
     #
     # This is called just prior to calculating the column widths and formatting
@@ -494,6 +504,7 @@ public
     # Reimplemented from ColumnConfigFile::Entry.
     #
     def populate_columns
+      sanity_check
       @columns =
         [@device,
          @mount_point,
@@ -570,5 +581,9 @@ public
 
   # Error class for parsing
   class ParseError < RuntimeError
+  end
+
+  # Error class for invalid entries
+  class InvalidEntryError < RuntimeError
   end
 end
