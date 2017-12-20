@@ -62,9 +62,7 @@ module Y2Firewall
     # @return [Boolean] true
     def read
       @zones = installed? ? ZoneParser.new(api.zones, api.list_all_zones).parse : []
-
       @log_denied_packets = api.log_denied_packets
-
       true
     end
 
@@ -74,7 +72,7 @@ module Y2Firewall
     # @return [Y2Firewall::Firewalld::Zone, nil] the firewalld zone with the given
     # name
     def find_zone(name)
-      @zones.find { |z| z.name == name }
+      zones.find { |z| z.name == name }
     end
 
     # Return true if the logging config or any of the zones where modified
@@ -82,17 +80,13 @@ module Y2Firewall
     #
     # @return [Boolean] true if the config was modified; false otherwise
     def modified?
-      return true if @log_denied_packets != api.log_denied_packets
-
-      @zones.any?(&:modified?)
+      log_denied_packets != api.log_denied_packets || @zones.any?(&:modified?)
     end
 
     # Apply the changes to the modified zones and sets the logging option
     def write
-      @zones.map { |z| z.apply_changes! if z.modified? }
-
+      zones.map { |z| z.apply_changes! if z.modified? }
       api.log_denied_packets = log_denied_packets
-
       true
     end
 

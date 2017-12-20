@@ -57,8 +57,8 @@ module Y2Firewall
 
       # Constructor
       #
-      # If a :name is given it is used as the zone name if not the default zone
-      # name is used as fallback.
+      # If a :name is given it is used as the zone name. Otherwise, the default
+      # zone name will be used as fallback.
       #
       # @param name [String] zone name
       def initialize(name: nil)
@@ -112,7 +112,7 @@ module Y2Firewall
 
       # Return whether a service is present in the list of services or not
       #
-      # param service [String] name of the service to check
+      # @param service [String] name of the service to check
       # @return [Boolean] true if the given service name is part of services
       def service_open?(service)
         services.include?(service)
