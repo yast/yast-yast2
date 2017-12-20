@@ -45,7 +45,7 @@ module Y2Firewall
       }.freeze
 
       # [String] Zone name
-      attr_reader   :name
+      attr_reader :name
 
       # @see Y2Firewall::Firewalld::Relations
       has_many :services, :interfaces, :zones, :protocols, :ports

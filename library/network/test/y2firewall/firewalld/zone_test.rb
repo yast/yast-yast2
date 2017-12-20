@@ -71,7 +71,7 @@ describe Y2Firewall::Firewalld::Zone do
 
     context "when the zone was modified since read" do
       it "returns true" do
-        expect(subject).to receive(:current_interfaces).and_return(["eth0","eth1"])
+        expect(subject).to receive(:current_interfaces).and_return(["eth0", "eth1"])
         expect(subject).to receive(:interfaces).and_return(["eth0"])
 
         expect(subject.modified?).to eq(true)

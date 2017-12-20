@@ -1,5 +1,7 @@
 module  Y2Firewall
   class Firewalld
+    # Extends the base class with metaprogramming methods which defines some
+    # attributes common logic.
     module Relations
       # Defines a set of methods to operate over array based firewalld
       # attributes like services, interfaces, protocols, ports..
@@ -36,54 +38,54 @@ module  Y2Firewall
       #   zone.apply_services_changes!
       #
       # @param args [Array<Symbol] relation or attribute names
-      def has_many(*args)
+      def has_many(*args) # rubocop:disable Style/PredicateName
         args.each do |relation|
-          relation_singularized = relation.to_s.gsub(/s$/,"")
+          relation_singularized = relation.to_s.gsub(/s$/, "")
           class_eval("attr_accessor :#{relation}")
 
           define_method "add_#{relation_singularized}" do |relation_name|
-            return eval("#{relation}") if eval("#{relation}").include?(relation_name)
+            return instance_eval(relation.to_s) if instance_eval(relation.to_s).include?(relation_name)
 
-            eval("#{relation}") << relation_name
+            instance_eval(relation.to_s) << relation_name
           end
 
           define_method "remove_#{relation_singularized}" do |relation_name|
-            return eval("#{relation}") if eval("#{relation}").delete(relation_name)
+            return instance_eval(relation.to_s) if instance_eval(relation.to_s).delete(relation_name)
 
-            eval("#{relation}")
+            instance_eval(relation.to_s)
           end
 
           define_method "current_#{relation}" do
-            eval("api.list_#{relation}(name)")
+            instance_eval("api.list_#{relation}(name)")
           end
 
-          define_method "add_#{relation_singularized}!" do |relation_name|
-            eval("api.add_#{relation_singularized}(name, relation_name)")
+          define_method "add_#{relation_singularized}!" do |_relation_name|
+            instance_eval("api.add_#{relation_singularized}(name, relation_name)")
           end
 
-          define_method "remove_#{relation_singularized}!" do |relation_name|
-            eval("api.remove_#{relation_singularized}(name, relation_name)")
+          define_method "remove_#{relation_singularized}!" do |_relation_name|
+            instance_eval("api.remove_#{relation_singularized}(name, relation_name)")
           end
 
           define_method "add_#{relation}!" do
-            eval("#{relation}_to_add").map { |i| eval("add_#{relation_singularized}!(i)") }
+            instance_eval("#{relation}_to_add").map { |_i| instance_eval("add_#{relation_singularized}!(i)") }
           end
 
           define_method "remove_#{relation}!" do
-            eval("#{relation}_to_remove").map { |i| eval("remove_#{relation_singularized}!(i)") }
+            instance_eval("#{relation}_to_remove").map { |_i| instance_eval("remove_#{relation_singularized}!(i)") }
           end
 
           define_method "#{relation}_to_add" do
-            eval("#{relation}") - eval("current_#{relation}")
+            instance_eval(relation.to_s) - instance_eval("current_#{relation}")
           end
 
           define_method "#{relation}_to_remove" do
-            eval("current_#{relation}") - eval("#{relation}")
+            instance_eval("current_#{relation}") - instance_eval(relation.to_s)
           end
 
           define_method "apply_#{relation}_changes!" do
-            eval("remove_#{relation}!")
-            eval("add_#{relation}!")
+            instance_eval("remove_#{relation}!")
+            instance_eval("add_#{relation}!")
           end
         end
       end

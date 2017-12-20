@@ -40,7 +40,6 @@ module Y2Firewall
         @zones_definition = zones_definition
       end
 
-
       # It parses the zone definition instantiating the defined zones and
       # settings their attributes.
       #
@@ -50,7 +49,7 @@ module Y2Firewall
         zone = nil
         zones = []
         @zones_definition.reject(&:empty?).each do |line|
-          attribute, value = line.split("\s")
+          attribute, _value = line.split("\s")
           next if !attribute
 
           if @zone_names.include?(attribute)
@@ -63,12 +62,11 @@ module Y2Firewall
 
           attribute, value = line.lstrip.split(":\s")
 
-          if zone.respond_to?("#{attribute}=")
-            if STRING_ATTRIBUTES.include?(attribute)
-              zone.public_send("#{attribute}=", value.to_s)
-            else
-              zone.public_send("#{attribute}=", value.to_s.split)
-            end
+          next unless zone.respond_to?("#{attribute}=")
+          if STRING_ATTRIBUTES.include?(attribute)
+            zone.public_send("#{attribute}=", value.to_s)
+          else
+            zone.public_send("#{attribute}=", value.to_s.split)
           end
         end
 
