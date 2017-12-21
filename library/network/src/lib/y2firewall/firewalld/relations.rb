@@ -48,15 +48,15 @@ module  Y2Firewall
           class_eval("attr_accessor :#{relation}")
 
           define_method "add_#{relation_singularized}" do |item|
-            return public_send(relation.to_s) if public_send(relation.to_s).include?(item)
+            return public_send(relation) if public_send(relation).include?(item)
 
-            public_send(relation.to_s) << item
+            public_send(relation) << item
           end
 
           define_method "remove_#{relation_singularized}" do |item|
-            return public_send(relation.to_s) if public_send(relation.to_s).delete(item)
+            return public_send(relation) if public_send(relation).delete(item)
 
-            public_send(relation.to_s)
+            public_send(relation)
           end
 
           define_method "current_#{relation}" do
@@ -80,11 +80,11 @@ module  Y2Firewall
           end
 
           define_method "#{relation}_to_add" do
-            public_send(relation.to_s) - public_send("current_#{relation}")
+            public_send(relation) - public_send("current_#{relation}")
           end
 
           define_method "#{relation}_to_remove" do
-            public_send("current_#{relation}") - public_send(relation.to_s)
+            public_send("current_#{relation}") - public_send(relation)
           end
 
           define_method "apply_#{relation}_changes!" do

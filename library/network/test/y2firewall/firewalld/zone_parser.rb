@@ -84,10 +84,10 @@ describe Y2Firewall::Firewalld::ZoneParser do
         expect(public_zone.services).to eq(["ssh", "iscsi-target"])
         expect(public_zone.interfaces).to eq(["eth0", "ens3"])
         expect(public_zone.ports).to include("123/udp", "530/udp")
-        expect(public_zone.masquerade).to eq("yes")
+        expect(public_zone.masquerade).to eq(true)
 
         dmz_zone = zones.find { |z| z.name == "dmz" }
-        expect(dmz_zone.masquerade).to eq("no")
+        expect(dmz_zone.masquerade).to eq(false)
         expect(dmz_zone.services).to be_empty
       end
     end

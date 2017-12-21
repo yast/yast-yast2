@@ -80,7 +80,7 @@ module Y2Firewall
     #
     # @return [Boolean] true if the config was modified; false otherwise
     def modified?
-      log_denied_packets != api.log_denied_packets || @zones.any?(&:modified?)
+      log_denied_packets != api.log_denied_packets || zones.any?(&:modified?)
     end
 
     # Apply the changes to the modified zones and sets the logging option

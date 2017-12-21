@@ -28,7 +28,7 @@ module Y2Firewall
     class ZoneParser
       include Yast::Logger
 
-      STRING_ATTRIBUTES = ["icmp-block-inversion", "masquerade"].freeze
+      BOOLEAN_ATTRIBUTES = ["icmp-block-inversion", "masquerade"].freeze
 
       # Constructor
       #
@@ -63,8 +63,8 @@ module Y2Firewall
           attribute, value = line.lstrip.split(":\s")
 
           next unless zone.respond_to?("#{attribute}=")
-          if STRING_ATTRIBUTES.include?(attribute)
-            zone.public_send("#{attribute}=", value.to_s)
+          if BOOLEAN_ATTRIBUTES.include?(attribute)
+            zone.public_send("#{attribute}=", value == "yes" ? true : false)
           else
             zone.public_send("#{attribute}=", value.to_s.split)
           end
