@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Dec 21 16:29:18 UTC 2017 - shundhammer@suse.com
+
+- Added missing files to Makefile.am (bsc#1064437)
+- 3.2.41
+
+-------------------------------------------------------------------
 Mon Dec 11 15:07:33 UTC 2017 - shundhammer@suse.com
 
 - Added infrastructure to preserve existing comments in config
