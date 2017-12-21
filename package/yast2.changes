@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Dec 20 08:31:29 UTC 2017 - knut.anderssen@suse.com
+
+- Firewalld: Extend handling of zones for AutoYaST configuration
+  (fate#323460).
+- 4.0.30
+
+-------------------------------------------------------------------
 Fri Dec 15 10:26:00 UTC 2017 - knut.anderssen@suse.com
 
 - Firewalld API: Use string command with all api methods which

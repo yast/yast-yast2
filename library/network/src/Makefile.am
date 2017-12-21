@@ -41,7 +41,9 @@ yfwlib_DATA = \
 yfwdlibdir = @ylibdir@/y2firewall/firewalld
 yfwdlib_DATA = \
   lib/y2firewall/firewalld/api.rb \
-  lib/y2firewall/firewalld/zone.rb
+  lib/y2firewall/firewalld/relations.rb \
+  lib/y2firewall/firewalld/zone.rb \
+  lib/y2firewall/firewalld/zone_parser.rb
 
 EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA) $(yfwlib_DATA) $(yfwdlibdir_DATA)
 

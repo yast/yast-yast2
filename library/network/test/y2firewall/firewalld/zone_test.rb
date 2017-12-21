@@ -21,6 +21,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
+require "y2firewall/firewalld"
 require "y2firewall/firewalld/zone"
 
 describe Y2Firewall::Firewalld::Zone do
@@ -29,6 +30,58 @@ describe Y2Firewall::Firewalld::Zone do
       expect(described_class.known_zones).to be_a(Hash)
       expect(described_class.known_zones).to include "public"
       expect(described_class.known_zones["dmz"]).to eq(N_("Demilitarized Zone"))
+    end
+  end
+
+  describe "#initialize" do
+    context "when :name is specified" do
+      subject { described_class.new(name: "test") }
+      it "uses the :name" do
+        expect(subject.name).to eq("test")
+      end
+    end
+
+    context "when :name is not specified" do
+      let(:api) { instance_double("Y2Firewall::Firewalld::Api", default_zone: "default") }
+
+      it "uses the default zone name" do
+        allow_any_instance_of(Y2Firewall::Firewalld).to receive(:api).and_return(api)
+
+        expect(subject.name).to eq("default")
+      end
+    end
+  end
+
+  describe "#modified?" do
+    subject { described_class.new(name: "test") }
+    let(:api) { instance_double("Y2Firewall::Firewalld::Api", masquerade_enabled?: true) }
+
+    before do
+      allow_any_instance_of(Y2Firewall::Firewalld).to receive(:api).and_return(api)
+      allow(subject).to receive(:current_services).and_return(["ssh"])
+      allow(subject).to receive(:services).and_return(["ssh"])
+      allow(subject).to receive(:current_interfaces).and_return(["eth0", "eth1"])
+      allow(subject).to receive(:interfaces).and_return(["eth0", "eth1"])
+      allow(subject).to receive(:current_ports).and_return(["80/tcp", "443/tcp"])
+      allow(subject).to receive(:ports).and_return(["80/tcp", "443/tcp"])
+      allow(subject).to receive(:current_protocols).and_return([])
+      allow(subject).to receive(:protocols).and_return([])
+      allow(subject).to receive(:masquerade?).and_return(true)
+    end
+
+    context "when the zone was modified since read" do
+      it "returns true" do
+        expect(subject).to receive(:current_interfaces).and_return(["eth0", "eth1"])
+        expect(subject).to receive(:interfaces).and_return(["eth0"])
+
+        expect(subject.modified?).to eq(true)
+      end
+    end
+
+    context "when the zone was not modified since read" do
+      it "returns false" do
+        expect(subject.modified?).to eq(false)
+      end
     end
   end
 end
