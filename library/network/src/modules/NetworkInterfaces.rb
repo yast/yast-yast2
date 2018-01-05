@@ -744,6 +744,15 @@ module Yast
       @Devices[devtype][device] = ifcfg
     end
 
+    # Device configuration files are matched against this regex
+    #
+    # The regex defines files which should not be parsed (e.g. ifcfg-eth0.bak)
+    #
+    # @return [Regexp] regexp describing ignored configurations
+    def ignore_confs_regex
+      /(.bak|.orig|.rpmnew|.rpmorig|.rpmsave|-range|~|.old|.scpmbackup)$/
+    end
+
     # Read devices from files and cache it
     # @return true if sucess
     def Read
@@ -752,7 +761,7 @@ module Yast
       @Devices = {}
 
       # preparation
-      devices = get_devices
+      devices = get_devices(ignore_confs_regex)
 
       # Read devices
       devices.each do |device|
