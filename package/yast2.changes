@@ -1,10 +1,17 @@
 -------------------------------------------------------------------
+Mon Jan  8 17:34:27 UTC 2018 - knut.anderssen@suse.com
+
+- Firewalld: Allow to modify default zone and export configuration
+  (fate#323460).
+- 4.0.32
+
+-------------------------------------------------------------------
 Mon Jan  8 09:19:09 UTC 2018 - mfilka@suse.com
 
 - bnc#1073727
   - ignored some of typical backup extensions (like .bak, .orig)
     when loading ifcfg files
-- 4.0.31 
+- 4.0.31
 
 -------------------------------------------------------------------
 Wed Dec 20 08:31:29 UTC 2017 - knut.anderssen@suse.com
