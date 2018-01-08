@@ -115,7 +115,7 @@ module Y2Firewall
       #
       # @return [String] default zone
       def default_zone
-        run_command("--get-default-zone")
+        string_command("--get-default-zone")
       end
 
       # Set the default zone
@@ -188,7 +188,7 @@ module Y2Firewall
       # @param interface [String] interface name
       # @return [String, nil] the interface zone or nil
       def interface_zone(interface)
-        run_command("--get-zone-of-interface=#{interface}")
+        string_command("--get-zone-of-interface=#{interface}")
       end
 
       # @param zone [String] The firewall zone

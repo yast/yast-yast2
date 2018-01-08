@@ -46,6 +46,9 @@ module Y2Firewall
     # values are: all, unicast, broadcast, multicast and off
     attr_accessor :log_denied_packets
 
+    # @return [String] default zone name
+    attr_accessor :default_zone
+
     PACKAGE = "firewalld".freeze
     SERVICE = "firewalld".freeze
 
@@ -61,8 +64,10 @@ module Y2Firewall
     #
     # @return [Boolean] true
     def read
-      @zones = installed? ? ZoneParser.new(api.zones, api.list_all_zones).parse : []
+      return false unless installed?
+      @zones = ZoneParser.new(api.zones, api.list_all_zones).parse
       @log_denied_packets = api.log_denied_packets
+      @default_zone       = api.default_zone
       true
     end
 
@@ -80,13 +85,16 @@ module Y2Firewall
     #
     # @return [Boolean] true if the config was modified; false otherwise
     def modified?
-      log_denied_packets != api.log_denied_packets || zones.any?(&:modified?)
+      default_zone != api.default_zone ||
+        log_denied_packets != api.log_denied_packets ||
+        zones.any?(&:modified?)
     end
 
     # Apply the changes to the modified zones and sets the logging option
     def write
       zones.map { |z| z.apply_changes! if z.modified? }
       api.log_denied_packets = log_denied_packets
+      api.default_zone       = default_zone
       true
     end
 
