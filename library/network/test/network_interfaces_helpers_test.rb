@@ -100,27 +100,19 @@ module Yast
       end
 
       it "returns an array of configured interfaces filtered by regexp" do
-        expect(subject.get_devices("1")).not_to include "em1", "eth1", "br1"
-      end
-
-      it "filters with <[~]> by default" do
-        expect(subject.get_devices).not_to include "tr~"
+        expect(subject.send(:get_devices, /1/)).not_to include "em1", "eth1", "br1"
       end
 
       it "returns an empty array with <.> argument" do
-        expect(subject.get_devices(".")).to eql []
+        expect(subject.send(:get_devices, /./)).to eql []
       end
 
       it "returns all devices filtering with <''>" do
-        expect(subject.get_devices("")).to eql devices
-      end
-
-      it "does not crash with exception" do
-        expect { subject.get_devices }.not_to raise_error
+        expect(subject.send(:get_devices, //)).to eql devices
       end
 
       it "doesn't carry empty strings" do
-        expect(subject.get_devices).not_to include ""
+        expect(subject.send(:get_devices, //)).not_to include ""
       end
     end
 

@@ -627,20 +627,6 @@ module Yast
       deep_copy(out)
     end
 
-    # Get current sysconfig configured interfaces
-    #
-    # @param devregex [String] regex to filter by
-    # @return [Array] of ifcfg names
-    def get_devices(devregex = "[~]")
-      devices = SCR.Dir(path(".network.section")) || []
-
-      devices.select! { |file| file !~ /#{devregex}/ } unless devregex.nil? && devregex.empty?
-      devices.delete_if(&:empty?)
-
-      log.debug "devices=#{devices}"
-      devices
-    end
-
     # Canonicalize IPADDR and STARTMODE of given config
     # and nested _aliases
     #
@@ -742,15 +728,6 @@ module Yast
       devtype = GetTypeFromIfcfgOrName(device, ifcfg)
       @Devices[devtype] ||= {}
       @Devices[devtype][device] = ifcfg
-    end
-
-    # Device configuration files are matched against this regex
-    #
-    # The regex defines files which should not be parsed (e.g. ifcfg-eth0.bak)
-    #
-    # @return [Regexp] regexp describing ignored configurations
-    def ignore_confs_regex
-      /(.bak|.orig|.rpmnew|.rpmorig|.rpmsave|-range|~|.old|.scpmbackup)$/
     end
 
     # Read devices from files and cache it
@@ -1730,6 +1707,31 @@ module Yast
     def ListDevicesExcept(dev)
       devices = Builtins.filter(LocateNOT("DEVICE", dev)) { |s| s != "lo" }
       deep_copy(devices)
+    end
+
+  private
+
+    # Device configuration files are matched against this regex
+    #
+    # The regex defines files which should not be parsed (e.g. ifcfg-eth0.bak)
+    #
+    # @return [Regexp] regexp describing ignored configurations
+    def ignore_confs_regex
+      /(.bak|.orig|.rpmnew|.rpmorig|.rpmsave|-range|~|.old|.scpmbackup)$/
+    end
+
+    # Get current sysconfig configured interfaces
+    #
+    # @param devregex [Regex] regex to filter by
+    # @return [Array<String>] of ifcfg names
+    def get_devices(devregex)
+      devices = SCR.Dir(path(".network.section")) || []
+
+      devices.select! { |file| file !~ devregex } unless devregex.nil?
+      devices.delete_if(&:empty?)
+
+      log.debug "devices=#{devices}"
+      devices
     end
 
     publish variable: :Name, type: "string"
