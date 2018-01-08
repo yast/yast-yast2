@@ -1711,9 +1711,21 @@ module Yast
 
   private
 
-    # Device configuration files are matched against this regex
+    # Device configuration files are matched against this regexp
     #
-    # The regex defines files which should not be parsed (e.g. ifcfg-eth0.bak)
+    # The regexp defines files which should not be parsed (e.g. ifcfg-eth0.bak)
+    #
+    # It is usually usefull to ignore files which various editors
+    # or other tools or daemons (e.g. firewalld)
+    # create as a backup (e.g. ifcfg-eth0~), also users sometime
+    # creates a backup when editing files from commandline
+    # (typically use extension .bak or .old)
+    #
+    # Moreover configuration filenames that contain the following
+    # blacklisted extensions, will be ignored by wicked:
+    # ~ .old .bak .orig .scpmbackup .rpmnew .rpmsave .rpmorig
+    #
+    # For details see bnc#1073727
     #
     # @return [Regexp] regexp describing ignored configurations
     def ignore_confs_regex
@@ -1722,7 +1734,7 @@ module Yast
 
     # Get current sysconfig configured interfaces
     #
-    # @param devregex [Regex] regex to filter by
+    # @param devregex [Regexp] regexp to filter by
     # @return [Array<String>] of ifcfg names
     def get_devices(devregex)
       devices = SCR.Dir(path(".network.section")) || []
