@@ -627,20 +627,6 @@ module Yast
       deep_copy(out)
     end
 
-    # Get current sysconfig configured interfaces
-    #
-    # @param devregex [String] regex to filter by
-    # @return [Array] of ifcfg names
-    def get_devices(devregex = "[~]")
-      devices = SCR.Dir(path(".network.section")) || []
-
-      devices.select! { |file| file !~ /#{devregex}/ } unless devregex.nil? && devregex.empty?
-      devices.delete_if(&:empty?)
-
-      log.debug "devices=#{devices}"
-      devices
-    end
-
     # Canonicalize IPADDR and STARTMODE of given config
     # and nested _aliases
     #
@@ -752,7 +738,7 @@ module Yast
       @Devices = {}
 
       # preparation
-      devices = get_devices
+      devices = get_devices(ignore_confs_regex)
 
       # Read devices
       devices.each do |device|
@@ -1721,6 +1707,43 @@ module Yast
     def ListDevicesExcept(dev)
       devices = Builtins.filter(LocateNOT("DEVICE", dev)) { |s| s != "lo" }
       deep_copy(devices)
+    end
+
+  private
+
+    # Device configuration files are matched against this regexp
+    #
+    # The regexp defines files which should not be parsed (e.g. ifcfg-eth0.bak)
+    #
+    # It is usually usefull to ignore files which various editors
+    # or other tools or daemons (e.g. firewalld)
+    # create as a backup (e.g. ifcfg-eth0~), also users sometime
+    # creates a backup when editing files from commandline
+    # (typically use extension .bak or .old)
+    #
+    # Moreover configuration filenames that contain the following
+    # blacklisted extensions, will be ignored by wicked:
+    # ~ .old .bak .orig .scpmbackup .rpmnew .rpmsave .rpmorig
+    #
+    # For details see bnc#1073727
+    #
+    # @return [Regexp] regexp describing ignored configurations
+    def ignore_confs_regex
+      /(\.bak|\.orig|\.rpmnew|\.rpmorig|\.rpmsave|-range|~|\.old|\.scpmbackup)$/
+    end
+
+    # Get current sysconfig configured interfaces
+    #
+    # @param devregex [Regexp] regexp to filter by
+    # @return [Array<String>] of ifcfg names
+    def get_devices(devregex)
+      devices = SCR.Dir(path(".network.section")) || []
+
+      devices.select! { |file| file !~ devregex } unless devregex.nil?
+      devices.delete_if(&:empty?)
+
+      log.debug "devices=#{devices}"
+      devices
     end
 
     publish variable: :Name, type: "string"

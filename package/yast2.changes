@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Jan  8 09:19:09 UTC 2018 - mfilka@suse.com
+
+- bnc#1073727
+  - ignored some of typical backup extensions (like .bak, .orig)
+    when loading ifcfg files
+- 4.0.31 
+
+-------------------------------------------------------------------
 Wed Dec 20 08:31:29 UTC 2017 - knut.anderssen@suse.com
 
 - Firewalld: Extend handling of zones for AutoYaST configuration
