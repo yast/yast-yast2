@@ -216,14 +216,14 @@ describe Y2Firewall::Firewalld do
       expect(firewalld.read).to eq(false)
     end
 
-    it "initializes @zones parsing the firewalld zones list" do
+    it "initializes the list of zones parsing the firewalld summary" do
       firewalld.read
 
       external = firewalld.find_zone("external")
       expect(external.ports).to eql(["5901/tcp", "5901/udp"])
     end
 
-    it "initializes the @default_zone and @log_denied_packets with the firewalld config" do
+    it "initializes global options with the current firewalld config" do
       firewalld.read
 
       expect(firewalld.log_denied_packets).to eql(false)
@@ -275,7 +275,6 @@ describe Y2Firewall::Firewalld do
         firewalld.default_zone = "public"
         expect(firewalld.modified?).to eq(false)
       end
-
     end
   end
 
@@ -317,6 +316,48 @@ describe Y2Firewall::Firewalld do
 
     it "returns true" do
       expect(firewalld.write).to eql(true)
+    end
+  end
+
+  describe "#export" do
+    let(:zones_definition) do
+      ["dmz",
+       "  target: default",
+       "  interfaces: ",
+       "  ports: ",
+       "  protocols:",
+       "",
+       "external (active)",
+       "  target: default",
+       "  interfaces: eth0",
+       "  services: ssh samba",
+       "  ports: 5901/tcp 5901/udp",
+       "  protocols: esp"]
+    end
+
+    let(:api) do
+      instance_double(Y2Firewall::Firewalld::Api,
+        log_denied_packets: true,
+        default_zone:       "work",
+        list_all_zones:     zones_definition,
+        zones:              known_zones)
+    end
+
+    before do
+      allow(firewalld).to receive("api").and_return api
+      firewalld.read
+    end
+
+    it "returns a hash with the current firewalld config" do
+      config = firewalld.export
+      external = config["zones"].find { |z| z["name"] == "external" }
+
+      expect(config).to be_a(Hash)
+      expect(config["log_denied_packets"]).to eq(true)
+      expect(config["default_zone"]).to eq("work")
+      expect(external["interfaces"]).to eql(["eth0"])
+      expect(external["ports"]).to eql(["5901/tcp", "5901/udp"])
+      expect(external["protocols"]).to eql(["esp"])
     end
   end
 end

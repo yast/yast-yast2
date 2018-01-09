@@ -98,7 +98,18 @@ module Y2Firewall
       true
     end
 
-    # Return wheter the firewalld package is installed or not
+    # Return a map with current firewalld settings.
+    #
+    # @return [Hash] dump firewalld settings
+    def export
+      {
+        "default_zone"       => default_zone,
+        "log_denied_packets" => log_denied_packets,
+        "zones"              => zones.map(&:export)
+      }
+    end
+
+    # Return whether the firewalld package is installed or not
     #
     # @return [Boolean] true if it is installed; false otherwise
     def installed?

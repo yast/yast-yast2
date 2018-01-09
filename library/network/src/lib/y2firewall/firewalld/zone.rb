@@ -48,7 +48,7 @@ module Y2Firewall
       attr_reader :name
 
       # @see Y2Firewall::Firewalld::Relations
-      has_many :services, :interfaces, :zones, :protocols, :ports
+      has_many :services, :interfaces, :protocols, :ports
 
       # [Boolean] Whether masquerade is enabled or not
       attr_accessor :masquerade
@@ -116,6 +116,20 @@ module Y2Firewall
       # @return [Boolean] true if the given service name is part of services
       def service_open?(service)
         services.include?(service)
+      end
+
+      # Dump a hash with the zone configuration
+      #
+      # @return [Hash] zone configuration
+      def export
+        {
+          "name"       => name,
+          "interfaces" => interfaces,
+          "services"   => services,
+          "ports"      => ports,
+          "protocols"  => protocols,
+          "masquerade" => masquerade
+        }
       end
 
     private
