@@ -53,7 +53,11 @@ describe Yast::NetworkInterfaces do
 
     it "doesn't load ifcfgs with a backup extension" do
       subject.Read
-      expect(subject.List("").any? { |d| d =~ subject.send(:ignore_confs_regex) }).to be false
+
+      devnames = subject.List("")
+
+      expect(devnames.any? { |d| d =~ subject.send(:ignore_confs_regex) }).to be false
+      expect(devnames).to include "ifcfg-cold"
     end
 
     it "canonicalizes readed config" do
