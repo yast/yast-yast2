@@ -170,18 +170,18 @@ describe Yast::WorkflowManager do
 
   describe "#UpdateInstallation" do
     let(:workflow) do
-      { "mode"     => "installation",
-        "archs"    => "",
-        "stage"    => "continue",
-        "append_modules" => [ {"label" => "Perform Update", "name" => "autopost"},
-          {"execute" => "inst_rpmcopy_secondstage",
-            "label" => "Perform Update",
-            "name" => "rpmcopy_secondstage_autoupgrade"},
-          {"heading" => "yes", "label"=>"Configuration"},
-          {"label" => "System Configuration", "name" => "autoconfigure"} ],
-        "defaults"=> { "archs"=>"",
-            "enable_back"=>"no",
-            "enable_next"=>"no" } }
+      { "mode"           => "installation",
+        "archs"          => "",
+        "stage"          => "continue",
+        "append_modules" => [{ "label" => "Perform Update", "name" => "autopost" },
+                             { "execute" => "inst_rpmcopy_secondstage",
+                               "label"   => "Perform Update",
+                               "name"    => "rpmcopy_secondstage_autoupgrade" },
+                             { "heading" => "yes", "label" => "Configuration" },
+                             { "label" => "System Configuration", "name" => "autoconfigure" }],
+        "defaults"       => { "archs"       => "",
+                              "enable_back" => "no",
+                              "enable_next" => "no" } }
     end
     let(:proposal) { { "mode" => "installation", "archs" => "", "stage" => "" } }
 
@@ -195,15 +195,14 @@ describe Yast::WorkflowManager do
 
     let(:product_workflows) do
       [
-        { "defaults"=>{"archs"=>"", "enable_back"=>"no", "enable_next"=>"no"},
-          "mode"=>"installation",
-          "modules"=>[{"label"=>"Perform Update", "name"=>"autopost"},
-            {"execute"=>"inst_rpmcopy_secondstage", "label"=>"Perform Update",
-              "name"=>"rpmcopy_secondstage_autoupgrade"},
-            {"heading"=>"yes", "label"=>"Configuration"},
-            {"label"=>"System Configuration", "name"=>"autoconfigure"}],
-          "stage"=>"continue"
-         }
+        { "defaults" => { "archs" => "", "enable_back" => "no", "enable_next" => "no" },
+          "mode"     => "installation",
+          "modules"  => [{ "label" => "Perform Update", "name" => "autopost" },
+                         { "execute" => "inst_rpmcopy_secondstage", "label" => "Perform Update",
+                           "name" => "rpmcopy_secondstage_autoupgrade" },
+                         { "heading" => "yes", "label" => "Configuration" },
+                         { "label" => "System Configuration", "name" => "autoconfigure" }],
+          "stage"    => "continue" }
       ]
     end
 
