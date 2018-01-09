@@ -220,14 +220,14 @@ describe Y2Firewall::Firewalld do
       firewalld.read
 
       external = firewalld.find_zone("external")
-      expect(external.ports).to eql(["5901/tcp", "5901/udp"])
+      expect(external.ports).to eq(["5901/tcp", "5901/udp"])
     end
 
     it "initializes global options with the current firewalld config" do
       firewalld.read
 
-      expect(firewalld.log_denied_packets).to eql(false)
-      expect(firewalld.default_zone).to eql("dmz")
+      expect(firewalld.log_denied_packets).to eq(false)
+      expect(firewalld.default_zone).to eq("dmz")
     end
   end
 
@@ -315,7 +315,7 @@ describe Y2Firewall::Firewalld do
     end
 
     it "returns true" do
-      expect(firewalld.write).to eql(true)
+      expect(firewalld.write).to eq(true)
     end
   end
 
@@ -355,9 +355,9 @@ describe Y2Firewall::Firewalld do
       expect(config).to be_a(Hash)
       expect(config["log_denied_packets"]).to eq(true)
       expect(config["default_zone"]).to eq("work")
-      expect(external["interfaces"]).to eql(["eth0"])
-      expect(external["ports"]).to eql(["5901/tcp", "5901/udp"])
-      expect(external["protocols"]).to eql(["esp"])
+      expect(external["interfaces"]).to eq(["eth0"])
+      expect(external["ports"]).to eq(["5901/tcp", "5901/udp"])
+      expect(external["protocols"]).to eq(["esp"])
     end
   end
 end
