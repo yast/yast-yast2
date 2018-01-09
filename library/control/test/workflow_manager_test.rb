@@ -172,8 +172,16 @@ describe Yast::WorkflowManager do
     let(:workflow) do
       { "mode"     => "installation",
         "archs"    => "",
-        "stage"    => "",
-        "defaults" => { "archs" => "" } }
+        "stage"    => "continue",
+        "append_modules" => [ {"label" => "Perform Update", "name" => "autopost"},
+          {"execute" => "inst_rpmcopy_secondstage",
+            "label" => "Perform Update",
+            "name" => "rpmcopy_secondstage_autoupgrade"},
+          {"heading" => "yes", "label"=>"Configuration"},
+          {"label" => "System Configuration", "name" => "autoconfigure"} ],
+        "defaults"=> { "archs"=>"",
+            "enable_back"=>"no",
+            "enable_next"=>"no" } }
     end
     let(:proposal) { { "mode" => "installation", "archs" => "", "stage" => "" } }
 
@@ -183,6 +191,20 @@ describe Yast::WorkflowManager do
         "workflows"    => [workflow],
         "proposals"    => [proposal]
       }
+    end
+
+    let(:product_workflows) do
+      [
+        { "defaults"=>{"archs"=>"", "enable_back"=>"no", "enable_next"=>"no"},
+          "mode"=>"installation",
+          "modules"=>[{"label"=>"Perform Update", "name"=>"autopost"},
+            {"execute"=>"inst_rpmcopy_secondstage", "label"=>"Perform Update",
+              "name"=>"rpmcopy_secondstage_autoupgrade"},
+            {"heading"=>"yes", "label"=>"Configuration"},
+            {"label"=>"System Configuration", "name"=>"autoconfigure"}],
+          "stage"=>"continue"
+         }
+      ]
     end
 
     let(:name) { "addon name" }
@@ -196,6 +218,12 @@ describe Yast::WorkflowManager do
     it "updates workflows" do
       expect(subject).to receive(:UpdateWorkflows).with(update["workflows"], name, domain)
       subject.UpdateInstallation(update, name, domain)
+    end
+
+    it "removes double entries from workflows" do
+      Yast::ProductControl.workflows = product_workflows
+      subject.UpdateWorkflows(update["workflows"], name, domain)
+      expect(Yast::ProductControl.workflows.first["modules"].size).to eq(product_workflows.first["modules"].size)
     end
 
     it "updates system roles" do

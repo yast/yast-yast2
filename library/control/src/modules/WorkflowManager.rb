@@ -896,16 +896,12 @@ module Yast
       # Merging - appending steps, settings
       appends = Ops.get_list(addon, "append_modules", [])
 
-      if Ops.greater_than(Builtins.size(appends), 0)
-        Builtins.y2milestone("Append: %1", appends)
-        Builtins.foreach(appends) do |new|
-          Ops.set(new, "textdomain", domain)
-          Ops.set(
-            base,
-            "modules",
-            Builtins.add(Ops.get_list(base, "modules", []), new)
-          )
-        end
+      unless appends.empty?
+        log.info("Append: #{appends}")
+        base["modules"] << appends
+        # Removing double entries in order not to run modules again.
+        base["modules"].flatten!.uniq!
+        base["modules"].each { |mod| mod["textdomain"] = domain }
       end
 
       log.info "result of merge #{base.inspect}"
@@ -928,7 +924,6 @@ module Yast
         new_workflows = []
         arch_all_wf = {}
         log.info "workflow to update #{workflow.inspect}"
-
         Builtins.foreach(ProductControl.workflows) do |w|
           if Ops.get_string(w, "stage", "") != stage ||
               Ops.get_string(w, "mode", "") != mode
