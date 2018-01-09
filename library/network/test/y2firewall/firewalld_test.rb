@@ -28,6 +28,8 @@ Yast.import "Service"
 
 describe Y2Firewall::Firewalld do
   let(:firewalld) { described_class.instance }
+  let(:known_zones) { Y2Firewall::Firewalld::Zone.known_zones.keys }
+  let(:empty_zones) { known_zones.map { |z| Y2Firewall::Firewalld::Zone.new(name: z) } }
 
   describe "#installed?" do
     it "returns false it the firewalld is not installed" do
@@ -177,6 +179,185 @@ describe Y2Firewall::Firewalld do
   describe "#api" do
     it "returns an Y2Firewall::Firewalld::Api instance" do
       expect(firewalld.api).to be_a Y2Firewall::Firewalld::Api
+    end
+  end
+
+  describe "#read" do
+    let(:zones_definition) do
+      ["dmz",
+       "  target: default",
+       "  interfaces: ",
+       "  ports: ",
+       "  protocols:",
+       "",
+       "external (active)",
+       "  target: default",
+       "  interfaces: eth0",
+       "  services: ssh samba",
+       "  ports: 5901/tcp 5901/udp",
+       "  protocols: "]
+    end
+
+    let(:api) do
+      instance_double(Y2Firewall::Firewalld::Api,
+        log_denied_packets: false,
+        default_zone:       "dmz",
+        list_all_zones:     zones_definition,
+        zones:              known_zones)
+    end
+
+    before do
+      allow(firewalld).to receive("api").and_return api
+    end
+
+    it "returns false if firewalld is not installed" do
+      allow(firewalld).to receive(:installed?).and_return(false)
+
+      expect(firewalld.read).to eq(false)
+    end
+
+    it "initializes the list of zones parsing the firewalld summary" do
+      firewalld.read
+
+      external = firewalld.find_zone("external")
+      expect(external.ports).to eq(["5901/tcp", "5901/udp"])
+    end
+
+    it "initializes global options with the current firewalld config" do
+      firewalld.read
+
+      expect(firewalld.log_denied_packets).to eq(false)
+      expect(firewalld.default_zone).to eq("dmz")
+    end
+  end
+
+  describe "#find_zone" do
+    it "returns the Y2Firewall::Firewalld::Zone with the given name" do
+      firewalld.zones = empty_zones
+      zone = firewalld.find_zone("external")
+
+      expect(zone).to be_a(Y2Firewall::Firewalld::Zone)
+      expect(zone.name).to eq("external")
+    end
+
+    it "returns nil if no zone match the given name" do
+      firewalld.zones = []
+
+      expect(firewalld.find_zone("test")).to eq(nil)
+    end
+  end
+
+  describe "#modified?" do
+    let(:api) do
+      instance_double(Y2Firewall::Firewalld::Api, log_denied_packets: true, default_zone: "public")
+    end
+
+    let(:modified_zone) { false }
+
+    before do
+      allow(firewalld).to receive("api").and_return api
+      empty_zones.each do |zone|
+        allow(zone).to receive(:modified?).and_return(modified_zone)
+      end
+      firewalld.zones = empty_zones
+      firewalld.log_denied_packets = true
+    end
+
+    context "when some of the attributes have been modified since read" do
+      it "returns true" do
+        firewalld.default_zone = "external"
+        expect(firewalld.modified?).to eq(true)
+      end
+    end
+
+    context "when no attribute has been modifiede since read" do
+      it "returns false" do
+        firewalld.default_zone = "public"
+        expect(firewalld.modified?).to eq(false)
+      end
+    end
+  end
+
+  describe "#write" do
+    let(:api) do
+      Y2Firewall::Firewalld::Api.new
+    end
+
+    before do
+      firewalld.zones = empty_zones
+      allow(firewalld).to receive("api").and_return api
+      empty_zones.each do |zone|
+        allow(zone).to receive(:modified?).and_return(false)
+      end
+
+      allow(api).to receive(:default_zone=)
+      allow(api).to receive(:log_denied_packets=)
+    end
+
+    it "applies in firewalld all the changes done in the object since read" do
+      firewalld.log_denied_packets = false
+      firewalld.default_zone = "drop"
+
+      expect(api).to receive(:default_zone=).with("drop")
+      expect(api).to receive(:log_denied_packets=).with(false)
+
+      firewalld.write
+    end
+
+    it "only apply changes to the modified zones" do
+      dmz = firewalld.find_zone("dmz")
+      allow(dmz).to receive(:modified?).and_return(true)
+      expect(dmz).to receive(:apply_changes!)
+      external = firewalld.find_zone("external")
+      expect(external).to_not receive(:apply_changes!)
+
+      firewalld.write
+    end
+
+    it "returns true" do
+      expect(firewalld.write).to eq(true)
+    end
+  end
+
+  describe "#export" do
+    let(:zones_definition) do
+      ["dmz",
+       "  target: default",
+       "  interfaces: ",
+       "  ports: ",
+       "  protocols:",
+       "",
+       "external (active)",
+       "  target: default",
+       "  interfaces: eth0",
+       "  services: ssh samba",
+       "  ports: 5901/tcp 5901/udp",
+       "  protocols: esp"]
+    end
+
+    let(:api) do
+      instance_double(Y2Firewall::Firewalld::Api,
+        log_denied_packets: true,
+        default_zone:       "work",
+        list_all_zones:     zones_definition,
+        zones:              known_zones)
+    end
+
+    before do
+      allow(firewalld).to receive("api").and_return api
+      firewalld.read
+    end
+
+    it "returns a hash with the current firewalld config" do
+      config = firewalld.export
+      external = config["zones"].find { |z| z["name"] == "external" }
+
+      expect(config).to be_a(Hash)
+      expect(config["log_denied_packets"]).to eq(true)
+      expect(config["default_zone"]).to eq("work")
+      expect(external["interfaces"]).to eq(["eth0"])
+      expect(external["ports"]).to eq(["5901/tcp", "5901/udp"])
+      expect(external["protocols"]).to eq(["esp"])
     end
   end
 end
