@@ -32,7 +32,7 @@ describe Yast::NetworkInterfaces do
   describe "#Read" do
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
     # Defined in test/data/etc/sysconfig/ifcfg-*
-    let(:devices) { ["arc5", "bond0", "br1", "em1", "eth0", "eth1", "eth2", "ppp0", "vlan3"] }
+    let(:devices) { ["arc5", "bond0", "br1", "cold", "em1", "eth0", "eth1", "eth2", "ppp0", "vlan3"] }
 
     around do |example|
       change_scr_root(data_dir, &example)
@@ -57,7 +57,7 @@ describe Yast::NetworkInterfaces do
       devnames = subject.List("")
 
       expect(devnames.any? { |d| d =~ subject.send(:ignore_confs_regex) }).to be false
-      expect(devnames).to include "ifcfg-cold"
+      expect(devnames).to include "cold"
     end
 
     it "canonicalizes readed config" do
@@ -144,7 +144,7 @@ describe Yast::NetworkInterfaces do
     context "given a list of device types and a regex" do
       it "returns device types that don't match the given regex" do
         expect(subject.FilterNOT(subject.FilterDevices(""), "eth").keys)
-          .to eql(["arc", "bond", "br", "em", "ppp", "vlan"])
+          .to eql(["arc", "bond", "br", "cold", "em", "ppp", "vlan"])
       end
     end
   end
@@ -238,7 +238,7 @@ describe Yast::NetworkInterfaces do
     end
 
     it "returns an array of devices which have got a different key,value than given ones" do
-      expect(subject.LocateNOT("BOOTPROTO", "static")).to eql(["arc5", "br1", "ppp0", "vlan3"])
+      expect(subject.LocateNOT("BOOTPROTO", "static")).to eql(["arc5", "br1", "cold", "ppp0", "vlan3"])
     end
   end
 

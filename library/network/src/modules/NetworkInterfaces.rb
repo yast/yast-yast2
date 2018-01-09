@@ -1729,7 +1729,7 @@ module Yast
     #
     # @return [Regexp] regexp describing ignored configurations
     def ignore_confs_regex
-      /(.bak|.orig|.rpmnew|.rpmorig|.rpmsave|-range|~|.old|.scpmbackup)$/
+      /(\.bak|\.orig|\.rpmnew|\.rpmorig|\.rpmsave|-range|~|\.old|\.scpmbackup)$/
     end
 
     # Get current sysconfig configured interfaces
