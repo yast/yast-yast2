@@ -170,10 +170,18 @@ describe Yast::WorkflowManager do
 
   describe "#UpdateInstallation" do
     let(:workflow) do
-      { "mode"     => "installation",
-        "archs"    => "",
-        "stage"    => "",
-        "defaults" => { "archs" => "" } }
+      { "mode"           => "installation",
+        "archs"          => "",
+        "stage"          => "continue",
+        "append_modules" => [{ "label" => "Perform Update", "name" => "autopost" },
+                             { "execute" => "inst_rpmcopy_secondstage",
+                               "label"   => "Perform Update",
+                               "name"    => "rpmcopy_secondstage_autoupgrade" },
+                             { "heading" => "yes", "label" => "Configuration" },
+                             { "label" => "System Configuration", "name" => "autoconfigure" }],
+        "defaults"       => { "archs"       => "",
+                              "enable_back" => "no",
+                              "enable_next" => "no" } }
     end
     let(:proposal) { { "mode" => "installation", "archs" => "", "stage" => "" } }
 
@@ -202,6 +210,13 @@ describe Yast::WorkflowManager do
       expect(subject).to receive(:update_system_roles).with(update["system_roles"])
       subject.UpdateInstallation(update, name, domain)
     end
+
+    it "generate new workflows with append_modules" do
+      Yast::ProductControl.workflows = []
+      subject.UpdateWorkflows(update["workflows"], name, domain)
+      expect(Yast::ProductControl.workflows.first["modules"].size).to eq(workflow["append_modules"].size)
+    end
+
   end
 
   describe "#update_system_roles" do

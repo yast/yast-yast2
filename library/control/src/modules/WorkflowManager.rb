@@ -949,8 +949,11 @@ module Yast
           if arch_all_wf != {}
             Ops.set(arch_all_wf, ["defaults", "archs"], arch)
             workflow = MergeWorkflow(arch_all_wf, workflow, prod_name, domain)
-            # completly new workflow
+          # completly new workflow
           else
+            # If modules has not been defined we are trying to use the appended modules
+            workflow["modules"] = workflow["append_modules"] unless workflow["modules"]
+
             Ops.set(workflow, "textdomain", domain)
 
             Ops.set(
