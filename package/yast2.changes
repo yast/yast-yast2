@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Jan 10 17:24:18 CET 2018 - schubi@suse.de
+
+- Adding a workflow from other products: If there are no modules
+  have beed defined we are using the modules defined in
+  append_modules. (bnc#1075182)
+- 4.0.33
+
+-------------------------------------------------------------------
 Mon Jan  8 17:34:27 UTC 2018 - knut.anderssen@suse.com
 
 - Firewalld: Allow to modify default zone and export configuration
