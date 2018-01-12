@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 12 14:13:38 CET 2018 - schubi@suse.de
+
+- Firewalld export: Return empty hash if the package has not
+  been installed. (fate#323460)
+- 4.0.34
+
+-------------------------------------------------------------------
 Wed Jan 10 17:24:18 CET 2018 - schubi@suse.de
 
 - Adding a workflow from other products: If there are no modules
