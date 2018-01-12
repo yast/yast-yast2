@@ -102,6 +102,7 @@ module Y2Firewall
     #
     # @return [Hash] dump firewalld settings
     def export
+      return {} unless installed?
       {
         "default_zone"       => default_zone,
         "log_denied_packets" => log_denied_packets,
