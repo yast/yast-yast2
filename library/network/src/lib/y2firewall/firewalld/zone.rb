@@ -69,6 +69,10 @@ module Y2Firewall
         KNOWN_ZONES
       end
 
+      def full_name
+        self.class.known_zones[name]
+      end
+
       # Whether the zone have been modified or not since read
       #
       # @return [Boolean] true if it was modified; false otherwise

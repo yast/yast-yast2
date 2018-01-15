@@ -23,6 +23,7 @@
 # ***************************************************************************
 
 require "y2firewall/firewalld/api"
+require "y2firewall/firewalld/service"
 require "y2firewall/firewalld/zone"
 require "y2firewall/firewalld/zone_parser"
 require "singleton"
@@ -80,6 +81,17 @@ module Y2Firewall
       zones.find { |z| z.name == name }
     end
 
+    def find_service(name)
+      services.find { |s| s.name == name } || create_service(name)
+    end
+
+    def create_service(name)
+      service = Y2Firewall::Firewalld::Service.new(name: name)
+      service.create! if !service.supported?
+      service.read
+      service
+    end
+
     # Return true if the logging config or any of the zones where modified
     # since read
     #
@@ -92,11 +104,19 @@ module Y2Firewall
 
     # Apply the changes to the modified zones and sets the logging option
     def write
+      only_write
+      reload
+    end
+
+    # Apply the changes to the modified zones and sets the logging option
+    def only_write
       zones.map { |z| z.apply_changes! if z.modified? }
       api.log_denied_packets = log_denied_packets
       api.default_zone       = default_zone
       true
     end
+
+
 
     # Return a map with current firewalld settings.
     #

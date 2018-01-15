@@ -24,6 +24,7 @@
 
 require "yast"
 require "yast2/execute"
+require "y2firewall/firewalld/api/services"
 
 Yast.import "Stage"
 Yast.import "Service"
@@ -42,6 +43,7 @@ module Y2Firewall
     class Api
       include Yast::Logger
       include Yast::I18n
+      include Services
       extend Forwardable
 
       # Map firewalld modes with their command line tools
@@ -219,61 +221,11 @@ module Y2Firewall
         run_command("--zone=#{zone}", "--change-interface=#{interface}", permanent: permanent)
       end
 
-      ### Services ###
-
-      # @return [Array<String>] List of firewall services
-      def services
-        string_command("--get-services").split(" ")
-      end
-
-      # @param service [String] The firewall service
-      # @return [Array<String>] list of all information for the given service
-      def info_service(service)
-        string_command("--info-service", service.to_s).split("\n")
-      end
-
-      # @param service [String] The firewall service
-      # @return [String] Short description for service
-      def service_short(service)
-        # these may not exist on early firewalld releases
-        string_command("--service=#{service}", "--get-short").rstrip
-      end
-
-      # @param service [String] the firewall service
-      # @return [String] Description for service
-      def service_description(service)
-        string_command("--service=#{service}", "--get-description").rstrip
-      end
-
-      # @param service [String] The firewall service
-      # @return [Boolean] True if service definition exists
-      def service_supported?(service)
-        services.include?(service)
-      end
-
       # @param zone [String] The firewall zone
       # @param service [String] The firewall service
       # @return [Boolean] True if service is enabled in zone
       def service_enabled?(zone, service)
         query_command("--zone=#{zone}", "--query-service=#{service}")
-      end
-
-      # @param service [String] The firewall service
-      # @return [Array<String>] The firewall service ports
-      def service_ports(service)
-        string_command("--service=#{service}", "--get-ports").strip
-      end
-
-      # @param service [String] The firewall service
-      # @return [Array<String>] The firewall service protocols
-      def service_protocols(service)
-        string_command("--service=#{service}", "--get-protocols").strip
-      end
-
-      # @param service [String] The firewall service
-      # @return [Array<String>] The firewall service modules
-      def service_modules(service)
-        string_command("--service=#{service}", "--get-modules").strip
       end
 
       # @param zone [String] The firewall zone
