@@ -25,6 +25,8 @@
 module Y2Firewall
   class Firewalld
     class Api
+      # This module contains specific api methods for handling with services
+      # definition and configuration.
       module Services
         # @param service [String] The firewall service
         def new_service(service, permanent: permanent?)

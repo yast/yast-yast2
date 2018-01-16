@@ -35,7 +35,7 @@ module Y2Firewall
       attr_accessor :short
       attr_accessor :description
 
-      has_many :ports, :protocols, :scope => "service"
+      has_many :ports, :protocols, scope: "service"
 
       # Constructor
       #

@@ -34,11 +34,8 @@
 #          and you should call 'firewalld.write' in the
 #          Write() function.
 #
-#	    Functionality of this module only changes the SuSEFirewall
+#	    Functionality of this module only changes the firewalld
 #          settings in memory, it never Reads or Writes the settings.
-#
-#	    Additionally you may need to call Progress::set(false)
-#	    before SuSEFirewall::Read() or SuSEFirewall::Write().
 require "yast"
 require "y2firewall/firewalld"
 
@@ -55,7 +52,6 @@ module Yast
       Yast.import "Mode"
       Yast.import "NetworkInterfaces"
       Yast.import "Popup"
-      Yast.import "SuSEFirewall"
       Yast.import "Report"
       Yast.import "Stage"
       Yast.import "String"
@@ -181,42 +177,32 @@ module Yast
     end
 
     # Get the list of all interfaces that will be selected
+    #
     # @param [Array<String>] ifaces a list of interfaces selected by the user
     # @param [Boolean] _nm_ifaces_have_to_be_selected defines whether also NetworkManager have to be selected too
     # @return a list of interfaces that will be opened
     def Selected2Opened(ifaces, _nm_ifaces_have_to_be_selected)
       log.info("Selected ifaces: #{ifaces}")
-      groups = ifaces.map { |i| firewalld.api.interface_zone(i) }.reject { |z| z.to_s.empty? }.uniq
-      log.info("Ifaces groups: #{groups}")
+      zone_names = ifaces.map { |i| interface_zone(i) }.reject { |z| z.to_s.empty? }.uniq
+      log.info("Ifaces zone names: #{zone_names}")
 
-      #      iface_groups = groups.map do |g|
-      #        ifaces_also_supported_by_any = SuSEFirewall.GetInterfacesInZoneSupportingAnyFeature(g)
-      #
-      #        # If all interfaces in EXT zone are covered by the special 'any' string
-      #        # and none of these interfaces are selected to be open, we can remove all of them
-      #        # disable the service in whole EXT zone
-      #        next deep_copy(ifaces_also_supported_by_any) if g != SuSEFirewall.special_all_interface_zone
-      #
-      #        ifaces_left_explicitely = Builtins.filter(
-      #          ifaces_also_supported_by_any
-      #        ) do |iface|
-      #          Builtins.contains(ifaces, iface)
-      #        end
-      #        log.info("Ifaces left in zone: #{ifaces_left_explicitely}")
-      #        # there are no interfaces left that would be explicitely mentioned in the EXT zone
-      #        next [] if ifaces_left_explicitely == []
-      #
-      #        # Hmm, some interfaces left
-      #        deep_copy(ifaces_also_supported_by_any)
-      #      end
+      zone_ifaces =
+        zone_names.map do |zone_name|
+          zone = firewalld.find_zone(zone_name)
+          interfaces = zone.interfaces
 
-      #      log.info("Ifaces touched: #{iface_groups}")
-      #      new_ifaces = Builtins.toset(Builtins.flatten(iface_groups))
-      #      new_ifaces = Builtins.filter(new_ifaces) { |i| !i.nil? }
+          next(interfaces) unless zone_name == firewalld.default_zone
+          interfaces += default_interfaces
 
-      #      Builtins.toset(new_ifaces)
+          left_explicitly = interfaces.select { |i| ifaces.include?(i) }.uniq
+          log.info("Ifaces left in zone: #{left_explicitly}")
 
-      ifaces
+          next [] if left_explicitly.empty?
+
+          interfaces
+        end
+
+      (ifaces + zone_ifaces.flatten).uniq
     end
 
     # Display popup with firewall settings details
@@ -258,41 +244,20 @@ module Yast
       log.info("Status: #{service_status}")
       @allowed_interfaces = service_status.keys
 
-      # Checking whether the string 'any' is in the 'EXT' zone
-      # If it is, checking the status of services for this zone
-      # If it is enabled, adding it these interfaces into the list of allowed interfaces
-      #                   and setting this zone to enabled
-      interfaces_supported_by_any = SuSEFirewall.InterfacesSupportedByAnyFeature(
-        SuSEFirewall.special_all_interface_zone
-      )
-      if !interfaces_supported_by_any.empty?
+      log.info "Default interfaces: #{default_interfaces}"
+      log.info "Default_zone services: #{default_zone.services}"
+
+      if !default_interfaces.empty?
         services.each do |service|
-          Ops.set(
-            service_status,
-            SuSEFirewall.special_all_interface_zone,
-            SuSEFirewall.IsServiceSupportedInZone(
-              service,
-              SuSEFirewall.special_all_interface_zone
-            ) &&
-              Ops.get(
-                service_status,
-                SuSEFirewall.special_all_interface_zone,
-                true
-              )
-          )
+          service_status[firewalld.default_zone] =
+            default_zone && default_zone.services.include?(service)
         end
-        if Ops.get(
-          service_status,
-          SuSEFirewall.special_all_interface_zone,
-          false
-        )
-          @allowed_interfaces = Convert.convert(
-            Builtins.union(@allowed_interfaces, interfaces_supported_by_any),
-            from: "list",
-            to:   "list <string>"
-          )
+        if service_status[firewalld.default_zone]
+          @allowed_interfaces = (@allowed_interfaces + default_interfaces).uniq
         end
       end
+
+      log.info "Allowed interfaces: #{@allowed_interfaces}"
 
       @configuration_changed = false
 
@@ -1005,6 +970,10 @@ module Yast
 
   private
 
+    def default_zone
+      @default_zone ||= firewalld.find_zone(firewalld.default_zone)
+    end
+
     def known_interfaces
       return @known_interfaces if @known_interfaces
 
@@ -1014,9 +983,19 @@ module Yast
         {
           "id"   => interface,
           "name" => NetworkInterfaces.GetValue(interface, "NAME"),
-          "zone" => firewalld.api.interface_zone(interface)
+          "zone" => interface_zone(interface)
         }
       end
+    end
+
+    def default_interfaces
+      known_interfaces.select { |i| i["zone"].to_s.empty? }.map { |i| i["id"] }
+    end
+
+    def interface_zone(name)
+      zone = firewalld.zones.find { |z| z.interfaces.include?(name) }
+
+      zone ? zone.name : nil
     end
 
     def zone_services(services)
