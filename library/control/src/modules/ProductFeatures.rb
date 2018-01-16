@@ -340,6 +340,9 @@ module Yast
     def ClearOverlay
       return if @backup_features.nil?
       @features = deep_copy(@backup_features)
+      # when overlay is cleared, remove backup as it can become invalid over-time
+      # when new extensions is applied
+      @backup_features = nil
     end
 
     publish function: :GetStringFeature, type: "string (string, string)"
