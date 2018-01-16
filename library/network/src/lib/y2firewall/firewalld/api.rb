@@ -173,6 +173,12 @@ module Y2Firewall
       end
 
       # @param zone [String] The firewall zone
+      # @return [Array<String>] list of zone's sources
+      def list_sources(zone)
+        string_command("--zone=#{zone}", "--list-sources").split(" ")
+      end
+
+      # @param zone [String] The firewall zone
       # @return [Array<String>] list of all information for given zone
       def list_all(zone)
         string_command("--zone=#{zone}", "--list-all").split(" ")
@@ -219,6 +225,27 @@ module Y2Firewall
       # @return [Boolean] True if interface was changed
       def change_interface(zone, interface, permanent: permanent?)
         run_command("--zone=#{zone}", "--change-interface=#{interface}", permanent: permanent)
+      end
+
+      # @param zone [String] The firewall zone
+      # @param source [String] The network source
+      # @return [Boolean] True if source was added
+      def add_source(zone, source, permanent: permanent?)
+        run_command("--zone=#{zone}", "--add-source=#{source}", permanent: permanent)
+      end
+
+      # @param zone [String] The firewall zone
+      # @param source [String] The network source
+      # @return [Boolean] True if source was removed
+      def remove_source(zone, source, permanent: permanent?)
+        run_command("--zone=#{zone}", "--remove-source=#{source}", permanent: permanent)
+      end
+
+      # @param zone [String] The firewall zone
+      # @param source [String] The network source
+      # @return [Boolean] True if source was changed
+      def change_source(zone, source, permanent: permanent?)
+        run_command("--zone=#{zone}", "--change-source=#{source}", permanent: permanent)
       end
 
       # @param zone [String] The firewall zone
