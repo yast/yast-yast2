@@ -43,6 +43,8 @@ module Y2Firewall
     # [Array <Y2Firewall::Firewalld::Zone>] firewalld zones
     attr_accessor :zones
 
+    attr_accessor :services
+
     # [String] Type of log denied packets (reject & drop rules). Possible
     # values are: all, unicast, broadcast, multicast and off
     attr_accessor :log_denied_packets
@@ -69,26 +71,40 @@ module Y2Firewall
       @zones = ZoneParser.new(api.zones, api.list_all_zones).parse
       @log_denied_packets = api.log_denied_packets
       @default_zone       = api.default_zone
+      # The list of services is not read or initialized because takes time and
+      # affects to the performance and also the services are rarely touched.
+      @services           = []
       true
     end
 
     # Return from the zones list the one which matches the given name
     #
     # @param name [String] the zone name
-    # @return [Y2Firewall::Firewalld::Zone, nil] the firewalld zone with the given
-    # name
+    # @return [Y2Firewall::Firewalld::Zone, nil] the firewalld zone with the
+    # given name
     def find_zone(name)
       zones.find { |z| z.name == name }
     end
 
+    # Return from the services list the one which matches the given name
+    #
+    # @param name [String] the service name
+    # @return [Y2Firewall::Firewalld::Service, nil] the firewalld service with
+    # the given name
     def find_service(name)
-      services.find { |s| s.name == name } || create_service(name)
+      services.find { |s| s.name == name } || read_service(name)
     end
 
-    def create_service(name)
+    # It reads the configuration of the given service or create it from scratch
+    # if not exist. After read adds it to the list of touched services.
+    #
+    # @param name [String] the service name
+    # @return [Y2Firewall::Firewalld::Service] the recently added service
+    def read_service(name)
       service = Y2Firewall::Firewalld::Service.new(name: name)
       service.create! if !service.supported?
       service.read
+      @services << service
       service
     end
 
@@ -115,8 +131,6 @@ module Y2Firewall
       api.default_zone       = default_zone
       true
     end
-
-
 
     # Return a map with current firewalld settings.
     #

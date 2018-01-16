@@ -141,12 +141,13 @@ module Yast
         log.info("Reading NetworkInterfaces...")
         NetworkInterfaces.Read
       end
+
       @all_interfaces = NetworkInterfaces.List("").reject { |i| i == "lo" }
 
       @interface_items =
         @all_interfaces.map do |interface|
           return Item(Id(interface), interface) if Mode.config
-          Item(Id(interface),  interface_label(interface))
+          Item(Id(interface), interface_label(interface))
         end
 
       nil
@@ -170,12 +171,8 @@ module Yast
         status = :closed
       end
 
-      Builtins.y2milestone(
-        "Status: %1, All: %2, Allowed: %3",
-        status,
-        @all_interfaces,
-        @allowed_interfaces
-      )
+      log.info("Status: #{status}, All: #{@all_interfaces}, Allowed: #{@allowed_interfaces}")
+
       SetFirewallLabel(status)
       open = status == :open_all || status == :custom
       UI.ChangeWidget(Id("_cwm_open_firewall"), :Value, open)
@@ -192,32 +189,32 @@ module Yast
       groups = ifaces.map { |i| firewalld.api.interface_zone(i) }.reject { |z| z.to_s.empty? }.uniq
       log.info("Ifaces groups: #{groups}")
 
-#      iface_groups = groups.map do |g|
-#        ifaces_also_supported_by_any = SuSEFirewall.GetInterfacesInZoneSupportingAnyFeature(g)
-#
-#        # If all interfaces in EXT zone are covered by the special 'any' string
-#        # and none of these interfaces are selected to be open, we can remove all of them
-#        # disable the service in whole EXT zone
-#        next deep_copy(ifaces_also_supported_by_any) if g != SuSEFirewall.special_all_interface_zone
-#
-#        ifaces_left_explicitely = Builtins.filter(
-#          ifaces_also_supported_by_any
-#        ) do |iface|
-#          Builtins.contains(ifaces, iface)
-#        end
-#        log.info("Ifaces left in zone: #{ifaces_left_explicitely}")
-#        # there are no interfaces left that would be explicitely mentioned in the EXT zone
-#        next [] if ifaces_left_explicitely == []
-#
-#        # Hmm, some interfaces left
-#        deep_copy(ifaces_also_supported_by_any)
-#      end
+      #      iface_groups = groups.map do |g|
+      #        ifaces_also_supported_by_any = SuSEFirewall.GetInterfacesInZoneSupportingAnyFeature(g)
+      #
+      #        # If all interfaces in EXT zone are covered by the special 'any' string
+      #        # and none of these interfaces are selected to be open, we can remove all of them
+      #        # disable the service in whole EXT zone
+      #        next deep_copy(ifaces_also_supported_by_any) if g != SuSEFirewall.special_all_interface_zone
+      #
+      #        ifaces_left_explicitely = Builtins.filter(
+      #          ifaces_also_supported_by_any
+      #        ) do |iface|
+      #          Builtins.contains(ifaces, iface)
+      #        end
+      #        log.info("Ifaces left in zone: #{ifaces_left_explicitely}")
+      #        # there are no interfaces left that would be explicitely mentioned in the EXT zone
+      #        next [] if ifaces_left_explicitely == []
+      #
+      #        # Hmm, some interfaces left
+      #        deep_copy(ifaces_also_supported_by_any)
+      #      end
 
-#      log.info("Ifaces touched: #{iface_groups}")
-#      new_ifaces = Builtins.toset(Builtins.flatten(iface_groups))
-#      new_ifaces = Builtins.filter(new_ifaces) { |i| !i.nil? }
+      #      log.info("Ifaces touched: #{iface_groups}")
+      #      new_ifaces = Builtins.toset(Builtins.flatten(iface_groups))
+      #      new_ifaces = Builtins.filter(new_ifaces) { |i| !i.nil? }
 
-#      Builtins.toset(new_ifaces)
+      #      Builtins.toset(new_ifaces)
 
       ifaces
     end
@@ -265,37 +262,35 @@ module Yast
       # If it is, checking the status of services for this zone
       # If it is enabled, adding it these interfaces into the list of allowed interfaces
       #                   and setting this zone to enabled
-      if SuSEFirewall.IsAnyNetworkInterfaceSupported
-        interfaces_supported_by_any = SuSEFirewall.InterfacesSupportedByAnyFeature(
-          SuSEFirewall.special_all_interface_zone
-        )
-        if interfaces_supported_by_any.size > 0
-          services.each do |service|
-            Ops.set(
-              service_status,
-              SuSEFirewall.special_all_interface_zone,
-              SuSEFirewall.IsServiceSupportedInZone(
-                service,
-                SuSEFirewall.special_all_interface_zone
-              ) &&
-                Ops.get(
-                  service_status,
-                  SuSEFirewall.special_all_interface_zone,
-                  true
-                )
-            )
-          end
-          if Ops.get(
+      interfaces_supported_by_any = SuSEFirewall.InterfacesSupportedByAnyFeature(
+        SuSEFirewall.special_all_interface_zone
+      )
+      if !interfaces_supported_by_any.empty?
+        services.each do |service|
+          Ops.set(
             service_status,
             SuSEFirewall.special_all_interface_zone,
-            false
+            SuSEFirewall.IsServiceSupportedInZone(
+              service,
+              SuSEFirewall.special_all_interface_zone
+            ) &&
+              Ops.get(
+                service_status,
+                SuSEFirewall.special_all_interface_zone,
+                true
+              )
           )
-            @allowed_interfaces = Convert.convert(
-              Builtins.union(@allowed_interfaces, interfaces_supported_by_any),
-              from: "list",
-              to:   "list <string>"
-            )
-          end
+        end
+        if Ops.get(
+          service_status,
+          SuSEFirewall.special_all_interface_zone,
+          false
+        )
+          @allowed_interfaces = Convert.convert(
+            Builtins.union(@allowed_interfaces, interfaces_supported_by_any),
+            from: "list",
+            to:   "list <string>"
+          )
         end
       end
 
@@ -481,6 +476,7 @@ module Yast
           return false
         end
       end
+
       # to hide that special string
       if !removed_ifaces.empty?
         if !Popup.YesNo(
@@ -1010,11 +1006,13 @@ module Yast
   private
 
     def known_interfaces
+      return @known_interfaces if @known_interfaces
+
       interfaces = NetworkInterfaces.List("").reject { |i| i == "lo" }
 
-      interfaces.map do |interface|
+      @known_interfaces = interfaces.map do |interface|
         {
-          "id" => interface,
+          "id"   => interface,
           "name" => NetworkInterfaces.GetValue(interface, "NAME"),
           "zone" => firewalld.api.interface_zone(interface)
         }
@@ -1025,16 +1023,15 @@ module Yast
       services_status = {}
 
       services.each do |service|
+        service_supported = firewalld.api.service_supported?(service)
         services_status[service] = {}
 
         firewalld.zones.each do |zone|
           next if !zone.interfaces || zone.interfaces.empty?
 
           zone.interfaces.each do |interface|
-            if firewalld.api.service_supported?(service)
-              services_status[service][interface] = zone.services.include?(service)
-            else
-              services_status[service][interface] = nil
+            services_status[service][interface] = if service_supported
+              zone.services.include?(service)
             end
           end
         end
@@ -1051,7 +1048,7 @@ module Yast
       label = NetworkInterfaces.GetValue(name, "BOOTPROTO")
       ipaddr = NetworkInterfaces.GetValue(name, "IPADDR")
       # BNC #483455: Interface zone name
-      zone = firewalld.find_zone(firewalld.api.interface_zone(name))
+      zone = firewalld.zones.find { |z| z.interfaces.include?(name) }
       zone_full_name = zone ? zone.full_name : _("Interface is not assigned to any zone")
       if label == "static" || label == "" || label.nil?
         label = ipaddr
@@ -1059,7 +1056,7 @@ module Yast
         label.upcase!
         label << "/#{ipaddr}" if !ipaddr.nil? && ipaddr != ""
       end
-      label = if label.nil? || label == ""
+      if label.nil? || label == ""
         name
       else
         "#{name} (#{label} / #{zone_full_name})"
