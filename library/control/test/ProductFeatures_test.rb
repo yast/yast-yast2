@@ -61,6 +61,15 @@ describe Yast::ProductFeatures do
       expect(subject.Export).to eq(original_features)
     end
 
+    it "does nothing in second consequent call" do
+      subject.Import(original_features)
+      subject.SetOverlay(overlay_features)
+      subject.ClearOverlay
+      subject.SetFeature("globals", "keyboard", "test")
+      subject.ClearOverlay
+      expect(subject.Export).to_not eq(original_features)
+    end
+
     it "keeps the original state if nothing was overlaid" do
       subject.Import(original_features)
       subject.ClearOverlay
