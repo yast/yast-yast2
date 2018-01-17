@@ -7,6 +7,11 @@ Yast.import "ProductFeatures"
 describe Yast::ProductFeatures do
   subject { Yast::ProductFeatures }
 
+  before do
+    # ensure no overlay is active
+    subject.ClearOverlay
+  end
+
   let(:original_features) do
     {
       "globals"      => {
@@ -50,6 +55,12 @@ describe Yast::ProductFeatures do
       subject.Import(original_features)
       subject.SetOverlay(overlay_features)
       expect(subject.Export).to eq(resulting_features)
+    end
+
+    it "raises RuntimeError if called twice without ClearOverlay meanwhile" do
+      subject.Import(original_features)
+      subject.SetOverlay(overlay_features)
+      expect{subject.SetOverlay(overlay_features)}.to raise_error(RuntimeError)
     end
   end
 
