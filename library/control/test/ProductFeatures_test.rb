@@ -60,7 +60,7 @@ describe Yast::ProductFeatures do
     it "raises RuntimeError if called twice without ClearOverlay meanwhile" do
       subject.Import(original_features)
       subject.SetOverlay(overlay_features)
-      expect{subject.SetOverlay(overlay_features)}.to raise_error(RuntimeError)
+      expect { subject.SetOverlay(overlay_features) }.to raise_error(RuntimeError)
     end
   end
 
