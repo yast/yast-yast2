@@ -25,7 +25,7 @@
 module Y2Firewall
   class Firewalld
     class Api
-      # This module contains specific api methods for handling with services
+      # This module contains specific api methods for handling services
       # definition and configuration.
       module Services
         # @param service [String] The firewall service

@@ -60,6 +60,8 @@ module Y2Firewall
     # Constructor
     def initialize
       @api = Api.new
+      @zones = []
+      @services = []
     end
 
     # Read the current firewalld configuration initializing the zones and other
@@ -73,7 +75,6 @@ module Y2Firewall
       @default_zone       = api.default_zone
       # The list of services is not read or initialized because takes time and
       # affects to the performance and also the services are rarely touched.
-      @services           = []
       true
     end
 

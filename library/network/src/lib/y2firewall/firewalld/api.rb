@@ -25,6 +25,7 @@
 require "yast"
 require "yast2/execute"
 require "y2firewall/firewalld/api/services"
+require "y2firewall/firewalld/api/zones"
 
 Yast.import "Stage"
 Yast.import "Service"
@@ -44,6 +45,7 @@ module Y2Firewall
       include Yast::Logger
       include Yast::I18n
       include Services
+      include Zones
       extend Forwardable
 
       # Map firewalld modes with their command line tools
@@ -139,202 +141,6 @@ module Y2Firewall
         return false if offline?
 
         run_command("--complete-reload")
-      end
-
-      ### Zones ####
-
-      # @return [Array<String>] List of firewall zones
-      def zones
-        string_command("--get-zones").split(" ")
-      end
-
-      # @param zone [String] The firewall zone
-      # @return [Array<String>] list of zone's interfaces
-      def list_interfaces(zone)
-        string_command("--zone=#{zone}", "--list-interfaces").split(" ")
-      end
-
-      # @param zone [String] The firewall zone
-      # @return [Arrray<String>] list of zone's services
-      def list_services(zone)
-        string_command("--zone=#{zone}", "--list-services").split(" ")
-      end
-
-      # @param zone [String] The firewall zone
-      # @return [Array<String>] list of zone's ports
-      def list_ports(zone)
-        string_command("--zone=#{zone}", "--list-ports").split(" ")
-      end
-
-      # @param zone [String] The firewall zone
-      # @return [Array<String>] list of zone's protocols
-      def list_protocols(zone)
-        string_command("--zone=#{zone}", "--list-protocols").split(" ")
-      end
-
-      # @param zone [String] The firewall zone
-      # @return [Array<String>] list of zone's sources
-      def list_sources(zone)
-        string_command("--zone=#{zone}", "--list-sources").split(" ")
-      end
-
-      # @param zone [String] The firewall zone
-      # @return [Array<String>] list of all information for given zone
-      def list_all(zone)
-        string_command("--zone=#{zone}", "--list-all").split(" ")
-      end
-
-      # @return [Array<String>] list of all information for all firewall zones
-      def list_all_zones
-        string_command("--list-all-zones").split("\n")
-      end
-
-      ### Interfaces ###
-
-      # Return the name of the zone the interface belongs to or nil.
-      #
-      # @param interface [String] interface name
-      # @return [String, nil] the interface zone or nil
-      def interface_zone(interface)
-        string_command("--get-zone-of-interface=#{interface}")
-      end
-
-      # @param zone [String] The firewall zone
-      # @param interface [String] The network interface
-      # @return [Boolean] True if interface is assigned to zone
-      def interface_enabled?(zone, interface)
-        query_command("--zone=#{zone} --query-interface=#{interface}")
-      end
-
-      # @param zone [String] The firewall zone
-      # @param interface [String] The network interface
-      # @return [Boolean] True if interface was added to zone
-      def add_interface(zone, interface, permanent: permanent?)
-        run_command("--zone=#{zone}", "--add-interface=#{interface}", permanent: permanent)
-      end
-
-      # @param zone [String] The firewall zone
-      # @param interface [String] The network interface
-      # @return [Boolean] True if interface was removed from zone
-      def remove_interface(zone, interface, permanent: permanent?)
-        run_command("--zone=#{zone}", "--remove-interface=#{interface}", permanent: permanent)
-      end
-
-      # @param zone [String] The firewall zone
-      # @param interface [String] The network interface
-      # @return [Boolean] True if interface was changed
-      def change_interface(zone, interface, permanent: permanent?)
-        run_command("--zone=#{zone}", "--change-interface=#{interface}", permanent: permanent)
-      end
-
-      # @param zone [String] The firewall zone
-      # @param source [String] The network source
-      # @return [Boolean] True if source was added
-      def add_source(zone, source, permanent: permanent?)
-        run_command("--zone=#{zone}", "--add-source=#{source}", permanent: permanent)
-      end
-
-      # @param zone [String] The firewall zone
-      # @param source [String] The network source
-      # @return [Boolean] True if source was removed
-      def remove_source(zone, source, permanent: permanent?)
-        run_command("--zone=#{zone}", "--remove-source=#{source}", permanent: permanent)
-      end
-
-      # @param zone [String] The firewall zone
-      # @param source [String] The network source
-      # @return [Boolean] True if source was changed
-      def change_source(zone, source, permanent: permanent?)
-        run_command("--zone=#{zone}", "--change-source=#{source}", permanent: permanent)
-      end
-
-      # @param zone [String] The firewall zone
-      # @param service [String] The firewall service
-      # @return [Boolean] True if service is enabled in zone
-      def service_enabled?(zone, service)
-        query_command("--zone=#{zone}", "--query-service=#{service}")
-      end
-
-      # @param zone [String] The firewall zone
-      # @param port [String] The firewall port
-      # @return [Boolean] True if port is enabled in zone
-      def port_enabled?(zone, port)
-        query_command("--zone=#{zone}", "--query-port=#{port}")
-      end
-
-      # @param zone [String] The firewall zone
-      # @param protocol [String] The zone protocol
-      # @return [Boolean] True if protocol is enabled in zone
-      def protocol_enabled?(zone, protocol)
-        query_command("--zone=#{zone}", "--query-protocol=#{protocol}")
-      end
-
-      # @param zone [String] The firewall zone
-      # @param service [String] The firewall service
-      # @return [Boolean] True if service was added to zone
-      def add_service(zone, service, permanent: permanent?)
-        run_command("--zone=#{zone}", "--add-service=#{service}", permanent: permanent)
-      end
-
-      # @param zone [String] The firewall zone
-      # @param port [String] The firewall port
-      # @return [Boolean] True if port was added to zone
-      def add_port(zone, port, permanent: permanent?)
-        run_command("--zone=#{zone}", "--add-port=#{port}", permanent: permanent)
-      end
-
-      # @param zone [String] The firewall zone
-      # @param protocol [String] The firewall protocol
-      # @return [Boolean] True if protocol was added to zone
-      def add_protocol(zone, protocol, permanent: permanent?)
-        run_command("--zone=#{zone}", "--add-protocol=#{protocol}", permanent: permanent)
-      end
-
-      # @param zone [String] The firewall zone
-      # @param service [String] The firewall service
-      # @return [Boolean] True if service was removed from zone
-      def remove_service(zone, service, permanent: permanent?)
-        if offline?
-          run_command("--zone=#{zone}", "--remove-service-from-zone=#{service}")
-        else
-          run_command("--zone=#{zone}", "--remove-service=#{service}", permanent: permanent)
-        end
-      end
-
-      # @param zone [String] The firewall zone
-      # @param port [String] The firewall port
-      # @return [Boolean] True if port was removed from zone
-      def remove_port(zone, port, permanent: permanent?)
-        run_command("--zone=#{zone}", "--remove-port=#{port}", permanent: permanent)
-      end
-
-      # @param zone [String] The firewall zone
-      # @param protocol [String] The firewall protocol
-      # @return [Boolean] True if protocol was removed from zone
-      def remove_protocol(zone, protocol, permanent: permanent?)
-        run_command("--zone=#{zone}", "--remove-protocol=#{protocol}", permanent: permanent)
-      end
-
-      # @param zone [String] The firewall zone
-      # @return [Boolean] True if masquerade is enabled in zone
-      def masquerade_enabled?(zone)
-        query_command("--zone=#{zone}", "--query-masquerade")
-      end
-
-      # @param zone [String] The firewall zone
-      # @return [Boolean] True if masquerade was enabled in zone
-      def add_masquerade(zone)
-        return true if masquerade_enabled?(zone)
-
-        run_command("--zone=#{zone}", "--add-masquerade")
-      end
-
-      # @param zone [String] The firewall zone
-      # @return [Boolean] True if masquerade was removed in zone
-      def remove_masquerade(zone)
-        return true if !masquerade_enabled?(zone)
-
-        run_command("--zone=#{zone}", "--remove-masquerade")
       end
 
       ### Logging ###

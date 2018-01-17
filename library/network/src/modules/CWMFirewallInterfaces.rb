@@ -226,17 +226,11 @@ module Yast
     # Changes the internal variables
     # @param [Array<String>] services a list of services
     def InitAllowedInterfaces(services)
-      services = deep_copy(services)
       service_status = {}
 
-      ifaces_info = zone_services(services)
-      ifaces_info.each do |_s, status|
+      zone_services(services).each do |_s, status|
         status.each do |iface, en|
-          Ops.set(
-            service_status,
-            iface,
-            Ops.get(service_status, iface, true) && en
-          )
+          service_status[iface] = service_status.fetch(iface, true) && en
         end
       end
 
@@ -429,7 +423,7 @@ module Yast
           Builtins.sformat(
             # yes-no popup
             _(
-              "Because of SuSE Firewall settings, the port\n" \
+              "Because of firewalld settings, the port\n" \
                 "on the following interfaces will additionally be open:\n" \
                 "%1\n" \
                 "\n" \
@@ -448,7 +442,7 @@ module Yast
           Builtins.sformat(
             # yes-no popup
             _(
-              "Because of SuSE Firewall settings, the port\n" \
+              "Because of firewalld settings, the port\n" \
                 "on the following interfaces cannot be opened:\n" \
                 "%1\n" \
                 "\n" \
@@ -628,14 +622,14 @@ module Yast
     # Initialize the open firewall widget
     # @param [Hash{String => Object}] widget a map describing the whole widget
     def OpenFirewallInit(widget, _key)
-      widget = deep_copy(widget)
       if !UI.WidgetExists(Id("_cwm_open_firewall"))
-        Builtins.y2error("Firewall widget doesn't exist")
+        log.error("Firewall widget doesn't exist")
         return
       end
-      services = widget.fetch("services", [])
-      InitAllInterfacesList()
 
+      services = widget.fetch("services", [])
+
+      InitAllInterfacesList()
       InitAllowedInterfaces(services)
 
       open_firewall = !@allowed_interfaces.empty?
@@ -970,10 +964,26 @@ module Yast
 
   private
 
+    # Convenience method to return the default zone object
+    #
+    # @return [Y2Firewall::Firewalld::Zone] default zone
     def default_zone
       @default_zone ||= firewalld.find_zone(firewalld.default_zone)
     end
 
+    # Return a hash of all the known interfaces with their "id", "name" and
+    # "zone".
+    #
+    # @example
+    #   CWMFirewallInterfaces.known_interfaces #=>
+    #     [
+    #       { "id" => "eth0", "name" => "Intel Ethernet Connection I217-LM", "zone" => "external"},
+    #       { "id" => "eth1", "name" => "Intel Ethernet Connection I217-LM", "zone" => "public"},
+    #       { "id" => "eth2", "name" => "Intel Ethernet Connection I217-LM", "zone" => nil},
+    #       { "id" => "eth3", "name" => "Intel Ethernet Connection I217-LM", "zone" => nil},
+    #     ]
+    #
+    # @return [Array<Hash<String,String>>] known interfaces "id", "name" and "zone"
     def known_interfaces
       return @known_interfaces if @known_interfaces
 
@@ -988,10 +998,18 @@ module Yast
       end
     end
 
+    # Return the name of interfaces which belongs to the default zone
+    #
+    # @return [Array<String>] default zone interface names
     def default_interfaces
       known_interfaces.select { |i| i["zone"].to_s.empty? }.map { |i| i["id"] }
     end
 
+    # Return the zone name for a given interface from the firewalld instance
+    # instead of from the API.
+    #
+    # @param name [String] interface name
+    # @return [String, nil] zone name whether belongs to some or nil if not
     def interface_zone(name)
       zone = firewalld.zones.find { |z| z.interfaces.include?(name) }
 
@@ -1006,12 +1024,11 @@ module Yast
         services_status[service] = {}
 
         firewalld.zones.each do |zone|
-          next if !zone.interfaces || zone.interfaces.empty?
+          next if (zone.interfaces || []).empty?
 
           zone.interfaces.each do |interface|
-            services_status[service][interface] = if service_supported
-              zone.services.include?(service)
-            end
+            services_status[service][interface] =
+              service_supported ? zone.services.include?(service) : nil
           end
         end
       end
