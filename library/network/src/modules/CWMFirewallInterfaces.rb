@@ -1,13 +1,13 @@
 # encoding: utf-8
-
+#
 # ***************************************************************************
 #
-# Copyright (c) 2002 - 2012 Novell, Inc.
+# Copyright (c) 2018 SUSE LLC.
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
-# modify it under the terms of version 2 of the GNU General Public License as
-# published by the Free Software Foundation.
+# modify it under the terms of version 2 or 3 of the GNU General
+# Public License as published by the Free Software Foundation.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -15,12 +15,13 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, contact Novell, Inc.
+# along with this program; if not, contact SUSE LLC.
 #
-# To contact Novell about this file by physical or electronic mail,
-# you may find current contact information at www.novell.com
+# To contact SUSE about this file by physical or electronic mail,
+# you may find current contact information at www.suse.com
 #
 # ***************************************************************************
+
 # File:	modules/CWMFirewallInterfaces.ycp
 # Package:	Common widget manipulation, firewall interfaces widget
 # Summary:	Routines for selecting interfaces opened in firewall
@@ -36,12 +37,18 @@
 #
 #	    Functionality of this module only changes the firewalld
 #          settings in memory, it never Reads or Writes the settings.
+
 require "yast"
 require "y2firewall/firewalld"
 
 module Yast
   class CWMFirewallInterfacesClass < Module
     include Yast::Logger
+
+    # [Array<String>] List of all interfaces relevant for firewall settings
+    attr_accessor :allowed_interfaces
+    # [Array<String>] List of all the system network interfaces
+    attr_accessor :all_interfaces
 
     def main
       Yast.import "UI"
@@ -58,23 +65,13 @@ module Yast
 
       # private variables
 
-      # List of all interfaces relevant for firewall settings
-      @all_interfaces = nil
-
       # List of all items of interfaces to the selection box
       @interface_items = nil
-
-      # List of interfaces that are allowed
-      @allowed_interfaces = nil
 
       # Information if configuration was changed by user
       @configuration_changed = false
 
       @buggy_ifaces = []
-    end
-
-    def firewalld
-      Y2Firewall::Firewalld.instance
     end
 
     # private functions
@@ -87,7 +84,7 @@ module Yast
       enabled = Convert.to_boolean(
         UI.QueryWidget(Id("_cwm_open_firewall"), :Value)
       )
-      enabled = false if enabled.nil? || @all_interfaces.empty?
+      enabled = false if enabled.nil? || all_interfaces.empty?
 
       UI.ChangeWidget(Id("_cwm_firewall_details"), :Enabled, enabled)
 
@@ -97,34 +94,36 @@ module Yast
     # Set the firewall status label
     # @param [Symbol] status symbol one of `off, `closed, `open_all, `custom, `not_installed
     def SetFirewallLabel(status)
-      label = ""
-      if status == :not_installed
-        # bnc #429861
-        label = if Stage.initial
+      label =
+        case status
+        when :not_installed
+          # bnc #429861
+          if Stage.initial
+            # label
+            _(
+              "Firewall cannot be adjusted during first stage installation."
+            )
+          else
+            # label
+            _("Firewall package is not installed.")
+          end
+        when :off
           # label
-          _(
-            "Firewall cannot be adjusted during first stage installation."
-          )
-        else
+          _("Firewall is disabled")
+        when :closed
           # label
-          _("Firewall package is not installed.")
+          _("Firewall port is closed")
+        when :open_all
+          # label
+          _("Firewall port is open on all interfaces")
+        when :custom
+          # label
+          _("Firewall port is open on selected interfaces")
+        when :no_ifaces
+          # label
+          _("No network interfaces are configured")
         end
-      elsif status == :off
-        # label
-        label = _("Firewall is disabled")
-      elsif status == :closed
-        # label
-        label = _("Firewall port is closed")
-      elsif status == :open_all
-        # label
-        label = _("Firewall port is open on all interfaces")
-      elsif status == :custom
-        # label
-        label = _("Firewall port is open on selected interfaces")
-      elsif status == :no_ifaces
-        # label
-        label = _("No network interfaces are configured")
-      end
+
       UI.ReplaceWidget(Id(:_cwm_firewall_status_rp), Label(label))
 
       nil
@@ -139,35 +138,17 @@ module Yast
       end
 
       @all_interfaces = NetworkInterfaces.List("").reject { |i| i == "lo" }
-
-      @interface_items =
-        @all_interfaces.map do |interface|
-          return Item(Id(interface), interface) if Mode.config
-          Item(Id(interface), interface_label(interface))
-        end
+      @interface_items = all_interfaces.map { |i| Item(Id(i), interface_label(i)) }
 
       nil
     end
 
     # Update the firewall status label according to the current status
     def UpdateFirewallStatus
-      InitAllInterfacesList() if @all_interfaces.nil?
-      status = :custom
+      InitAllInterfacesList() if all_interfaces.nil?
 
-      # bnc #429861
-      if Stage.initial || !firewalld.installed?
-        status = :not_installed
-      elsif !firewalld.enabled?
-        status = :off
-      elsif @all_interfaces.empty?
-        status = :no_ifaces
-      elsif @all_interfaces.size == @allowed_interfaces.size
-        status = :open_all
-      elsif @allowed_interfaces.empty?
-        status = :closed
-      end
-
-      log.info("Status: #{status}, All: #{@all_interfaces}, Allowed: #{@allowed_interfaces}")
+      status = current_firewall_status
+      log.info("Status: #{status}, All: #{all_interfaces}, Allowed: #{allowed_interfaces}")
 
       SetFirewallLabel(status)
       open = status == :open_all || status == :custom
@@ -247,11 +228,11 @@ module Yast
             default_zone && default_zone.services.include?(service)
         end
         if service_status[firewalld.default_zone]
-          @allowed_interfaces = (@allowed_interfaces + default_interfaces).uniq
+          @allowed_interfaces = (allowed_interfaces + default_interfaces).uniq
         end
       end
 
-      log.info "Allowed interfaces: #{@allowed_interfaces}"
+      log.info "Allowed interfaces: #{allowed_interfaces}"
 
       @configuration_changed = false
 
@@ -268,7 +249,7 @@ module Yast
 
       zones =
         known_interfaces.each_with_object([]) do |known_interface, a|
-          a << known_interface["zone"] if @allowed_interfaces.include?(known_interface["id"])
+          a << known_interface["zone"] if allowed_interfaces.include?(known_interface["id"])
         end
 
       firewalld.zones.map do |zone|
@@ -291,7 +272,7 @@ module Yast
     # @param [String] _key strnig the widget key
     def InterfacesInit(_widget, _key)
       # set the list of ifaces
-      InitAllInterfacesList() if @all_interfaces.nil?
+      InitAllInterfacesList() if all_interfaces.nil?
       UI.ReplaceWidget(
         Id("_cwm_interface_list_rp"),
         MultiSelectionBox(
@@ -305,7 +286,7 @@ module Yast
       UI.ChangeWidget(
         Id("_cwm_interface_list"),
         :SelectedItems,
-        @allowed_interfaces
+        allowed_interfaces
       )
 
       nil
@@ -322,7 +303,7 @@ module Yast
         UI.ChangeWidget(
           Id("_cwm_interface_list"),
           :SelectedItems,
-          @all_interfaces
+          all_interfaces
         )
         return nil
       end
@@ -338,12 +319,12 @@ module Yast
     # @param [String] _key strnig the widget key
     # @param [Hash] _event map that caused widget data storing
     def InterfacesStore(_widget, _key, _event)
-      @allowed_interfaces = Convert.convert(
+      allowed_interfaces = Convert.convert(
         UI.QueryWidget(Id("_cwm_interface_list"), :SelectedItems),
         from: "any",
         to:   "list <string>"
       )
-      @allowed_interfaces = Selected2Opened(@allowed_interfaces, false)
+      @allowed_interfaces = Selected2Opened(allowed_interfaces, false)
       @configuration_changed = true
 
       nil
@@ -632,8 +613,8 @@ module Yast
       InitAllInterfacesList()
       InitAllowedInterfaces(services)
 
-      open_firewall = !@allowed_interfaces.empty?
-      firewall_enabled = firewalld.enabled? && !@all_interfaces.empty?
+      open_firewall = !allowed_interfaces.empty?
+      firewall_enabled = firewalld.enabled? && !all_interfaces.empty?
       if !firewall_enabled
         open_firewall = false
         UI.ChangeWidget(Id("_cwm_open_firewall"), :Enabled, false)
@@ -695,13 +676,13 @@ module Yast
           UI.QueryWidget(Id("_cwm_open_firewall"), :Value)
         )
         Builtins.y2milestone("OF: %1", value)
-        @allowed_interfaces = value ? deep_copy(@all_interfaces) : []
+        @allowed_interfaces = value ? deep_copy(all_interfaces) : []
 
         @buggy_ifaces = []
 
         # Filtering out buggy ifaces
         Builtins.foreach(@buggy_ifaces) do |one_iface|
-          @allowed_interfaces = Builtins.filter(@allowed_interfaces) do |one_allowed|
+          @allowed_interfaces = Builtins.filter(allowed_interfaces) do |one_allowed|
             one_allowed != one_iface
           end
         end
@@ -964,6 +945,28 @@ module Yast
 
   private
 
+    # Return an instance of Y2Firewall::Firewalld
+    #
+    # @return [Y2Firewall::Firewalld] a firewalld instance
+    def firewalld
+      Y2Firewall::Firewalld.instance
+    end
+
+    # Return the current status of the firewall related to the interfaces
+    # opened or available
+    #
+    # @return [Symbol] current firewall status
+    def current_firewall_status
+      # bnc #429861
+      return :not_installed if Stage.initial || !firewalld.installed?
+      return :off unless firewalld.enabled?
+      return :no_ifaces if all_interfaces.empty?
+      return :open_all if all_interfaces.size == allowed_interfaces.size
+      return :closed if allowed_interfaces.empty?
+
+      :custom
+    end
+
     # Convenience method to return the default zone object
     #
     # @return [Y2Firewall::Firewalld::Zone] default zone
@@ -1041,6 +1044,8 @@ module Yast
     # @param name [String] interface name
     # @return [String] label for given interface name
     def interface_label(name)
+      return name if Mode.config
+
       label = NetworkInterfaces.GetValue(name, "BOOTPROTO")
       ipaddr = NetworkInterfaces.GetValue(name, "IPADDR")
       # BNC #483455: Interface zone name
