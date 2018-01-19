@@ -164,15 +164,16 @@ module Yast
     # @return a list of interfaces that will be opened
     def Selected2Opened(ifaces, _nm_ifaces_have_to_be_selected)
       log.info("Selected ifaces: #{ifaces}")
-      zone_names = ifaces.map { |i| interface_zone(i) }.reject { |z| z.to_s.empty? }.uniq
+      zone_names = ifaces.map { |i| interface_zone(i) || default_zone.name }.uniq
       log.info("Ifaces zone names: #{zone_names}")
 
       zone_ifaces =
         zone_names.map do |zone_name|
           zone = firewalld.find_zone(zone_name)
+          next [] unless zone
           interfaces = zone.interfaces
 
-          next(interfaces) unless zone_name == firewalld.default_zone
+          next(interfaces) unless zone_name == default_zone.name
           interfaces += default_interfaces
 
           left_explicitly = interfaces.select { |i| ifaces.include?(i) }.uniq
@@ -603,10 +604,7 @@ module Yast
     # Initialize the open firewall widget
     # @param [Hash{String => Object}] widget a map describing the whole widget
     def OpenFirewallInit(widget, _key)
-      if !UI.WidgetExists(Id("_cwm_open_firewall"))
-        log.error("Firewall widget doesn't exist")
-        return
-      end
+      return unless open_firewall_widget?
 
       services = widget.fetch("services", [])
 
@@ -631,15 +629,9 @@ module Yast
     # @param [String] _key strnig the widget key
     # @param [Hash] _event map that caused widget data storing
     def OpenFirewallStore(widget, _key, _event)
-      widget = deep_copy(widget)
-      if !UI.WidgetExists(Id("_cwm_open_firewall"))
-        Builtins.y2error("Widget _cwm_open_firewall does not exist")
-        return
-      end
+      return unless open_firewall_widget?
       services = widget.fetch("services", [])
-
       StoreAllowedInterfaces(services)
-
       nil
     end
 
@@ -944,6 +936,19 @@ module Yast
     publish function: :Modified, type: "boolean ()"
 
   private
+
+    # Return whether the '_cwm_open_firewall' widget exists or not logging the
+    # error in case of non-existence.
+    #
+    # @return [Boolean] true if the open firewall widget exists
+    def open_firewall_widget?
+      unless UI.WidgetExists(Id("_cwm_open_firewall"))
+        log.error("Widget _cwm_open_firewall does not exist")
+        return false
+      end
+
+      true
+    end
 
     # Return an instance of Y2Firewall::Firewalld
     #
