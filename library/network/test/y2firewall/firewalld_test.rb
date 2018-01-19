@@ -280,7 +280,6 @@ describe Y2Firewall::Firewalld do
     end
   end
 
-
   describe "#write_only" do
     let(:api) do
       Y2Firewall::Firewalld::Api.new

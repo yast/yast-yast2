@@ -46,9 +46,12 @@ module Yast
     include Yast::Logger
 
     # [Array<String>] List of all interfaces relevant for firewall settings
-    attr_accessor :allowed_interfaces
+    attr_reader :allowed_interfaces
     # [Array<String>] List of all the system network interfaces
-    attr_accessor :all_interfaces
+    attr_reader :all_interfaces
+
+    # [Boolean] Information if configuration was changed by user
+    attr_reader :configuration_changed
 
     def main
       Yast.import "UI"
@@ -68,7 +71,6 @@ module Yast
       # List of all items of interfaces to the selection box
       @interface_items = nil
 
-      # Information if configuration was changed by user
       @configuration_changed = false
 
       @buggy_ifaces = []
@@ -184,7 +186,7 @@ module Yast
           interfaces
         end
 
-      (ifaces + zone_ifaces.flatten).uniq
+      zone_ifaces.flatten.uniq
     end
 
     # Display popup with firewall settings details
@@ -246,11 +248,13 @@ module Yast
     def StoreAllowedInterfaces(services)
       services = deep_copy(services)
       # do not save anything if configuration didn't change
-      return if !@configuration_changed
+      return if !configuration_changed
 
       zones =
         known_interfaces.each_with_object([]) do |known_interface, a|
-          a << known_interface["zone"] if allowed_interfaces.include?(known_interface["id"])
+          if allowed_interfaces.include?(known_interface["id"])
+            a << known_interface["zone"] || default_zone.name
+          end
         end
 
       firewalld.zones.map do |zone|
