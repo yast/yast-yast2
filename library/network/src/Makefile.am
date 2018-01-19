@@ -14,7 +14,8 @@ module_DATA = \
   modules/SuSEFirewallExpertRules.rb \
   modules/SuSEFirewallServices.rb \
   modules/SLPAPI.pm \
-  modules/DnsServerAPI.pm
+  modules/DnsServerAPI.pm \
+  modules/firewalld_wrapper.rb
 
 scrconf_DATA = \
   scrconf/sysconfig_SuSEfirewall2.scr \
