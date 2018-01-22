@@ -93,6 +93,7 @@ module Y2Firewall
 
         # @param zone [String] The firewall zone
         # @param interface [String] The network interface
+        # @param permanent [Boolean] if true it adds the --permanent option the
         # @return [Boolean] True if interface was added to zone
         def add_interface(zone, interface, permanent: permanent?)
           run_command("--zone=#{zone}", "--add-interface=#{interface}", permanent: permanent)

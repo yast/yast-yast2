@@ -179,6 +179,7 @@ module Y2Firewall
       # @see Yast::Execute
       # @param args [Array<String>] list of command optional arguments
       # @param permanent [Boolean] if true it adds the --permanent option the
+      # command to be executed
       # @param allowed_exitstatus [Fixnum, .include?, nil] allowed exit codes
       # which do not cause an exception.
       # command to be executed

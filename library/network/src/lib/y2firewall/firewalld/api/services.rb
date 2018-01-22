@@ -2,7 +2,7 @@
 #
 # ***************************************************************************
 #
-# Copyright (c) 2017 SUSE LLC.
+# Copyright (c) 2018 SUSE LLC.
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -29,6 +29,9 @@ module Y2Firewall
       # definition and configuration.
       module Services
         # @param service [String] The firewall service
+        # @param permanent [
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         def new_service(service, permanent: permanent?)
           query_command("--new-service=#{service}", permanent: permanent)
         end
@@ -39,12 +42,16 @@ module Y2Firewall
         end
 
         # @param service [String] The firewall service
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Array<String>] list of all information for the given service
         def info_service(service, permanent: permanent?)
           string_command("--info-service", service.to_s, permanent: permanent).split("\n")
         end
 
         # @param service [String] The firewall service
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [String] Short description for service
         def service_short(service, permanent: permanent?)
           # these may not exist on early firewalld releases
@@ -52,6 +59,8 @@ module Y2Firewall
         end
 
         # @param service [String] the firewall service
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [String] Description for service
         def service_description(service, permanent: permanent?)
           string_command("--service=#{service}", "--get-description", permanent: permanent)
@@ -64,18 +73,24 @@ module Y2Firewall
         end
 
         # @param service [String] The firewall service
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Array<String>] The firewall service ports
         def service_ports(service, permanent: permanent?)
           string_command("--service=#{service}", "--get-ports", permanent: permanent).split(" ")
         end
 
         # @param service [String] The firewall service
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Array<String>] The firewall service protocols
         def service_protocols(service, permanent: permanent?)
           string_command("--service=#{service}", "--get-protocols", permanent: permanent).split(" ")
         end
 
         # @param service [String] The firewall service
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Array<String>] The firewall service modules
         def service_modules(service, permanent: permanent?)
           string_command("--service=#{service}", "--get-modules", permanent: permanent).split(" ")
@@ -83,6 +98,8 @@ module Y2Firewall
 
         # @param service [String] The firewall service
         # @param port [String] The firewall port
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Boolean] True if port was removed from service
         def remove_service_port(service, port, permanent: permanent?)
           string_command("--service=#{service}", "--remove-port=#{port}", permanent: permanent)
@@ -90,6 +107,8 @@ module Y2Firewall
 
         # @param service [String] The firewall firewall
         # @param port [String] The firewall port
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Boolean] True if port was removed from service
         def add_service_port(service, port, permanent: permanent?)
           string_command("--service=#{service}", "--add-port=#{port}", permanent: permanent)
