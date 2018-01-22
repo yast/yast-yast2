@@ -1062,7 +1062,7 @@ module Yast
     def services_not_defined_widget(services)
       services_list =
         services.map do |service|
-          if firewalld.api.service_supported?(service)
+          if !firewalld.api.service_supported?(service)
             HBox(HSpacing(2), Left(Label(_("* %{service} (Not available)") % { service: service })))
           else
             HBox(HSpacing(2), Left(Label(_("* %{service}") % { service: service })))
