@@ -330,7 +330,7 @@ describe Y2Firewall::Firewalld do
     end
 
     it "reloads firewalld" do
-      allow(firewalld).to receive(:write_only)
+      allow(firewalld).to receive(:write_only).and_return(true)
       expect(firewalld).to receive(:reload)
 
       firewalld.write
