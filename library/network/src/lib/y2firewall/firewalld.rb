@@ -103,7 +103,8 @@ module Y2Firewall
     # @return [Y2Firewall::Firewalld::Service] the recently added service
     def read_service(name)
       service = Y2Firewall::Firewalld::Service.new(name: name)
-      service.create! if !service.supported?
+      raise(Service::NotFound, name) if !service.supported?
+
       service.read
       @services << service
       service
@@ -121,15 +122,14 @@ module Y2Firewall
 
     # Apply the changes to the modified zones and sets the logging option
     def write
-      write_only
-      reload
+      write_only && reload
     end
 
     # Apply the changes to the modified zones and sets the logging option
     def write_only
       zones.map { |z| z.apply_changes! if z.modified? }
-      api.log_denied_packets = log_denied_packets
-      api.default_zone       = default_zone
+      api.log_denied_packets = log_denied_packets if log_denied_packets != api.log_denied_packets
+      api.default_zone       = default_zone if default_zone != api.default_zone
       true
     end
 

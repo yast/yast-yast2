@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 # ------------------------------------------------------------------------------
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2018 SUSE LLC
 #
 #
 # This program is free software; you can redistribute it and/or modify it under
@@ -27,6 +27,13 @@ module Y2Firewall
   class Firewalld
     # Class to work with Firewalld services
     class Service
+      # Service was not found
+      class NotFound < StandardError
+        def initialize(name)
+          super "Service '#{name}' not found"
+        end
+      end
+
       extend Relations
       include Yast::I18n
       extend Yast::I18n
