@@ -12,7 +12,53 @@ describe Yast::CWMFirewallInterfaces do
   subject { Yast::CWMFirewallInterfaces }
 
   describe "#CreateOpenFirewallWidget" do
-    let(:widget_settings) { { "services" => ["apache"] } }
+    let(:widget_settings) { { "services" => [] } }
+    let(:api) { Y2Firewall::Firewalld::Api.new }
+
+    before do
+      allow_any_instance_of(Y2Firewall::Firewalld)
+        .to receive(:api).and_return(api)
+
+      allow(api).to receive(:service_supported?)
+    end
+
+    context "when the widget settings does not contain any service" do
+      it "returns a hash with only 'widget' and 'custom_widget' keys" do
+        ret = subject.CreateOpenFirewallWidget(widget_settings)
+        expect(ret.keys).to eq(["widget", "custom_widget"])
+      end
+
+      it "returns an empty VBox() as the 'custom_widget'" do
+        expect(subject.CreateOpenFirewallWidget(widget_settings)["custom_widget"]).to eq(VBox())
+      end
+    end
+
+    context "when the widget settings does not contain any service" do
+      let(:widget_settings) { { "services" => ["service"] } }
+
+      before do
+        allow(api).to receive(:service_supported?).with("service").and_return(false)
+      end
+
+      it "returns a hash with only 'widget' and 'custom_widget' keys" do
+        allow(subject).to receive(:services_not_defined_widget).with(["service"])
+          .and_return(Frame("unsupported_services_summary"))
+
+        ret = subject.CreateOpenFirewallWidget(widget_settings)
+
+        expect(ret.keys).to eq(["widget", "custom_widget"])
+      end
+
+      it "returns a summary with the unavailable services as the 'custom_widget'" do
+        expect(subject).to receive(:services_not_defined_widget).with(["service"])
+          .and_return(Frame("unsupported_services_summary"))
+        expect(api).to receive(:service_supported?).with("service").and_return(false)
+
+        ret = subject.CreateOpenFirewallWidget(widget_settings)
+
+        expect(ret["custom_widget"]).to eq(Frame("unsupported_services_summary"))
+      end
+    end
   end
 
   describe "#OpenFirewallInit" do

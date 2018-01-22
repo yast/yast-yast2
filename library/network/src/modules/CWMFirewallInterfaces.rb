@@ -212,6 +212,8 @@ module Yast
     def InitAllowedInterfaces(services)
       service_status = {}
 
+      services.each { |s| firewalld.find_service(s) }
+
       zone_services(services).each do |_s, status|
         status.each do |iface, en|
           service_status[iface] = service_status.fetch(iface, true) && en
@@ -816,38 +818,32 @@ module Yast
     # </pre>
     # @return [Hash] the widget description map
     def CreateOpenFirewallWidget(settings)
-      settings = deep_copy(settings)
+      services = settings.fetch("services", []) || []
 
-      open_firewall_checkbox = Ops.get_locale(
-        settings,
-        "open_firewall_checkbox",
-        # check box
-        _("Open Port in &Firewall")
-      )
-      # push button
-
-      firewall_details_button = Ops.get_locale(
-        settings,
-        "firewall_details_button",
-        _("Firewall &Details...")
-      )
-
-      display_firewall_details = Builtins.haskey(
-        settings,
-        "firewall_details_handler"
-      ) ||
-        Ops.get_boolean(settings, "display_details", false)
-      help = if Builtins.haskey(settings, "help")
-        Ops.get_string(settings, "help", "")
-      else
-        OpenFirewallHelp(display_firewall_details)
+      if services.empty?
+        log.error("Firewall services not specified")
+        return { "widget" => :custom, "custom_widget" => VBox() }
       end
+
+      if services.any? { |s| !firewalld.api.service_supported?(s) }
+        return { "widget" => :custom, "custom_widget" => services_not_defined_widget(services) }
+      end
+
+      open_firewall_checkbox =
+        settings.fetch("open_firewall_checkbox", _("Open Port in &Firewall"))
+      firewall_details_button =
+        settings.fetch("firewall_details_button", _("Firewall &Details..."))
+      display_firewall_details =
+        settings.fetch("firewall_details_handler", settings.fetch("display_details", false))
+
+      help = settings.fetch("help", OpenFirewallHelp(display_firewall_details))
 
       firewall_settings = CheckBox(
         Id("_cwm_open_firewall"),
         Opt(:notify),
         open_firewall_checkbox
       )
+
       if display_firewall_details
         firewall_settings = HBox(
           firewall_settings,
@@ -855,6 +851,7 @@ module Yast
           PushButton(Id("_cwm_firewall_details"), firewall_details_button)
         )
       end
+
       firewall_settings = VBox(
         Frame(
           _("Firewall Settings for %{firewall}") % { firewall: Y2Firewall::Firewalld::SERVICE },
@@ -871,39 +868,24 @@ module Yast
         )
       )
 
-      if !Builtins.haskey(settings, "services")
-        firewall_settings = VBox()
-        help = ""
-        Builtins.y2error("Firewall services not specified")
-      end
-
-      ret = Convert.convert(
-        Builtins.union(
-          {
-            "widget"        => :custom,
-            "custom_widget" => firewall_settings,
-            "help"          => help,
-            "init"          => fun_ref(
-              method(:OpenFirewallInitWrapper),
-              "void (string)"
-            ),
-            "store"         => fun_ref(
-              method(:OpenFirewallStoreWrapper),
-              "void (string, map)"
-            ),
-            "handle"        => fun_ref(
-              method(:OpenFirewallHandleWrapper),
-              "symbol (string, map)"
-            ),
-            "handle_events" => ["_cwm_firewall_details", "_cwm_open_firewall"]
-          },
-          settings
+      {
+        "widget"        => :custom,
+        "custom_widget" => firewall_settings,
+        "help"          => help,
+        "init"          => fun_ref(
+          method(:OpenFirewallInitWrapper),
+          "void (string)"
         ),
-        from: "map",
-        to:   "map <string, any>"
-      )
-
-      deep_copy(ret)
+        "store"         => fun_ref(
+          method(:OpenFirewallStoreWrapper),
+          "void (string, map)"
+        ),
+        "handle"        => fun_ref(
+          method(:OpenFirewallHandleWrapper),
+          "symbol (string, map)"
+        ),
+        "handle_events" => ["_cwm_firewall_details", "_cwm_open_firewall"]
+      }.merge(settings)
     end
 
     # Check if settings were modified by the user
@@ -1071,6 +1053,32 @@ module Yast
       else
         "#{name} (#{label} / #{zone_full_name})"
       end
+    end
+
+    # Return a firewall widget with a list of the supported and unsupported
+    # firewalld services.
+    #
+    # @return [Yast::Term] widget with a summary of services support
+    def services_not_defined_widget(services)
+      services_list =
+        services.map do |service|
+          if firewalld.api.service_supported?(service)
+            HBox(HSpacing(2), Left(Label(_("* %{service} (Not available)") % { service: service })))
+          else
+            HBox(HSpacing(2), Left(Label(_("* %{service}") % { service: service })))
+          end
+        end
+
+      VBox(
+        Frame(
+          _("Firewall not configurable (missing services)"),
+          VBox(
+            Left(Label(_("Some firewalld services are not available:"))),
+            *services_list,
+            Left(Label(_("You need to defined them to be able to configure the firewall.")))
+          )
+        )
+      )
     end
   end
 
