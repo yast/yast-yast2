@@ -71,7 +71,7 @@ module Y2Firewall
       end
 
       def apply_changes!
-        create! unless supported?
+        return false unless supported?
 
         apply_protocols_changes!
         apply_ports_changes!
