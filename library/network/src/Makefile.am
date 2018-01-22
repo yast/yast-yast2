@@ -39,18 +39,18 @@ yfwlibdir = @ylibdir@/y2firewall
 yfwlib_DATA = \
   lib/y2firewall/firewalld.rb
 
-yfwdlibdir = @yfwdlibdir@/firewalld
+yfwdlibdir = @ylibdir@/y2firewall/firewalld
 yfwdlib_DATA = \
   lib/y2firewall/firewalld/api.rb \
   lib/y2firewall/firewalld/relations.rb \
   lib/y2firewall/firewalld/zone.rb \
   lib/y2firewall/firewalld/zone_parser.rb
 
-yfwdapilibdir = @yfwdlibdir@/api/
+yfwdapilibdir = @ylibdir@/y2firewall/firewalld/api/
 yfwdapilib_DATA = \
   lib/y2firewall/firewalld/api/services.rb \
   lib/y2firewall/firewalld/api/zones.rb
 
-EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA) $(yfwlib_DATA) $(yfwdapilib_DATA)
+EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA) $(yfwlib_DATA) $(yfwdlib_DATA) $(yfwdapilib_DATA)
 
 include $(top_srcdir)/Makefile.am.common
