@@ -29,7 +29,6 @@ module Y2Firewall
       # definition and configuration.
       module Services
         # @param service [String] The firewall service
-        # @param permanent [
         # @param permanent [Boolean] if true it adds the --permanent option the
         # command to be executed
         def new_service(service, permanent: permanent?)

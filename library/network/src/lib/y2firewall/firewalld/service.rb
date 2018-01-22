@@ -38,27 +38,37 @@ module Y2Firewall
       include Yast::I18n
       extend Yast::I18n
 
-      attr_accessor :name
-      attr_accessor :short
-      attr_accessor :description
+      # @return name [String] service name
+      attr_reader :name
+      # @return short [String] service short description
+      attr_reader :short
+      # @return description [String] service long description
+      attr_reader :description
 
       has_many :ports, :protocols, scope: "service"
 
       # Constructor
       #
       # @param name [String] zone name
-      def initialize(name: nil)
+      def initialize(name:)
         @name = name
       end
 
+      # Create the service in firewalld
       def create!
         api.add_service(name)
       end
 
+      # Return whether the service is available in firewalld or not
+      #
+      # @return [Boolean] true if defined; false otherwise
       def supported?
         api.service_supported?(name)
       end
 
+      # Read the firewalld configuration initializing the object accordingly
+      #
+      # @return [Boolean] true if read
       def read
         return false unless supported?
 
@@ -70,6 +80,9 @@ module Y2Firewall
         true
       end
 
+      # Apply the changes done since read in firewalld
+      #
+      # @return [Boolean] true if applied; false otherwise
       def apply_changes!
         return false unless supported?
 
