@@ -841,7 +841,9 @@ module Yast
     # </pre>
     # @return [Hash] the widget description map
     def CreateOpenFirewallWidget(settings)
-      services = settings.fetch("services", []) || []
+      settings = deep_copy(settings)
+
+      services = adapt_settings_services!(settings)
 
       if services.empty?
         log.error("Firewall services not specified")
@@ -1102,6 +1104,25 @@ module Yast
           )
         )
       )
+    end
+
+    # Modify the services of a given widget settings definition removing old
+    # "services:" prepend from them.
+    #
+    # @example
+    #
+    #  settings = { "services" => ["service:apache2", "service:apache2-ssl"] }
+    #  adapt_settings_services!(settings) #=> ["apache2", "apache2-ssl"]
+    #  settings #=> { "services" => ["apache2", "apache2-ssl"] }
+    #
+    # @param settings[Hash{String => Object}] settings a map of all parameters needed
+    # to create the widget properly
+    # @return [Array<String>] converted widget settings services names
+    def adapt_settings_services!(settings)
+      services = settings.fetch("services", []) || []
+      return [] if services.empty?
+
+      settings["services"] = services.map { |s| s.sub!(/service:/, "") }
     end
   end
 
