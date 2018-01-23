@@ -1122,7 +1122,9 @@ module Yast
       services = settings.fetch("services", []) || []
       return [] if services.empty?
 
-      settings["services"] = services.map { |s| s.sub!(/service:/, "") }
+      services.each { |s| s.sub!(/service:/, "") }
+
+      settings["services"] = services.select { |s| s && !s.empty? }
     end
   end
 
