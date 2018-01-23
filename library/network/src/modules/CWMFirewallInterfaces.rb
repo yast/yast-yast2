@@ -42,6 +42,29 @@ require "yast"
 require "y2firewall/firewalld"
 
 module Yast
+  # This class provide a set of methods to define a widget for handling with
+  # firewall interfaces configuration.
+  #
+  # @example Open a service in the firewall
+  #
+  #   # Obtain the firewalld widget description (a widget with the firewalld
+  #   # status, a checkbox for opening the service in all the interfaces and
+  #   # a details button to decide per interface where should be opened.
+  #
+  #   CWMFireallInterfaces.CreateOpenFirewallWidget(["smtp"])
+  #
+  #   # Require the new firewalld library
+  #   require 'y2firewall/firewalld'
+  #
+  #   # In your Read method call firewalld.read to initializate the firewalld
+  #   # object and all of its zones.
+  #
+  #   Y2Firewall::Firewalld.instance.read
+  #
+  #   # And finally call firewalld.write to apply the changes done through the
+  #   # widget.
+  #
+  #   Y2Firewall::Firewalld.instance.write
   class CWMFirewallInterfacesClass < Module
     include Yast::Logger
 

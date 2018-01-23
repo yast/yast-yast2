@@ -26,6 +26,17 @@ require "y2firewall/firewalld/relations"
 module Y2Firewall
   class Firewalld
     # Class to work with Firewalld services
+    #
+    #
+    # # @example
+    #
+    #   ha = firewalld.find_service("high-availability")
+    #   ha.ports # => ["2224/tcp", "3121/tcp", "5403/tcp", "5404/udp",
+    #   "5405/udp", "21064/tcp"]
+    #
+    #   ha.tcp_ports #=> ["2224", "3121", "5403", "21064"]
+    #   ha.udp_ports #=> ["5404", "5405"]
+    #
     class Service
       # Service was not found
       class NotFound < StandardError
@@ -46,6 +57,27 @@ module Y2Firewall
       attr_reader :description
 
       has_many :ports, :protocols, scope: "service"
+
+      # Convenience method for setting the tcp and udp ports of a given
+      # service. If the service is found, it modify the ports according to the
+      # given parameters applying the changes at the end.
+      #
+      # @example
+      #   Y2Firewall::Firewalld::Service.modify_ports("apach", tcp_ports:
+      #   ["80", "8080"]) #=> Y2Firewall::Firewalld::Service::NotFound
+      #
+      #   Y2Firewall::Firewalld::Service.modify_ports("apache2", tcp_ports:
+      #   ["80", "8080"]) #=> true
+      #
+      # @param name [String] service name
+      # @param tcp_ports [Array<String>] tcp ports to be opened by the service
+      # @param udp_ports [Array<String>] udp ports to be opened by the service
+      # @return [Boolean] true if modified; false otherwise
+      def self.modify_ports(name:, tcp_ports: [], udp_ports: [])
+        service = Y2Firewall::Firewalld.instance.find_service(name)
+        service.ports = tcp_ports.map { |p| "#{p}/tcp" } + udp_ports.map { |p| "#{p}/udp" }
+        service.apply_changes!
+      end
 
       # Constructor
       #
@@ -90,6 +122,20 @@ module Y2Firewall
         apply_ports_changes!
 
         true
+      end
+
+      # Convenience method to select only the service tcp ports
+      #
+      # @return [Array<String>] array with the service tcp ports
+      def tcp_ports
+        ports.select { |p| p.include?("tcp") }.map { |p| p.sub("/tcp", "") }
+      end
+
+      # Convenience method to select only the service udp ports
+      #
+      # @return [Array<String>] array with the service udp ports
+      def udp_ports
+        ports.select { |p| p.include?("udp") }.map { |p| p.sub("/udp", "") }
       end
 
     private
