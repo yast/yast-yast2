@@ -14,7 +14,8 @@ module_DATA = \
   modules/SuSEFirewallExpertRules.rb \
   modules/SuSEFirewallServices.rb \
   modules/SLPAPI.pm \
-  modules/DnsServerAPI.pm
+  modules/DnsServerAPI.pm \
+  modules/firewalld_wrapper.rb
 
 scrconf_DATA = \
   scrconf/sysconfig_SuSEfirewall2.scr \
@@ -45,6 +46,11 @@ yfwdlib_DATA = \
   lib/y2firewall/firewalld/zone.rb \
   lib/y2firewall/firewalld/zone_parser.rb
 
-EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA) $(yfwlib_DATA) $(yfwdlibdir_DATA)
+yfwdapilibdir = @ylibdir@/y2firewall/firewalld/api/
+yfwdapilib_DATA = \
+  lib/y2firewall/firewalld/api/services.rb \
+  lib/y2firewall/firewalld/api/zones.rb
+
+EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA) $(yfwlib_DATA) $(yfwdlib_DATA) $(yfwdapilib_DATA)
 
 include $(top_srcdir)/Makefile.am.common

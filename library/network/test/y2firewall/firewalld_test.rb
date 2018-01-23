@@ -189,13 +189,15 @@ describe Y2Firewall::Firewalld do
        "  interfaces: ",
        "  ports: ",
        "  protocols:",
+       "  sources:",
        "",
        "external (active)",
        "  target: default",
        "  interfaces: eth0",
        "  services: ssh samba",
        "  ports: 5901/tcp 5901/udp",
-       "  protocols: "]
+       "  protocols:",
+       "  sources:"]
     end
 
     let(:api) do
@@ -278,7 +280,7 @@ describe Y2Firewall::Firewalld do
     end
   end
 
-  describe "#write" do
+  describe "#write_only" do
     let(:api) do
       Y2Firewall::Firewalld::Api.new
     end
@@ -301,7 +303,7 @@ describe Y2Firewall::Firewalld do
       expect(api).to receive(:default_zone=).with("drop")
       expect(api).to receive(:log_denied_packets=).with(false)
 
-      firewalld.write
+      firewalld.write_only
     end
 
     it "only apply changes to the modified zones" do
@@ -311,11 +313,27 @@ describe Y2Firewall::Firewalld do
       external = firewalld.find_zone("external")
       expect(external).to_not receive(:apply_changes!)
 
-      firewalld.write
+      firewalld.write_only
     end
 
     it "returns true" do
-      expect(firewalld.write).to eq(true)
+      expect(firewalld.write_only).to eq(true)
+    end
+  end
+
+  describe "#write" do
+    it "writes the configuration" do
+      allow(firewalld).to receive(:reload)
+      expect(firewalld).to receive(:write_only)
+
+      firewalld.write
+    end
+
+    it "reloads firewalld" do
+      allow(firewalld).to receive(:write_only).and_return(true)
+      expect(firewalld).to receive(:reload)
+
+      firewalld.write
     end
   end
 
@@ -326,13 +344,15 @@ describe Y2Firewall::Firewalld do
        "  interfaces: ",
        "  ports: ",
        "  protocols:",
+       "  sources:",
        "",
        "external (active)",
        "  target: default",
        "  interfaces: eth0",
        "  services: ssh samba",
        "  ports: 5901/tcp 5901/udp",
-       "  protocols: esp"]
+       "  protocols: esp",
+       "  sources:"]
     end
 
     let(:api) do

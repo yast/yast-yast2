@@ -65,7 +65,9 @@ describe Y2Firewall::Firewalld::Zone do
       allow(subject).to receive(:current_ports).and_return(["80/tcp", "443/tcp"])
       allow(subject).to receive(:ports).and_return(["80/tcp", "443/tcp"])
       allow(subject).to receive(:current_protocols).and_return([])
+      allow(subject).to receive(:current_sources).and_return([])
       allow(subject).to receive(:protocols).and_return([])
+      allow(subject).to receive(:sources).and_return([])
       allow(subject).to receive(:masquerade?).and_return(true)
     end
 
@@ -93,6 +95,7 @@ describe Y2Firewall::Firewalld::Zone do
       allow(subject).to receive(:services).and_return(["ssh", "samba"])
       allow(subject).to receive(:ports).and_return(["80/tcp", "443/tcp"])
       allow(subject).to receive(:protocols).and_return(["esp"])
+      allow(subject).to receive(:sources).and_return([])
       allow(subject).to receive(:masquerade).and_return(true)
     end
 
@@ -104,6 +107,7 @@ describe Y2Firewall::Firewalld::Zone do
       expect(config["services"]).to eql(["ssh", "samba"])
       expect(config["ports"]).to eql(["80/tcp", "443/tcp"])
       expect(config["protocols"]).to eql(["esp"])
+      expect(config["sources"]).to eql([])
       expect(config["masquerade"]).to eql(true)
     end
   end

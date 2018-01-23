@@ -42,7 +42,8 @@ module  Y2Firewall
       #   zone.apply_services_changes!
       #
       # @param args [Array<Symbol] relation or attribute names
-      def has_many(*relations) # rubocop:disable Style/PredicateName
+      def has_many(*relations, scope: nil) # rubocop:disable Style/PredicateName
+        scope = "#{scope}_" if scope
         relations.each do |relation|
           relation_singularized = relation.to_s.sub(/s$/, "")
           class_eval("attr_accessor :#{relation}")
@@ -60,15 +61,19 @@ module  Y2Firewall
           end
 
           define_method "current_#{relation}" do
-            api.public_send("list_#{relation}", name)
+            if scope
+              api.public_send("#{scope}#{relation}", name)
+            else
+              api.public_send("list_#{relation}", name)
+            end
           end
 
           define_method "add_#{relation_singularized}!" do |item|
-            api.public_send("add_#{relation_singularized}", name, item)
+            api.public_send("add_#{scope}#{relation_singularized}", name, item)
           end
 
           define_method "remove_#{relation_singularized}!" do |item|
-            api.public_send("remove_#{relation_singularized}", name, item)
+            api.public_send("remove_#{scope}#{relation_singularized}", name, item)
           end
 
           define_method "add_#{relation}!" do

@@ -48,7 +48,7 @@ module Y2Firewall
       attr_reader :name
 
       # @see Y2Firewall::Firewalld::Relations
-      has_many :services, :interfaces, :protocols, :ports
+      has_many :services, :interfaces, :protocols, :ports, :sources
 
       # [Boolean] Whether masquerade is enabled or not
       attr_accessor :masquerade
@@ -69,6 +69,10 @@ module Y2Firewall
         KNOWN_ZONES
       end
 
+      def full_name
+        self.class.known_zones[name]
+      end
+
       # Whether the zone have been modified or not since read
       #
       # @return [Boolean] true if it was modified; false otherwise
@@ -77,6 +81,7 @@ module Y2Firewall
         return true if current_services.sort   != services.sort
         return true if current_protocols.sort  != protocols.sort
         return true if current_ports.sort      != ports.sort
+        return true if current_sources.sort    != sources.sort
 
         masquerade? != api.masquerade_enabled?(name)
       end
@@ -87,6 +92,7 @@ module Y2Firewall
         apply_services_changes!
         apply_ports_changes!
         apply_protocols_changes!
+        apply_sources_changes!
 
         masquerade? ? api.add_masquerade(name) : api.remove_masquerade(name)
       end
@@ -105,6 +111,7 @@ module Y2Firewall
         @services   = api.list_services(name)
         @ports      = api.list_ports(name)
         @protocols  = api.list_protocols(name)
+        @sources    = api.list_sources(name)
         @masquerade = api.masquerade_enabled?(name)
 
         true
@@ -128,6 +135,7 @@ module Y2Firewall
           "services"   => services,
           "ports"      => ports,
           "protocols"  => protocols,
+          "sources"    => sources,
           "masquerade" => masquerade
         }
       end
