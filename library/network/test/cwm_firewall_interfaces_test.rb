@@ -23,9 +23,9 @@ describe Yast::CWMFirewallInterfaces do
     end
 
     context "when the widget settings does not contain any service" do
-      it "returns a hash with only 'widget' and 'custom_widget' keys" do
+      it "returns a hash with only the 'widget', 'custom_widget' and 'help' keys" do
         ret = subject.CreateOpenFirewallWidget(widget_settings)
-        expect(ret.keys).to eq(["widget", "custom_widget"])
+        expect(ret.keys.sort).to eq(["widget", "custom_widget", "help"].sort)
       end
 
       it "returns an empty VBox() as the 'custom_widget'" do
@@ -40,13 +40,13 @@ describe Yast::CWMFirewallInterfaces do
         allow(api).to receive(:service_supported?).with("service").and_return(false)
       end
 
-      it "returns a hash with only 'widget' and 'custom_widget' keys" do
+      it "returns a hash with only the 'widget', 'custom_widget' and 'help' keys" do
         allow(subject).to receive(:services_not_defined_widget).with(["service"])
           .and_return(Frame("unsupported_services_summary"))
 
         ret = subject.CreateOpenFirewallWidget(widget_settings)
 
-        expect(ret.keys).to eq(["widget", "custom_widget"])
+        expect(ret.keys.sort).to eq(["widget", "custom_widget", "help"].sort)
       end
 
       it "returns a summary with the unavailable services as the 'custom_widget'" do

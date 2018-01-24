@@ -849,11 +849,15 @@ module Yast
 
       if services.empty?
         log.error("Firewall services not specified")
-        return { "widget" => :custom, "custom_widget" => VBox() }
+        return { "widget" => :custom, "custom_widget" => VBox(), "help" => "" }
       end
 
       if services.any? { |s| !firewalld.api.service_supported?(s) }
-        return { "widget" => :custom, "custom_widget" => services_not_defined_widget(services) }
+        return {
+          "widget"        => :custom,
+          "custom_widget" => services_not_defined_widget(services),
+          "help"          => ""
+        }
       end
 
       open_firewall_checkbox =

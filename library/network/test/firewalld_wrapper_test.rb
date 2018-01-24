@@ -7,7 +7,7 @@ Yast.import "FirewalldWrapper"
 describe Yast::FirewalldWrapper do
   let(:firewalld) { Y2Firewall::Firewalld.instance }
   let(:external) { Y2Firewall::Firewalld::Zone.new(name: "external") }
-  let(:zones) { [ external ] }
+  let(:zones) { [external] }
 
   before do
     allow(subject).to receive(:firewalld).and_return(firewalld)
@@ -68,6 +68,3 @@ describe Yast::FirewalldWrapper do
     end
   end
 end
-
-
-
