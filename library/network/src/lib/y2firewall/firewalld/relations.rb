@@ -44,18 +44,38 @@ module  Y2Firewall
       # @param args [Array<Symbol] relation or attribute names
       def has_many(*relations, scope: nil) # rubocop:disable Style/PredicateName
         scope = "#{scope}_" if scope
+
+        define_method "relations" do
+          relations
+        end
+
+        define_method "apply_all_relations_changes!" do
+          relations.each { |r| public_send("apply_#{r}_changes!") }
+          true
+        end
+
         relations.each do |relation|
           relation_singularized = relation.to_s.sub(/s$/, "")
-          class_eval("attr_accessor :#{relation}")
+          class_eval("attr_reader :#{relation}")
+
+          define_method "#{relation}=" do |item|
+            instance_variable_set("@#{relation}", item)
+
+            @modified << relation unless modified.include?(relation)
+          end
 
           define_method "add_#{relation_singularized}" do |item|
             return public_send(relation) if public_send(relation).include?(item)
 
+            @modified << relation unless modified.include?(relation)
             public_send(relation) << item
           end
 
           define_method "remove_#{relation_singularized}" do |item|
-            return public_send(relation) if public_send(relation).delete(item)
+            if public_send(relation).delete(item)
+              @modified << relation unless modified.include?(relation)
+              return public_send(relation)
+            end
 
             public_send(relation)
           end
@@ -93,8 +113,11 @@ module  Y2Firewall
           end
 
           define_method "apply_#{relation}_changes!" do
+            return unless (modified || []).include?(relation)
             public_send("remove_#{relation}!")
             public_send("add_#{relation}!")
+
+            modified.delete(relation)
           end
         end
       end

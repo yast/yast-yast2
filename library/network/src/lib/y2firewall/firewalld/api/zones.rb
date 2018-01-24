@@ -34,44 +34,54 @@ module Y2Firewall
         end
 
         # @param zone [String] The firewall zone
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Array<String>] list of zone's interfaces
-        def list_interfaces(zone)
-          string_command("--zone=#{zone}", "--list-interfaces").split(" ")
+        def list_interfaces(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-interfaces", permanent: permanent).split(" ")
         end
 
         # @param zone [String] The firewall zone
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Arrray<String>] list of zone's services
-        def list_services(zone)
-          string_command("--zone=#{zone}", "--list-services").split(" ")
+        def list_services(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-services", permanent: permanent).split(" ")
         end
 
         # @param zone [String] The firewall zone
         # @return [Array<String>] list of zone's ports
-        def list_ports(zone)
-          string_command("--zone=#{zone}", "--list-ports").split(" ")
+        def list_ports(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-ports", permanent: permanent).split(" ")
         end
 
         # @param zone [String] The firewall zone
         # @return [Array<String>] list of zone's protocols
-        def list_protocols(zone)
-          string_command("--zone=#{zone}", "--list-protocols").split(" ")
+        def list_protocols(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-protocols", permanent: permanent).split(" ")
         end
 
         # @param zone [String] The firewall zone
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Array<String>] list of zone's sources
-        def list_sources(zone)
-          string_command("--zone=#{zone}", "--list-sources").split(" ")
+        def list_sources(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-sources", permanent: permanent).split(" ")
         end
 
         # @param zone [String] The firewall zone
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Array<String>] list of all information for given zone
-        def list_all(zone)
-          string_command("--zone=#{zone}", "--list-all").split(" ")
+        def list_all(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-all", permanent: permanent).split(" ")
         end
 
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Array<String>] list of all information for all firewall zones
-        def list_all_zones
-          string_command("--list-all-zones").split("\n")
+        def list_all_zones(permanent: permanent?)
+          string_command("--list-all-zones", permanent: permanent).split("\n")
         end
 
         ### Interfaces ###
@@ -79,21 +89,26 @@ module Y2Firewall
         # Return the name of the zone the interface belongs to or nil.
         #
         # @param interface [String] interface name
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [String, nil] the interface zone or nil
-        def interface_zone(interface)
-          string_command("--get-zone-of-interface=#{interface}")
-        end
-
-        # @param zone [String] The firewall zone
-        # @param interface [String] The network interface
-        # @return [Boolean] True if interface is assigned to zone
-        def interface_enabled?(zone, interface)
-          query_command("--zone=#{zone} --query-interface=#{interface}")
+        def interface_zone(interface, permanent: permanent?)
+          string_command("--get-zone-of-interface=#{interface}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
         # @param interface [String] The network interface
         # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
+        # @return [Boolean] True if interface is assigned to zone
+        def interface_enabled?(zone, interface, permanent: permanent?)
+          query_command("--zone=#{zone} --query-interface=#{interface}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param interface [String] The network interface
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Boolean] True if interface was added to zone
         def add_interface(zone, interface, permanent: permanent?)
           run_command("--zone=#{zone}", "--add-interface=#{interface}", permanent: permanent)

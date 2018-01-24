@@ -56,6 +56,9 @@ module Y2Firewall
       # @return description [String] service long description
       attr_reader :description
 
+      # @return modified [Array<Symbol>] the list of relations modified
+      attr_reader :modified
+
       has_many :ports, :protocols, scope: "service"
 
       # Convenience method for setting the tcp and udp ports of a given
@@ -86,6 +89,8 @@ module Y2Firewall
       # @param name [String] zone name
       def initialize(name:)
         @name = name
+
+        @modified = []
       end
 
       # Create the service in firewalld
@@ -100,6 +105,10 @@ module Y2Firewall
         api.service_supported?(name)
       end
 
+      def modified?
+        !(modified || []).empty?
+      end
+
       # Read the firewalld configuration initializing the object accordingly
       #
       # @return [Boolean] true if read
@@ -111,6 +120,8 @@ module Y2Firewall
         @protocols    = current_protocols
         @ports        = current_ports
 
+        @modified = []
+
         true
       end
 
@@ -118,10 +129,12 @@ module Y2Firewall
       #
       # @return [Boolean] true if applied; false otherwise
       def apply_changes!
-        return false unless supported?
+        return false if !supported? || !modified?
 
         apply_protocols_changes!
         apply_ports_changes!
+
+        @modified = []
 
         true
       end

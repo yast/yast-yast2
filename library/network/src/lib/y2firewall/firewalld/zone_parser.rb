@@ -70,6 +70,8 @@ module Y2Firewall
           end
         end
 
+        zones.map { |z| z.modified = [] }
+
         zones
       end
     end

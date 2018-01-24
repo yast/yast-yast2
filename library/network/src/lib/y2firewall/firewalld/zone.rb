@@ -51,7 +51,9 @@ module Y2Firewall
       has_many :services, :interfaces, :protocols, :ports, :sources
 
       # [Boolean] Whether masquerade is enabled or not
-      attr_accessor :masquerade
+      attr_reader :masquerade
+
+      attr_accessor :modified
 
       alias_method :masquerade?, :masquerade
 
@@ -63,10 +65,17 @@ module Y2Firewall
       # @param name [String] zone name
       def initialize(name: nil)
         @name = name || api.default_zone
+        @modified = []
       end
 
       def self.known_zones
         KNOWN_ZONES
+      end
+
+      def masquerade=(value)
+        @masquerade = value
+
+        @modified << :masquerade unless @modified.include?(:masquerade)
       end
 
       def full_name
@@ -77,24 +86,20 @@ module Y2Firewall
       #
       # @return [Boolean] true if it was modified; false otherwise
       def modified?
-        return true if current_interfaces.sort != interfaces.sort
-        return true if current_services.sort   != services.sort
-        return true if current_protocols.sort  != protocols.sort
-        return true if current_ports.sort      != ports.sort
-        return true if current_sources.sort    != sources.sort
-
-        masquerade? != api.masquerade_enabled?(name)
+        !modified.empty?
       end
 
       # Apply all the changes in firewalld but do not reload it
       def apply_changes!
-        apply_interfaces_changes!
-        apply_services_changes!
-        apply_ports_changes!
-        apply_protocols_changes!
-        apply_sources_changes!
+        return true unless modified?
 
-        masquerade? ? api.add_masquerade(name) : api.remove_masquerade(name)
+        apply_all_relations_changes!
+        if modified.include?(:masquerade)
+          masquerade? ? api.add_masquerade(name) : api.remove_masquerade(name)
+        end
+        @modified = []
+
+        true
       end
 
       # Convenience method wich reload changes applied to firewalld
@@ -107,12 +112,10 @@ module Y2Firewall
       def read
         return unless firewalld.installed?
 
-        @interfaces = api.list_interfaces(name)
-        @services   = api.list_services(name)
-        @ports      = api.list_ports(name)
-        @protocols  = api.list_protocols(name)
-        @sources    = api.list_sources(name)
+        relations.each { |r| instance_variable_set("@#{r}", public_send("current_#{r}")) }
+
         @masquerade = api.masquerade_enabled?(name)
+        @modified = []
 
         true
       end
