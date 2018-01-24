@@ -943,8 +943,8 @@ module Yast
     #   like a reset button or a redrawing.  It will skip also validation, because it is not needed
     #   as nothing is stored.
     # @param [Proc] abort_handler handler that is called after click on abort. If it returns false,
-    #   then it stops abort. If it return true, then it return :abort symbol. If handler is not
-    #   defined, then it act like if it return true.
+    #   then it stops abort. If it return true, then it returns :abort symbol. If handler is not
+    #   defined, then it acts like if it return true.
     # @return [Symbol] wizard sequencer symbol
     def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil, skip_store_for: [],
       disable_buttons: [], abort_handler: nil)
