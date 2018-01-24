@@ -6,6 +6,7 @@ require "cwm"
 
 Yast.import "CWM"
 Yast.import "Wizard"
+Yast.import "Popup"
 
 class LuckyNumberWidget < CWM::IntField
   attr_reader :result, :minimum, :maximum
@@ -57,7 +58,8 @@ module Yast
       )
 
       Yast::Wizard.CreateDialog
-      CWM.show(contents, caption: _("Lucky number"))
+      abort_handler = proc { Yast::Popup.YesNo("Really abort?") }
+      CWM.show(contents, caption: _("Lucky number"), abort_handler: abort_handler)
       Yast::Wizard.CloseDialog
 
       lucky_number_widget.result

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 24 13:23:14 UTC 2018 - jreidinger@suse.com
+
+- CWM: Add possibility to define abort handler for CWM.show
+  (needed for expert partitioner fate#318196)
+- 4.0.38
+
+-------------------------------------------------------------------
 Tue Jan 23 11:53:09 UTC 2018 - knut.anderssen@suse.com
 
 - Firewalld: Added missing firewalld service file to the Makefile

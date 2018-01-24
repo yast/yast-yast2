@@ -942,9 +942,12 @@ module Yast
     #   Useful mainly when some widget returns an event that should not trigger the storing,
     #   like a reset button or a redrawing.  It will skip also validation, because it is not needed
     #   as nothing is stored.
+    # @param [Proc] abort_handler handler that is called after click on abort. If it returns false,
+    #   then it stops abort. If it return true, then it returns :abort symbol. If handler is not
+    #   defined, then it acts like if it return true.
     # @return [Symbol] wizard sequencer symbol
     def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil, skip_store_for: [],
-      disable_buttons: [])
+      disable_buttons: [], abort_handler: nil)
       widgets = widgets_in_contents(contents)
       options = {
         "contents"     => widgets_contents(contents),
@@ -957,6 +960,7 @@ module Yast
       options["abort_button"] = abort_button if abort_button
       options["skip_store_for"] = skip_store_for
       options["disable_buttons"] = disable_buttons
+      options["fallback_functions"] = { abort: Yast.fun_ref(abort_handler, "boolean ()") } if abort_handler
 
       ShowAndRun(options)
     end
