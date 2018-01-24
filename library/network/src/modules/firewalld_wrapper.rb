@@ -42,9 +42,25 @@ module Yast
       firewalld.write_only
     end
 
-    publish function: :read, type: "boolean (string)"
-    publish function: :write, type: "boolean (string)"
-    publish function: :write_only, type: "boolean (string)"
+    def add_port(port_range, protocol, interface)
+      zone = firewalld.zones.find { |z| z.interfaces.include?(interface) }
+      return unless zone
+      port = "#{port_range.sub(":", "-")}/#{protocol.downcase}"
+      zone.add_port(port)
+    end
+
+    def remove_port(port_range, protocol, interface)
+      zone = firewalld.zones.find { |z| z.interfaces.include?(interface) }
+      return unless zone
+      port = "#{port_range.sub(":", "-")}/#{protocol.downcase}"
+      zone.add_port(port)
+    end
+
+    publish function: :read, type: "boolean ()"
+    publish function: :write, type: "boolean ()"
+    publish function: :write_only, type: "boolean ()"
+    publish function: :add_port, type: "boolean (string, string, string)"
+    publish function: :remove_port, type: "boolean (string, string, string)"
 
   private
 
