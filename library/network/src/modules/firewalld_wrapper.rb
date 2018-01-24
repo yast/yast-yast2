@@ -53,7 +53,7 @@ module Yast
       zone = firewalld.zones.find { |z| z.interfaces.include?(interface) }
       return unless zone
       port = "#{port_range.sub(":", "-")}/#{protocol.downcase}"
-      zone.add_port(port)
+      zone.remove_port(port)
     end
 
     publish function: :read, type: "boolean ()"
