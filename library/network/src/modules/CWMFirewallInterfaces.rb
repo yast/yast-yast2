@@ -247,6 +247,7 @@ module Yast
       log.info("Status: #{service_status}")
       @allowed_interfaces = service_status.keys
 
+      log.info "Default zone name: #{default_zone.name}"
       log.info "Default interfaces: #{default_interfaces}"
       log.info "Default_zone services: #{default_zone.services}"
 
@@ -278,7 +279,8 @@ module Yast
       zones =
         known_interfaces.each_with_object([]) do |known_interface, a|
           if allowed_interfaces.include?(known_interface["id"])
-            a << known_interface["zone"] || default_zone.name
+            zone_name = known_interface["zone"] || default_zone.name
+            a << zone_name
           end
         end
 
