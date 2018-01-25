@@ -31,12 +31,15 @@ module Y2Firewall
         # @param service [String] The firewall service
         # @param permanent [Boolean] if true it adds the --permanent option the
         # command to be executed
+        # @return true for success
         def new_service(service, permanent: permanent?)
+          return false unless Y2Firewall::Firewalld.instance.installed?
           query_command("--new-service=#{service}", permanent: permanent)
         end
 
         # @return [Array<String>] List of firewall services
         def services
+          return [] unless Y2Firewall::Firewalld.instance.installed?
           string_command("--get-services").split(" ")
         end
 
@@ -45,6 +48,7 @@ module Y2Firewall
         # command to be executed
         # @return [Array<String>] list of all information for the given service
         def info_service(service, permanent: permanent?)
+          return [] unless Y2Firewall::Firewalld.instance.installed?
           string_command("--info-service", service.to_s, permanent: permanent).split("\n")
         end
 
@@ -54,6 +58,7 @@ module Y2Firewall
         # @return [String] Short description for service
         def service_short(service, permanent: permanent?)
           # these may not exist on early firewalld releases
+          return "" unless Y2Firewall::Firewalld.instance.installed?
           string_command("--service=#{service}", "--get-short", permanent: permanent)
         end
 
@@ -62,12 +67,14 @@ module Y2Firewall
         # command to be executed
         # @return [String] Description for service
         def service_description(service, permanent: permanent?)
+          return "" unless Y2Firewall::Firewalld.instance.installed?
           string_command("--service=#{service}", "--get-description", permanent: permanent)
         end
 
         # @param service [String] The firewall service
         # @return [Boolean] True if service definition exists
         def service_supported?(service)
+          return false unless Y2Firewall::Firewalld.instance.installed?
           services.include?(service)
         end
 
@@ -76,6 +83,7 @@ module Y2Firewall
         # command to be executed
         # @return [Array<String>] The firewall service ports
         def service_ports(service, permanent: permanent?)
+          return [] unless Y2Firewall::Firewalld.instance.installed?
           string_command("--service=#{service}", "--get-ports", permanent: permanent).split(" ")
         end
 
@@ -84,6 +92,7 @@ module Y2Firewall
         # command to be executed
         # @return [Array<String>] The firewall service protocols
         def service_protocols(service, permanent: permanent?)
+          return [] unless Y2Firewall::Firewalld.instance.installed?
           string_command("--service=#{service}", "--get-protocols", permanent: permanent).split(" ")
         end
 
@@ -92,6 +101,7 @@ module Y2Firewall
         # command to be executed
         # @return [Array<String>] The firewall service modules
         def service_modules(service, permanent: permanent?)
+          return [] unless Y2Firewall::Firewalld.instance.installed?
           string_command("--service=#{service}", "--get-modules", permanent: permanent).split(" ")
         end
 
@@ -101,6 +111,7 @@ module Y2Firewall
         # command to be executed
         # @return [Boolean] True if port was removed from service
         def remove_service_port(service, port, permanent: permanent?)
+          return false unless Y2Firewall::Firewalld.instance.installed?
           string_command("--service=#{service}", "--remove-port=#{port}", permanent: permanent)
         end
 
@@ -110,6 +121,7 @@ module Y2Firewall
         # command to be executed
         # @return [Boolean] True if port was removed from service
         def add_service_port(service, port, permanent: permanent?)
+          return false unless Y2Firewall::Firewalld.instance.installed?
           string_command("--service=#{service}", "--add-port=#{port}", permanent: permanent)
         end
       end
