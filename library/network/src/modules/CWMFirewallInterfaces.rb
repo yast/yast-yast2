@@ -847,8 +847,9 @@ module Yast
 
       services = adapt_settings_services!(settings)
 
-      if services.empty?
-        log.error("Firewall services not specified")
+      if services.empty? || !firewalld.installed?
+        log.error("Firewall is not installed") if !firewalld.installed?
+        log.error("Firewall services not specified") if services.empty?
         return { "widget" => :custom, "custom_widget" => VBox(), "help" => "" }
       end
 

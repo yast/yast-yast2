@@ -74,7 +74,9 @@ module Y2Firewall
       # @param udp_ports [Array<String>] udp ports to be opened by the service
       # @return [Boolean] true if modified; false otherwise
       def self.modify_ports(name:, tcp_ports: [], udp_ports: [])
-        service = Y2Firewall::Firewalld.instance.find_service(name)
+        return false unless Firewalld.instance.installed?
+
+        service = Firewalld.instance.find_service(name)
         service.ports = tcp_ports.map { |p| "#{p}/tcp" } + udp_ports.map { |p| "#{p}/udp" }
         service.apply_changes!
       end

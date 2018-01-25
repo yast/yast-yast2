@@ -14,12 +14,26 @@ describe Yast::CWMFirewallInterfaces do
   describe "#CreateOpenFirewallWidget" do
     let(:widget_settings) { { "services" => [] } }
     let(:api) { Y2Firewall::Firewalld::Api.new }
+    let(:installed) { true }
 
     before do
       allow_any_instance_of(Y2Firewall::Firewalld)
         .to receive(:api).and_return(api)
-
+      allow_any_instance_of(Y2Firewall::Firewalld)
+        .to receive(:installed?).and_return(installed)
       allow(api).to receive(:service_supported?)
+    end
+
+    context "when firewalld is not installed" do
+      let(:installed) { false }
+      it "returns a hash with only the 'widget', 'custom_widget' and 'help' keys" do
+        ret = subject.CreateOpenFirewallWidget(widget_settings)
+        expect(ret.keys.sort).to eq(["widget", "custom_widget", "help"].sort)
+      end
+
+      it "returns an empty VBox() as the 'custom_widget'" do
+        expect(subject.CreateOpenFirewallWidget(widget_settings)["custom_widget"]).to eq(VBox())
+      end
     end
 
     context "when the widget settings does not contain any service" do

@@ -127,7 +127,8 @@ module Y2Firewall
 
     # Apply the changes to the modified zones and sets the logging option
     def write_only
-      zones.map { |z| z.apply_changes! if z.modified? }
+      return false unless installed?
+      zones.each { |z| z.apply_changes! if z.modified? }
       api.log_denied_packets = log_denied_packets if log_denied_packets != api.log_denied_packets
       api.default_zone       = default_zone if default_zone != api.default_zone
       true
