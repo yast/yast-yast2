@@ -90,7 +90,7 @@ module Y2Firewall
     # Return from the services list the one which matches the given name
     #
     # @param name [String] the service name
-    # @return [Y2Firewall::Firewalld::Service, nil] the firewalld service with
+    # @return [Y2Firewall::Firewalld::Service] the firewalld service with
     # the given name
     def find_service(name)
       services.find { |s| s.name == name } || read_service(name)
@@ -102,6 +102,7 @@ module Y2Firewall
     # @param name [String] the service name
     # @return [Y2Firewall::Firewalld::Service] the recently added service
     def read_service(name)
+      raise(Service::NotFound, name) unless installed?
       service = Y2Firewall::Firewalld::Service.new(name: name)
       raise(Service::NotFound, name) if !service.supported?
 
