@@ -30,29 +30,70 @@ module Yast
   # mainly a firewalld wrapper. It is inteded to be used mostly by YaST
   # modules written in Perl like yast-dns-server.
   class FirewalldWrapperClass < Module
+    include Logger
+
+    VALID_PROTOCOLS = ["udp", "tcp"].freeze
+
+    def initialize
+      Yast.import "PortAliases"
+      Yast.import "PortRanges"
+    end
+
+    # Convenience method for calling firewalld.read
     def read
       firewalld.read
     end
 
+    # Convenience method for calling firewalld.write
     def write
       firewalld.write
     end
 
+    # Convenience method for calling firewalld.write_only
     def write_only
       firewalld.write_only
     end
 
-    def add_port(port_range, protocol, interface)
-      zone = firewalld.zones.find { |z| z.interfaces.include?(interface) }
-      return unless zone
-      port = "#{port_range.sub(":", "-")}/#{protocol.downcase}"
+    # Add the port or range of ports with the given protocol to the zone the
+    # interface belongs to.
+    #
+    # @example
+    #   FirewalldWrapper.add_port("80", "TCP", "eth0")
+    #   FirewalldWrapper.add_port("8080:8090", "TCP", "eth0")
+    #   FirewalldWrapper.add_port("nameserver", "UDP", "eth0")
+    #
+    # @param port_or_range [String] port or range of ports to be added to the zone
+    # @param protocol [String] port protocol
+    # @param interface [String] interface name
+    def add_port(port_or_range, protocol, interface)
+      return false unless validate_port(port_or_range)
+      return false unless supported_protocol?(protocol)
+
+      zone = interface_zone(interface)
+      return false unless zone
+      port = "#{port_or_range.sub(":", "-")}/#{protocol.downcase}"
       zone.add_port(port)
     end
 
-    def remove_port(port_range, protocol, interface)
-      zone = firewalld.zones.find { |z| z.interfaces.include?(interface) }
-      return unless zone
-      port = "#{port_range.sub(":", "-")}/#{protocol.downcase}"
+    # Remove the port or range of ports with the given protocol to the zone the
+    # interface belongs to.
+    #
+    # @example
+    #   FirewalldWrapper.remove_port("80", "TCP", "eth0")
+    #   FirewalldWrapper.remove_port("8080:8090", "TCP", "eth0")
+    #   FirewalldWrapper.remove_port("nameserver", "UDP", "eth0")
+    #
+    # @param port_or_range [String] port or range of ports to be removed from
+    # the interface zone
+    # @param protocol [String] port protocol
+    # @param interface [String] interface name
+    def remove_port(port_or_range, protocol, interface)
+      return false unless validate_port(port_or_range)
+      return false unless supported_protocol?(protocol)
+
+      zone = interface_zone(interface)
+      return false unless zone
+      port = "#{port_or_range.sub(":", "-")}/#{protocol.downcase}"
       zone.remove_port(port)
     end
 
@@ -66,6 +107,43 @@ module Yast
 
     def firewalld
       Y2Firewall::Firewalld.instance
+    end
+
+    # Return whether the given port of range of ports is valid
+    #
+    # @example
+    #   FirewalldWrapper.validate_port("80") #=> true
+    #   FirewalldWrapper.validate_port("8080:8090") #=> true
+    #   FirewalldWrapper.validate_port("ssh") #=> true
+    #   FirewalldWrapper.validate_port("8080:8070") #=> false
+    #   FirewalldWrapper.validate_port("klasjdkla") #=> false
+    #
+    # @param port_or_range [String] port or port range to be added to the zone
+    def validate_port(port_or_range)
+      if !PortRanges.IsValidPortRange(port_or_range)
+        unless PortAliases.GetPortNumber(port_or_range)
+          log.error("The given port or range of ports are not valid: #{port_or_range}")
+          return false
+        end
+      end
+
+      true
+    end
+
+    # Return whether the given protocol is supported or not
+    #
+    # @return [Boolean] true if supported; false otherwise
+    def supported_protocol?(protocol)
+      VALID_PROTOCOLS.include?(protocol.downcase)
+    end
+
+    # Return the interface zone if present or nil otherwise
+    # Return [Y2Firewall::Firewalld::Zone,nil] the interface zone if present;
+    # nil otherwise
+    def interface_zone(interface)
+      zone = firewalld.zones.find { |z| z.interfaces.include?(interface) }
+      log.error("There is no zone for the interface #{interface}") if !zone
+      zone
     end
   end
 

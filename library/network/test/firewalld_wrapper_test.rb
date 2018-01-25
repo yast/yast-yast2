@@ -12,6 +12,7 @@ describe Yast::FirewalldWrapper do
   before do
     allow(subject).to receive(:firewalld).and_return(firewalld)
     allow(firewalld).to receive(:zones).and_return(zones)
+    allow(firewalld).to receive(:installed?).and_return(true)
     external.interfaces = ["eth0"]
   end
 
@@ -32,6 +33,21 @@ describe Yast::FirewalldWrapper do
   end
 
   describe "#add_port" do
+    before do
+      allow(external).to receive(:add_port).and_return(true)
+    end
+
+    it "returns false if the port is not a port, a valid range or an alias" do
+      expect(subject.add_port("asdasd", "TCP", "eth0")).to eq(false)
+      expect(subject.add_port("8080:8070", "TCP", "eth0")).to eq(false)
+      expect(subject.add_port("ssh", "TCP", "eth0")).to eq(true)
+    end
+
+    it "returns false if the protocol is not supported" do
+      expect(subject.add_port("ssh", "RCP", "eth0")).to eq(false)
+      expect(subject.add_port("ssh", "TCP", "eth0")).to eq(true)
+    end
+
     context "when the interface belongs to a known zone" do
       it "add the given port to the zone" do
         expect(external).to receive(:add_port).with("80/tcp")
@@ -50,6 +66,21 @@ describe Yast::FirewalldWrapper do
   end
 
   describe "#remove_port" do
+    before do
+      allow(external).to receive(:remove_port).and_return(true)
+    end
+
+    it "returns false if the port is not a port, a valid range or an alias" do
+      expect(subject.remove_port("asdasd", "TCP", "eth0")).to eq(false)
+      expect(subject.remove_port("8080:8070", "TCP", "eth0")).to eq(false)
+      expect(subject.remove_port("ssh", "TCP", "eth0")).to eq(true)
+    end
+
+    it "returns false if the protocol is not supported" do
+      expect(subject.remove_port("ssh", "RCP", "eth0")).to eq(false)
+      expect(subject.remove_port("ssh", "TCP", "eth0")).to eq(true)
+    end
+
     context "when the interface belongs to a known zone" do
       it "remove the given port from the zone" do
         allow(external).to receive(:ports).and_return(["80/tcp", "8080/tcp"])

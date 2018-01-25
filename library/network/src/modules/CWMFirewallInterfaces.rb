@@ -119,37 +119,7 @@ module Yast
     # Set the firewall status label
     # @param [Symbol] status symbol one of `off, `closed, `open_all, `custom, `not_installed
     def SetFirewallLabel(status)
-      label =
-        case status
-        when :not_installed
-          # bnc #429861
-          if Stage.initial
-            # label
-            _(
-              "Firewall cannot be adjusted during first stage installation."
-            )
-          else
-            # label
-            _("Firewall package is not installed.")
-          end
-        when :off
-          # label
-          _("Firewall is disabled")
-        when :closed
-          # label
-          _("Firewall port is closed")
-        when :open_all
-          # label
-          _("Firewall port is open on all interfaces")
-        when :custom
-          # label
-          _("Firewall port is open on selected interfaces")
-        when :no_ifaces
-          # label
-          _("No network interfaces are configured")
-        end
-
-      UI.ReplaceWidget(Id(:_cwm_firewall_status_rp), Label(label))
+      UI.ReplaceWidget(Id(:_cwm_firewall_status_rp), Label(firewall_status_label(status)))
 
       nil
     end
@@ -847,10 +817,14 @@ module Yast
 
       services = adapt_settings_services!(settings)
 
-      if services.empty? || !firewalld.installed?
-        log.error("Firewall is not installed") if !firewalld.installed?
+      if services.empty?
         log.error("Firewall services not specified") if services.empty?
         return { "widget" => :custom, "custom_widget" => VBox(), "help" => "" }
+      end
+
+      if !firewalld.installed?
+        log.error("Firewall is not installed") if !firewalld.installed?
+        return { "widget" => :custom, "custom_widget" => not_installed_widget, "help" => "" }
       end
 
       if services.any? { |s| !firewalld.api.service_supported?(s) }
@@ -990,6 +964,41 @@ module Yast
       :custom
     end
 
+    # Return the firewall status label for the given status
+    #
+    # @param status [Symbol] current status
+    # @return [String] current firewall status label
+    def firewall_status_label(status)
+      case status
+      when :not_installed
+        # bnc #429861
+        if Stage.initial
+          # label
+          _(
+            "Firewall cannot be adjusted during first stage installation."
+          )
+        else
+          # label
+          _("Firewall package is not installed.")
+        end
+      when :off
+        # label
+        _("Firewall is disabled")
+      when :closed
+        # label
+        _("Firewall port is closed")
+      when :open_all
+        # label
+        _("Firewall port is open on all interfaces")
+      when :custom
+        # label
+        _("Firewall port is open on selected interfaces")
+      when :no_ifaces
+        # label
+        _("No network interfaces are configured")
+      end
+    end
+
     # Convenience method to return the default zone object
     #
     # @return [Y2Firewall::Firewalld::Zone] default zone
@@ -1087,10 +1096,11 @@ module Yast
       end
     end
 
-    # Return a firewall widget with a list of the supported and unsupported
-    # firewalld services.
+    # Return a YaST::Term alerting that the firewall is not configurable
+    # because some services are not configurable and also with a list of the
+    # unsupported firewalld services.
     #
-    # @return [Yast::Term] widget with a summary of services support
+    # @return [Yast::Term] widget with a summary of supported services
     def services_not_defined_widget(services)
       services_list =
         services.map do |service|
@@ -1103,11 +1113,26 @@ module Yast
 
       VBox(
         Frame(
-          _("Firewall not configurable (missing services)"),
+          _("Firewall not configurable"),
           VBox(
             Left(Label(_("Some firewalld services are not available:"))),
             *services_list,
             Left(Label(_("You need to defined them to be able to configure the firewall.")))
+          )
+        )
+      )
+    end
+
+    # Return a YaST::Term alerting that the firewall is not configurable
+    # because it is not installed
+    #
+    # @return [Yast::Term] widget with not installed label
+    def not_installed_widget
+      VBox(
+        Frame(
+          _("Firewall not configurable"),
+          VBox(
+            Left(Label(firewall_status_label(:not_installed)))
           )
         )
       )

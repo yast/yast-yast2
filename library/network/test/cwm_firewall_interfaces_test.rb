@@ -26,13 +26,18 @@ describe Yast::CWMFirewallInterfaces do
 
     context "when firewalld is not installed" do
       let(:installed) { false }
+      let(:widget_settings) { { "services" => ["apache2"] } }
+
       it "returns a hash with only the 'widget', 'custom_widget' and 'help' keys" do
         ret = subject.CreateOpenFirewallWidget(widget_settings)
         expect(ret.keys.sort).to eq(["widget", "custom_widget", "help"].sort)
       end
 
-      it "returns an empty VBox() as the 'custom_widget'" do
-        expect(subject.CreateOpenFirewallWidget(widget_settings)["custom_widget"]).to eq(VBox())
+      it "returns a widget alerting of it as the 'custom_widget'" do
+        expect(subject).to receive(:not_installed_widget)
+          .and_return("not_installed_widget")
+        expect(subject.CreateOpenFirewallWidget(widget_settings)["custom_widget"])
+          .to eq("not_installed_widget")
       end
     end
 
