@@ -117,7 +117,7 @@ module Yast
       Y2Firewall::Firewalld.instance
     end
 
-    # Return whether the given port of range of ports is valid. The port can be
+    # Return whether the given port or range of ports is valid. The port can be
     # either a number or known service name.
 
     #
