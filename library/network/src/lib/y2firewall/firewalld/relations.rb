@@ -49,8 +49,13 @@ module  Y2Firewall
           relations
         end
 
-        define_method "apply_all_relations_changes!" do
+        define_method "apply_relations_changes!" do
           relations.each { |r| public_send("apply_#{r}_changes!") }
+          true
+        end
+
+        define_method "read_relations" do
+          relations.each { |r| instance_variable_set("@#{r}", public_send("current_#{r}")) }
           true
         end
 

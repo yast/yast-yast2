@@ -58,11 +58,12 @@ describe Y2Firewall::Firewalld::Zone do
 
     before do
       allow_any_instance_of(Y2Firewall::Firewalld).to receive(:api).and_return(api)
-      allow(subject).to receive(:current_services).and_return(["ssh"])
-      allow(subject).to receive(:current_interfaces).and_return(["eth0", "eth1"])
-      allow(subject).to receive(:current_ports).and_return(["80/tcp", "443/tcp"])
-      allow(subject).to receive(:current_protocols).and_return([])
-      allow(subject).to receive(:current_sources).and_return([])
+      allow(subject).to receive(:public_send).with("current_services").and_return(["ssh"])
+      allow(subject).to receive(:public_send).with("current_interfaces").and_return(["eth0", "eth1"])
+      allow(subject).to receive(:public_send).with("current_ports").and_return(["80/tcp", "443/tcp"])
+      allow(subject).to receive(:public_send).with("current_protocols").and_return([])
+      allow(subject).to receive(:public_send).with("current_sources").and_return([])
+      allow(subject).to receive(:public_send).with(:interfaces).and_call_original
     end
 
     context "when the zone was modified since read" do

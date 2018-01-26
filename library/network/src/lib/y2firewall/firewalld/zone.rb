@@ -93,7 +93,7 @@ module Y2Firewall
       def apply_changes!
         return true unless modified?
 
-        apply_all_relations_changes!
+        apply_relations_changes!
         if modified.include?(:masquerade)
           masquerade? ? api.add_masquerade(name) : api.remove_masquerade(name)
         end
@@ -111,9 +111,7 @@ module Y2Firewall
       # configuration for this zone.
       def read
         return unless firewalld.installed?
-
-        relations.each { |r| instance_variable_set("@#{r}", public_send("current_#{r}")) }
-
+        read_relations
         @masquerade = api.masquerade_enabled?(name)
         @modified = []
 
