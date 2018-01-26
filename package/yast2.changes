@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 24 14:13:13 UTC 2018 - knut.anderssen@suse.com
+
+- Firewalld: Added methods to the wrapper class for opening ports
+  by YaPI modules (fate#323460 bsc#1071548 bsc#1076837)
+- 4.0.39
+
+-------------------------------------------------------------------
 Wed Jan 24 13:23:14 UTC 2018 - jreidinger@suse.com
 
 - CWM: Add possibility to define abort handler for CWM.show

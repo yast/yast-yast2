@@ -90,7 +90,7 @@ module Y2Firewall
     # Return from the services list the one which matches the given name
     #
     # @param name [String] the service name
-    # @return [Y2Firewall::Firewalld::Service, nil] the firewalld service with
+    # @return [Y2Firewall::Firewalld::Service] the firewalld service with
     # the given name
     def find_service(name)
       services.find { |s| s.name == name } || read_service(name)
@@ -102,6 +102,7 @@ module Y2Firewall
     # @param name [String] the service name
     # @return [Y2Firewall::Firewalld::Service] the recently added service
     def read_service(name)
+      raise(Service::NotFound, name) unless installed?
       service = Y2Firewall::Firewalld::Service.new(name: name)
       raise(Service::NotFound, name) if !service.supported?
 
@@ -127,7 +128,8 @@ module Y2Firewall
 
     # Apply the changes to the modified zones and sets the logging option
     def write_only
-      zones.map { |z| z.apply_changes! if z.modified? }
+      return false unless installed?
+      zones.each { |z| z.apply_changes! if z.modified? }
       api.log_denied_packets = log_denied_packets if log_denied_packets != api.log_denied_packets
       api.default_zone       = default_zone if default_zone != api.default_zone
       true
