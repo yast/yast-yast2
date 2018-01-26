@@ -32,7 +32,7 @@ module Yast
   class FirewalldWrapperClass < Module
     include Logger
 
-    VALID_PROTOCOLS = ["udp", "tcp"].freeze
+    VALID_PROTOCOLS = ["udp", "tcp", "sctp", "dccp"].freeze
 
     def initialize
       Yast.import "PortAliases"
@@ -55,18 +55,20 @@ module Yast
     end
 
     # Add the port or range of ports with the given protocol to the zone the
-    # interface belongs to.
+    # interface belongs to. The port can be either a number or known service
+    # name.
     #
     # @example
     #   FirewalldWrapper.add_port("80", "TCP", "eth0")
     #   FirewalldWrapper.add_port("8080:8090", "TCP", "eth0")
     #   FirewalldWrapper.add_port("nameserver", "UDP", "eth0")
     #
-    # @param port_or_range [String] port or range of ports to be added to the zone
+    # @param port_or_range [String] port or range of ports to be added to the
+    # interface zone; the port can be either a number or a known service name
     # @param protocol [String] port protocol
     # @param interface [String] interface name
     def add_port(port_or_range, protocol, interface)
-      return false unless validate_port(port_or_range)
+      return false unless valid_port?(port_or_range)
       return false unless supported_protocol?(protocol)
 
       zone = interface_zone(interface)
@@ -76,7 +78,8 @@ module Yast
     end
 
     # Remove the port or range of ports with the given protocol to the zone the
-    # interface belongs to.
+    # interface belongs to. The port can be either a number or known service
+    # name.
     #
     # @example
     #   FirewalldWrapper.remove_port("80", "TCP", "eth0")
@@ -84,11 +87,12 @@ module Yast
     #   FirewalldWrapper.remove_port("nameserver", "UDP", "eth0")
     #
     # @param port_or_range [String] port or range of ports to be removed from
-    # the interface zone
+    # the interface zone; the port can be either a number or a known service
+    # name
     # @param protocol [String] port protocol
     # @param interface [String] interface name
     def remove_port(port_or_range, protocol, interface)
-      return false unless validate_port(port_or_range)
+      return false unless valid_port?(port_or_range)
       return false unless supported_protocol?(protocol)
 
       zone = interface_zone(interface)
@@ -105,21 +109,29 @@ module Yast
 
   private
 
+    # Convenience method which returns a singleton instance of
+    # Y2Firewall::Firewalld
+    #
+    # @return [Y2Firewall::Firewalld] singleton instance
     def firewalld
       Y2Firewall::Firewalld.instance
     end
 
-    # Return whether the given port of range of ports is valid
+    # Return whether the given port of range of ports is valid. The port can be
+    # either a number or known service name.
+
     #
     # @example
-    #   FirewalldWrapper.validate_port("80") #=> true
-    #   FirewalldWrapper.validate_port("8080:8090") #=> true
-    #   FirewalldWrapper.validate_port("ssh") #=> true
-    #   FirewalldWrapper.validate_port("8080:8070") #=> false
-    #   FirewalldWrapper.validate_port("klasjdkla") #=> false
+    #   FirewalldWrapper.valid_port?("80") #=> true
+    #   FirewalldWrapper.valid_port?("8080:8090") #=> true
+    #   FirewalldWrapper.valid_port?("ssh") #=> true
+    #   FirewalldWrapper.valid_port?("8080:8070") #=> false
+    #   FirewalldWrapper.valid_port?("klasjdkla") #=> false
     #
-    # @param port_or_range [String] port or port range to be added to the zone
-    def validate_port(port_or_range)
+    # @param port_or_range [String] port or range of ports; the port can be
+    # either a number or a known service name
+    # @return [Boolean] true if is valid port or range of ports
+    def valid_port?(port_or_range)
       if !PortRanges.IsValidPortRange(port_or_range)
         unless PortAliases.GetPortNumber(port_or_range)
           log.error("The given port or range of ports are not valid: #{port_or_range}")
