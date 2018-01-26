@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Feb  1 12:21:32 UTC 2018 - knut.anderssen@suse.com
+
+- Firewalld: Cache modifications for performance improvements.
+  (fate#323460)
+- 4.0.47
+
+-------------------------------------------------------------------
 Thu Feb  1 08:09:28 UTC 2018 - lslezak@suse.cz
 
 - Move some Y2Packager classes from yast2-packager here to avoid
