@@ -44,15 +44,16 @@ module Y2Firewall
         "work"     => N_("Work Zone")
       }.freeze
 
-      # [String] Zone name
+      # @return [String] Zone name
       attr_reader :name
 
       # @see Y2Firewall::Firewalld::Relations
       has_many :services, :interfaces, :protocols, :ports, :sources
 
-      # [Boolean] Whether masquerade is enabled or not
+      # @return [Boolean] Whether masquerade is enabled or not
       attr_reader :masquerade
 
+      # @return [Array<Symbol>] symbol of the modified relations or attributes
       attr_accessor :modified
 
       alias_method :masquerade?, :masquerade
@@ -72,12 +73,19 @@ module Y2Firewall
         KNOWN_ZONES
       end
 
+      # Setter method for masquerade and also add it into modified array if no
+      # present.
       def masquerade=(value)
         @masquerade = value
 
         @modified << :masquerade unless @modified.include?(:masquerade)
       end
 
+      # Known full name of the known zones. Usefull when the API is not
+      # accessible or when make sense to not call it directly to obtain
+      # the full name.
+      #
+      # @return [String] zone full name
       def full_name
         self.class.known_zones[name]
       end
@@ -110,10 +118,10 @@ module Y2Firewall
       # Read and modify the state of the object with the current firewalld
       # configuration for this zone.
       def read
+        @modified = []
         return unless firewalld.installed?
         read_relations
         @masquerade = api.masquerade_enabled?(name)
-        @modified = []
 
         true
       end

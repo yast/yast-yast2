@@ -18,6 +18,10 @@ module  Y2Firewall
       #
       #   zone = Zone.new
       #
+      #   # Return all the declared relations
+      #   zone.relations #=> [:services]
+      #   # Read all the relations initializing the object
+      #   zone.read_relations
       #   # Adds the "ssh" service into the zone object if not present
       #   zone.add_service("ssh")
       #   # Removes the "ssh" service from the zone object
@@ -40,6 +44,8 @@ module  Y2Firewall
       #   zone.services_to_remove
       #   # Apply the changes (remove_services! && add_services!)
       #   zone.apply_services_changes!
+      #   # Apply all the relations changes
+      #   zone.apply_relations_changes!
       #
       # @param args [Array<Symbol] relation or attribute names
       def has_many(*relations, scope: nil) # rubocop:disable Style/PredicateName
