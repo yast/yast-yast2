@@ -25,6 +25,12 @@ require "y2firewall/firewalld"
 require "y2firewall/firewalld/zone"
 
 describe Y2Firewall::Firewalld::Zone do
+  let(:firewalld) { Y2Firewall::Firewalld.instance }
+
+  before do
+    allow(firewalld).to receive(:installed?).and_return(true)
+  end
+
   describe ".known_zones" do
     it "returns a hash with known zone names and descriptions" do
       expect(described_class.known_zones).to be_a(Hash)
@@ -45,7 +51,7 @@ describe Y2Firewall::Firewalld::Zone do
       let(:api) { instance_double("Y2Firewall::Firewalld::Api", default_zone: "default") }
 
       it "uses the default zone name" do
-        allow_any_instance_of(Y2Firewall::Firewalld).to receive(:api).and_return(api)
+        allow(firewalld).to receive(:api).and_return(api)
 
         expect(subject.name).to eq("default")
       end
@@ -57,7 +63,7 @@ describe Y2Firewall::Firewalld::Zone do
     let(:api) { instance_double("Y2Firewall::Firewalld::Api", masquerade_enabled?: true) }
 
     before do
-      allow_any_instance_of(Y2Firewall::Firewalld).to receive(:api).and_return(api)
+      allow(firewalld).to receive(:api).and_return(api)
       allow(subject).to receive(:public_send).with("current_services").and_return(["ssh"])
       allow(subject).to receive(:public_send).with("current_interfaces").and_return(["eth0", "eth1"])
       allow(subject).to receive(:public_send).with("current_ports").and_return(["80/tcp", "443/tcp"])
