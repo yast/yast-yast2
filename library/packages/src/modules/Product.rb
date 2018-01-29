@@ -109,7 +109,7 @@ module Yast
         # list of products defined by the "system-installation()" provides
         system_products = Y2Packager::ProductReader.installation_package_mapping.keys
       rescue LoadError
-        log.warning "yast2-packager is missing, cannot read system-installation products"
+        log.warn "yast2-packager is missing, cannot read system-installation products"
       end
 
       selected = Pkg.IsAnyResolvable(:product, :to_install)
