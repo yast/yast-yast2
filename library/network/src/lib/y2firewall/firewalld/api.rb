@@ -130,16 +130,21 @@ module Y2Firewall
         run_command("--set-default-zone=#{zone}")
       end
 
+      # Do a reload of the firewall if running. In offline mode just return
+      # true as a reload is not needed to apply the changes.
+      #
       # @return [Boolean] The firewalld reload result (exit code)
       def reload
-        return false if offline?
+        return true if offline?
         run_command("--reload")
       end
 
+      # Do a complete reload of the firewall if running. In offline mode just
+      # return true as a reload is not needed to apply the changes
+      #
       # @return [Boolean] The firewalld complete-reload result (exit code)
       def complete_reload
-        return false if offline?
-
+        return true if offline?
         run_command("--complete-reload")
       end
 
