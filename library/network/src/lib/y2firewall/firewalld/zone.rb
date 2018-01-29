@@ -73,12 +73,13 @@ module Y2Firewall
         KNOWN_ZONES
       end
 
-      # Setter method for masquerade and also add it into modified array if no
-      # present.
-      def masquerade=(value)
-        @masquerade = value
-
+      # Setter method for enabling masquerading.
+      #
+      # @param enabled [Boolean] true for enable; false for disable
+      # @return [Boolean] whether it is enabled or not
+      def masquerade=(enable)
         @modified << :masquerade unless @modified.include?(:masquerade)
+        @masquerade = enable || false
       end
 
       # Known full name of the known zones. Usefull when the API is not
