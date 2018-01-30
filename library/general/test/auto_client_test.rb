@@ -168,8 +168,8 @@ describe ::Installation::AutoClient do
         expect { ::Installation::AutoClient.run }.to_not raise_error
       end
 
-      it "returns empty array if optional abstract method not defined" do
-        expect(::Installation::AutoClient.run).to eq []
+      it "returns an empty hash if the optional abstract method is not defined" do
+        expect(::Installation::AutoClient.run).to eq({})
       end
     end
   end
