@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 30 06:45:17 UTC 2018 - ancor@suse.com
+
+- Fixed a bug causing pages of all CWM::TreePager to be rendered
+  twice on every page switch (bsc#1078212)
+- 4.0.43
+
+-------------------------------------------------------------------
 Mon Jan 29 17:11:19 UTC 2018 - knut.anderssen@suse.com
 
 - Firewalld API: reload and complete reload return true in offline
