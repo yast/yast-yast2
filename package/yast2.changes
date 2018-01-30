@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 30 17:19:39 CET 2018 - schubi@suse.de
+
+- Do not enable xvnc.socket
+- 4.0.39
+
+-------------------------------------------------------------------
 Wed Jan 24 13:23:14 UTC 2018 - jreidinger@suse.com
 
 - CWM: Add possibility to define abort handler for CWM.show
