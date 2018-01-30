@@ -35,7 +35,9 @@ module CWM
 
       return nil unless page
 
-      # Don't alter this line without taking a look to bsc#1078212
+      # Note: don't rely on new_id being equal to page.widget_id
+      # This may not be true for subclasses redefining #page_for_id
+      # (see bsc#1078212)
       return nil if @current_page.widget_id == page.widget_id
 
       unless replace_point.validate
