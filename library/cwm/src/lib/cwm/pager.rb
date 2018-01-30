@@ -35,7 +35,8 @@ module CWM
 
       return nil unless page
 
-      return nil if @current_page.widget_id == new_id
+      # Don't alter this line without taking a look to bsc#1078212
+      return nil if @current_page.widget_id == page.widget_id
 
       unless replace_point.validate
         mark_page(@current_page)
