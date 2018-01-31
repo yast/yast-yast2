@@ -32,24 +32,36 @@ Yast.import "PackageSystem"
 
 module Y2Firewall
   # Main class to interact with Firewalld
+  #
+  # @example Enable the cluster service into the external zone
+  #
+  #   require "y2firewall/firewalld"
+  #
+  #   f = Y2Firewall::Firewalld.instance
+  #   f.read
+  #   external = f.find_zone("external")
+  #   external.services #=> ["ssh", "dns", "samba-client"]
+  #   external.add_service("cluster")
+  #   f.write
+  #
+  #
   class Firewalld
     include Singleton
     include Yast::Logger
     extend Forwardable
 
-    # Y2Firewall::Firewalld::Api instance
+    # @return Y2Firewall::Firewalld::Api instance
     attr_accessor :api
-
-    # [Array <Y2Firewall::Firewalld::Zone>] firewalld zones
+    # @return [Array <Y2Firewall::Firewalld::Zone>] firewalld zones
     attr_accessor :zones
-
+    # @return [Array <Y2Firewall::Firewalld::Service>] firewalld services. To
+    # avoid performance problems it is empty by default and the services are
+    # added when needed by the find_service method.
     attr_accessor :services
-
-    # [String] Type of log denied packets (reject & drop rules). Possible
-    # values are: all, unicast, broadcast, multicast and off
+    # @return [String] Type of log denied packets (reject & drop rules).
+    # Possible values are: all, unicast, broadcast, multicast and off
     attr_accessor :log_denied_packets
-
-    # @return [String] default zone name
+    # @return [String] firewalld default zone name
     attr_accessor :default_zone
 
     PACKAGE = "firewalld".freeze
@@ -62,6 +74,7 @@ module Y2Firewall
       @api = Api.new
       @zones = []
       @services = []
+      @read = false
     end
 
     # Read the current firewalld configuration initializing the zones and other
@@ -75,7 +88,7 @@ module Y2Firewall
       @default_zone       = api.default_zone
       # The list of services is not read or initialized because takes time and
       # affects to the performance and also the services are rarely touched.
-      true
+      @read = true
     end
 
     # Return from the zones list the one which matches the given name
@@ -190,6 +203,14 @@ module Y2Firewall
       return false if !installed? || running?
 
       Yast::Service.Start(SERVICE)
+    end
+
+    # Return whether the configuration has been read
+    #
+    # @return [Boolean] true if the configuration has been read; false
+    # otherwise
+    def read?
+      @read
     end
   end
 end

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 31 13:54:12 UTC 2018 - knut.anderssen@suse.com
+
+- Firewalld API: Cache whether the configuration has been read
+  (fate#323460)
+- 4.0.45
+
+-------------------------------------------------------------------
 Tue Jan 30 11:06:59 UTC 2018 - knut.anderssen@suse.com
 
 - Installation::AutoClient: modified packages default and improved
