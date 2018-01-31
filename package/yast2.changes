@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb  1 11:36:31 UTC 2018 - igonzalezsosa@suse.com
+
+- Replace idnconv with simpleidn library (related to bsc#1071552).
+- 4.0.48
+
+-------------------------------------------------------------------
 Thu Feb  1 10:36:26 UTC 2018 - knut.anderssen@suse.com
 
 - Firewalld: Cache modifications for performance improvements.
