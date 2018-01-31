@@ -166,6 +166,11 @@ module Y2Firewall
         api.change_source(name, source)
       end
 
+      # Mark the zone as untouched or not modified since this moment
+      def untouched!
+        @modified = []
+      end
+
     private
 
       # Convenience method which return an instance of Y2Firewall::Firewalld

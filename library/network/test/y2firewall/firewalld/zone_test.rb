@@ -116,4 +116,16 @@ describe Y2Firewall::Firewalld::Zone do
       expect(config["masquerade"]).to eql(true)
     end
   end
+
+  describe "#untouched!" do
+    subject { described_class.new(name: "test") }
+
+    it "marks the zone as untouched or not modified" do
+      subject.interfaces = ["eth0", "eth1"]
+      expect(subject.modified?).to eq(true)
+      subject.untouched!
+      expect(subject.modified?).to eq(false)
+      expect(subject.interfaces).to eq(["eth0", "eth1"])
+    end
+  end
 end

@@ -70,7 +70,7 @@ module Y2Firewall
           end
         end
 
-        zones.map { |z| z.modified = [] }
+        zones.map(&:untouched!)
 
         zones
       end
