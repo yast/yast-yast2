@@ -3,10 +3,12 @@ TESTS = \
   dummy_callbacks_test.rb \
   file_conflict_callbacks_test.rb \
   package_callbacks_test.rb \
-  lib/package_downloader_test.rb \
-  lib/package_extractor_test.rb \
 	lib/product_test.rb \
 	lib/repository_test.rb \
+  lib/package_downloader_test.rb \
+  lib/package_extractor_test.rb \
+  lib/product_reader_test.rb \
+  lib/product_sorter_test.rb \
   packages_ui_test.rb \
   product_test.rb \
   signature_check_callbacks_test.rb \

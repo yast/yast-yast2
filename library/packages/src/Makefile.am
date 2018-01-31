@@ -31,6 +31,12 @@ ylib_DATA = \
   lib/packages/update_message.rb \
   lib/packages/update_messages_view.rb
 
-EXTRA_DIST = $(module_DATA) $(ynclude_DATA) $(ylib_DATA)
+y2packagerdir = "${yast2dir}/lib/y2packager"
+y2packager_DATA = \
+	lib/y2packager/product.rb \
+	lib/y2packager/product_reader.rb \
+	lib/y2packager/product_sorter.rb
+
+EXTRA_DIST = $(module_DATA) $(ynclude_DATA) $(ylib_DATA) $(y2packager_DATA)
 
 include $(top_srcdir)/Makefile.am.common

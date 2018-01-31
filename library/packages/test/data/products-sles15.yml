@@ -1,0 +1,42 @@
+---
+- arch: x86_64
+  category: addon
+  description: |-
+    SUSE Linux Enterprise offers a comprehensive
+            suite of products built on a single code base.
+            The platform addresses business needs from
+            the smallest thin-client devices to the world's
+            most powerful high-performance computing
+            and mainframe servers. SUSE Linux Enterprise
+            offers common management tools and technology
+            certifications across the platform, and
+            each product is enterprise-class.
+  display_name: SUSE Linux Enterprise Server 15 Alpha1
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: SLES
+  on_system_by_user: false
+  product_file: SLES.prod
+  product_line: ''
+  product_package: sles-release
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: https://www.suse.com/releasenotes/x86_64/SUSE-SLES/15/release-notes-sles.rpm
+  relnotes_urls:
+  - https://www.suse.com/releasenotes/x86_64/SUSE-SLES/15/release-notes-sles.rpm
+  short_name: SLES15
+  source: 0
+  status: :selected
+  summary: SUSE Linux Enterprise Server 15 Alpha1
+  transact_by: :app_high
+  type: addon
+  update_urls: []
+  vendor: SUSE LINUX Products GmbH, Nuernberg, Germany
+  version: 15-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15'
