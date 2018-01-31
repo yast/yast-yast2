@@ -39,6 +39,8 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
 BuildRequires:  update-desktop-files
 # For running RSpec tests during build
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
+# For converting to/from punycode strings
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:simpleidn)
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
@@ -66,6 +68,8 @@ Requires:       perl-XML-Simple
 Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
 Requires:       rubygem(%{rb_default_ruby_abi}:cfa)
+# For converting to/from punycode strings
+Requires:       rubygem(%{rb_default_ruby_abi}:simpleidn)
 Requires:       sysconfig >= 0.80.0
 # for running scripts
 Requires:       rubygem(%{rb_default_ruby_abi}:cheetah)
@@ -96,13 +100,6 @@ Conflicts:      yast2-mail < 3.1.7
 # Older packager use removed API
 Conflicts:      yast2-packager < 3.1.34
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-# for Punycode.rb (bnc#651893) - the idnconv tool is located in
-# different packages (SLE12/Leap-42.1: bind-utils, TW/Factory: idnkit)
-%if 0%{?suse_version} >= 1330
-Requires:       idnkit
-%else
-Requires:       bind-utils
-%endif
 Obsoletes:      yast2-devel-doc
 # for the PackageExtractor class, just make sure they are present,
 # these should be present even in a very minimal installation
