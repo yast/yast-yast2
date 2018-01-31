@@ -30,6 +30,7 @@
 # $Id$
 #
 require "yast"
+require "simpleidn"
 
 module Yast
   class PunycodeClass < Module
@@ -212,36 +213,9 @@ module Yast
       converted_not_cached = []
 
       # There is something not cached, converting them at once
-      if not_cached != []
-        tmp_in = Ops.add(GetTmpDirectory(), "/tmp-idnconv-in.ycp")
-        tmp_out = Ops.add(GetTmpDirectory(), "/tmp-idnconv-out.ycp")
-
-        SCR.Write(path(".target.ycp"), tmp_in, not_cached)
-        convert_command = Builtins.sformat(
-          "/usr/bin/idnconv %1 %2 > %3",
-          to_punycode ? "" : "-reverse",
-          tmp_in,
-          tmp_out
-        )
-
-        if Convert.to_integer(
-          SCR.Execute(path(".target.bash"), convert_command)
-        ) != 0
-          Builtins.y2error("Conversion failed!")
-        else
-          converted_not_cached = Convert.convert(
-            SCR.Read(path(".target.ycp"), tmp_out),
-            from: "any",
-            to:   "list <string>"
-          )
-          # Parsing the YCP file failed
-          if converted_not_cached.nil?
-            Builtins.y2error(
-              "Erroneous YCP file: %1",
-              SCR.Read(path(".target.string"), tmp_out)
-            )
-          end
-        end
+      if !not_cached.empty?
+        meth = to_punycode ? :to_ascii : :to_unicode
+        converted_not_cached = not_cached.map { |v| SimpleIDN.public_send(meth, v) }
       end
 
       # Listing through the given list and adjusting the return list
