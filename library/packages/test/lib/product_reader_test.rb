@@ -15,8 +15,6 @@ require_relative "../test_helper"
 
 require "y2packager/product_reader"
 
-PACKAGES_FIXTURES_PATH = File.join(File.dirname(__FILE__), "../data")
-
 describe Y2Packager::ProductReader do
   subject { Y2Packager::ProductReader.new }
   let(:products) { YAML.load(File.read(File.join(PACKAGES_FIXTURES_PATH, "products-sles15.yml"))) }
