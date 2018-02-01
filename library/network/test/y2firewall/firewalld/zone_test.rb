@@ -25,6 +25,12 @@ require "y2firewall/firewalld"
 require "y2firewall/firewalld/zone"
 
 describe Y2Firewall::Firewalld::Zone do
+  let(:firewalld) { Y2Firewall::Firewalld.instance }
+
+  before do
+    allow(firewalld).to receive(:installed?).and_return(true)
+  end
+
   describe ".known_zones" do
     it "returns a hash with known zone names and descriptions" do
       expect(described_class.known_zones).to be_a(Hash)
@@ -45,7 +51,7 @@ describe Y2Firewall::Firewalld::Zone do
       let(:api) { instance_double("Y2Firewall::Firewalld::Api", default_zone: "default") }
 
       it "uses the default zone name" do
-        allow_any_instance_of(Y2Firewall::Firewalld).to receive(:api).and_return(api)
+        allow(firewalld).to receive(:api).and_return(api)
 
         expect(subject.name).to eq("default")
       end
@@ -57,25 +63,24 @@ describe Y2Firewall::Firewalld::Zone do
     let(:api) { instance_double("Y2Firewall::Firewalld::Api", masquerade_enabled?: true) }
 
     before do
-      allow_any_instance_of(Y2Firewall::Firewalld).to receive(:api).and_return(api)
-      allow(subject).to receive(:current_services).and_return(["ssh"])
-      allow(subject).to receive(:services).and_return(["ssh"])
-      allow(subject).to receive(:current_interfaces).and_return(["eth0", "eth1"])
-      allow(subject).to receive(:interfaces).and_return(["eth0", "eth1"])
-      allow(subject).to receive(:current_ports).and_return(["80/tcp", "443/tcp"])
-      allow(subject).to receive(:ports).and_return(["80/tcp", "443/tcp"])
-      allow(subject).to receive(:current_protocols).and_return([])
-      allow(subject).to receive(:current_sources).and_return([])
-      allow(subject).to receive(:protocols).and_return([])
-      allow(subject).to receive(:sources).and_return([])
-      allow(subject).to receive(:masquerade?).and_return(true)
+      allow(firewalld).to receive(:api).and_return(api)
+      allow(subject).to receive(:public_send).with("current_services").and_return(["ssh"])
+      allow(subject).to receive(:public_send).with("current_interfaces").and_return(["eth0", "eth1"])
+      allow(subject).to receive(:public_send).with("current_ports").and_return(["80/tcp", "443/tcp"])
+      allow(subject).to receive(:public_send).with("current_protocols").and_return([])
+      allow(subject).to receive(:public_send).with("current_sources").and_return([])
+      allow(subject).to receive(:public_send).with(:interfaces).and_call_original
     end
 
     context "when the zone was modified since read" do
       it "returns true" do
-        expect(subject).to receive(:current_interfaces).and_return(["eth0", "eth1"])
-        expect(subject).to receive(:interfaces).and_return(["eth0"])
-
+        subject.read
+        expect(subject.interfaces).to eq(["eth0", "eth1"])
+        subject.interfaces = ["eth0"]
+        expect(subject.modified?).to eq(true)
+        subject.read
+        expect(subject.modified?).to eq(false)
+        subject.remove_interface("eth1")
         expect(subject.modified?).to eq(true)
       end
     end
@@ -109,6 +114,18 @@ describe Y2Firewall::Firewalld::Zone do
       expect(config["protocols"]).to eql(["esp"])
       expect(config["sources"]).to eql([])
       expect(config["masquerade"]).to eql(true)
+    end
+  end
+
+  describe "#untouched!" do
+    subject { described_class.new(name: "test") }
+
+    it "marks the zone as untouched or not modified" do
+      subject.interfaces = ["eth0", "eth1"]
+      expect(subject.modified?).to eq(true)
+      subject.untouched!
+      expect(subject.modified?).to eq(false)
+      expect(subject.interfaces).to eq(["eth0", "eth1"])
     end
   end
 end

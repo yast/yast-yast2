@@ -56,7 +56,7 @@ module Y2Firewall
       # @return description [String] service long description
       attr_reader :description
 
-      has_many :ports, :protocols, scope: "service"
+      has_many :ports, :protocols, scope: "service", cache: true
 
       # Convenience method for setting the tcp and udp ports of a given
       # service. If the service is found, it modify the ports according to the
@@ -105,12 +105,11 @@ module Y2Firewall
       # @return [Boolean] true if read
       def read
         return false unless supported?
-
         @short        = api.service_short(name)
         @description  = api.service_description(name)
         @protocols    = current_protocols
         @ports        = current_ports
-
+        untouched!
         true
       end
 
@@ -118,11 +117,10 @@ module Y2Firewall
       #
       # @return [Boolean] true if applied; false otherwise
       def apply_changes!
-        return false unless supported?
-
+        return false if !supported? || !modified?
         apply_protocols_changes!
         apply_ports_changes!
-
+        untouched!
         true
       end
 

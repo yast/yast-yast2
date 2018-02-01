@@ -365,6 +365,9 @@ describe Y2Firewall::Firewalld do
 
     before do
       allow(firewalld).to receive("api").and_return api
+      allow(firewalld).to receive("api").and_return api
+      allow(firewalld).to receive("running?").and_return true
+      allow(firewalld).to receive("enabled?").and_return false
       firewalld.read
     end
 
@@ -373,6 +376,8 @@ describe Y2Firewall::Firewalld do
       external = config["zones"].find { |z| z["name"] == "external" }
 
       expect(config).to be_a(Hash)
+      expect(config["enable_firewall"]).to eq(false)
+      expect(config["start_firewall"]).to eq(true)
       expect(config["log_denied_packets"]).to eq(true)
       expect(config["default_zone"]).to eq("work")
       expect(external["interfaces"]).to eq(["eth0"])

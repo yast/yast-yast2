@@ -44,14 +44,14 @@ module Y2Firewall
         "work"     => N_("Work Zone")
       }.freeze
 
-      # [String] Zone name
+      # @return [String] Zone name
       attr_reader :name
 
       # @see Y2Firewall::Firewalld::Relations
-      has_many :services, :interfaces, :protocols, :ports, :sources
+      has_many :services, :interfaces, :protocols, :ports, :sources, cache: true
 
-      # [Boolean] Whether masquerade is enabled or not
-      attr_accessor :masquerade
+      # @return [Boolean] Whether masquerade is enabled or not
+      attr_reader :masquerade
 
       alias_method :masquerade?, :masquerade
 
@@ -69,32 +69,35 @@ module Y2Firewall
         KNOWN_ZONES
       end
 
+      # Setter method for enabling masquerading.
+      #
+      # @param enabled [Boolean] true for enable; false for disable
+      # @return [Boolean] whether it is enabled or not
+      def masquerade=(enable)
+        modified!(:masquerade)
+        @masquerade = enable || false
+      end
+
+      # Known full name of the known zones. Usefull when the API is not
+      # accessible or when make sense to not call it directly to obtain
+      # the full name.
+      #
+      # @return [String] zone full name
       def full_name
         self.class.known_zones[name]
       end
 
-      # Whether the zone have been modified or not since read
-      #
-      # @return [Boolean] true if it was modified; false otherwise
-      def modified?
-        return true if current_interfaces.sort != interfaces.sort
-        return true if current_services.sort   != services.sort
-        return true if current_protocols.sort  != protocols.sort
-        return true if current_ports.sort      != ports.sort
-        return true if current_sources.sort    != sources.sort
-
-        masquerade? != api.masquerade_enabled?(name)
-      end
-
       # Apply all the changes in firewalld but do not reload it
       def apply_changes!
-        apply_interfaces_changes!
-        apply_services_changes!
-        apply_ports_changes!
-        apply_protocols_changes!
-        apply_sources_changes!
+        return true unless modified?
 
-        masquerade? ? api.add_masquerade(name) : api.remove_masquerade(name)
+        apply_relations_changes!
+        if modified?(:masquerade)
+          masquerade? ? api.add_masquerade(name) : api.remove_masquerade(name)
+        end
+        untouched!
+
+        true
       end
 
       # Convenience method wich reload changes applied to firewalld
@@ -106,13 +109,9 @@ module Y2Firewall
       # configuration for this zone.
       def read
         return unless firewalld.installed?
-
-        @interfaces = api.list_interfaces(name)
-        @services   = api.list_services(name)
-        @ports      = api.list_ports(name)
-        @protocols  = api.list_protocols(name)
-        @sources    = api.list_sources(name)
+        read_relations
         @masquerade = api.masquerade_enabled?(name)
+        untouched!
 
         true
       end
