@@ -33,10 +33,21 @@ ylib_DATA = \
 
 y2packagerdir = "${yast2dir}/lib/y2packager"
 y2packager_DATA = \
+	lib/y2packager/package.rb \
 	lib/y2packager/product.rb \
 	lib/y2packager/product_reader.rb \
-	lib/y2packager/product_sorter.rb
+	lib/y2packager/product_sorter.rb \
+	lib/y2packager/release_notes.rb \
+	lib/y2packager/release_notes_content_prefs.rb \
+	lib/y2packager/release_notes_reader.rb \
+	lib/y2packager/release_notes_store.rb
 
-EXTRA_DIST = $(module_DATA) $(ynclude_DATA) $(ylib_DATA) $(y2packager_DATA)
+y2fetchersdir = "${yast2dir}/lib/y2packager/release_notes_fetchers"
+y2fetchers_DATA = \
+	lib/y2packager/release_notes_fetchers/base.rb \
+	lib/y2packager/release_notes_fetchers/rpm.rb \
+	lib/y2packager/release_notes_fetchers/url.rb
+
+EXTRA_DIST = $(module_DATA) $(ynclude_DATA) $(ylib_DATA) $(y2packager_DATA) $(y2fetchers_DATA)
 
 include $(top_srcdir)/Makefile.am.common
