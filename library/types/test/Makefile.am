@@ -2,6 +2,7 @@ TESTS = \
   hostname_test.rb \
   ip_test.rb \
   ipv4_netmask_test.rb \
+  punycode_test.rb \
   string_test.rb \
   type_repository_test.rb \
   url_test.rb \
