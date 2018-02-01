@@ -29,6 +29,7 @@
 #
 # $Id$
 require "yast"
+require "y2packager/product_reader"
 
 module Yast
   class ProductClass < Module
@@ -102,16 +103,8 @@ module Yast
       required_status = use_installed_products? ? :installed : :selected
       fill_up_relnotes(products.select { |p| p["status"] == required_status })
 
-      # FIXME: move the code from yast2-packager here, we cannot depend on
-      # yast2-packager as it would result in a circular dependency
-      begin
-        require "y2packager/product_reader"
-        # list of products defined by the "system-installation()" provides
-        system_products = Y2Packager::ProductReader.installation_package_mapping.keys
-      rescue LoadError
-        log.warn "yast2-packager is missing, cannot read system-installation products"
-      end
-
+      # list of products defined by the "system-installation()" provides
+      system_products = Y2Packager::ProductReader.installation_package_mapping.keys
       selected = Pkg.IsAnyResolvable(:product, :to_install)
 
       # Use only base products

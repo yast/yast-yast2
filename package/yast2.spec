@@ -16,7 +16,7 @@
 #
 
 Name:           yast2
-Version:        4.0.45
+Version:        4.0.46
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0
@@ -93,7 +93,7 @@ Conflicts:      yast2-installation < 2.18.5
 # moved cfg_mail.scr
 Conflicts:      yast2-mail < 3.1.7
 # Older packager use removed API
-Conflicts:      yast2-packager < 3.1.34
+Conflicts:      yast2-packager < 4.0.33
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 # for Punycode.rb (bnc#651893) - the idnconv tool is located in
 # different packages (SLE12/Leap-42.1: bind-utils, TW/Factory: idnkit)
