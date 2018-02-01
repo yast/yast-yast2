@@ -48,13 +48,10 @@ module Y2Firewall
       attr_reader :name
 
       # @see Y2Firewall::Firewalld::Relations
-      has_many :services, :interfaces, :protocols, :ports, :sources
+      has_many :services, :interfaces, :protocols, :ports, :sources, use_cache: true
 
       # @return [Boolean] Whether masquerade is enabled or not
       attr_reader :masquerade
-
-      # @return [Array<Symbol>] symbol of the modified relations or attributes
-      attr_accessor :modified
 
       alias_method :masquerade?, :masquerade
 
@@ -78,7 +75,7 @@ module Y2Firewall
       # @param enabled [Boolean] true for enable; false for disable
       # @return [Boolean] whether it is enabled or not
       def masquerade=(enable)
-        @modified << :masquerade unless @modified.include?(:masquerade)
+        modified!(:masquerade)
         @masquerade = enable || false
       end
 
@@ -91,22 +88,15 @@ module Y2Firewall
         self.class.known_zones[name]
       end
 
-      # Whether the zone have been modified or not since read
-      #
-      # @return [Boolean] true if it was modified; false otherwise
-      def modified?
-        !modified.empty?
-      end
-
       # Apply all the changes in firewalld but do not reload it
       def apply_changes!
         return true unless modified?
 
         apply_relations_changes!
-        if modified.include?(:masquerade)
+        if modified?(:masquerade)
           masquerade? ? api.add_masquerade(name) : api.remove_masquerade(name)
         end
-        @modified = []
+        untouched!
 
         true
       end
@@ -119,10 +109,10 @@ module Y2Firewall
       # Read and modify the state of the object with the current firewalld
       # configuration for this zone.
       def read
-        @modified = []
         return unless firewalld.installed?
         read_relations
         @masquerade = api.masquerade_enabled?(name)
+        untouched!
 
         true
       end
@@ -164,11 +154,6 @@ module Y2Firewall
       # @param source [String] source address
       def add_source!(source)
         api.change_source(name, source)
-      end
-
-      # Mark the zone as untouched or not modified since this moment
-      def untouched!
-        @modified = []
       end
 
     private
