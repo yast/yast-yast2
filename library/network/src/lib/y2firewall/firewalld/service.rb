@@ -56,7 +56,7 @@ module Y2Firewall
       # @return description [String] service long description
       attr_reader :description
 
-      has_many :ports, :protocols, scope: "service", use_cache: true
+      has_many :ports, :protocols, scope: "service", cache: true
 
       # Convenience method for setting the tcp and udp ports of a given
       # service. If the service is found, it modify the ports according to the
@@ -86,7 +86,6 @@ module Y2Firewall
       # @param name [String] zone name
       def initialize(name:)
         @name = name
-        @modified = []
       end
 
       # Create the service in firewalld

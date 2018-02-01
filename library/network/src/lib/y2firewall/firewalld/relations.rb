@@ -4,7 +4,7 @@ module  Y2Firewall
     # attributes common logic.
     module Relations
       def enable_modifications_cache
-        class_eval("attr_accessor :modified")
+        attr_writer :modified
 
         # Return an array with all the modified attributes/relations
         define_method "modified" do
@@ -36,7 +36,7 @@ module  Y2Firewall
       # applies the object modifications into the firewalld zone using the
       # Firewalld API.
       #
-      # A modifications cache can be enable with the use_cache param. In that
+      # A modifications cache can be enable with the cache param. In that
       # case it is important to initialize objects with the instance variable
       # @modified as an empty array.
       #
@@ -45,7 +45,7 @@ module  Y2Firewall
       #   class Zone
       #     extend Relations
       #
-      #     has_many :services, use_cache: true
+      #     has_many :services, cache: true
       #
       #     def initialize
       #       @modified = []
@@ -84,9 +84,9 @@ module  Y2Firewall
       #   zone.apply_relations_changes!
       #
       # @param args [Array<Symbol] relation or attribute names
-      def has_many(*relations, scope: nil, use_cache: false) # rubocop:disable Style/PredicateName
+      def has_many(*relations, scope: nil, cache: false) # rubocop:disable Style/PredicateName
         scope = "#{scope}_" if scope
-        enable_modifications_cache if use_cache
+        enable_modifications_cache if cache
 
         define_method "relations" do
           relations
@@ -104,30 +104,23 @@ module  Y2Firewall
 
         relations.each do |relation|
           relation_singularized = relation.to_s.sub(/s$/, "")
-          class_eval("attr_reader :#{relation}")
+          attr_reader relation
 
           define_method "#{relation}=" do |item|
             instance_variable_set("@#{relation}", item)
 
-            if use_cache
-              @modified << relation unless modified.include?(relation)
-            end
+            @modified << relation if cache && !modified?(relation)
           end
 
           define_method "add_#{relation_singularized}" do |item|
             return public_send(relation) if public_send(relation).include?(item)
-
-            if use_cache
-              @modified << relation unless modified.include?(relation)
-            end
+            @modified << relation if cache && !modified?(relation)
             public_send(relation) << item
           end
 
           define_method "remove_#{relation_singularized}" do |item|
             if public_send(relation).delete(item)
-              if use_cache
-                @modified << relation unless modified.include?(relation)
-              end
+              @modified << relation if cache && !modified?(relation)
               return public_send(relation)
             end
 
@@ -167,9 +160,7 @@ module  Y2Firewall
           end
 
           define_method "apply_#{relation}_changes!" do
-            if use_cache
-              return unless (modified || []).include?(relation)
-            end
+            return if cache && !modified?(relation)
             public_send("remove_#{relation}!")
             public_send("add_#{relation}!")
 

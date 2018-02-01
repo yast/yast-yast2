@@ -154,6 +154,8 @@ module Y2Firewall
     def export
       return {} unless installed?
       {
+        "enable_firewall"    => enabled?,
+        "start_firewall"     => running?,
         "default_zone"       => default_zone,
         "log_denied_packets" => log_denied_packets,
         "zones"              => zones.map(&:export)

@@ -48,7 +48,7 @@ module Y2Firewall
       attr_reader :name
 
       # @see Y2Firewall::Firewalld::Relations
-      has_many :services, :interfaces, :protocols, :ports, :sources, use_cache: true
+      has_many :services, :interfaces, :protocols, :ports, :sources, cache: true
 
       # @return [Boolean] Whether masquerade is enabled or not
       attr_reader :masquerade
@@ -63,7 +63,6 @@ module Y2Firewall
       # @param name [String] zone name
       def initialize(name: nil)
         @name = name || api.default_zone
-        @modified = []
       end
 
       def self.known_zones
