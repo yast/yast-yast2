@@ -109,18 +109,18 @@ module  Y2Firewall
           define_method "#{relation}=" do |item|
             instance_variable_set("@#{relation}", item)
 
-            @modified << relation if cache && !modified?(relation)
+            modified!(relation) if cache
           end
 
           define_method "add_#{relation_singularized}" do |item|
             return public_send(relation) if public_send(relation).include?(item)
-            @modified << relation if cache && !modified?(relation)
+            modified!(relation) if cache
             public_send(relation) << item
           end
 
           define_method "remove_#{relation_singularized}" do |item|
             if public_send(relation).delete(item)
-              @modified << relation if cache && !modified?(relation)
+              modified!(relation) if cache
               return public_send(relation)
             end
 
