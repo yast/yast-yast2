@@ -2,6 +2,8 @@
 Thu Feb  1 11:36:31 UTC 2018 - igonzalezsosa@suse.com
 
 - Replace idnconv with simpleidn library (related to bsc#1071552).
+- Move some Y2Packager classes from yast2-packager here to
+  fix the package build.
 - 4.0.48
 
 -------------------------------------------------------------------
