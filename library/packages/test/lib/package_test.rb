@@ -26,8 +26,8 @@ describe Y2Packager::Package do
     it "downloads the package" do
       expect(Packages::PackageDownloader).to receive(:new)
         .with(package.repo_id, package.name).and_return(downloader)
-      expect(downloader).to receive(:download).with(FIXTURES_PATH.to_s)
-      package.download_to(FIXTURES_PATH)
+      expect(downloader).to receive(:download).with(PACKAGES_FIXTURES_PATH.to_s)
+      package.download_to(PACKAGES_FIXTURES_PATH)
     end
 
     context "when package download fails" do
@@ -37,7 +37,7 @@ describe Y2Packager::Package do
       end
 
       it "raises the error" do
-        expect { package.download_to(FIXTURES_PATH) }
+        expect { package.download_to(PACKAGES_FIXTURES_PATH) }
           .to raise_error(Packages::PackageDownloader::FetchError)
       end
     end

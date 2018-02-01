@@ -33,7 +33,7 @@ describe Y2Packager::ReleaseNotesFetchers::Rpm do
     allow(Y2Packager::Package).to receive(:find).with(package.name)
       .and_return(packages)
     allow(package).to receive(:download_to) do |path|
-      ::FileUtils.cp(FIXTURES_PATH.join("release-notes-dummy.rpm"), path)
+      ::FileUtils.cp(PACKAGES_FIXTURES_PATH.join("release-notes-dummy.rpm"), path)
     end
     allow(package).to receive(:status).and_return(:available)
   end
