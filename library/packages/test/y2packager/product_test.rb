@@ -212,22 +212,12 @@ describe Y2Packager::Product do
         expect(product.license(lang)).to be_nil
       end
     end
-
-    context "when a language was not specified" do
-      let(:current_language) { "de_DE" }
-
-      before do
-        allow(Yast::Language).to receive(:language).and_return(current_language)
-      end
-
-      it "uses the YaST current language" do
-        expect(Yast::Pkg).to receive(:PrdGetLicenseToConfirm).with(product.name, current_language)
-        product.license
-      end
-    end
   end
 
   describe "#license?" do
+    let(:lang) { "en_US" }
+    let(:license) { "" }
+
     before do
       allow(product).to receive(:license).and_return(license)
     end
@@ -236,7 +226,7 @@ describe Y2Packager::Product do
       let(:license) { "license content" }
 
       it "returns the license content" do
-        expect(product.license?).to eq(true)
+        expect(product.license?(lang)).to eq(true)
       end
     end
 
@@ -244,7 +234,7 @@ describe Y2Packager::Product do
       let(:license) { "" }
 
       it "returns false" do
-        expect(product.license?).to eq(false)
+        expect(product.license?(lang)).to eq(false)
       end
     end
 
@@ -252,8 +242,13 @@ describe Y2Packager::Product do
       let(:license) { nil }
 
       it "returns nil" do
-        expect(product.license?).to eq(false)
+        expect(product.license?(lang)).to eq(false)
       end
+    end
+
+    it "asks for the license in the given language" do
+      expect(product).to receive(:license).with(lang)
+      product.license?(lang)
     end
   end
 
@@ -326,22 +321,21 @@ describe Y2Packager::Product do
     before do
       allow(Y2Packager::ReleaseNotesReader).to receive(:new)
         .and_return(relnotes_reader)
-      allow(Yast::Language).to receive(:language).and_return(lang)
     end
 
-    it "returns release notes in the current language" do
+    it "returns release notes in the given language using text format" do
       expect(relnotes_reader).to receive(:release_notes)
         .with(user_lang: lang, format: :txt)
         .and_return(relnotes_content)
-      expect(product.release_notes).to eq(relnotes_content)
+      expect(product.release_notes(lang)).to eq(relnotes_content)
     end
 
-    context "when language/format are given" do
+    context "when format is given" do
       it "returns release notes in the given language/format" do
         expect(relnotes_reader).to receive(:release_notes)
           .with(user_lang: "de_DE", format: :rtf)
           .and_return(relnotes_content)
-        expect(product.release_notes(:rtf, "de_DE")).to eq(relnotes_content)
+        expect(product.release_notes("de_DE", :rtf)).to eq(relnotes_content)
       end
     end
   end
