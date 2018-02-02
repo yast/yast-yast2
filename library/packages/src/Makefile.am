@@ -26,8 +26,6 @@ ylib_DATA = \
   lib/packages/file_conflict_callbacks.rb \
   lib/packages/package_downloader.rb \
   lib/packages/package_extractor.rb \
-  lib/packages/product.rb \
-  lib/packages/repository.rb \
   lib/packages/update_message.rb \
   lib/packages/update_messages_view.rb
 

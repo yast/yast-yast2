@@ -3,8 +3,6 @@ TESTS = \
   dummy_callbacks_test.rb \
   file_conflict_callbacks_test.rb \
   package_callbacks_test.rb \
-	lib/product_test.rb \
-	lib/repository_test.rb \
   lib/package_downloader_test.rb \
   lib/package_extractor_test.rb \
   packages_ui_test.rb \
