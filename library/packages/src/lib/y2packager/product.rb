@@ -11,7 +11,6 @@
 # ------------------------------------------------------------------------------
 
 Yast.import "Pkg"
-Yast.import "Language"
 require "y2packager/product_reader"
 require "y2packager/release_notes_reader"
 
@@ -174,18 +173,20 @@ module Y2Packager
     # It will return the empty string ("") if the license does not exist or if
     # it was already confirmed.
     #
+    # @param lang [String] Language
     # @return [String,nil] Product's license; nil if the product was not found.
-    def license(lang = nil)
-      license_lang = lang || Yast::Language.language
-      Yast::Pkg.PrdGetLicenseToConfirm(name, license_lang)
+    def license(lang)
+      Yast::Pkg.PrdGetLicenseToConfirm(name, lang)
     end
 
     # Determines whether the product has a license
     #
+    # @param lang [String] Language
     # @return [Boolean] true if the product has a license
-    def license?
-      return false unless license
-      license != ""
+    def license?(lang)
+      content = license(lang)
+      return false unless content
+      content != ""
     end
 
     # Determine whether the license should be accepted or not
@@ -220,7 +221,7 @@ module Y2Packager
     # @return [ReleaseNotes] Release notes for product, language and format
     # @see ReleaseNotesReader
     # @see ReleaseNotes
-    def release_notes(format = :txt, user_lang = Yast::Language.language)
+    def release_notes(user_lang, format = :txt)
       ReleaseNotesReader.new(self).release_notes(user_lang: user_lang, format: format)
     end
 

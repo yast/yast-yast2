@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Feb  2 11:25:21 UTC 2018 - igonzalezsosa@suse.com
+
+- Y2Packager::Product does not depend on Yast::Language module
+  anymore (related to bsc#1079045)
+- 4.0.49
+
+-------------------------------------------------------------------
 Thu Feb  1 11:36:31 UTC 2018 - igonzalezsosa@suse.com
 
 - Replace idnconv with simpleidn library (related to bsc#1071552).

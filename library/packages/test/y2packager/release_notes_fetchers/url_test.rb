@@ -10,7 +10,6 @@ describe Y2Packager::ReleaseNotesFetchers::Url do
   let(:product) { instance_double(Y2Packager::Product, name: "dummy") }
   let(:relnotes_url) { "http://doc.opensuse.org/openSUSE/release-notes-openSUSE.rpm" }
   let(:content) { "Release Notes\n" }
-  let(:language) { double("Yast::Language", language: "de_DE") }
   let(:curl_retcode) { 0 }
 
   let(:relnotes_tmpfile) do
@@ -44,7 +43,6 @@ describe Y2Packager::ReleaseNotesFetchers::Url do
     described_class.clear_blacklist
     described_class.enable!
 
-    stub_const("Yast::Language", language)
     stub_const("Yast::Proxy", proxy)
   end
 
