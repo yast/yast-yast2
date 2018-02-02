@@ -16,7 +16,6 @@ require "y2packager/release_notes_fetchers/base"
 require "tmpdir"
 
 Yast.import "Pkg"
-Yast.import "Proxy"
 Yast.import "String"
 
 module Y2Packager
@@ -251,6 +250,9 @@ module Y2Packager
       #
       # @return [String] to be interpolated in a .target.bash command, unquoted
       def curl_proxy_args
+        # Import the module when it is needed to avoid building projects (bsc#1079045)
+        Yast.import "Proxy"
+
         return @curl_proxy_args if @curl_proxy_args
         @curl_proxy_args = ""
         # proxy should be set by inst_install_inf if set via Linuxrc
