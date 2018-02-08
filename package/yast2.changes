@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Feb  8 12:10:29 UTC 2018 - knut.anderssen@suse.com
+
+- Drop (x)inetd agents
+- CWMServiceStart: Replace xinetd by systemd socket activation
+  (fate#323373)
+- 4.0.50
+
+-------------------------------------------------------------------
 Fri Feb  2 11:25:21 UTC 2018 - igonzalezsosa@suse.com
 
 - Y2Packager::Product does not depend on Yast::Language module
