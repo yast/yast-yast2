@@ -46,17 +46,17 @@ is reference to a function with one boolean parameter saying if the service
 should be started at boot and return type void. It is mandatory.
       </para></listitem>
       <listitem><para><computeroutput>
-"get_service_start_via_xinetd"
+"get_service_start_via_socket"
       </computeroutput>
 is reference to a function with no parameter returning boolean value that says
-if the service is started via xinetd. It is optional, if not present, the xinetd
+if the service is started via socket. It is optional, if not present, the socket
 part of the widget is not shown
       </para></listitem>
       <listitem><para><computeroutput>
-"set_service_start_via_xinetd"
+"set_service_start_via_socket"
       </computeroutput>
 is a reference to a function with one boolean parameter saying if the service
-should be started via xinetd and return type void. It is optional. If it is
+should be started via socket and return type void. It is optional. If it is
 setting the value to true, "set_service_auto_start" is set to false.
       </para></listitem>
       <listitem><para><computeroutput>
@@ -72,10 +72,10 @@ contains the label of the "Start only manually" radio button. If not present,
 generic label is used.
       </para></listitem>
       <listitem><para><computeroutput>
-"start_xinetd_button"
+"start_socket_button"
       </computeroutput>
-contains the label of the "Start via xinetd" radio button. If not present,
-generic label is used. Used only if "get_service_start_via_xinetd"
+contains the label of the "Start via socket" radio button. If not present,
+generic label is used. Used only if "get_service_start_via_socket"
 is defined.
       </para></listitem>
       <listitem><para><computeroutput>

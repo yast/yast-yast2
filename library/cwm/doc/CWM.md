@@ -941,15 +941,15 @@ The parameters for service starting are following:
     is mandatory.
 
 -   `
-    "get_service_start_via_xinetd"
+    "get_service_start_via_socket"
           ` is reference to a function with no parameter returning
-    boolean value that says if the service is started via xinetd. It is
-    optional, if not present, the xinetd part of the widget is not shown
+    boolean value that says if the service is started via socket. It is
+    optional, if not present, the socket part of the widget is not shown
 
 -   `
-    "set_service_start_via_xinetd"
+    "set_service_start_via_socket"
           ` is a reference to a function with one boolean parameter
-    saying if the service should be started via xinetd and return
+    saying if the service should be started via socket and return
     type void. It is optional. If it is setting the value to true,
     "set\_service\_auto\_start" is set to false.
 
@@ -964,10 +964,10 @@ The parameters for service starting are following:
     radio button. If not present, generic label is used.
 
 -   `
-    "start_xinetd_button"
-          ` contains the label of the "Start via xinetd" radio button.
+    "start_socket_button"
+          ` contains the label of the "Start via socket" radio button.
     If not present, generic label is used. Used only if
-    "get\_service\_start\_via\_xinetd" is defined.
+    "get\_service\_start\_via\_socket" is defined.
 
 -   `
     "help"
