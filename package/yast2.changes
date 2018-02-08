@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Feb  8 09:21:19 UTC 2018 - mfilka@suse.com
+
+- fate#323460
+  - slightly improved consistency of new Y2Firewall API
+- 4.0.50 
+
+-------------------------------------------------------------------
 Fri Feb  2 11:25:21 UTC 2018 - igonzalezsosa@suse.com
 
 - Y2Packager::Product does not depend on Yast::Language module
