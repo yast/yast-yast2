@@ -88,7 +88,7 @@ module  Y2Firewall
         scope = "#{scope}_" if scope
         enable_modifications_cache if cache
 
-        define_method "relations" do
+        define_singleton_method "relations" do
           relations
         end
 
