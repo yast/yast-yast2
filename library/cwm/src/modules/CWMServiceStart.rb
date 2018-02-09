@@ -143,17 +143,17 @@ module Yast
         :CurrentButton,
         auto_start ? "_cwm_startup_auto" : "_cwm_startup_manual"
       )
-      if Builtins.haskey(widget, "get_service_start_via_xinetd")
-        start_via_xinetd = Convert.convert(
-          Ops.get(widget, "get_service_start_via_xinetd"),
+      if Builtins.haskey(widget, "get_service_start_via_socket")
+        start_via_socket = Convert.convert(
+          Ops.get(widget, "get_service_start_via_socket"),
           from: "any",
           to:   "boolean ()"
         )
-        if start_via_xinetd.call
+        if start_via_socket.call
           UI.ChangeWidget(
             Id("_cwm_service_startup"),
             :CurrentButton,
-            "_cwm_startup_xinetd"
+            "_cwm_startup_socket"
           )
         end
       end
@@ -181,15 +181,15 @@ module Yast
         to:   "void (boolean)"
       )
       set_auto_start.call(auto_start)
-      if !auto_start && Builtins.haskey(widget, "set_service_start_via_xinetd")
-        start_via_xinetd = Convert.convert(
-          Ops.get(widget, "set_service_start_via_xinetd"),
+      if !auto_start && Builtins.haskey(widget, "set_service_start_via_socket")
+        start_via_socket = Convert.convert(
+          Ops.get(widget, "set_service_start_via_socket"),
           from: "any",
           to:   "void (boolean)"
         )
-        start_via_xinetd.call(
+        start_via_socket.call(
           UI.QueryWidget(Id("_cwm_service_startup"), :CurrentButton) ==
-            "_cwm_startup_xinetd"
+            "_cwm_startup_socket"
         )
       end
 
@@ -231,18 +231,18 @@ module Yast
 
     # Get the template for the help text to the auto start widget
     # @return [String] help text template with %1 and %2 placeholders
-    def AutoStartHelpXinetdTemplate
+    def AutoStartHelpSocketTemplate
       # help text for service auto start widget
       # %1, %2 and %3 are button labels
       # %1 is eg. "On -- Start Service when Booting"
       # %2 is eg. "Off -- Start Service Manually"
-      # %3 is eg. "Start Service via xinetd"
+      # %3 is eg. "Start Service via socket"
       # (both without quotes)
       _(
         "<p><b><big>Service Start</big></b><br>\n" \
           "To start the service every time your computer is booted, set\n" \
-          "<b>%1</b>. To start the service via the xinetd daemon, set <b>%3</b>.\n" \
-          "Otherwise set <b>%2</b>.</p>"
+          "<b>%1</b>. To start the service via systemd socket activation, " \
+          "set <b>%3</b>.\nOtherwise set <b>%2</b>.</p>"
       )
     end
 
@@ -260,15 +260,15 @@ module Yast
 
     # Get the help text to the auto start widget
     # @return [String] help text
-    def AutoStartXinetdHelp
+    def AutoStartSocketHelp
       Builtins.sformat(
-        AutoStartHelpTemplate(),
+        AutoStartHelpSocketTemplate(),
         # part of help text - radio button label, NO SHORTCUT!!!
         _("During Boot"),
         # part of help text - radio button label, NO SHORTCUT!!!
         _("Manually"),
         # part of help text - radio button label, NO SHORTCUT!!!
-        _("Via xinetd")
+        _("Via socket")
       )
     end
 
@@ -282,17 +282,17 @@ module Yast
     # - "set_service_auto_start" : void (boolean) -- function that takes as
     #          an argument boolean value saying if the service is started
     #          automatically during booting
-    # - "get_service_start_via_xinetd" : boolean () -- function that returns if
-    #          the service is to be started via xinetd. At most one of this
+    # - "get_service_start_via_socket" : boolean () -- function that returns if
+    #          the service is to be started via socket. At most one of this
     #          function and "get_service_auto_start" returns true (if started
-    #          via xinetd, not starting automatically
-    # - "set_service_start_via_xinetd" : void (boolean) - function that takes
+    #          via socket, not starting automatically
+    # - "set_service_start_via_socket" : void (boolean) - function that takes
     #          as an argument boolean value saying if the service is started
-    #          via xinetd
+    #          via socket
     # - "start_auto_button" : string -- label of the radio button to start
     #          the service automatically when booting
-    # - "start_xinetd_button" : string -- label of the radio button to start
-    #          the service via xinetd
+    # - "start_socket_button" : string -- label of the radio button to start
+    #          the service via socket
     # - "start_manual_button" : string -- label of the radio button to start
     #          the service only manually
     # - "help" : string -- custom help for the widget. If not specified, generic
@@ -322,19 +322,19 @@ module Yast
       )
       # radio button
 
-      start_xinetd_button = Ops.get_locale(
+      start_socket_button = Ops.get_locale(
         settings,
-        "start_xinetd_button",
-        _("Via &xinetd")
+        "start_socket_button",
+        _("Via &socket")
       )
-      xinetd_available = Builtins.haskey(
+      socket_available = Builtins.haskey(
         settings,
-        "get_service_start_via_xinetd"
+        "get_service_start_via_socket"
       )
       help = if Builtins.haskey(settings, "help")
         Ops.get_string(settings, "help", "")
       else
-        xinetd_available ? AutoStartXinetdHelp() : AutoStartHelp()
+        socket_available ? AutoStartSocketHelp() : AutoStartHelp()
       end
 
       items = VBox(
@@ -343,14 +343,14 @@ module Yast
           RadioButton(Id("_cwm_startup_auto"), Opt(:notify), start_auto_button)
         )
       )
-      if xinetd_available
+      if socket_available
         items = Builtins.add(
           items,
           Left(
             RadioButton(
-              Id("_cwm_startup_xinetd"),
+              Id("_cwm_startup_socket"),
               Opt(:notify),
-              start_xinetd_button
+              start_socket_button
             )
           )
         )
@@ -816,9 +816,9 @@ module Yast
     publish function: :AutoStartInitWrapper, type: "void (string)"
     publish function: :AutoStartStoreWrapper, type: "void (string, map)"
     publish function: :AutoStartHelpTemplate, type: "string ()"
-    publish function: :AutoStartHelpXinetdTemplate, type: "string ()"
+    publish function: :AutoStartHelpSocketTemplate, type: "string ()"
     publish function: :AutoStartHelp, type: "string ()"
-    publish function: :AutoStartXinetdHelp, type: "string ()"
+    publish function: :AutoStartSocketHelp, type: "string ()"
     publish function: :CreateAutoStartWidget, type: "map <string, any> (map <string, any>)"
     publish function: :StartStopHandle, type: "symbol (map <string, any>, string, map)"
     publish function: :StartStopInit, type: "void (map <string, any>, string)"

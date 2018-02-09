@@ -39,7 +39,6 @@ scrconf_DATA = \
   scrconf/proc_meminfo.scr \
   scrconf/etc_sysctl_conf.scr \
   scrconf/cfg_sysctl.scr \
-  scrconf/etc_inetd.scr \
   scrconf/etc_inittab.scr \
   scrconf/cfg_apache2.scr \
   scrconf/cfg_features.scr \
@@ -54,7 +53,6 @@ scrconf_DATA = \
   scrconf/etc_login_defs.scr \
   scrconf/cfg_policykit.scr \
   scrconf/system_freespace.scr \
-  scrconf/etc_xinetd.scr \
   scrconf/run_ifconfig.scr \
   scrconf/cfg_apache.scr \
   scrconf/cfg_services.scr \
@@ -66,7 +64,6 @@ scrconf_DATA = \
   scrconf/cfg_security.scr
 
 agent_SCRIPTS = \
-  servers_non_y2/ag_netd \
   servers_non_y2/ag_anyxml \
   servers_non_y2/ag_freespace
 
