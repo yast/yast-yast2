@@ -262,7 +262,7 @@ module Yast
     # @return [String] help text
     def AutoStartSocketHelp
       Builtins.sformat(
-        AutoStartHelpTemplate(),
+        AutoStartHelpSocketTemplate(),
         # part of help text - radio button label, NO SHORTCUT!!!
         _("During Boot"),
         # part of help text - radio button label, NO SHORTCUT!!!
