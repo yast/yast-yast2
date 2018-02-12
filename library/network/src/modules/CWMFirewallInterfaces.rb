@@ -40,6 +40,7 @@
 
 require "yast"
 require "y2firewall/firewalld"
+require "y2firewall/helpers/interfaces"
 
 module Yast
   # This class provide a set of methods to define a widget for handling with
@@ -66,6 +67,7 @@ module Yast
   #
   #   Y2Firewall::Firewalld.instance.write
   class CWMFirewallInterfacesClass < Module
+    include Y2Firewall::Helpers::Interfaces
     include Yast::Logger
 
     # [Array<String>] List of all interfaces relevant for firewall settings
@@ -997,58 +999,6 @@ module Yast
         # label
         _("No network interfaces are configured")
       end
-    end
-
-    # Convenience method to return the default zone object
-    #
-    # @return [Y2Firewall::Firewalld::Zone] default zone
-    def default_zone
-      @default_zone ||= firewalld.find_zone(firewalld.default_zone)
-    end
-
-    # Return a hash of all the known interfaces with their "id", "name" and
-    # "zone".
-    #
-    # @example
-    #   CWMFirewallInterfaces.known_interfaces #=>
-    #     [
-    #       { "id" => "eth0", "name" => "Intel Ethernet Connection I217-LM", "zone" => "external"},
-    #       { "id" => "eth1", "name" => "Intel Ethernet Connection I217-LM", "zone" => "public"},
-    #       { "id" => "eth2", "name" => "Intel Ethernet Connection I217-LM", "zone" => nil},
-    #       { "id" => "eth3", "name" => "Intel Ethernet Connection I217-LM", "zone" => nil},
-    #     ]
-    #
-    # @return [Array<Hash<String,String>>] known interfaces "id", "name" and "zone"
-    def known_interfaces
-      return @known_interfaces if @known_interfaces
-
-      interfaces = NetworkInterfaces.List("").reject { |i| i == "lo" }
-
-      @known_interfaces = interfaces.map do |interface|
-        {
-          "id"   => interface,
-          "name" => NetworkInterfaces.GetValue(interface, "NAME"),
-          "zone" => interface_zone(interface)
-        }
-      end
-    end
-
-    # Return the name of interfaces which belongs to the default zone
-    #
-    # @return [Array<String>] default zone interface names
-    def default_interfaces
-      known_interfaces.select { |i| i["zone"].to_s.empty? }.map { |i| i["id"] }
-    end
-
-    # Return the zone name for a given interface from the firewalld instance
-    # instead of from the API.
-    #
-    # @param name [String] interface name
-    # @return [String, nil] zone name whether belongs to some or nil if not
-    def interface_zone(name)
-      zone = firewalld.zones.find { |z| z.interfaces.include?(name) }
-
-      zone ? zone.name : nil
     end
 
     def zone_services(services)
