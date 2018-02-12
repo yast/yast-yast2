@@ -21,6 +21,7 @@ describe Y2Firewall::Helpers::Interfaces do
     external.interfaces = ["eth0"]
     dmz.interfaces = []
     firewalld.zones = [dmz, external]
+    firewalld.default_zone = "external"
   end
 
   describe "#interface_zone" do
@@ -48,6 +49,12 @@ describe Y2Firewall::Helpers::Interfaces do
   describe "#default_interfaces" do
     it "returns all the interface names that does not belong explicitly to any zone" do
       expect(subject.default_interfaces).to eql(["eth1"])
+    end
+  end
+
+  describe "#default_zone" do
+    it "returns the Y2Firewall::Firewalld::Zone marked as default in firewalld " do
+      expect(subject.default_zone).to eql(external)
     end
   end
 end
