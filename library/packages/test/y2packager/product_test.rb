@@ -269,6 +269,16 @@ describe Y2Packager::Product do
         expect(product.license_locales).to eq(["en_US"])
       end
     end
+
+    context "when the product is not found" do
+      before do
+        allow(Yast::Pkg).to receive(:PrdLicenseLocales).and_return(nil)
+      end
+
+      it "returns an empty array" do
+        expect(product.license_locales).to eq([])
+      end
+    end
   end
 
   describe "#license_confirmation_required?" do

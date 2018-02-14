@@ -221,7 +221,12 @@ module Y2Packager
     #
     # @return [Array<String>] Language codes ("de_DE", "en_US", etc.)
     def license_locales
-      locales = Yast::Pkg.PrdLicenseLocales(name) || []
+      locales = Yast::Pkg.PrdLicenseLocales(name)
+      if locales.nil?
+        log.error "Error getting the list of available license translations for '#{name}'"
+        return []
+      end
+
       empty_idx = locales.index("")
       locales[empty_idx] = DEFAULT_LICENSE_LANG if empty_idx
       locales
