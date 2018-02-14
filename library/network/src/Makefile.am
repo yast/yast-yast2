@@ -56,7 +56,8 @@ yfwhelperslibdir = @ylibdir@/y2firewall/helpers
 yfwhelperslib_DATA = \
   lib/y2firewall/helpers/interfaces.rb
 
-EXTRA_DIST = $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA) \
-						 $(yfwlib_DATA) $(yfwdlib_DATA) $(yfwdapilib_DATA) $(yfwhelperslib_DATA)
+EXTRA_DIST = \
+  $(module_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ylib_DATA) \
+  $(yfwlib_DATA) $(yfwdlib_DATA) $(yfwdapilib_DATA) $(yfwhelperslib_DATA)
 
 include $(top_srcdir)/Makefile.am.common
