@@ -29,9 +29,6 @@ desktop_DATA = \
 
 ylibdir = @ylibdir@/yast2
 ylib_DATA = \
-  lib/yast2/column_config_file.rb \
-  lib/yast2/commented_config_file.rb \
-  lib/yast2/etc_fstab.rb \
   lib/yast2/execute.rb \
   lib/yast2/hw_detection.rb \
   lib/yast2/fs_snapshot.rb \

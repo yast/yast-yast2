@@ -1,8 +1,4 @@
 TESTS = \
-  column_config_file_test.rb \
-  commented_config_file_test.rb \
-  etc_fstab_entry_test.rb \
-  etc_fstab_test.rb \
   execute_test.rb \
   kernel_test.rb \
   hw_detection_test.rb \
