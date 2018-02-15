@@ -288,7 +288,12 @@ describe Yast::URL do
       "http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir"                               => "http://user:password@[2001:de8:0:f123::1]:8080/path/to/dir",
       "http://name:pass@www.suse.cz:80/path/index.html?question#part"                            => "http://name:pass@www.suse.cz:80/path/index.html?question#part",
       "smb://username:passwd@servername/share/path/on/the/share?mountoptions=ro&workgroup=group" => "smb://username:passwd@servername/share/path/on/the/share?mountoptions=ro&workgroup=group",
-      "slp:/"                                                                                    => "slp://"
+      "slp:/"                                                                                    => "slp://",
+      "dir:/"                                                                                    => "dir:///",
+      "iso:/"                                                                                    => "iso:///",
+      "hd:/"                                                                                     => "hd:///",
+      "cd:/"                                                                                     => "cd:///",
+      "dvd:/"                                                                                    => "dvd:///"
     }.freeze
 
     URLS.each do |url, rebuilt|

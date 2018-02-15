@@ -655,9 +655,10 @@ module Yast
 
   private
 
-    # Schemes which should not include a host.
+    # Schemes which should not include a host.Should be kept in sync with libzypp.
+    # @see https://github.com/openSUSE/libzypp/blob/d9c97b883ac1561225c4d728a5f6c8a34498d5b9/zypp/Url.cc#L184-L190
     # @see #merge_host_and_path
-    SCHEMES_WO_HOST = ["cd", "dvd"].freeze
+    SCHEMES_WO_HOST = ["cd", "dvd", "hd", "iso", "dir"].freeze
 
     # Merges host and path tokens
     #
