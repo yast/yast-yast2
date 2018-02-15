@@ -252,6 +252,35 @@ describe Y2Packager::Product do
     end
   end
 
+  describe "#license_locales" do
+    it "returns license locales from libzypp" do
+      expect(Yast::Pkg).to receive(:PrdLicenseLocales).with(product.name)
+        .and_return(["en_US", "de_DE"])
+      expect(product.license_locales).to eq(["en_US", "de_DE"])
+    end
+
+    context "when the empty locale is reported by libzypp" do
+      before do
+        allow(Yast::Pkg).to receive(:PrdLicenseLocales).with(product.name)
+          .and_return([""])
+      end
+
+      it "converts it to the default one (en_US)" do
+        expect(product.license_locales).to eq(["en_US"])
+      end
+    end
+
+    context "when the product is not found" do
+      before do
+        allow(Yast::Pkg).to receive(:PrdLicenseLocales).and_return(nil)
+      end
+
+      it "returns an empty array" do
+        expect(product.license_locales).to eq([])
+      end
+    end
+  end
+
   describe "#license_confirmation_required?" do
     before do
       allow(Yast::Pkg).to receive(:PrdNeedToAcceptLicense).with(product.name).and_return(needed)
