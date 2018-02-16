@@ -1,3 +1,6 @@
+*.pot
+*.log
+*.trs
 Makefile
 /Makefile.am
 Makefile.am.common
@@ -12,14 +15,12 @@ config.*
 configure
 configure.in
 configure.ac
+coverage/
 install-sh
 pluglib-bindings.ami
 */.dep
-library/*/.dep
-library/*/*/.dep
-library/*/*.ybc
-library/*/*/*.ybc
-library/*/*/*/*.ybc
+library/**/.dep
+library/**/*.ybc
 doc/autodocs
 library/*/doc/autodocs
 library/*/testsuite/config/
@@ -31,9 +32,10 @@ library/*/testsuite/*.log
 library/*/testsuite/*.sum
 library/*/testsuite/*.exp
 library/*/testsuite/*.bak
-library/*/test/*.log
-library/*/test/*.trs
+library/*/test/**/*.log
+library/*/test/**/*.trs
 /test-driver
+coverage
 
 doc/yast.8
 
@@ -44,10 +46,12 @@ library/network/src/scrconf/network.scr
 missing
 library/packages/src/packages
 /.yardoc
+/*.pot
+*.log
+*.trs
 
 # Package
 package/yast2-*.tar.bz2
-package/yast2.spec
 
 # other
 home:*:*
