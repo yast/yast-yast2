@@ -765,8 +765,7 @@ module Yast
         config = CanonicalizeStartmode(config)
         config = filter_interfacetype(config)
 
-        devtype = GetTypeFromIfcfg(config)
-        devtype = GetType(d) if devtype.nil?
+        devtype = GetTypeFromIfcfgOrName(d, config)
 
         dev = @Devices[devtype] || {}
         dev[d] = config
