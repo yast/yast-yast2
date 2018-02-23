@@ -31,6 +31,8 @@ module Y2Firewall
       include Yast::I18n
       extend Yast::I18n
 
+      textdomain "base"
+
       # Map of known zone names and description
       KNOWN_ZONES = {
         "block"    => N_("Block Zone"),
