@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Feb 26 15:09:44 UTC 2018 - knut.anderssen@suse.com
+
+- SuSEFirewall2: Restart SuSEFirewall2 if needed to apply the final
+  configuration once written during the AY Second Stage.
+  (bsc#1080630)
+- 3.2.44
+
+-------------------------------------------------------------------
 Tue Feb 13 09:34:40 UTC 2018 - lslezak@suse.cz
 
 - Fixed list of the URL schemes without host, fixes processing
