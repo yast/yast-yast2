@@ -75,6 +75,7 @@ module Y2Firewall
       @zones = []
       @services = []
       @read = false
+      @log_denied_packets = "off"
     end
 
     # Read the current firewalld configuration initializing the zones and other
