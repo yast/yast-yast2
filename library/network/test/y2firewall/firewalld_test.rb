@@ -287,6 +287,7 @@ describe Y2Firewall::Firewalld do
     end
 
     before do
+      allow(firewalld).to receive("read?").and_return(true)
       firewalld.zones = empty_zones
       allow(firewalld).to receive("api").and_return api
       empty_zones.each do |zone|
@@ -295,6 +296,13 @@ describe Y2Firewall::Firewalld do
 
       allow(api).to receive(:default_zone=)
       allow(api).to receive(:log_denied_packets=)
+    end
+
+    it "enforces a read of the configuration if not read before" do
+      allow(firewalld).to receive("read?").and_return(false)
+      expect(firewalld).to receive("read")
+
+      firewalld.write_only
     end
 
     it "applies in firewalld all the changes done in the object since read" do
