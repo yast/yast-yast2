@@ -17,7 +17,7 @@ class DisplayWidget < CWM::InputField
   end
 
   def label
-    _("Lucky number")
+    "Lucky number"
   end
 
   def init
@@ -46,7 +46,7 @@ class FirstButton < CWM::PushButton
   end
 
   def label
-    _("Choose the best first button")
+    "Choose the best first button"
   end
 end
 
@@ -56,7 +56,7 @@ class SecondButton < CWM::PushButton
   end
 
   def label
-    _("Choose the best second button")
+    "Choose the best second button"
   end
 end
 
@@ -65,8 +65,6 @@ module Yast
     include Yast::I18n
     include Yast::UIShortcuts
     def run
-      textdomain "example"
-
       display_widget = DisplayWidget.new
 
       contents = HBox(
@@ -76,7 +74,7 @@ module Yast
       )
 
       Yast::Wizard.CreateDialog
-      CWM.show(contents, caption: _("Lucky button"))
+      CWM.show(contents, caption: "Lucky button")
       Yast::Wizard.CloseDialog
 
       display_widget.result

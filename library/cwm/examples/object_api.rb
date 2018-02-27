@@ -17,7 +17,7 @@ class LuckyNumberWidget < CWM::IntField
   end
 
   def label
-    _("Lucky number")
+    "Lucky number"
   end
 
   def store
@@ -31,7 +31,7 @@ class GenerateButton < CWM::PushButton
   end
 
   def label
-    _("Generate Lucky Number")
+    "Generate Lucky Number"
   end
 
   def handle
@@ -47,8 +47,6 @@ module Yast
     include Yast::I18n
     include Yast::UIShortcuts
     def run
-      textdomain "example"
-
       lucky_number_widget = LuckyNumberWidget.new
       button_widget = GenerateButton.new(lucky_number_widget)
 
@@ -59,7 +57,7 @@ module Yast
 
       Yast::Wizard.CreateDialog
       abort_handler = proc { Yast::Popup.YesNo("Really abort?") }
-      CWM.show(contents, caption: _("Lucky number"), abort_handler: abort_handler)
+      CWM.show(contents, caption: "Lucky number", abort_handler: abort_handler)
       Yast::Wizard.CloseDialog
 
       lucky_number_widget.result

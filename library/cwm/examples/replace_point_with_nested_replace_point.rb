@@ -75,7 +75,7 @@ class LuckyNumberWidget < CWM::IntField
   end
 
   def label
-    _("Lucky number")
+    "Lucky number"
   end
 
   def store
@@ -89,7 +89,7 @@ class GenerateButton < CWM::PushButton
   end
 
   def label
-    _("Generate Lucky Number")
+    "Generate Lucky Number"
   end
 
   def handle

@@ -16,7 +16,7 @@ class LuckyNumberWidget < CWM::IntField
   end
 
   def label
-    _("Lucky number")
+    "Lucky number"
   end
 
   def store
@@ -34,7 +34,7 @@ class EnableButton < CWM::PushButton
   end
 
   def label
-    _("Enable")
+    "Enable"
   end
 
   def init
@@ -61,7 +61,7 @@ class DisableButton < CWM::PushButton
   end
 
   def label
-    _("Disable")
+    "Disable"
   end
 
   def handle
@@ -79,8 +79,6 @@ module Yast
     include Yast::I18n
     include Yast::UIShortcuts
     def run
-      textdomain "example"
-
       lucky_number_widget = LuckyNumberWidget.new
       disable_button_widget = DisableButton.new(lucky_number_widget)
       enable_button_widget = EnableButton.new(lucky_number_widget)
@@ -94,7 +92,7 @@ module Yast
       )
 
       Yast::Wizard.CreateDialog
-      CWM.show(contents, caption: _("Lucky number"))
+      CWM.show(contents, caption: "Lucky number")
       Yast::Wizard.CloseDialog
 
       lucky_number_widget.result
