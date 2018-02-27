@@ -262,7 +262,7 @@ describe Y2Firewall::Firewalld do
         allow(zone).to receive(:modified?).and_return(modified_zone)
       end
       firewalld.zones = empty_zones
-      firewalld.log_denied_packets = "on"
+      firewalld.log_denied_packets = "all"
     end
 
     context "when some of the attributes have been modified since read" do
@@ -358,7 +358,7 @@ describe Y2Firewall::Firewalld do
 
     let(:api) do
       instance_double(Y2Firewall::Firewalld::Api,
-        log_denied_packets: "on",
+        log_denied_packets: "all",
         default_zone:       "work",
         list_all_zones:     zones_definition,
         zones:              known_zones)
@@ -379,7 +379,7 @@ describe Y2Firewall::Firewalld do
       expect(config).to be_a(Hash)
       expect(config["enable_firewall"]).to eq(false)
       expect(config["start_firewall"]).to eq(true)
-      expect(config["log_denied_packets"]).to eq("on")
+      expect(config["log_denied_packets"]).to eq("all")
       expect(config["default_zone"]).to eq("work")
       expect(external["interfaces"]).to eq(["eth0"])
       expect(external["ports"]).to eq(["5901/tcp", "5901/udp"])
