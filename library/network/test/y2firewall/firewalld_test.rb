@@ -202,7 +202,7 @@ describe Y2Firewall::Firewalld do
 
     let(:api) do
       instance_double(Y2Firewall::Firewalld::Api,
-        log_denied_packets: false,
+        log_denied_packets: "off",
         default_zone:       "dmz",
         list_all_zones:     zones_definition,
         zones:              known_zones)
@@ -228,7 +228,7 @@ describe Y2Firewall::Firewalld do
     it "initializes global options with the current firewalld config" do
       firewalld.read
 
-      expect(firewalld.log_denied_packets).to eq(false)
+      expect(firewalld.log_denied_packets).to eq("off")
       expect(firewalld.default_zone).to eq("dmz")
     end
   end
@@ -251,7 +251,7 @@ describe Y2Firewall::Firewalld do
 
   describe "#modified?" do
     let(:api) do
-      instance_double(Y2Firewall::Firewalld::Api, log_denied_packets: true, default_zone: "public")
+      instance_double(Y2Firewall::Firewalld::Api, log_denied_packets: "off", default_zone: "public")
     end
 
     let(:modified_zone) { false }
@@ -262,7 +262,7 @@ describe Y2Firewall::Firewalld do
         allow(zone).to receive(:modified?).and_return(modified_zone)
       end
       firewalld.zones = empty_zones
-      firewalld.log_denied_packets = true
+      firewalld.log_denied_packets = "all"
     end
 
     context "when some of the attributes have been modified since read" do
@@ -275,6 +275,7 @@ describe Y2Firewall::Firewalld do
     context "when no attribute has been modifiede since read" do
       it "returns false" do
         firewalld.default_zone = "public"
+        firewalld.log_denied_packets = "off"
         expect(firewalld.modified?).to eq(false)
       end
     end
@@ -286,6 +287,7 @@ describe Y2Firewall::Firewalld do
     end
 
     before do
+      allow(firewalld).to receive("read?").and_return(true)
       firewalld.zones = empty_zones
       allow(firewalld).to receive("api").and_return api
       empty_zones.each do |zone|
@@ -296,12 +298,19 @@ describe Y2Firewall::Firewalld do
       allow(api).to receive(:log_denied_packets=)
     end
 
+    it "enforces a read of the configuration if not read before" do
+      allow(firewalld).to receive("read?").and_return(false)
+      expect(firewalld).to receive("read")
+
+      firewalld.write_only
+    end
+
     it "applies in firewalld all the changes done in the object since read" do
-      firewalld.log_denied_packets = false
+      firewalld.log_denied_packets = "off"
       firewalld.default_zone = "drop"
 
       expect(api).to receive(:default_zone=).with("drop")
-      expect(api).to receive(:log_denied_packets=).with(false)
+      expect(api).to receive(:log_denied_packets=).with("off")
 
       firewalld.write_only
     end
@@ -357,7 +366,7 @@ describe Y2Firewall::Firewalld do
 
     let(:api) do
       instance_double(Y2Firewall::Firewalld::Api,
-        log_denied_packets: true,
+        log_denied_packets: "all",
         default_zone:       "work",
         list_all_zones:     zones_definition,
         zones:              known_zones)
@@ -378,7 +387,7 @@ describe Y2Firewall::Firewalld do
       expect(config).to be_a(Hash)
       expect(config["enable_firewall"]).to eq(false)
       expect(config["start_firewall"]).to eq(true)
-      expect(config["log_denied_packets"]).to eq(true)
+      expect(config["log_denied_packets"]).to eq("all")
       expect(config["default_zone"]).to eq("work")
       expect(external["interfaces"]).to eq(["eth0"])
       expect(external["ports"]).to eq(["5901/tcp", "5901/udp"])
