@@ -72,6 +72,7 @@ class LuckyNumberWidget < CWM::IntField
   def initialize
     @minimum = 0
     @maximum = 1000
+    textdomain "example"
   end
 
   def label
@@ -86,6 +87,7 @@ end
 class GenerateButton < CWM::PushButton
   def initialize(lucky_number_widget)
     @lucky_number_widget = lucky_number_widget
+    textdomain "example"
   end
 
   def label
