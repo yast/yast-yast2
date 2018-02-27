@@ -18,7 +18,7 @@ class LuckyNumberWidget < ::CWM::IntField
   end
 
   def label
-    _("Lucky number")
+    "Lucky number"
   end
 
   def init
@@ -36,7 +36,7 @@ class GenerateButton < ::CWM::PushButton
   end
 
   def label
-    _("Generate Lucky Number")
+    "Generate Lucky Number"
   end
 
   def handle
@@ -63,7 +63,7 @@ class LuckyNumberTab < ::CWM::Tab
   end
 
   def label
-    _("Lucky Number")
+    "Lucky Number"
   end
 
 private
@@ -83,7 +83,7 @@ class TrueLoveSelector < ::CWM::RadioButtons
   end
 
   def label
-    _("Select true love")
+    "Select true love"
   end
 
   def items
@@ -99,7 +99,7 @@ class TrueLoveSelector < ::CWM::RadioButtons
 
   def validate
     if value == :pc
-      Yast::Popup.Error(_("Human will be exterminated, pc cannot allow you to be your true love"))
+      Yast::Popup.Error("Human will be exterminated, pc cannot allow you to be your true love")
       return false
     end
 
@@ -123,7 +123,7 @@ class TrueLoveTab < ::CWM::Tab
   end
 
   def label
-    _("True Love")
+    "True Love"
   end
 
   def result
@@ -144,8 +144,7 @@ class ExampleTree < CWM::Tree
   end
 
   def label
-    textdomain "example"
-    _("It's complicated")
+    "It's complicated"
   end
 end
 
@@ -156,8 +155,6 @@ module Yast
     include Yast::Logger
 
     def run
-      textdomain "example"
-
       lucky_number_tab = LuckyNumberTab.new
       true_love_tab = TrueLoveTab.new
 
@@ -168,7 +165,7 @@ module Yast
       contents = VBox(tabs)
 
       Yast::Wizard.CreateDialog
-      CWM.show(contents, caption: _("Tree Pager Example"))
+      CWM.show(contents, caption: "Tree Pager Example")
       Yast::Wizard.CloseDialog
 
       log.info "Lucky number: #{lucky_number_tab.result}, true love: #{true_love_tab.result}"

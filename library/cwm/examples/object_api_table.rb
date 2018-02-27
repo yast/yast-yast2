@@ -36,8 +36,6 @@ module Yast
     include Yast::I18n
     include Yast::UIShortcuts
     def run
-      textdomain "example"
-
       table_widget = NiceTable.new
 
       contents = HBox(
@@ -45,7 +43,7 @@ module Yast
       )
 
       Yast::Wizard.CreateDialog
-      CWM.show(contents, caption: _("Table Example"))
+      CWM.show(contents, caption: "Table Example")
       Yast.y2milestone("Selected item: #{table_widget.value.inspect}")
       Yast::Wizard.CloseDialog
     end

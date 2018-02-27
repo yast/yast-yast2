@@ -17,7 +17,7 @@ class LuckyNumberWidget < CWM::IntField
   end
 
   def label
-    _("Lucky number")
+    "Lucky number"
   end
 
   def store
@@ -31,7 +31,7 @@ class GenerateButton < CWM::PushButton
   end
 
   def label
-    _("Generate Lucky Number")
+    "Generate Lucky Number"
   end
 
   def handle
@@ -88,14 +88,12 @@ module Yast
     include Yast::UIShortcuts
     include Yast::Logger
     def run
-      textdomain "example"
-
       generate_widget = Page.new
 
       contents = HBox(generate_widget)
 
       Yast::Wizard.CreateDialog
-      CWM.show(contents, caption: _("Lucky number"))
+      CWM.show(contents, caption: "Lucky number")
       Yast::Wizard.CloseDialog
     end
   end
