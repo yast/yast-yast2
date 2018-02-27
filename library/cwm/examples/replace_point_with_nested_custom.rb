@@ -82,6 +82,7 @@ end
 class GenerateButton < CWM::PushButton
   def initialize(lucky_number_widget)
     @lucky_number_widget = lucky_number_widget
+    textdomain "example"
   end
 
   def label
