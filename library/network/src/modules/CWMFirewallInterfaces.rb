@@ -1055,9 +1055,13 @@ module Yast
       services_list =
         services.map do |service|
           if !firewalld.api.service_supported?(service)
-            HBox(HSpacing(2), Left(Label(_("* %{service} (Not available)") % { service: service })))
+            # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
+            # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
+            HBox(HSpacing(2), Left(Label(_("- %{service} (Not available)") % { service: service })))
           else
-            HBox(HSpacing(2), Left(Label(_("* %{service}") % { service: service })))
+            # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
+            # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
+            HBox(HSpacing(2), Left(Label(_("- %{service}") % { service: service })))
           end
         end
 
@@ -1067,7 +1071,7 @@ module Yast
           VBox(
             Left(Label(_("Some firewalld services are not available:"))),
             *services_list,
-            Left(Label(_("You need to defined them to be able to configure the firewall.")))
+            Left(Label(_("These services must be defined in order to configure the firewall.")))
           )
         )
       )
