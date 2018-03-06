@@ -243,6 +243,11 @@ module Y2Packager
       ReleaseNotesReader.new(self).release_notes(user_lang: user_lang, format: format)
     end
 
+    def relnotes_url
+      return nil unless resolvable_properties
+      resolvable_properties["relnotes_url"] || ""
+    end
+
     # Determine whether a product is in a given status
     #
     # Only the 'name' will be used to find out whether the product status,
@@ -254,6 +259,12 @@ module Y2Packager
     def status?(*statuses)
       Yast::Pkg.ResolvableProperties(name, :product, "").any? do |res|
         statuses.include?(res["status"])
+      end
+    end
+
+    def resolvable_properties
+      @resolvable_properties ||= Yast::Pkg.ResolvableProperties(name, :product, "").find do |data|
+        data["version"] == version
       end
     end
   end
