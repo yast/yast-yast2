@@ -217,9 +217,7 @@ module Y2Packager
       #
       # @return [String] Release notes URL
       def relnotes_url
-        return @relnotes_url if @relnotes_url
-        data = Yast::Pkg.ResolvableProperties(product.name, :product, "").first
-        @relnotes_url = data["relnotes_url"]
+        @relnotes_url ||= product.relnotes_url
       end
 
       # Return release notes URL
