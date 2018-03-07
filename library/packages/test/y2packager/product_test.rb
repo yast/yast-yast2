@@ -415,17 +415,6 @@ describe Y2Packager::Product do
       end
     end
 
-    context "when relnotes_url property is not defined" do
-      before do
-        allow(Yast::Pkg).to receive(:ResolvableProperties).with(product.name, :product, "")
-          .and_return([{ "version" => product.version }])
-      end
-
-      it "returns nil" do
-        expect(product.relnotes_url).to be_nil
-      end
-    end
-
     context "when product properties are not found" do
       before do
         allow(Yast::Pkg).to receive(:ResolvableProperties).with(product.name, :product, "")

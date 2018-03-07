@@ -252,7 +252,7 @@ module Y2Packager
     def relnotes_url
       return nil unless resolvable_properties
       url = resolvable_properties["relnotes_url"]
-      url.is_a?(String) && url.empty? ? nil : url
+      url.empty? ? nil : url
     end
 
     # Determine whether a product is in a given status
@@ -271,9 +271,9 @@ module Y2Packager
 
     # Return product's resolvable properties
     #
-    # Only the 'name' and 'version' will be used to find out whether the
-    # product properties, ignoring the architecture, vendor or any other
-    # property. libzypp will take care of finding the proper product.
+    # Only the 'name' and 'version' will be used to find out the product
+    # properties, ignoring the architecture, vendor or any other property.
+    # libzypp will take care of finding the proper product.
     #
     # @return [Hash] properties
     def resolvable_properties
