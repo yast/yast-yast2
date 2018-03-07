@@ -7,7 +7,7 @@ require "y2packager/product"
 describe Y2Packager::ReleaseNotesFetchers::Url do
   subject(:fetcher) { described_class.new(product) }
 
-  let(:product) { instance_double(Y2Packager::Product, name: "dummy") }
+  let(:product) { instance_double(Y2Packager::Product, name: "dummy", relnotes_url: relnotes_url) }
   let(:relnotes_url) { "http://doc.opensuse.org/openSUSE/release-notes-openSUSE.rpm" }
   let(:content) { "Release Notes\n" }
   let(:curl_retcode) { 0 }
@@ -29,8 +29,6 @@ describe Y2Packager::ReleaseNotesFetchers::Url do
   let(:prefs) { Y2Packager::ReleaseNotesContentPrefs.new(user_lang, fallback_lang, format) }
 
   before do
-    allow(Yast::Pkg).to receive(:ResolvableProperties)
-      .with(product.name, :product, "").and_return(["relnotes_url" => relnotes_url])
     allow(File).to receive(:read).with(/relnotes/).and_return(content)
     allow(Yast::SCR).to receive(:Execute)
       .with(Yast::Path.new(".target.bash"), /curl.*directory.yast/)

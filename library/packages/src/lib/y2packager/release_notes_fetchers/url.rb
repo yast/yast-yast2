@@ -200,7 +200,7 @@ module Y2Packager
       #
       # @return [Boolean]
       def relnotes_url_valid?
-        if relnotes_url.nil? || relnotes_url.empty?
+        if relnotes_url.nil?
           log.error "No release notes URL for #{product.name}"
           return false
         end
