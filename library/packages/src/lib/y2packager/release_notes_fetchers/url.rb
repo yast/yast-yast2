@@ -200,7 +200,7 @@ module Y2Packager
       #
       # @return [Boolean]
       def relnotes_url_valid?
-        if relnotes_url.nil? || relnotes_url.empty?
+        if relnotes_url.nil?
           log.error "No release notes URL for #{product.name}"
           return false
         end
@@ -217,9 +217,7 @@ module Y2Packager
       #
       # @return [String] Release notes URL
       def relnotes_url
-        return @relnotes_url if @relnotes_url
-        data = Yast::Pkg.ResolvableProperties(product.name, :product, "").first
-        @relnotes_url = data["relnotes_url"]
+        @relnotes_url ||= product.relnotes_url
       end
 
       # Return release notes URL

@@ -243,6 +243,18 @@ module Y2Packager
       ReleaseNotesReader.new(self).release_notes(user_lang: user_lang, format: format)
     end
 
+    # Return release notes URL
+    #
+    # Release notes might not be defined in libzypp and this method returns the URL
+    # to get release notes from.
+    #
+    # @return [String,nil] Release notes URL or nil if it is not defined.
+    def relnotes_url
+      return nil unless resolvable_properties
+      url = resolvable_properties["relnotes_url"]
+      url.empty? ? nil : url
+    end
+
     # Determine whether a product is in a given status
     #
     # Only the 'name' will be used to find out whether the product status,
@@ -254,6 +266,19 @@ module Y2Packager
     def status?(*statuses)
       Yast::Pkg.ResolvableProperties(name, :product, "").any? do |res|
         statuses.include?(res["status"])
+      end
+    end
+
+    # Return product's resolvable properties
+    #
+    # Only the 'name' and 'version' will be used to find out the product
+    # properties, ignoring the architecture, vendor or any other property.
+    # libzypp will take care of finding the proper product.
+    #
+    # @return [Hash] properties
+    def resolvable_properties
+      @resolvable_properties ||= Yast::Pkg.ResolvableProperties(name, :product, "").find do |data|
+        data["version"] == version
       end
     end
   end

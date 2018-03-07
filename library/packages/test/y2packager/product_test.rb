@@ -394,4 +394,36 @@ describe Y2Packager::Product do
       end
     end
   end
+
+  describe "#relnotes_url" do
+    let(:relnotes_url) { "http://doc.opensuse.org/openSUSE/release-notes-openSUSE.rpm" }
+
+    before do
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with(product.name, :product, "")
+        .and_return([{ "version" => product.version, "relnotes_url" => relnotes_url }])
+    end
+
+    it "returns relnotes_url property" do
+      expect(product.relnotes_url).to eq(relnotes_url)
+    end
+
+    context "when relnotes_url property is empty" do
+      let(:relnotes_url) { "" }
+
+      it "returns nil" do
+        expect(product.relnotes_url).to be_nil
+      end
+    end
+
+    context "when product properties are not found" do
+      before do
+        allow(Yast::Pkg).to receive(:ResolvableProperties).with(product.name, :product, "")
+          .and_return([])
+      end
+
+      it "returns nil" do
+        expect(product.relnotes_url).to be_nil
+      end
+    end
+  end
 end
