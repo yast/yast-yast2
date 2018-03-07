@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar  7 07:12:27 UTC 2018 - igonzalezsosa@suse.com
+
+- Use the correct release notes URL during upgrade (bsc#1073488).
+- 4.0.56 
+
+-------------------------------------------------------------------
 Wed Feb 28 13:03:21 UTC 2018 - ancor@suse.com
 
 - Fixed a typo and the list item marker in the firewall widget
