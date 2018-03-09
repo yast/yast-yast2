@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Mar  9 11:51:07 UTC 2018 - jreidinger@suse.com
+
+- Fix extracting kernel parameters from installation when there is
+  parameter with '=' in value like
+  pci=hpiosize=0,hpmemsize=0,nobar (bsc#1081353)
+- 4.0.59
+
+-------------------------------------------------------------------
 Wed Mar  7 07:12:27 UTC 2018 - igonzalezsosa@suse.com
 
 - Use the correct release notes URL during upgrade (bsc#1073488).
