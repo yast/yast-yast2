@@ -575,6 +575,31 @@ module Yast
       @inform_about_kernel_change
     end
 
+    publish function: :AddCmdLine, type: "void (string, string)"
+    publish function: :GetVgaType, type: "string ()"
+    publish function: :SetVgaType, type: "void (string)"
+    publish function: :GetSuSEUpdate, type: "boolean ()"
+    publish function: :GetCmdLine, type: "string ()"
+    publish function: :SetCmdLine, type: "void (string)"
+    publish function: :ProbeKernel, type: "void ()"
+    publish function: :SetPackages, type: "void (list <string>)"
+    publish function: :GetBinary, type: "string ()"
+    publish function: :GetPackages, type: "list <string> ()"
+    publish function: :ComputePackage, type: "string ()"
+    publish function: :GetFinalKernel, type: "string ()"
+    publish function: :ComputePackagesForBase, type: "list <string> (string, boolean)"
+    publish function: :ComputePackages, type: "list <string> ()"
+    publish function: :SetInformAboutKernelChange, type: "void (boolean)"
+    publish function: :GetInformAboutKernelChange, type: "boolean ()"
+    publish function: :InformAboutKernelChange, type: "boolean ()"
+
+    # Handling for Kernel modules loaded on boot
+    publish function: :AddModuleToLoad, type: "void (string)"
+    publish function: :RemoveModuleToLoad, type: "void (string)"
+    publish function: :SaveModulesToLoad, type: "boolean ()"
+    publish function: :reset_modules_to_load, type: "void ()"
+    publish function: :modules_to_load, type: "map <string, list> ()"
+
   private
 
     # Registers new SCR agent for a file given as parameter
@@ -645,33 +670,6 @@ module Yast
       @modules_to_load
     end
 
-    publish function: :AddCmdLine, type: "void (string, string)"
-    publish function: :GetVgaType, type: "string ()"
-    publish function: :SetVgaType, type: "void (string)"
-    publish function: :GetSuSEUpdate, type: "boolean ()"
-    publish function: :GetCmdLine, type: "string ()"
-    publish function: :SetCmdLine, type: "void (string)"
-    publish function: :ProbeKernel, type: "void ()"
-    publish function: :SetPackages, type: "void (list <string>)"
-    publish function: :GetBinary, type: "string ()"
-    publish function: :GetPackages, type: "list <string> ()"
-    publish function: :ComputePackage, type: "string ()"
-    publish function: :GetFinalKernel, type: "string ()"
-    publish function: :ComputePackagesForBase, type: "list <string> (string, boolean)"
-    publish function: :ComputePackages, type: "list <string> ()"
-    publish function: :SetInformAboutKernelChange, type: "void (boolean)"
-    publish function: :GetInformAboutKernelChange, type: "boolean ()"
-    publish function: :InformAboutKernelChange, type: "boolean ()"
-
-    # Handling for Kernel modules loaded on boot
-    publish function: :AddModuleToLoad, type: "void (string)"
-    publish function: :RemoveModuleToLoad, type: "void (string)"
-    publish function: :SaveModulesToLoad, type: "boolean ()"
-    publish function: :reset_modules_to_load, type: "void ()"
-    publish function: :modules_to_load, type: "map <string, list> ()"
-
-  private
-
     # @param [String] line to parse
     # @return [Array<String>] line splitted to individual params, respecting quotes there
     def list_of_params(line)
@@ -710,9 +708,7 @@ module Yast
 
       # add special key filtering for s390
       # bnc#462276 Extraneous parameters in /etc/zipl.conf from the installer
-      if Arch.s390
-        discardlist << "User" << "init" << "ramdisk_size"
-      end
+      discardlist << "User" << "init" << "ramdisk_size" if Arch.s390
 
       # get rid of live-installer-specific parameters
       if Mode.live_installation
