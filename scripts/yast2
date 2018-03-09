@@ -35,20 +35,20 @@ export QT_IM_MODULE=xim GTK_IM_MODULE=xim
 # used correctly (see bnc#866692 for details).
 export PX_MODULE_PATH=""
 
-
 # allow for a different prefix
 # strip the basename off $0, which can be: (bnc#382216, bnc#458385)
 # /sbin/yast2, /sbin/yast, yast2 (sh -x yast2 ...), /sbin/yast2 (PATH=/sbin/:...)
 shopt -s extglob
 mydir=${0%%*(/)[YyZz]a[Ss][Tt]?(2)}
-if [[ -z "$mydir" || "$mydir" = /sbin ]]; then
+if [[ -z "$mydir" || "$mydir" = /sbin || -n "$TESTING_YAST2" ]]; then
     YAST_PREFIX=/usr
 else
     YAST_PREFIX=${mydir%/sbin}
 fi
 
+[[ -n "$TESTING_YAST2" ]] && YAST2FUNCS="$(dirname $0)/yast2-funcs" || YAST2FUNCS=$YAST_PREFIX/lib/YaST2/bin/yast2-funcs
 # load common script functions
-. $YAST_PREFIX/lib/YaST2/bin/yast2-funcs
+. $YAST2FUNCS
 
 
 # check that system directories are non-empty - bnc #450643
@@ -56,7 +56,7 @@ mount_ok=1;
 test -z `ls /proc |head -n1` && echo "The /proc filesystem is not mounted." && mount_ok=0;
 test -z `ls /sys |head -n1` && echo "The /sys filesystem is not mounted." && mount_ok=0;
 test -z `ls /dev |head -n1` && echo "The /dev filesystem is not mounted." && mount_ok=0;
-if test $mount_ok -eq 0 ; then
+if test $mount_ok -eq 0 -a -z "$TESTING_YAST2" ; then
     echo "If you are running in a chroot environment, bind-mount missing filesystems.";
     exit 1;
 fi
@@ -67,7 +67,8 @@ exit_code=0
 # --fullscreen
 # --noborder
 # well also for gtk and ncurses
-Y2UI_ARGS=""
+# add hints for ui about app name and icon
+Y2UI_ARGS="-name YaST2 -icon yast"
 GNOME_SHELL="$ybindir/y2controlcenter-gnome"
 KDE_SHELL="$ybindir/y2controlcenter"
 
@@ -135,6 +136,8 @@ select_control_center()
     y2ccbin=""
     case "$WANTED_SHELL" in
 	gtk)
+            # gnome control center use different format of arguments (bsc#1058376)
+            Y2UI_ARGS="--gtk-name=YaST2 --class=yast"
 	    y2ccbin="$GNOME_SHELL"
 	    ;;
 	*)
@@ -203,7 +206,7 @@ chef_is_running ()
 # return 0 if user decided to continue
 chef_warning_continue ()
 {
-  $ybindir/y2base other_tools_warning -S "(chef)" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
+  $ybindir/y2start other_tools_warning --arg chef "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
 }
 
 # Check if chef-client is running and warn user about it (bnc#803358)
@@ -211,7 +214,7 @@ chef_warning_continue ()
 # (check for other tools (like puppet) may be added here)
 other_tools_are_conflicting ()
 {
-  # - no need to check for installation/firstboot, they are started directly with y2base
+  # - no need to check for installation/firstboot, they are started directly with y2start
 
   if ! chef_is_running; then
     return 1
@@ -285,20 +288,17 @@ else
 	shift
 fi
 
-# Pass the arguments to WFM::Args():
-# Surround all args by (...).  args may contain spaces.
-# Use -S to avoid YCP escaping (bnc#382883)
-# But avoid a lone -S (cc-gnome dies, bnc#537470)
+# Pass the arguments to client:
 
 if [ -n "$CMDLINE_HELP" ]; then
     set -- $@ help;
 fi
-if [ $# -gt 0 ]; then
-    a=("$@")
-    b=("${a[@]/#/(}")
-    c=("${b[@]/%/)}")
-    set -- -S "${c[@]}"
-fi
+ARGS=( )
+for i in "$@"; do
+  ARGS+=( "--arg" )
+  ARGS+=( "$i" )
+done
+set -- "${ARGS[@]}"
 
 case "`basename $0`" in
 	YaST|yast|yast1|zast)
@@ -340,6 +340,10 @@ if [ -n "$DISPLAY" ]; then
     select_gui_frontend
 fi
 
+if [ -n "$TESTING_YAST2" ]; then
+  SELECTED_GUI="UI"
+fi
+
 if [ "$SELECTED_GUI" = "ncurses" ]; then
     if check_ncurses ; then
 	TTY=$(/usr/bin/tty)
@@ -349,7 +353,7 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 	        TTY=console
 		;;
 	esac
-	
+
 	# The part below has changed: we don't use 'testutf8' any longer, i.e.
 	# don't start YaST in UTF-8 locale by default and don't fix the settings
 	# in rxvt*|vt*|xterm*|linux|screen* (trust the locale).
@@ -367,9 +371,9 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
 			export LANG=en_US
 			export LC_CTYPE=en_US
 			export LC_ALL=en_US # just to make sure.
-		    fi	
+		    fi
 		    ;;
-	     esac	
+	     esac
 	fi
 
 	# set color theme, if defined
@@ -380,12 +384,12 @@ if [ "$SELECTED_GUI" = "ncurses" ]; then
     else
 	rpm -V yast2-core yast2-ncurses yast2-qt yast2-gtk >&2
 	echo "Something is wrong with the YaST user interface." >&2
-	exit_code=1		# also skips y2base later
+	exit_code=1		# also skips y2start later
     fi
     if [ -n "$DISPLAY" -a ! -t 0 ]; then
 	rpm -V yast2-core yast2-ncurses yast2-qt yast2-gtk >&2
 	echo "Something is wrong with the YaST user interface, NCurses selected but no terminal available." >&2
-	exit_code=1		# also skips y2base later
+	exit_code=1		# also skips y2start later
     fi
 elif [ "$SELECTED_GUI" = "qt" ]; then
 
@@ -397,7 +401,8 @@ elif [ "$SELECTED_GUI" = "qt" ]; then
     if [ $module == "menu" ]; then
 	select_control_center
     fi
-
+elif [ "$SELECTED_GUI" = "UI" ]; then
+  echo "Testing UI only"
 else
     echo >&2 "Internal error, unhandled '$SELECTED_GUI'"
 fi
@@ -422,9 +427,14 @@ else
 	*) REDO_FILE=/var/lib/YaST2/restart_yast ;;
     esac
     snapshot_pre $module
+
+    # remove the redo file if it already exists before starting the module,
+    # avoid possible infinite loop (bsc#842910)
+    rm -f "$REDO_FILE"
+
     #  break out on errors, #343258
     while [ $exit_code = 0 ]; do
-	$ybindir/y2base $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
+	$ybindir/y2start $module "$@" "$SELECTED_GUI" $Y2_GEOMETRY $Y2UI_ARGS
 	exit_code=$?
 	if [ -z "$REDO_FILE" -o ! -f "$REDO_FILE" ]; then
 	    break

@@ -37,7 +37,7 @@ module Yast
   class SuSEFirewalldServicesClass < SuSEFirewallServicesClass
     include Yast::Logger
 
-    SERVICES_DIR = ["/etc/firewalld/services", "/usr/lib/firewalld/services"].freeze
+    SERVICES_DIRECTORIES = ["/etc/firewalld/services", "/usr/lib/firewalld/services"].freeze
 
     IGNORED_SERVICES = ["..", "."].freeze
 
@@ -68,9 +68,11 @@ module Yast
     # @return [Boolean] if successful
     # @api private
     def ReadServicesDefinedByRPMPackages
-      log.info "Reading FirewallD services from #{SERVICES_DIR.join(" and ")}"
+      log.info "Reading FirewallD services from #{SERVICES_DIRECTORIES.join(" and ")}"
 
       @services ||= {}
+
+      return true unless SuSEFirewall.SuSEFirewallIsInstalled()
 
       SuSEFirewall.api.services.each do |service_name|
         # Init everything
@@ -106,18 +108,18 @@ module Yast
     # @note before. The way we determine if the service has been populated or not
     # @note is to look at the "description" key.
     #
-    # @param [String] service name (may include the "service:" prefix)
-    # @param [String] (optional) whether to silently return nil
-    #                 when service is not found (default false)
+    # @param [String] service_name name that may include the "service:" prefix
+    # @param [String] silent whether to silently return nil
+    #                 when service is not found
     # @api private
     def service_details(service_name, silent = false)
+      service = all_services[service_name]
       # Drop service: if needed
       service_name = service_name.partition(":")[2] if service_name.include?("service:")
       # If service description is the default one then we know that we haven't read the service
       # information just yet. Lets do it now
-      populate_service(service_name) if all_services[service_name]["description"] ==
+      populate_service(service_name) if all_services.fetch(service_name, {})["description"] ==
           default_service_description(service_name)
-      service = all_services[service_name]
       if service.nil? && !silent
         log.error "Uknown service '#{service_name}'"
         log.info "Known services: #{all_services.keys}"

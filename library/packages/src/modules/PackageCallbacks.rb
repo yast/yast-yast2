@@ -66,6 +66,7 @@ module Yast
       Yast.import "Progress"
       Yast.import "FileUtils"
       Yast.import "SignatureCheckCallbacks"
+      Yast.import "Linuxrc"
 
       @_provide_popup = false
       @_package_popup = false
@@ -400,6 +401,24 @@ module Yast
       end
 
       true
+    end
+
+    # Handle GPG check result (pkgGpgCheck)
+    #
+    # If insecure mode is set to '1', the check result is ignored. Otherwise, no decision is made.
+    # When running on an installed system, it always return "".
+    #
+    # @param data [Hash] Output from `pkgGpgCheck` callback.
+    # @option data [Integer] "CheckPackageResult" Check result code according to libzypp.
+    # @option data [String]  "Package" Package's name.
+    # @option data [String]  "Localpath" Path to RPM file.
+    # @option data [String]  "RepoMediaUrl" Media URL.
+    # @return [String] "I" if the package should be accepted; otherwise
+    #   a blank string is returned (so no decision is made).
+    def pkg_gpg_check(data)
+      log.debug("pkgGpgCheck data: #{data}")
+      insecure = Stage.initial && Linuxrc.InstallInf("Insecure") == "1"
+      insecure ? "I" : ""
     end
 
     #  After package install.
@@ -2664,6 +2683,9 @@ module Yast
       Pkg.CallbackDonePackage(
         fun_ref(method(:DonePackage), "string (integer, string)")
       )
+      Pkg.CallbackPkgGpgCheck(
+        fun_ref(method(:pkg_gpg_check), "string(map)")
+      )
 
       nil
     end
@@ -2877,6 +2899,7 @@ module Yast
       Pkg.CallbackStartPackage(nil)
       Pkg.CallbackProgressPackage(nil)
       Pkg.CallbackDonePackage(nil)
+      Pkg.CallbackPkgGpgCheck(nil)
 
       nil
     end

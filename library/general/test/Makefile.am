@@ -5,13 +5,15 @@ TESTS = \
   directory_test.rb \
   event_dispatcher_test.rb \
   finish_client_test.rb \
+  greasemonkey_test.rb \
   hooks_test.rb \
   linuxrc_test.rb \
   os_release_test.rb \
   popup_test.rb \
   proposal_client_test.rb \
-  service_status_test.rb \
   report_test.rb \
+  service_status_test.rb \
+  text_helpers_test.rb \
   widgets_test.rb \
   agents_test/proc_meminfo_agent_test.rb
 

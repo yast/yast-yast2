@@ -40,6 +40,7 @@ module Yast
     Yast.import "NetworkInterfaces"
     Yast.import "PackageSystem"
     Yast.import "PortRanges"
+    Yast.import "Service"
 
     include Yast::Logger
 

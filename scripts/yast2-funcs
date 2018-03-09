@@ -129,9 +129,13 @@ function set_qt_env()
 
 function set_inst_qt_env()
 {
-    export XCURSOR_THEME="DMZ"
+    export XCURSOR_THEME="DMZ-White"
     export Y2STYLE="installation.qss"
     export QT_HOME_DIR="/tmp/.qt/"
+    if [ "$Screenmode" != "" ] && [ "$Screenmode" != "default" ]; then
+        export Y2ALTSTYLE="$Screenmode"
+    fi
+
     mkdir -p /tmp/.qt
     [ -e /usr/share/desktop-data/qtrc ] && cp /usr/share/desktop-data/qtrc /tmp/.qt/
     set_qt_arabic_workaround
@@ -146,13 +150,21 @@ function clr_inst_qt_env()
 
 function set_inst_gtk_env()
 {
-    export XCURSOR_THEME="DMZ"
+    export XCURSOR_THEME="DMZ-White"
 }
 
 
 function clr_inst_gtk_env()
 {
     :
+}
+
+function set_inst_ncurses_env()
+{
+    if [ "$Screenmode" != "" ] && [ "$Screenmode" != "default" ];then
+        # Use 'highcontrast' as the only alternative screenmode.
+        export Y2NCURSES_COLOR_THEME="highcontrast"
+    fi
 }
 
 

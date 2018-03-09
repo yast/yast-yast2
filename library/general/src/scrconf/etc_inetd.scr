@@ -1,4 +1,0 @@
-.etc.inetd_conf
-`ag_netd (
-    `Netd ("/etc/inetd.conf")
-)

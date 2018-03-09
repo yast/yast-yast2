@@ -230,4 +230,53 @@ describe Yast::Linuxrc do
       end
     end
   end
+
+  describe "#disable_remote" do
+    before(:each) do
+      allow(Yast::SCR).to receive(:Write)
+        .with(path(".etc.install_inf"), nil)
+    end
+
+    context "when vnc should be disabled" do
+      it "updates install.inf" do
+        # twice, because there are two services, thus two calls to do the same
+        expect(Yast::SCR).to receive(:Write)
+          .with(path(".etc.install_inf.VNC"), 0).twice
+        # twice, because there are two services, thus two calls to do the same
+        expect(Yast::SCR).to receive(:Write)
+          .with(path(".etc.install_inf.VNCPassword"), "").twice
+        subject.disable_remote(["vnc", "VNC"])
+      end
+    end
+
+    context "when ssh should be disabled" do
+      it "updates install.inf" do
+        # twice, because there are two services, thus two calls to do the same
+        expect(Yast::SCR).to receive(:Write)
+          .with(path(".etc.install_inf.UseSSH"), 0).twice
+        subject.disable_remote(["sSh", "ssh"])
+      end
+    end
+
+    context "when braille and dispaly_ip should be disabled" do
+      it "updates install.inf" do
+        expect(Yast::SCR).to receive(:Write)
+          .with(path(".etc.install_inf.Braille"), 0)
+        # twice, because there are two services, thus two calls to do the same
+        expect(Yast::SCR).to receive(:Write)
+          .with(path(".etc.install_inf.DISPLAY_IP"), 0).twice
+        subject.disable_remote(["braille", "display-ip", "DiSplaY_IP"])
+      end
+    end
+
+    context "when trying to disable an unknown service" do
+      it "throws an exception" do
+        # for other (valid) services
+        allow(Yast::SCR).to receive(:Write)
+
+        unknown_service = "uNkNown-ser_vice"
+        expect { subject.disable_remote(["SSH", unknown_service]) }.to raise_error(ArgumentError, /Cannot disable #{unknown_service}/)
+      end
+    end
+  end
 end

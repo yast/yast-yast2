@@ -198,7 +198,7 @@ module Yast
     # @note This is a stable API function
     # @param [String] section string section of the feature
     # @param features string feature name
-    # @return [Object] the feature value
+    # @return [Object] the feature value, "" if not found
     def GetFeature(section, feature)
       InitIfNeeded()
       ret = Ops.get(@features, [section, feature])
@@ -210,7 +210,7 @@ module Yast
     # @note This is a stable API function
     # @param [String] section string section of the feature
     # @param features string feature name
-    # @return [String] the feature value
+    # @return [String] the feature value, "" if not found
     def GetStringFeature(section, feature)
       value = GetFeature(section, feature)
 
@@ -225,7 +225,7 @@ module Yast
     end
 
     # Get value of a feature
-    # If the feature is missing false is returned. So it is not possible to
+    # If the feature is missing `false` is returned. So it is not possible to
     # distingush between a missing value and a false value.
     # @note This is a stable API function
     # @param [String] section string section of the feature
@@ -242,7 +242,7 @@ module Yast
     # @note This is a stable API function
     # @param [String] section string section of the feature
     # @param features string feature name
-    # @return [Fixnum] the feature value
+    # @return [Fixnum] the feature value, nil if not found
     def GetIntegerFeature(section, feature)
       value = GetFeature(section, feature)
       if Ops.is_integer?(value)
@@ -324,7 +324,9 @@ module Yast
     # @param features [Hash{String => Hash{String => Object}}] in the same
     #   format as `@features` or `@defaults`
     # @return void
+    # @raise RuntimeError if called twice without {ClearOverlay}
     def SetOverlay(features)
+      raise "SetOverlay called when old overlay was not cleared" if @backup_features
       @backup_features = deep_copy(@features)
 
       features.each do |section_name, section|
@@ -340,6 +342,9 @@ module Yast
     def ClearOverlay
       return if @backup_features.nil?
       @features = deep_copy(@backup_features)
+      # when overlay is cleared, remove backup as it can become invalid over-time
+      # when new extensions is applied
+      @backup_features = nil
     end
 
     publish function: :GetStringFeature, type: "string (string, string)"

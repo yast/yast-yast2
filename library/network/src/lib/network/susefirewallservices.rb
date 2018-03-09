@@ -41,6 +41,9 @@ module Yast
   class SuSEFirewallServicesClass < Module
     include Yast::Logger
 
+    # this is how services defined by package are distinguished
+    DEFINED_BY_PKG_PREFIX = "service:".freeze
+
     DEFAULT_SERVICE = {
       "tcp_ports"       => [],
       "udp_ports"       => [],
@@ -170,6 +173,77 @@ module Yast
     # @return [Boolean] modified
     def GetModified
       @sfws_modified
+    end
+
+    # Returns whether the service ID is defined by package.
+    # Returns 'false' if it isn't.
+    #
+    # @param [String] service
+    # @return	[Boolean] whether service is defined by package
+    #
+    # @example
+    #   ServiceDefinedByPackage ("http-server") -> false
+    #   ServiceDefinedByPackage ("service:http-server") -> true
+    def ServiceDefinedByPackage(service)
+      service.start_with? DEFINED_BY_PKG_PREFIX
+    end
+
+    # Creates a file name from service name defined by package.
+    # Service MUST be defined by package, otherwise it returns 'nil'.
+    #
+    # @param [String] service name (e.g., 'service:abc')
+    # @return [String] file name (e.g., 'abc')
+    #
+    # @example
+    #   GetFilenameFromServiceDefinedByPackage ("service:abc") -> "abc"
+    #   GetFilenameFromServiceDefinedByPackage ("abc") -> nil
+    def GetFilenameFromServiceDefinedByPackage(service)
+      if !ServiceDefinedByPackage(service)
+        log.error "Service #{service} is not defined by package"
+        return nil
+      end
+
+      service[/\A#{DEFINED_BY_PKG_PREFIX}(.*)/, 1]
+    end
+
+    # Returns SCR Agent definition.
+    #
+    # @return [Yast::Term] with agent definition
+    # @param filefullpath [String] full filename path (to read by this agent)
+    # @api private
+    def GetMetadataAgent(filefullpath)
+      term(
+        :IniAgent,
+        filefullpath,
+
+        "options"  => [
+          "global_values",
+          "flat",
+          "read_only",
+          "ignore_case_regexps"
+        ],
+        "comments" => [
+          # jail followed by anything but jail (immediately)
+          "^[ \t]*#[^#].*$",
+          # comments that are not commented key:value pairs (see "params")
+          # they always use two jails
+          "^[ \t]*##[ \t]*[^([a-zA-Z0-9_]+:.*)]$",
+          # comments with three jails and more
+          "^[ \t]*###.*$",
+          # jail alone
+          "^[ \t]*#[ \t]*$",
+          # (empty space)
+          "^[ \t]*$",
+          # sysconfig entries
+          "^[ \t]*[a-zA-Z0-9_]+.*"
+        ],
+        "params"   => [
+          # commented key:value pairs
+          # e.g.: ## Name: service name
+          { "match" => ["^##[ \t]*([a-zA-Z0-9_]+):[ \t]*(.*)[ \t]*$", "%s: %s"] }
+        ]
+
+      )
     end
   end
 end

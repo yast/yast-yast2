@@ -29,6 +29,7 @@
 #
 # $Id$
 require "yast"
+require "y2packager/product_reader"
 
 module Yast
   class ProductClass < Module
@@ -102,15 +103,27 @@ module Yast
       required_status = use_installed_products? ? :installed : :selected
       fill_up_relnotes(products.select { |p| p["status"] == required_status })
 
+      # list of products defined by the "system-installation()" provides
+      system_products = Y2Packager::ProductReader.installation_package_mapping.keys
+      selected = Pkg.IsAnyResolvable(:product, :to_install)
+
       # Use only base products
       products.select! do |p|
         # The category "base" is not set during installation yet, it is set
         # only for _installed_ base product (otherwise "addon" is reported).
-        # Use the product from the initial repository during installation.
-        use_installed_products? ? (p["category"] == "base") : (p["source"] == 0)
+        if use_installed_products?
+          p["category"] == "base"
+        elsif system_products && !system_products.empty?
+          # the base product is marked by "system-installation()" provides
+          status = selected ? :selected : :available
+          system_products.include?(p["name"]) && p["status"] == status
+        else
+          # Use the product from the initial repository as a fallback
+          p["source"] == 0
+        end
       end
 
-      log.info "Found #{products.size} base product(s)"
+      log.info "Found #{products.size} base product(s): #{products.map { |p| p["name"] }.inspect}"
 
       if products.empty?
         log.error "No base product found"

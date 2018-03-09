@@ -24,7 +24,7 @@ end
 need_API_mock = true
 
 # Re-instansiate our objects
-FakeFirewallD = Yast::FirewallClass.create(:fwd)
+FakeFirewallD = Yast::SuSEFirewalldClass.new
 
 describe FakeFirewallD do
 
@@ -156,6 +156,12 @@ describe FakeFirewallD do
         interfaces: ["eth3"]
       }
     }.freeze
+
+    MINIMAL_CONFIG = {
+      "logging"         => "off",
+      "start_firewall"  => true,
+      "enable_firewall" => true
+    }.freeze
     FULL_FAKE_FIREWALLD_CONFIG = GOOD_FAKE_FIREWALLD_CONFIG.merge(BAD_FAKE_FIREWALLD_CONFIG)
 
     context "when verifying its basic configuration" do
@@ -171,15 +177,7 @@ describe FakeFirewallD do
     context "given a known configuration" do
       it "can import it and export it" do
         expect(subject.Import(FULL_FAKE_FIREWALLD_CONFIG)).to be nil
-        good_config = Yast.deep_copy(GOOD_FAKE_FIREWALLD_CONFIG)
-        GOOD_FAKE_FIREWALLD_CONFIG.keys.each do |key|
-          next unless subject.GetKnownFirewallZones().include?(key)
-          good_config[key] = Yast::SuSEFirewalldClass::EMPTY_ZONE.merge(good_config[key])
-          # When importing configuration we consider all zone attributes as
-          # dirty
-          good_config[key][:modified] = [:interfaces, :masquerade, :ports, :protocols, :services]
-        end
-        expect(subject.Export).to include(good_config)
+        expect(subject.Export).to include(MINIMAL_CONFIG)
       end
 
       it "it does not propagate invalid settings to internal data structures" do

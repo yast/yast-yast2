@@ -5,6 +5,16 @@ require_relative "test_helper"
 Yast.import "CommandLine"
 
 describe Yast::CommandLine do
+  # restore the original modes to not accidentally influence the other tests
+  # (these tests change the UI mode to "commandline")
+  around(:example) do |example|
+    orig_mode = Yast::Mode.mode
+    orig_ui = Yast::Mode.ui
+    example.run
+    Yast::Mode.SetMode(orig_mode)
+    Yast::Mode.SetUI(orig_ui)
+  end
+
   it "invokes initialize, handler and finish" do
     expect(STDOUT).to receive(:puts).with("Initialize called").ordered
     expect(STDOUT).to receive(:puts).with("something").ordered

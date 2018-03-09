@@ -21,7 +21,7 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/WorkflowManager.ycp
+# File:	modules/WorkflowManager.rb
 # Package:	yast2
 # Summary:	Provides API for configuring workflows
 # Authors:	Lukas Ocilka <locilka@suse.cz>
@@ -34,8 +34,10 @@
 #
 # Module unifies Add-Ons and Patterns modifying the workflow.
 #
-# $Id: $
 require "yast"
+
+require "packages/package_downloader"
+require "packages/package_extractor"
 
 module Yast
   class WorkflowManagerClass < Module
@@ -83,6 +85,7 @@ module Yast
       @wkf_initial_proposals = []
       @wkf_initial_inst_finish = []
       @wkf_initial_clone_modules = []
+      @wkf_initial_system_roles = []
 
       @wkf_initial_product_features = {}
 
@@ -113,6 +116,12 @@ module Yast
       @system_workflows_prepared = false
 
       @control_files_dir = "additional-control-files"
+
+      # base product that got its workflow merged
+      # @see #merge_product_workflow
+      self.merged_base_product = nil
+
+      self.merged_modules_extensions = []
     end
 
     # Returns list of additional inst_finish steps requested by
@@ -152,6 +161,7 @@ module Yast
       @wkf_initial_proposals = deep_copy(ProductControl.proposals)
       @wkf_initial_inst_finish = deep_copy(ProductControl.inst_finish)
       @wkf_initial_clone_modules = deep_copy(ProductControl.clone_modules)
+      @wkf_initial_system_roles = deep_copy(ProductControl.system_roles)
 
       @additional_finish_steps_before_chroot = []
       @additional_finish_steps_after_chroot = []
@@ -295,6 +305,7 @@ module Yast
       ProductControl.proposals = deep_copy(@wkf_initial_proposals)
       ProductControl.inst_finish = deep_copy(@wkf_initial_inst_finish)
       ProductControl.clone_modules = deep_copy(@wkf_initial_clone_modules)
+      ProductControl.system_roles = deep_copy(@wkf_initial_system_roles)
 
       @additional_finish_steps_before_chroot = []
       @additional_finish_steps_after_chroot = []
@@ -390,25 +401,98 @@ module Yast
       file_location
     end
 
+    # Download and extract the control file (installation.xml) from the add-on
+    # repository.
+    #
+    # @param source [String, Fixnum] source where to get control file. It can be fixnum for
+    #   addon type or package name for package type
+    # @return [String, nil] path to downloaded installation.xml file or nil
+    #   or nil when no workflow is defined or the workflow package is missing
+    def control_file(source)
+      package = case source
+      when ::Integer
+        product = find_product(source)
+        return nil unless product && product["product_package"]
+
+        product_package = product["product_package"]
+
+        # the dependencies are bound to the product's -release package
+        release_package = Pkg.ResolvableDependencies(product_package, :package, "").first
+
+        # find the package name with installer update in its Provide dependencies
+        control_file_package = find_control_package(release_package)
+        return nil unless control_file_package
+
+        control_file_package
+      when ::String
+        source
+      else
+        raise ArgumentError, "Invalid argument source #{source.inspect}"
+      end
+
+      # get the repository ID of the package
+      src = package_repository(package)
+      return nil unless src
+
+      # ensure the previous content is removed, the src should avoid
+      # collisions but rather be safe...
+      dir = addon_control_dir(src, cleanup: true)
+      fetch_package(src, package, dir)
+
+      path = File.join(dir, "installation.xml")
+      return nil unless File.exist?(path)
+
+      log.info("installation.xml path: #{path}")
+      path
+    rescue ::Packages::PackageDownloader::FetchError
+      # TRANSLATORS: an error message
+      Report.Error(_("Downloading the installer extension package failed."))
+      nil
+    rescue ::Packages::PackageExtractor::ExtractionFailed
+      # TRANSLATORS: an error message
+      Report.Error(_("Extracting the installer extension failed."))
+      nil
+    end
+
+    # Create a temporary directory for storing the installer extension package content.
+    # The directory is automatically removed at exit.
+    # @param src_id [Fixnum] repository ID
+    # @param cleanup [Boolean] remove the content if the directory already exists
+    # @return [String] directory path
+    def addon_control_dir(src_id, cleanup: false)
+      # Directory.tmpdir is automatically removed at exit
+      dir = File.join(Directory.tmpdir, "installer-extension-#{src_id}")
+      ::FileUtils.remove_entry(dir) if cleanup && Dir.exist?(dir)
+      ::FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
+      dir
+    end
+
     # Returns requested control filename. Parameter 'name' is ignored
     # for Add-Ons.
     #
-    # @param [Symbol] type `addon or `pattern
+    # @param [Symbol] type :addon or :package
     # @param [Fixnum] src_id with Source ID
-    # @param [String] name with unique identification
-    # @return [String] path to already cached workflow file, control file is downloaded if not yet chached
-    def GetCachedWorkflowFilename(type, src_id, _name)
-      if type == :addon
-        disk_filename = GenerateAdditionalControlFilePath(src_id, "")
+    # @param [String] name with unique identification, ignored for addon
+    # @return [String] path to already cached workflow file, control file is downloaded if not yet cached
+    #   or nil if failed to get filename
+    def GetCachedWorkflowFilename(type, src_id, name = "")
+      if ![:package, :addon].include?(type)
+        Builtins.y2error("Unknown workflow type: %1", type)
+        return nil
+      end
 
-        # A cached copy exists
-        if FileUtils.Exists(disk_filename)
-          Builtins.y2milestone("Using cached file %1", disk_filename)
-          return disk_filename
-          # Trying to get the file from source
-        else
-          Builtins.y2milestone("File %1 not cached", disk_filename)
-          # using a file from source
+      disk_filename = GenerateAdditionalControlFilePath(src_id, name)
+
+      # A cached copy exists
+      if FileUtils.Exists(disk_filename)
+        Builtins.y2milestone("Using cached file %1", disk_filename)
+        return disk_filename
+        # Trying to get the file from source
+      else
+        Builtins.y2milestone("File %1 not cached", disk_filename)
+        case type
+        when :addon
+          # using a file from source, works only for SUSE tags repositories
           use_filename = Pkg.SourceProvideDigestedFile(
             src_id,
             1,
@@ -416,23 +500,24 @@ module Yast
             true
           )
 
-          # File exists?
-          return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
+          # The most generic way it to use the package referenced by the "installerextension()"
+          # provides, this works with all repository types, including the RPM-MD repositories.
+          use_filename ||= control_file(src_id)
+        when :package
+          use_filename = control_file(name)
         end
 
-        # New workflow types can be added here
-      else
-        Builtins.y2error("Unknown workflow type: %1", type)
-        return nil
+        # File exists?
+        return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
       end
     end
 
     # Stores new workflow (if such workflow exists) into the Worflow Store.
     #
-    # @param [Symbol] type `addon or `pattern
+    # @param [Symbol] type :addon or :package
     # @param intger src_id with source ID
     # @param [String] name with unique identification name of the object
-    #        ("" for `addon, pattern name for `pattern)
+    #        ("" for `addon, package name for :package)
     # @return [Boolean] whether successful (true also in case of no workflow file)
     #
     # @example
@@ -444,20 +529,14 @@ module Yast
         src_id,
         name
       )
-      if !Builtins.contains([:addon, :pattern], type)
+      if !Builtins.contains([:addon, :package], type)
         Builtins.y2error("Unknown workflow type: %1", type)
         return false
       end
 
+      name = "" if type == :addon
       # new xml filename
-      used_filename = nil
-
-      if type == :addon
-        used_filename = GetCachedWorkflowFilename(:addon, src_id, "")
-      elsif type == :pattern
-        Builtins.y2error("Not implemented yet")
-        return false
-      end
+      used_filename = GetCachedWorkflowFilename(type, src_id, name)
 
       if !used_filename.nil? && used_filename != ""
         @unmerged_changes = true
@@ -472,14 +551,15 @@ module Yast
     # Removes workflow (if such workflow exists) from the Worflow Store.
     # Alose removes the cached file but in the installation.
     #
-    # @param [Symbol] type `addon or `pattern
-    # @param intger src_id with source ID
-    # @param [String] name with unique identification name of the object
+    # @param [Symbol] type :addon or :package
+    # @param [Integer] src_id with source ID
+    # @param [String] name with unique identification name of the object.
+    #   For :addon it should be empty string
     #
     # @return [Boolean] whether successful (true also in case of no workflow file)
     #
     # @example
-    #	RemoveWorkflow (`addon, 4, "");
+    #	RemoveWorkflow (:addon, 4, "");
     def RemoveWorkflow(type, src_id, name)
       Builtins.y2milestone(
         "Removing Workflow:  Type %1, ID %2, Name %3",
@@ -487,20 +567,14 @@ module Yast
         src_id,
         name
       )
-      if !Builtins.contains([:addon, :pattern], type)
+      if !Builtins.contains([:addon, :package], type)
         Builtins.y2error("Unknown workflow type: %1", type)
         return false
       end
 
+      name = "" if type == :addon
       # cached xml file
-      used_filename = nil
-
-      if type == :addon
-        used_filename = GenerateAdditionalControlFilePath(src_id, "")
-      else
-        Builtins.y2error("Not implemented yet")
-        return false
-      end
+      used_filename = GenerateAdditionalControlFilePath(src_id, name)
 
       if !used_filename.nil? && used_filename != ""
         @unmerged_changes = true
@@ -779,6 +853,8 @@ module Yast
       base = deep_copy(base)
       addon = deep_copy(addon)
 
+      log.info "merging workflow #{addon.inspect} to #{base.inspect}"
+
       # Merging - removing steps, settings
       removes = Ops.get_list(addon, "remove_modules", [])
 
@@ -832,6 +908,7 @@ module Yast
         end
       end
 
+      log.info "result of merge #{base.inspect}"
       deep_copy(base)
     end
 
@@ -850,6 +927,8 @@ module Yast
         found = false
         new_workflows = []
         arch_all_wf = {}
+        log.info "workflow to update #{workflow.inspect}"
+
         Builtins.foreach(ProductControl.workflows) do |w|
           if Ops.get_string(w, "stage", "") != stage ||
               Ops.get_string(w, "mode", "") != mode
@@ -870,8 +949,11 @@ module Yast
           if arch_all_wf != {}
             Ops.set(arch_all_wf, ["defaults", "archs"], arch)
             workflow = MergeWorkflow(arch_all_wf, workflow, prod_name, domain)
-            # completly new workflow
+          # completly new workflow
           else
+            # If modules has not been defined we are trying to use the appended modules
+            workflow["modules"] = workflow["append_modules"] unless workflow["modules"]
+
             Ops.set(workflow, "textdomain", domain)
 
             Ops.set(
@@ -886,10 +968,36 @@ module Yast
 
           new_workflows = Builtins.add(new_workflows, workflow)
         end
+
+        log.info "new workflow after update #{new_workflows}"
+
         ProductControl.workflows = deep_copy(new_workflows)
       end
 
       true
+    end
+
+    # Update sytem roles according to the update section of the control file
+    #
+    # The hash is expectd to have the following structure:
+    #
+    # "insert_system_roles" => [
+    #   {
+    #    "system_roles" =>
+    #      [
+    #        { "id" => "additional_role1" },
+    #        { "id" => "additional_role2" }
+    #      ]
+    #   }
+    # ]
+    #
+    # @param new_roles [Hash] System roles specification
+    #
+    # @see ProductControl#add_system_roles
+    def update_system_roles(system_roles)
+      system_roles.fetch("insert_system_roles", []).each do |insert|
+        ProductControl.add_system_roles(insert["system_roles"])
+      end
     end
 
     # Add specified steps to inst_finish.
@@ -932,6 +1040,7 @@ module Yast
     #
     # @return [Boolean] true on success
     def UpdateInstallation(update_file, name, domain)
+      log.info "Updating installation workflow: #{update_file.inspect}"
       update_file = deep_copy(update_file)
       PrepareSystemProposals()
       PrepareSystemWorkflows()
@@ -943,6 +1052,8 @@ module Yast
       workflows = Ops.get_list(update_file, "workflows", [])
       workflows = PrepareWorkflows(workflows)
       UpdateWorkflows(workflows, name, domain)
+
+      update_system_roles(update_file.fetch("system_roles", {}))
 
       true
     end
@@ -1235,7 +1346,7 @@ module Yast
       true
     end
 
-    # Returns file unique identification in format ${file_MD5sum}-${file_size}
+    # Returns file unique identification in format <file_MD5sum>-<file_size>
     # Returns 'nil' if file doesn't exist, it is not a 'file', etc.
     #
     # @param string file
@@ -1360,6 +1471,7 @@ module Yast
     #     		"proposals" : ...
     #     		"inst_finish" : ...
     #     		"clone_modules" : ...
+    #         "system_roles" : ...
     #     		"unmerged_changes" : ...
     #     	];
     def DumpCurrentSettings
@@ -1368,8 +1480,46 @@ module Yast
         "proposals"        => ProductControl.proposals,
         "inst_finish"      => ProductControl.inst_finish,
         "clone_modules"    => ProductControl.clone_modules,
+        "system_roles"     => ProductControl.system_roles,
         "unmerged_changes" => @unmerged_changes
       }
+    end
+
+    # Merge product's workflow
+    #
+    # @param product [Y2Packager::Product] Base product
+    def merge_product_workflow(product)
+      return false unless product.installation_package
+
+      log.info "Merging #{product.label} workflow"
+
+      if merged_base_product
+        Yast::WorkflowManager.RemoveWorkflow(:package, 0, merged_base_product.installation_package)
+      end
+
+      AddWorkflow(:package, 0, product.installation_package)
+      MergeWorkflows()
+      RedrawWizardSteps()
+      self.merged_base_product = product
+    end
+
+    # Merge modules extensions
+    #
+    # @param packages [Array<String>] packages that extends workflow
+    def merge_modules_extensions(packages)
+      log.info "Merging #{packages} workflow"
+
+      merged_modules_extensions.each do |pkg|
+        Yast::WorkflowManager.RemoveWorkflow(:package, 0, pkg)
+      end
+
+      packages.each do |pkg|
+        AddWorkflow(:package, 0, pkg)
+      end
+      MergeWorkflows()
+      RedrawWizardSteps()
+
+      self.merged_modules_extensions = packages
     end
 
     publish variable: :additional_finish_steps_before_chroot, type: "list <string>"
@@ -1396,6 +1546,99 @@ module Yast
     publish function: :SetAllUsedControlFiles, type: "void (list <string>)"
     publish function: :HaveAdditionalWorkflows, type: "boolean ()"
     publish function: :DumpCurrentSettings, type: "map <string, any> ()"
+
+  private
+
+    # @return [Y2Packager::Product,nil] Product or nil if no base product workflow was merged.
+    attr_accessor :merged_base_product
+
+    # @return [Array<String>] list of modules that have registered extensions
+    attr_accessor :merged_modules_extensions
+
+    # Find the product from a repository.
+    # @param repo_id [Fixnum] repository ID
+    # @return [Hash,nil] pkg-bindings product hash or nil if not found
+    def find_product(repo_id)
+      # identify the product
+      products = Pkg.ResolvableDependencies("", :product, "")
+      return nil unless products
+
+      products.select! { |p| p["source"] == repo_id }
+
+      if products.size > 1
+        log.warn("More than one product found in the repository: #{products}")
+        log.warn("Using the first one: #{products.first}")
+      end
+
+      products.first
+    end
+
+    # Find the extension package name for the specified release package.
+    # The extension package is defined by the "installerextension()"
+    # RPM "Provides" dependency.
+    # @return [String,nil] a package name or nil if not found
+    def find_control_package(release_package)
+      return nil unless release_package && release_package["deps"]
+
+      release_package["deps"].each do |dep|
+        provide = dep["provides"]
+        next unless provide
+
+        control_file_package = provide[/\Ainstallerextension\((.+)\)\z/, 1]
+        next unless control_file_package
+
+        log.info("Found referenced package with control file: #{control_file_package}")
+        return control_file_package.strip
+      end
+
+      nil
+    end
+
+    # Find the repository ID for the package.
+    # @param package_name [String] name of the package
+    # @return [Fixnum,nil] repository ID or nil if not found
+    def package_repository(package_name)
+      # Identify the installation repository with the package
+      pkgs = Pkg.ResolvableProperties(package_name, :package, "")
+
+      if pkgs.empty?
+        log.warn("The installer extension package #{package_name} was not found")
+        return nil
+      elsif pkgs.size > 1
+        log.warn("More than one control package found: #{pkgs}")
+        log.warn("Using the first one: #{pkgs.first}")
+      end
+
+      pkgs.first["source"]
+    end
+
+    # Download and extract a package from a repository.
+    # @param repo_id [Fixnum] repository ID
+    # @param package [String] name of the package
+    # @raise [::Packages::PackageDownloader::FetchError] if package download failed
+    # @raise [::Packages::PackageExtractor::ExtractionFailed] if package extraction failed
+    def fetch_package(repo_id, package, dir)
+      downloader = ::Packages::PackageDownloader.new(repo_id, package)
+
+      Tempfile.open("downloaded-package-") do |tmp|
+        downloader.download(tmp.path)
+        extract(tmp.path, dir)
+        # the RPM package file is not needed after extracting it's content,
+        # remove it explicitly now, do not wait for the garbage collector
+        # (in inst-syst it is stored in a RAM disk and eats the RAM memory)
+        tmp.unlink
+      end
+    end
+
+    # Extract an RPM package into the given directory.
+    # @param package_file [String] the RPM package path
+    # @param dir [String] a directory where the package will be extracted to
+    # @raise [::Packages::PackageExtractor::ExtractionFailed] if package extraction failed
+    def extract(package_file, dir)
+      log.info("Extracting file #{package_file}")
+      extractor = ::Packages::PackageExtractor.new(package_file)
+      extractor.extract(dir)
+    end
   end
 
   WorkflowManager = WorkflowManagerClass.new

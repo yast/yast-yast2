@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>Special testing service</short>
+  <description>This service will be parsed and every single pice of it will be inspected!</description>
+  <port protocol="tcp" port="port_1"/>
+  <port protocol="tcp" port="port_2"/>
+  <port protocol="udp" port="zzz"/>
+  <port protocol="udp" port="bbb"/>
+  <port protocol="udp" port="aaa"/>
+  <module name="module_x"/>
+</service>

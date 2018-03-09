@@ -10,6 +10,9 @@ ADDITIONAL_Y2DIRS = [
 inc_dirs.concat(ADDITIONAL_Y2DIRS)
 ENV["Y2DIR"] = inc_dirs.join(":")
 
+ENV["LC_ALL"] = "C.UTF-8"
+ENV["LANG"] = "C.UTF-8"
+
 require "yast"
 require "yast/rspec"
 
@@ -24,6 +27,9 @@ RSpec.configure do |config|
       mocks.verify_partial_doubles = true
     end
   end
+
+  config.extend Yast::I18n  # available in context/describe
+  config.include Yast::I18n # available in it/let/before/...
 end
 
 if ENV["COVERAGE"]
@@ -31,8 +37,11 @@ if ENV["COVERAGE"]
   SimpleCov.start do
     add_filter "/test/"
   end
-  # for coverage we need to load all ruby files
-  Dir["#{root_location}/library/*/src/{module,lib}/**/*.rb"].each { |f| require_relative f }
+
+  top_location = File.expand_path("../../", __FILE__)
+  # track all ruby files under src
+  SimpleCov.track_files("#{top_location}/**/src/**/*.rb")
+
   # use coveralls for on-line code coverage reporting at Travis CI
   if ENV["TRAVIS"]
     require "coveralls"

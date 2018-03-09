@@ -27,10 +27,21 @@ describe Yast::Execute do
     end
   end
 
+  describe ".locally!" do
+    it "passes arguments directly to cheetah" do
+      expect(Cheetah).to receive(:run).with("ls", "-a")
+
+      Yast::Execute.locally("ls", "-a")
+    end
+
+    it "raises Cheetah::ExecutionFailed if command execution failed" do
+      expect { Yast::Execute.locally!("false") }.to raise_error(Cheetah::ExecutionFailed)
+    end
+  end
+
   describe ".on_target" do
     it "adds to passed arguments chroot option if scr chrooted" do
-      Yast::Installation.destdir = "/mnt"
-      allow(Yast::WFM).to receive(:scr_chrooted?).and_return(true)
+      allow(Yast::WFM).to receive(:scr_root).and_return("/mnt")
       expect(Cheetah).to receive(:run).with("ls", "-a", chroot: "/mnt")
 
       Yast::Execute.on_target("ls", "-a")
@@ -43,6 +54,19 @@ describe Yast::Execute do
 
     it "returns nil if command execution failed" do
       expect(Yast::Execute.on_target("false")).to eq nil
+    end
+  end
+
+  describe ".on_target!" do
+    it "adds to passed arguments chroot option if scr chrooted" do
+      allow(Yast::WFM).to receive(:scr_root).and_return("/mnt")
+      expect(Cheetah).to receive(:run).with("ls", "-a", chroot: "/mnt")
+
+      Yast::Execute.on_target("ls", "-a")
+    end
+
+    it "raises Cheetah::ExecutionFailed if command execution failed" do
+      expect { Yast::Execute.on_target!("false") }.to raise_error(Cheetah::ExecutionFailed)
     end
   end
 end

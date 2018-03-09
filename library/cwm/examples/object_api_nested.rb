@@ -2,9 +2,10 @@
 
 require_relative "example_helper"
 
-require "cwm/widget"
+require "cwm"
 
 Yast.import "CWM"
+Yast.import "Popup"
 Yast.import "Wizard"
 
 class LuckyNumberWidget < CWM::IntField
@@ -64,6 +65,23 @@ private
   end
 end
 
+class Page < CWM::CustomWidget
+  def contents
+    VBox(
+      lucky_number_generator,
+      PushButton(Id(:rate_page), "Rate Pager")
+    )
+  end
+
+  def handle
+    Yast::Popup.Warning("Be honest")
+  end
+
+  def lucky_number_generator
+    @lng = LuckyNumberGenerator.new
+  end
+end
+
 module Yast
   class ExampleDialog
     include Yast::I18n
@@ -72,15 +90,13 @@ module Yast
     def run
       textdomain "example"
 
-      generate_widget = LuckyNumberGenerator.new
+      generate_widget = Page.new
 
       contents = HBox(generate_widget)
 
       Yast::Wizard.CreateDialog
       CWM.show(contents, caption: _("Lucky number"))
       Yast::Wizard.CloseDialog
-
-      log.info "The result is #{generate_widget.result}"
     end
   end
 end

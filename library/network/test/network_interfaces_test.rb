@@ -32,7 +32,7 @@ describe Yast::NetworkInterfaces do
   describe "#Read" do
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
     # Defined in test/data/etc/sysconfig/ifcfg-*
-    let(:devices) { ["arc5", "bond0", "br1", "em1", "eth0", "eth1", "eth2", "ppp0", "vlan3"] }
+    let(:devices) { ["arc5", "bond0", "br1", "cold", "em1", "eth0", "eth1", "eth2", "ppp0", "vlan3"] }
 
     around do |example|
       change_scr_root(data_dir, &example)
@@ -49,6 +49,15 @@ describe Yast::NetworkInterfaces do
     it "loads all valid devices from ifcfg-* definition" do
       subject.Read
       expect(subject.List("")).to eql devices
+    end
+
+    it "doesn't load ifcfgs with a backup extension" do
+      subject.Read
+
+      devnames = subject.List("")
+
+      expect(devnames.any? { |d| d =~ subject.send(:ignore_confs_regex) }).to be false
+      expect(devnames).to include "cold"
     end
 
     it "canonicalizes readed config" do
@@ -135,7 +144,7 @@ describe Yast::NetworkInterfaces do
     context "given a list of device types and a regex" do
       it "returns device types that don't match the given regex" do
         expect(subject.FilterNOT(subject.FilterDevices(""), "eth").keys)
-          .to eql(["arc", "bond", "br", "em", "ppp", "vlan"])
+          .to eql(["arc", "bond", "br", "cold", "em", "ppp", "vlan"])
       end
     end
   end
@@ -185,21 +194,6 @@ describe Yast::NetworkInterfaces do
     end
   end
 
-  describe "IsHotplug" do
-    it "returns true if given interfaces is a pcmcia interface" do
-      expect(subject.IsHotplug("eth-pcmcia")).to eql(true)
-    end
-    it "returns true if given interfaces is a usb interface" do
-      expect(subject.IsHotplug("eth-usb")).to eql(true)
-    end
-
-    it "return false otherwise" do
-      expect(subject.IsHotplug("eth")).to eql(false)
-      expect(subject.IsHotplug("qeth")).to eql(false)
-      expect(subject.IsHotplug("br")).to eql(false)
-    end
-  end
-
   describe "#GetFreeDevices" do
     it "returns an array with available device numbers" do
       subject.instance_variable_set(:@Devices, "eth" => { "0" => {} })
@@ -208,10 +202,6 @@ describe Yast::NetworkInterfaces do
       expect(subject.GetFreeDevices("eth", 2)).to eql(["0", "2"])
       subject.instance_variable_set(:@Devices, "eth" => { "2" => {} })
       expect(subject.GetFreeDevices("eth", 2)).to eql(["0", "1"])
-      subject.instance_variable_set(:@Devices, "eth-pcmcia" => { "0" => {} })
-      expect(subject.GetFreeDevices("eth-pcmcia", 2)).to eql(["", "1"])
-      subject.instance_variable_set(:@Devices, "eth-pcmcia" => { "" => {} })
-      expect(subject.GetFreeDevices("eth-pcmcia", 2)).to eql(["0", "1"])
     end
   end
 
@@ -248,7 +238,7 @@ describe Yast::NetworkInterfaces do
     end
 
     it "returns an array of devices which have got a different key,value than given ones" do
-      expect(subject.LocateNOT("BOOTPROTO", "static")).to eql(["arc5", "br1", "ppp0", "vlan3"])
+      expect(subject.LocateNOT("BOOTPROTO", "static")).to eql(["arc5", "br1", "cold", "ppp0", "vlan3"])
     end
   end
 

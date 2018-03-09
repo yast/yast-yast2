@@ -67,6 +67,83 @@ describe Yast2::FsSnapshot do
     end
   end
 
+  describe ".configure_on_install?" do
+    # This test assumes #configure_on_install= has not been called in the
+    # testsuite
+    it "returns false unless explicitly set to true" do
+      expect(described_class.configure_on_install?).to eq false
+    end
+  end
+
+  describe ".configure_snapper" do
+    before do
+      Yast.import "Mode"
+      Yast.import "Stage"
+
+      allow(Yast::Stage).to receive(:initial).and_return true
+      allow(Yast::Mode).to receive(:installation).and_return(mode == :installation)
+      allow(Yast::WFM).to receive(:scr_chrooted?).and_return chrooted
+    end
+
+    context "in normal mode (no installation)" do
+      let(:mode) { :normal }
+      let(:chrooted) { false }
+
+      it "raises a SnapperNotConfigurable error" do
+        expect { described_class.configure_snapper }.to raise_error(Yast2::SnapperNotConfigurable)
+      end
+    end
+
+    context "during installation" do
+      let(:mode) { :installation }
+
+      context "before the chroot switch to the target system" do
+        let(:chrooted) { false }
+
+        it "raises a SnapperNotConfigurable error" do
+          expect { described_class.configure_snapper }.to raise_error(Yast2::SnapperNotConfigurable)
+        end
+      end
+
+      context "after chrooting to the target system" do
+        let(:chrooted) { true }
+
+        before do
+          described_class.instance_variable_set("@configured", false)
+          allow(Yast::Execute).to receive(:on_target)
+          allow(Yast::SCR).to receive(:Write)
+        end
+
+        # Not the most elegant test ever, but...
+        it "resets the .configured? cache" do
+          expect(described_class.instance_variable_get("@configured")).to_not be_nil
+          described_class.configure_snapper
+          expect(described_class.instance_variable_get("@configured")).to be_nil
+        end
+
+        it "executes the fourth step of Snapper's installation helper" do
+          expect(Yast::Execute).to receive(:on_target).with(/snapper\/installation-helper/, "--step", "4")
+          described_class.configure_snapper
+        end
+
+        it "sets Snapper config" do
+          expect(Yast::Execute).to receive(:on_target).with(/snapper$/, "--no-dbus", "set-config", any_args)
+          described_class.configure_snapper
+        end
+
+        it "configures YaST to use snapper" do
+          expect(Yast::SCR).to receive(:Write).with(path(".sysconfig.yast2.USE_SNAPPER"), "yes")
+          described_class.configure_snapper
+        end
+
+        it "sets Snapper quota" do
+          expect(Yast::Execute).to receive(:on_target).with(/snapper$/, "--no-dbus", "setup-quota")
+          described_class.configure_snapper
+        end
+      end
+    end
+  end
+
   describe ".create_single" do
     CREATE_SINGLE_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
       "--root-prefix=/ --snapshot-type single --description \"some-description\"".freeze

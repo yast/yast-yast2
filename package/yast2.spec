@@ -15,9 +15,8 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
-
 Name:           yast2
-Version:        3.1.219
+Version:        4.0.58
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0
@@ -36,18 +35,25 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:abstract_method)
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:cfa)
 # for running scripts
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
+BuildRequires:  update-desktop-files
 # For running RSpec tests during build
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
-BuildRequires:  update-desktop-files
+# For converting to/from punycode strings
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:simpleidn)
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
-BuildRequires:  yast2-perl-bindings
 BuildRequires:  yast2-pkg-bindings >= 2.20.3
-# To have Yast::CoreExt::AnsiString
-BuildRequires:  yast2-ruby-bindings >= 3.1.36
+# To have Yast::WFM.scr_root
+BuildRequires:  yast2-ruby-bindings >= 3.2.8
 BuildRequires:  yast2-testsuite
-BuildRequires:  yast2-ycp-ui-bindings >= 3.1.8
+# UI::.SetApplicationTitle
+BuildRequires:  yast2-ycp-ui-bindings >= 3.2.0
+# for the PackageExtractor tests, just make sure they are present,
+# these should be installed in the default build anyway
+BuildRequires:  rpm
+BuildRequires:  cpio
+
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
 Requires:       coreutils
@@ -61,9 +67,11 @@ Requires:       perl-XML-Simple
 Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
 Requires:       rubygem(%{rb_default_ruby_abi}:cfa)
+# For converting to/from punycode strings
+Requires:       rubygem(%{rb_default_ruby_abi}:simpleidn)
+Requires:       sysconfig >= 0.80.0
 # for running scripts
 Requires:       rubygem(%{rb_default_ruby_abi}:cheetah)
-Requires:       sysconfig >= 0.80.0
 # ag_ini section_private
 # ag_ini with (un)quoting support
 Requires:       yast2-core >= 2.23.0
@@ -72,10 +80,11 @@ Requires:       yast2-hardware-detection
 Requires:       yast2-perl-bindings
 # changed StartPackage callback signature
 Requires:       yast2-pkg-bindings >= 2.20.3
-Requires:       yast2-ruby-bindings >= 3.1.33
+# for y2start
+Requires:       yast2-ruby-bindings >= 3.2.10
 Requires:       yast2-xml
-# new UI::SetApplicationIcon
-Requires:       yast2-ycp-ui-bindings >= 3.1.8
+# new UI::SetApplicationTitle
+Requires:       yast2-ycp-ui-bindings >= 3.2.0
 Requires:       yui_backend
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq
@@ -88,16 +97,13 @@ Conflicts:      yast2-installation < 2.18.5
 # moved cfg_mail.scr
 Conflicts:      yast2-mail < 3.1.7
 # Older packager use removed API
-Conflicts:      yast2-packager < 3.1.34
+Conflicts:      yast2-packager < 4.0.33
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-# for Punycode.rb (bnc#651893) - the idnconv tool is located in
-# different packages (SLE12/Leap-42.1: bind-utils, TW/Factory: idnkit)
-%if 0%{?suse_version} >= 1330
-Requires:       idnkit
-%else
-Requires:       bind-utils
-%endif
 Obsoletes:      yast2-devel-doc
+# for the PackageExtractor class, just make sure they are present,
+# these should be present even in a very minimal installation
+Requires:  rpm
+Requires:  cpio
 
 %description
 This package contains scripts and data needed for SUSE Linux
@@ -172,7 +178,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %{yast_scrconfdir}/*
 %{yast_ybindir}/*
 %{yast_agentdir}/ag_*
-%{_localstatedir}/adm/fillup-templates/sysconfig.yast2
+%{_fillupdir}/sysconfig.yast2
 
 # configuration files
 %config %{_sysconfdir}/bash_completion.d/yast2*.sh

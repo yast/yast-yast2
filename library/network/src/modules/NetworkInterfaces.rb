@@ -29,10 +29,11 @@ module Yast
   # Categorizes the configurations according to type.
   # Presents them one ifcfg at a time through the {#Current} hash.
   class NetworkInterfacesClass < Module
+    attr_reader :Devices
+
     include Logger
 
     Yast.import "String"
-    include Logger
 
     # A single character used to separate alias id
     ALIAS_SEPARATOR = "#".freeze
@@ -40,8 +41,6 @@ module Yast
     ID_REGEX = "([^#{ALIAS_SEPARATOR}]*)".freeze
     ALIAS_REGEX = "(.*)".freeze
     DEVNAME_REGEX = "#{TYPE_REGEX}-?#{ID_REGEX}".freeze
-    # Supported hotplug types
-    HOTPLUG_TYPES = ["pcmcia", "usb"].freeze
 
     # @attribute Name
     # @return [String]
@@ -67,7 +66,6 @@ module Yast
       Yast.import "Map"
       Yast.import "Mode"
       Yast.import "Netmask"
-      Yast.import "TypeRepository"
       Yast.import "FileUtils"
       Yast.import "IP"
 
@@ -103,7 +101,7 @@ module Yast
       @CardRegex =
         # other: irlan|lo|plip|...
         {
-          "netcard" => "arc|ath|bnep|ci|ctc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
+          "netcard" => "arc|ath|bnep|ci|ctc|slc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
           "modem"   => "ppp|modem",
           "isdn"    => "isdn|ippp",
           "dsl"     => "dsl"
@@ -112,38 +110,17 @@ module Yast
       # Predefined network device regular expressions
       @DeviceRegex = {
         # device types
-        "netcard" => Ops.add(
-          Ops.add(
-            Ops.get(@CardRegex, "netcard", ""),
-            HotplugRegex(["ath", "eth", "tr", "wlan"])
-          ),
-          "|usb-usb|usb-usb-"
-        ),
-        "modem"   => Ops.get(@CardRegex, "modem", ""),
-        "isdn"    => Ops.add(
-          Ops.get(@CardRegex, "isdn", ""),
-          HotplugRegex(["isdn", "ippp"])
-        ),
-        "dsl"     => Ops.get(@CardRegex, "dsl", ""),
+        "netcard" => @CardRegex["netcard"],
+        "modem"   => @CardRegex["modem"],
+        "isdn"    => @CardRegex["isdn"],
+        "dsl"     => @CardRegex["dsl"],
         # device groups
-        "dialup"  => Ops.add(
-          Ops.add(
-            Ops.add(
-              Ops.add(Ops.get(@CardRegex, "modem", ""), "|"),
-              Ops.get(@CardRegex, "dsl", "")
-            ),
-            "|"
-          ),
-          Ops.get(@CardRegex, "isdn", "")
-        )
+        "dialup"  => @CardRegex["modem"] + "|" + @CardRegex["dsl"] + "|" + @CardRegex["isdn"]
       }
 
       # Types in order from fastest to slowest.
       # @see #FastestRegexps
       @FastestTypes = { 1 => "dsl", 2 => "isdn", 3 => "modem", 4 => "netcard" }
-
-      # @see #Push
-      @stack = {}
 
       # -------------------- components of configuration names --------------------
 
@@ -204,22 +181,8 @@ module Yast
       ]
     end
 
-    # Create a list of hot-pluggable device names for the given devices
-    def HotplugRegex(devs)
-      return "" unless devs
-
-      ret = ""
-      devs.each do |dev|
-        HOTPLUG_TYPES.each do |hot|
-          ret += "|#{dev}-#{hot}|#{dev}-#{hot}-"
-        end
-      end
-      ret
-    end
-
     def IsEmpty(value)
-      value = deep_copy(value)
-      TypeRepository.IsEmpty(value)
+      value.nil? ? true : value.empty?
     end
 
     def ifcfg_part(ifcfg, part)
@@ -239,10 +202,11 @@ module Yast
 
     # Detects a subtype of Ethernet device type according /sys or /proc content
     #
-    # @example GetEthTypeFromSysfs("eth0") -> "eth"
-    # @example GetEthTypeFromSysfs("bond0") -> "bon"
+    # @example
+    #   GetEthTypeFromSysfs("eth0") -> "eth"
+    #   GetEthTypeFromSysfs("bond0") -> "bon"
     #
-    # @param [String] interface name
+    # @param [String] dev interface name
     # @return [String] device type
     def GetEthTypeFromSysfs(dev)
       sys_dir_path = "/sys/class/net/#{dev}"
@@ -268,11 +232,12 @@ module Yast
 
     # Detects a subtype of InfiniBand device type according /sys
     #
-    # @example GetEthTypeFromSysfs("ib0") -> "ib"
-    # @example GetEthTypeFromSysfs("bond0") -> "bon"
-    # @example GetEthTypeFromSysfs("ib0.8001") -> "ibchild"
+    # @example
+    #   GetEthTypeFromSysfs("ib0") -> "ib"
+    #   GetEthTypeFromSysfs("bond0") -> "bon"
+    #   GetEthTypeFromSysfs("ib0.8001") -> "ibchild"
     #
-    # @param [String] interface name
+    # @param [String] dev interface name
     # @return [String] device type
     def GetIbTypeFromSysfs(dev)
       sys_dir_path = "/sys/class/net/#{dev}"
@@ -293,7 +258,7 @@ module Yast
     # to specify a "subtype". E.g. in case of "eth" it checks for presence of "wireless" subdir to
     # determine "wlan" device.
     #
-    # @param [String] interface name
+    # @param [String] dev interface name
     # @return return device type or nil if nothing known found
     def GetTypeFromSysfs(dev)
       sys_dir_path = Builtins.sformat("/sys/class/net/%1", dev)
@@ -506,25 +471,12 @@ module Yast
       Builtins.sformat("%1#%2", device_name(typ, num), anum)
     end
 
-    # Test hotplugability of a device
-    # @param [String] type device type
-    # @return true if hotpluggable
-    def IsHotplug(type)
-      return false if type == "" || type.nil?
-      HOTPLUG_TYPES.any? { |t| type.end_with?(t) }
+    # @deprecated Formerly hotpluggable devices required a special ifcfg name
+    # @return false
+    def IsHotplug(_type)
+      false
     end
 
-    # Return matching inteface for this hardware ID (uses getcfg-interface)
-    # @param [String] dev unique device string
-    # return interface name
-    # @example MatchInterface("eth-id-00:01:DE:AD:BE:EF") -> "eth0"
-    # global string MatchInterface(string dev) {
-    #     string cmd = "getcfg-interface " + dev;
-    #     map dn =(map) SCR::Execute(.target.bash_output, cmd);
-    #     string devname = deletechars(dn["stdout"]:"", "\n");
-    #
-    #     return devname;
-    # }
     # Test whether device is connected (Link:up)
     # The info is taken from sysfs
     # @param [String] dev unique device string
@@ -541,23 +493,18 @@ module Yast
       Builtins.deletechars(Ops.get_string(ret, "stdout", ""), "\n") == "1"
     end
 
+    # @deprecated hotpluggable devices no longer need a special type
     # Return real type of the device (incl. PCMCIA, USB, ...)
     # @param [String] type basic device type
     # @param [String] hotplug hot plug type
     # @return real type
-    # @example RealType("eth", "usb") -> "eth-usb"
-    def RealType(type, hotplug)
-      Builtins.y2debug("type=%1", type)
+    # @example RealType("eth", "usb") -> "eth"
+    def RealType(type, _hotplug)
       if type == "" || type.nil?
         Builtins.y2error("Wrong type: %1", type)
         return "eth"
       end
-
-      return type if hotplug == "" || hotplug.nil?
-
-      realtype = Ops.add(Ops.add(type, "-"), hotplug)
-      Builtins.y2debug("realtype=%1", realtype)
-      realtype
+      type
     end
 
     # ---------------------------------------------------------------------------
@@ -680,24 +627,10 @@ module Yast
       deep_copy(out)
     end
 
-    # Get current sysconfig configured interfaces
-    #
-    # @param devregex [String] regex to filter by
-    # @return [Array] of ifcfg names
-    def get_devices(devregex = "[~]")
-      devices = SCR.Dir(path(".network.section")) || []
-
-      devices.select! { |file| file !~ /#{devregex}/ } unless devregex.nil? && devregex.empty?
-      devices.delete_if(&:empty?)
-
-      log.debug "devices=#{devices}"
-      devices
-    end
-
     # Canonicalize IPADDR and STARTMODE of given config
     # and nested _aliases
     #
-    # @param [Hash] a map with netconfig (ifcfg) configuration
+    # @param [Hash] config a map with netconfig (ifcfg) configuration
     # @return [Hash] ifcfg with canonicalized IP addresses
     def canonicalize_config(config)
       config = deep_copy(config)
@@ -726,8 +659,8 @@ module Yast
     # from the given device config path returning a hash
     # with the transformed device config
     #
-    # @param [String] path of the device config to read from
-    # @param [Hash{String => Object}] newdev new device map
+    # @param [String] pth path of the device config to read from
+    # @param [Hash<String, Object>] values new device map
     #
     # @return [Hash{String => Object}] parsed configuration
     def generate_config(pth, values)
@@ -787,9 +720,8 @@ module Yast
     # The device is added to @Devices[devtype] hash using the device name as key
     # and the ifconfg hash as value
     #
-    # @param <String> device name
-    # @param [Hash] a map with netconfig (ifcfg) configuration
-    #
+    # @param [String] device name
+    # @param [Hash] ifcfg a map with netconfig (ifcfg) configuration
     def add_device(device, ifcfg)
       # if possible use dev type as available in /sys otherwise use ifcfg config
       # as a fallback for device type detection
@@ -806,7 +738,7 @@ module Yast
       @Devices = {}
 
       # preparation
-      devices = get_devices
+      devices = get_devices(ignore_confs_regex)
 
       # Read devices
       devices.each do |device|
@@ -833,10 +765,22 @@ module Yast
       Read()
     end
 
+    # Returns a hash with configuration for particular device
+    #
+    # Hash map is direct maping of sysconfig file into hash.
+    # Keys are sysconfig options (e.g. { 'IPADDR' => '1.1.1.1' }
+    #
+    # @param [String] name is device name as provided by the
+    #                 system (e.g. eth0)
+    # @return [Hash] device configuration or nil in case of error
+    def devmap(name)
+      Devices().fetch(GetType(name), {})[name]
+    end
+
     # Returns all the devices which device name matchs given devregex
     #
-    # @param [Array] of Devices
-    # @param [String] regex to filter by
+    # @param [Array] devices of Devices
+    # @param [String] devregex regex to filter by
     # @return [Array] of Devices that match the given regex
     def Filter(devices, devregex)
       devices = deep_copy(devices)
@@ -856,8 +800,8 @@ module Yast
 
     # Returns all the devices that does not match the given devregex
     #
-    # @param [Array] of Devices
-    # @param [String] regex to filter by
+    # @param [Array] devices of Devices
+    # @param [String] devregex regex to filter by
     # @return [Array] of Devices that match the given regex
     def FilterNOT(devices, devregex)
       return {} if devices.nil? || devregex.nil? || devregex == ""
@@ -971,6 +915,7 @@ module Yast
               # TODO : delete PREFIXLEN from config file
             end
           end
+          devmap["ZONE"] = nil if devmap["ZONE"] && devmap["ZONE"].empty?
           # write all keys to config
           Builtins.maplist(
             Convert.convert(
@@ -1069,7 +1014,8 @@ module Yast
     # All devices which confirms to <devregex> are silently removed from Devices
     # and replaced by those supplied by <devices>.
     #
-    # @param settings settings to be imported
+    # @param [String] devregex filter for devices
+    # @param [Array] devices devices to replace filtered ones
     # @return true on success
     def Import(devregex, devices)
       devices = deep_copy(devices)
@@ -1179,10 +1125,12 @@ module Yast
 
     # Return textual device type
     # @param [String] type device type
-    # @param [String] type description type
+    # @param [String] longdescr description type
     # @return textual form of device type
-    # @example GetDevTypeDescription("eth", false) -> "Ethernet"
-    # @example GetDevTypeDescription("eth", true)  -> "Ethernet Network Card"
+    # @example
+    #   GetDevTypeDescription("eth", false) -> "Ethernet"
+    # @example
+    #   GetDevTypeDescription("eth", true)  -> "Ethernet Network Card"
     def GetDevTypeDescription(type, longdescr)
       if Builtins.issubstring(type, "#")
         # Device type label
@@ -1384,13 +1332,6 @@ module Yast
       count = 0
       ret = []
 
-      # Hotpluggable devices
-      if IsHotplug(type) && !curdevs.include?("")
-        log.debug("Added simple hotplug device")
-        count += 1
-        ret << ""
-      end
-
       # Remaining numbered devices
       while count < num
         if !curdevs.include?(i.to_s)
@@ -1438,7 +1379,7 @@ module Yast
     end
 
     # Select the given device
-    # @param device to select ("" for new device, default values)
+    # @param [String] name device to select ("" for new device, default values)
     # @return true if success
     def Select(name)
       @Name = ""
@@ -1481,7 +1422,7 @@ module Yast
     end
 
     # Edit the given device
-    # @param dev device to edit
+    # @param [String] name device to edit
     # @return true if success
     def Edit(name)
       @operation = nil
@@ -1491,7 +1432,7 @@ module Yast
     end
 
     # Delete the given device
-    # @param dev device to delete
+    # @param [String] name device to delete
     # @return true if success
     def Delete(name)
       @operation = nil
@@ -1501,9 +1442,9 @@ module Yast
     end
 
     # Update Devices map
-    # @param dev device identifier
-    # @param [Hash{String => Object}] newdev new device map
-    # @param [Boolean] check if check if device already exists
+    # @param [String] name device identifier
+    # @param [Hash<String, Object>] newdev new device map
+    # @param [true, false] check if check if device already exists
     # @return true if success
     def Change2(name, newdev, check)
       newdev = deep_copy(newdev)
@@ -1626,9 +1567,8 @@ module Yast
     end
 
     # get IP addres + additional IP addresses
-    # @param identifier for network interface
+    # @param [String] device identifier for network interface
     # @return [Array] of IP addresses of selected interface
-
     def GetIP(device)
       Select(device)
       ips = [GetValue(device, "IPADDR")]
@@ -1672,34 +1612,14 @@ module Yast
       ret
     end
 
-    # Clean the hotplug devices compatibility symlink,
-    # usually ifcfg-eth-pcmcia -> ifcfg-eth-pcmcia-0.
-    # @return true if success
+    # @deprecated No longer needed
+    # @return true
     def CleanHotplugSymlink
-      types = ["eth-pcmcia", "eth-usb", "tr-pcmcia", "tr-usb"]
-      Builtins.maplist(types) do |t|
-        link = Ops.add("/etc/sysconfig/network/ifcfg-", t)
-        Builtins.y2debug("link=%1", link)
-        lstat = Convert.to_map(SCR.Read(path(".target.lstat"), link))
-        if Ops.get_boolean(lstat, "islink", false) == true
-          file = Convert.to_string(SCR.Read(path(".target.symlink"), link))
-          file = Ops.add("/etc/sysconfig/network/", file)
-          Builtins.y2debug("file=%1", file)
-          if Ops.greater_than(SCR.Read(path(".target.size"), file), -1)
-            Builtins.y2milestone("Cleaning hotplug symlink")
-            Builtins.y2milestone("Devices[%1]=%2", t, Ops.get(@Devices, t, {}))
-            Ops.set(@Devices, t, Builtins.remove(Ops.get(@Devices, t, {}), ""))
-            Builtins.y2milestone("Devices[%1]=%2", t, Ops.get(@Devices, t, {}))
-          end
-        end
-      end
-
-      Builtins.y2debug("Devices=%1", @Devices)
       true
     end
 
     # Get devices of the given type
-    # @param type devices type ("" for all)
+    # @param [String] devregex devices type ("" for all)
     # @return [Array] of found devices
     def List(devregex)
       ret = []
@@ -1776,28 +1696,6 @@ module Yast
       ret
     end
 
-    # DSL needs to save its config while the underlying network card is
-    # being configured.
-    def Push
-      Builtins.y2error("Stack not empty: %1", @stack) if @stack != {}
-      Ops.set(@stack, "Name", @Name)
-      Ops.set(@stack, "Current", @Current)
-      Ops.set(@stack, "operation", @operation)
-      Builtins.y2milestone("PUSH: %1", @stack)
-
-      nil
-    end
-
-    def Pop
-      Builtins.y2milestone("POP: %1", @stack)
-      @Name = Ops.get_string(@stack, "Name", "")
-      @Current = Ops.get_map(@stack, "Current", {})
-      @operation = Ops.get_symbol(@stack, "operation")
-      @stack = {}
-
-      nil
-    end
-
     # #46803: forbid "/" (filename), maybe also "-" (separator) "_" (escape)
     def ValidCharsIfcfg
       String.ValidCharsFilename
@@ -1809,6 +1707,43 @@ module Yast
     def ListDevicesExcept(dev)
       devices = Builtins.filter(LocateNOT("DEVICE", dev)) { |s| s != "lo" }
       deep_copy(devices)
+    end
+
+  private
+
+    # Device configuration files are matched against this regexp
+    #
+    # The regexp defines files which should not be parsed (e.g. ifcfg-eth0.bak)
+    #
+    # It is usually usefull to ignore files which various editors
+    # or other tools or daemons (e.g. firewalld)
+    # create as a backup (e.g. ifcfg-eth0~), also users sometime
+    # creates a backup when editing files from commandline
+    # (typically use extension .bak or .old)
+    #
+    # Moreover configuration filenames that contain the following
+    # blacklisted extensions, will be ignored by wicked:
+    # ~ .old .bak .orig .scpmbackup .rpmnew .rpmsave .rpmorig
+    #
+    # For details see bnc#1073727
+    #
+    # @return [Regexp] regexp describing ignored configurations
+    def ignore_confs_regex
+      /(\.bak|\.orig|\.rpmnew|\.rpmorig|\.rpmsave|-range|~|\.old|\.scpmbackup)$/
+    end
+
+    # Get current sysconfig configured interfaces
+    #
+    # @param devregex [Regexp] regexp to filter by
+    # @return [Array<String>] of ifcfg names
+    def get_devices(devregex)
+      devices = SCR.Dir(path(".network.section")) || []
+
+      devices.select! { |file| file !~ devregex } unless devregex.nil?
+      devices.delete_if(&:empty?)
+
+      log.debug "devices=#{devices}"
+      devices
     end
 
     publish variable: :Name, type: "string"
@@ -1848,13 +1783,10 @@ module Yast
     publish function: :SetValue, type: "boolean (string, string, string)"
     publish function: :GetIP, type: "list <string> (string)"
     publish function: :Locate, type: "list <string> (string, string)"
-    publish function: :UpdateModemSymlink, type: "boolean ()"
     publish function: :CleanHotplugSymlink, type: "boolean ()"
     publish function: :List, type: "list <string> (string)"
     publish function: :Fastest, type: "string ()"
     publish function: :FastestType, type: "string (string)"
-    publish function: :Push, type: "void ()"
-    publish function: :Pop, type: "void ()"
     publish function: :ValidCharsIfcfg, type: "string ()"
     publish function: :ListDevicesExcept, type: "list <string> (string)"
   end

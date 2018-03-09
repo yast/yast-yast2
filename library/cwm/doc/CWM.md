@@ -1,4 +1,4 @@
-Introduction {#intro}
+Introduction
 ============
 
 Currently commonly used technique to create dialogs brings several
@@ -45,7 +45,7 @@ TODO
 
     -   Table Up/Down buttons handling
 
-General concept {#concept}
+General concept
 ===============
 
 The main goal is to provide a set of simple routines that can be used
@@ -106,8 +106,8 @@ Developer must specify following:
 
 -   Dialog caption, help, what buttons are to be present,...
 
-<!-- -->
-
+```
+    // TODO: convert from ycp to ruby
     // include  here
 
     // function to initialize widgets
@@ -150,7 +150,7 @@ Developer must specify following:
 
         return ret;
     }
-            
+```
 
 Notes:
 
@@ -228,7 +228,7 @@ UI::WaitForEvent ()). The widget key is the key of the processed widget,
 the event is the event that caused saving the settings. In most cases,
 it can be ignored.
 
-CWM Table concept {#cwr_table}
+CWM Table concept
 =================
 
 Table widget and manupulation with data in this widget need same
@@ -251,7 +251,7 @@ Simple example for CWM Table
 
 This example show basic features of CWM table and also basic how to use.
 
-     
+```
     {
           import "CWM";
           import "CWMTable";
@@ -327,8 +327,9 @@ This example show basic features of CWM table and also basic how to use.
             "caption" : "test"
           ]);
     }
+```
 
-CWM tutorial {#tutor}
+CWM tutorial
 ============
 
 How to create simple dialog using CWM
@@ -341,11 +342,12 @@ This section describes how to create a simple dialog using CWM.
 The easiest is to use a map, where key is name of configuration file
 entry and value is its value.
 
+```
     global map settings = $[
         "option1" : "value1",
         "option2" : "value2",
     ];
-     
+```
 
 Additionally, this map can then be used as-is for exporting and
 importing settings.
@@ -354,6 +356,7 @@ importing settings.
 
 They can (in most cases) look the following way:
 
+```
     global define void MyInit (string widget_id) ``{
         UI::ChangeWidget (`id (widget_id), `Value,
             settings[widget_id]:"");
@@ -363,7 +366,7 @@ They can (in most cases) look the following way:
         settings[widget_id] = UI::QueryWidget (`id (widget_id),
             `Value);
     }
-     
+```
 
 They don't do anything else than to get current value from the map and
 change the widget appropriate way in case of init handler, and query the
@@ -375,6 +378,7 @@ handler.
 It is a map with the same keys as the data map has, values are widget
 description maps.
 
+```
     map widgets = $[
         "option1" : $[
             "label" : _("The &first option"),
@@ -393,7 +397,7 @@ description maps.
             "store" : ``(MyModule::RadioButtonsStore ()),
         ],
     ];
-     
+```
 
 If you use radio button group, you can't use above mentioned handlers,
 because it is needed to use \`CurrentButton instead of \`Value. In this
@@ -404,6 +408,7 @@ case the init and store callbacks must be set if fallback handlers use
 
 For radio button group the callback will look following way:
 
+```
     global define void RadioButtonsInit (string widget_id) ``{
         UI::ChangeWidget (`id (widget_id), `CurrentButton,
             settings[widget_id]:"");
@@ -413,7 +418,7 @@ For radio button group the callback will look following way:
         settings[widget_id] = UI::QueryWidget (`id (widget_id),
             `CurrentButton);
     }
-     
+```  
 
 ### Create and run the dialog
 
@@ -421,6 +426,7 @@ It means to create dialog layout and call ShowAndRun with appropriate
 parameters. This should be contents of the function that is called from
 wizard sequencer.
 
+```
     term contents = `VBox (
         "option1",
         `VSpacing (2),
@@ -435,10 +441,11 @@ wizard sequencer.
     return CWM::ShowAndRun (["option1", "option2"], widgets,
         contents, _("Dialog caption"),
         Label::BackButton (), Label::NextButton (), fallback_func);
-     
+```  
 
 ### Whole example (runnable)
 
+```
 /usr/share/YaST2/modules/MyModule.ycp
 
     {
@@ -510,7 +517,6 @@ wizard sequencer.
     }
 
     }
-     
 
 /usr/share/YaST2/clients/myexample.ycp
 
@@ -528,10 +534,9 @@ wizard sequencer.
 
         UI::CloseDialog ();
     }
-     
+```
 
-
-Creating the table container {#create_cwr_table}
+Creating the table container
 ----------------------------
 
 For getting the initial map the function map&lt;string,any&gt;
@@ -589,7 +594,7 @@ This is the same as for normal widgets. Set the keys according to your
 needs. Only doesn't overwrite handle function, as it make all handling
 stuff
 
-Reserved UI events {#tw_events}
+Reserved UI events
 ==================
 
 Some UI events (return values of UI::UserInput ()) are used internally
@@ -612,7 +617,7 @@ The table widget contains following ids:
 
 -   \`\_tw\_custom - The Custom button
 
-Dialogs using the Tab widget {#cwm_tab}
+Dialogs using the Tab widget
 ============================
 
 CWMTab is a widget for CWM that can be used for handling dialogs with
@@ -626,7 +631,7 @@ multiple tabs. Its tasks are following:
 The CWMTab widget is just a widget for CWM. It is limited to one
 instance in a single dialog.
 
-
+```
             map<string,map<string,any>> widgets = $[
                "w1" : $[...],
                "w2" : $[...],
@@ -670,7 +675,7 @@ instance in a single dialog.
                 Label::NextButton (),
                 $[...]
             );
-     
+```
 
 Running the dialog with tab widget
 ==================================
@@ -744,7 +749,7 @@ For every screen description map, the following keys must be defined:
 
 TERMINOLOGY CONCEPT ADVANCED WIDGETS CWM\_TABLE TABLE\_POPUP
 DIALOG\_TREE CWM\_TAB SERVICE\_START TSIG\_KEYS TUTOR
-Dialogs based on the tree on the left (for English) {#dialog_tree}
+Dialogs based on the tree on the left (for English)
 ===================================================
 
 DialogTree is a set of functions to help using CWM in the dialogs that
@@ -757,8 +762,7 @@ have the Tree widget on the left side. Its tasks are following:
 -   Handle different GUIs (supporting or not supporting the
     Wizard widget)
 
-<!-- -->
-
+```
             import "DialogTree";
 
             DialogTree::ShowAndRun ($[
@@ -785,7 +789,7 @@ have the Tree widget on the left side. Its tasks are following:
                 "abort_button" : "AbortButton",
                 "functions" : $[...]
             ]);
-     
+```
 
 Running the dialog
 ------------------
@@ -851,6 +855,7 @@ the whole tree. To add items to the tree, use `Wizard::AddTreeItem`. The
 type `list<map>()`. This function creates a list of widgets via the
 `Wizard::AddTreeItem` and returns the output of the last call.
 
+```
     define list<map> CreateWizardTree () {
         list<map> Tree = [];
         Tree = Wizard::AddTreeItem (Tree, "",  _("S1_label"), "s1");
@@ -858,7 +863,7 @@ type `list<map>()`. This function creates a list of widgets via the
         Tree = Wizard::AddTreeItem (Tree, "",  _("S3_label"), "s3");
         return Tree;
     }
-     
+```
 
 Specifying the initial screen
 -----------------------------
@@ -894,7 +899,7 @@ To specify the fallback handlers of the widgets and functions for
 handling abort and back events, use the `"functions"`. See ? and
 following for additional information about this stuff.
 
-Advanced Service Starting Widgets {#service_start}
+Advanced Service Starting Widgets
 =================================
 
 CWMServiceStart is a set of widgets for CWM that can be used for setting
@@ -909,6 +914,7 @@ To create a widget for setting if service should be started on boot, use
 the CWMServiceStart::CreateAutoStartWidget () function. This function
 has one argument (a map from string to any).
 
+```
     boolean GetStartService () {...}
     boolean SetStartService (boolean start) {...}
 
@@ -919,7 +925,7 @@ has one argument (a map from string to any).
         "start_manual_button" : _("Start DHCP Server &Manually"),
         "help" : _("Help to the widget..."),
     ]);
-     
+```
 
 The parameters for service starting are following:
 
@@ -935,15 +941,15 @@ The parameters for service starting are following:
     is mandatory.
 
 -   `
-    "get_service_start_via_xinetd"
+    "get_service_start_via_socket"
           ` is reference to a function with no parameter returning
-    boolean value that says if the service is started via xinetd. It is
-    optional, if not present, the xinetd part of the widget is not shown
+    boolean value that says if the service is started via socket. It is
+    optional, if not present, the socket part of the widget is not shown
 
 -   `
-    "set_service_start_via_xinetd"
+    "set_service_start_via_socket"
           ` is a reference to a function with one boolean parameter
-    saying if the service should be started via xinetd and return
+    saying if the service should be started via socket and return
     type void. It is optional. If it is setting the value to true,
     "set\_service\_auto\_start" is set to false.
 
@@ -958,10 +964,10 @@ The parameters for service starting are following:
     radio button. If not present, generic label is used.
 
 -   `
-    "start_xinetd_button"
-          ` contains the label of the "Start via xinetd" radio button.
+    "start_socket_button"
+          ` contains the label of the "Start via socket" radio button.
     If not present, generic label is used. Used only if
-    "get\_service\_start\_via\_xinetd" is defined.
+    "get\_service\_start\_via\_socket" is defined.
 
 -   `
     "help"
@@ -978,6 +984,7 @@ To create a widget for enabling or disabling the LDAP support, use the
 CWMServiceStart::CreateLdapWidget () function. This function has one
 argument (a map from string to any).
 
+```
     global define void SetUseLdap (boolean use_ldap) {...}
     global define boolean GetUseLdap () {...}
 
@@ -987,7 +994,7 @@ argument (a map from string to any).
         "use_ldap_checkbox" : _("Read DHCP Settings from &LDAP"),
         "help" : _("Help to the widget..."),
     ]);
-     
+```
 
 The parameters for LDAP support are following:
 
@@ -1023,6 +1030,7 @@ To create a widget for displaying service status and immediate starting
 or stopping the service, use the CWMServiceStart::CreateStartStopWidget
 () function. This function has one argument (a map from string to any).
 
+```
     define void SaveAndRestart () {...}
 
     map<string,any> widget = CWMServiceStart::CreateStartStopWidget ($[
@@ -1035,7 +1043,7 @@ or stopping the service, use the CWMServiceStart::CreateStartStopWidget
         "save_now_button" : _("Save and Restart DHCP Server &Now"),
         "help" : _("Help to the widget..."),
     ]);
-     
+```
 
 The parameters for Immediate actions are following:
 
@@ -1097,7 +1105,7 @@ The parameters for Immediate actions are following:
     CWMServiceStart::StartStopHelpTemplate () and sformat to change only
     the button labels.
 
-Table/Popup concept {#table_popup}
+Table/Popup concept
 ===================
 
 Table/Popup superwidget is quite complex, that's why it has an extra
@@ -1119,6 +1127,7 @@ Basic table attributes
 
 Following text will refer on ?.
 
+```
            map<string,map<string,any> > options = $[
                "popup1" : popup1_description_map,
                "popup2" : popup2_description_map,
@@ -1145,8 +1154,8 @@ Following text will refer on ?.
                );
                return ret;
            }
+```
 
-     
 
 Notes:
 
@@ -1163,7 +1172,7 @@ Notes:
     given as an argument in the ShowAndRun or Run function won't be
     used, but instead of them table-widget-specific defaults are used.
 
-### Creating the table container (1) {#create_table}
+### Creating the table container (1)
 
 For getting the initial map the function map&lt;string,any&gt;
 CWM::CreateTableDescr () can be used. It takes as a parameters a map
@@ -1228,7 +1237,7 @@ Specify here the contents of the table that will be displayed. Should
 return the list of option ids. The function has one argument, the table
 widget description map.
 
-Basic table option attributes {#option_basic}
+Basic table option attributes
 -----------------------------
 
 Option description map describes the behavior of one single option in
@@ -1246,6 +1255,7 @@ are used as label the option name is used.
 
 Following text will refer to ?.
 
+```
     define string EnableServiceSummary (
         any opt_id, string opt_key)
     {
@@ -1286,7 +1296,7 @@ Following text will refer to ?.
             ],
         ],
     ];
-     
+```
 
 This example describes a simple option, that is represented by a check
 box in the popup, has label "Enable DHCP server at boot time" and own
@@ -1340,6 +1350,7 @@ Note, that because the TP mechanism doesn't know where the data are
 stored, fallback handler or option-specific handler for every option
 must be defined.
 
+```
     define map<string,any> getTableWidget () {
         map<string,any> ret = CWM::CreateTableDescr (
             $[],
@@ -1354,7 +1365,7 @@ must be defined.
         );
         return ret;
     }
-     
+```
 
 ### Deleting entry
 
@@ -1364,6 +1375,7 @@ this handler is used. The handler has two parameter - the option id
 assumed, that the entry was really deleted, and the table should be
 redrawn. Otherwise, the table is left as is.
 
+```
     define map<string,any> getTableWidget () {
         map<string,any> ret = CWM::CreateTableDescr (
             $[],
@@ -1375,7 +1387,7 @@ redrawn. Otherwise, the table is left as is.
         );
         return ret;
     }
-     
+```
 
 ### Items for adding
 
@@ -1385,6 +1397,7 @@ specify if the combo box will be editable and any option can be entered
 (if true), or the combobox will not be editable, and the option list is
 fixed (if false). If not present, default is true.
 
+```
     define map<string,any> getTableWidget () {
         map<string,any> ret = CWM::CreateTableDescr (
             $[],
@@ -1396,7 +1409,7 @@ fixed (if false). If not present, default is true.
         );
         return ret;
     }
-     
+```
 
 This will allow to add only these 3 entries.
 
@@ -1407,6 +1420,7 @@ set the function that will transform the option id to option key. Before
 evaluation, the table description map and the option id will be added to
 the term . If not present, then option key is the same as option id.
 
+```
     define string id2key (map<string,any> descr, any opt_id) {
         return opt_id; // 1:1 translation
     }
@@ -1421,7 +1435,7 @@ the term . If not present, then option key is the same as option id.
         );
         return ret;
     }
-     
+```
 
 ### Specifying reordering function
 
@@ -1433,6 +1447,7 @@ parameters option id (any), option key (string) and direction (symbol
 \`up or \`down). Must return true if the order was really changed (in
 order to redraw the table).
 
+```
     global define any optMove (any opt_id, string opt_key, symbol direction) {
         // modify internal structure appropriate way here
         return true;
@@ -1448,7 +1463,7 @@ order to redraw the table).
         );
         return ret;
     }
-     
+```
 
 Advanced table option attributes
 --------------------------------
@@ -1603,7 +1618,7 @@ selected. You can modify the label of the option in order to display the
 separator the way you want to. It behaves like a normal option, with the
 only difference that it isn't selectable.
 
-Reserved UI events {#tp_events}
+Reserved UI events
 ------------------
 
 Some UI events (return values of UI::UserInput ()) are used internally
@@ -1720,12 +1735,12 @@ Terminology
   n"                 ensure that the settings are consistent. Used if
   handler            validation by function is set for the widget.
 
-                     
+
   ------------------ -----------------------------------------------------
 
   : Terminology
 
-TSIG Keys Management {#tsig_keys}
+TSIG Keys Management
 ====================
 
 CWMTsigKeys is a widget for CWM that can be used for management of TSIG
@@ -1740,6 +1755,7 @@ function. As parameter, it takes a map with settings needed to create
 the widget and handle settings on it, returns a map with the widget for
 CWM. This map can be used the same way as maps for other widgets.
 
+```
             global define void SetKeysInfo (map<string,any>) {...}
             global define map<string,any> GetKeysInfo () {...}
 
@@ -1747,7 +1763,7 @@ CWM. This map can be used the same way as maps for other widgets.
                 "get_keys_info" : DhcpServer::GetKeysInfo,
                 "set_keys_info" : DhcpServer::SetKeysInfo,
             ]);
-     
+```
 
 Reading and storing TSIG Keys
 -----------------------------
@@ -1852,7 +1868,7 @@ TSIG keys. Following functions are available:
     name of the file.
 
 
-Available widgets {#widgets}
+Available widgets
 =================
 
 Note: in all examples additional parameters can be present, see ?.
@@ -2003,7 +2019,7 @@ Parameters:
       ....
     ]
 
-Radio Buttons {#radio_buttons}
+Radio Buttons
 -------------
 
 Parameters:
@@ -2078,7 +2094,7 @@ Parameters:
       ....
     ]
 
-Menu Button {#menu_button}
+Menu Button
 -----------
 
 widget
@@ -2107,7 +2123,7 @@ items
       ....
     ]
 
-Multi-Line Edit Box {#multiline}
+Multi-Line Edit Box
 -------------------
 
 Parameters:
@@ -2126,7 +2142,7 @@ Parameters:
       ....
     ]
 
-Rich Text Field {#richtext}
+Rich Text Field
 ---------------
 
 Parameters:
@@ -2374,10 +2390,10 @@ no\_help
     any
 
 
-Advanced stuff {#advanced}
+Advanced stuff
 ==============
 
-Helps {#widget_help}
+Helps
 =====
 
 Help is usually related to a widget. There is no reason not to add help
@@ -2412,7 +2428,7 @@ the log, add a key `"no_help"` with any value to the widget instead.
     ]
      
 
-Widget validation {#validation}
+Widget validation
 =================
 
 Especially in case of more complex widgets, some validation may be
@@ -2438,6 +2454,7 @@ otherwise generic error message is shown.
 
 If no validation type is defined, validation is always OK.
 
+```
     define boolean MyValidateWidget (string key, map event) {
         boolean value = UI::QueryWidget (
             `id (key),
@@ -2479,7 +2496,7 @@ If no validation type is defined, validation is always OK.
         "validate_typespec" : ["Word1", "Word2"],
       ],
     ]
-     
+```
 
 Widget options
 ==============
@@ -2511,6 +2528,7 @@ function must have two arguments - widget key (string) and event that
 caused storing the settings (map). If widget doesn't have any "init" or
 "store" function specified, generic one is used (see ?).
 
+```
     define void MyInitializeWidget (string key) {
         boolean value = this_global_variable;
         UI::ChangeWidget (`id (key), `Value, value);
@@ -2531,7 +2549,7 @@ caused storing the settings (map). If widget doesn't have any "init" or
         "store" : MyStoreWidget,
       ],
     ]
-     
+```
 
 UI events handling
 ==================
@@ -2551,6 +2569,7 @@ It is also possible to specify the list of events to handle by the
 widget, via the "handle\_events" key. If it is empty, or not present,
 then the handle function is called for every generated event.
 
+```
     define symbol MyHandleWidget (string key, map event) {
         UI::MessagePopup (_("You checked the checkbox. Restart to
     make the change effective ;-)"));
@@ -2565,9 +2584,9 @@ then the handle function is called for every generated event.
         "handle" : MyHandleWidget,
       ],
     ]
-     
+```
 
-Changing the return value {#retval_sect}
+Changing the return value
 =========================
 
 If it is required to quit dialog other way than via the Next, Back and
@@ -2589,6 +2608,7 @@ specified in the argument of CreateWidgets function.
 The returned value (if not nil) is passed to the store functions as the
 "ID" member of the event map.
 
+```
     define symbol MyHandleButton (map event) {
         if (event["ID"]:nil == "PUSH_BUTTON")
         return `leave_dialog_other_way;
@@ -2604,9 +2624,9 @@ The returned value (if not nil) is passed to the store functions as the
         "handle" : MyHandleButton ()),
       ],
     ]
-     
+```
 
-Changing whole widget {#repl_widget}
+Changing whole widget
 =====================
 
 In some cases no predefined widget can be used. In this case it is
@@ -2625,6 +2645,7 @@ building of the widget creating function calls other functions, that
 need some time, they aren't called when YaST2 component starts, but when
 it is really needed (but every time the widget is displayed).
 
+```
     define term getW2 () {
         return `VBox (`PushButton (`id (`w), _("W")));
     }
@@ -2643,11 +2664,11 @@ it is really needed (but every time the widget is displayed).
         "store" : WStore,
       ],
     ];
-     
+```
 
 These two widgets (W1 and W2) are identical.
 
-Replacing, Disabling, and Hiding the Back/Abort/Next buttons {#repl_buttons}
+Replacing, Disabling, and Hiding the Back/Abort/Next buttons
 ============================================================
 
 To specify the labels of the Abort, Back and Next buttons, use the
@@ -2680,6 +2701,7 @@ Note that if there are multiple widgets in a dialog with UI timeout set,
 the lowest timeout is used (which means that the timeout event can be
 generated more often than specified).
 
+```
     define symbol EventHandle (string key, map event) {
         if (event["ID"] == `timeout)
         {
@@ -2697,7 +2719,7 @@ generated more often than specified).
         "handle" : EventHandle,
       ],
     ]
-     
+```
 
 Empty widget
 ============
@@ -2708,6 +2730,7 @@ for handling some events but without displaying anything in the dialog.
 The only needed attribute to specify is the "widget" entry in the map
 that must have the value \`empty.
 
+```
     define symbol EventHandle (string key, map event) {
         // to something interesting here
         return nil;
@@ -2719,15 +2742,16 @@ that must have the value \`empty.
         "handle" : EventHandle,
       ],
     ]
-     
+```
 
-More control over the dialog creation {#create_control}
+More control over the dialog creation
 =====================================
 
 In some cases it may not be sufficient to use the standard dialog layout
 creation. You may eg. need to add some additional help text. The same
 dalog as in ? is created in ?.
 
+```
     // include  here
 
     define symbol runSomeDialog {
@@ -2758,6 +2782,7 @@ dalog as in ? is created in ?.
         symbol ret = CWM::Run (widgets, functions);
 
         return ret;
+```
 
 The first step is to process the relevant widgets from the widgets
 description map in order to create the "real" widgets. The second task

@@ -7,9 +7,6 @@ use ycp;
 use YaST::SCRAgent;
 use Config::Crontab;
 use diagnostics;
-#use Data::Dumper;
-
-use POSIX qw(tmpnam);
 
 our @ISA = ("YaST::SCRAgent");
 

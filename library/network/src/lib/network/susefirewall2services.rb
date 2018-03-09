@@ -37,9 +37,6 @@ module Yast
   class SuSEFirewall2ServicesClass < SuSEFirewallServicesClass
     include Yast::Logger
 
-    # this is how services defined by package are distinguished
-    DEFINED_BY_PKG_PREFIX = "service:".freeze
-
     SERVICES_DIR = "/etc/sysconfig/SuSEfirewall2.d/services/".freeze
 
     # please, check it with configuration in refresh-srv-def-by-pkgs-trans.sh script
@@ -249,85 +246,14 @@ module Yast
       }
     end
 
-    # Returns whether the service ID is defined by package.
-    # Returns 'false' if it isn't.
-    #
-    # @param [String] service
-    # @return	[Boolean] whether service is defined by package
-    #
-    # @example
-    #   ServiceDefinedByPackage ("http-server") -> false
-    #   ServiceDefinedByPackage ("service:http-server") -> true
-    def ServiceDefinedByPackage(service)
-      service.start_with? DEFINED_BY_PKG_PREFIX
-    end
-
-    # Creates a file name from service name defined by package.
-    # Service MUST be defined by package, otherwise it returns 'nil'.
-    #
-    # @param [String] service name (e.g., 'service:abc')
-    # @return [String] file name (e.g., 'abc')
-    #
-    # @example
-    #   GetFilenameFromServiceDefinedByPackage ("service:abc") -> "abc"
-    #   GetFilenameFromServiceDefinedByPackage ("abc") -> nil
-    def GetFilenameFromServiceDefinedByPackage(service)
-      if !ServiceDefinedByPackage(service)
-        log.error "Service #{service} is not defined by package"
-        return nil
-      end
-
-      service[/\A#{DEFINED_BY_PKG_PREFIX}(.*)/, 1]
-    end
-
-    # Returns SCR Agent definition.
-    #
-    # @return [Yast::Term] with agent definition
-    # @param filefullpath [String] full filename path (to read by this agent)
-    # @api private
-    def GetMetadataAgent(filefullpath)
-      term(
-        :IniAgent,
-        filefullpath,
-
-        "options"  => [
-          "global_values",
-          "flat",
-          "read_only",
-          "ignore_case_regexps"
-        ],
-        "comments" => [
-          # jail followed by anything but jail (immediately)
-          "^[ \t]*#[^#].*$",
-          # comments that are not commented key:value pairs (see "params")
-          # they always use two jails
-          "^[ \t]*##[ \t]*[^([a-zA-Z0-9_]+:.*)]$",
-          # comments with three jails and more
-          "^[ \t]*###.*$",
-          # jail alone
-          "^[ \t]*#[ \t]*$",
-          # (empty space)
-          "^[ \t]*$",
-          # sysconfig entries
-          "^[ \t]*[a-zA-Z0-9_]+.*"
-        ],
-        "params"   => [
-          # commented key:value pairs
-          # e.g.: ## Name: service name
-          { "match" => ["^##[ \t]*([a-zA-Z0-9_]+):[ \t]*(.*)[ \t]*$", "%s: %s"] }
-        ]
-
-      )
-    end
-
     # Returns service definition.
     # See @services for the format.
     # If *silent* is `false` (the default), the method throws an exception
     # {Yast::SuSEFirewalServiceNotFound} if service is not found on disk.
     #
-    # @param [String] service name (including the "service:" prefix)
-    # @param [String] (optional) whether to silently return nil
-    #                 when service is not found (default false)
+    # @param [String] service_name name including the "service:" prefix
+    # @param [String] silent whether to silently return nil
+    #                 when service is not found
     # @api private
     def service_details(service_name, silent = false)
       service = all_services[service_name]
@@ -472,7 +398,7 @@ module Yast
     # defined by package.
     #
     # @param [String] service ID (e.g., "service:ssh")
-    # @param [Hash{String => Array<String>] store_definition of full service definition
+    # @param [Hash<String, Array<String>>] store_definition of full service definition
     # @return [Boolean] if successful (nil in case of developer's mistake)
     #
     # @see #IsKnownService

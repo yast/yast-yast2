@@ -35,18 +35,15 @@ module_DATA = \
   modules/Hooks.rb
 
 scrconf_DATA = \
-  scrconf/content.scr \
   scrconf/cfg_hotplug.scr \
   scrconf/proc_meminfo.scr \
   scrconf/etc_sysctl_conf.scr \
   scrconf/cfg_sysctl.scr \
-  scrconf/etc_inetd.scr \
   scrconf/etc_inittab.scr \
   scrconf/cfg_apache2.scr \
   scrconf/cfg_features.scr \
   scrconf/etc_ssh_sshd_config.scr \
   scrconf/cfg_displaymanager.scr \
-  scrconf/contentfile.scr \
   scrconf/cfg_yast2.scr \
   scrconf/cfg_xversion.scr \
   scrconf/yast2_groups.scr \
@@ -56,7 +53,6 @@ scrconf_DATA = \
   scrconf/etc_login_defs.scr \
   scrconf/cfg_policykit.scr \
   scrconf/system_freespace.scr \
-  scrconf/etc_xinetd.scr \
   scrconf/run_ifconfig.scr \
   scrconf/cfg_apache.scr \
   scrconf/cfg_services.scr \
@@ -68,10 +64,8 @@ scrconf_DATA = \
   scrconf/cfg_security.scr
 
 agent_SCRIPTS = \
-  servers_non_y2/ag_netd \
   servers_non_y2/ag_anyxml \
-  servers_non_y2/ag_freespace \
-  servers_non_y2/ag_content
+  servers_non_y2/ag_freespace
 
 ydata_DATA = \
   data/country.ycp \
@@ -80,21 +74,29 @@ ydata_DATA = \
 fillup_DATA = \
   fillup/sysconfig.yast2
 
-ylibdir = "${yast2dir}/lib/installation"
-ylib_DATA = \
+ylibinstallationdir = "${yast2dir}/lib/installation"
+ylibinstallation_DATA = \
   lib/installation/auto_client.rb \
   lib/installation/finish_client.rb \
   lib/installation/proposal_client.rb
 
-ylib2dir = "${yast2dir}/lib/ui"
-ylib2_DATA = \
+ylibuidir = "${yast2dir}/lib/ui"
+ylibui_DATA = \
   lib/ui/dialog.rb \
   lib/ui/installation_dialog.rb \
   lib/ui/event_dispatcher.rb \
+  lib/ui/greasemonkey.rb \
   lib/ui/service_status.rb \
+  lib/ui/text_helpers.rb \
   lib/ui/widgets.rb
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylib_DATA) $(ylib2_DATA)
+ylibyast2dir = "${yast2dir}/lib/yast2"
+ylibyast2_DATA = \
+  lib/yast2/feedback.rb \
+  lib/yast2/popup.rb \
+  lib/yast2/popup_rspec.rb
+
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylibinstallation_DATA) $(ylibui_DATA) $(ylibyast2_DATA)
 
 
 include $(top_srcdir)/Makefile.am.common

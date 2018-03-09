@@ -89,7 +89,7 @@ module Installation
     #
     # The profile is a Hash or an Array according to the configuration item
     # `X-SuSE-YaST-AutoInstDataType`
-    # @param profile [Hash, Array] profile data specific to this module.
+    # @param _profile [Hash, Array] profile data specific to this module.
     # @return true on success
     def import(_profile)
       raise NotImplementedError, "Calling abstract method 'import'"
@@ -129,14 +129,21 @@ module Installation
       raise NotImplementedError, "Calling abstract method 'write'"
     end
 
-    # Get a list of packages needed for configuration.
+    # Return a hash with packages that need to be installed or removed for
+    # configuration.
     #
-    # The default implementation returns an empty list.
-    # @return [Array<String>] list of required packages
+    # @example
+    #
+    #   def packages
+    #     { "install" => ["package1"], "remove" => ["package2"] }
+    #   end
+    #
+    # The default implementation returns an empty hash.
+    # @return [Hash] of packages to be installed and removed
     def packages
-      log.info "#{self.class}#packages not implemented, returning []."
+      log.info "#{self.class}#packages not implemented, returning {}."
 
-      []
+      {}
     end
 
     # Read settings from the target system.

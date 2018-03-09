@@ -208,13 +208,6 @@ module Yast
         "FW_BOOT_FULL_INIT"
       ]
 
-      @one_line_per_record = [
-        "FW_FORWARD_MASQ",
-        "FW_SERVICES_ACCEPT_EXT",
-        "FW_SERVICES_ACCEPT_INT",
-        "FW_SERVICES_ACCEPT_DMZ"
-      ]
-
       # FATE #300970: Firewall support for SMB browsing
       @broadcast_related_module = "nf_conntrack_netbios_ns"
 
@@ -261,25 +254,17 @@ module Yast
 
     # <!-- SuSEFirewall GLOBAL FUNCTIONS USED BY LOCAL ONES //-->
 
-    # Returns whether records in variable should be written one record on one line.
-    # @return [Boolean] if wolpr
-    def WriteOneRecordPerLine(key_name)
-      return true if key_name.nil? && key_name == ""
-
-      Builtins.contains(@one_line_per_record, key_name)
-    end
-
     # Report the error, warning, message only once.
     # Stores the error, warning, message in memory.
     # This is just a helper function that could avoid from filling y2log up with
     # a lot of the very same messages - 'foreach()' is a very powerful builtin.
     #
-    # @param string error, warning or message
+    # @param [String] what_to_report error, warning or message
     # @return [Boolean] whether the message should be reported or not
     #
     # @example
-    #	string error = sformat("Port number %1 is invalid.", port_nr);
-    #	if (ReportOnlyOnce(error)) y2error(error);
+    #   string error = sformat("Port number %1 is invalid.", port_nr);
+    #   if (ReportOnlyOnce(error)) y2error(error);
     def ReportOnlyOnce(what_to_report)
       return false if Builtins.contains(@report_only_once, what_to_report)
 
@@ -304,7 +289,7 @@ module Yast
 
     # Function return list of variables needed for SuSEFirewall's settings.
     #
-    # @return	[Array<String>] of names of variables
+    # @return [Array<String>] of names of variables
     def GetListOfSuSEFirewallVariables
       deep_copy(@SuSEFirewall_variables)
     end
@@ -326,7 +311,7 @@ module Yast
     # Local function returns if other functions should produce verbose output.
     # like popups, reporting errors, etc.
     #
-    # @return	[Boolean] is_verbose
+    # @return [Boolean] is_verbose
     def IsVerbose
       # verbose level must be above zero to be verbose
       Ops.greater_than(@verbose_level, 0)
@@ -334,15 +319,15 @@ module Yast
 
     # Local function for returning default values (if defined) for sysconfig variables.
     #
-    # @param	string sysconfig variable
-    # @return	[String] default value
+    # @param [String] variable sysconfig variable
+    # @return [String] default value
     def GetDefaultValue(variable)
       Ops.get(@DEFAULT_SETTINGS, variable, "")
     end
 
     # Local function for reading list of sysconfig variables into internal variables.
     #
-    # @param	list <string> of sysconfig variables
+    # @param [Array<String>] variables of sysconfig variables
     def ReadSysconfigSuSEFirewall(variables)
       variables = deep_copy(variables)
       Builtins.foreach(variables) do |variable|
@@ -377,7 +362,7 @@ module Yast
 
     # Local function for reseting list of sysconfig variables in internal variables.
     #
-    # @param	list <string> of sysconfig variables
+    # @param [Array<String>] variables of sysconfig variables
     def ResetSysconfigSuSEFirewall(variables)
       variables = deep_copy(variables)
       Builtins.foreach(variables) do |variable|
@@ -392,8 +377,8 @@ module Yast
     # List of variables is list of keys in SETTINGS map, to sync configuration
     # into the disk, use `nil` as the last list item.
     #
-    # @param	list <string> of sysconfig variables
-    # @return	[Boolean] if successful
+    # @param [Array<String>] variables of sysconfig variables
+    # @return [Boolean] if successful
     def WriteSysconfigSuSEFirewall(variables)
       variables = deep_copy(variables)
       write_status = true
@@ -402,9 +387,6 @@ module Yast
       Builtins.foreach(variables) do |variable|
         # if variable is undefined, get default value
         value = Ops.get_string(@SETTINGS, variable) { GetDefaultValue(variable) }
-        if WriteOneRecordPerLine(variable) == true
-          value = Builtins.mergestring(Builtins.splitstring(value, " "), "\n")
-        end
         write_status = SCR.Write(
           Builtins.add(path(".sysconfig.SuSEfirewall2"), variable),
           value
@@ -431,7 +413,7 @@ module Yast
     # For instance "ext" for "EXT" zone.
     #
     # @param [String] zone shortname
-    # @return	[String] zone configuration string
+    # @return [String] zone configuration string
     def GetZoneConfigurationString(zone)
       if IsKnownZone(zone)
         # zones in SuSEFirewall configuration are identified by lowercased zone shorters
@@ -443,8 +425,8 @@ module Yast
     # Local function returns zone name (shortname) for configuration string.
     # For instance "EXT" for "ext" zone.
     #
-    # @param	string zone configuration string
-    # @return	[String] zone shortname
+    # @param [String] zone_string configuration string
+    # @return [String] zone shortname
     def GetConfigurationStringZone(zone_string)
       if IsKnownZone(Builtins.toupper(zone_string))
         # zones in SuSEFirewall configuration are identified by lowercased zone shorters
@@ -457,7 +439,7 @@ module Yast
     #
     # @param [String] zone
     # @param [String] protocol
-    # @return	[Array<String>] of allowed services/ports
+    # @return [Array<String>] of allowed services/ports
     def GetAllowedServicesForZoneProto(zone, protocol)
       Builtins.splitstring(
         Ops.get_string(
@@ -471,7 +453,7 @@ module Yast
 
     # Function sets list of services as allowed ports for zone and protocol
     #
-    # @param	list <string> of allowed ports/services
+    # @param [Array<String>] allowed_services of allowed ports/services
     # @param [String] zone
     # @param [String] protocol
     def SetAllowedServicesForZoneProto(allowed_services, zone, protocol)
@@ -489,14 +471,15 @@ module Yast
 
     # Local function returns configuration string for broadcast packets.
     #
-    # @return	[String] with broadcast configuration
+    # @return [String] with broadcast configuration
     def GetBroadcastConfiguration(zone)
       Ops.get_string(@SETTINGS, Ops.add("FW_ALLOW_FW_BROADCAST_", zone), "no")
     end
 
     # Local function saves configuration string for broadcast packets.
     #
-    # @param	string with broadcast configuration
+    # @param [String] zone
+    # @param [String] broadcast_configuration with broadcast configuration
     def SetBroadcastConfiguration(zone, broadcast_configuration)
       SetModified()
 
@@ -516,7 +499,7 @@ module Yast
     # it doesn't return ports that are listed in some service (defined by package)
     # which is enabled.
     #
-    # @return	[Hash{String => Array<String>}] strings are allowed ports or port ranges
+    # @return [Hash{String => Array<String>}] strings are allowed ports or port ranges
     #
     #
     # **Structure:**
@@ -563,7 +546,7 @@ module Yast
 
     # Function creates allowed-broadcast-ports string from broadcast map and saves it.
     #
-    # @param	map <zone_string, list <string> > strings are allowed ports or port ranges
+    # @param [Hash<String,Array<String>>] broadcast strings are allowed ports or port ranges
     # @see GetBroadcastAllowedPorts() for an example of data
     def SetBroadcastAllowedPorts(broadcast)
       broadcast = deep_copy(broadcast)
@@ -582,11 +565,12 @@ module Yast
 
     # Function returns if broadcast is allowed for needed ports in zone.
     #
-    # @param	list <string> ports
+    # @param [Array<String>] needed_ports
     # @param [String] zone
-    # @return	[Boolean] if is allowed
+    # @return [Boolean] if is allowed
     #
-    # @example IsBroadcastAllowed (["port-xyz", "53"], "EXT") -> true
+    # @example
+    #    IsBroadcastAllowed (["port-xyz", "53"], "EXT") -> true
     def IsBroadcastAllowed(needed_ports, zone)
       needed_ports = deep_copy(needed_ports)
       if Builtins.size(needed_ports) == 0
@@ -631,7 +615,7 @@ module Yast
 
     # Local function removes list of ports from port allowing broadcast packets in zone.
     #
-    # @param	list <of ports> to be removed
+    # @param [Array<String>] needed_ports to be removed
     # @param [String] zone
     def RemoveAllowedBroadcast(needed_ports, zone)
       needed_ports = deep_copy(needed_ports)
@@ -658,7 +642,8 @@ module Yast
 
     # Local function adds list of ports to ports accepting broadcast
     #
-    # @param	list <string> of ports
+    # @param [Array<String>] needed_ports of ports
+    # @param [String] zone
     def AddAllowedBroadcast(needed_ports, zone)
       needed_ports = deep_copy(needed_ports)
       # changing only if ports are not allowed
@@ -691,10 +676,10 @@ module Yast
     # for defined protocol and zone. Functions doesn't take care of
     # port-aliases.
     #
-    # @param	string service/port
+    # @param [String] remove_service service/port
     # @param [String] protocol
     # @param [String] zone
-    # @return	[Boolean] success
+    # @return [Boolean] success
     def RemoveServiceFromProtocolZone(remove_service, protocol, zone)
       SetModified()
 
@@ -715,11 +700,11 @@ module Yast
 
     # Removes service defined by package (FATE #300687) from enabled services.
     #
-    # @param string service_id
+    # @param [String] service
     # @param [String] zone
     #
     # @example
-    #	RemoveServiceDefinedByPackageFromZone ("service:irc-server", "EXT");
+    #    RemoveServiceDefinedByPackageFromZone ("service:irc-server", "EXT");
     def RemoveServiceDefinedByPackageFromZone(service, zone)
       return nil if !IsKnownZone(zone)
 
@@ -753,11 +738,11 @@ module Yast
 
     # Adds service defined by package (FATE #300687) into list of enabled services.
     #
-    # @param string service_id
+    # @param [String] service
     # @param [String] zone
     #
     # @example
-    #	AddServiceDefinedByPackageIntoZone ("service:irc-server", "EXT");
+    #    AddServiceDefinedByPackageIntoZone ("service:irc-server", "EXT");
     def AddServiceDefinedByPackageIntoZone(service, zone)
       return nil if !IsKnownZone(zone)
 
@@ -898,7 +883,7 @@ module Yast
 
     # Function sets if firewall should be protected from internal zone.
     #
-    # @param	boolean set to be protected from internal zone
+    # @param [Boolean] set_protect set to be protected from internal zone
     def SetProtectFromInternalZone(set_protect)
       SetModified()
 
@@ -913,14 +898,14 @@ module Yast
 
     # Function returns if firewall is protected from internal zone.
     #
-    # @return	[Boolean] if protected from internal
+    # @return [Boolean] if protected from internal
     def GetProtectFromInternalZone
       Ops.get_string(@SETTINGS, "FW_PROTECT_FROM_INT", "no") == "yes"
     end
 
     # Function sets if firewall should support routing.
     #
-    # @param	boolean set to support route or not
+    # @param [Boolean] set_route set to support route or not
     def SetSupportRoute(set_route)
       SetModified()
 
@@ -937,7 +922,7 @@ module Yast
 
     # Function returns if firewall supports routing.
     #
-    # @return	[Boolean] if route is supported
+    # @return [Boolean] if route is supported
     def GetSupportRoute
       Ops.get_string(@SETTINGS, "FW_ROUTE", "no") == "yes"
     end
@@ -974,7 +959,7 @@ module Yast
     # Function returns the trust level of IPsec packets.
     # See SetTrustIPsecAs() for more information.
     #
-    # @return	[String] zone or "no"
+    # @return [String] zone or "no"
     def GetTrustIPsecAs
       # do not trust
       return "no" if Ops.get(@SETTINGS, "FW_IPSEC_TRUST") == "no"
@@ -1003,14 +988,14 @@ module Yast
 
     # Function for getting exported SuSEFirewall configuration
     #
-    # @return	[Hash{String => Object}] with configuration
+    # @return [Hash{String => Object}] with configuration
     def Export
       deep_copy(@SETTINGS)
     end
 
     # Function for setting SuSEFirewall configuration from input
     #
-    # @param	map <string, any> with configuration
+    # @param [Hash<String, Object>] import_settings with configuration
     def Import(import_settings)
       Read()
       @SETTINGS.merge!(import_settings || {})
@@ -1024,8 +1009,8 @@ module Yast
     # Function returns if the interface is in zone.
     #
     # @param [String] interface
-    # @param	string firewall zone
-    # @return	[Boolean] is in zone
+    # @param [String] zone firewall zone
+    # @return [Boolean] is in zone
     #
     # @example IsInterfaceInZone ("eth-id-01:11:DA:9C:8A:2F", "INT") -> false
     def IsInterfaceInZone(interface, zone)
@@ -1041,7 +1026,7 @@ module Yast
     # firewall zones, then the first appearance is returned.
     #
     # @param [String] interface
-    # @return	[String] zone
+    # @return [String] zone
     #
     # @example GetZoneOfInterface ("eth-id-01:11:DA:9C:8A:2F") -> "DMZ"
     def GetZoneOfInterface(interface)
@@ -1084,10 +1069,10 @@ module Yast
     # Special string 'any' in 'EXT' zone is supported.
     #
     # @param [Array<String>] interfaces
-    # @return	[Array<String>] firewall zones
+    # @return [Array<String>] firewall zones
     #
     # @example
-    #	GetZonesOfInterfaces (["eth1","eth4"]) -> ["EXT"]
+    #    GetZonesOfInterfaces (["eth1","eth4"]) -> ["EXT"]
     def GetZonesOfInterfacesWithAnyFeatureSupported(interfaces)
       interfaces = deep_copy(interfaces)
       zones = []
@@ -1223,7 +1208,7 @@ module Yast
     # Special strings like 'any' or 'auto' and unknown interfaces are removed from list.
     #
     # @param [String] zone
-    # @return	[Array<String>] of interfaces
+    # @return [Array<String>] of interfaces
     # @example GetInterfacesInZone ("DMZ") -> ["eth4", "eth5"]
     def GetInterfacesInZone(zone)
       interfaces_in_zone = Builtins.splitstring(
@@ -1243,7 +1228,7 @@ module Yast
 
     # Function returns all interfaces already configured in firewall.
     #
-    # @return	[Array<String>] of configured interfaces
+    # @return [Array<String>] of configured interfaces
     def GetFirewallInterfaces
       firewall_configured_devices = []
 
@@ -1292,7 +1277,7 @@ module Yast
     # any zone assignment.
     #
     # @param [String] zone
-    # @return	[Array<String>] of interfaces
+    # @return [Array<String>] of interfaces
     def GetInterfacesInZoneSupportingAnyFeature(zone)
       interfaces_in_zone = GetInterfacesInZone(zone)
 
@@ -1312,12 +1297,12 @@ module Yast
     # Returns whether a service is mentioned in FW_CONFIGURATIONS_[EXT|INT|DMZ].
     # These services are defined by random packages.
     #
+    # @param [String] service e.g., "service:sshd"
+    # @param [String] zone e.g., "EXT"
     # @return [Boolean] if service is supported in zone
-    # @param [String] service, e.g., "service:sshd"
-    # @param [String] zone, e.g., "EXT"
     #
     # @example
-    #	IsServiceDefinedByPackageSupportedInZone ("service:sshd", "EXT") -> true
+    #    IsServiceDefinedByPackageSupportedInZone ("service:sshd", "EXT") -> true
     def IsServiceDefinedByPackageSupportedInZone(service, zone)
       return nil if !IsKnownZone(zone)
 
@@ -1344,12 +1329,12 @@ module Yast
     # @see YCP Module SuSEFirewallServices
     # @param [String] service id
     # @param [String] zone
-    # @return	[Boolean] if supported
+    # @return [Boolean] if supported
     #
     # @example
-    #	// All ports defined by dns-server service in SuSEFirewallServices module
-    #	// are enabled in the respective zone
-    #	IsServiceSupportedInZone ("dns-server", "EXT") -> true
+    #    // All ports defined by dns-server service in SuSEFirewallServices module
+    #    // are enabled in the respective zone
+    #    IsServiceSupportedInZone ("dns-server", "EXT") -> true
     #  // irc-server definition exists on the system and the irc-server
     #  // is mentioned in FW_CONFIGURATIONS_EXT variable of SuSEfirewall2
     #  IsServiceSupportedInZone ("service:irc-server", "EXT") -> true
@@ -1425,14 +1410,14 @@ module Yast
 
     # Function sets status for several services in several firewall zones.
     #
-    # @param	list <string> service ids
-    # @param	list <string> firewall zones (EXT|INT|DMZ...)
-    # @param	boolean new status of services
-    # @return	nil
+    # @param [Array<String>] services_ids
+    # @param [Array<String>] firewall_zones (EXT|INT|DMZ...)
+    # @param [Boolean] new_status of services
+    # @return nil
     #
     # @example
-    #	SetServicesForZones (["samba-server", "service:irc-server"], ["DMZ", "EXT"], false);
-    #	SetServicesForZones (["samba-server", "service:irc-server"], ["EXT", "DMZ"], true);
+    #    SetServicesForZones (["samba-server", "service:irc-server"], ["DMZ", "EXT"], false);
+    #    SetServicesForZones (["samba-server", "service:irc-server"], ["EXT", "DMZ"], true);
     #
     # @see #GetServicesInZones()
     # @see #GetServices()
@@ -1634,7 +1619,7 @@ module Yast
     # Function which stops firewall. Then firewall is started immediately when firewall
     # is wanted to be started: SetStartService(boolean).
     #
-    # @return	[Boolean] if successful
+    # @return [Boolean] if successful
     def ActivateConfiguration
       # just disabled
       return true if !SuSEFirewallIsInstalled()
@@ -1689,7 +1674,7 @@ module Yast
     # This is a write-only configuration, firewall is never started only enabled
     # or disabled.
     #
-    # @return	[Boolean] if successful
+    # @return [Boolean] if successful
     def WriteConfiguration
       # just disabled
       return true if !SuSEFirewallIsInstalled()
@@ -1787,7 +1772,7 @@ module Yast
     # Function for writing and enabling configuration it is an union of
     # WriteConfiguration() and ActivateConfiguration().
     #
-    # @return	[Boolean] if succesfull
+    # @return [Boolean] if succesfull
     def Write
       CheckKernelModules()
 
@@ -1806,10 +1791,10 @@ module Yast
     # This function doesn't check for services defined by packages.
     # They are listed by a different way.
     #
-    # @return	[Array<String>] of additional (unassigned) services
+    # @return [Array<String>] of additional (unassigned) services
     #
     # @example
-    #	GetAdditionalServices("TCP", "EXT") -> ["53", "128"]
+    #    GetAdditionalServices("TCP", "EXT") -> ["53", "128"]
     def GetAdditionalServices(protocol, zone)
       if !IsSupportedProtocol(protocol)
         Builtins.y2error("Unknown protocol '%1'", protocol)
@@ -1872,15 +1857,15 @@ module Yast
 
     # Function returns map of `interfaces in zones`.
     #
-    # @return	[Hash{String => Array<String>}] interface in zones
+    # @return [Hash{String => Array<String>}] interface in zones
     #
     #
     # **Structure:**
     #
-    #    	map $[zone : [list of interfaces]]
+    #        map $[zone : [list of interfaces]]
     #
     # @example
-    #	GetFirewallInterfacesMap() -> $["DMZ":[], "EXT":["dsl0"], "INT":["eth1", "eth2"]]
+    #    GetFirewallInterfacesMap() -> $["DMZ":[], "EXT":["dsl0"], "INT":["eth1", "eth2"]]
     def GetFirewallInterfacesMap
       firewall_interfaces_now = {}
 
@@ -1905,10 +1890,10 @@ module Yast
     # Function returns list of special strings like 'any' or 'auto' and uknown interfaces.
     #
     # @param [String] zone
-    # @return	[Array<String>] special strings or unknown interfaces
+    # @return [Array<String>] special strings or unknown interfaces
     #
     # @example
-    #	GetSpecialInterfacesInZone("EXT") -> ["any", "unknown-1", "wrong-3"]
+    #    GetSpecialInterfacesInZone("EXT") -> ["any", "unknown-1", "wrong-3"]
     def GetSpecialInterfacesInZone(zone)
       interfaces_in_zone = Builtins.splitstring(
         Ops.get_string(@SETTINGS, Ops.add("FW_DEV_", zone), ""),
@@ -1984,8 +1969,8 @@ module Yast
 
     # Function returns actual state of Masquerading support.
     #
-    # @param    Ignored
-    # @return	[Boolean] if supported
+    # @param _zone Ignored
+    # @return [Boolean] if supported
     def GetMasquerade(_zone = nil)
       Ops.get_string(@SETTINGS, "FW_MASQUERADE", "no") == "yes" &&
         Ops.get_string(@SETTINGS, "FW_ROUTE", "no") == "yes"
@@ -1993,8 +1978,8 @@ module Yast
 
     # Function sets Masquerade support.
     #
-    # @param	boolean to support or not to support it
-    # @param    ignored
+    # @param enable [Boolean] to support or not to support it
+    # @param _zone ignored
     def SetMasquerade(enable, _zone = nil)
       SetModified()
 
@@ -2014,10 +1999,10 @@ module Yast
     #
     # **Structure:**
     #
-    #    	list [$[ key: value ]]
+    #     list [$[ key: value ]]
     #
     # @example
-    #	GetListOfForwardsIntoMasquerade() -> [
+    #    GetListOfForwardsIntoMasquerade() -> [
     # $[
     #   "forward_to":"172.24.233.1",
     #   "protocol":"tcp",
@@ -2071,7 +2056,7 @@ module Yast
     # Function removes rule for forwarding into masquerade
     # from the list of current rules returned by GetListOfForwardsIntoMasquerade().
     #
-    # @params	integer item number
+    # @param remove_item [Integer] item number
     #
     # @see #GetListOfForwardsIntoMasquerade()
     def RemoveForwardIntoMasqueradeRule(remove_item)
@@ -2112,7 +2097,7 @@ module Yast
     # @param [String] requested_ip
     #
     # @example
-    #	AddForwardIntoMasqueradeRule ("0/0", "192.168.32.1", "TCP", "80", "8080", "10.0.0.1")
+    #    AddForwardIntoMasqueradeRule ("0/0", "192.168.32.1", "TCP", "80", "8080", "10.0.0.1")
     def AddForwardIntoMasqueradeRule(source_net, forward_to_ip, protocol, req_port, redirect_to_port, requested_ip)
       SetModified()
 
@@ -2167,11 +2152,11 @@ module Yast
     # Function returns actual state of logging for rule taken as parameter.
     #
     # @param [String] rule definition 'ACCEPT' or 'DROP'
-    # @return	[String] 'ALL', 'CRIT', or 'NONE'
+    # @return [String] 'ALL', 'CRIT', or 'NONE'
     #
     # @example
-    #	GetLoggingSettings("ACCEPT") -> "CRIT"
-    #	GetLoggingSettings("DROP") -> "CRIT"
+    #   GetLoggingSettings("ACCEPT") -> "CRIT"
+    #   GetLoggingSettings("DROP") -> "CRIT"
     def GetLoggingSettings(rule)
       ret_val = nil
 
@@ -2201,11 +2186,11 @@ module Yast
     # Function sets state of logging for rule taken as parameter.
     #
     # @param [String] rule definition 'ACCEPT' or 'DROP'
-    # @param	string new logging state 'ALL', 'CRIT', or 'NONE'
+    # @param [String] state new logging state 'ALL', 'CRIT', or 'NONE'
     #
     # @example
-    #	SetLoggingSettings ("ACCEPT", "ALL")
-    #	SetLoggingSettings ("DROP", "NONE")
+    #   SetLoggingSettings ("ACCEPT", "ALL")
+    #   SetLoggingSettings ("DROP", "NONE")
     def SetLoggingSettings(rule, state)
       SetModified()
 
@@ -2241,11 +2226,11 @@ module Yast
     # Function returns yes/no - ingoring broadcast for zone
     #
     # @param [String] zone
-    # @return	[String] "yes" or "no"
+    # @return [String] "yes" or "no"
     #
     # @example
-    #	// Does not logg ignored broadcast packets
-    #	GetIgnoreLoggingBroadcast ("EXT") -> "yes"
+    #    # Does not log ignored broadcast packets
+    #    GetIgnoreLoggingBroadcast ("EXT") -> "yes"
     def GetIgnoreLoggingBroadcast(zone)
       if !IsKnownZone(zone)
         Builtins.y2error("Unknown zone '%1'", zone)
@@ -2258,11 +2243,11 @@ module Yast
     # Function sets yes/no - ingoring broadcast for zone
     #
     # @param [String] zone
-    # @param	string ignore 'yes' or 'no'
+    # @param [String] bcast ignore 'yes' or 'no'
     #
     # @example
-    #	// Do not log broadcast packetes from DMZ
-    #	SetIgnoreLoggingBroadcast ("DMZ", "yes")
+    #   # Does not log broadcast packets from DMZ
+    #   SetIgnoreLoggingBroadcast ("DMZ", "yes")
     def SetIgnoreLoggingBroadcast(zone, bcast)
       if !IsKnownZone(zone)
         Builtins.y2error("Unknown zone '%1'", zone)
@@ -2299,7 +2284,7 @@ module Yast
     # Sets expert allow rules for zone.
     #
     # @param [String] zone
-    # @param string whitespace-separated expert_rules
+    # @param [String] expert_rules whitespace-separated expert_rules
     # @return [Boolean] if successful
     def SetAcceptExpertRules(zone, expert_rules)
       zone = Builtins.toupper(zone)
@@ -2335,11 +2320,12 @@ module Yast
 
     # Sets list of additional kernel modules to be loaded by firewall on startup.
     #
-    # @param list <string> of kernel modules
+    # @param [Array<String>] k_modules list of kernel modules
     #
     # @see /etc/sysconfig/SuSEfirewall2 option nr. 32
     #
-    # @example SuSEFirewall::SetFirewallKernelModules (["ip_conntrack_ftp","ip_nat_ftp"]);
+    # @example
+    #   SuSEFirewall::SetFirewallKernelModules (["ip_conntrack_ftp","ip_nat_ftp"]);
     def SetFirewallKernelModules(k_modules)
       k_modules = deep_copy(k_modules)
       k_modules = Builtins.filter(k_modules) do |one_module|
@@ -2379,7 +2365,7 @@ module Yast
     # Returns translated protocol name. Translation is provided from
     # SuSEfirewall2 sysconfig format to l10n format.
     #
-    # @param string string from sysconfig (e.g., _rpc_)
+    # @param protocol [String] from sysconfig (e.g., _rpc_)
     # @return [String] translated string (e.g., RPC)
     def GetProtocolTranslatedName(protocol)
       protocol = Builtins.tolower(protocol)
@@ -2403,7 +2389,7 @@ module Yast
     # @return [Array<String>] list of definitions
     #
     # @example
-    # GetServicesAcceptRelated ("EXT") -> ["0/0,udp,427", "0/0,udp,137"]
+    #   GetServicesAcceptRelated ("EXT") -> ["0/0,udp,427", "0/0,udp,137"]
     #
     # @see #SetServicesAcceptRelated()
     def GetServicesAcceptRelated(zone)
@@ -2427,10 +2413,10 @@ module Yast
     # reply or Samba browsing reply.
     #
     # @param [String] zone
-    # @param list <string> list of rules
+    # @param [Array<String>] ruleset list of rules
     #
     # @example
-    # SetServicesAcceptRelated ("EXT", ["0/0,udp,427", "0/0,udp,137"])
+    #   SetServicesAcceptRelated ("EXT", ["0/0,udp,427", "0/0,udp,137"])
     #
     # @see #GetServicesAcceptRelated()
     def SetServicesAcceptRelated(zone, ruleset)
@@ -2656,7 +2642,7 @@ module Yast
 
     # Local function allows ports for requested protocol and zone.
     #
-    # @param	list <string> ports to be added
+    # @param [Array<string>] add_ports ports to be added
     # @param [String] protocol
     # @param [String] zone
     def AddAllowedPortsOrServices(add_ports, protocol, zone)
@@ -2689,7 +2675,7 @@ module Yast
     # Sets whether ports need to be open already during boot
     # bsc#916376
     #
-    # @param [Boolean] new state
+    # @param [Boolean] new_state
     # @return [Boolean] current state
     def full_init_on_boot(new_state)
       @SETTINGS["FW_BOOT_FULL_INIT"] = new_state ? "yes" : "no"
@@ -2715,9 +2701,7 @@ module Yast
     publish variable: :allowed_conflict_services, type: "map <string, list <string>>", private: true
     publish variable: :firewall_service, type: "string", private: true
     publish variable: :SuSEFirewall_variables, type: "list <string>", private: true
-    publish variable: :one_line_per_record, type: "list <string>", private: true
     publish variable: :broadcast_related_module, type: "string", private: true
-    publish function: :WriteOneRecordPerLine, type: "boolean (string)", private: true
     publish function: :SetModified, type: "void ()"
     publish function: :ResetModified, type: "void ()"
     publish function: :GetKnownFirewallZones, type: "list <string> ()"
