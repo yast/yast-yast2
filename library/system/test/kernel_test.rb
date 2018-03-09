@@ -182,14 +182,19 @@ describe Yast::Kernel do
         subject.ParseInstallationKernelCmdline
         expect(subject.GetCmdLine).to eq " splash=verbose silent"
       end
+
+      it "sets vgaType" do
+        subject.ParseInstallationKernelCmdline
+        expect(subject.GetVgaType).to eq "ask"
+      end
     end
 
     context "when command line value in quotes" do
-      let(:cmdline) { " splash=\"verbose, silent\"\n" }
+      let(:cmdline) { " splash=\"verbose\\\", silent\" text=\\\"abc\n" }
 
       it "it adds it to CmdLine correctly" do
         subject.ParseInstallationKernelCmdline
-        expect(subject.GetCmdLine).to eq " splash=\"verbose, silent\""
+        expect(subject.GetCmdLine).to eq " splash=\"verbose\\\", silent\" text=\\\"abc"
       end
     end
 

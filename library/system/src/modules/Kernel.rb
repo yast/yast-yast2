@@ -161,89 +161,6 @@ module Yast
       nil
     end
 
-    # @param	cmdline	string
-    #
-    # @return	[void]
-    # Filters out yast2 specific boot parameters and sets
-    # Parameters to the important cmdline parts.
-    def ExtractCmdlineParameters(line)
-      # discard \n
-      line = Builtins.deletechars(line, "\n")
-
-      # list of parameters to be discarded (yast internals)
-
-      discardlist = []
-
-      cmdlist = []
-
-      parse_index = 0
-      in_quotes = false
-      after_backslash = false
-      current_param = ""
-      while Ops.less_than(parse_index, Builtins.size(line))
-        current_char = Builtins.substring(line, parse_index, 1)
-        in_quotes = !in_quotes if current_char == "\"" && !after_backslash
-        if current_char == " " && !in_quotes
-          cmdlist = Builtins.add(cmdlist, current_param)
-          current_param = ""
-        else
-          current_param = Ops.add(current_param, current_char)
-        end
-        after_backslash = current_char == "\\"
-        parse_index = Ops.add(parse_index, 1)
-      end
-      cmdlist = Builtins.add(cmdlist, current_param)
-
-      #	this is wrong because of eg. >>o="p a r a m"<<, see bugzilla 26147
-      #	list cmdlist = splitstring (line, " ");
-
-      # some systems (pseries) can autodetect the serial console
-      if Builtins.contains(cmdlist, "AUTOCONSOLE")
-        discardlist = Builtins.add(discardlist, "console")
-        discardlist = Builtins.add(discardlist, "AUTOCONSOLE")
-      end
-
-      # add special key filtering for s390
-      # bnc#462276 Extraneous parameters in /etc/zipl.conf from the installer
-      if Arch.s390
-        discardlist = Builtins.add(discardlist, "User")
-        discardlist = Builtins.add(discardlist, "init")
-        discardlist = Builtins.add(discardlist, "ramdisk_size")
-      end
-
-      # get rid of live-installer-specific parameters
-      if Mode.live_installation
-        discardlist.push("initrd", "ramdisk_size", "ramdisk_blocksize", "liveinstall", "splash", "quiet", "lang")
-      end
-
-      # backdoor to re-enable update on UL/SLES
-      if Builtins.contains(cmdlist, "suse_update")
-        discardlist = Builtins.add(discardlist, "suse_update")
-        @suse_update = true
-      end
-
-      Builtins.foreach(cmdlist) do |parameter|
-        next unless parameter
-        key, value = parameter.split("=", 2)
-        next unless key
-        value ||= ""
-        if !Builtins.contains(discardlist, key)
-          if key == "vga"
-            if Builtins.regexpmatch(value, "^(0x)?[0-9a-fA-F]+$") ||
-                Builtins.contains(["normal", "ext", "ask"], value)
-              @vgaType = value
-            else
-              Builtins.y2warning("Incorrect VGA kernel parameter: %1", value)
-            end
-          else
-            AddCmdLine(key, value)
-          end
-        end
-      end
-
-      nil
-    end
-
     def ParseInstallationKernelCmdline
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
@@ -752,6 +669,98 @@ module Yast
     publish function: :SaveModulesToLoad, type: "boolean ()"
     publish function: :reset_modules_to_load, type: "void ()"
     publish function: :modules_to_load, type: "map <string, list> ()"
+
+  private
+
+    # @param [String] line to parse
+    # @return [Array<String>] line splitted to individual params, respecting quotes there
+    def list_of_params(line)
+      line = line.delete("\n")
+      cmdlist = []
+      parse_index = 0
+      in_quotes = false
+      after_backslash = false
+      current_param = ""
+      while parse_index < line.size
+        current_char = line[parse_index]
+        in_quotes = !in_quotes if current_char == "\"" && !after_backslash
+        if current_char == " " && !in_quotes
+          cmdlist << current_param
+          current_param = ""
+        else
+          current_param << current_char
+        end
+        # does kernel cmdline can have double backslash?
+        after_backslash = current_char == "\\"
+        parse_index += 1
+      end
+      cmdlist << current_param
+    end
+
+    # constructs list of keys to discard from command line
+    # @param [Array<String>] list of command line entries
+    # @return [Array<String>] list of keys to discard
+    def params_to_discard(cmdlist)
+      discardlist = []
+      # some systems (pseries) can autodetect the serial console
+      if cmdlist.include?("AUTOCONSOLE")
+        discardlist << "console"
+        discardlist << "AUTOCONSOLE"
+      end
+
+      # add special key filtering for s390
+      # bnc#462276 Extraneous parameters in /etc/zipl.conf from the installer
+      if Arch.s390
+        discardlist << "User" << "init" << "ramdisk_size"
+      end
+
+      # get rid of live-installer-specific parameters
+      if Mode.live_installation
+        discardlist.push("initrd", "ramdisk_size", "ramdisk_blocksize", "liveinstall", "splash", "quiet", "lang")
+      end
+
+      # TODO: is it still needed?
+      # backdoor to re-enable update on UL/SLES
+      if cmdlist.include?("suse_update")
+        discardlist << "suse_update"
+        @suse_update = true
+      end
+
+      discardlist
+    end
+
+    # @param	[String] cmdline to parse
+    #
+    # @return	[void]
+    # Filters out yast2 specific boot parameters and sets
+    # Parameters to the important cmdline parts.
+    def ExtractCmdlineParameters(line)
+      return unless line
+      # list of parameters to be discarded (yast internals)
+      cmdlist = list_of_params(line)
+
+      discardlist = params_to_discard(cmdlist)
+
+      cmdlist.each do |parameter|
+        next unless parameter
+        next if parameter.empty?
+        key, value = parameter.split("=", 2)
+        next unless key
+        value ||= ""
+        next if discardlist.include?(key)
+        if key == "vga"
+          if value.match?(/^(((0x)?\h+)|(ask)|(ext)|(normal))$/)
+            @vgaType = value
+          else
+            Builtins.y2warning("Incorrect VGA kernel parameter: %1", value)
+          end
+        else
+          AddCmdLine(key, value)
+        end
+      end
+
+      nil
+    end
   end
 
   Kernel = KernelClass.new
