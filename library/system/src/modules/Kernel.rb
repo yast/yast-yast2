@@ -221,23 +221,20 @@ module Yast
       end
 
       Builtins.foreach(cmdlist) do |parameter|
-        # split "key=value" to ["key", "value"]
-        param_value_list = Builtins.splitstring(parameter, "=")
-        key = Ops.get(param_value_list, 0, "")
-        value = Ops.get(param_value_list, 1, "")
-        # now only collect keys not in discardlist
-        if Ops.greater_than(Builtins.size(param_value_list), 0)
-          if !Builtins.contains(discardlist, key)
-            if Ops.get(param_value_list, 0, "") == "vga"
-              if Builtins.regexpmatch(value, "^(0x)?[0-9a-fA-F]+$") ||
-                  Builtins.contains(["normal", "ext", "ask"], value)
-                @vgaType = value
-              else
-                Builtins.y2warning("Incorrect VGA kernel parameter: %1", value)
-              end
+        next unless parameter
+        key, value = parameter.split("=", 2)
+        next unless key
+        value ||= ""
+        if !Builtins.contains(discardlist, key)
+          if key == "vga"
+            if Builtins.regexpmatch(value, "^(0x)?[0-9a-fA-F]+$") ||
+                Builtins.contains(["normal", "ext", "ask"], value)
+              @vgaType = value
             else
-              AddCmdLine(key, value)
+              Builtins.y2warning("Incorrect VGA kernel parameter: %1", value)
             end
+          else
+            AddCmdLine(key, value)
           end
         end
       end
