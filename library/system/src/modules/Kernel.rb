@@ -161,92 +161,11 @@ module Yast
       nil
     end
 
-    # @param	cmdline	string
-    #
-    # @return	[void]
-    # Filters out yast2 specific boot parameters and sets
-    # Parameters to the important cmdline parts.
-    def ExtractCmdlineParameters(line)
-      # discard \n
-      line = Builtins.deletechars(line, "\n")
-
-      # list of parameters to be discarded (yast internals)
-
-      discardlist = []
-
-      cmdlist = []
-
-      parse_index = 0
-      in_quotes = false
-      after_backslash = false
-      current_param = ""
-      while Ops.less_than(parse_index, Builtins.size(line))
-        current_char = Builtins.substring(line, parse_index, 1)
-        in_quotes = !in_quotes if current_char == "\"" && !after_backslash
-        if current_char == " " && !in_quotes
-          cmdlist = Builtins.add(cmdlist, current_param)
-          current_param = ""
-        else
-          current_param = Ops.add(current_param, current_char)
-        end
-        after_backslash = current_char == "\\"
-        parse_index = Ops.add(parse_index, 1)
-      end
-      cmdlist = Builtins.add(cmdlist, current_param)
-
-      #	this is wrong because of eg. >>o="p a r a m"<<, see bugzilla 26147
-      #	list cmdlist = splitstring (line, " ");
-
-      # some systems (pseries) can autodetect the serial console
-      if Builtins.contains(cmdlist, "AUTOCONSOLE")
-        discardlist = Builtins.add(discardlist, "console")
-        discardlist = Builtins.add(discardlist, "AUTOCONSOLE")
-      end
-
-      # add special key filtering for s390
-      # bnc#462276 Extraneous parameters in /etc/zipl.conf from the installer
-      if Arch.s390
-        discardlist = Builtins.add(discardlist, "User")
-        discardlist = Builtins.add(discardlist, "init")
-        discardlist = Builtins.add(discardlist, "ramdisk_size")
-      end
-
-      # get rid of live-installer-specific parameters
-      if Mode.live_installation
-        discardlist.push("initrd", "ramdisk_size", "ramdisk_blocksize", "liveinstall", "splash", "quiet", "lang")
-      end
-
-      # backdoor to re-enable update on UL/SLES
-      if Builtins.contains(cmdlist, "suse_update")
-        discardlist = Builtins.add(discardlist, "suse_update")
-        @suse_update = true
-      end
-
-      Builtins.foreach(cmdlist) do |parameter|
-        # split "key=value" to ["key", "value"]
-        param_value_list = Builtins.splitstring(parameter, "=")
-        key = Ops.get(param_value_list, 0, "")
-        value = Ops.get(param_value_list, 1, "")
-        # now only collect keys not in discardlist
-        if Ops.greater_than(Builtins.size(param_value_list), 0)
-          if !Builtins.contains(discardlist, key)
-            if Ops.get(param_value_list, 0, "") == "vga"
-              if Builtins.regexpmatch(value, "^(0x)?[0-9a-fA-F]+$") ||
-                  Builtins.contains(["normal", "ext", "ask"], value)
-                @vgaType = value
-              else
-                Builtins.y2warning("Incorrect VGA kernel parameter: %1", value)
-              end
-            else
-              AddCmdLine(key, value)
-            end
-          end
-        end
-      end
-
-      nil
-    end
-
+    # Parse the installation-time kernel command line
+    # - the `vga` parameter is separated, see {#GetVgaType}
+    # - some specific parameters are ignored
+    # - the rest is passed on to @cmdLine for which {#GetCmdLine} is a reader
+    # @return [void]
     def ParseInstallationKernelCmdline
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
@@ -278,36 +197,11 @@ module Yast
       @vgaType
     end
 
-    # Set the vga= kernel argument
-    # FIXME: is heer because of bootloader module, should be removed
-    def SetVgaType(new_vga)
-      ParseInstallationKernelCmdline() if !@cmdline_parsed
-      @vgaType = new_vga
-
-      nil
-    end
-
-    # Check if suse_update kernel command line argument was passed
-    # @return [Boolean] true if it was
-    def GetSuSEUpdate
-      ParseInstallationKernelCmdline() if !@cmdline_parsed
-      @suse_update
-    end
-
     # Get the kernel command line
     # @return [String] the command line
     def GetCmdLine
       ParseInstallationKernelCmdline() if !@cmdline_parsed
       @cmdLine
-    end
-
-    # Set the kernel command line
-    # FIXME: is heer because of bootloader module, should be removed
-    def SetCmdLine(new_cmd_line)
-      ParseInstallationKernelCmdline() if !@cmdline_parsed
-      @cmdLine = new_cmd_line
-
-      nil
     end
 
     # Simple check any graphical desktop was selected
@@ -661,6 +555,28 @@ module Yast
       @inform_about_kernel_change
     end
 
+    publish function: :AddCmdLine, type: "void (string, string)"
+    publish function: :GetVgaType, type: "string ()"
+    publish function: :GetCmdLine, type: "string ()"
+    publish function: :ProbeKernel, type: "void ()"
+    publish function: :SetPackages, type: "void (list <string>)"
+    publish function: :GetBinary, type: "string ()"
+    publish function: :GetPackages, type: "list <string> ()"
+    publish function: :ComputePackage, type: "string ()"
+    publish function: :GetFinalKernel, type: "string ()"
+    publish function: :ComputePackagesForBase, type: "list <string> (string, boolean)"
+    publish function: :ComputePackages, type: "list <string> ()"
+    publish function: :SetInformAboutKernelChange, type: "void (boolean)"
+    publish function: :GetInformAboutKernelChange, type: "boolean ()"
+    publish function: :InformAboutKernelChange, type: "boolean ()"
+
+    # Handling for Kernel modules loaded on boot
+    publish function: :AddModuleToLoad, type: "void (string)"
+    publish function: :RemoveModuleToLoad, type: "void (string)"
+    publish function: :SaveModulesToLoad, type: "boolean ()"
+    publish function: :reset_modules_to_load, type: "void ()"
+    publish function: :modules_to_load, type: "map <string, list> ()"
+
   private
 
     # Registers new SCR agent for a file given as parameter
@@ -731,30 +647,97 @@ module Yast
       @modules_to_load
     end
 
-    publish function: :AddCmdLine, type: "void (string, string)"
-    publish function: :GetVgaType, type: "string ()"
-    publish function: :SetVgaType, type: "void (string)"
-    publish function: :GetSuSEUpdate, type: "boolean ()"
-    publish function: :GetCmdLine, type: "string ()"
-    publish function: :SetCmdLine, type: "void (string)"
-    publish function: :ProbeKernel, type: "void ()"
-    publish function: :SetPackages, type: "void (list <string>)"
-    publish function: :GetBinary, type: "string ()"
-    publish function: :GetPackages, type: "list <string> ()"
-    publish function: :ComputePackage, type: "string ()"
-    publish function: :GetFinalKernel, type: "string ()"
-    publish function: :ComputePackagesForBase, type: "list <string> (string, boolean)"
-    publish function: :ComputePackages, type: "list <string> ()"
-    publish function: :SetInformAboutKernelChange, type: "void (boolean)"
-    publish function: :GetInformAboutKernelChange, type: "boolean ()"
-    publish function: :InformAboutKernelChange, type: "boolean ()"
+    # @param [String] line to parse
+    # @return [Array<String>] line splitted to individual params, respecting quotes there
+    def list_of_params(line)
+      line = line.delete("\n")
+      cmdlist = []
+      parse_index = 0
+      in_quotes = false
+      after_backslash = false
+      current_param = ""
+      while parse_index < line.size
+        current_char = line[parse_index]
+        in_quotes = !in_quotes if current_char == "\"" && !after_backslash
+        if current_char == " " && !in_quotes
+          cmdlist << current_param
+          current_param = ""
+        else
+          current_param << current_char
+        end
+        # For the in-kernel parser, a backslash is a regular character.
+        # For this parser, it is a "stupid escape": the first backslash
+        # does not escape the second one.
+        after_backslash = current_char == "\\"
+        parse_index += 1
+      end
+      cmdlist << current_param
+    end
 
-    # Handling for Kernel modules loaded on boot
-    publish function: :AddModuleToLoad, type: "void (string)"
-    publish function: :RemoveModuleToLoad, type: "void (string)"
-    publish function: :SaveModulesToLoad, type: "boolean ()"
-    publish function: :reset_modules_to_load, type: "void ()"
-    publish function: :modules_to_load, type: "map <string, list> ()"
+    S390_ZIPL_ARGS = ["User", "init", "ramdisk_size"].freeze
+    # constructs list of keys to discard from command line
+    # @param [Array<String>] list of command line entries
+    # @return [Array<String>] list of keys to discard
+    def params_to_discard(cmdlist)
+      discardlist = []
+      # some systems (pseries) can autodetect the serial console
+      if cmdlist.include?("AUTOCONSOLE")
+        # Note:  `console` is the only value that depends on the input argument.
+        discardlist << "console"
+        discardlist << "AUTOCONSOLE"
+      end
+
+      # add special key filtering for s390
+      # bnc#462276 Extraneous parameters in /etc/zipl.conf from the installer
+      discardlist.concat(S390_ZIPL_ARGS) if Arch.s390
+
+      # get rid of live-installer-specific parameters
+      if Mode.live_installation
+        discardlist.push("initrd", "ramdisk_size", "ramdisk_blocksize", "liveinstall", "splash", "quiet", "lang")
+      end
+
+      # TODO: is it still needed?
+      # backdoor to re-enable update on UL/SLES
+      if cmdlist.include?("suse_update")
+        discardlist << "suse_update"
+        @suse_update = true
+      end
+
+      discardlist
+    end
+
+    # @param	[String] cmdline to parse
+    #
+    # @return	[void]
+    # Filters out yast2 specific boot parameters and sets
+    # Parameters to the important cmdline parts.
+    def ExtractCmdlineParameters(line)
+      return unless line
+      # list of parameters to be discarded (yast internals)
+      cmdlist = list_of_params(line)
+
+      discardlist = params_to_discard(cmdlist)
+
+      cmdlist.each do |parameter|
+        next unless parameter
+        next if parameter.empty?
+        key, value = parameter.split("=", 2)
+        next unless key
+        value ||= ""
+        next if discardlist.include?(key)
+        if key == "vga"
+          if value.match?(/^(((0x)?\h+)|(ask)|(ext)|(normal))$/)
+            @vgaType = value
+          else
+            Builtins.y2warning("Incorrect VGA kernel parameter: %1", value)
+          end
+        else
+          AddCmdLine(key, value)
+        end
+      end
+
+      nil
+    end
   end
 
   Kernel = KernelClass.new
