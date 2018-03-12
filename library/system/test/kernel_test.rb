@@ -189,7 +189,17 @@ describe Yast::Kernel do
       end
     end
 
-    context "when command line value in quotes" do
+    context "when command line value including quotes" do
+      let(:cmdline) { " splash=\"verbose, silent\" text=abc\n" }
+
+      it "it adds it to CmdLine correctly" do
+        subject.ParseInstallationKernelCmdline
+        expect(subject.GetCmdLine).to eq " splash=\"verbose, silent\" text=abc"
+      end
+    end
+
+    # FIXME: keep old functionality, but probably kernel does not allow it.
+    context "when command line value including escaped quotes" do
       let(:cmdline) { " splash=\"verbose\\\", silent\" text=\\\"abc\n" }
 
       it "it adds it to CmdLine correctly" do

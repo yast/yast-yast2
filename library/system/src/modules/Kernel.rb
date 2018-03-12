@@ -161,6 +161,11 @@ module Yast
       nil
     end
 
+    # Parse the installation-time kernel command line
+    # - the `vga` parameter is separated, see {#GetVgaType}
+    # - some specific parameters are ignored
+    # - the rest is passed on to @cmdLine for which {#GetCmdLine} is a reader
+    # @return [void]
     def ParseInstallationKernelCmdline
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
@@ -201,27 +206,11 @@ module Yast
       nil
     end
 
-    # Check if suse_update kernel command line argument was passed
-    # @return [Boolean] true if it was
-    def GetSuSEUpdate
-      ParseInstallationKernelCmdline() if !@cmdline_parsed
-      @suse_update
-    end
-
     # Get the kernel command line
     # @return [String] the command line
     def GetCmdLine
       ParseInstallationKernelCmdline() if !@cmdline_parsed
       @cmdLine
-    end
-
-    # Set the kernel command line
-    # FIXME: is heer because of bootloader module, should be removed
-    def SetCmdLine(new_cmd_line)
-      ParseInstallationKernelCmdline() if !@cmdline_parsed
-      @cmdLine = new_cmd_line
-
-      nil
     end
 
     # Simple check any graphical desktop was selected
@@ -578,9 +567,7 @@ module Yast
     publish function: :AddCmdLine, type: "void (string, string)"
     publish function: :GetVgaType, type: "string ()"
     publish function: :SetVgaType, type: "void (string)"
-    publish function: :GetSuSEUpdate, type: "boolean ()"
     publish function: :GetCmdLine, type: "string ()"
-    publish function: :SetCmdLine, type: "void (string)"
     publish function: :ProbeKernel, type: "void ()"
     publish function: :SetPackages, type: "void (list <string>)"
     publish function: :GetBinary, type: "string ()"
@@ -695,6 +682,7 @@ module Yast
       cmdlist << current_param
     end
 
+    S390_ZIPL_ARGS = ["User", "init", "ramdisk_size"].freeze
     # constructs list of keys to discard from command line
     # @param [Array<String>] list of command line entries
     # @return [Array<String>] list of keys to discard
@@ -702,13 +690,14 @@ module Yast
       discardlist = []
       # some systems (pseries) can autodetect the serial console
       if cmdlist.include?("AUTOCONSOLE")
+        # Note:  `console` is the only value that depends on the input argument.
         discardlist << "console"
         discardlist << "AUTOCONSOLE"
       end
 
       # add special key filtering for s390
       # bnc#462276 Extraneous parameters in /etc/zipl.conf from the installer
-      discardlist << "User" << "init" << "ramdisk_size" if Arch.s390
+      discardlist.concat(S390_ZIPL_ARGS) if Arch.s390
 
       # get rid of live-installer-specific parameters
       if Mode.live_installation
