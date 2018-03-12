@@ -8,11 +8,13 @@ include Yast::Logger
 Yast.import "Kernel"
 Yast.import "FileUtils"
 
-describe "Kernel" do
+describe Yast::Kernel do
   let(:stubbed_modules_dir) { File.join(File.dirname(__FILE__), "data", "modules.d") }
 
   before do
     log.info "--- test ---"
+    # reset variables
+    subject.main
     stub_const("Yast::KernelClass::MODULES_DIR", stubbed_modules_dir)
     @default_modules = {
       Yast::KernelClass::MODULES_CONF_FILE => [],
@@ -144,6 +146,72 @@ describe "Kernel" do
           number_of_rkm = `grep --count --no-filename #{remove_module} #{tmpdir}/*`
           expect(number_of_rkm.split.map(&:to_i).inject(:+)).to eq(0)
         end
+      end
+    end
+  end
+
+  describe ".ParseInstallationKernelCmdline" do
+    before do
+      allow(Yast::SCR).to receive(:Read).with(path(".etc.install_inf.Cmdline")).and_return(cmdline)
+      allow(Yast::Stage).to receive(:initial).and_return(true)
+      allow(Yast::Arch).to receive(:architecture).and_return("x86_64")
+    end
+
+    context "for common options" do
+      let(:cmdline) { "splash=verbose silent" }
+
+      it "adds options to CmdLine" do
+        subject.ParseInstallationKernelCmdline
+        expect(subject.GetCmdLine).to eq " splash=verbose silent"
+      end
+    end
+
+    context "when command line contain newline" do
+      let(:cmdline) { "splash=verbose silent\n" }
+
+      it "deletes this newline from CmdLine" do
+        subject.ParseInstallationKernelCmdline
+        expect(subject.GetCmdLine).to eq " splash=verbose silent"
+      end
+    end
+
+    context "when command line contain vga= key" do
+      let(:cmdline) { "vga=ask splash=verbose silent\n" }
+
+      it "deletes vga parameter from CmdLine" do
+        subject.ParseInstallationKernelCmdline
+        expect(subject.GetCmdLine).to eq " splash=verbose silent"
+      end
+    end
+
+    context "when command line value in quotes" do
+      let(:cmdline) { " splash=\"verbose, silent\"\n" }
+
+      it "it adds it to CmdLine correctly" do
+        subject.ParseInstallationKernelCmdline
+        expect(subject.GetCmdLine).to eq " splash=\"verbose, silent\""
+      end
+    end
+
+    context "when value of parameter contain '='" do
+      let(:cmdline) { " splash=verbose silent pci=hpiosize=0,hpmemsize=0,nobar\n" }
+
+      it "it adds it to CmdLine correctly" do
+        subject.ParseInstallationKernelCmdline
+        expect(subject.GetCmdLine).to eq " splash=verbose silent pci=hpiosize=0,hpmemsize=0,nobar"
+      end
+    end
+
+    context "when there is special characters for filter on s390" do
+      let(:cmdline) { " splash=verbose silent User=root init=5 ramdisk_size=5G\n" }
+
+      before do
+        allow(Yast::Arch).to receive(:architecture).and_return("s390_64")
+      end
+
+      it "it filters it out of CmdLine" do
+        subject.ParseInstallationKernelCmdline
+        expect(subject.GetCmdLine).to eq " splash=verbose silent"
       end
     end
   end
