@@ -197,15 +197,6 @@ module Yast
       @vgaType
     end
 
-    # Set the vga= kernel argument
-    # FIXME: is heer because of bootloader module, should be removed
-    def SetVgaType(new_vga)
-      ParseInstallationKernelCmdline() if !@cmdline_parsed
-      @vgaType = new_vga
-
-      nil
-    end
-
     # Get the kernel command line
     # @return [String] the command line
     def GetCmdLine
@@ -566,7 +557,6 @@ module Yast
 
     publish function: :AddCmdLine, type: "void (string, string)"
     publish function: :GetVgaType, type: "string ()"
-    publish function: :SetVgaType, type: "void (string)"
     publish function: :GetCmdLine, type: "string ()"
     publish function: :ProbeKernel, type: "void ()"
     publish function: :SetPackages, type: "void (list <string>)"
@@ -675,7 +665,9 @@ module Yast
         else
           current_param << current_char
         end
-        # does kernel cmdline can have double backslash?
+        # For the in-kernel parser, a backslash is a regular character.
+        # For this parser, it is a "stupid escape": the first backslash
+        # does not escape the second one.
         after_backslash = current_char == "\\"
         parse_index += 1
       end

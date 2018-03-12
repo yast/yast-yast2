@@ -198,7 +198,8 @@ describe Yast::Kernel do
       end
     end
 
-    # FIXME: keep old functionality, but probably kernel does not allow it.
+    # FIXME: we do backslash escapes but in fact
+    # the kernel does not care about any backslashes, only about double quotes
     context "when command line value including escaped quotes" do
       let(:cmdline) { " splash=\"verbose\\\", silent\" text=\\\"abc\n" }
 
