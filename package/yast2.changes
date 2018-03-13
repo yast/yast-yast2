@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar 12 16:20:02 UTC 2018 - jreidinger@suse.com
+
+- Do not truncate kernel parameter when it contains '='
+  (bsc#1081353)
+- 3.2.45
+
+-------------------------------------------------------------------
 Mon Feb 26 15:09:44 UTC 2018 - knut.anderssen@suse.com
 
 - SuSEFirewall2: Restart SuSEFirewall2 if needed to apply the final
