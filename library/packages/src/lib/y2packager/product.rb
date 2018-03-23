@@ -42,9 +42,20 @@ module Y2Packager
     attr_reader :installation_package
 
     class << self
-      # Return all known products
+      # Create a product from pkg-bindings hash data.
+      # @param p [Hash] the pkg-binindgs product hash
+      # @return [Y2Packager::Product] converted product
+      def from_h(p)
+        Y2Packager::Product.new(
+          name: p["name"], short_name: p["short_name"], display_name: p["display_name"],
+          version: p["version"], arch: p["arch"], category: p["category"],
+          vendor: p["vendor"]
+        )
+      end
+
+      # Return all known available products
       #
-      # @return [Array<Product>] Known products
+      # @return [Array<Product>] Known available products
       def all
         Y2Packager::ProductReader.new.all_products
       end
@@ -54,6 +65,20 @@ module Y2Packager
       # @return [Array<Product>] Available base products
       def available_base_products
         Y2Packager::ProductReader.new.available_base_products
+      end
+
+      # Return the installed base product
+      #
+      # @return [Product,nil] Installed base product or nil if not found
+      def installed_base_product
+        Y2Packager::ProductReader.new.installed_base_product
+      end
+
+      # Return all installed products (including the base product)
+      #
+      # @return [Product,nil] Installed products
+      def installed_products
+        Y2Packager::ProductReader.new.all_installed_products
       end
 
       # Returns the selected base product

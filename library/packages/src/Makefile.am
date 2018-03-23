@@ -35,6 +35,7 @@ y2packager_DATA = \
 	lib/y2packager/product.rb \
 	lib/y2packager/product_reader.rb \
 	lib/y2packager/product_sorter.rb \
+	lib/y2packager/product_upgrade.rb \
 	lib/y2packager/release_notes.rb \
 	lib/y2packager/release_notes_content_prefs.rb \
 	lib/y2packager/release_notes_reader.rb \

@@ -87,6 +87,23 @@ describe Y2Packager::ProductReader do
     end
   end
 
+  describe "#installed_base_product" do
+    let(:base_prod) do
+      # reuse the available SLES15 product, just change some attributes
+      base = products.first.dup
+      base["name"] = "base_product"
+      base["type"] = "base"
+      base["status"] = :installed
+      base
+    end
+
+    it "returns the installed base product" do
+      expect(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+        .and_return(products + [base_prod])
+      expect(subject.installed_base_product.name).to eq("base_product")
+    end
+  end
+
   describe "#products" do
     before do
       allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
