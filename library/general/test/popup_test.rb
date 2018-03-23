@@ -2,6 +2,7 @@
 
 require_relative "test_helper"
 require "erb"
+require "yast2/popup_rspec"
 
 Yast.import "Popup"
 
@@ -156,6 +157,18 @@ describe Yast::Popup do
       expect(subject).to receive(:HSpacing).with(30)
       expect(subject).to receive(:VSpacing).with(40)
       subject.TimedLongMessageGeometry("Title", 1, 30, 40)
+    end
+  end
+
+  describe ".TimedErrorAnyQuestion" do
+    it "returns true when user click on yes" do
+      expect_to_show_popup_which_return(:yes)
+      expect(subject.TimedErrorAnyQuestion("head", "msg", "yes", "no", :focus_no, 10)).to eq true
+    end
+
+    it "returns false when user click on no" do
+      expect_to_show_popup_which_return(:no)
+      expect(subject.TimedErrorAnyQuestion("head", "msg", "yes", "no", :focus_no, 10)).to eq false
     end
   end
 

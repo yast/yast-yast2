@@ -275,6 +275,8 @@ module Yast2
           end
         when :__stop
           loop do
+            Yast::UI.ChangeWidget(:__stop, :Enabled, false)
+            Yast::UI.SetFocus(focus)
             res = Yast::UI.UserInput
             res = handle_event(res, details, remaining_time, focus)
             return res if res
