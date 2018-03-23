@@ -37,6 +37,8 @@
 # See also <a href="../wizard/README.popups">README.popups</a>
 require "yast"
 require "erb"
+# when we need to modify some old method, then sometimes it is easier to replace it with new one
+require "yast2/popup"
 
 module Yast
   class PopupClass < Module
@@ -447,56 +449,10 @@ module Yast
     # @return [Boolean]              True if Yes, False if no
     # @see #AnyQuestion
     def TimedErrorAnyQuestion(headline, message, yes_button_message, no_button_message, focus, timeout_seconds)
-      button_box = AnyQuestionButtonBox(
-        yes_button_message,
-        no_button_message,
-        focus
-      )
-      timed = ReplacePoint(
-        Id(:replace_buttons),
-        VBox(
-          HCenter(Label(Id(:remaining_time), Ops.add("", timeout_seconds))),
-          ButtonBox(
-            # FIXME: BNC #422612, Use `opt(`noSanityCheck) later
-            PushButton(Id(:timed_stop), Opt(:cancelButton), Label.StopButton),
-            PushButton(
-              Id(:timed_ok),
-              Opt(:default, :key_F10, :okButton),
-              Label.OKButton
-            )
-          ),
-          VSpacing(0.2)
-        )
-      )
-
-      success = UI.OpenDialog(
-        Opt(:decorated),
-        popupLayoutInternal(headline, message, timed)
-      )
-
-      while Ops.greater_than(timeout_seconds, 0)
-        which_input = UI.TimeoutUserInput(1000)
-
-        break if which_input == :timed_ok
-        if which_input == :timed_stop
-          UI.ReplaceWidget(Id(:replace_buttons), button_box)
-          which_input = UI.UserInput while which_input == :timed_stop
-          break
-        end
-        timeout_seconds = Ops.subtract(timeout_seconds, 1)
-
-        next unless success
-
-        UI.ChangeWidget(
-          Id(:remaining_time),
-          :Value,
-          Ops.add("", timeout_seconds)
-        )
-      end
-
-      UI.CloseDialog if success == true
-
-      which_input == :yes
+      buttons = { yes: yes_button_message, no: no_button_message }
+      focus_symbol = focus == :focus_no ? :no : :yes
+      Yast2::Popup.show(message, headline: headline, buttons: buttons,
+        focus: focus_symbol, timeout: timeout_seconds)
     end
 
     # Dialog which displays the "message" and has a <b>Continue</b>
