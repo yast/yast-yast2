@@ -451,8 +451,10 @@ module Yast
     def TimedErrorAnyQuestion(headline, message, yes_button_message, no_button_message, focus, timeout_seconds)
       buttons = { yes: yes_button_message, no: no_button_message }
       focus_symbol = focus == :focus_no ? :no : :yes
-      Yast2::Popup.show(message, headline: headline, buttons: buttons,
+      ret = Yast2::Popup.show(message, headline: headline, buttons: buttons,
         focus: focus_symbol, timeout: timeout_seconds)
+
+      ret == :yes
     end
 
     # Dialog which displays the "message" and has a <b>Continue</b>
