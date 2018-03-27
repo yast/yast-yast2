@@ -40,6 +40,8 @@ module Yast
   # @TODO not all methods respect all environment, feel free to open issue with
   #   method that doesn't respect it.
   class ReportClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -436,6 +438,8 @@ module Yast
     #   - The argument :timeout will be ignored, the timeout fixed in the Report
     #   module will always be used instead (again, see {#DisplayYesNoMessages}).
     #   - The button ids must be :yes and :no, to honor the Report API.
+    #   - Due to the previous point, if no :buttons argument is provided, the
+    #   value :yes_no will be used for it.
     #
     # Like any other method used to present yesno_messages, false is always
     # returned if the system is configured to not display messages, no matter
@@ -449,9 +453,15 @@ module Yast
       # Use exactly the same y2milestone call than other yesno methods
       Builtins.y2milestone(1, "%1", message) if @log_yesno_messages
 
+      if extra_args.key?(:timeout)
+        log.warn "Report.yesno_popup will ignore the :timeout argument"
+      end
+
       ret =
         if @display_yesno_messages
-          answer = Yast2::Popup.show(message, extra_args.merge(timeout: @timeout_yesno_messages))
+          args = { buttons: :yes_no }.merge(extra_args)
+          args[:timeout] = @timeout_yesno_messages
+          answer = Yast2::Popup.show(message, args)
           answer == :yes
         else
           false

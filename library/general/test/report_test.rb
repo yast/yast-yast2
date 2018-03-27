@@ -307,17 +307,42 @@ describe Yast::Report do
     end
 
     context "when display of messages is enabled" do
-      it "shows a popup" do
+      it "shows a popup ignoring any :timeout argument" do
         expect(Yast2::Popup).to receive(:show).with("Message", hash_including(timeout: 0))
         subject.yesno_popup("Message")
+
+        expect(Yast2::Popup).to receive(:show).with("Message", hash_including(timeout: 0))
+        subject.yesno_popup("Message", timeout: 22)
+      end
+
+      it "uses :yes_no buttons for the popup by default" do
+        expect(Yast2::Popup).to receive(:show).with("Message", hash_including(buttons: :yes_no))
+        subject.yesno_popup("Message")
+
+        expect(Yast2::Popup).to receive(:show)
+          .with("Message", hash_including(buttons: { yes: "Sir" }))
+        subject.yesno_popup("Message", buttons: { yes: "Sir" })
+      end
+
+      it "returns true if :yes is pressed" do
+        allow(Yast2::Popup).to receive(:show).and_return :yes
+        expect(subject.yesno_popup("Message")).to eq true
+      end
+
+      it "returns false if another button is pressed" do
+        allow(Yast2::Popup).to receive(:show).and_return :no
+        expect(subject.yesno_popup("Message")).to eq false
       end
 
       context "when timeouts are enabled" do
         let(:timeout) { 12 }
 
-        it "shows a timed popup" do
+        it "shows a timed popup based on the Report timeout" do
           expect(Yast2::Popup).to receive(:show).with("Message", hash_including(timeout: 12))
           subject.yesno_popup("Message")
+
+          expect(Yast2::Popup).to receive(:show).with("Message", hash_including(timeout: 12))
+          subject.yesno_popup("Message", timeout: 22)
         end
       end
     end
