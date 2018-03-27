@@ -12,6 +12,7 @@
 
 Yast.import "Pkg"
 require "y2packager/product_reader"
+require "y2packager/license_reader"
 require "y2packager/release_notes_reader"
 
 module Y2Packager
@@ -200,8 +201,19 @@ module Y2Packager
     #
     # @param lang [String] Language
     # @return [String,nil] Product's license; nil if the product was not found.
-    def license(lang)
-      Yast::Pkg.PrdGetLicenseToConfirm(name, lang)
+    def license
+      license_reader.license
+    end
+
+    # Return the license text to be confirmed
+    #
+    # It will return the empty string ("") if the license does not exist or if
+    # it was already confirmed.
+    #
+    # @param lang [String] Language
+    # @return [String,nil] Product's license; nil if the product was not found.
+    def license_content(lang)
+      license_reader.license_content(lang)
     end
 
     # Determines whether the product has a license
@@ -218,25 +230,23 @@ module Y2Packager
     #
     # @return [Boolean] true if the license acceptance is required
     def license_confirmation_required?
-      Yast::Pkg.PrdNeedToAcceptLicense(name)
+      license_reader.license_confirmation_required?
     end
 
     # Set license confirmation for the product
     #
     # @param confirmed [Boolean] determines whether the license should be accepted or not
     def license_confirmation=(confirmed)
-      if confirmed
-        Yast::Pkg.PrdMarkLicenseConfirmed(name)
-      else
-        Yast::Pkg.PrdMarkLicenseNotConfirmed(name)
-      end
+      return unless license
+      confirmed ? license.accept! : license.reject!
     end
 
     # Determine whether the license is confirmed
     #
     # @return [Boolean] true if the license was confirmed (or acceptance was not needed)
     def license_confirmed?
-      Yast::Pkg.PrdHasLicenseConfirmed(name)
+      return false unless license
+      license.accepted?
     end
 
     # [String] Default license language.
@@ -246,15 +256,7 @@ module Y2Packager
     #
     # @return [Array<String>] Language codes ("de_DE", "en_US", etc.)
     def license_locales
-      locales = Yast::Pkg.PrdLicenseLocales(name)
-      if locales.nil?
-        log.error "Error getting the list of available license translations for '#{name}'"
-        return []
-      end
-
-      empty_idx = locales.index("")
-      locales[empty_idx] = DEFAULT_LICENSE_LANG if empty_idx
-      locales
+      license_reader.locales
     end
 
     # Return product's release notes
@@ -305,6 +307,13 @@ module Y2Packager
       @resolvable_properties ||= Yast::Pkg.ResolvableProperties(name, :product, "").find do |data|
         data["version"] == version
       end
+    end
+
+  private
+
+    def license_reader
+      # FIXME: Determine which source should be used
+      @license_reader ||= LicenseReader.new(name)
     end
   end
 end
