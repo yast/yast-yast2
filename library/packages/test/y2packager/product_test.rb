@@ -184,24 +184,25 @@ describe Y2Packager::Product do
     end
   end
 
-  describe "#license" do
-    let(:license) { "license content" }
+  describe "#license_content" do
+    let(:license_content) { "license content" }
     let(:lang) { "en_US" }
 
     before do
       allow(Yast::Pkg).to receive(:PrdGetLicenseToConfirm).with(product.name, lang)
-        .and_return(license)
+        .and_return(license_content)
+      allow(product.license_reader).to receive(:license_content).and_return(license_content)
     end
 
-    it "return the license" do
-      expect(product.license(lang)).to eq(license)
+    it "return the license content" do
+      expect(product.license_content(lang)).to eq(license_content)
     end
 
     context "when the no license to confirm was found" do
       let(:license) { "" }
 
       it "return the empty string" do
-        expect(product.license(lang)).to eq("")
+        expect(product.license_content(lang)).to eq("")
       end
     end
 
@@ -209,46 +210,31 @@ describe Y2Packager::Product do
       let(:license) { nil }
 
       it "return nil" do
-        expect(product.license(lang)).to be_nil
+        expect(product.license_content(lang)).to be_nil
       end
     end
   end
 
   describe "#license?" do
     let(:lang) { "en_US" }
-    let(:license) { "" }
+    let(:license) { instance_double("Y2Packager::License") }
 
     before do
       allow(product).to receive(:license).and_return(license)
     end
 
     context "when product has a license" do
-      let(:license) { "license content" }
-
-      it "returns the license content" do
-        expect(product.license?(lang)).to eq(true)
+      it "returns true" do
+        expect(product.license?).to eq(true)
       end
     end
 
     context "when product does not have a license" do
-      let(:license) { "" }
-
-      it "returns false" do
-        expect(product.license?(lang)).to eq(false)
-      end
-    end
-
-    context "when product is not found" do
       let(:license) { nil }
 
-      it "returns nil" do
-        expect(product.license?(lang)).to eq(false)
+      it "returns false" do
+        expect(product.license?).to eq(false)
       end
-    end
-
-    it "asks for the license in the given language" do
-      expect(product).to receive(:license).with(lang)
-      product.license?(lang)
     end
   end
 
