@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 27 15:00:20 UTC 2018 - ancor@suse.com
+
+- Make possible to use the Yast2::Popup class from the Report
+  module (part of bsc#1082542).
+- 4.0.61
+
+-------------------------------------------------------------------
 Fri Mar 23 09:17:01 UTC 2018 - jreidinger@suse.com
 
 - fix behavior of showing timed error popup (found during

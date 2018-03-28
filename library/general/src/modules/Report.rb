@@ -31,6 +31,7 @@
 #
 #
 require "yast"
+require "yast2/popup"
 
 module Yast
   # Report module is universal reporting module. It properly display messages
@@ -39,6 +40,8 @@ module Yast
   # @TODO not all methods respect all environment, feel free to open issue with
   #   method that doesn't respect it.
   class ReportClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -419,6 +422,52 @@ module Yast
       end
 
       @yesno_messages = Builtins.add(@yesno_messages, message)
+      ret
+    end
+
+    # Question presented via the Yast2::Popup class
+    #
+    # It works like any other method used to present yesno_messages, but it
+    # delegates drawing the pop-up to {Yast2::Popup.show}, in case the message
+    # must be presented to the user (which can be configured via
+    # {#DisplayYesNoMessages}).
+    #
+    # All the arguments are forwarded to #{Yast2::Popup.show} almost as-is, but
+    # some aspects must be observed:
+    #
+    #   - The argument :timeout will be ignored, the timeout fixed in the Report
+    #   module will always be used instead (again, see {#DisplayYesNoMessages}).
+    #   - The button ids must be :yes and :no, to honor the Report API.
+    #   - Due to the previous point, if no :buttons argument is provided, the
+    #   value :yes_no will be used for it.
+    #
+    # Like any other method used to present yesno_messages, false is always
+    # returned if the system is configured to not display messages, no matter
+    # what was selected as the focused default answer.
+    #
+    # @param [String] message Popup message, forwarded to {Yast2::Popup.show}
+    # @param [Hash] extra_args Extra options to be forwarded to {Yast2::Popup.show},
+    #   see description for some considerations
+    # @return [Boolean] True if :yes is pressed, otherwise false
+    def yesno_popup(message, extra_args = {})
+      # Use exactly the same y2milestone call than other yesno methods
+      Builtins.y2milestone(1, "%1", message) if @log_yesno_messages
+
+      if extra_args.key?(:timeout)
+        log.warn "Report.yesno_popup will ignore the :timeout argument"
+      end
+
+      ret =
+        if @display_yesno_messages
+          args = { buttons: :yes_no }.merge(extra_args)
+          args[:timeout] = @timeout_yesno_messages
+          answer = Yast2::Popup.show(message, args)
+          answer == :yes
+        else
+          false
+        end
+
+      @yesno_messages << message
       ret
     end
 
