@@ -35,6 +35,7 @@ module Y2Packager
     #
     # @param options [Hash<String, String>]
     def initialize(options = {})
+      @accepted = false
       @id = id_for(options)
       @translations = { DEFAULT_LANG => options[:content] }
     end
