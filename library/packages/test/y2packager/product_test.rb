@@ -187,11 +187,12 @@ describe Y2Packager::Product do
   describe "#license_content" do
     let(:license_content) { "license content" }
     let(:lang) { "en_US" }
+    let(:license_reader) { product.send(:license_reader) }
 
     before do
       allow(Yast::Pkg).to receive(:PrdGetLicenseToConfirm).with(product.name, lang)
         .and_return(license_content)
-      allow(product.license_reader).to receive(:license_content).and_return(license_content)
+      allow(license_reader).to receive(:license_content).and_return(license_content)
     end
 
     it "return the license content" do
@@ -199,7 +200,7 @@ describe Y2Packager::Product do
     end
 
     context "when the no license to confirm was found" do
-      let(:license) { "" }
+      let(:license_content) { "" }
 
       it "return the empty string" do
         expect(product.license_content(lang)).to eq("")
@@ -207,7 +208,7 @@ describe Y2Packager::Product do
     end
 
     context "when the product does not exist" do
-      let(:license) { nil }
+      let(:license_content) { nil }
 
       it "return nil" do
         expect(product.license_content(lang)).to be_nil
