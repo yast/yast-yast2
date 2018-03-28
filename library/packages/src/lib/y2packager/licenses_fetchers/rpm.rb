@@ -14,6 +14,10 @@ require "y2packager/licenses_fetchers/base"
 
 module Y2Packager
   module LicensesFetchers
+    # This class is responsible for obtaining the license and license content
+    # of a given product from libzypp.
+    #
+    # FIXME: Finish implementation
     class Rpm < Base
       # Return the license text to be confirmed
       #

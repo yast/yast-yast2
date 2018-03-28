@@ -13,11 +13,16 @@
 require "yast"
 
 module Y2Packager
+  # This class is responsible for storing the different license translations.
   class LicenseTranslation
     # @return [String] Content Language
     attr_reader :lang
     attr_reader :content
 
+    # Constructor
+    #
+    # @param language [String]
+    # @param content [String] of the license for the given language
     def initialize(language:, content:)
       @lang = language
       @content = content

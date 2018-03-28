@@ -19,7 +19,7 @@ module Y2Packager
   # This class stores the license ID and the traslated content of the license
   # for different languages.
   class License
-    DEFAULT_LANG = "en_US"
+    DEFAULT_LANG = "en_US".freeze
     # @return [String] License unique identifier
     attr_reader :id
 

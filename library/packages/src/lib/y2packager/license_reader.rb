@@ -43,7 +43,7 @@ module Y2Packager
       content = fetcher.license_content(License::DEFAULT_LANG)
       return unless content
 
-      store.add_license_for(product_name, License.new(:content => content))
+      store.add_license_for(product_name, License.new(content: content))
     end
 
     # Return the license text

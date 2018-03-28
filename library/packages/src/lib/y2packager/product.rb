@@ -220,10 +220,8 @@ module Y2Packager
     #
     # @param lang [String] Language
     # @return [Boolean] true if the product has a license
-    def license?(lang)
-      content = license(lang)
-      return false unless content
-      content != ""
+    def license?
+      license ? true : false
     end
 
     # Determine whether the license should be accepted or not

@@ -14,10 +14,11 @@ require "y2packager/licenses_fetchers/base"
 
 module Y2Packager
   module LicensesFetchers
+    # This class reads the licenses from the eula_url product property
+    #
     # FIXME: Finish implementation
     class Url < Base
-
-      def license_content(lang)
+      def license_content(_lang)
         "Fetching product license"
       end
 
