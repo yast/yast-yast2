@@ -134,11 +134,14 @@ module Y2Packager
         installed = Y2Packager::Product.installed_products
 
         # sort the keys by length, try more products first
+        # to find the most specific upgrade, prefer the
+        # SLES + sle-module-hpc => SLES_HPC upgrade to plain SLES => SLES upgrade
+        # (if that would be in the list)
         upgrade = MAPPING.keys.sort_by(&:size).find do |keys|
           keys.all? { |name| installed.any? { |p| p.name == name } }
         end
 
-        log.info("Found fallback upgrade for products: #{upgrade.inspect}")
+        log.info("Fallback upgrade for products: #{upgrade.inspect}")
         return nil unless upgrade
 
         name = MAPPING[upgrade]

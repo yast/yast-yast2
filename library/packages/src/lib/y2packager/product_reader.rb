@@ -135,30 +135,26 @@ module Y2Packager
     # read the available products, remove potential duplicates
     # @return [Array<Hash>] pkg-bindings data structures
     def available_products
-      # remove e.g. installed products
+      # select only the available or to be installed products
       zypp_products.select { |p| p["status"] == :available || p["status"] == :selected }
     end
 
     # read the installed products
     # @return [Array<Hash>] pkg-bindings data structures
     def installed_products
-      # remove e.g. available or removed products
+      # select only the installed or to be removed products
       zypp_products.select { |p| p["status"] == :installed || p["status"] == :removed }
     end
 
     # find the installed base product
     # @return[Hash,nil] the pkg-bindings product structure or nil if not found
     def base_product
-      products = Yast::Pkg.ResolvableProperties("", :product, "")
-
       # The base product is identified by the /etc/products.d/baseproduct symlink
       # and because a symlink can point only to one file there can be only one base product.
-      # The "status" conditition is actually not required because that symlink is created
+      # The "installed" conditition is actually not required because that symlink is created
       # only for installed products. (Just make sure it still works in case the libzypp
       # internal implementation is changed.)
-      base = products.find do |p|
-        p["type"] == "base" && (p["status"] == :installed || p["status"] == :removed)
-      end
+      base = installed_products.find { |p| p["type"] == "base" }
 
       log.info("Found installed base product: #{base}")
       base

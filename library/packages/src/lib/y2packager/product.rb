@@ -42,15 +42,15 @@ module Y2Packager
     attr_reader :installation_package
 
     class << self
+      PKG_BINDINGS_ATTRS = ["name", "short_name", "display_name", "version", "arch",
+                            "category", "vendor"].freeze
+
       # Create a product from pkg-bindings hash data.
       # @param p [Hash] the pkg-binindgs product hash
       # @return [Y2Packager::Product] converted product
       def from_h(p)
-        Y2Packager::Product.new(
-          name: p["name"], short_name: p["short_name"], display_name: p["display_name"],
-          version: p["version"], arch: p["arch"], category: p["category"],
-          vendor: p["vendor"]
-        )
+        params = PKG_BINDINGS_ATTRS.each_with_object({}) { |a, h| h[a.to_sym] = p[a] }
+        Y2Packager::Product.new(params)
       end
 
       # Return all known available products
