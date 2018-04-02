@@ -42,6 +42,7 @@ module Y2Packager
     # @return [License] The given license or the already stored one with the
     # same id.
     def add_license_for(product_name, license)
+      log.info "Adding license for #{product_name}"
       stored_license = license(license.id)
 
       @product_licenses[product_name] = stored_license || license

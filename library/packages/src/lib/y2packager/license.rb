@@ -26,7 +26,7 @@ module Y2Packager
     # @return [Boolean] whether the license has been accepted or not
     attr_reader :accepted
 
-    # @retrun [Hash<String, String>] language -> content
+    # @return [Hash<String, String>] language -> content
     attr_reader :translations
 
     alias_method :accepted?, :accepted

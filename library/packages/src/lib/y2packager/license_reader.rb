@@ -17,7 +17,7 @@ require "y2packager/licenses_fetchers/rpm"
 require "y2packager/licenses_fetchers/url"
 
 module Y2Packager
-  # This class is able to read the licence of a given product
+  # This class is able to read the license of a given product
   class LicenseReader
     include Yast::Logger
 

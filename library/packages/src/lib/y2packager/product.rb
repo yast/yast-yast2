@@ -244,7 +244,7 @@ module Y2Packager
     # @return [Boolean] true if the license was confirmed (or acceptance was not needed)
     def license_confirmed?
       return false unless license
-      license.accepted?
+      license.accepted? || !license_confirmation_required?
     end
 
     # [String] Default license language.
