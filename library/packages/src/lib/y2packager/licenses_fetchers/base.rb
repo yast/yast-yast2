@@ -17,7 +17,7 @@ Yast.import "Pkg"
 
 module Y2Packager
   module LicensesFetchers
-    # Base class for licences fetchers
+    # Base class for licenses fetchers
     class Base
       include Yast::Logger
 

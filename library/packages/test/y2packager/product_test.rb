@@ -18,6 +18,7 @@ describe Y2Packager::Product do
   let(:sles) { instance_double(Y2Packager::Product) }
   let(:sdk) { instance_double(Y2Packager::Product) }
   let(:products) { [sles, sdk] }
+  let(:license_reader) { product.send(:license_reader) }
 
   before do
     allow(Y2Packager::ProductReader).to receive(:new).and_return(reader)
@@ -187,11 +188,8 @@ describe Y2Packager::Product do
   describe "#license_content" do
     let(:license_content) { "license content" }
     let(:lang) { "en_US" }
-    let(:license_reader) { product.send(:license_reader) }
 
     before do
-      allow(Yast::Pkg).to receive(:PrdGetLicenseToConfirm).with(product.name, lang)
-        .and_return(license_content)
       allow(license_reader).to receive(:license_content).and_return(license_content)
     end
 
@@ -240,37 +238,16 @@ describe Y2Packager::Product do
   end
 
   describe "#license_locales" do
-    it "returns license locales from libzypp" do
-      expect(Yast::Pkg).to receive(:PrdLicenseLocales).with(product.name)
-        .and_return(["en_US", "de_DE"])
+    it "returns license locales from the corrsponding fetcher" do
+      expect(license_reader).to receive(:locales).and_return(["en_US", "de_DE"])
+
       expect(product.license_locales).to eq(["en_US", "de_DE"])
-    end
-
-    context "when the empty locale is reported by libzypp" do
-      before do
-        allow(Yast::Pkg).to receive(:PrdLicenseLocales).with(product.name)
-          .and_return([""])
-      end
-
-      it "converts it to the default one (en_US)" do
-        expect(product.license_locales).to eq(["en_US"])
-      end
-    end
-
-    context "when the product is not found" do
-      before do
-        allow(Yast::Pkg).to receive(:PrdLicenseLocales).and_return(nil)
-      end
-
-      it "returns an empty array" do
-        expect(product.license_locales).to eq([])
-      end
     end
   end
 
   describe "#license_confirmation_required?" do
     before do
-      allow(Yast::Pkg).to receive(:PrdNeedToAcceptLicense).with(product.name).and_return(needed)
+      allow(license_reader).to receive(:license_confirmation_required?).and_return(needed)
     end
 
     context "when accepting the license is required" do
@@ -291,40 +268,61 @@ describe Y2Packager::Product do
   end
 
   describe "#license_confirmation=" do
+    let(:license) { instance_double(Y2Packager::License, accept!: true, reject!: true) }
+
+    before do
+      allow(product).to receive(:license).and_return(license)
+    end
+
     context "when 'true' is given" do
       it "confirms the license" do
-        expect(Yast::Pkg).to receive(:PrdMarkLicenseConfirmed).with(product.name)
+        expect(license).to receive(:accept!)
         product.license_confirmation = true
       end
     end
 
     context "when 'false' is given" do
       it "sets as unconfirmed the license" do
-        expect(Yast::Pkg).to receive(:PrdMarkLicenseNotConfirmed).with(product.name)
+        expect(license).to receive(:reject!)
         product.license_confirmation = false
       end
     end
   end
 
   describe "#license_confirmed?" do
+    let(:license) { instance_double(Y2Packager::License, accepted?: confirmed) }
+    let(:confirmed) { false }
+    let(:confirmation_required) { true }
+
     before do
-      allow(Yast::Pkg).to receive(:PrdHasLicenseConfirmed).with(product.name)
-        .and_return(confirmed)
+      allow(product).to receive(:license).and_return(license)
+      allow(product).to receive(:license_confirmation_required?)
+        .and_return(confirmation_required)
     end
 
-    context "when the license has not been confirmed" do
-      let(:confirmed) { false }
-
-      it "returns false" do
-        expect(product.license_confirmed?).to eq(false)
-      end
-    end
-
-    context "when the license was already confirmed" do
-      let(:confirmed) { true }
+    context "when the acceptance of the license is not required" do
+      let(:confirmation_required) { false }
 
       it "returns true" do
         expect(product.license_confirmed?).to eq(true)
+      end
+    end
+
+    context "when the acceptance of the license is required" do
+      let(:confirmation_required) { true }
+
+      context "and the license has not been confirmed" do
+        it "returns false" do
+          expect(product.license_confirmed?).to eq(false)
+        end
+      end
+
+      context "and the license was already confirmed" do
+        let(:confirmed) { true }
+
+        it "returns true" do
+          expect(product.license_confirmed?).to eq(true)
+        end
       end
     end
   end
