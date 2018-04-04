@@ -13,6 +13,7 @@
 require "yast"
 require "forwardable"
 require "y2packager/license"
+require "y2packager/licenses_handlers"
 
 module Y2Packager
   class ProductLicense
@@ -29,8 +30,19 @@ module Y2Packager
     # @see Y2Packager::License
 
     extend Forwardable
+
     def_delegators :@license, :content_for, :locales, :accept!, :reject!
 
+    # @!method license_confirmation_required?
+    #   Determine whether the license should be accepted or not
+    #   @return [Boolean] true if the license acceptance is required
+    #
+    # @!method license_confirmation=(confirmed)
+    #   Set the license confirmation for the product
+    #   @param confirmed [Boolean] true if it should be accepted; false otherwise
+    def_delegators :@handler, :license_confirmation_required?, :license_confirmation
+
+    # @return [License] Product's license
     attr_reader :license
 
     class << self
@@ -45,7 +57,7 @@ module Y2Packager
         return cache[product_name] if cache[product_name]
         license = License.find(product_name, source)
         return nil unless license
-        cache[product_name] = ProductLicense.new(product_name, license)
+        cache[product_name] = ProductLicense.new(product_name, license, source: source)
       end
 
       # Clear product licenses cache
@@ -62,9 +74,10 @@ module Y2Packager
     #
     # @param product_name [String] Product name to get licenses for
     # @param source       [Symbol] Source to use for fetching the license from
-    def initialize(product_name, license)
+    def initialize(product_name, license, source: :rpm)
       @product_name = product_name
       @license = license
+      @handler = Y2Packager::LicensesHandlers.for(source, product_name)
     end
 
     # Determines whether the license have been accepted or not
