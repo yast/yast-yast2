@@ -12,16 +12,14 @@
 
 require "yast"
 require "digest"
+require "y2packager/licenses_fetchers"
 
 module Y2Packager
   # Represent a License which could be the same for multiple products.
   #
-  # This class stores the license ID and the traslated content of the license
-  # for different languages.
+  # This class represents a license.
   class License
     DEFAULT_LANG = "en_US".freeze
-    # @return [String] License unique identifier
-    attr_reader :id
 
     # @return [Boolean] whether the license has been accepted or not
     attr_reader :accepted
@@ -29,23 +27,81 @@ module Y2Packager
     # @return [Hash<String, String>] language -> content
     attr_reader :translations
 
+    # @return [Y2Packager::LicensesFetchers::Base] License fetcher object
+    attr_reader :fetcher
+
     alias_method :accepted?, :accepted
+
+    class << self
+      # Find a license for a given product
+      #
+      # @param product_name [String]    Product's name
+      # @param source       [:rpm,:url] Source to get the license from. For the time being,
+      #   only :rpm is really supported.
+      # @return [License]
+      def find(product_name, source)
+        return cache[product_name] if cache[product_name]
+
+        # This could be done in the constructor.
+        fetcher = LicensesFetchers.for(source)
+        new_license = License.new(fetcher)
+        return unless new_license.id
+
+        eq_license = cache.values.find { |l| l.id == new_license.id }
+        license = eq_license || new_license
+        cache[product_name] = license
+      end
+
+      def clear_cache
+        @cache = nil
+      end
+
+      private def cache
+        @cache ||= {}
+      end
+    end
 
     # Constructor
     #
     # @param options [Hash<String, String>]
-    def initialize(options = {})
+    def initialize(fetcher)
       @accepted = false
-      @id = id_for(options)
-      @translations = { DEFAULT_LANG => options[:content] }
+      @fetcher = fetcher
+      @translations = {}
+    end
+
+    # License unique identifier
+    #
+    # This identifier is based on the given default language translation.
+    #
+    # @return [String] Unique identifier
+    def id
+      @id ||= Digest::MD5.hexdigest(content_for(DEFAULT_LANG))
     end
 
     # Return the license translated content for the given language
     #
+    # It will return the empty string ("") if the license does not exist
+    #
     # @param [String] language
     # @return [String,nil] the license translated content or nil if not found
     def content_for(lang = DEFAULT_LANG)
-      translations[lang]
+      return @translations[lang] if @translations[lang]
+      content = fetcher.license_content(lang)
+      return add_content_for(lang, content) if content
+      content_for(DEFAULT_LANG) unless lang == DEFAULT_LANG
+    end
+
+    # FIXME: Probably the locales should be obtained through the licenses
+    # translations, and probably could be initialized the first time a license
+    # is instantiated.
+    def locales
+      fetcher.license_locales
+    end
+
+    def license_confirmation_required?
+      # FIXME
+      true
     end
 
     # Add the license translated content for the given language
@@ -65,18 +121,6 @@ module Y2Packager
     # Set the license as rejected
     def reject!
       @accepted = false
-    end
-
-  private
-
-    # Generate the license unique identifier based on the given options.
-    # Currently the id is obtained using the MD5 digest of te license's
-    # content (in the default language).
-    #
-    # @param options [Hash<String,String>] License map options
-    # @return [String] MD5 digest of the license's content
-    def id_for(options)
-      Digest::MD5.hexdigest(options[:content])
     end
   end
 end
