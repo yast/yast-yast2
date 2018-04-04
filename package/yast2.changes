@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr  3 15:32:31 UTC 2018 - lslezak@suse.cz
+
+- Added ProductUpgrade class to better evaluate the product for
+  upgrading (related to bsc#1086259)
+- 4.0.62
+
+-------------------------------------------------------------------
 Tue Mar 27 15:00:20 UTC 2018 - ancor@suse.com
 
 - Make possible to use the Yast2::Popup class from the Report

@@ -94,6 +94,21 @@ module Y2Packager
       products
     end
 
+    # Read the installed base product
+    # @return [Y2Packager::Product,nil] the installed base product or nil if not found
+    def installed_base_product
+      base = base_product
+      return nil unless base
+
+      Y2Packager::Product.from_h(base)
+    end
+
+    # All installed products
+    # @return [Array<Y2Packager::Product>] the product list
+    def all_installed_products
+      installed_products.map { |p| Y2Packager::Product.from_h(p) }
+    end
+
     def product_package(name, repo_id)
       return nil unless name
       Yast::Pkg.ResolvableDependencies(name, :package, "").find do |prod|
@@ -105,11 +120,8 @@ module Y2Packager
 
     # read the available products, remove potential duplicates
     # @return [Array<Hash>] pkg-bindings data structure
-    def available_products
+    def zypp_products
       products = Yast::Pkg.ResolvableProperties("", :product, "")
-
-      # remove e.g. installed products
-      products.select! { |p| p["status"] == :available || p["status"] == :selected }
 
       # remove duplicates, there migth be different flavors ("DVD"/"POOL")
       # or archs (x86_64/i586), when selecting the product to install later
@@ -118,6 +130,34 @@ module Y2Packager
       log.info "Found products: #{products.map { |p| p["name"] }}"
 
       products
+    end
+
+    # read the available products, remove potential duplicates
+    # @return [Array<Hash>] pkg-bindings data structures
+    def available_products
+      # select only the available or to be installed products
+      zypp_products.select { |p| p["status"] == :available || p["status"] == :selected }
+    end
+
+    # read the installed products
+    # @return [Array<Hash>] pkg-bindings data structures
+    def installed_products
+      # select only the installed or to be removed products
+      zypp_products.select { |p| p["status"] == :installed || p["status"] == :removed }
+    end
+
+    # find the installed base product
+    # @return[Hash,nil] the pkg-bindings product structure or nil if not found
+    def base_product
+      # The base product is identified by the /etc/products.d/baseproduct symlink
+      # and because a symlink can point only to one file there can be only one base product.
+      # The "installed" conditition is actually not required because that symlink is created
+      # only for installed products. (Just make sure it still works in case the libzypp
+      # internal implementation is changed.)
+      base = installed_products.find { |p| p["type"] == "base" }
+
+      log.info("Found installed base product: #{base}")
+      base
     end
 
     def installation_package_mapping
