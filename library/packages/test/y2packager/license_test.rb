@@ -63,6 +63,16 @@ describe Y2Packager::License do
     it "returns the license unique identifier" do
       expect(license.id).to eq("9a0364b9e99bb480dd25e1f0284c8555")
     end
+
+    context "when the license is not found" do
+      before do
+        allow(fetcher).to receive(:license_content).and_return(nil)
+      end
+
+      it "returns nil" do
+        expect(license.id).to be_nil
+      end
+    end
   end
 
   describe "#content_for" do

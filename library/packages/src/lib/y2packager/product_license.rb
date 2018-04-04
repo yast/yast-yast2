@@ -1,0 +1,77 @@
+# ------------------------------------------------------------------------------
+# Copyright (c) 2018 SUSE LLC, All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it under
+# the terms of version 2 of the GNU General Public License as published by the
+# Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+# FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+# ------------------------------------------------------------------------------
+
+require "yast"
+require "forwardable"
+require "y2packager/license"
+
+module Y2Packager
+  class ProductLicense
+    # This class holds the license stuff for a given product
+    #
+    # Why a separate ProductLicense class? First of all, we wanted to extract
+    # the license handling from Y2Packager::Product and moving this logic to
+    # Y2Packager::License was not a good idea because different products could
+    # share the same license. Additionally, this class offers an API to work
+    # with licenses with a proper Product or Addon object is not available
+    # (backward compatibility reasons).
+    #
+    # @see Y2Packager::Product
+    # @see Y2Packager::License
+
+    extend Forwardable
+    def_delegators :@license, :content_for, :locales, :accept!, :reject!
+
+    attr_reader :license
+
+    class << self
+      # Find license for a given product
+      #
+      # @param product_name [String]    Product's name
+      # @param source       [:rpm,:url] Source to get the license from. For the time being,
+      #   only :rpm is really supported.
+      # @return [ProductLicense]
+
+      def find(product_name, source = :rpm)
+        return cache[product_name] if cache[product_name]
+        license = License.find(product_name, source)
+        return nil unless license
+        cache[product_name] = ProductLicense.new(product_name, license)
+      end
+
+      # Clear product licenses cache
+      def clear_cache
+        @cache = nil
+      end
+
+      private def cache
+        @cache ||= {}
+      end
+    end
+
+    # Constructor
+    #
+    # @param product_name [String] Product name to get licenses for
+    # @param source       [Symbol] Source to use for fetching the license from
+    def initialize(product_name, license)
+      @product_name = product_name
+      @license = license
+    end
+
+    # Determines whether the license have been accepted or not
+    #
+    # @return [Boolean] true if the license has been accepted; false otherwise.
+    def accepted?
+      license.accepted?
+    end
+  end
+end

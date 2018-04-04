@@ -43,7 +43,7 @@ module Y2Packager
         return cache[product_name] if cache[product_name]
 
         # This could be done in the constructor.
-        fetcher = LicensesFetchers.for(source)
+        fetcher = LicensesFetchers.for(source, product_name)
         new_license = License.new(fetcher)
         return unless new_license.id
 
@@ -74,9 +74,12 @@ module Y2Packager
     #
     # This identifier is based on the given default language translation.
     #
-    # @return [String] Unique identifier
+    # @return [String,nil] Unique identifier; nil if the license was not found.
     def id
-      @id ||= Digest::MD5.hexdigest(content_for(DEFAULT_LANG))
+      return @id if @id
+      content = content_for(DEFAULT_LANG)
+      return unless content
+      @id = Digest::MD5.hexdigest(content_for(DEFAULT_LANG))
     end
 
     # Return the license translated content for the given language
