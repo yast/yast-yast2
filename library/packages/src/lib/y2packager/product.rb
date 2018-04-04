@@ -12,8 +12,8 @@
 
 Yast.import "Pkg"
 require "y2packager/product_reader"
-require "y2packager/license_reader"
 require "y2packager/release_notes_reader"
+require "y2packager/product_license"
 
 module Y2Packager
   # Represent a product which is present in a repository. At this
@@ -196,24 +196,19 @@ module Y2Packager
 
     # Return the license to confirm
     #
-    # It will return the empty string ("") if the license does not exist or if
-    # it was already confirmed.
-    #
     # @param lang [String] Language
-    # @return [String,nil] Product's license; nil if the product was not found.
+    # @return [ProductLicense,nil] Product's license; nil if the license was not found.
     def license
-      license_reader.license
+      @license ||= ProductLicense.find(name, :rpm)
     end
 
     # Return the license text to be confirmed
     #
-    # It will return the empty string ("") if the license does not exist or if
-    # it was already confirmed.
-    #
     # @param lang [String] Language
-    # @return [String,nil] Product's license; nil if the product was not found.
+    # @return [String] Product's license; empty string ("") if no license was found.
     def license_content(lang)
-      license_reader.license_content(lang)
+      return "" unless license?
+      license.content_for(lang)
     end
 
     # Determines whether the product has a license
@@ -221,14 +216,14 @@ module Y2Packager
     # @param lang [String] Language
     # @return [Boolean] true if the product has a license
     def license?
-      license ? true : false
+      !!license
     end
 
     # Determine whether the license should be accepted or not
     #
     # @return [Boolean] true if the license acceptance is required
     def license_confirmation_required?
-      license_reader.license_confirmation_required?
+      license.license_confirmation_required?
     end
 
     # Set license confirmation for the product
@@ -254,7 +249,7 @@ module Y2Packager
     #
     # @return [Array<String>] Language codes ("de_DE", "en_US", etc.)
     def license_locales
-      license_reader.locales
+      license.locales
     end
 
     # Return product's release notes
@@ -305,13 +300,6 @@ module Y2Packager
       @resolvable_properties ||= Yast::Pkg.ResolvableProperties(name, :product, "").find do |data|
         data["version"] == version
       end
-    end
-
-  private
-
-    def license_reader
-      # FIXME: Determine which source should be used
-      @license_reader ||= LicenseReader.new(name)
     end
   end
 end

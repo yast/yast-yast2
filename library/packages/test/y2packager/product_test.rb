@@ -17,12 +17,13 @@ describe Y2Packager::Product do
   let(:reader) { Y2Packager::ProductReader.new }
   let(:sles) { instance_double(Y2Packager::Product) }
   let(:sdk) { instance_double(Y2Packager::Product) }
+  let(:product_license) { instance_double(Y2Packager::ProductLicense, content_for: "content") }
   let(:products) { [sles, sdk] }
-  let(:license_reader) { product.send(:license_reader) }
 
   before do
     allow(Y2Packager::ProductReader).to receive(:new).and_return(reader)
     allow(reader).to receive(:all_products).and_return(products)
+    allow(product).to receive(:license).and_return(product_license)
   end
 
   describe ".selected_base" do
@@ -186,50 +187,33 @@ describe Y2Packager::Product do
   end
 
   describe "#license_content" do
-    let(:license_content) { "license content" }
     let(:lang) { "en_US" }
 
-    before do
-      allow(license_reader).to receive(:license_content).and_return(license_content)
+    it "returns the license content" do
+      expect(product_license).to receive(:content_for).with(lang).and_return("content")
+      expect(product.license_content(lang)).to eq("content")
     end
 
-    it "return the license content" do
-      expect(product.license_content(lang)).to eq(license_content)
-    end
+    context "when no license was found" do
+      let(:product_license) { nil }
 
-    context "when the no license to confirm was found" do
-      let(:license_content) { "" }
-
-      it "return the empty string" do
+      it "returns the empty string" do
         expect(product.license_content(lang)).to eq("")
-      end
-    end
-
-    context "when the product does not exist" do
-      let(:license_content) { nil }
-
-      it "return nil" do
-        expect(product.license_content(lang)).to be_nil
       end
     end
   end
 
   describe "#license?" do
-    let(:lang) { "en_US" }
-    let(:license) { instance_double("Y2Packager::License") }
+    context "when the product has a license" do
+      let(:product_license) { instance_double(Y2Packager::ProductLicense) }
 
-    before do
-      allow(product).to receive(:license).and_return(license)
-    end
-
-    context "when product has a license" do
       it "returns true" do
         expect(product.license?).to eq(true)
       end
     end
 
-    context "when product does not have a license" do
-      let(:license) { nil }
+    context "when the product does not have a license" do
+      let(:product_license) { nil }
 
       it "returns false" do
         expect(product.license?).to eq(false)
@@ -238,16 +222,18 @@ describe Y2Packager::Product do
   end
 
   describe "#license_locales" do
-    it "returns license locales from the corrsponding fetcher" do
-      expect(license_reader).to receive(:locales).and_return(["en_US", "de_DE"])
+    let(:product_license) do
+      instance_double(Y2Packager::ProductLicense, locales: ["en_US", "de_DE"])
+    end
 
-      expect(product.license_locales).to eq(["en_US", "de_DE"])
+    it "returns product license locales" do
+      expect(product.license_locales).to eq(product_license.locales)
     end
   end
 
   describe "#license_confirmation_required?" do
     before do
-      allow(license_reader).to receive(:license_confirmation_required?).and_return(needed)
+      allow(product_license).to receive(:license_confirmation_required?).and_return(needed)
     end
 
     context "when accepting the license is required" do
@@ -268,7 +254,7 @@ describe Y2Packager::Product do
   end
 
   describe "#license_confirmation=" do
-    let(:license) { instance_double(Y2Packager::License, accept!: true, reject!: true) }
+    let(:license) { instance_double(Y2Packager::ProductLicense, accept!: true, reject!: true) }
 
     before do
       allow(product).to receive(:license).and_return(license)
