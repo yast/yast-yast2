@@ -72,7 +72,7 @@ describe Y2Packager::License do
     end
 
     it "returns the license unique identifier" do
-      expect(license.id).to eq("9a0364b9e99bb480dd25e1f0284c8555")
+      expect(license.id).to eq("040f06fd774092478d450774f5ba30c5da78acc8")
     end
 
     context "when the license is not found" do
