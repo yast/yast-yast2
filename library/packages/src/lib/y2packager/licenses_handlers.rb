@@ -11,13 +11,14 @@
 # ------------------------------------------------------------------------------
 
 require "y2packager/licenses_handlers/rpm"
-require "y2packager/licenses_handlers/dummy"
 
 module Y2Packager
   module LicensesHandlers
     # Return the licenses proper fetcher for a given source
     #
-    # @param source [Symbol] :rpm or :url
+    # @param source       [:rpm,nil] Source to fetch license from (only :rpm is supported)
+    # @param product_name [String]   Product's name
+    # @return [Object]
     def self.for(source, product_name)
       klass = const_get(source.to_s.capitalize)
       klass.new(product_name)
