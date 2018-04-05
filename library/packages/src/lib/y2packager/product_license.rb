@@ -16,19 +16,18 @@ require "y2packager/license"
 require "y2packager/licenses_handlers"
 
 module Y2Packager
+  # This class holds the license stuff for a given product
+  #
+  # Why a separate ProductLicense class? First of all, we wanted to extract
+  # the license handling from Y2Packager::Product and moving this logic to
+  # Y2Packager::License was not a good idea because different products could
+  # share the same license. Additionally, this class offers an API to work
+  # with licenses when a proper Product or Addon object is not available
+  # (backward compatibility reasons).
+  #
+  # @see Y2Packager::Product
+  # @see Y2Packager::License
   class ProductLicense
-    # This class holds the license stuff for a given product
-    #
-    # Why a separate ProductLicense class? First of all, we wanted to extract
-    # the license handling from Y2Packager::Product and moving this logic to
-    # Y2Packager::License was not a good idea because different products could
-    # share the same license. Additionally, this class offers an API to work
-    # with licenses when a proper Product or Addon object is not available
-    # (backward compatibility reasons).
-    #
-    # @see Y2Packager::Product
-    # @see Y2Packager::License
-
     extend Forwardable
 
     def_delegators :@license, :content_for, :locales, :accept!, :reject!

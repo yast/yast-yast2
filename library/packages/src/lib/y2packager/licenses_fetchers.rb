@@ -14,6 +14,10 @@ require "yast"
 require "y2packager/licenses_fetchers/rpm"
 
 module Y2Packager
+  # This module contains licenses fetchers
+  #
+  # Licenses can be retrieved from different places (libzypp, URLs, etc.). The classes
+  # defined in this module are able to retrieve licenses contents.
   module LicensesFetchers
     # Return the licenses proper fetcher for a given source
     #

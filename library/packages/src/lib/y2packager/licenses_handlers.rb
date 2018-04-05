@@ -13,6 +13,11 @@
 require "y2packager/licenses_handlers/rpm"
 
 module Y2Packager
+  # This module contains licenses handlers
+  #
+  # Licenses can be retrieved from different places (libzypp, URLs, etc.). The
+  # classes defined in this module are able to interact with these sources in
+  # order to find out, for instance, whether a license must be accepted.
   module LicensesHandlers
     # Return the licenses proper fetcher for a given source
     #

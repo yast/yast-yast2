@@ -141,6 +141,7 @@ module Y2Packager
     end
 
   private
+
     # @return [Y2Packager::LicensesFetchers::Base] License fetcher object
     attr_reader :fetcher
   end

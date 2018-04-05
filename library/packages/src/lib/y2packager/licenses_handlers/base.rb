@@ -30,4 +30,3 @@ module Y2Packager
     end
   end
 end
-

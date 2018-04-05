@@ -100,7 +100,7 @@ describe Y2Packager::License do
 
       context "and the default language is specified" do
         it "returns the given content" do
-          expect(license.content_for()).to eq("Some content")
+          expect(license.content_for).to eq("Some content")
         end
       end
 
