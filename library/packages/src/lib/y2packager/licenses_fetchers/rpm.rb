@@ -16,16 +16,11 @@ module Y2Packager
   module LicensesFetchers
     # This class is responsible for obtaining the license and license content
     # of a given product from libzypp.
-    #
-    # FIXME: Finish implementation
     class Rpm < Base
       # Return the license text to be confirmed
       #
-      # It will return the empty string ("") if the license does not exist or if
-      # it was already confirmed.
-      #
       # @param lang [String] Language
-      # @return [String,nil] Product's license; nil if the product was not found.
+      # @return [String,nil] Product's license; nil if the product or the license were not found.
       def content(lang)
         Yast::Pkg.PrdGetLicenseToConfirm(product_name, lang)
       end

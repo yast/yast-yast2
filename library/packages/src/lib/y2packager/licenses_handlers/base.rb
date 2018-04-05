@@ -10,32 +10,24 @@
 # FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # ------------------------------------------------------------------------------
 
-require "y2packager/licenses_handlers/base"
-
-Yast.import "Pkg"
+require "yast"
 
 module Y2Packager
   module LicensesHandlers
-    class Rpm < Base
+    # Base class for licenses handlers
+    class Base
+      include Yast::Logger
+
+      # @return [String] Product name to handle license status
       attr_reader :product_name
 
-      # Determine whether the license should be accepted or not
+      # Constructor
       #
-      # @return [Boolean] true if the license acceptance is required
-      def confirmation_required?
-        Yast::Pkg.PrdNeedToAcceptLicense(product_name)
-      end
-
-      # Set the license confirmation for the product
-      #
-      # @param confirmed [Boolean] true if it should be accepted; false otherwise
-      def confirmation=(confirmed)
-        if confirmed
-          Yast::Pkg.PrdMarkLicenseConfirmed(product_name)
-        else
-          Yast::Pkg.PrdMarkLicenseNotConfirmed(product_name)
-        end
+      # @param product_name [String] Product name to handle license status
+      def initialize(product_name)
+        @product_name = product_name
       end
     end
   end
 end
+

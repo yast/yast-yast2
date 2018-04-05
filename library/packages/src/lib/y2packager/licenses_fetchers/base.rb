@@ -11,7 +11,7 @@
 # ------------------------------------------------------------------------------
 
 require "yast"
-require "y2packager/license"
+require "y2packager/licenses_fetchers/base"
 
 Yast.import "Pkg"
 
