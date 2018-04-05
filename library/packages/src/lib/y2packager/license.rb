@@ -110,7 +110,7 @@ module Y2Packager
     def content_for(lang = DEFAULT_LANG)
       return @translations[lang] if @translations[lang]
       return nil unless fetcher
-      content = fetcher.license_content(lang)
+      content = fetcher.content(lang)
       return add_content_for(lang, content) if content
     end
 
@@ -118,7 +118,7 @@ module Y2Packager
     #
     # @return [String] List of available locales
     def locales
-      fetcher.license_locales
+      fetcher.locales
     end
 
     # Add the license translated content for the given language

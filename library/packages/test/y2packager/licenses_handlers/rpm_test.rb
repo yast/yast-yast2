@@ -30,7 +30,7 @@ describe Y2Packager::LicensesHandlers::Rpm do
       let(:needed) { true }
 
       it "returns true" do
-        expect(handler.license_confirmation_required?).to eq(true)
+        expect(handler.confirmation_required?).to eq(true)
       end
     end
 
@@ -38,7 +38,7 @@ describe Y2Packager::LicensesHandlers::Rpm do
       let(:needed) { false }
 
       it "returns false" do
-        expect(handler.license_confirmation_required?).to eq(false)
+        expect(handler.confirmation_required?).to eq(false)
       end
     end
   end

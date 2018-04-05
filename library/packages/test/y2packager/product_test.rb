@@ -233,7 +233,7 @@ describe Y2Packager::Product do
 
   describe "#license_confirmation_required?" do
     before do
-      allow(product_license).to receive(:license_confirmation_required?).and_return(needed)
+      allow(product_license).to receive(:confirmation_required?).and_return(needed)
     end
 
     context "when accepting the license is required" do
@@ -278,16 +278,16 @@ describe Y2Packager::Product do
   describe "#license_confirmed?" do
     let(:license) { instance_double(Y2Packager::License, accepted?: confirmed) }
     let(:confirmed) { false }
-    let(:confirmation_required) { true }
+    let(:license_confirmation_required) { true }
 
     before do
       allow(product).to receive(:license).and_return(license)
       allow(product).to receive(:license_confirmation_required?)
-        .and_return(confirmation_required)
+        .and_return(license_confirmation_required)
     end
 
     context "when the acceptance of the license is not required" do
-      let(:confirmation_required) { false }
+      let(:license_confirmation_required) { false }
 
       it "returns true" do
         expect(product.license_confirmed?).to eq(true)
@@ -295,7 +295,7 @@ describe Y2Packager::Product do
     end
 
     context "when the acceptance of the license is required" do
-      let(:confirmation_required) { true }
+      let(:license_confirmation_required) { true }
 
       context "and the license has not been confirmed" do
         it "returns false" do

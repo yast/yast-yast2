@@ -40,7 +40,7 @@ module Y2Packager
     # @!method license_confirmation=(confirmed)
     #   Set the license confirmation for the product
     #   @param confirmed [Boolean] true if it should be accepted; false otherwise
-    def_delegators :@handler, :license_confirmation_required?, :license_confirmation
+    def_delegators :@handler, :confirmation_required?, :confirmation=
 
     # @return [License] Product's license
     attr_reader :license

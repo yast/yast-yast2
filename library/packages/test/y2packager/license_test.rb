@@ -19,7 +19,7 @@ describe Y2Packager::License do
   subject(:license) { Y2Packager::License.new(fetcher: fetcher) }
 
   let(:fetcher) do
-    instance_double(Y2Packager::LicensesFetchers::Rpm, license_content: "license") 
+    instance_double(Y2Packager::LicensesFetchers::Rpm, content: "license")
   end
 
   before do
@@ -54,7 +54,7 @@ describe Y2Packager::License do
 
     context "when no license with the same ID was already retrieved" do
       before do
-        allow(fetcher).to receive(:license_content).and_return("sles license", "sled license")
+        allow(fetcher).to receive(:content).and_return("sles license", "sled license")
       end
 
       it "returns a new license instance" do
@@ -68,7 +68,7 @@ describe Y2Packager::License do
 
   describe "#id" do
     before do
-      allow(fetcher).to receive(:license_content).and_return("content")
+      allow(fetcher).to receive(:content).and_return("content")
     end
 
     it "returns the license unique identifier" do
@@ -77,7 +77,7 @@ describe Y2Packager::License do
 
     context "when the license is not found" do
       before do
-        allow(fetcher).to receive(:license_content).and_return(nil)
+        allow(fetcher).to receive(:content).and_return(nil)
       end
 
       it "returns nil" do
@@ -116,22 +116,22 @@ describe Y2Packager::License do
 
       context "when no language is given" do
         it "returns the license content for the default language" do
-          expect(fetcher).to receive(:license_content).with(described_class::DEFAULT_LANG)
+          expect(fetcher).to receive(:content).with(described_class::DEFAULT_LANG)
             .and_return("dummy content")
           expect(license.content_for).to eq("dummy content")
         end
       end
 
       it "returns the license content for the given language" do
-        expect(fetcher).to receive(:license_content).with(lang)
+        expect(fetcher).to receive(:content).with(lang)
           .and_return("dummy content")
         expect(license.content_for(lang)).to eq("dummy content")
       end
 
       context "when there is no translation for the given language" do
         before do
-          allow(fetcher).to receive(:license_content).with(lang).and_return(nil)
-          allow(fetcher).to receive(:license_content).with(described_class::DEFAULT_LANG)
+          allow(fetcher).to receive(:content).with(lang).and_return(nil)
+          allow(fetcher).to receive(:content).with(described_class::DEFAULT_LANG)
             .and_return("dummy content")
         end
 
@@ -142,12 +142,12 @@ describe Y2Packager::License do
 
       context "license content for the given languages was already retrieved" do
         before do
-          allow(fetcher).to receive(:license_content).with(lang).and_return("content")
+          allow(fetcher).to receive(:content).with(lang).and_return("content")
           license.content_for(lang)
         end
 
         it "returns cached content" do
-          expect(fetcher).to_not receive(:license_content)
+          expect(fetcher).to_not receive(:content)
           expect(license.content_for(lang)).to eq("content")
         end
       end
@@ -163,7 +163,7 @@ describe Y2Packager::License do
 
   describe "#locales" do
     before do
-      allow(fetcher).to receive(:license_locales).and_return(["en_US", "cz_CZ"])
+      allow(fetcher).to receive(:locales).and_return(["en_US", "cz_CZ"])
     end
 
     it "returns list of available translations for the license" do
