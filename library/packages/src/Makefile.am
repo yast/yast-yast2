@@ -32,6 +32,8 @@ ylib_DATA = \
 y2packagerdir = "${yast2dir}/lib/y2packager"
 y2packager_DATA = \
 	lib/y2packager/license.rb \
+	lib/y2packager/licenses_handlers.rb \
+	lib/y2packager/licenses_fetchers.rb \
 	lib/y2packager/package.rb \
 	lib/y2packager/product.rb \
 	lib/y2packager/product_license.rb \
