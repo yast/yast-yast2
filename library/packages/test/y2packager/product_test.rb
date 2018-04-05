@@ -186,6 +186,18 @@ describe Y2Packager::Product do
     end
   end
 
+  describe "#license" do
+    before do
+      allow(product).to receive(:license).and_call_original
+    end
+
+    it "returns the product license" do
+      expect(Y2Packager::ProductLicense).to receive(:find).with(product.name, source: :rpm)
+        .and_return(product_license)
+      expect(product.license).to be(product_license)
+    end
+  end
+
   describe "#license_content" do
     let(:lang) { "en_US" }
 
