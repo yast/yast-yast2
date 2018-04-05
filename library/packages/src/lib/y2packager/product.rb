@@ -13,6 +13,7 @@
 Yast.import "Pkg"
 require "y2packager/product_reader"
 require "y2packager/release_notes_reader"
+require "y2packager/product_license"
 
 module Y2Packager
   # Represent a product which is present in a repository. At this
@@ -195,48 +196,50 @@ module Y2Packager
 
     # Return the license to confirm
     #
-    # It will return the empty string ("") if the license does not exist or if
-    # it was already confirmed.
+    # @param lang [String] Language
+    # @return [ProductLicense,nil] Product's license; nil if the license was not found.
+    def license
+      @license ||= ProductLicense.find(name, source: :libzypp)
+    end
+
+    # Return the license text to be confirmed
     #
     # @param lang [String] Language
-    # @return [String,nil] Product's license; nil if the product was not found.
-    def license(lang)
-      Yast::Pkg.PrdGetLicenseToConfirm(name, lang)
+    # @return [String] Product's license; empty string ("") if no license was found.
+    def license_content(lang)
+      return "" unless license?
+      license.content_for(lang)
     end
 
     # Determines whether the product has a license
     #
     # @param lang [String] Language
     # @return [Boolean] true if the product has a license
-    def license?(lang)
-      content = license(lang)
-      return false unless content
-      content != ""
+    def license?
+      !!license
     end
 
     # Determine whether the license should be accepted or not
     #
     # @return [Boolean] true if the license acceptance is required
     def license_confirmation_required?
-      Yast::Pkg.PrdNeedToAcceptLicense(name)
+      license.confirmation_required?
     end
 
     # Set license confirmation for the product
     #
     # @param confirmed [Boolean] determines whether the license should be accepted or not
     def license_confirmation=(confirmed)
-      if confirmed
-        Yast::Pkg.PrdMarkLicenseConfirmed(name)
-      else
-        Yast::Pkg.PrdMarkLicenseNotConfirmed(name)
-      end
+      return unless license
+      confirmed ? license.accept! : license.reject!
     end
 
     # Determine whether the license is confirmed
     #
     # @return [Boolean] true if the license was confirmed (or acceptance was not needed)
     def license_confirmed?
-      Yast::Pkg.PrdHasLicenseConfirmed(name)
+      return false unless license
+      license.accepted? || !license_confirmation_required?
     end
 
     # [String] Default license language.
@@ -246,15 +249,7 @@ module Y2Packager
     #
     # @return [Array<String>] Language codes ("de_DE", "en_US", etc.)
     def license_locales
-      locales = Yast::Pkg.PrdLicenseLocales(name)
-      if locales.nil?
-        log.error "Error getting the list of available license translations for '#{name}'"
-        return []
-      end
-
-      empty_idx = locales.index("")
-      locales[empty_idx] = DEFAULT_LICENSE_LANG if empty_idx
-      locales
+      license.locales
     end
 
     # Return product's release notes
