@@ -19,6 +19,8 @@ module Y2Packager
   #
   # This class represents a license.
   class License
+    include Yast::Logger
+
     # Default language for licenses.
     DEFAULT_LANG = "en_US".freeze
 
@@ -43,6 +45,7 @@ module Y2Packager
       #   string is used as the license's content (and `source` is ignored).
       # @return [License]
       def find(product_name, source: nil, content: nil)
+        log.info "Searching for a license for product #{product_name}"
         return cache[product_name] if cache[product_name]
 
         fetcher = source ? LicensesFetchers.for(source, product_name) : nil
@@ -50,8 +53,13 @@ module Y2Packager
         return unless new_license.id
 
         eq_license = cache.values.find { |l| l.id == new_license.id }
-        license = eq_license || new_license
-        cache[product_name] = license
+        if eq_license
+          log.info "Found cached license: #{eq_license.id}"
+        else
+          log.info "Caching license: #{new_license.id}"
+        end
+
+        cache[product_name] = eq_license || new_license
       end
 
       # Clean licenses cache
