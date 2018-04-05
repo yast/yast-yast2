@@ -20,9 +20,9 @@ module Y2Packager
     # Return the licenses proper fetcher for a given source
     #
     # @param source [Symbol] :rpm or :url
-    def self.for(source, product_name, options = {})
+    def self.for(source, product_name)
       klass = const_get(source.to_s.capitalize)
-      klass.new(product_name, options)
+      klass.new(product_name)
     end
   end
 end

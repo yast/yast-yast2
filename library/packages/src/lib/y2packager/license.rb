@@ -19,6 +19,7 @@ module Y2Packager
   #
   # This class represents a license.
   class License
+    # Default language for licenses.
     DEFAULT_LANG = "en_US".freeze
 
     # @return [Boolean] whether the license has been accepted or not
@@ -27,24 +28,26 @@ module Y2Packager
     # @return [Hash<String, String>] language -> content
     attr_reader :translations
 
-    # @return [Y2Packager::LicensesFetchers::Base] License fetcher object
-    attr_reader :fetcher
-
     alias_method :accepted?, :accepted
 
     class << self
       # Find a license for a given product
       #
-      # @param product_name [String]    Product's name
-      # @param source       [:rpm,:url] Source to get the license from. For the time being,
-      #   only :rpm is really supported.
+      # This method uses a cache to return the same license if it was already
+      # used for another product.
+      #
+      # @param product_name [String]   Product's name
+      # @param source       [:rpm,nil] Source to get the license from. For the time being,
+      #   only :rpm is supported.
+      # @param content      [String]   License content. If this argument is given, this
+      #   string is used as the license's content (and `source` is ignored).
       # @return [License]
-      def find(product_name, source, options = {})
+      def find(product_name, source: nil, content: nil)
         return cache[product_name] if cache[product_name]
 
+        fetcher = source ? LicensesFetchers.for(source, product_name) : nil
         # This could be done in the constructor.
-        fetcher = LicensesFetchers.for(source, product_name, options)
-        new_license = License.new(fetcher)
+        new_license = License.new(fetcher: fetcher, content: content)
         return unless new_license.id
 
         eq_license = cache.values.find { |l| l.id == new_license.id }
@@ -52,22 +55,40 @@ module Y2Packager
         cache[product_name] = license
       end
 
+      # Clean licenses cache
       def clear_cache
         @cache = nil
       end
 
-      private def cache
+    private
+
+      # Licenses cache
+      #
+      # @return [Hash<String,License>]
+      def cache
         @cache ||= {}
       end
     end
 
     # Constructor
     #
-    # @param options [Hash<String, String>]
-    def initialize(fetcher)
+    # This class should be able to use the proper fetcher (see Y2Packager::LicensesFetchers)
+    # in order to retrieve license content (including translations). However, for compatibility
+    # reasons, the constructor can receive a `content` that will be used as licence's
+    # content. The reason is that, in some parts of YaST, the license content/translations
+    # is retrieved in different ways. We might need to unify them.
+    #
+    # @param fetcher [:rpm,nil] Fetcher to retrieve licenses information.
+    # @param content [String]   License content. If this argument is given, this
+    #   string is used as the license's content (and `source` is ignored).
+    def initialize(fetcher: nil, content: nil)
       @accepted = false
-      @fetcher = fetcher
       @translations = {}
+      if content
+        add_content_for(DEFAULT_LANG, content)
+      else
+        @fetcher = fetcher
+      end
     end
 
     # License unique identifier
@@ -79,39 +100,32 @@ module Y2Packager
       return @id if @id
       content = content_for(DEFAULT_LANG)
       return unless content
-      @id = Digest::MD5.hexdigest(content_for(DEFAULT_LANG))
+      @id = Digest::MD5.hexdigest(content)
     end
 
     # Return the license translated content for the given language
     #
-    # It will return the empty string ("") if the license does not exist
-    #
-    # @param [String] language
+    # @param lang [String] Contents' language
     # @return [String,nil] the license translated content or nil if not found
     def content_for(lang = DEFAULT_LANG)
       return @translations[lang] if @translations[lang]
+      return nil unless fetcher
       content = fetcher.license_content(lang)
       return add_content_for(lang, content) if content
-      content_for(DEFAULT_LANG) unless lang == DEFAULT_LANG
     end
 
-    # FIXME: Probably the locales should be obtained through the licenses
-    # translations, and probably could be initialized the first time a license
-    # is instantiated.
+    # Return license's available locales
+    #
+    # @return [String] List of available locales
     def locales
       fetcher.license_locales
     end
 
-    def license_confirmation_required?
-      # FIXME
-      true
-    end
-
     # Add the license translated content for the given language
     #
-    # @param lang [String]
-    # @param content [String]
-    # @return [String,nil] the license translated content or nil if not found
+    # @param lang    [String] Language to add the translation to
+    # @param content [String] Content to add
+    # @return [String] the license translated content
     def add_content_for(lang, content)
       @translations[lang] = content
     end
@@ -125,5 +139,9 @@ module Y2Packager
     def reject!
       @accepted = false
     end
+
+  private
+    # @return [Y2Packager::LicensesFetchers::Base] License fetcher object
+    attr_reader :fetcher
   end
 end
