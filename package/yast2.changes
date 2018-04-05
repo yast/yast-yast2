@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr  5 17:38:35 UTC 2018 - igonzalezsosa@suse.com
+
+- Use SHA1 instead of MD5 when determining whether a license
+  was already accepted or not (related to fate#325461).
+- 4.0.64
+
+-------------------------------------------------------------------
 Thu Apr  5 12:28:12 UTC 2018 - knut.anderssen@suse.com
 
 - Add a new API to handle product licenses.
