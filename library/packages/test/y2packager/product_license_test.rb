@@ -31,32 +31,37 @@ describe Y2Packager::ProductLicense do
     end
 
     it "returns a product license for the given product" do
-      expect(Y2Packager::License).to receive(:find).with("SLES", :rpm, {})
+      expect(Y2Packager::License).to receive(:find).with("SLES", source: :rpm, content: nil)
         .and_return(license)
-      product_license = described_class.find("SLES", :rpm)
+      product_license = described_class.find("SLES", source: :rpm)
       expect(product_license).to be_a(Y2Packager::ProductLicense)
       expect(product_license.license).to eq(license)
     end
 
-    context "when the product license was already built" do
-      it "returns the already built instance" do
-        cached_product_license = described_class.find("SLES", :rpm)
-        product_license = described_class.find("SLES", :rpm)
+    context "when the product license was already found" do
+      it "returns the already found instance" do
+        cached_product_license = described_class.find("SLES", source: :rpm)
+        product_license = described_class.find("SLES", source: :rpm)
         expect(product_license).to be(cached_product_license)
       end
     end
 
-    context "when license does not have an id" do
-      it "returns nil"
-    end
-  end
+    context "when a suitable license is not found" do
+      before do
+        allow(Y2Packager::License).to receive(:find).and_return(nil)
+      end
 
-  describe ".find_or_create" do
-    it "returns a product license with the given content" do
-      product_license = described_class.find_or_create("SLES", "Some predefined content")
-      expect(product_license).to be_a(Y2Packager::ProductLicense)
-      license = product_license.license
-      expect(license.content_for).to eq("Some predefined content")
+      it "returns nil" do
+        expect(described_class.find("SLES", source: :rpm)).to be_nil
+      end
+    end
+
+    context "when some content is given" do
+      it "returns a product license with the given content" do
+        expect(Y2Packager::License).to receive(:find).and_call_original
+        product_license = described_class.find("SLES", content: "Some content")
+        expect(product_license.content_for).to eq("Some content")
+      end
     end
   end
 

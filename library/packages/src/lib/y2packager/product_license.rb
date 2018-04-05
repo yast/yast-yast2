@@ -23,7 +23,7 @@ module Y2Packager
     # the license handling from Y2Packager::Product and moving this logic to
     # Y2Packager::License was not a good idea because different products could
     # share the same license. Additionally, this class offers an API to work
-    # with licenses with a proper Product or Addon object is not available
+    # with licenses when a proper Product or Addon object is not available
     # (backward compatibility reasons).
     #
     # @see Y2Packager::Product
@@ -48,19 +48,17 @@ module Y2Packager
     class << self
       # Find license for a given product
       #
+      # This method uses a cache to return an already fetched product license.
+      #
       # @param product_name [String]    Product's name
       # @param source       [:rpm,:url] Source to get the license from. For the time being,
       #   only :rpm is really supported.
       # @return [ProductLicense]
-      def find(product_name, source = :rpm, options = {})
+      def find(product_name, source: nil, content: nil)
         return cache[product_name] if cache[product_name]
-        license = License.find(product_name, source, options)
+        license = License.find(product_name, source: source, content: content)
         return nil unless license
         cache[product_name] = ProductLicense.new(product_name, license, source: source)
-      end
-
-      def find_or_create(product_name, content)
-        find(product_name, :dummy, {content: content})
       end
 
       # Clear product licenses cache
@@ -76,11 +74,12 @@ module Y2Packager
     # Constructor
     #
     # @param product_name [String] Product name to get licenses for
-    # @param source       [Symbol] Source to use for fetching the license from
-    def initialize(product_name, license, source: :rpm)
+    # @param source       [Symbol] Backend to use when syncing the licenses acceptance status
+    #   (only :rpm is supported)
+    def initialize(product_name, license, source: nil)
       @product_name = product_name
       @license = license
-      @handler = Y2Packager::LicensesHandlers.for(source, product_name)
+      @handler = Y2Packager::LicensesHandlers.for(source, product_name) if source
     end
 
     # Determines whether the license have been accepted or not
