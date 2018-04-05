@@ -10,25 +10,28 @@
 # FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # ------------------------------------------------------------------------------
 
-require "yast"
-require "y2packager/license"
-
-Yast.import "Pkg"
-
 module Y2Packager
-  module LicensesFetchers
-    # Base class for licenses fetchers
-    class Base
-      include Yast::Logger
-
-      # @return [String] Product name to get licenses for
+  module LicensesHandlers
+    class Dummy
       attr_reader :product_name
 
       # Constructor
       #
-      # @param product_name [String] to get licenses for
-      def initialize(product_name, _options = {})
+      # @param product_name [String] Product's name
+      def initialize(product_name)
         @product_name = product_name
+      end
+
+      # Determine whether the license should be accepted or not
+      #
+      # @return [Boolean] true if the license acceptance is required
+      def license_confirmation_required?
+      end
+
+      # Set the license confirmation for the product
+      #
+      # @param confirmed [Boolean] true if it should be accepted; false otherwise
+      def license_confirmation=(confirmed)
       end
     end
   end

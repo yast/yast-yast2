@@ -11,6 +11,7 @@
 # ------------------------------------------------------------------------------
 
 require "y2packager/licenses_handlers/rpm"
+require "y2packager/licenses_handlers/dummy"
 
 module Y2Packager
   module LicensesHandlers

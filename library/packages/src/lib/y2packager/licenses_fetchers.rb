@@ -13,15 +13,16 @@
 require "yast"
 require "y2packager/licenses_fetchers/rpm"
 require "y2packager/licenses_fetchers/url"
+require "y2packager/licenses_fetchers/dummy"
 
 module Y2Packager
   module LicensesFetchers
     # Return the licenses proper fetcher for a given source
     #
     # @param source [Symbol] :rpm or :url
-    def self.for(source, product_name)
+    def self.for(source, product_name, options = {})
       klass = const_get(source.to_s.capitalize)
-      klass.new(product_name)
+      klass.new(product_name, options)
     end
   end
 end

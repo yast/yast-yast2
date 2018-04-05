@@ -39,11 +39,11 @@ module Y2Packager
       # @param source       [:rpm,:url] Source to get the license from. For the time being,
       #   only :rpm is really supported.
       # @return [License]
-      def find(product_name, source)
+      def find(product_name, source, options = {})
         return cache[product_name] if cache[product_name]
 
         # This could be done in the constructor.
-        fetcher = LicensesFetchers.for(source, product_name)
+        fetcher = LicensesFetchers.for(source, product_name, options)
         new_license = License.new(fetcher)
         return unless new_license.id
 

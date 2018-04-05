@@ -52,12 +52,15 @@ module Y2Packager
       # @param source       [:rpm,:url] Source to get the license from. For the time being,
       #   only :rpm is really supported.
       # @return [ProductLicense]
-
-      def find(product_name, source = :rpm)
+      def find(product_name, source = :rpm, options = {})
         return cache[product_name] if cache[product_name]
-        license = License.find(product_name, source)
+        license = License.find(product_name, source, options)
         return nil unless license
         cache[product_name] = ProductLicense.new(product_name, license, source: source)
+      end
+
+      def find_or_create(product_name, content)
+        find(product_name, :dummy, {content: content})
       end
 
       # Clear product licenses cache

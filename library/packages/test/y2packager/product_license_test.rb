@@ -31,7 +31,8 @@ describe Y2Packager::ProductLicense do
     end
 
     it "returns a product license for the given product" do
-      expect(Y2Packager::License).to receive(:find).with("SLES", :rpm).and_return(license)
+      expect(Y2Packager::License).to receive(:find).with("SLES", :rpm, {})
+        .and_return(license)
       product_license = described_class.find("SLES", :rpm)
       expect(product_license).to be_a(Y2Packager::ProductLicense)
       expect(product_license.license).to eq(license)
@@ -47,6 +48,15 @@ describe Y2Packager::ProductLicense do
 
     context "when license does not have an id" do
       it "returns nil"
+    end
+  end
+
+  describe ".find_or_create" do
+    it "returns a product license with the given content" do
+      product_license = described_class.find_or_create("SLES", "Some predefined content")
+      expect(product_license).to be_a(Y2Packager::ProductLicense)
+      license = product_license.license
+      expect(license.content_for).to eq("Some predefined content")
     end
   end
 
