@@ -46,7 +46,6 @@ module Y2Packager
         return cache[product_name] if cache[product_name]
 
         fetcher = source ? LicensesFetchers.for(source, product_name) : nil
-        # This could be done in the constructor.
         new_license = License.new(fetcher: fetcher, content: content)
         return unless new_license.id
 
@@ -78,8 +77,11 @@ module Y2Packager
     # content. The reason is that, in some parts of YaST, the license content/translations
     # is retrieved in different ways. We might need to unify them.
     #
-    # @param fetcher [:rpm,nil] Fetcher to retrieve licenses information.
-    # @param content [String]   License content. If this argument is given, this
+    # Bear in mind that `fetcher` will be ignored if `content` is specified.
+    #
+    # @param fetcher [:rpm]   Fetcher to retrieve licenses information. For the time
+    #   being, only :rpm is supported.
+    # @param content [String] License content. If this argument is given, this
     #   string is used as the license's content (and `source` is ignored).
     def initialize(fetcher: nil, content: nil)
       @accepted = false
