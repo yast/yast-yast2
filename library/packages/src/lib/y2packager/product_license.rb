@@ -30,7 +30,7 @@ module Y2Packager
   class ProductLicense
     extend Forwardable
 
-    def_delegators :@license, :content_for, :locales, :accept!, :reject!
+    def_delegators :@license, :content_for, :locales
 
     # @!method license_confirmation_required?
     #   Determine whether the license should be accepted or not
@@ -81,11 +81,39 @@ module Y2Packager
       @handler = Y2Packager::LicensesHandlers.for(source, product_name) if source
     end
 
-    # Determines whether the license have been accepted or not
+    # Determine whether the license have been accepted or not
     #
     # @return [Boolean] true if the license has been accepted; false otherwise.
     def accepted?
       license.accepted?
+      sync_acceptance
+    end
+
+    # Accept the license
+    #
+    # As a side effect, it will update the source acceptance
+    #
+    # @return [Boolean] true if the license has been accepted; false otherwise.
+    def accept!
+      license.accept!
+      sync_acceptance
+      license.accepted?
+    end
+
+    # Reject the license
+    #
+    # @return [Boolean] true if the license has been accepted; false otherwise.
+    def reject!
+      license.reject!
+      sync_acceptance
+      license.accepted?
+    end
+
+  private
+
+    def sync_acceptance
+      return @handler unless @handler
+      @handler.confirmation = license.accepted?
     end
   end
 end

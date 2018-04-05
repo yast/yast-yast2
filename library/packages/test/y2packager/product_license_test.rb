@@ -16,13 +16,18 @@ require_relative "../test_helper"
 require "y2packager/product_license"
 
 describe Y2Packager::ProductLicense do
-  subject(:product_license) { Y2Packager::ProductLicense.new(product_name, license) }
+  subject(:product_license) do
+    Y2Packager::ProductLicense.new(product_name, license, source: :libzypp)
+  end
 
-  let(:license) { instance_double(Y2Packager::License) }
+  let(:license) { instance_double(Y2Packager::License, accept!: true, reject!: false) }
   let(:product_name) { "SLES" }
+  let(:handler) { instance_double(Y2Packager::LicensesHandlers::Libzypp, :confirmation= => nil) }
 
   before do
     described_class.clear_cache
+    allow(Y2Packager::LicensesHandlers).to receive(:for)
+      .with(:libzypp, product_name).and_return(handler)
   end
 
   describe ".find" do
@@ -80,16 +85,46 @@ describe Y2Packager::ProductLicense do
   end
 
   describe "#accept!" do
+    subject(:product_license) do
+      Y2Packager::ProductLicense.new(product_name, license, source: :libzypp)
+    end
+
+    let(:license) { Y2Packager::License.new(content: "Some content") }
+
     it "delegates to License#accept!" do
-      expect(license).to receive(:accept!)
+      expect(license).to receive(:accept!).and_call_original
       product_license.accept!
+    end
+
+    it "returns true" do
+      expect(product_license.accept!).to eq(true)
+    end
+
+    context "when a handler for the source is given" do
+      it "synchronizes the source" do
+        expect(handler).to receive(:confirmation=).with(true)
+        product_license.accept!
+      end
     end
   end
 
   describe "#reject!" do
+    let(:license) { Y2Packager::License.new(content: "Some content") }
+
     it "delegates to License#reject!" do
       expect(license).to receive(:reject!)
       product_license.reject!
+    end
+
+    it "returns false" do
+      expect(product_license.reject!).to eq(false)
+    end
+
+    context "when a handler for the source is given" do
+      it "synchronizes the source" do
+        expect(handler).to receive(:confirmation=).with(false)
+        product_license.reject!
+      end
     end
   end
 
