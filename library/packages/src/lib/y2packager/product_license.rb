@@ -85,28 +85,24 @@ module Y2Packager
     #
     # @return [Boolean] true if the license has been accepted; false otherwise.
     def accepted?
-      license.accepted?
       sync_acceptance
+      license.accepted?
     end
 
     # Accept the license
     #
     # As a side effect, it will update the source acceptance
-    #
-    # @return [Boolean] true if the license has been accepted; false otherwise.
     def accept!
       license.accept!
       sync_acceptance
-      license.accepted?
+      nil
     end
 
     # Reject the license
-    #
-    # @return [Boolean] true if the license has been accepted; false otherwise.
     def reject!
       license.reject!
       sync_acceptance
-      license.accepted?
+      nil
     end
 
   private

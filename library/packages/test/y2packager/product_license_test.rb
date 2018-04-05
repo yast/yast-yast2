@@ -96,13 +96,18 @@ describe Y2Packager::ProductLicense do
       product_license.accept!
     end
 
-    it "returns true" do
-      expect(product_license.accept!).to eq(true)
-    end
-
     context "when a handler for the source is given" do
       it "synchronizes the source" do
         expect(handler).to receive(:confirmation=).with(true)
+        product_license.accept!
+      end
+    end
+
+    context "when a handler was not given" do
+      let(:handler) { nil }
+
+      it "does not try to synchronize the status and does not crash" do
+        expect(license).to receive(:accept!).and_call_original
         product_license.accept!
       end
     end
@@ -116,27 +121,61 @@ describe Y2Packager::ProductLicense do
       product_license.reject!
     end
 
-    it "returns false" do
-      expect(product_license.reject!).to eq(false)
-    end
-
     context "when a handler for the source is given" do
       it "synchronizes the source" do
         expect(handler).to receive(:confirmation=).with(false)
         product_license.reject!
       end
     end
+
+    context "when a handler was not given" do
+      let(:handler) { nil }
+
+      it "does not try to synchronize the status and does not crash" do
+        expect(license).to receive(:reject!).and_call_original
+        product_license.reject!
+      end
+    end
   end
 
   describe "#accepted?" do
-    context "if the product license has been accepted" do
-      it "returns true"
+    before do
+      allow(license).to receive(:accepted?).and_return(accepted?)
     end
 
     context "if the product license has been accepted" do
-      it "returns false"
+      let(:accepted?) { true }
+
+      it "returns true" do
+        expect(product_license).to be_accepted
+      end
+
+      it "synchronizes the source" do
+        expect(handler).to receive(:confirmation=).with(true)
+        product_license.reject!
+      end
     end
 
-    context "synchronizes the license status"
+    context "if the product license has not been accepted" do
+      let(:accepted?) { false }
+
+      it "returns false" do
+        expect(product_license).to_not be_accepted
+      end
+
+      it "synchronizes the source" do
+        expect(handler).to receive(:confirmation=).with(false)
+        product_license.reject!
+      end
+    end
+
+    context "when a handler was not given" do
+      let(:handler) { nil }
+      let(:accepted?) { true }
+
+      it "does not try to synchronize the status and does not crash" do
+        product_license.accepted?
+      end
+    end
   end
 end
