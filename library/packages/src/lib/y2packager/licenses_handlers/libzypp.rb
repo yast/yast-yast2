@@ -18,7 +18,7 @@ module Y2Packager
   module LicensesHandlers
     # This class is responsible for interacting with libzypp in order to get/set
     # the license acceptance status for a given product
-    class Rpm < Base
+    class Libzypp < Base
       # Determine whether the license should be accepted or not
       #
       # @return [Boolean] true if the license acceptance is required

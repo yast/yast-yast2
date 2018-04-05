@@ -192,7 +192,7 @@ describe Y2Packager::Product do
     end
 
     it "returns the product license" do
-      expect(Y2Packager::ProductLicense).to receive(:find).with(product.name, source: :rpm)
+      expect(Y2Packager::ProductLicense).to receive(:find).with(product.name, source: :libzypp)
         .and_return(product_license)
       expect(product.license).to be(product_license)
     end

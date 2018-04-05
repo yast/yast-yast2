@@ -199,7 +199,7 @@ module Y2Packager
     # @param lang [String] Language
     # @return [ProductLicense,nil] Product's license; nil if the license was not found.
     def license
-      @license ||= ProductLicense.find(name, source: :rpm)
+      @license ||= ProductLicense.find(name, source: :libzypp)
     end
 
     # Return the license text to be confirmed

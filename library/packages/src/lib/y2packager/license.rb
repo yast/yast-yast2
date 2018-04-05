@@ -36,9 +36,9 @@ module Y2Packager
       # This method uses a cache to return the same license if it was already
       # used for another product.
       #
-      # @param product_name [String]   Product's name
-      # @param source       [:rpm,nil] Source to get the license from. For the time being,
-      #   only :rpm is supported.
+      # @param product_name [String]       Product's name
+      # @param source       [:libzypp,nil] Source to get the license from. For the time being,
+      #   only :libzypp is supported.
       # @param content      [String]   License content. If this argument is given, this
       #   string is used as the license's content (and `source` is ignored).
       # @return [License]
@@ -79,9 +79,9 @@ module Y2Packager
     #
     # Bear in mind that `fetcher` will be ignored if `content` is specified.
     #
-    # @param fetcher [:rpm]   Fetcher to retrieve licenses information. For the time
-    #   being, only :rpm is supported.
-    # @param content [String] License content. If this argument is given, this
+    # @param fetcher [:libzypp] Fetcher to retrieve licenses information. For the time
+    #   being, only :libzypp is supported.
+    # @param content [String]   License content. If this argument is given, this
     #   string is used as the license's content (and `source` is ignored).
     def initialize(fetcher: nil, content: nil)
       @accepted = false

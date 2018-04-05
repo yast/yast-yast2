@@ -15,7 +15,7 @@ require_relative "../../test_helper"
 
 require "y2packager/product_license"
 
-describe Y2Packager::LicensesHandlers::Rpm do
+describe Y2Packager::LicensesHandlers::Libzypp do
   subject(:handler) { described_class.new(product_name) }
 
   let(:product_name) { "SLES" }

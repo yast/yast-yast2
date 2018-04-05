@@ -19,12 +19,12 @@ describe Y2Packager::License do
   subject(:license) { Y2Packager::License.new(fetcher: fetcher) }
 
   let(:fetcher) do
-    instance_double(Y2Packager::LicensesFetchers::Rpm, content: "license")
+    instance_double(Y2Packager::LicensesFetchers::Libzypp, content: "license")
   end
 
   before do
     described_class.clear_cache
-    allow(Y2Packager::LicensesFetchers::Rpm).to receive(:new).and_return(fetcher)
+    allow(Y2Packager::LicensesFetchers::Libzypp).to receive(:new).and_return(fetcher)
   end
 
   describe ".find" do
@@ -32,7 +32,7 @@ describe Y2Packager::License do
       it "uses a fetcher to build the license" do
         expect(Y2Packager::License).to receive(:new).with(fetcher: fetcher, content: nil)
           .and_return(license)
-        expect(described_class.find("SLES", source: :rpm)).to be(license)
+        expect(described_class.find("SLES", source: :libzypp)).to be(license)
       end
     end
 
@@ -46,8 +46,8 @@ describe Y2Packager::License do
 
     context "when a license with the same ID was already retrieved" do
       it "returns the already retrieved instance" do
-        sles_license = described_class.find("SLES", source: :rpm)
-        sled_license = described_class.find("SLED", source: :rpm)
+        sles_license = described_class.find("SLES", source: :libzypp)
+        sled_license = described_class.find("SLED", source: :libzypp)
         expect(sles_license).to be(sled_license)
       end
     end
@@ -58,8 +58,8 @@ describe Y2Packager::License do
       end
 
       it "returns a new license instance" do
-        sles_license = described_class.find("SLES", source: :rpm)
-        sled_license = described_class.find("SLED", source: :rpm)
+        sles_license = described_class.find("SLES", source: :libzypp)
+        sled_license = described_class.find("SLED", source: :libzypp)
         expect(sles_license).to_not be(sled_license)
         expect(sles_license.id).to_not eq(sled_license.id)
       end

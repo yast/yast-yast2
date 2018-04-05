@@ -16,7 +16,7 @@ module Y2Packager
   module LicensesFetchers
     # This class is responsible for obtaining the license and license content
     # of a given product from libzypp.
-    class Rpm < Base
+    class Libzypp < Base
       # Return the license text to be confirmed
       #
       # @param lang [String] Language

@@ -54,12 +54,12 @@ y2rns_fetchers_DATA = \
 y2licenses_fetchersdir = "${yast2dir}/lib/y2packager/licenses_fetchers"
 y2licenses_fetchers_DATA = \
 	lib/y2packager/licenses_fetchers/base.rb \
-	lib/y2packager/licenses_fetchers/rpm.rb
+	lib/y2packager/licenses_fetchers/libzypp.rb
 
 y2licenses_handlersdir = "${yast2dir}/lib/y2packager/licenses_handlers"
 y2licenses_handlers_DATA = \
 	lib/y2packager/licenses_handlers/base.rb \
-	lib/y2packager/licenses_handlers/rpm.rb
+	lib/y2packager/licenses_handlers/libzypp.rb
 
 EXTRA_DIST = $(module_DATA) $(ynclude_DATA) $(ylib_DATA) $(y2packager_DATA) $(y2rns_fetchers_DATA) \
 						 $(y2licenses_fetchers_DATA) $(y2licenses_handlers_DATA)

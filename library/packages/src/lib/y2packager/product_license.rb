@@ -49,9 +49,9 @@ module Y2Packager
       #
       # This method uses a cache to return an already fetched product license.
       #
-      # @param product_name [String]   Product's name
-      # @param source       [:rpm,nil] Source to get the license from. For the time being,
-      #   only :rpm is really supported.
+      # @param product_name [String]       Product's name
+      # @param source       [:libzypp,nil] Source to get the license from. For the time being,
+      #   only :libzypp is really supported.
       # @return [ProductLicense]
       def find(product_name, source: nil, content: nil)
         return cache[product_name] if cache[product_name]
@@ -74,7 +74,7 @@ module Y2Packager
     #
     # @param product_name [String] Product name to get licenses for
     # @param source       [Symbol] Backend to use when syncing the licenses acceptance status
-    #   (only :rpm is supported)
+    #   (only :libzypp is supported)
     def initialize(product_name, license, source: nil)
       @product_name = product_name
       @license = license

@@ -31,17 +31,17 @@ describe Y2Packager::ProductLicense do
     end
 
     it "returns a product license for the given product" do
-      expect(Y2Packager::License).to receive(:find).with("SLES", source: :rpm, content: nil)
+      expect(Y2Packager::License).to receive(:find).with("SLES", source: :libzypp, content: nil)
         .and_return(license)
-      product_license = described_class.find("SLES", source: :rpm)
+      product_license = described_class.find("SLES", source: :libzypp)
       expect(product_license).to be_a(Y2Packager::ProductLicense)
       expect(product_license.license).to eq(license)
     end
 
     context "when the product license was already found" do
       it "returns the already found instance" do
-        cached_product_license = described_class.find("SLES", source: :rpm)
-        product_license = described_class.find("SLES", source: :rpm)
+        cached_product_license = described_class.find("SLES", source: :libzypp)
+        product_license = described_class.find("SLES", source: :libzypp)
         expect(product_license).to be(cached_product_license)
       end
     end
@@ -52,7 +52,7 @@ describe Y2Packager::ProductLicense do
       end
 
       it "returns nil" do
-        expect(described_class.find("SLES", source: :rpm)).to be_nil
+        expect(described_class.find("SLES", source: :libzypp)).to be_nil
       end
     end
 
