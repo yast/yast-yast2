@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Thu Apr  5 17:38:35 UTC 2018 - igonzalezsosa@suse.com
 
-- Use SHA1 instead of MD5 when determining whether a license
+- Use SHA2 instead of MD5 when determining whether a license
   was already accepted or not (related to fate#325461).
 - 4.0.64
 

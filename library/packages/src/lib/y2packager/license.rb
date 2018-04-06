@@ -110,7 +110,7 @@ module Y2Packager
       return @id if @id
       content = content_for(DEFAULT_LANG)
       return unless content
-      @id = Digest::SHA1.hexdigest(content)
+      @id = Digest::SHA2.hexdigest(content)
     end
 
     # Return the license translated content for the given language
