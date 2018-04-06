@@ -339,7 +339,7 @@ SELECTED_GUI=ncurses
 # if we have a DISPLAY or WAYLAND_DISPLAY, select a preferred GUI
 if [ -n "$DISPLAY" -o -n "$WAYLAND_DISPLAY" ]; then
     select_gui_frontend
-    # for wayland only environment, switch qt to use it
+    # for wayland only environment, switch qt to use it (bsc#1083907)
     if [ -n "$WAYLAND_DISPLAY" -a -z "$DISPLAY" ]; then
       export QT_QPA_PLATFORM=wayland
     fi
