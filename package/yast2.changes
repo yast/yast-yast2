@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  6 09:19:55 UTC 2018 - jreidinger@suse.com
+
+- improve wayland support (bsc#1083907)
+- 4.0.65
+
+-------------------------------------------------------------------
 Thu Apr  5 17:38:35 UTC 2018 - igonzalezsosa@suse.com
 
 - Use SHA2 instead of MD5 when determining whether a license
