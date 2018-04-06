@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr  6 16:47:35 UTC 2018 - jlopez@suse.com
+
+- Update dependency of yast2-ruby-bindings to handle direct abort
+  using a specific exception (needed for fate#318196).
+- 4.0.66
+
+-------------------------------------------------------------------
 Fri Apr  6 09:19:55 UTC 2018 - jreidinger@suse.com
 
 - improve wayland support (bsc#1083907)
