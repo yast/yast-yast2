@@ -16,7 +16,7 @@
 #
 
 Name:           yast2
-Version:        4.0.65
+Version:        4.0.66
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0
@@ -80,8 +80,8 @@ Requires:       yast2-hardware-detection
 Requires:       yast2-perl-bindings
 # changed StartPackage callback signature
 Requires:       yast2-pkg-bindings >= 2.20.3
-# for y2start
-Requires:       yast2-ruby-bindings >= 3.2.10
+# for AbortException and handle direct abort
+Requires:       yast2-ruby-bindings >= 4.0.6
 Requires:       yast2-xml
 # new UI::SetApplicationTitle
 Requires:       yast2-ycp-ui-bindings >= 3.2.0
