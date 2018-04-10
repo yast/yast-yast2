@@ -21,7 +21,7 @@ module Y2Packager
     Yast.import "Pkg"
 
     # mapping with upgraded products to handle some corner cases,
-    # maps installed products to a new base product
+    # maps installed products to a new available base product
     MAPPING = {
       # SLES12 + HPC module => SLESHPC15
       # (a bit tricky, the module became a new base product!)
@@ -34,7 +34,10 @@ module Y2Packager
       ["SUSE_SLED"]              => "SLED",
       # SLES4SAP11 => SLES4SAP15
       ["SUSE_SLES_SAP"]          => "SLES_SAP",
-      # openSUSE => SLES
+      # (installed) openSUSE => (available) SLES,
+      # this one is used when openSUSE is not available, e.g. booting SLE medium
+      # (moreover the openSUSE medium should contain only one product so that
+      # product should be used unconditionally)
       ["openSUSE"]               => "SLES"
     }.freeze
 
