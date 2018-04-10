@@ -32,6 +32,8 @@ require "yast"
 
 module Yast
   class WizardClass < Module
+    DEFAULT_ICON_NAME = "yast".freeze
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -64,9 +66,8 @@ module Yast
       @relnotes_button_label = ""
       @relnotes_button_id = ""
 
-      @icon_dir = File.join(Directory.themedir, "current", "icons",
-        "64x64", "apps")
-      @icon_name = "yast"
+      # Current icon name to set.
+      @icon_name = DEFAULT_ICON_NAME
     end
 
     def haveFancyUI
@@ -1158,17 +1159,13 @@ module Yast
     #	SetDesktopIcon ("lan")
     def SetDesktopIcon(file)
       description = Desktop.ParseSingleDesktopFile(file)
-
       return false unless description
 
-      icon = description["icon"]
-
-      return false unless icon
+      icon = description["Icon"]
+      return false if !icon || icon.empty?
 
       @icon_name = icon
       set_icon
-
-      true
     end
 
     # Convenience function to avoid 2 calls if application needs to set
@@ -1194,7 +1191,10 @@ module Yast
       Builtins.y2debug("Set dialog title: %1", name)
       SetDialogTitle(name)
 
-      SetDesktopIcon(file)
+      if description && (icon = description["Icon"]) && !icon.empty?
+        @icon_name = icon
+        set_icon
+      end
 
       Builtins.haskey(description, "Name")
     end
@@ -1868,8 +1868,24 @@ module Yast
     # This should be called only immediately before opening a dialog; premature
     # UI calls can interfere with the CommandLine mode.
     def set_icon
-      icon_path = File.join(@icon_dir, "#{@icon_name}.png")
+      icon_glob = File.join(
+        "{" + Directory.icondir + ",/usr/share/icons/hicolor}",
+        "{64x64,48x48,32x32,22x22,16x16}", "apps", "#{@icon_name}.png"
+      )
+      icon_path = ""
+      Dir.glob(icon_glob) do |path|
+        icon_path = path
+        break
+      end
+
+      if icon_path.empty?
+        Builtins.y2warning("Cannot set application icon to \"%1.png\"", @icon_name)
+        @icon_name = DEFAULT_ICON_NAME
+        return false
+      end
+
       UI.SetApplicationIcon(icon_path)
+      true
     end
   end
 
