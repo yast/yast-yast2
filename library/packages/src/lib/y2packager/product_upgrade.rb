@@ -20,7 +20,7 @@ module Y2Packager
 
     Yast.import "Pkg"
 
-    # fallback mapping with upgraded products to handle some corner cases,
+    # mapping with upgraded products to handle some corner cases,
     # maps installed products to a new base product
     MAPPING = {
       # SLES12 + HPC module => SLESHPC15
@@ -33,7 +33,9 @@ module Y2Packager
       # SLED11 => SLED15
       ["SUSE_SLED"]              => "SLED",
       # SLES4SAP11 => SLES4SAP15
-      ["SUSE_SLES_SAP"]          => "SLES_SAP"
+      ["SUSE_SLES_SAP"]          => "SLES_SAP",
+      # openSUSE => SLES
+      ["openSUSE"]               => "SLES"
     }.freeze
 
     class << self
@@ -44,19 +46,15 @@ module Y2Packager
       #  1) If there is only one available base product then just use it,
       #     there are no other options than to upgrade to this product.
       #
-      #  2) Let the solver to evaluate the product versions, their dependencies,
-      #     Obsoletes/Provides, ... and find the correct upgrade candidate.
+      #  2) TODO: Somehow evaluate the available and installed products and
+      #     find the best upgrade candidate.
       #
-      #     However, this step is quite fragile as the solver evaluates *all*
-      #     packages, not just the products. That means the solver might fail
-      #     because of some unrelated package dependency issue and cannot
-      #     find the correct upgrade candidate. That's more likely when using
-      #     custom or 3rd party packages.
+      #     Note: We cannot use the solver here because it evaluates *all*
+      #     packages, not just the products. Moreover some products
+      #     (modules/extensions) might be added later which could change
+      #     the best upgrade candidate.
       #
-      #     If the solver fails then we try some fallback mechanisms for finding
-      #     the new product.
-      #
-      #  3) Use a harcoded fallback mapping with the list of installed products
+      #  3) Use a harcoded mapping with the list of installed products
       #     mapped to a new base product product. The static mapping is needed to
       #     handle some corner cases properly. This includes product renames or
       #     changing a module to a base product.
@@ -75,10 +73,6 @@ module Y2Packager
 
         # just one product?
         product = find_by_count(available)
-        return product if product
-
-        # found by solver?
-        product = find_by_solver
         return product if product
 
         # found by hardcoded mapping?
@@ -100,31 +94,6 @@ module Y2Packager
         # only one base product available, we can upgrade only to this product
         log.info("Only one base product available: #{available.first}")
         available.first
-      end
-
-      # We do not know which available product might upgrade the installed product
-      # if the installation medium contains several products.
-      # Temporarily turn on the update mode to let the solver select the product for upgrade,
-      # this will correctly handle possible product renames specified via Obsoletes/Provides.
-      # @return [Y2Packager::Product,nil] the new upgraded product
-      def find_by_solver
-        # store the current resolvable states
-        Yast::Pkg.SaveState
-
-        # run the solver in the upgrade mode
-        Yast::Pkg.PkgUpdateAll({})
-        log_products
-
-        product = Y2Packager::Product.selected_base
-        # save the solver test case for easier debugging if no product upgrade was found
-        Yast::Pkg.CreateSolverTestCase("/var/log/YaST2/solver-product-upgrade") unless product
-
-        # restore the original resolvable states
-        Yast::Pkg.RestoreState
-        log_products
-
-        log.info("Upgraded base product found by solver: #{product.inspect}")
-        product
       end
 
       # find the upgrade product from the fallback mapping

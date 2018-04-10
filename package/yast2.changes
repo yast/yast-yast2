@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Apr 10 11:38:23 UTC 2018 - lslezak@suse.cz
+
+- Do not use the solver for finding the best product upgrade
+  candidate, it does not work correctly in the SLES + sle-module-hpc
+  => SLES_HPC case (bsc#1086734)
+- 4.0.67
+
+-------------------------------------------------------------------
 Tue Apr 10 07:25:08 UTC 2018 - jreidinger@suse.com
 
 - Fix early exit of installation when initial install url is
