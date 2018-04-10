@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr 10 07:25:08 UTC 2018 - jreidinger@suse.com
+
+- Fix early exit of installation when initial install url is
+  invalid and later fixed (bsc#1086840)
+- 4.0.66
+
+-------------------------------------------------------------------
 Fri Apr  6 09:19:55 UTC 2018 - jreidinger@suse.com
 
 - improve wayland support (bsc#1083907)
