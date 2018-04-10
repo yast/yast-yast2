@@ -27,15 +27,17 @@ module Y2Packager
       # This map contains the correspondence between products and the
       # installation package for each product.
       #
-      # The information is read only once and cached for further queries.
+      # The information is always read again. Reason is that that url can be invalid,
+      # but user fix it later. This way it cache invalid result. See bsc#1086840
+      # ProductReader instance cache it properly, but caching for installation life-time
+      # should be prevented.
       #
       # @return [Hash<String,String>] product name -> installation package name
       def installation_package_mapping
-        return @installation_package_mapping if @installation_package_mapping
         installation_packages = Yast::Pkg.PkgQueryProvides("system-installation()")
         log.info "Installation packages: #{installation_packages.inspect}"
 
-        @installation_package_mapping = {}
+        installation_package_mapping = {}
         installation_packages.each do |list|
           pkg_name = list.first
           # There can be more instances of same package in different version. We except that one
@@ -49,10 +51,10 @@ module Y2Packager
           # `system-installation() = <product_name>`
           product_name = install_provide["provides"][/system-installation\(\)\s*=\s*(\S+)/, 1]
           log.info "package #{pkg_name} install product #{product_name}"
-          @installation_package_mapping[product_name] = pkg_name
+          installation_package_mapping[product_name] = pkg_name
         end
 
-        @installation_package_mapping
+        installation_package_mapping
       end
     end
 
@@ -161,7 +163,7 @@ module Y2Packager
     end
 
     def installation_package_mapping
-      self.class.installation_package_mapping
+      @installation_package_mapping ||= self.class.installation_package_mapping
     end
   end
 end
