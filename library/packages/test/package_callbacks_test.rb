@@ -284,6 +284,19 @@ describe Yast::PackageCallbacks do
       end
     end
 
+    context "when error is unknown" do
+      let(:error) { 256 }
+
+      it "returns 'I'" do
+        expect(subject.DoneProvide(error, reason, name)).to eq("I")
+      end
+
+      it "logs the unknown error code" do
+        expect(subject.log).to receive(:warn).with("DoneProvide: unknown error '256'")
+        subject.DoneProvide(error, reason, name)
+      end
+    end
+
     context "when user asks to abort" do
       let(:user_input) { [:abort] }
 

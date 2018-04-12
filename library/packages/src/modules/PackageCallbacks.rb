@@ -216,10 +216,13 @@ module Yast
       end
 
       message =
-        if error == 3
-          Builtins.sformat(_("Package %1 is broken, integrity check has failed."), name)
-        elsif error == 2
+        case error
+        when 2
           Builtins.sformat(_("Package %1 could not be downloaded (input/output error)."), name)
+        when 3
+          Builtins.sformat(_("Package %1 is broken, integrity check has failed."), name)
+        else
+          log.warn "DoneProvide: unknown error '#{error}'"
         end
 
       # IO/INVALID
