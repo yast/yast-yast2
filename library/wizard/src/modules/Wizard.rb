@@ -33,6 +33,7 @@ require "yast"
 module Yast
   class WizardClass < Module
     DEFAULT_ICON_NAME = "yast".freeze
+    FALLBACK_ICON_DIR = "/usr/share/icon/hicolor".freeze
 
     def main
       Yast.import "UI"
@@ -1161,8 +1162,8 @@ module Yast
       description = Desktop.ParseSingleDesktopFile(file)
       return false unless description
 
-      icon = description["Icon"]
-      return false if !icon || icon.empty?
+      icon = description["Icon"].to_s
+      return false if icon.empty?
 
       @icon_name = icon
       set_icon
@@ -1190,11 +1191,7 @@ module Yast
 
       Builtins.y2debug("Set dialog title: %1", name)
       SetDialogTitle(name)
-
-      if description && (icon = description["Icon"]) && !icon.empty?
-        @icon_name = icon
-        set_icon
-      end
+      SetDesktopIcon(file)
 
       Builtins.haskey(description, "Name")
     end
@@ -1867,16 +1864,10 @@ module Yast
     #
     # This should be called only immediately before opening a dialog; premature
     # UI calls can interfere with the CommandLine mode.
+    #
+    # @return [Boolean] true if the application icon was set; false otherwise
     def set_icon
-      icon_glob = File.join(
-        "{" + Directory.icondir + ",/usr/share/icons/hicolor}",
-        "{64x64,48x48,32x32,22x22,16x16}", "apps", "#{@icon_name}.png"
-      )
-      icon_path = ""
-      Dir.glob(icon_glob) do |path|
-        icon_path = path
-        break
-      end
+      icon_path = paths_for(@icon_name).first.to_s
 
       if icon_path.empty?
         Builtins.y2warning("Cannot set application icon to \"%1.png\"", @icon_name)
@@ -1886,6 +1877,19 @@ module Yast
 
       UI.SetApplicationIcon(icon_path)
       true
+    end
+
+    # Convenience method that returns all the available icon paths for a given
+    # icon name
+    #
+    # @param name [String] icon name
+    # @return [Array<String>, nil] list with the available icon paths; nil if
+    # not found
+    def paths_for(icon_name)
+      icon_dirs = "{#{Directory.icondir}, #{FALLBACK_ICON_DIR}}"
+      sizes = "{64x64,48x48,32x32,22x22,16x16}"
+
+      Dir.glob(File.join(icon_dirs, sizes, "apps", "#{icon_name}.png"))
     end
   end
 
