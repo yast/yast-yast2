@@ -215,13 +215,16 @@ module Yast
         return "C"
       end
 
-      # INVALID
-      if error == 3
+      message =
+        if error == 3
+          Builtins.sformat(_("Package %1 is broken, integrity check has failed."), name)
+        elsif error == 2
+          Builtins.sformat(_("Package %1 could not be downloaded (input/output error)."), name)
+        end
+
+      # IO/INVALID
+      if message
         # error message, %1 is a package name
-        message = Builtins.sformat(
-          _("Package %1 is broken, integrity check has failed."),
-          name
-        )
 
         if Mode.commandline
           CommandLine.Print(message)
@@ -286,9 +289,8 @@ module Yast
             if @showLongInfo
               error_symbol = "ERROR"
 
-              if error == 1
-                error_symbol = "NOT_FOUND"
-              elsif error == 2
+              # https://github.com/openSUSE/libzypp/blob/8dda46306f06440e1acaefb36fb60f6ce909fd42/zypp/ZYppCallbacks.h#L106
+              if error == 2
                 error_symbol = "IO"
               elsif error == 3
                 error_symbol = "INVALID"

@@ -253,4 +253,69 @@ describe Yast::PackageCallbacks do
       end
     end
   end
+
+  describe "#DoneProvide" do
+    let(:error) { 2 }
+    let(:reason) { "Some reason" }
+    let(:name) { "yast2-packager" }
+    let(:user_input) { [:abort] }
+
+    before do
+      allow(Yast::UI).to receive(:UserInput).and_return(*user_input)
+    end
+
+    context "when error is 2 (IO)" do
+      let(:error) { 2 }
+
+      it "reports the error to the user" do
+        expect(subject).to receive(:layout_popup)
+          .with(/Package yast2-packager could not be downloaded/, *any_args)
+        subject.DoneProvide(error, reason, name)
+      end
+    end
+
+    context "when error is 3 (INVALID)" do
+      let(:error) { 3 }
+
+      it "reports the error to the user" do
+        expect(subject).to receive(:layout_popup)
+          .with(/Package yast2-packager is broken/, *any_args)
+        subject.DoneProvide(error, reason, name)
+      end
+    end
+
+    context "when user asks to abort" do
+      let(:user_input) { [:abort] }
+
+      it "returns 'C'" do
+        expect(subject.DoneProvide(error, reason, name)).to eq("C")
+      end
+    end
+
+    context "when user asks to retry" do
+      let(:user_input) { [:retry] }
+
+      it "returns 'R'" do
+        expect(subject.DoneProvide(error, reason, name)).to eq("R")
+      end
+    end
+
+    context "when user asks to ignore" do
+      let(:user_input) { [:ignore] }
+
+      it "returns 'I'" do
+        expect(subject.DoneProvide(error, reason, name)).to eq("I")
+      end
+    end
+
+    context "when the user asks to show more details" do
+      let(:user_input) { [:show, :ignore] }
+
+      it "shows the reason" do
+        allow(subject).to receive(:show_log_info).and_return(true)
+        expect(subject).to receive(:RichText).with(anything, /#{reason}/)
+        subject.DoneProvide(error, reason, name)
+      end
+    end
+  end
 end
