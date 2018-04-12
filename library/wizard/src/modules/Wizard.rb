@@ -32,6 +32,9 @@ require "yast"
 
 module Yast
   class WizardClass < Module
+    DEFAULT_ICON_NAME = "yast".freeze
+    FALLBACK_ICON_DIR = "/usr/share/icon/hicolor".freeze
+
     def main
       Yast.import "UI"
       textdomain "base"
@@ -64,9 +67,8 @@ module Yast
       @relnotes_button_label = ""
       @relnotes_button_id = ""
 
-      @icon_dir = File.join(Directory.themedir, "current", "icons",
-        "64x64", "apps")
-      @icon_name = "yast"
+      # Current icon name to set.
+      @icon_name = DEFAULT_ICON_NAME
     end
 
     def haveFancyUI
@@ -1158,17 +1160,13 @@ module Yast
     #	SetDesktopIcon ("lan")
     def SetDesktopIcon(file)
       description = Desktop.ParseSingleDesktopFile(file)
-
       return false unless description
 
-      icon = description["icon"]
-
-      return false unless icon
+      icon = description["Icon"].to_s
+      return false if icon.empty?
 
       @icon_name = icon
       set_icon
-
-      true
     end
 
     # Convenience function to avoid 2 calls if application needs to set
@@ -1193,7 +1191,6 @@ module Yast
 
       Builtins.y2debug("Set dialog title: %1", name)
       SetDialogTitle(name)
-
       SetDesktopIcon(file)
 
       Builtins.haskey(description, "Name")
@@ -1867,9 +1864,31 @@ module Yast
     #
     # This should be called only immediately before opening a dialog; premature
     # UI calls can interfere with the CommandLine mode.
+    #
+    # @return [Boolean] true if the application icon was set; false otherwise
     def set_icon
-      icon_path = File.join(@icon_dir, "#{@icon_name}.png")
+      icon_path = paths_for(@icon_name).first.to_s
+
+      if icon_path.empty?
+        Builtins.y2warning("Cannot set application icon to \"%1.png\"", @icon_name)
+        @icon_name = DEFAULT_ICON_NAME
+        return false
+      end
+
       UI.SetApplicationIcon(icon_path)
+      true
+    end
+
+    # Convenience method that returns all the available icon paths for a given
+    # icon name
+    #
+    # @param name [String] icon name
+    # @return [Array<String>] list with the available icon paths
+    def paths_for(icon_name)
+      icon_dirs = "{#{Directory.icondir}, #{FALLBACK_ICON_DIR}}"
+      sizes = "{64x64,48x48,32x32,22x22,16x16}"
+
+      Dir.glob(File.join(icon_dirs, sizes, "apps", "#{icon_name}.png"))
     end
   end
 
