@@ -1883,8 +1883,7 @@ module Yast
     # icon name
     #
     # @param name [String] icon name
-    # @return [Array<String>, nil] list with the available icon paths; nil if
-    # not found
+    # @return [Array<String>] list with the available icon paths
     def paths_for(icon_name)
       icon_dirs = "{#{Directory.icondir}, #{FALLBACK_ICON_DIR}}"
       sizes = "{64x64,48x48,32x32,22x22,16x16}"
