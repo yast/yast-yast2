@@ -21,16 +21,13 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CWMServiceStart.ycp
-# Package:	Common widget manipulation, service start widget
-# Summary:	Routines for service start widget handling
-# Authors:	Jiri Srain <jsrain@suse.cz>
-#
-# $Id$
-#
+
 require "yast"
 
 module Yast
+  # Routines for service start widget handling.
+  #
+  # NOTE: a modern API for this is {::UI::ServiceStatus}
   class CWMServiceStartClass < Module
     def main
       Yast.import "UI"
@@ -274,6 +271,9 @@ module Yast
 
     # Get the widget description map of the widget for service auto starting
     # settings
+    #
+    # NOTE: a modern API for this is {::UI::ServiceStatus}
+    #
     # @param [Hash{String => Object}] settings a map of all parameters needed to create the widget properly
     # <pre>
     #
