@@ -215,8 +215,12 @@ module Yast
         return "C"
       end
 
+      # https://github.com/openSUSE/libzypp/blob/8dda46306f06440e1acaefb36fb60f6ce909fd42/zypp/ZYppCallbacks.h#L106
       message =
         case error
+        when 1
+          # NOT_FOUND (error = 1) is handled via MediaChange callback.
+          nil
         when 2
           Builtins.sformat(_("Package %1 could not be downloaded (input/output error)."), name)
         when 3
