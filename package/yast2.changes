@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 12 13:38:26 UTC 2018 - igonzalezsosa@suse.com
+
+- Handle input/output errors in the DoneProvide package callback
+  (bsc#1088682).
+- 4.0.69
+
+-------------------------------------------------------------------
 Thu Apr 12 12:01:49 UTC 2018 - knut.anderssen@suse.com
 
 - Wizard: Fall back to smaller and/or hicolor icon if the icon for
