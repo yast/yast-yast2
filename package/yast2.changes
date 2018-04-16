@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr 16 14:48:27 CEST 2018 - snwint@suse.de
+
+- save_y2logs: save kernel messages and udev log (bsc#1089647,
+  bsc#1085212)
+- 4.0.70
+
+-------------------------------------------------------------------
 Thu Apr 12 13:38:26 UTC 2018 - igonzalezsosa@suse.com
 
 - Handle input/output errors in the DoneProvide package callback
