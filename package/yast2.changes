@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr 16 13:47:10 UTC 2018 - igonzalezsosa@suse.com
+
+- Do not crash when reading trying to determine available locales
+  for some licenses (bsc#1089610).
+- 4.0.71
+
+-------------------------------------------------------------------
 Mon Apr 16 14:48:27 CEST 2018 - snwint@suse.de
 
 - save_y2logs: save kernel messages and udev log (bsc#1089647,
