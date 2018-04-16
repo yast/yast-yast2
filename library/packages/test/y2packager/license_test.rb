@@ -169,6 +169,14 @@ describe Y2Packager::License do
     it "returns list of available translations for the license" do
       expect(license.locales).to eq(["en_US", "cz_CZ"])
     end
+
+    context "when the license was initialized using some content" do
+      subject(:license) { Y2Packager::License.new(content: "Some content") }
+
+      it "returns a list containing the default language" do
+        expect(license.locales).to eq([described_class::DEFAULT_LANG])
+      end
+    end
   end
 
   describe "#accept!" do
