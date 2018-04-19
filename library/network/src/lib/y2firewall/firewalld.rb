@@ -67,7 +67,8 @@ module Y2Firewall
     PACKAGE = "firewalld".freeze
     SERVICE = "firewalld".freeze
 
-    def_delegators :@api, :enable!, :disable!, :reload, :running?
+    def_delegators :@api, :complete_reload, :enable!, :disable!,
+      :reload, :running?, :runtime_to_permanent
 
     # Constructor
     def initialize
@@ -136,7 +137,7 @@ module Y2Firewall
 
     # Apply the changes to the modified zones and sets the logging option
     def write
-      write_only && reload
+      write_only && runtime_to_permanent
     end
 
     # Apply the changes to the modified zones and sets the logging option
