@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr 19 12:23:34 UTC 2018 - knut.anderssen@suse.com
+
+- Y2Firewall: When firewalld is running apply the changes directly
+  and make them permanent when writing (bsc#1088647)
+- 4.0.72
+
+-------------------------------------------------------------------
 Mon Apr 16 13:47:10 UTC 2018 - igonzalezsosa@suse.com
 
 - Do not crash when reading trying to determine available locales
