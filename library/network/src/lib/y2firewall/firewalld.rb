@@ -137,7 +137,9 @@ module Y2Firewall
 
     # Apply the changes to the modified zones and sets the logging option
     def write
-      write_only && runtime_to_permanent
+      return false unless write_only
+
+      api.permanent? ? complete_reload : runtime_to_permanent
     end
 
     # Apply the changes to the modified zones and sets the logging option

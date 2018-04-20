@@ -282,9 +282,7 @@ describe Y2Firewall::Firewalld do
   end
 
   describe "#write_only" do
-    let(:api) do
-      Y2Firewall::Firewalld::Api.new
-    end
+    let(:api) { Y2Firewall::Firewalld::Api.new }
 
     before do
       allow(firewalld).to receive("read?").and_return(true)
@@ -331,18 +329,47 @@ describe Y2Firewall::Firewalld do
   end
 
   describe "#write" do
-    it "writes the configuration" do
-      allow(firewalld).to receive(:reload)
-      expect(firewalld).to receive(:write_only)
+    let(:api) { Y2Firewall::Firewalld::Api.new }
+    let(:permanent) { false }
 
+    before do
+      allow(firewalld).to receive(:api).and_return(api)
+      allow(firewalld).to receive(:runtime_to_permanent)
+      allow(firewalld).to receive(:complete_reload)
+      allow(firewalld).to receive(:write_only).and_return(true)
+      allow(api).to receive(:permanent?).and_return(permanent)
+    end
+
+    it "writes the configuration" do
+      expect(firewalld).to receive(:write_only)
       firewalld.write
     end
 
-    it "reloads firewalld" do
-      allow(firewalld).to receive(:write_only).and_return(true)
-      expect(firewalld).to receive(:reload)
+    context "when the configuration is not written correctly" do
+      it "returns false" do
+        expect(firewalld).to receive(:write_only).and_return(false)
+        expect(firewalld).to_not receive(:complete_reload)
+        expect(firewalld).to_not receive(:runtime_to_permanent)
 
-      firewalld.write
+        expect(firewalld.write).to eq(false)
+      end
+    end
+
+    context "when the configuration is written correctly" do
+      context "and the api is not in permanent mode" do
+        let(:permanent) { true }
+        it "does a firewalld complete reload" do
+          expect(firewalld).to receive(:complete_reload)
+          firewalld.write
+        end
+      end
+
+      context "and the api is in permanent mode" do
+        it "makes the configuration permanent" do
+          expect(firewalld).to receive(:runtime_to_permanent)
+          firewalld.write
+        end
+      end
     end
   end
 
