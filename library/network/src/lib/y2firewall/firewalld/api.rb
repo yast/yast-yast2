@@ -58,7 +58,7 @@ module Y2Firewall
       attr_accessor :mode
 
       # Constructor
-      def initialize(mode: nil, permanent: true)
+      def initialize(mode: nil, permanent: false)
         @mode =
           if mode == :running || running?
             :running
@@ -148,6 +148,15 @@ module Y2Firewall
         run_command("--complete-reload")
       end
 
+      # Turn the running configuration permanent. In offline mode it just
+      # return true as it is already permanent.
+      #
+      # @return [Boolean] The firewalld complete-reload result (exit code)
+      def runtime_to_permanent
+        return true if offline?
+        run_command("--runtime-to-permanent")
+      end
+
       ### Logging ###
 
       # @param kind [String] Denied packets to log. Possible values are:
@@ -189,7 +198,7 @@ module Y2Firewall
       # which do not cause an exception.
       # command to be executed
       def run_command(*args, permanent: false, allowed_exitstatus: nil)
-        arguments = permanent ? ["--permanent"] : []
+        arguments = !offline? && permanent ? ["--permanent"] : []
         arguments.concat(args)
         log.info("Executing #{command} with #{arguments.inspect}")
 
