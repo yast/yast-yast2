@@ -53,5 +53,17 @@ module UI
 
       lines.join("\n")
     end
+
+    # Wrap a given text in direction markers
+    #
+    # @param [String] text to be wrapped
+    # @param [String] language code (it gets the current one by default)
+    # @return [String] wrapped text
+    def direct_richtext(text, lang = Yast::Language.language)
+      Yast.import "Language"
+      direction = "ltr"
+      direction = "rtl" if lang.start_with?("ar") || lang.start_with?("he")
+      "<div dir=\"#{direction}\">#{text}</div>"
+    end
   end
 end

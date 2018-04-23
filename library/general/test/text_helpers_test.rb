@@ -9,8 +9,9 @@ class TestTextHelpers
 end
 
 describe ::UI::TextHelpers do
-  describe ".wrap_text" do
-    subject { TestTextHelpers.new }
+  subject { TestTextHelpers.new }
+
+  describe "#wrap_text" do
     let(:devices) { ["eth0", "eth1", "eth2", "eth3", "a_very_long_device_name"] }
     let(:more_devices) do
       [
@@ -46,6 +47,42 @@ describe ::UI::TextHelpers do
 
           expect(subject.wrap_text(devices_s, 20, n_lines: 3, cut_text: "...")).to eql(text)
         end
+      end
+    end
+  end
+
+  describe "#direct_richtext" do
+    let(:language) { double("Yast::Language") }
+
+    before do
+      stub_const("Yast::Language", language)
+      allow(language).to receive(:language).and_return(lang)
+    end
+
+    context "when language is not 'arabic' or 'hebrew'" do
+      let(:lang) { "de_DE" }
+
+      it "wraps the text in a 'ltr' marker" do
+        expect(subject.direct_richtext("sample"))
+          .to eq("<div dir=\"ltr\">sample</div>")
+      end
+    end
+
+    context "when current language is 'arabic'" do
+      let(:lang) { "ar_AR" }
+
+      it "wraps the text in a 'rtl' marker" do
+        expect(subject.direct_richtext("sample"))
+          .to eq("<div dir=\"rtl\">sample</div>")
+      end
+    end
+
+    context "when current language is 'arabic'" do
+      let(:lang) { "he_HE" }
+
+      it "wraps the text in a 'rtl' marker" do
+        expect(subject.direct_richtext("sample"))
+          .to eq("<div dir=\"rtl\">sample</div>")
       end
     end
   end
