@@ -63,8 +63,7 @@ module UI
     def div_with_direction(text, lang = nil)
       Yast.import "Language"
       lang ||= Yast::Language.language
-      direction = "ltr"
-      direction = "rtl" if lang.start_with?("ar") || lang.start_with?("he")
+      direction = lang.start_with?("ar", "he") ? "rtl" : "ltr"
       "<div dir=\"#{direction}\">#{text}</div>"
     end
   end
