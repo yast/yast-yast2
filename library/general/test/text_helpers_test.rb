@@ -51,19 +51,21 @@ describe ::UI::TextHelpers do
     end
   end
 
-  describe "#direct_richtext" do
+  describe "#div_with_direction" do
     let(:language) { double("Yast::Language") }
+    let(:lang) { "de_DE" }
 
     before do
       stub_const("Yast::Language", language)
       allow(language).to receive(:language).and_return(lang)
+      allow(Yast).to receive(:import).with("Language")
     end
 
     context "when language is not 'arabic' or 'hebrew'" do
       let(:lang) { "de_DE" }
 
       it "wraps the text in a 'ltr' marker" do
-        expect(subject.direct_richtext("sample"))
+        expect(subject.div_with_direction("sample"))
           .to eq("<div dir=\"ltr\">sample</div>")
       end
     end
@@ -72,7 +74,7 @@ describe ::UI::TextHelpers do
       let(:lang) { "ar_AR" }
 
       it "wraps the text in a 'rtl' marker" do
-        expect(subject.direct_richtext("sample"))
+        expect(subject.div_with_direction("sample"))
           .to eq("<div dir=\"rtl\">sample</div>")
       end
     end
@@ -81,8 +83,22 @@ describe ::UI::TextHelpers do
       let(:lang) { "he_HE" }
 
       it "wraps the text in a 'rtl' marker" do
-        expect(subject.direct_richtext("sample"))
+        expect(subject.div_with_direction("sample"))
           .to eq("<div dir=\"rtl\">sample</div>")
+      end
+    end
+
+    context "when the language is specified as argument" do
+      it "wraps the text according to the given language" do
+        expect(subject.div_with_direction("sample", "ar_AR"))
+          .to eq("<div dir=\"rtl\">sample</div>")
+      end
+    end
+
+    context "when the text contains tags" do
+      it "does not escape those tags" do
+        expect(subject.div_with_direction("<strong>SAMPLE</strong>", "ar_AR"))
+          .to eq("<div dir=\"rtl\"><strong>SAMPLE</strong></div>")
       end
     end
   end

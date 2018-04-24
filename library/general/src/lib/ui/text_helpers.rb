@@ -56,11 +56,13 @@ module UI
 
     # Wrap a given text in direction markers
     #
-    # @param [String] text to be wrapped
+    # @param [String] text to be wrapped. This text may contain tags and they
+    #   will not be escaped
     # @param [String] language code (it gets the current one by default)
     # @return [String] wrapped text
-    def direct_richtext(text, lang = Yast::Language.language)
+    def div_with_direction(text, lang = nil)
       Yast.import "Language"
+      lang ||= Yast::Language.language
       direction = "ltr"
       direction = "rtl" if lang.start_with?("ar") || lang.start_with?("he")
       "<div dir=\"#{direction}\">#{text}</div>"
