@@ -53,5 +53,18 @@ module UI
 
       lines.join("\n")
     end
+
+    # Wrap a given text in direction markers
+    #
+    # @param [String] text to be wrapped. This text may contain tags and they
+    #   will not be escaped
+    # @param [String] language code (it gets the current one by default)
+    # @return [String] wrapped text
+    def div_with_direction(text, lang = nil)
+      Yast.import "Language"
+      lang ||= Yast::Language.language
+      direction = lang.start_with?("ar", "he") ? "rtl" : "ltr"
+      "<div dir=\"#{direction}\">#{text}</div>"
+    end
   end
 end

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr 23 19:03:40 UTC 2018 - igonzalezsosa@suse.com
+
+- Add a text helper to wrap richtext in directional markers
+  (bsc#1089846).
+- 4.0.72
+
+-------------------------------------------------------------------
 Mon Apr 16 13:47:10 UTC 2018 - igonzalezsosa@suse.com
 
 - Do not crash when reading trying to determine available locales
