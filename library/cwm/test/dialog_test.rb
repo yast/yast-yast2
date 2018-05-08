@@ -39,18 +39,20 @@ describe "CWM::Dialog" do
       expect(subject.class.run).to eq(:launch)
     end
 
-    it "uses the back handler" do
+    it "passes the back handler to CWM#show" do
       expect(Yast::CWM).to receive(:show) do |_content, options|
         expect(options).to include(:back_handler)
+        # Checking the default handler is passed (simply returns true)
         expect(options[:back_handler].call).to eq(true)
       end
 
       subject.class.run
     end
 
-    it "uses the abort handler" do
+    it "passes the abort handler to CWM#show" do
       expect(Yast::CWM).to receive(:show) do |_content, options|
         expect(options).to include(:abort_handler)
+        # Checking the default handler is passed (simply returns true)
         expect(options[:abort_handler].call).to eq(true)
       end
 
