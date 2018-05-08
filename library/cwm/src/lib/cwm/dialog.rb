@@ -76,6 +76,24 @@ module CWM
       []
     end
 
+    # Handler when the back button is used
+    #
+    # If returns false, then it does not go back.
+    #
+    # @return [Boolean]
+    def back_handler
+      true
+    end
+
+    # Handler when the abort button is used
+    #
+    # If returns false, then it does not abort.
+    #
+    # @return [Boolean]
+    def abort_handler
+      true
+    end
+
   private
 
     # Create a wizard dialog, run the *block*, ensure the dialog is closed.
@@ -97,7 +115,9 @@ module CWM
         abort_button:    abort_button,
         next_button:     next_button,
         skip_store_for:  skip_store_for,
-        disable_buttons: disable_buttons
+        disable_buttons: disable_buttons,
+        back_handler:    proc { back_handler },
+        abort_handler:   proc { abort_handler }
       )
     end
   end

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue May  8 10:21:07 UTC 2018 - jlopez@suse.com
+
+- CWM: allow to define back handler for CWM#show.
+- CWM: define default handlers for back and abort in CWM::Dialog.
+- Needed for Expert Partitioner fate#318196.
+- 4.0.73
+
+-------------------------------------------------------------------
 Mon Apr 23 19:03:40 UTC 2018 - igonzalezsosa@suse.com
 
 - Add a text helper to wrap richtext in directional markers
