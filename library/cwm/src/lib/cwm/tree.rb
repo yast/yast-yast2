@@ -1,4 +1,7 @@
+require "yast"
 require "cwm/custom_widget"
+
+Yast.import "UI"
 
 module CWM
   # A {Tree} widget item
@@ -64,6 +67,27 @@ module CWM
     def change_items(items)
       item_terms = items.map(&:ui_term)
       Yast::UI.ChangeWidget(Id(widget_id), :Items, item_terms)
+    end
+
+    # Ids of items that is expanded in tree.
+    # @return [Array]
+    def expanded_ids
+      items = Yast::UI.QueryWidget(Id(widget_id), :Items)
+      expanded_ids_for(items)
+    end
+
+  private
+
+    def expanded_ids_for(items)
+      items.each_with_object([]) do |item, result|
+        # skip if not expanded, find only boolean true, others is different params
+        next if item.params.none? { |p| p == true }
+        # id is always first param and it is Term which contain real id in first param
+        result << item.params.first.params.first
+        # children is in params as array
+        children = item.params.find { |p| p.is_a?(::Array) }
+        result.concat(expanded_ids_for(children)) if children
+      end
     end
   end
 end

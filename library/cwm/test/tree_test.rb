@@ -15,7 +15,7 @@ describe CWM::Tree do
       [
         new_item(:i1, "First", icon: "1st.png", open: false),
         new_item(:i2, "Second", open: true, children: [
-                   new_item(:i21, "Nested")
+                   new_item(:i21, "Nested", open: false)
                  ])
       ]
     end
@@ -31,6 +31,13 @@ describe CWM::Tree do
   describe "#items=" do
   end
 
-  describe "change_items" do
+  describe "#change_items" do
+  end
+
+  describe "#expanded_ids" do
+    it "returns array of ids for expanded items" do
+      allow(Yast::UI).to receive(:QueryWidget).and_return(subject.items.map(&:ui_term))
+      expect(subject.expanded_ids).to eq [:i2]
+    end
   end
 end
