@@ -36,7 +36,7 @@ describe CWM::Tree do
 
   describe "#open_items_ids" do
     it "returns array of ids for expanded items" do
-      allow(Yast::UI).to receive(:QueryWidget).and_return(:i2 => "ID")
+      allow(Yast::UI).to receive(:QueryWidget).and_return(i2: "ID")
       expect(subject.open_items_ids).to eq [:i2]
     end
   end
