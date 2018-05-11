@@ -42,7 +42,6 @@ module CWM
       Tree(Id(widget_id), Opt(:notify), label, item_terms)
     end
 
-    # FIXME: CurrentBranch? item id uniqueness?
     # TODO: extract value/value= to CurrentItemBasedWidget
     # or declare: value_property :CurrentItem
     def value
@@ -71,23 +70,12 @@ module CWM
 
     # Ids of items that is expanded in tree.
     # @return [Array]
-    def expanded_ids
-      items = Yast::UI.QueryWidget(Id(widget_id), :Items)
-      expanded_ids_for(items)
-    end
-
-  private
-
-    def expanded_ids_for(items)
-      items.each_with_object([]) do |item, result|
-        # skip if not expanded, find only boolean true, others is different params
-        next if item.params.none? { |p| p == true }
-        # id is always first param and it is Term which contain real id in first param
-        result << item.params.first.params.first
-        # children is in params as array
-        children = item.params.find { |p| p.is_a?(::Array) }
-        result.concat(expanded_ids_for(children)) if children
-      end
+    def open_items_ids
+      # for implementation details see ycp-ui-bindings
+      items = Yast::UI.QueryWidget(Id(widget_id), :OpenItems)
+      # open items return hash where key is id and value is "ID" or "Text".
+      # We can ignore value here, as CWM tree always define ID.
+      items.keys
     end
   end
 end
