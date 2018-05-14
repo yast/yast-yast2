@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 14 09:00:43 UTC 2018 - lslezak@suse.cz
+
+- Support multiple "system-installation()" provides in one
+  package (bsc#1092965)
+- 4.0.74
+
+-------------------------------------------------------------------
 Tue May  8 10:21:07 UTC 2018 - jlopez@suse.com
 
 - CWM: allow to define back handler for CWM#show.

@@ -43,15 +43,18 @@ module Y2Packager
           # There can be more instances of same package in different version. We except that one
           # package provide same product installation. So we just pick the first one.
           dependencies = Yast::Pkg.ResolvableDependencies(pkg_name, :package, "").first["deps"]
-          install_provide = dependencies.find do |d|
+          install_provides = dependencies.find_all do |d|
             d["provides"] && d["provides"].match(/system-installation\(\)/)
           end
 
           # parse product name from provides. Format of provide is
           # `system-installation() = <product_name>`
-          product_name = install_provide["provides"][/system-installation\(\)\s*=\s*(\S+)/, 1]
-          log.info "package #{pkg_name} install product #{product_name}"
-          installation_package_mapping[product_name] = pkg_name
+          install_provides.each do |install_provide|
+            product_name = install_provide["provides"][/system-installation\(\)\s*=\s*(\S+)/, 1]
+            log.info "package #{pkg_name} install product #{product_name}"
+            installation_package_mapping[product_name] = pkg_name
+          end
+
         end
 
         installation_package_mapping
