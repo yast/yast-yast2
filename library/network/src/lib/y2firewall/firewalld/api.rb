@@ -105,7 +105,7 @@ module Y2Firewall
 
       # @return [Boolean] The firewalld service state (exit code)
       def state
-        case Yast::Execute.on_target("firewallctl", "state", allowed_exitstatus: [0, 252])
+        case Yast::Execute.on_target("firewall-cmd", "--state", allowed_exitstatus: [0, 252])
         when 0
           "running"
         when 252
