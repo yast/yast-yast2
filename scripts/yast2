@@ -191,7 +191,7 @@ snapshot_pre()
 snapshot_post()
 {
     if [ "$1" != "menu" -a "$1" != "migration" ]; then
-	if [ "$USE_SNAPPER" = "yes" -a -x $SNAPPERBIN ] ; then
+	if [ "$USE_SNAPPER" = "yes" -a -x $SNAPPERBIN -a "$SNAPSHOT_NUMBER" != '' ] ; then
 	    $SNAPPERBIN create --type=post --cleanup-algorithm=number --pre-number=$SNAPSHOT_NUMBER
 	fi
     fi

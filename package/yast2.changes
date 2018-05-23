@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed May 23 15:25:04 CEST 2018 - schubi@suse.de
+
+- Calling YAST module: Do not create a post Snapper image if the
+  pre Snapper image has already been failed (bnc#1093374)
+- 4.0.75
+
+-------------------------------------------------------------------
 Mon May 14 09:00:43 UTC 2018 - lslezak@suse.cz
 
 - Support multiple "system-installation()" provides in one
