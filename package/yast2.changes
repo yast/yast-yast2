@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May 29 14:26:11 UTC 2018 - jsrain@suse.cz
+
+- rename SLES_HPC -> SLE_HPC (bsc#1095053)
+- 4.0.76
+
+-------------------------------------------------------------------
 Wed May 23 15:25:04 CEST 2018 - schubi@suse.de
 
 - Calling YAST module: Do not create a post Snapper image if the
