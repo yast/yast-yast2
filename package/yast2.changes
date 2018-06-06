@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun  6 06:06:10 UTC 2018 - jsrain@suse.cz
+
+- display proper release notes for product (bsc#1096138)
+- 4.0.77
+
+-------------------------------------------------------------------
 Tue May 29 14:26:11 UTC 2018 - jsrain@suse.cz
 
 - rename SLES_HPC -> SLE_HPC (bsc#1095053)
