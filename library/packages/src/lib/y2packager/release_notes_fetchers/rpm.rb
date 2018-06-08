@@ -94,7 +94,8 @@ module Y2Packager
         package_name = release_notes_packages.sort.find do |name|
           dependencies = Yast::Pkg.ResolvableDependencies(name, :package, "").first["deps"]
           dependencies.any? do |dep|
-            dep["provides"].to_s.match(/release-notes\(\)\s*=\s*#{product.name}\s*/)
+            # mind $ at the end of the regexp, otherwise for SLES you may get RNs of any SLES.* product
+            dep["provides"].to_s.match(/release-notes\(\)\s*=\s*#{product.name}\s*$/)
           end
         end
         return nil if package_name.nil?
