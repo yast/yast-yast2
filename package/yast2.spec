@@ -1,7 +1,7 @@
 #
 # spec file for package yast2
 #
-# Copyright (c) 2016 SUSE LINUX GmbH, Nuernberg, Germany.
+# Copyright (c) 2018 SUSE LINUX GmbH, Nuernberg, Germany.
 #
 # All modifications and additions to the file contributed by third parties
 # remain the property of their copyright owners, unless otherwise agreed
@@ -15,11 +15,12 @@
 # Please submit bugfixes or comments via http://bugs.opensuse.org/
 #
 
+
 Name:           yast2
-Version:        4.0.74
+Version:        4.0.77
 Release:        0
 Summary:        YaST2 - Main Package
-License:        GPL-2.0
+License:        GPL-2.0-only
 Group:          System/YaST
 Url:            https://github.com/yast/yast-yast2
 Source0:        %{name}-%{version}.tar.bz2
@@ -34,8 +35,8 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:cfa)
 # for running scripts
-BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
 BuildRequires:  update-desktop-files
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
 # For running RSpec tests during build
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
 # For converting to/from punycode strings
@@ -51,8 +52,8 @@ BuildRequires:  yast2-testsuite
 BuildRequires:  yast2-ycp-ui-bindings >= 3.2.0
 # for the PackageExtractor tests, just make sure they are present,
 # these should be installed in the default build anyway
-BuildRequires:  rpm
 BuildRequires:  cpio
+BuildRequires:  rpm
 
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
@@ -68,8 +69,8 @@ Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
 Requires:       rubygem(%{rb_default_ruby_abi}:cfa)
 # For converting to/from punycode strings
-Requires:       rubygem(%{rb_default_ruby_abi}:simpleidn)
 Requires:       sysconfig >= 0.80.0
+Requires:       rubygem(%{rb_default_ruby_abi}:simpleidn)
 # for running scripts
 Requires:       rubygem(%{rb_default_ruby_abi}:cheetah)
 # ag_ini section_private
@@ -102,8 +103,8 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Obsoletes:      yast2-devel-doc
 # for the PackageExtractor class, just make sure they are present,
 # these should be present even in a very minimal installation
-Requires:  rpm
-Requires:  cpio
+Requires:       cpio
+Requires:       rpm
 
 %description
 This package contains scripts and data needed for SUSE Linux

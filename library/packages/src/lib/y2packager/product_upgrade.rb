@@ -25,9 +25,9 @@ module Y2Packager
     MAPPING = {
       # SLES12 + HPC module => SLESHPC15
       # (a bit tricky, the module became a new base product!)
-      ["SLES", "sle-module-hpc"] => "SLES_HPC",
+      ["SLES", "sle-module-hpc"] => "SLE_HPC",
       # this is an internal product so far...
-      ["SLE-HPC"]                => "SLES_HPC",
+      ["SLE-HPC"]                => "SLE_HPC",
       # SLES11 => SLES15
       ["SUSE_SLES"]              => "SLES",
       # SLED11 => SLED15
@@ -107,7 +107,7 @@ module Y2Packager
 
         # sort the keys by length, try more products first
         # to find the most specific upgrade, prefer the
-        # SLES + sle-module-hpc => SLES_HPC upgrade to plain SLES => SLES upgrade
+        # SLES + sle-module-hpc => SLE_HPC upgrade to plain SLES => SLES upgrade
         # (if that would be in the list)
         upgrade = MAPPING.keys.sort_by(&:size).find do |keys|
           keys.all? { |name| installed.any? { |p| p.name == name } }

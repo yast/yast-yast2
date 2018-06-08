@@ -34,7 +34,7 @@ describe Y2Packager::ProductUpgrade do
 
     context "several base products are available" do
       let(:sles) { Y2Packager::Product.new(name: "SLES") }
-      let(:sles_hpc) { Y2Packager::Product.new(name: "SLES_HPC") }
+      let(:sles_hpc) { Y2Packager::Product.new(name: "SLE_HPC") }
       let(:hpc_module) { Y2Packager::Product.new(name: "sle-module-hpc") }
       let(:sles11) { Y2Packager::Product.new(name: "SUSE_SLES") }
 
@@ -49,7 +49,7 @@ describe Y2Packager::ProductUpgrade do
           expect(described_class.new_base_product).to be(sles)
         end
 
-        it "returns SLES_HPC for SLES and HPC module installed" do
+        it "returns SLE_HPC for SLES and HPC module installed" do
           expect(Y2Packager::Product).to receive(:installed_products)
             .and_return([sles, hpc_module])
           expect(described_class.new_base_product).to be(sles_hpc)
