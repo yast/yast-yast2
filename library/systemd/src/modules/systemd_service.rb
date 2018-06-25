@@ -72,7 +72,7 @@ module Yast
     include Yast::Logger
 
     UNIT_SUFFIX = ".service".freeze
-    SERVICE_PROPMAP = SystemdUnit::DEFAULT_PROPMAP.merge(triggered_by: "TriggeredBy")
+    SERVICE_PROPMAP = SystemdUnit::DEFAULT_PROPMAP.merge(trigerred_by: "TriggeredBy")
 
     # @param service_name [String] "foo" or "foo.service"
     # @param propmap [SystemdUnit::PropMap]

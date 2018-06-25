@@ -144,6 +144,19 @@ module Yast
       end
     end
 
+    describe "#socket" do
+      it "returns nil if service does not have socket" do
+        service = SystemdService.find("sshd")
+        expect(service.socket).to eq nil
+      end
+
+      it "returns a socket that can start service" do
+        stub_services(service: "cups")
+        service = SystemdService.find("cups")
+        expect(service.socket).to be_a Yast::SystemdSocketClass::Socket
+      end
+    end
+
     context "Start a service on the installation system" do
       it "starts a service with a specialized inst-sys helper if available" do
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
