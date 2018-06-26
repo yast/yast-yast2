@@ -43,6 +43,40 @@ module Yast
       end
     end
 
+    describe ".find_many" do
+      let(:systemctl_stdout) do
+        File.read(File.join(__dir__, "data", "apparmor_and_cups_properties"))
+      end
+
+      let(:systemctl_show) do
+        OpenStruct.new(
+          stdout: systemctl_stdout,
+          stderr: "",
+          exit:   0
+        )
+      end
+
+      before do
+        allow(Yast::Systemctl).to receive(:execute).with(
+          "show  --property=Id,MainPID,Description,LoadState,ActiveState,SubState,UnitFileState," \
+          "FragmentPath,TriggeredBy apparmor.service cups.service"
+        ).and_return(systemctl_show)
+      end
+
+      it "returns the list of services" do
+        services = SystemdService.find_many(["apparmor", "cups"])
+        expect(services).to contain_exactly(
+          an_object_having_attributes("name" => "apparmor"),
+          an_object_having_attributes("name" => "cups")
+        )
+      end
+
+      it "includes 'TriggeredBy' property" do
+        cups = SystemdService.find_many(["apparmor", "cups"]).last
+        expect(cups.properties.triggered_by).to eq("cups.path cups.socket")
+      end
+    end
+
     describe ".all" do
       it "returns all supported services found" do
         services = SystemdService.all
