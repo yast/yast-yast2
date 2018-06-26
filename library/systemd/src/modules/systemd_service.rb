@@ -1,5 +1,7 @@
 require "yast2/systemd_unit"
 
+Yast.import "SystemdSocket"
+
 module Yast
   class SystemdServiceNotFound < StandardError
     def initialize(service_name)
@@ -70,12 +72,14 @@ module Yast
     include Yast::Logger
 
     UNIT_SUFFIX = ".service".freeze
+    SERVICE_PROPMAP = SystemdUnit::DEFAULT_PROPMAP.merge(triggered_by: "TriggeredBy")
 
     # @param service_name [String] "foo" or "foo.service"
     # @param propmap [SystemdUnit::PropMap]
     # @return [Service,nil] `nil` if not found
     def find(service_name, propmap = {})
       service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
+      propmap = SERVICE_PROPMAP.merge(propmap)
       service = Service.new(service_name, propmap)
       return nil if service.properties.not_found?
       service
@@ -101,7 +105,7 @@ module Yast
 
       snames = service_names.map { |n| n + UNIT_SUFFIX unless n.end_with?(UNIT_SUFFIX) }
       snames_s = snames.join(" ")
-      pnames_s = SystemdUnit::DEFAULT_PROPMAP.merge(propmap).values.join(",")
+      pnames_s = SERVICE_PROPMAP.merge(propmap).values.join(",")
       out = Systemctl.execute("show  --property=#{pnames_s} #{snames_s}")
       log.error "returned #{out.exit}, #{out.stderr}" unless out.exit.zero? && out.stderr.empty?
       property_texts = out.stdout.split("\n\n")
@@ -165,6 +169,18 @@ module Yast
         stop
         sleep(1)
         start
+      end
+
+      # Returns socket associated with service or nil if there is no such socket
+      def socket
+        # not triggered
+        socket_name = properties.triggered_by
+        return unless socket_name
+
+        socket_name = socket_name[/\S+\.socket/]
+        return unless socket_name # triggered by non-socket
+
+        Yast::SystemdSocket.find(socket_name)
       end
 
     private
