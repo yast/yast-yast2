@@ -44,16 +44,11 @@ module Yast
     end
 
     describe ".find_many" do
+      let(:systemctl_show) { OpenStruct.new(stdout: systemctl_stdout, stderr: "", exit: 0) }
+      let(:apparmor_double) { double("Service", name: "apparmor") }
+      let(:cups_double) { double("Service", name: "cups") }
       let(:systemctl_stdout) do
         File.read(File.join(__dir__, "data", "apparmor_and_cups_properties"))
-      end
-
-      let(:systemctl_show) do
-        OpenStruct.new(
-          stdout: systemctl_stdout,
-          stderr: "",
-          exit:   0
-        )
       end
 
       before do
@@ -61,6 +56,8 @@ module Yast
           "show  --property=Id,MainPID,Description,LoadState,ActiveState,SubState,UnitFileState," \
           "FragmentPath,TriggeredBy apparmor.service cups.service"
         ).and_return(systemctl_show)
+        allow(SystemdService).to receive(:find).with("apparmor", {}).and_return(apparmor_double)
+        allow(SystemdService).to receive(:find).with("cups", {}).and_return(cups_double)
       end
 
       it "returns the list of services" do
@@ -74,6 +71,24 @@ module Yast
       it "includes 'TriggeredBy' property" do
         cups = SystemdService.find_many(["apparmor", "cups"]).last
         expect(cups.properties.triggered_by).to eq("cups.path cups.socket")
+      end
+
+      context "when 'systemctl show' fails to provide services information" do
+        let(:systemctl_show) { OpenStruct.new(stdout: "", stderr: "", exit: 1) }
+
+        it "retrieve services information in a one-by-one basis" do
+          expect(SystemdService.find_many(["apparmor", "cups"]))
+            .to eq([apparmor_double, cups_double])
+        end
+      end
+
+      context "when 'systemctl show' displays some error" do
+        let(:systemctl_show) { OpenStruct.new(stdout: "", stderr: "error", exit: 1) }
+
+        it "retrieve services information in a one-by-one basis" do
+          expect(SystemdService.find_many(["apparmor", "cups"]))
+            .to eq([apparmor_double, cups_double])
+        end
       end
     end
 
