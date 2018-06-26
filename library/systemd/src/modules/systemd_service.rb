@@ -103,16 +103,17 @@ module Yast
     private def find_many_at_once(service_names, propmap = {})
       return [] if Stage.initial
 
+      service_propmap = SERVICE_PROPMAP.merge(propmap)
       snames = service_names.map { |n| n + UNIT_SUFFIX unless n.end_with?(UNIT_SUFFIX) }
       snames_s = snames.join(" ")
-      pnames_s = SERVICE_PROPMAP.merge(propmap).values.join(",")
+      pnames_s = service_propmap.values.join(",")
       out = Systemctl.execute("show  --property=#{pnames_s} #{snames_s}")
       log.error "returned #{out.exit}, #{out.stderr}" unless out.exit.zero? && out.stderr.empty?
       property_texts = out.stdout.split("\n\n")
       return [] unless snames.size == property_texts.size
 
       snames.zip(property_texts).map do |service_name, property_text|
-        service = Service.new(service_name, propmap, property_text)
+        service = Service.new(service_name, service_propmap, property_text)
         next nil if service.properties.not_found?
         service
       end
