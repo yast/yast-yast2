@@ -72,7 +72,7 @@ module Yast
     include Yast::Logger
 
     UNIT_SUFFIX = ".service".freeze
-    SERVICE_PROPMAP = SystemdUnit::DEFAULT_PROPMAP.merge(trigerred_by: "TriggeredBy")
+    SERVICE_PROPMAP = SystemdUnit::DEFAULT_PROPMAP.merge(triggered_by: "TriggeredBy")
 
     # @param service_name [String] "foo" or "foo.service"
     # @param propmap [SystemdUnit::PropMap]
@@ -174,11 +174,11 @@ module Yast
       # Returns socket associated with service or nil if there is no such socket
       def socket
         # not triggered
-        socket_name = properties.trigerred_by
+        socket_name = properties.triggered_by
         return unless socket_name
 
         socket_name = socket_name[/\S+\.socket/]
-        return unless socket_name # trigerred by non-socket
+        return unless socket_name # triggered by non-socket
 
         Yast::SystemdSocket.find(socket_name)
       end
