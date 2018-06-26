@@ -34,10 +34,8 @@ module UI
     include Yast::I18n
     include Yast::Logger
 
-    # @param service [Object] An object providing the following methods:
-    #   #name, #start, #stop, #enabled?, #active?
-    #   For systemd compliant services, just do
-    #   Yast::SystemdService.find("name_of_the_service")
+    # @param service [Yast::SystemdServiceClass::Service] systemd service. Usually the easiest way
+    #   is just calling `Yast::SystemdService.find("name_of_the_service")`
     #   Note that this widget will #start and #stop the service by itself but
     #   the actions referenced by the flags (reloading and enabling/disabling)
     #   are expected to be done by the caller, when the whole configuration is
