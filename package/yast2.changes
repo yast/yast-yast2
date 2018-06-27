@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jun 27 15:42:04 CEST 2018 - schubi@suse.de
+
+- Added additional searchkeys to desktop file (fate#321043).
+- 4.0.78
+
+-------------------------------------------------------------------
 Wed Jun  6 06:06:10 UTC 2018 - jsrain@suse.cz
 
 - display proper release notes for product (bsc#1096138)
