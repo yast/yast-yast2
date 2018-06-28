@@ -212,7 +212,105 @@ module Yast
         !socket.nil?
       end
 
+      alias_method :enable_service, :enable
+      private :enable_service
+
+      # Enable a service
+      #
+      # @param mode [Symbol] Start mode (:boot or :demand).
+      # @return [Boolean] true if the service was successfully enabled; false otherwise.
+      def enable
+        self.start_mode = :boot
+      end
+
+      alias_method :disable_service, :disable
+      private :disable_service
+
+      # Disable a service
+      #
+      # If the service has an associated socket, it is disabled too.
+      #
+      # @return [Boolean] true if the service was successfully disabled; false otherwise.
+      def disable
+        self.start_mode = :manual
+      end
+
+      alias_method :enabled_on_boot?, :enabled?
+      private :enabled_on_boot?
+
+      # Determine whether the service is enabled or not
+      #
+      # The service can be enable to be started on boot or on demand.
+      #
+      # @return [Boolean] true if the service is enabled; false otherwise.
+      def enabled?
+        start_mode != :manual
+      end
+
+      # Determine whether the service has an associated socket
+      #
+      # @return [Boolean] true if an associated socket exists; false otherwise.
+      def socket?
+        !socket.nil?
+      end
+
+      # Return the start mode
+      #
+      # @return [Symbol] Start mode (:boot, :demand, :manual)
+      def start_mode
+        return :boot if enabled_on_boot?
+        return :demand if enabled_on_demand?
+        :manual
+      end
+
+      # Set the service start mode
+      #
+      # See {#start_modes} to find out the supported modes for a given service (usually :boot,
+      # :manual and, in some cases, :demand).
+      #
+      # @see #start_modes
+      def start_mode=(mode)
+        if !start_modes.include?(mode)
+          log.warn "Invalid start mode: '#{mode}' for service '#{name}'"
+          return
+        end
+
+        case mode
+        when :boot
+          enable_service
+          socket.disable
+        when :demand
+          disable_service
+          socket.enable
+        when :manual
+          disable_service
+          socket.disable
+        end
+      end
+
+      # Return the list of supported start modes
+      #
+      # * :boot:   The service will be started when the system boots.
+      # * :manual: The service is disabled and it will be started manually.
+      # * :demand: The service will be started on demand (using a Systemd socket).
+      #
+      # @return [Array<Symbol>] List of supported modes.
+      def start_modes
+        return @start_modes if @start_modes
+        @start_modes = [:boot, :manual]
+        @start_modes.insert(1, :demand) if socket?
+        @start_modes
+      end
+
     private
+
+      # Determine whether the service is enabled on demand
+      #
+      # @return [Boolean] true if it is enabled on demand; false otherwise.
+      def enabled_on_demand?
+        return false unless socket
+        socket.enabled?
+      end
 
       def installation_system?
         File.exist?(START_SERVICE_INSTSYS_COMMAND)
