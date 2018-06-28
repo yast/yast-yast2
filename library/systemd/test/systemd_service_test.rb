@@ -130,6 +130,201 @@ module Yast
       end
     end
 
+    describe "#enabled?" do
+      subject(:service) { SystemdService.find("cups") }
+
+      before do
+        allow(service).to receive(:start_mode).and_return(start_mode)
+        stub_services(service: "cups")
+      end
+
+      context "when the start mode is :boot" do
+        let(:start_mode) { :boot }
+
+        it "returns true" do
+          expect(service).to be_enabled
+        end
+      end
+
+      context "when the start mode is :demand" do
+        let(:start_mode) { :demand }
+
+        it "returns true" do
+          expect(service).to be_enabled
+        end
+      end
+
+      context "when the start mode is :manual" do
+        let(:start_mode) { :manual }
+
+        it "returns false" do
+          expect(service).to_not be_enabled
+        end
+      end
+    end
+
+    describe "#start_mode" do
+      let(:enabled_on_boot?) { true }
+      let(:socket) { double("socket", enabled?: true) }
+
+      subject(:service) { SystemdService.find("cups") }
+
+      before do
+        stub_services(service: "cups")
+        allow(service).to receive(:socket).and_return(socket)
+        allow(service).to receive(:enabled_on_boot?).and_return(enabled_on_boot?)
+      end
+
+      context "when the service is enabled" do
+        it "returns :boot" do
+          expect(service.start_mode).to eq(:boot)
+        end
+      end
+
+      context "when the service is disabled" do
+        let(:enabled_on_boot?) { false }
+
+        context "but the associated socket is enabled" do
+          it "returns :demand" do
+            expect(service.start_mode).to eq(:demand)
+          end
+        end
+
+        context "and the socket is disabled" do
+          let(:socket) { double("socket", enabled?: false) }
+
+          it "returns :manual" do
+            expect(service.start_mode).to eq(:manual)
+          end
+        end
+
+        context "and there is no socket" do
+          let(:socket) { nil }
+
+          it "returns :manual" do
+            expect(service.start_mode).to eq(:manual)
+          end
+        end
+      end
+    end
+
+    describe "#start_mode=" do
+      subject(:service) { SystemdService.find("cups") }
+      let(:socket) { double("socket", disable: true) }
+
+      before do
+        stub_services(service: "cups")
+        allow(service).to receive(:socket).and_return(socket)
+        allow(service).to receive(:disable)
+      end
+
+      context "when no argument is given" do
+        it "enables the service to start on boot" do
+          expect(socket).to_not receive(:enable)
+          service.start_mode = :boot
+        end
+      end
+
+      context "when :boot mode is given" do
+        it "enables the service to start on boot" do
+          expect(service).to receive(:enable_service)
+          expect(socket).to_not receive(:enable)
+          service.start_mode = :boot
+        end
+      end
+
+      context "when :demand mode is given" do
+        it "enables the socket" do
+          expect(service).to_not receive(:enable_service)
+          expect(socket).to receive(:enable)
+          service.start_mode = :demand
+        end
+      end
+
+      context "when :manual mode is given" do
+        it "disables the service and the socket" do
+          expect(service).to receive(:disable_service)
+          expect(socket).to receive(:disable)
+          service.start_mode = :manual
+        end
+      end
+    end
+
+    describe "#start_modes" do
+      subject(:service) { SystemdService.find("cups") }
+
+      before do
+        stub_services(service: "cups")
+        allow(service).to receive(:socket).and_return(socket)
+      end
+
+      context "when an associated socket exists" do
+        let(:socket) { double("socket", disable: true) }
+
+        it "returns :boot, :demand and :manual" do
+          expect(service.start_modes).to eq([:boot, :demand, :manual])
+        end
+      end
+
+      context "when no associated socket exists" do
+        let(:socket) { nil }
+
+        it "returns :boot and :manual" do
+          expect(service.start_modes).to eq([:boot, :manual])
+        end
+      end
+    end
+
+    describe "#enable" do
+      subject(:service) { SystemdService.find("cups") }
+
+      before do
+        stub_services(service: "cups")
+      end
+
+      it "sets start_mode to :boot" do
+        expect(service).to receive(:start_mode=).with(:boot)
+        service.enable
+      end
+    end
+
+    describe "#disable" do
+      subject(:service) { SystemdService.find("cups") }
+
+      before do
+        stub_services(service: "cups")
+      end
+
+      it "sets start_mode to :manual" do
+        expect(service).to receive(:start_mode=).with(:manual)
+        service.disable
+      end
+    end
+
+    describe "#socket?" do
+      subject(:service) { SystemdService.find("cups") }
+
+      before do
+        allow(service).to receive(:socket).and_return(socket)
+      end
+
+      context "when there is an associated socket" do
+        let(:socket) { double("socket") }
+
+        it "returns true" do
+          expect(service.socket?).to eq(true)
+        end
+      end
+
+      context "when there is no associated socket" do
+        let(:socket) { nil }
+
+        it "returns false" do
+          expect(service.socket?).to eq(false)
+        end
+      end
+    end
+
     context "Start a service on the installation system" do
       it "starts a service with a specialized inst-sys helper if available" do
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
