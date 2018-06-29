@@ -256,10 +256,16 @@ module Yast
 
       # Return the start mode
       #
+      # See {#start_modes} to find out the supported modes for a given service (usually :boot,
+      # :manual and, in some cases, :demand).
+      #
+      # When the service are the service (:boot) and the socket (:demand) are enabled,
+      # the start mode is translated to :boot.
+      #
       # @return [Symbol] Start mode (:boot, :demand, :manual)
       def start_mode
         return :boot if enabled_on_boot?
-        return :demand if enabled_on_demand?
+        return :demand if socket && socket.enabled?
         :manual
       end
 
@@ -271,8 +277,7 @@ module Yast
       # @see #start_modes
       def start_mode=(mode)
         if !start_modes.include?(mode)
-          log.warn "Invalid start mode: '#{mode}' for service '#{name}'"
-          return
+          raise ArgumentError, "Invalid start mode: '#{mode}' for service '#{name}'"
         end
 
         case mode
@@ -303,14 +308,6 @@ module Yast
       end
 
     private
-
-      # Determine whether the service is enabled on demand
-      #
-      # @return [Boolean] true if it is enabled on demand; false otherwise.
-      def enabled_on_demand?
-        return false unless socket
-        socket.enabled?
-      end
 
       def installation_system?
         File.exist?(START_SERVICE_INSTSYS_COMMAND)
