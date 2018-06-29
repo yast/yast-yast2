@@ -218,13 +218,6 @@ module Yast
         allow(service).to receive(:disable)
       end
 
-      context "when no argument is given" do
-        it "enables the service to start on boot" do
-          expect(socket).to_not receive(:enable)
-          service.start_mode = :boot
-        end
-      end
-
       context "when :boot mode is given" do
         it "enables the service to start on boot" do
           expect(service).to receive(:enable_service)
@@ -246,6 +239,12 @@ module Yast
           expect(service).to receive(:disable_service)
           expect(socket).to receive(:disable)
           service.start_mode = :manual
+        end
+      end
+
+      context "when an invalid value is given" do
+        it "raises an error" do
+          expect { service.start_mode = :other }.to raise_error(ArgumentError)
         end
       end
     end
