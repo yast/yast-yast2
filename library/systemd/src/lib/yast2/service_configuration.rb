@@ -4,7 +4,7 @@ Yast.import "SystemdService"
 
 module Yast2
   # Class that holds configuration for single or multiple services. It allows
-  # read current status from system. It allows to modify target state. And it
+  # to read current status from system. It allows to modify target state. And it
   # allows to write that target state so system reflects it.
   # Its common usage is with {Yast2::ServiceWidget} which allows to modify
   # configuration and write it when user approve whole dialog.
@@ -19,15 +19,14 @@ module Yast2
     # @param reload<true,false> if use reload instead of restart action. If
     #   service does not support reload or does not run, then restart is used.
     #
-    # @example three services that wants reload instead of restart
-    #   config = Yast2::ServiceConfiguration.new(s1, s2, s3, reload: true)
-    def initialize(*services, reload: false)
+    # @example three services
+    #   config = Yast2::ServiceConfiguration.new(s1, s2, s3)
+    def initialize(*services)
       if services.any? { |s| !s.is_a?(Yast::SystemdServiceClass::Service) }
         raise ArgumentError, "Services can be only Systemd Service - #{services.inspect}"
       end
 
       @services = services
-      @reload = reload
     end
 
     # reads system status of services. Can be also used to reread current status.
@@ -44,6 +43,8 @@ module Yast2
     # writes services new status
     # @raise <Yast::SystemctlError> when set service to target state failed
     def write
+      write_action
+      write_autostart
     end
 
     # returns current running status, but when read failed return `:unknown`.
@@ -67,8 +68,9 @@ module Yast2
     #
     #   - `:start` to start all services. If service is already active, do nothing.
     #   - `:stop`  to stop all services. If service already is inactive, do nothing.
-    #   - `:restart` restart all services. Can be reload if specified during
-    #       construction of this class. If service is inactive, it is started.
+    #   - `:restart` restart all services. If service is inactive, it is started.
+    #   - `:reload` reload all services that support it and restart that does not
+    #       support it. If service is inactive, it is started.
     #   - `:nothing` do not touch anything.
     def action
       return :nothing unless @action
@@ -76,10 +78,16 @@ module Yast2
       @action
     end
 
+    ACTIONS = [ :start, :stop, :reload, :restart, :nothing].freeze
     # sets target action for services
-    # @param action[:start, :stop, :restart, :nothing] for possible values and
+    # @param action[:start, :stop, :restart, :reload, :nothing] for possible values and
     #  its explanation please see return value of {target_action}
     def action= (action)
+      if !ACTIONS.include?(action)
+        raise ArgumentError, "Invalid parameter #{action.inspect}"
+      end
+
+      @action = action
     end
 
     # returns currently set autostart configuration. If it is not yet set it
@@ -99,11 +107,28 @@ module Yast2
       @autostart
     end
 
+    AUTOSTART_OPTIONS = [:on_boot, :on_demand, :manual, :inconsistent]
     # sets autostart configuration.
     # @param [:on_boot, :on_demand, :manual, :inconsistent] autostart
-    # configuratio. For explanation please see {target_autostart} when
+    # configuratio. For explanation please see {autostart} when
     # `:inconsistent` means keep it as it is now.
     def autostart=(configuration)
+      if !AUTOSTART_OPTIONS.include?(configuration)
+        raise ArgumentError, "Invalid parameter #{configuration.inspect}"
+      end
+
+      @autostart = configuration
+    end
+
+    # returns true if any service support reload
+    def support_reload?
+      # TODO: implement it
+      true
+    end
+
+    # returns true if any service has socket start
+    def support_on_demand?
+      @services.any?(&:socket?)
     end
 
   private
@@ -120,6 +145,50 @@ module Yast2
     end
 
     def read_autostart
+      sockets = @services.map(&:socket).compact
+      services_without_socket = @services.reject(&:socket)
+      if sockets.all?(&:enabled?) && services_without_socket.all?(&:enabled?)
+        @autostart = :on_demand
+      elsif @services.all?(&:enabled?)
+        @autostart = :on_boot
+      elsif sockets.none?(&:enabled?) && @services.none?(&:enabled?)
+        @autostart = :manual
+      else
+        @autostart = :inconsistent
+      end
+    rescue SystemctlError =>e
+      log.error "systemctl failure: #{e.inspect}"
+      @autostart = :unknown
+    end
+
+    def write_autostart
+      case autostart
+      when :on_boot then @services.each { |s| s.start_mode = :boot }
+      when :on_demand
+        @services.each do |service|
+          if s.start_modes.include?(:demand)
+            s.start_mode = :demand
+          else
+            s.start_mode = :boot
+          end
+        end
+      when :manual then @services.each { |s| s.start_mode = :manual }
+      when :inconsistent then log.info "keeping current autostart"
+      else
+        raise "Unexpected action #{autostart.inspect}"
+      end
+    end
+
+    def write_action
+      case action
+      when :start then @services.each(&:start)
+      when :stop then @services.each(&:stop)
+      when :reload then @services.each(&:reload_or_restart)
+      when :restart then @services.each(&:restart)
+      when :nothing then log.info "no action"
+      else
+        raise "Unexpected action #{action.inspect}"
+      end
     end
   end
 end
