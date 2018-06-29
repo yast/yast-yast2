@@ -276,26 +276,32 @@ module Yast
 
     describe "#enable" do
       subject(:service) { SystemdService.find("cups") }
+      let(:socket) { double("socket") }
 
       before do
         stub_services(service: "cups")
+        allow(service).to receive(:socket).and_return(socket)
       end
 
-      it "sets start_mode to :boot" do
-        expect(service).to receive(:start_mode=).with(:boot)
+      it "enables the service to start on boot" do
+        expect(service).to receive(:enable_service)
+        expect(socket).to receive(:disable)
         service.enable
       end
     end
 
     describe "#disable" do
       subject(:service) { SystemdService.find("cups") }
+      let(:socket) { double("socket") }
 
       before do
         stub_services(service: "cups")
+        allow(service).to receive(:socket).and_return(socket)
       end
 
-      it "sets start_mode to :manual" do
-        expect(service).to receive(:start_mode=).with(:manual)
+      it "disables the service and the socket" do
+        expect(service).to receive(:disable_service)
+        expect(socket).to receive(:disable)
         service.disable
       end
     end
