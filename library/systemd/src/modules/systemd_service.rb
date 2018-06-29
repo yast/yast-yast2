@@ -207,23 +207,23 @@ module Yast
 
       # Return the start mode
       #
-      # See {#start_modes} to find out the supported modes for a given service (usually :boot,
-      # :manual and, in some cases, :demand).
+      # See {#start_modes} to find out the supported modes for a given service (usually :on_boot,
+      # :manual and, in some cases, :on_demand).
       #
-      # When the service (:boot) and the socket (:demand) are enabled, the start mode is translated
-      # to :boot.
+      # When the service (:on_boot) and the socket (:on_demand) are enabled, the start mode is translated
+      # to :on_boot.
       #
-      # @return [Symbol] Start mode (:boot, :demand, :manual)
+      # @return [Symbol] Start mode (:on_boot, :on_demand, :manual)
       def start_mode
-        return :boot if enabled_on_boot?
-        return :demand if socket && socket.enabled?
+        return :on_boot if enabled_on_boot?
+        return :on_demand if socket && socket.enabled?
         :manual
       end
 
       # Set the service start mode
       #
-      # See {#start_modes} to find out the supported modes for a given service (usually :boot,
-      # :manual and, in some cases, :demand).
+      # See {#start_modes} to find out the supported modes for a given service (usually :on_boot,
+      # :manual and, in some cases, :on_demand).
       #
       # @see #start_modes
       def start_mode=(mode)
@@ -232,10 +232,10 @@ module Yast
         end
 
         case mode
-        when :boot
+        when :on_boot
           enable
           socket.disable
-        when :demand
+        when :on_demand
           disable
           socket.enable
         when :manual
@@ -246,15 +246,15 @@ module Yast
 
       # Return the list of supported start modes
       #
-      # * :boot:   The service will be started when the system boots.
+      # * :on_boot:   The service will be started when the system boots.
       # * :manual: The service is disabled and it will be started manually.
-      # * :demand: The service will be started on demand (using a Systemd socket).
+      # * :on_demand: The service will be started on demand (using a Systemd socket).
       #
       # @return [Array<Symbol>] List of supported modes.
       def start_modes
         return @start_modes if @start_modes
-        @start_modes = [:boot, :manual]
-        @start_modes.insert(1, :demand) if socket?
+        @start_modes = [:on_boot, :manual]
+        @start_modes.insert(1, :on_demand) if socket?
         @start_modes
       end
 
