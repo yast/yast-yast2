@@ -186,29 +186,6 @@ module Yast
         @socket = Yast::SystemdSocket.find(socket_name)
       end
 
-      alias_method :enable_service, :enable
-      private :enable_service
-
-      # Enable a service
-      #
-      # @param mode [Symbol] Start mode (:boot or :demand).
-      # @return [Boolean] true if the service was successfully enabled; false otherwise.
-      def enable
-        self.start_mode = :boot
-      end
-
-      alias_method :disable_service, :disable
-      private :disable_service
-
-      # Disable a service
-      #
-      # If the service has an associated socket, it is disabled too.
-      #
-      # @return [Boolean] true if the service was successfully disabled; false otherwise.
-      def disable
-        self.start_mode = :manual
-      end
-
       alias_method :enabled_on_boot?, :enabled?
       private :enabled_on_boot?
 
@@ -256,13 +233,13 @@ module Yast
 
         case mode
         when :boot
-          enable_service
+          enable
           socket.disable
         when :demand
-          disable_service
+          disable
           socket.enable
         when :manual
-          disable_service
+          disable
           socket.disable
         end
       end
