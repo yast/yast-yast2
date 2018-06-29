@@ -174,6 +174,8 @@ module Yast
 
       # Returns socket associated with service or nil if there is no such socket
       def socket
+        return @socket if @socket
+
         # not triggered
         socket_name = properties.triggered_by
         return unless socket_name
@@ -181,7 +183,7 @@ module Yast
         socket_name = socket_name[/\S+\.socket/]
         return unless socket_name # triggered by non-socket
 
-        Yast::SystemdSocket.find(socket_name)
+        @socket = Yast::SystemdSocket.find(socket_name)
       end
 
       alias_method :enable_service, :enable
