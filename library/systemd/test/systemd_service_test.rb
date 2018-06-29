@@ -165,16 +165,16 @@ module Yast
         stub_services(service: "cups")
       end
 
-      context "when the start mode is :boot" do
-        let(:start_mode) { :boot }
+      context "when the start mode is :on_boot" do
+        let(:start_mode) { :on_boot }
 
         it "returns true" do
           expect(service).to be_enabled
         end
       end
 
-      context "when the start mode is :demand" do
-        let(:start_mode) { :demand }
+      context "when the start mode is :on_demand" do
+        let(:start_mode) { :on_demand }
 
         it "returns true" do
           expect(service).to be_enabled
@@ -203,8 +203,8 @@ module Yast
       end
 
       context "when the service is enabled" do
-        it "returns :boot" do
-          expect(service.start_mode).to eq(:boot)
+        it "returns :on_boot" do
+          expect(service.start_mode).to eq(:on_boot)
         end
       end
 
@@ -212,8 +212,8 @@ module Yast
         let(:enabled_on_boot?) { false }
 
         context "but the associated socket is enabled" do
-          it "returns :demand" do
-            expect(service.start_mode).to eq(:demand)
+          it "returns :on_demand" do
+            expect(service.start_mode).to eq(:on_demand)
           end
         end
 
@@ -245,19 +245,19 @@ module Yast
         allow(service).to receive(:disable)
       end
 
-      context "when :boot mode is given" do
+      context "when :on_boot mode is given" do
         it "enables the service to start on boot" do
           expect(service).to receive(:enable)
           expect(socket).to_not receive(:enable)
-          service.start_mode = :boot
+          service.start_mode = :on_boot
         end
       end
 
-      context "when :demand mode is given" do
+      context "when :on_demand mode is given" do
         it "enables the socket" do
           expect(service).to_not receive(:enable)
           expect(socket).to receive(:enable)
-          service.start_mode = :demand
+          service.start_mode = :on_demand
         end
       end
 
@@ -287,16 +287,16 @@ module Yast
       context "when an associated socket exists" do
         let(:socket) { double("socket", disable: true) }
 
-        it "returns :boot, :demand and :manual" do
-          expect(service.start_modes).to eq([:boot, :demand, :manual])
+        it "returns :on_boot, :on_demand and :manual" do
+          expect(service.start_modes).to eq([:on_boot, :on_demand, :manual])
         end
       end
 
       context "when no associated socket exists" do
         let(:socket) { nil }
 
-        it "returns :boot and :manual" do
-          expect(service.start_modes).to eq([:boot, :manual])
+        it "returns :on_boot and :manual" do
+          expect(service.start_modes).to eq([:on_boot, :manual])
         end
       end
     end
