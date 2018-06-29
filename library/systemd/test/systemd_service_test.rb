@@ -247,7 +247,7 @@ module Yast
 
       context "when :boot mode is given" do
         it "enables the service to start on boot" do
-          expect(service).to receive(:enable_service)
+          expect(service).to receive(:enable)
           expect(socket).to_not receive(:enable)
           service.start_mode = :boot
         end
@@ -255,7 +255,7 @@ module Yast
 
       context "when :demand mode is given" do
         it "enables the socket" do
-          expect(service).to_not receive(:enable_service)
+          expect(service).to_not receive(:enable)
           expect(socket).to receive(:enable)
           service.start_mode = :demand
         end
@@ -263,7 +263,7 @@ module Yast
 
       context "when :manual mode is given" do
         it "disables the service and the socket" do
-          expect(service).to receive(:disable_service)
+          expect(service).to receive(:disable)
           expect(socket).to receive(:disable)
           service.start_mode = :manual
         end
@@ -298,38 +298,6 @@ module Yast
         it "returns :boot and :manual" do
           expect(service.start_modes).to eq([:boot, :manual])
         end
-      end
-    end
-
-    describe "#enable" do
-      subject(:service) { SystemdService.find("cups") }
-      let(:socket) { double("socket") }
-
-      before do
-        stub_services(service: "cups")
-        allow(service).to receive(:socket).and_return(socket)
-      end
-
-      it "enables the service to start on boot" do
-        expect(service).to receive(:enable_service)
-        expect(socket).to receive(:disable)
-        service.enable
-      end
-    end
-
-    describe "#disable" do
-      subject(:service) { SystemdService.find("cups") }
-      let(:socket) { double("socket") }
-
-      before do
-        stub_services(service: "cups")
-        allow(service).to receive(:socket).and_return(socket)
-      end
-
-      it "disables the service and the socket" do
-        expect(service).to receive(:disable_service)
-        expect(socket).to receive(:disable)
-        service.disable
       end
     end
 

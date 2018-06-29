@@ -282,13 +282,13 @@ module Yast
 
         case mode
         when :boot
-          enable_service
+          enable
           socket.disable
         when :demand
-          disable_service
+          disable
           socket.enable
         when :manual
-          disable_service
+          disable
           socket.disable
         end
       end
