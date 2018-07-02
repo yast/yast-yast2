@@ -135,7 +135,7 @@ module Yast2
   private
 
     def read_status
-      services_active = @services.map { |s| s.active? }
+      services_active = @services.map(&:active?)
 
       return @status = :active if services_active.all?
       return @status = :inactive if services_active.none?
