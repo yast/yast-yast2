@@ -848,7 +848,7 @@ module Yast
           # look in OriginalDevs because we need to catch all variables
           # of the alias
 
-          dev_aliases = original_devs[typ][dev]["_aliases"][anum] || {}
+          dev_aliases = original_devs.dig(typ, dev, "_aliases", anum) || {}
           dev_aliases.keys.each do |key|
             p = base + "#{key}_#{anum}"
             log.debug("deleting: #{p}")
