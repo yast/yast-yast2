@@ -23,13 +23,17 @@ require "forwardable"
 Yast.import "SystemdService"
 
 module Yast2
+  # This class represents a system service
+  #
+  # When talking about systemd, it might happen that a service is compose by a set of units
+  # (services, sockets, paths and so on). This class is able to group those units and
+  # offer an API to handle them together.
   class SystemService
     extend Forwardable
 
     # @return [Yast::SystemdService]
     attr_reader :service
 
-    # FIXME: temporary delegated methods.
     def_delegators :@service, :running?, :start, :stop, :restart, :active?, :description
 
     class << self
