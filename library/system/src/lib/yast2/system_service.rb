@@ -19,12 +19,18 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "forwardable"
 Yast.import "SystemdService"
 
 module Yast2
   class SystemService
+    extend Forwardable
+
     # @return [Yast::SystemdService]
     attr_reader :service
+
+    # FIXME: temporary delegated methods.
+    def_delegators :@service, :running?, :start, :stop, :restart, :active?, :description
 
     class << self
       def find(name)
@@ -42,7 +48,7 @@ module Yast2
       return @socket if @socket
 
       # not triggered
-      socket_name = properties.triggered_by
+      socket_name = service.properties.triggered_by
       return unless socket_name
 
       socket_name = socket_name[/\S+\.socket/]
@@ -109,14 +115,6 @@ module Yast2
       @start_modes = [:on_boot, :manual]
       @start_modes.insert(1, :on_demand) if socket?
       @start_modes
-    end
-
-    def start
-      raise NotImplementedError
-    end
-
-    def stop
-      raise NotImplementedError
     end
   end
 end
