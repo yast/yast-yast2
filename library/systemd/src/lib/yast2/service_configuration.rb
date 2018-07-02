@@ -67,6 +67,7 @@ module Yast2
     # @return [:start, :stop, :restart, :nothing] action for all services:
     #
     #   - `:start` to start all services. If service is already active, do nothing.
+    #     if services has socket it starts socket instead of service.
     #   - `:stop`  to stop all services. If service already is inactive, do nothing.
     #   - `:restart` restart all services. If service is inactive, it is started.
     #   - `:reload` reload all services that support it and restart that does not
@@ -181,7 +182,11 @@ module Yast2
 
     def write_action
       case action
-      when :start then @services.each(&:start)
+      when :start
+        sockets = @services.map(&:socket).compact
+        services_without_socket = @services.reject(&:socket)
+        sockets.each(&:start)
+        services_without_socket.each(&:start)
       when :stop then @services.each(&:stop)
       when :reload then @services.each(&:reload_or_restart)
       when :restart then @services.each(&:restart)
