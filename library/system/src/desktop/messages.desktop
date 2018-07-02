@@ -14,6 +14,7 @@ X-SuSE-YaST-AutoInst=
 X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=
+X-SuSE-YaST-Keywords=system,log,messages
 
 Icon=yast-messages
 Exec=/sbin/yast2 view_anymsg /var/log/messages
