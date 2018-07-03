@@ -152,7 +152,7 @@ describe Yast2::SystemService do
       let(:socket) { double("socket", disable: true) }
 
       it "returns :on_boot, :on_demand and :manual" do
-        expect(system_service.start_modes).to eq([:on_boot, :on_demand, :manual])
+        expect(system_service.start_modes).to eq([:on_boot, :manual, :on_demand])
       end
     end
 
