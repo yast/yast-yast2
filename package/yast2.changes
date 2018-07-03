@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul  3 08:01:07 UTC 2018 - knut.anderssen@suse.com
+
+- Network: Prevent from crashing when trying to delete some ip
+  aliases from the original devices (bsc#1098919)
+- 3.2.46
+
+-------------------------------------------------------------------
 Mon Mar 12 16:20:02 UTC 2018 - jreidinger@suse.com
 
 - Do not truncate kernel parameter when it contains '='
