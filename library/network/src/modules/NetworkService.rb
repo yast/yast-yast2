@@ -42,6 +42,7 @@
 # The network.service alias link obsoletes the old master switch in
 # /etc/sysconfig/network/config:NETWORKMANAGER (until openSUSE-12.2).
 require "yast"
+require "yast2/systemd_service"
 
 module Yast
   class NetworkServiceClass < Module
@@ -73,7 +74,6 @@ module Yast
     include Yast::Logger
 
     def main
-      Yast.import "SystemdService"
       Yast.import "NetworkConfig"
       Yast.import "Popup"
       Yast.import "Mode"

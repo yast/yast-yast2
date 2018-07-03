@@ -37,7 +37,7 @@ describe Yast2::SystemService do
   end
 
   describe ".find" do
-    let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+    let(:systemd_service) { instance_double(Yast::SystemdService) }
 
     before do
       allow(Yast::SystemdService).to receive(:find).with("cups").and_return(systemd_service)
@@ -51,8 +51,8 @@ describe Yast2::SystemService do
   end
 
   describe ".find_many" do
-    let(:apparmor) { instance_double(Yast::SystemdServiceClass::Service) }
-    let(:cups) { instance_double(Yast::SystemdServiceClass::Service) }
+    let(:apparmor) { instance_double(Yast::SystemdService) }
+    let(:cups) { instance_double(Yast::SystemdService) }
 
     before do
       allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
