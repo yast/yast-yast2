@@ -3,8 +3,6 @@
 require_relative "test_helper"
 
 module Yast
-  import "SystemdService"
-
   describe SystemdService do
     include SystemdServiceStubs
 
@@ -80,7 +78,7 @@ module Yast
 
     context "Restart a service on the installation system" do
       it "restarts a service with a specialized inst-sys helper if available" do
-        allow_any_instance_of(SystemdServiceClass::Service).to receive(:sleep).and_return(1)
+        allow_any_instance_of(SystemdService).to receive(:sleep).and_return(1)
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
         service = SystemdService.find("sshd")
         allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
