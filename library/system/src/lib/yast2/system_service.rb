@@ -132,7 +132,7 @@ module Yast2
     def start_modes
       return @start_modes if @start_modes
       @start_modes = [:on_boot, :manual]
-      @start_modes.insert(1, :on_demand) if socket?
+      @start_modes << :on_demand if socket?
       @start_modes
     end
   end
