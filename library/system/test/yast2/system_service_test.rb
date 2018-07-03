@@ -33,6 +33,20 @@ describe Yast2::SystemService do
     allow(system_service).to receive(:socket).and_return(socket)
   end
 
+  describe ".find" do
+    let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+
+    before do
+      allow(Yast::SystemdService).to receive(:find).with("cups").and_return(systemd_service)
+    end
+
+    it "finds a systemd service" do
+      system_service = described_class.find("cups")
+      expect(system_service).to be_a(described_class)
+      expect(system_service.service).to eq(systemd_service)
+    end
+  end
+
   describe "#start_mode" do
     context "when the service is enabled" do
       it "returns :on_boot" do

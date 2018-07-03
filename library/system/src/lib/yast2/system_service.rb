@@ -37,6 +37,10 @@ module Yast2
     def_delegators :@service, :running?, :start, :stop, :restart, :active?, :description
 
     class << self
+      # Find a service
+      #
+      # @param name [String] Service name
+      # @return [SystemService,nil] System service or nil when not found
       def find(name)
         new(Yast::SystemdService.find(name))
       end
