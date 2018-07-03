@@ -34,6 +34,10 @@ Style/AccessorMethodName:
   Exclude:
     - library/systemd/src/modules/systemd_target.rb
 
+# set reasonable ruby version
+AllCops:
+  TargetRubyVersion: 2.2
+
 # UI_ID module is not camel case
 Style/ClassAndModuleCamelCase:
   Enabled: false
