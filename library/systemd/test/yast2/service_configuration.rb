@@ -7,7 +7,7 @@ require "yast2/service_configuration"
 describe Yast2::ServiceConfiguration do
   describe ".new" do
     it "raises ArgumentError if non service is passed" do
-      expect{described_class.new(nil)}.to raise_error(ArgumentError)
+      expect { described_class.new(nil) }.to raise_error(ArgumentError)
     end
   end
 
