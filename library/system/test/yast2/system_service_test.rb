@@ -47,6 +47,34 @@ describe Yast2::SystemService do
     end
   end
 
+  describe ".find_many" do
+    let(:apparmor) { instance_double(Yast::SystemdServiceClass::Service) }
+    let(:cups) { instance_double(Yast::SystemdServiceClass::Service) }
+
+    before do
+      allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
+        .and_return([apparmor, cups])
+    end
+
+    it "finds a set of systemd services" do
+      system_services = described_class.find_many(["apparmor", "cups"])
+      expect(system_services).to be_all(Yast2::SystemService)
+      expect(system_services.map(&:service)).to eq([apparmor, cups])
+    end
+
+    context "when some service is not found" do
+      before do
+        allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
+          .and_return([nil, cups])
+      end
+
+      it "ignores the not found service" do
+        system_services = described_class.find_many(["apparmor", "cups"])
+        expect(system_services.map(&:service)).to eq([cups])
+      end
+    end
+  end
+
   describe "#start_mode" do
     context "when the service is enabled" do
       it "returns :on_boot" do

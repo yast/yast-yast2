@@ -44,6 +44,17 @@ module Yast2
       def find(name)
         new(Yast::SystemdService.find(name))
       end
+
+      # Find service names
+      #
+      # This method finds a set of system services. Currently it is just a wrapper around
+      # SystemdService.find_many.
+      #
+      # @param names [Array<String>] Service names to find
+      # @return [Array<SystemService>] Found system services
+      def find_many(names)
+        Yast::SystemdService.find_many(names).compact.map { |s| new(s) }
+      end
     end
 
     # @param service [SystedService]
