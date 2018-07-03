@@ -54,11 +54,13 @@ module Yast2
       Frame(
         _("Service Configuration"),
         VBox(
-          Left(HBox(
-            Label(_("Current status:")),
-            Label(" "),
-            Label(status)
-          )),
+          Left(
+            HBox(
+              Label(_("Current status:")),
+              Label(" "),
+              Label(status)
+            )
+          ),
           Left(action_widget),
           Left(autostart_widget)
         )
@@ -70,6 +72,8 @@ module Yast2
     # @param event_id [Object] id of UI element that cause event
     # @return [void]
     def handle_input(event_id)
+      log.info "handle event #{event_id}"
+
       nil
     end
 
@@ -104,13 +108,13 @@ module Yast2
       when :active
         _("Active")
       when :inactive
-      # TRANSLATORS: Status of service
+        # TRANSLATORS: Status of service
         _("Inactive")
       when :inconsistent
-      # TRANSLATORS: Status of service
+        # TRANSLATORS: Status of service
         _("Partly Active")
       when :unknown
-      # TRANSLATORS: Status of service
+        # TRANSLATORS: Status of service
         _("Unknown")
       else
         raise "Unknown status #{service_configuration.status.inspect}"
@@ -154,7 +158,7 @@ module Yast2
         Item(Id(:service_widget_autostart_on_boot), _("During boot"), current_autostart == :on_boot),
         Item(Id(:service_widget_autostart_on_demand), _("On demand"), current_autostart == :on_demand),
         Item(Id(:service_widget_autostart_manual), _("Never"), current_autostart == :manual),
-        Item(Id(:service_widget_autostart_inconsistent), _("Do not change"), keep),
+        Item(Id(:service_widget_autostart_inconsistent), _("Do not change"), keep)
       ]
     end
   end

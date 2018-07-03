@@ -79,11 +79,11 @@ module Yast2
       @action
     end
 
-    ACTIONS = [ :start, :stop, :reload, :restart, :nothing].freeze
+    ACTIONS = [:start, :stop, :reload, :restart, :nothing].freeze
     # sets target action for services
     # @param action[:start, :stop, :restart, :reload, :nothing] for possible values and
     #  its explanation please see return value of {target_action}
-    def action= (action)
+    def action=(action)
       if !ACTIONS.include?(action)
         raise ArgumentError, "Invalid parameter #{action.inspect}"
       end
@@ -108,7 +108,7 @@ module Yast2
       @autostart
     end
 
-    AUTOSTART_OPTIONS = [:on_boot, :on_demand, :manual, :inconsistent]
+    AUTOSTART_OPTIONS = [:on_boot, :on_demand, :manual, :inconsistent].freeze
     # sets autostart configuration.
     # @param [:on_boot, :on_demand, :manual, :inconsistent] autostart
     # configuratio. For explanation please see {autostart} when
@@ -148,16 +148,16 @@ module Yast2
     def read_autostart
       sockets = @services.map(&:socket).compact
       services_without_socket = @services.reject(&:socket)
-      if sockets.all?(&:enabled?) && services_without_socket.all?(&:enabled?)
-        @autostart = :on_demand
+      @autostart = if sockets.all?(&:enabled?) && services_without_socket.all?(&:enabled?)
+        :on_demand
       elsif @services.all?(&:enabled?)
-        @autostart = :on_boot
+        :on_boot
       elsif sockets.none?(&:enabled?) && @services.none?(&:enabled?)
-        @autostart = :manual
+        :manual
       else
-        @autostart = :inconsistent
+        :inconsistent
       end
-    rescue SystemctlError =>e
+    rescue SystemctlError => e
       log.error "systemctl failure: #{e.inspect}"
       @autostart = :unknown
     end
@@ -166,11 +166,11 @@ module Yast2
       case autostart
       when :on_boot then @services.each { |s| s.start_mode = :boot }
       when :on_demand
-        @services.each do |service|
-          if s.start_modes.include?(:demand)
-            s.start_mode = :demand
+        @services.each do |_service|
+          s.start_mode = if s.start_modes.include?(:demand)
+            :demand
           else
-            s.start_mode = :boot
+            :boot
           end
         end
       when :manual then @services.each { |s| s.start_mode = :manual }
