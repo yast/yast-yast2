@@ -57,12 +57,14 @@ module Yast2
       end
     end
 
-    # @param service [SystedService]
+    # @param service [Yast::SystemdServiceClass::Service]
     def initialize(service)
       @service = service
     end
 
     # Returns socket associated with service or nil if there is no such socket
+    #
+    # @return [Yast::SystemdSocketClass::Socket]
     def socket
       return @socket if @socket
 
@@ -104,6 +106,7 @@ module Yast2
     # :manual and, in some cases, :on_demand).
     #
     # @see #start_modes
+    # @raise ArgumentError when mode is not valid
     def start_mode=(mode)
       if !start_modes.include?(mode)
         raise ArgumentError, "Invalid start mode: '#{mode}' for service '#{service.name}'"
