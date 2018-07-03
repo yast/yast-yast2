@@ -157,7 +157,7 @@ module Yast2
       else
         :inconsistent
       end
-    rescue SystemctlError => e
+    rescue Yast::SystemctlError => e
       log.error "systemctl failure: #{e.inspect}"
       @autostart = :unknown
     end
@@ -166,8 +166,8 @@ module Yast2
       case autostart
       when :on_boot then @services.each { |s| s.start_mode = :boot }
       when :on_demand
-        @services.each do |_service|
-          s.start_mode = if s.start_modes.include?(:demand)
+        @services.each do |service|
+          service.start_mode = if service.start_modes.include?(:demand)
             :demand
           else
             :boot
