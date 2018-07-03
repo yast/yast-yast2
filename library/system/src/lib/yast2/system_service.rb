@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "forwardable"
-Yast.import "SystemdService"
+require "yast2/systemd_service"
 
 module Yast2
   # This class represents a system service
@@ -85,7 +85,7 @@ module Yast2
       end
     end
 
-    # @param service [Yast::SystemdServiceClass::Service]
+    # @param service [Yast::SystemdService]
     def initialize(service)
       @service = service
       @changes = {}

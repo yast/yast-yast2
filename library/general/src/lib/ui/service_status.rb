@@ -34,7 +34,7 @@ module UI
     include Yast::I18n
     include Yast::Logger
 
-    # @param service [Yast::SystemdServiceClass::Service] systemd service. Usually the easiest way
+    # @param service [Yast::SystemdService] systemd service. Usually the easiest way
     #   is just calling `Yast::SystemdService.find("name_of_the_service")`
     #   Note that this widget will #start and #stop the service by itself but
     #   the actions referenced by the flags (reloading and enabling/disabling)
