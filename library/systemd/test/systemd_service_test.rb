@@ -157,7 +157,7 @@ module Yast
         let(:service_name) { "cups" }
 
         it "returns the socket" do
-          expect(service.socket).to be_a(Yast::SystemdSocketClass::Socket)
+          expect(service.socket).to be_a(Yast::SystemdSocket)
           expect(service.socket.unit_name).to eq("iscsid")
         end
       end
