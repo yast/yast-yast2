@@ -1,4 +1,5 @@
 TESTS = \
+  yast2/service_configuration_test.rb \
   systemctl_test.rb \
   systemd_unit_test.rb \
   systemd_socket_test.rb \
