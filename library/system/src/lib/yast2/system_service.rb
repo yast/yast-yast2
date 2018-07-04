@@ -233,7 +233,7 @@ module Yast2
 
     # Returns the associated socket
     #
-    # @return [Yast::SystemdSocketClass::Socket]
+    # @return [Yast::SystemdSocket]
     def socket
       service && service.socket
     end

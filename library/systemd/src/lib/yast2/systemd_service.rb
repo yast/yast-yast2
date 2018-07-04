@@ -173,7 +173,7 @@ module Yast
 
     # Returns socket associated with service or nil if there is no such socket
     #
-    # @return [Yast::SystemdSocketClass::Socket]
+    # @return [Yast::SystemdSocket]
     def socket
       return @socket if @socket
 

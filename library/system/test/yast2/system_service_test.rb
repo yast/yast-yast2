@@ -351,7 +351,7 @@ describe Yast2::SystemService do
     end
 
     context "when the service has an associated socket" do
-      let(:socket) { instance_double(Yast::SystemdSocketClass::Socket, id: "cups.socket") }
+      let(:socket) { instance_double(Yast::SystemdSocket, id: "cups.socket") }
 
       it "returns the service and socket full names" do
         expect(system_service.search_terms).to contain_exactly("cups.service", "cups.socket")
