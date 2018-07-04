@@ -1,10 +1,9 @@
 require_relative "../../../test/test_helper.rb"
 
 require "yast2/systemd_unit"
-
-Yast.import "SystemdSocket"
-Yast.import "SystemdService"
-Yast.import "SystemdTarget"
+require "yast2/systemd_service"
+require "yast2/systemd_socket"
+require "yast2/systemd_target"
 
 module SystemctlStubs
   def stub_systemctl(unit)

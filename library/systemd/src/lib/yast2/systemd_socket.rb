@@ -1,6 +1,13 @@
 require "yast2/systemd_unit"
 
 module Yast
+  # Represents that the given socket does not exists
+  class SystemdSocketNotFound < StandardError
+    def initialize(socket_name)
+      super "Socket unit '#{socket_name}' not found"
+    end
+  end
+
   ###
   #  Systemd.socket unit control API
   #
@@ -58,42 +65,34 @@ module Yast
   #    socket.properties.triggers   # 'iscsid.service'
   #
   ##
-
-  class SystemdSocketNotFound < StandardError
-    def initialize(socket_name)
-      super "Socket unit '#{socket_name}' not found"
-    end
-  end
-
-  class SystemdSocketClass < Module
+  class SystemdSocket < SystemdUnit
     UNIT_SUFFIX = ".socket".freeze
 
-    # @param propmap [SystemdUnit::PropMap]
-    def find(socket_name, propmap = {})
-      socket_name += UNIT_SUFFIX unless socket_name.end_with?(UNIT_SUFFIX)
-      socket = Socket.new(socket_name, propmap)
-      return nil if socket.properties.not_found?
-      socket
-    end
-
-    # @param propmap [SystemdUnit::PropMap]
-    def find!(socket_name, propmap = {})
-      find(socket_name, propmap) || raise(SystemdSocketNotFound, socket_name)
-    end
-
-    # @param propmap [SystemdUnit::PropMap]
-    def all(propmap = {})
-      sockets = Systemctl.socket_units.map do |socket_unit|
-        Socket.new(socket_unit, propmap)
+    class << self
+      # @param propmap [SystemdUnit::PropMap]
+      def find(socket_name, propmap = {})
+        socket_name += UNIT_SUFFIX unless socket_name.end_with?(UNIT_SUFFIX)
+        socket = new(socket_name, propmap)
+        return nil if socket.properties.not_found?
+        socket
       end
-      sockets.select { |s| s.properties.supported? }
+
+      # @param propmap [SystemdUnit::PropMap]
+      def find!(socket_name, propmap = {})
+        find(socket_name, propmap) || raise(SystemdSocketNotFound, socket_name)
+      end
+
+      # @param propmap [SystemdUnit::PropMap]
+      def all(propmap = {})
+        sockets = Systemctl.socket_units.map do |socket_unit|
+          new(socket_unit, propmap)
+        end
+        sockets.select { |s| s.properties.supported? }
+      end
     end
 
-    class Socket < SystemdUnit
-      def listening?
-        properties.sub_state == "listening"
-      end
+    def listening?
+      properties.sub_state == "listening"
     end
   end
-  SystemdSocket = SystemdSocketClass.new
 end
