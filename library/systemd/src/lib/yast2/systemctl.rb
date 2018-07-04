@@ -1,7 +1,7 @@
 require "ostruct"
 require "timeout"
 
-module Yast
+module Yast2
   # Exception when systemctl command failed
   class SystemctlError < StandardError
     # @param details [#to_s]
@@ -32,7 +32,7 @@ module Yast
         log.info("systemctl #{command}")
         command = SYSTEMCTL + command
         log.debug "Executing `systemctl` command: #{command}"
-        result = ::Timeout.timeout(TIMEOUT) { SCR.Execute(BASH_SCR_PATH, command) }
+        result = ::Timeout.timeout(TIMEOUT) { Yast::SCR.Execute(BASH_SCR_PATH, command) }
         OpenStruct.new(result.merge!(command: command))
       rescue ::Timeout::Error
         raise SystemctlError, "Timeout #{TIMEOUT} seconds: #{command}"

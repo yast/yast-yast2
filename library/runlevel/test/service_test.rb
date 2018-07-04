@@ -9,7 +9,7 @@ module Yast
     include SystemdServiceStubs
 
     def stub_service_with(method, result)
-      allow_any_instance_of(SystemdService).to receive(method)
+      allow_any_instance_of(Yast2::Systemd::Service).to receive(method)
         .and_return(result)
     end
 
