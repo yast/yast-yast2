@@ -71,7 +71,7 @@ module Yast
 
     # with ruby 2.4 delegating ostruct with Forwardable start to write warning
     # so define it manually (bsc#1049433)
-    [:id, :path, :description, :active?, :enabled?, :loaded?].each do |m|
+    [:id, :path, :description, :active?, :enabled?, :loaded?, :active_state, :sub_state].each do |m|
       define_method(m) { properties.public_send(m) }
     end
 
