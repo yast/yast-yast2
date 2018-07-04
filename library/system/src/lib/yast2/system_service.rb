@@ -34,7 +34,8 @@ module Yast2
     # @return [Yast::SystemdService]
     attr_reader :service
 
-    def_delegators :@service, :running?, :start, :stop, :restart, :active?, :description
+    def_delegators :@service, :running?, :start, :stop, :restart, :active?,
+      :active_state, :sub_state, :description
 
     class << self
       # Find a service
