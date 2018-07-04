@@ -1,4 +1,4 @@
-require "yast2/systemd_unit"
+require "yast2/systemd/unit"
 
 module Yast2
   module Systemd
@@ -14,29 +14,29 @@ module Yast2
     # @example How to find a custom systemd target
     #
     #   require 'yast'
-    #   require 'yast2/systemd_target'
+    #   require 'yast2/systemd/target'
     #
     #   # This will return either a target object or nil
-    #   target = Yast::Systemd::Target.find('graphical')
+    #   target = Yast2::Systemd::Target.find('graphical')
     #
     #   # This returns target object or raises exception Systemd::TargetNotFound
-    #   target = Yast::Systemd::Target.find!('whatever')
+    #   target = Yast2::Systemd::Target.find!('whatever')
     #
     #   # This returns collection of all available targets
-    #   Yast::Systemd::Target.all
+    #   Yast2::Systemd::Target.all
     #
     # @example How to find the current default target
     #
-    #   target = Yast::Systemd::Target.get_default
+    #   target = Yast2::Systemd::Target.get_default
     #   target.unit_name      # name of the default target
     #   target.allow_isolate? # should return true
     #
     # @example Set the default target
     #
-    #   Yast::Systemd::Target.set_default('multi-user') # returns true if success
+    #   Yast2::Systemd::Target.set_default('multi-user') # returns true if success
     #
     #   # Or if we have already an target object, use this for default target
-    #   target = Yast::Systemd::Target.find('graphical')
+    #   target = Yast2::Systemd::Target.find('graphical')
     #   target.allow_isolate? # must be true to set default target
     #   target.set_default # returns true if success
     ###

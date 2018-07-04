@@ -61,7 +61,7 @@ module Yast2
 
     describe ".get_default" do
       it "returns the unit object of the currently set default target" do
-        allow(Yast2::Systemctl).to receive(:execute).with("get-default").and_return(
+        allow(Systemctl).to receive(:execute).with("get-default").and_return(
           OpenStruct.new("exit" => 0, "stdout" => "graphical.target", "stderr" => "")
         )
         target = Systemd::Target.get_default
@@ -73,7 +73,7 @@ module Yast2
 
     describe ".set_default" do
       it "returns true if the default target has been has for the parameter successfully" do
-        expect(Yast2::Systemctl).to receive(:execute).with("set-default --force graphical.target")
+        expect(Systemctl).to receive(:execute).with("set-default --force graphical.target")
           .and_return(OpenStruct.new("exit" => 0, "stdout" => "", "stderr" => ""))
         expect(Systemd::Target.set_default("graphical")).to eq(true)
       end
@@ -86,7 +86,7 @@ module Yast2
 
     describe "#set_default" do
       it "it returns true if the target unit object has been set as default target" do
-        expect(Yast2::Systemctl).to receive(:execute).with("set-default --force graphical.target")
+        expect(Systemctl).to receive(:execute).with("set-default --force graphical.target")
           .and_return(OpenStruct.new("exit" => 0, "stdout" => "", "stderr" => ""))
         target = Systemd::Target.find("graphical")
         expect(target.set_default).to eq(true)
@@ -100,7 +100,7 @@ module Yast2
 
       context "when target properties cannot be found out (e.g. in chroot)" do
         it "it returns true if the target unit object has been set as default target" do
-          expect(Yast2::Systemctl).to receive(:execute).with("set-default --force multi-user-in-installation.target")
+          expect(Systemctl).to receive(:execute).with("set-default --force multi-user-in-installation.target")
             .and_return(OpenStruct.new("exit" => 0, "stdout" => "", "stderr" => ""))
           stub_targets(target: "multi-user-in-installation")
           target = Systemd::Target.find("multi-user-in-installation")

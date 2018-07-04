@@ -31,7 +31,7 @@
 # Functions for systemd service handling used by other modules.
 
 require "yast"
-require "yast2/systemd_service"
+require "yast2/systemd/service"
 
 module Yast
   class ServiceClass < Module

@@ -2,7 +2,7 @@ require "yast"
 
 require "yast2/service_widget"
 require "yast2/service_configuration"
-require "yast2/systemd_service"
+require "yast2/systemd/service"
 require "ui/service_status"
 
 def service

@@ -1,4 +1,4 @@
-require "yast2/systemd_unit"
+require "yast2/systemd/unit"
 
 module Yast2
   module Systemd
@@ -15,18 +15,18 @@ module Yast2
     #  @example How to use it in other yast libraries
     #
     #    require 'yast'
-    #    require 'yast2/systemd_socket'
+    #    require 'yast2/systemd/socket'
     #
     #    ## Get a socket unit by its name
     #    ## If the socket unit can't be found, you'll get a nil object
     #
-    #    socket = Yast::Systemd::Socket.find('iscsid') # socket unit object
+    #    socket = Yast2::Systemd::Socket.find('iscsid') # socket unit object
     #
     #    ## If you can't handle any nil at the place of calling,
     #    ## use the finder with exclamation mark;
     #    ## Systemd::SocketNotFound exception will be raised
     #
-    #    socket = Yast::Systemd::Socket.find!('IcanHasCheez') # Systemd::SocketNotFound: Socket unit 'IcanHasCheez' not found
+    #    socket = Yast2::Systemd::Socket.find!('IcanHasCheez') # Systemd::SocketNotFound: Socket unit 'IcanHasCheez' not found
     #
     #    ## Get basic unit properties
     #
@@ -60,7 +60,7 @@ module Yast2
     #    # then available under the #properties instance method. To get an overview of
     #    # available socket properties, try e.g., `systemctl show iscsid.socket`
     #
-    #    socket = Yast::Systemd::Socket.find('iscsid', :can_start=>'CanStart', :triggers=>'Triggers')
+    #    socket = Yast2::Systemd::Socket.find('iscsid', :can_start=>'CanStart', :triggers=>'Triggers')
     #    socket.properties.can_start  # 'yes'
     #    socket.properties.triggers   # 'iscsid.service'
     #
