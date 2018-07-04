@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "forwardable"
-require "yast2/systemd_service"
+require "yast2/systemd/service"
 
 module Yast2
   # This class represents a system service
@@ -49,7 +49,7 @@ module Yast2
   class SystemService
     extend Forwardable
 
-    # @return [Yast2::Systemd::Service]
+    # @return [Systemd::Service]
     attr_reader :service
 
     def_delegators :@service, :running?, :start, :stop, :restart, :active?, :name, :description
@@ -85,7 +85,7 @@ module Yast2
       end
     end
 
-    # @param service [Yast2::Systemd::Service]
+    # @param service [Systemd::Service]
     def initialize(service)
       @service = service
       @changes = {}

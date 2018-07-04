@@ -42,7 +42,7 @@
 # The network.service alias link obsoletes the old master switch in
 # /etc/sysconfig/network/config:NETWORKMANAGER (until openSUSE-12.2).
 require "yast"
-require "yast2/systemd_service"
+require "yast2/systemd/service"
 
 module Yast
   class NetworkServiceClass < Module

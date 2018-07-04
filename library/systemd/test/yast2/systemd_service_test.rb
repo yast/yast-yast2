@@ -46,7 +46,7 @@ module Yast2
       let(:apparmor_double) { double("Service", name: "apparmor") }
       let(:cups_double) { double("Service", name: "cups") }
       let(:systemctl_stdout) do
-        File.read(File.join(File.expand_path("..", __dir__), "data", "apparmor_and_cups_properties"))
+        File.read(File.join(SYSTEMD_DATA_PATH, "apparmor_and_cups_properties"))
       end
 
       before do

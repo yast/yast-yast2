@@ -1,9 +1,11 @@
 require_relative "../../../test/test_helper.rb"
 
-require "yast2/systemd_unit"
-require "yast2/systemd_service"
-require "yast2/systemd_socket"
-require "yast2/systemd_target"
+require "yast2/systemd/unit"
+require "yast2/systemd/service"
+require "yast2/systemd/socket"
+require "yast2/systemd/target"
+
+SYSTEMD_DATA_PATH = File.expand_path("data", __dir__)
 
 module SystemctlStubs
   def stub_systemctl(unit)

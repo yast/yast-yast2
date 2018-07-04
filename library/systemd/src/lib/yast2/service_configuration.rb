@@ -1,5 +1,5 @@
 require "yast"
-require "yast2/systemd_service"
+require "yast2/systemd/service"
 
 module Yast2
   # Class that holds configuration for single or multiple services. It allows

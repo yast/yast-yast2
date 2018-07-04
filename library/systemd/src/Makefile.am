@@ -2,10 +2,11 @@ ylibdir = @ylibdir@/yast2
 ylib_DATA = \
   lib/yast2/service_configuration.rb \
   lib/yast2/systemctl.rb \
-  lib/yast2/systemd_service.rb \
-  lib/yast2/systemd_socket.rb \
-  lib/yast2/systemd_target.rb \
-  lib/yast2/systemd_unit.rb
+  lib/yast2/systemd.rb \
+  lib/yast2/systemd/service.rb \
+  lib/yast2/systemd/socket.rb \
+  lib/yast2/systemd/target.rb \
+  lib/yast2/systemd/unit.rb
 
 EXTRA_DIST = $(ylib_DATA)
 

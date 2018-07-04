@@ -1,4 +1,4 @@
-require "yast2/systemd_unit"
+require "yast2/systemd/unit"
 
 module Yast2
   module Systemd
@@ -13,7 +13,7 @@ module Yast2
     #
     # @example How to use it in other yast libraries
     #    require 'yast'
-    #    require 'yast2/systemd_service'
+    #    require 'yast2/systemd/service'
     #
     #    ## Get a service unit by its name
     #    ## If the service unit can't be found, you'll get nil
@@ -185,7 +185,7 @@ module Yast2
         socket_name = socket_name[/\S+\.socket/]
         return unless socket_name # triggered by non-socket
 
-        @socket = Yast2::Systemd::Socket.find(socket_name)
+        @socket = Socket.find(socket_name)
       end
 
       # Determines whether the service has an associated socket
