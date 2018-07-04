@@ -5,7 +5,7 @@ module Yast2
   # @example usage of widget with workflow with read + propose + show_dialog + write
   #   class Workflow
   #     def initialize
-  #       service = Yast::SystemdService.find!("my_service")
+  #       service = Yast2::Systemd::Service.find!("my_service")
   #       @service_configuration = Yast2::ServiceConfiguration.new(service)
   #     end
   #

@@ -14,14 +14,14 @@ module Yast2
     attr_reader :services
 
     # creates new configuration that holds state for given services
-    # @param services<Yast::SystemdService> services to configure
+    # @param services<Yast2::Systemd::Service> services to configure
     # @param reload<true,false> if use reload instead of restart action. If
     #   service does not support reload or does not run, then restart is used.
     #
     # @example three services
     #   config = Yast2::ServiceConfiguration.new(s1, s2, s3)
     def initialize(*services)
-      if services.any? { |s| !s.is_a?(Yast::SystemdService) }
+      if services.any? { |s| !s.is_a?(Systemd::Service) }
         raise ArgumentError, "Services can be only Systemd Service - #{services.inspect}"
       end
 

@@ -49,7 +49,7 @@ module Yast2
   class SystemService
     extend Forwardable
 
-    # @return [Yast::SystemdService]
+    # @return [Yast2::Systemd::Service]
     attr_reader :service
 
     def_delegators :@service, :running?, :start, :stop, :restart, :active?, :name, :description
@@ -70,22 +70,22 @@ module Yast2
       # @param name [String] Service name
       # @return [SystemService,nil] System service or nil when not found
       def find(name)
-        new(Yast::SystemdService.find(name))
+        new(Systemd::Service.find(name))
       end
 
       # Finds service names
       #
       # This method finds a set of system services. Currently it is just a wrapper around
-      # SystemdService.find_many.
+      # Systemd::Service.find_many.
       #
       # @param names [Array<String>] Service names to find
       # @return [Array<SystemService>] Found system services
       def find_many(names)
-        Yast::SystemdService.find_many(names).compact.map { |s| new(s) }
+        Systemd::Service.find_many(names).compact.map { |s| new(s) }
       end
     end
 
-    # @param service [Yast::SystemdService]
+    # @param service [Yast2::Systemd::Service]
     def initialize(service)
       @service = service
       @changes = {}
@@ -233,7 +233,7 @@ module Yast2
 
     # Returns the associated socket
     #
-    # @return [Yast::SystemdSocket]
+    # @return [Yast2::Systemd::Socket]
     def socket
       service && service.socket
     end

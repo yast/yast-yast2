@@ -193,7 +193,7 @@ module Yast
         @current_name = DEFAULT_BACKEND
         log.info "Running in installer/AutoYaST, use default: #{@current_name}"
       else
-        service = SystemdService.find("network")
+        service = Yast2::Systemd::Service.find("network")
         @current_name = BACKENDS.invert[service.name] if service
       end
 
