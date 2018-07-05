@@ -149,5 +149,50 @@ module Yast
         expect(service.stop).to eq(true)
       end
     end
+
+    describe "#socket" do
+      subject(:service) { SystemdService.find(service_name) }
+
+      before { stub_services(service: service_name) }
+
+      context "when the service is triggered by a socket" do
+        let(:service_name) { "cups" }
+
+        it "returns the socket" do
+          expect(service.socket).to be_a(Yast::SystemdSocketClass::Socket)
+          expect(service.socket.unit_name).to eq("iscsid")
+        end
+      end
+
+      context "when the service is not triggered by a socket" do
+        let(:service_name) { "sshd" }
+
+        it "returns nil" do
+          expect(service.socket).to be_nil
+        end
+      end
+    end
+
+    describe "#socket?" do
+      subject(:service) { SystemdService.find(service_name) }
+
+      before { stub_services(service: service_name) }
+
+      context "when there is an associated socket" do
+        let(:service_name) { "cups" }
+
+        it "returns true" do
+          expect(service.socket?).to eq(true)
+        end
+      end
+
+      context "when there is no associated socket" do
+        let(:service_name) { "sshd" }
+
+        it "returns false" do
+          expect(service.socket?).to eq(false)
+        end
+      end
+    end
   end
 end

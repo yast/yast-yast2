@@ -172,6 +172,29 @@ module Yast
         start
       end
 
+      # Returns socket associated with service or nil if there is no such socket
+      #
+      # @return [Yast::SystemdSocketClass::Socket]
+      def socket
+        return @socket if @socket
+
+        # not triggered
+        socket_name = properties.triggered_by
+        return unless socket_name
+
+        socket_name = socket_name[/\S+\.socket/]
+        return unless socket_name # triggered by non-socket
+
+        @socket = Yast::SystemdSocket.find(socket_name)
+      end
+
+      # Determines whether the service has an associated socket
+      #
+      # @return [Boolean] true if an associated socket exists; false otherwise.
+      def socket?
+        !socket.nil?
+      end
+
     private
 
       def installation_system?
