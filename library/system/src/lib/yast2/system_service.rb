@@ -49,20 +49,15 @@ module Yast2
   class SystemService
     extend Forwardable
 
-    # @return [Yast::SystemdService]
+    # @return [Yast::SystemdServiceClass::Service]
     attr_reader :service
 
-    def_delegators :@service, :running?, :name, :description
+    # @return [Hash<Symbol,Object>] Errors when trying to write changes to the
+    #   underlying system.
+    attr_reader :errors
 
-    # @!method state
-    #
-    # @return [String]
-    def_delegator :@service, :active_state, :state
-
-    # @!method substate
-    #
-    # @return [String]
-    def_delegator :@service, :sub_state, :substate
+    def_delegators :@service, :running?, :start, :stop, :restart, :active?,
+      :active_state, :sub_state, :name, :description
 
     class << self
       # Find a service
@@ -89,6 +84,7 @@ module Yast2
     def initialize(service)
       @service = service
       @changes = {}
+      @errors = {}
     end
 
     # Returns the start mode
@@ -156,6 +152,7 @@ module Yast2
     #
     # @param set_status [Boolean] Do not change service status. Useful when running on 1st stage.
     def save(ignore_status: false)
+      clear_errors
       save_start_mode
       set_current_status unless ignore_status
       reload
@@ -239,27 +236,43 @@ module Yast2
 
     # Sets start mode to the underlying system
     def save_start_mode
-      return unless changed_value?(:start_mode)
-      case new_value_for(:start_mode)
-      when :on_boot
-        service.enable
-        socket.disable
-      when :on_demand
-        service.disable
-        socket.enable
-      when :manual
-        service.disable
-        socket.disable
-      end
+      return unless changes[:start_mode]
+      result =
+        case changes[:start_mode]
+        when :on_boot
+          service.enable && socket.disable
+        when :on_demand
+          service.disable && socket.enable
+        when :manual
+          service.disable && socket.disable
+        end
+      register_error(:start_mode) unless result
     end
 
     # Sets service status
     def set_current_status
-      if new_value_for(:active) && !service.active?
-        service.start
-      elsif new_value_for(:active) == false && service.active?
-        service.stop
-      end
+      return if changes[:active].nil?
+      result =
+        if changes[:active] && !service.active?
+          service.start
+        elsif changes[:active] == false && service.active?
+          service.stop
+        end
+      register_error(:active) if result == false
+    end
+
+    # Registers error information
+    #
+    # Stores the source of error and the value which caused it.
+    #
+    # @param key [Symbol] Source of error
+    def register_error(key)
+      errors[key] = changes[key]
+    end
+
+    # Clears registered errors
+    def clear_errors
+      @errors.clear
     end
 
     # Returns the associated socket
