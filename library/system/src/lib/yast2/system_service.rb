@@ -28,6 +28,24 @@ module Yast2
   # When talking about systemd, it might happen that a service is compose by a set of units
   # (services, sockets, paths and so on). This class is able to group those units and
   # offer an API to handle them together.
+  #
+  # Additionally, this class does not modify the underlying system until the #save
+  # method is called.
+  #
+  # @example Enabling a service
+  #   cups = SystemService.find("cups")
+  #   cups.start_mode = :boot
+  #   cups.save
+  #
+  # @example Activating a service
+  #   cups = SystemService.find("cups")
+  #   cups.active = true
+  #   cups.save
+  #
+  # @example Ignoring status changes on 1st stage
+  #   cups = SystemService.find("cups")
+  #   cups.active = true
+  #   cups.save(ignore_status: true)
   class SystemService
     extend Forwardable
 
@@ -35,7 +53,7 @@ module Yast2
     attr_reader :service
 
     def_delegators :@service, :running?, :start, :stop, :restart, :active?,
-      :active_state, :sub_state, :description
+      :active_state, :sub_state, :name, :description
 
     class << self
       # Find a service
@@ -61,6 +79,7 @@ module Yast2
     # @param service [Yast::SystemdServiceClass::Service]
     def initialize(service)
       @service = service
+      @changes = {}
     end
 
     # Returns socket associated with service or nil if there is no such socket
@@ -79,14 +98,14 @@ module Yast2
       @socket = Yast::SystemdSocket.find(socket_name)
     end
 
-    # Determine whether the service has an associated socket
+    # Determines whether the service has an associated socket
     #
     # @return [Boolean] true if an associated socket exists; false otherwise.
     def socket?
       !socket.nil?
     end
 
-    # Return the start mode
+    # Returns the start mode
     #
     # See {#start_modes} to find out the supported modes for a given service (usually :on_boot,
     # :manual and, in some cases, :on_demand).
@@ -96,15 +115,13 @@ module Yast2
     #
     # @return [Symbol] Start mode (:on_boot, :on_demand, :manual)
     def start_mode
-      return :on_boot if service.enabled?
-      return :on_demand if socket && socket.enabled?
-      :manual
+      changes[:start_mode] || current_start_mode
     end
 
-    # Set the service start mode
+    # Sets the service start mode
     #
     # See {#start_modes} to find out the supported modes for a given service (usually :on_boot,
-    # :manual and, in some cases, :on_demand).
+    # :manual and, in some cases, :on_demand). The given value will be applied after calling #save.
     #
     # @see #start_modes
     # @raise ArgumentError when mode is not valid
@@ -113,17 +130,51 @@ module Yast2
         raise ArgumentError, "Invalid start mode: '#{mode}' for service '#{service.name}'"
       end
 
-      case mode
-      when :on_boot
-        service.enable
-        socket.disable
-      when :on_demand
-        service.disable
-        socket.enable
-      when :manual
-        service.disable
-        socket.disable
+      if mode == current_start_mode
+        changes.delete(:start_mode)
+      else
+        changes[:start_mode] = mode
       end
+    end
+
+    # Sets whether the service should be active or not
+    #
+    # The given value will be applied after calling #save.
+    #
+    # @param value [Boolean] true to set this service as active
+    def active=(active)
+      if active == service.active?
+        changes.delete(:active)
+      else
+        changes[:active] = active
+      end
+    end
+
+    def active
+      return changes[:active] unless changes[:active].nil?
+      service.active?
+    end
+
+    # Saves changes to the underlying system
+    #
+    # @param set_status [Boolean] Do not change service status. Useful when running on 1st stage.
+    def save(ignore_status: false)
+      save_start_mode
+      set_current_status unless ignore_status
+      reload
+    end
+
+    # Reverts stored changes
+    def reload
+      changes.clear
+      @current_start_mode = nil
+    end
+
+    # Determines whether the system has been changed or not
+    #
+    # @return [Boolean] true if the system has been changed
+    def changed?
+      !changes.empty?
     end
 
     # Return the list of supported start modes
@@ -138,6 +189,48 @@ module Yast2
       @start_modes = [:on_boot, :manual]
       @start_modes << :on_demand if socket?
       @start_modes
+    end
+
+  private
+
+    # @return [Hash<String,Object>]
+    attr_reader :changes
+
+    # Get the current start_mode
+    def current_start_mode
+      @current_start_mode ||=
+        if service.enabled?
+          :on_boot
+        elsif socket && socket.enabled?
+          :on_demand
+        else
+          :manual
+        end
+    end
+
+    # Sets start mode to the underlying system
+    def save_start_mode
+      return unless changes[:start_mode]
+      case changes[:start_mode]
+      when :on_boot
+        service.enable
+        socket.disable
+      when :on_demand
+        service.disable
+        socket.enable
+      when :manual
+        service.disable
+        socket.disable
+      end
+    end
+
+    # Sets service status
+    def set_current_status
+      if changes[:active] && !service.active?
+        service.start
+      elsif changes[:active] == false && service.active?
+        service.stop
+      end
     end
   end
 end
