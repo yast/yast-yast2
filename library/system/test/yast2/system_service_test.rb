@@ -26,12 +26,14 @@ require "yast2/system_service"
 describe Yast2::SystemService do
   subject(:system_service) { described_class.new(service) }
 
-  let(:service) { double("service", enabled?: true, name: "cups", active?: active?, enable: nil) }
+  let(:service) do
+    double("service", enabled?: true, name: "cups", active?: active?, enable: nil)
+  end
   let(:socket) { double("socket", enabled?: true) }
   let(:active?) { true }
 
   before do
-    allow(system_service).to receive(:socket).and_return(socket)
+    allow(service).to receive(:socket).and_return(socket)
   end
 
   describe ".find" do
@@ -331,28 +333,6 @@ describe Yast2::SystemService do
     context "when no changes were made" do
       it "returns false" do
         expect(system_service.changed?).to eq(false)
-      end
-    end
-  end
-
-  describe "#socket?" do
-    before do
-      allow(system_service).to receive(:socket).and_return(socket)
-    end
-
-    context "when there is an associated socket" do
-      let(:socket) { double("socket") }
-
-      it "returns true" do
-        expect(system_service.socket?).to eq(true)
-      end
-    end
-
-    context "when there is no associated socket" do
-      let(:socket) { nil }
-
-      it "returns false" do
-        expect(system_service.socket?).to eq(false)
       end
     end
   end
