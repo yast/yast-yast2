@@ -145,6 +145,13 @@ module Yast2
       self.active = false
     end
 
+    # Toggles the service status
+    #
+    # @see #active=
+    def toggle
+      self.active = !active?
+    end
+
     # Saves changes to the underlying system
     #
     # @param set_status [Boolean] Do not change service status. Useful when running on 1st stage.
