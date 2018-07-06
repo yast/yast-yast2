@@ -342,7 +342,7 @@ describe Yast2::SystemService do
       allow(service).to receive(:id).and_return("cups.service")
     end
 
-    context "when the service has not associated socket" do
+    context "when the service does not have an associated socket" do
       let(:socket) { nil }
 
       it "returns only the service full name" do
