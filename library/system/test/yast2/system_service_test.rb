@@ -358,4 +358,22 @@ describe Yast2::SystemService do
       end
     end
   end
+
+  describe "#changed_value?" do
+    context "when no value has been changed" do
+      it "returns true" do
+        expect(system_service.changed_value?(:active)).to eq(false)
+      end
+    end
+
+    context "when some value has been changed" do
+      before do
+        system_service.active = !system_service.active
+      end
+
+      it "returns true" do
+        expect(system_service.changed_value?(:active)).to eq(true)
+      end
+    end
+  end
 end
