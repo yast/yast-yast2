@@ -39,12 +39,12 @@ module Yast2
   #
   # @example Activating a service
   #   cups = SystemService.find("cups")
-  #   cups.active = true
+  #   cups.start
   #   cups.save
   #
   # @example Ignoring status changes on 1st stage
   #   cups = SystemService.find("cups")
-  #   cups.active = true
+  #   cups.start
   #   cups.save(ignore_status: true)
   class SystemService
     extend Forwardable
