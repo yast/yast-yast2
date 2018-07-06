@@ -52,8 +52,17 @@ module Yast2
     # @return [Yast::SystemdService]
     attr_reader :service
 
-    def_delegators :@service, :running?, :start, :stop, :restart, :active?,
-      :active_state, :sub_state, :name, :description
+    def_delegators :@service, :running?, :start, :stop, :restart, :active?, :name, :description
+
+    # @!method state
+    #
+    # @return [String]
+    def_delegator :@service, :active_state, :state
+
+    # @!method substate
+    #
+    # @return [String]
+    def_delegator :@service, :sub_state, :substate
 
     class << self
       # Find a service
@@ -64,7 +73,7 @@ module Yast2
         new(Yast::SystemdService.find(name))
       end
 
-      # Find service names
+      # Finds service names
       #
       # This method finds a set of system services. Currently it is just a wrapper around
       # SystemdService.find_many.
@@ -154,7 +163,7 @@ module Yast2
       !changes.empty?
     end
 
-    # Return the list of supported start modes
+    # Returns the list of supported start modes
     #
     # * :on_boot:   The service will be started when the system boots.
     # * :manual: The service is disabled and it will be started manually.
@@ -166,6 +175,18 @@ module Yast2
       @start_modes = [:on_boot, :manual]
       @start_modes << :on_demand if socket
       @start_modes
+    end
+
+    # Terms to search for this service
+    #
+    # In case the service has an associated socket, the socket name
+    # is included as search term.
+    #
+    # @return [Array<String>] e.g., #=> ["tftp.service", "tftp.socket"]
+    def search_terms
+      terms = [service.id]
+      terms << socket.id if socket
+      terms
     end
 
   private
