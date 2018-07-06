@@ -52,7 +52,7 @@ module Yast2
     # @return [Yast::SystemdService]
     attr_reader :service
 
-    def_delegators :@service, :running?, :start, :stop, :restart, :active?, :name, :description
+    def_delegators :@service, :running?, :start, :stop, :restart, :name, :description
 
     # @!method state
     #
@@ -136,10 +136,15 @@ module Yast2
       end
     end
 
+    # Determine whether the service will be active after calling #save
+    #
+    # @return [Boolean] true if the service must be active; false otherwise
     def active
       return changes[:active] unless changes[:active].nil?
       service.active?
     end
+
+    alias_method :active?, :active
 
     # Saves changes to the underlying system
     #
