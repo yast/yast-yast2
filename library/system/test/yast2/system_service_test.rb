@@ -167,7 +167,7 @@ describe Yast2::SystemService do
       let(:active?) { false }
 
       it "sets #active to true" do
-        expect { system_service.active = true }.to change { system_service.active }
+        expect { system_service.active = true }.to change { system_service.active? }
           .from(false).to(true)
       end
 
@@ -187,7 +187,7 @@ describe Yast2::SystemService do
       let(:active?) { true }
 
       it "sets #active to false" do
-        expect { system_service.active = false }.to change { system_service.active }
+        expect { system_service.active = false }.to change { system_service.active? }
           .from(true).to(false)
       end
 
@@ -202,12 +202,12 @@ describe Yast2::SystemService do
     end
   end
 
-  describe "#active" do
+  describe "#active?" do
     context "when service is active" do
       let(:active?) { true }
 
       it "returns true" do
-        expect(system_service.active).to eq(true)
+        expect(system_service.active?).to eq(true)
       end
     end
 
@@ -215,7 +215,7 @@ describe Yast2::SystemService do
       let(:active?) { false }
 
       it "returns false" do
-        expect(system_service.active).to eq(false)
+        expect(system_service.active?).to eq(false)
       end
     end
 
@@ -225,7 +225,7 @@ describe Yast2::SystemService do
       end
 
       it "returns the given value" do
-        expect(system_service.active).to eq(false)
+        expect(system_service.active?).to eq(false)
       end
     end
   end
@@ -374,7 +374,7 @@ describe Yast2::SystemService do
 
     context "when some value has been changed" do
       before do
-        system_service.active = !system_service.active
+        system_service.active = !system_service.active?
       end
 
       it "returns true" do

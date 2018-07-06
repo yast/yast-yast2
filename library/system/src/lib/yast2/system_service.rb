@@ -139,12 +139,10 @@ module Yast2
     # Determine whether the service will be active after calling #save
     #
     # @return [Boolean] true if the service must be active; false otherwise
-    def active
+    def active?
       return new_value_for(:active) if changed_value?(:active)
       service.active?
     end
-
-    alias_method :active?, :active
 
     # Saves changes to the underlying system
     #
