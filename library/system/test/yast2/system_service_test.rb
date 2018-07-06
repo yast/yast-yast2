@@ -129,6 +129,10 @@ describe Yast2::SystemService do
     end
 
     context "when the wanted start_mode is the same than the current one" do
+      before do
+        system_service.start_mode = :on_demand
+      end
+
       it "ignores the change" do
         system_service.start_mode = :on_boot
         expect(system_service.changed?).to eq(false)
@@ -168,7 +172,9 @@ describe Yast2::SystemService do
       end
 
       context "and the service is already active" do
-        let(:active?) { true }
+        before do
+          system_service.active = true
+        end
 
         it "ignores the change" do
           system_service.active = true
