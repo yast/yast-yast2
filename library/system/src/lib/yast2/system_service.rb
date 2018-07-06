@@ -49,6 +49,8 @@ module Yast2
   class SystemService
     extend Forwardable
 
+    Change = Struct.new(:old_value, :new_value)
+
     # @return [Yast::SystemdService]
     attr_reader :service
 
@@ -101,7 +103,7 @@ module Yast2
     #
     # @return [Symbol] Start mode (:on_boot, :on_demand, :manual)
     def start_mode
-      changes[:start_mode] || current_start_mode
+      new_value_for(:start_mode) || current_start_mode
     end
 
     # Sets the service start mode
@@ -117,9 +119,9 @@ module Yast2
       end
 
       if mode == current_start_mode
-        changes.delete(:start_mode)
+        unregister_change(:start_mode)
       else
-        changes[:start_mode] = mode
+        register_change(:start_mode, current_start_mode, mode)
       end
     end
 
@@ -128,11 +130,11 @@ module Yast2
     # The given value will be applied after calling #save.
     #
     # @param value [Boolean] true to set this service as active
-    def active=(active)
-      if active == service.active?
-        changes.delete(:active)
+    def active=(value)
+      if value == service.active?
+        unregister_change(:start_mode)
       else
-        changes[:active] = active
+        register_change(:active, service.active?, value)
       end
     end
 
@@ -140,7 +142,8 @@ module Yast2
     #
     # @return [Boolean] true if the service must be active; false otherwise
     def active
-      return changes[:active] unless changes[:active].nil?
+      new_value = new_value_for(:active)
+      return new_value unless new_value.nil?
       service.active?
     end
 
@@ -157,7 +160,7 @@ module Yast2
 
     # Reverts stored changes
     def reload
-      changes.clear
+      clear_changes
       @current_start_mode = nil
     end
 
@@ -194,6 +197,13 @@ module Yast2
       terms
     end
 
+    # Determines whether a value has been changed
+    #
+    # @return [Boolean] true if the value has been changed; false otherwise
+    def changed_value?(key)
+      changes.key?(key)
+    end
+
   private
 
     # @return [Hash<String,Object>]
@@ -213,8 +223,8 @@ module Yast2
 
     # Sets start mode to the underlying system
     def save_start_mode
-      return unless changes[:start_mode]
-      case changes[:start_mode]
+      return unless new_value_for(:start_mode)
+      case new_value_for(:start_mode)
       when :on_boot
         service.enable
         socket.disable
@@ -229,9 +239,9 @@ module Yast2
 
     # Sets service status
     def set_current_status
-      if changes[:active] && !service.active?
+      if new_value_for(:active) && !service.active?
         service.start
-      elsif changes[:active] == false && service.active?
+      elsif new_value_for(:active) == false && service.active?
         service.stop
       end
     end
@@ -241,6 +251,28 @@ module Yast2
     # @return [Yast::SystemdSocketClass::Socket]
     def socket
       service && service.socket
+    end
+
+    def unregister_change(key)
+      changes.delete(key)
+    end
+
+    def register_change(key, old_value, new_value)
+      changes[key] = Change.new(old_value, new_value)
+    end
+
+    def clear_changes
+      changes.clear
+    end
+
+    def new_value_for(key)
+      return nil unless changes[key]
+      changes[key].new_value
+    end
+
+    def old_value_for(key)
+      return nil unless changes[key]
+      changes[key].old_value
     end
   end
 end
