@@ -49,8 +49,6 @@ module Yast2
   class SystemService
     extend Forwardable
 
-    Change = Struct.new(:old_value, :new_value)
-
     # @return [Yast::SystemdService]
     attr_reader :service
 
@@ -121,7 +119,7 @@ module Yast2
       if mode == current_start_mode
         unregister_change(:start_mode)
       else
-        register_change(:start_mode, current_start_mode, mode)
+        register_change(:start_mode, mode)
       end
     end
 
@@ -134,7 +132,7 @@ module Yast2
       if value == service.active?
         unregister_change(:start_mode)
       else
-        register_change(:active, service.active?, value)
+        register_change(:active, value)
       end
     end
 
@@ -142,8 +140,7 @@ module Yast2
     #
     # @return [Boolean] true if the service must be active; false otherwise
     def active
-      new_value = new_value_for(:active)
-      return new_value unless new_value.nil?
+      return new_value_for(:active) if changed_value?(:active)
       service.active?
     end
 
@@ -223,7 +220,7 @@ module Yast2
 
     # Sets start mode to the underlying system
     def save_start_mode
-      return unless new_value_for(:start_mode)
+      return unless changed_value?(:start_mode)
       case new_value_for(:start_mode)
       when :on_boot
         service.enable
@@ -253,26 +250,33 @@ module Yast2
       service && service.socket
     end
 
+    # Unregisters change for a given key
+    #
+    # @param [Symbol] Change key
     def unregister_change(key)
       changes.delete(key)
     end
 
-    def register_change(key, old_value, new_value)
-      changes[key] = Change.new(old_value, new_value)
+    # Registers change for a given key
+    #
+    # @param [Symbol] Change key
+    # @param [Object] New value
+    def register_change(key, new_value)
+      changes[key] = new_value
     end
 
+    # Clears changes
     def clear_changes
       changes.clear
     end
 
+    # Returns the new value for a given key
+    #
+    # @param [Symbol] Change key
+    # @return [Object] New value
     def new_value_for(key)
-      return nil unless changes[key]
-      changes[key].new_value
-    end
-
-    def old_value_for(key)
-      return nil unless changes[key]
-      changes[key].old_value
+      return nil unless changed_value?(key)
+      changes[key]
     end
   end
 end
