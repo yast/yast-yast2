@@ -52,7 +52,7 @@ module Yast2
     # @return [Yast::SystemdService]
     attr_reader :service
 
-    def_delegators :@service, :running?, :start, :stop, :restart, :name, :description
+    def_delegators :@service, :running?, :name, :description
 
     # @!method state
     #
@@ -123,25 +123,26 @@ module Yast2
       end
     end
 
-    # Sets whether the service should be active or not
-    #
-    # The given value will be applied after calling #save.
-    #
-    # @param value [Boolean] true to set this service as active
-    def active=(value)
-      if value == active?
-        unregister_change(:active)
-      else
-        register_change(:active, value)
-      end
-    end
-
     # Determine whether the service will be active after calling #save
     #
     # @return [Boolean] true if the service must be active; false otherwise
     def active?
       return new_value_for(:active) if changed_value?(:active)
       service.active?
+    end
+
+    # Sets the service to be started after calling #save
+    #
+    # @see #active=
+    def start
+      self.active = true
+    end
+
+    # Sets the service to be stopped after calling #save
+    #
+    # @see #active=
+    def stop
+      self.active = false
     end
 
     # Saves changes to the underlying system
@@ -203,6 +204,19 @@ module Yast2
 
     # @return [Hash<String,Object>]
     attr_reader :changes
+
+    # Sets whether the service should be active or not
+    #
+    # The given value will be applied after calling #save.
+    #
+    # @param value [Boolean] true to set this service as active
+    def active=(value)
+      if value == service.active?
+        unregister_change(:active)
+      else
+        register_change(:active, value)
+      end
+    end
 
     # Get the current start_mode
     def current_start_mode
