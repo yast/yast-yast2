@@ -252,6 +252,30 @@ describe Yast2::SystemService do
     end
   end
 
+  describe "#toggle" do
+    context "when the service is set to be started" do
+      before do
+        system_service.start
+      end
+
+      it "sets the services to be stopped" do
+        expect { system_service.toggle }.to change { system_service.active? }
+          .from(true).to(false)
+      end
+    end
+
+    context "when the service is set to be stopped" do
+      before do
+        system_service.stop
+      end
+
+      it "sets the services to be started" do
+        expect { system_service.toggle }.to change { system_service.active? }
+          .from(false).to(true)
+      end
+    end
+  end
+
   describe "#active?" do
     context "when the underlying service is active" do
       let(:active?) { true }
