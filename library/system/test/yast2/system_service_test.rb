@@ -336,4 +336,26 @@ describe Yast2::SystemService do
       end
     end
   end
+
+  describe "#search_terms" do
+    before do
+      allow(service).to receive(:id).and_return("cups.service")
+    end
+
+    context "when the service has not associated socket" do
+      let(:socket) { nil }
+
+      it "returns only the service full name" do
+        expect(system_service.search_terms).to contain_exactly("cups.service")
+      end
+    end
+
+    context "when the service has an associated socket" do
+      let(:socket) { instance_double(Yast::SystemdSocketClass::Socket, id: "cups.socket") }
+
+      it "returns the service and socket full names" do
+        expect(system_service.search_terms).to contain_exactly("cups.service", "cups.socket")
+      end
+    end
+  end
 end
