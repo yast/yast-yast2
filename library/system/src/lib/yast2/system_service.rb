@@ -39,12 +39,12 @@ module Yast2
   #
   # @example Activating a service
   #   cups = SystemService.find("cups")
-  #   cups.active = true
+  #   cups.start
   #   cups.save
   #
   # @example Ignoring status changes on 1st stage
   #   cups = SystemService.find("cups")
-  #   cups.active = true
+  #   cups.start
   #   cups.save(ignore_status: true)
   class SystemService
     extend Forwardable
@@ -52,7 +52,7 @@ module Yast2
     # @return [Yast::SystemdService]
     attr_reader :service
 
-    def_delegators :@service, :running?, :start, :stop, :restart, :active?, :name, :description
+    def_delegators :@service, :running?, :name, :description
 
     # @!method state
     #
@@ -101,7 +101,7 @@ module Yast2
     #
     # @return [Symbol] Start mode (:on_boot, :on_demand, :manual)
     def start_mode
-      changes[:start_mode] || current_start_mode
+      new_value_for(:start_mode) || current_start_mode
     end
 
     # Sets the service start mode
@@ -117,28 +117,39 @@ module Yast2
       end
 
       if mode == current_start_mode
-        changes.delete(:start_mode)
+        unregister_change(:start_mode)
       else
-        changes[:start_mode] = mode
+        register_change(:start_mode, mode)
       end
     end
 
-    # Sets whether the service should be active or not
+    # Determine whether the service will be active after calling #save
     #
-    # The given value will be applied after calling #save.
-    #
-    # @param value [Boolean] true to set this service as active
-    def active=(active)
-      if active == service.active?
-        changes.delete(:active)
-      else
-        changes[:active] = active
-      end
-    end
-
-    def active
-      return changes[:active] unless changes[:active].nil?
+    # @return [Boolean] true if the service must be active; false otherwise
+    def active?
+      return new_value_for(:active) if changed_value?(:active)
       service.active?
+    end
+
+    # Sets the service to be started after calling #save
+    #
+    # @see #active=
+    def start
+      self.active = true
+    end
+
+    # Sets the service to be stopped after calling #save
+    #
+    # @see #active=
+    def stop
+      self.active = false
+    end
+
+    # Toggles the service status
+    #
+    # @see #active=
+    def toggle
+      self.active = !active?
     end
 
     # Saves changes to the underlying system
@@ -152,7 +163,7 @@ module Yast2
 
     # Reverts stored changes
     def reload
-      changes.clear
+      clear_changes
       @current_start_mode = nil
     end
 
@@ -189,10 +200,30 @@ module Yast2
       terms
     end
 
+    # Determines whether a value has been changed
+    #
+    # @return [Boolean] true if the value has been changed; false otherwise
+    def changed_value?(key)
+      changes.key?(key)
+    end
+
   private
 
     # @return [Hash<String,Object>]
     attr_reader :changes
+
+    # Sets whether the service should be active or not
+    #
+    # The given value will be applied after calling #save.
+    #
+    # @param value [Boolean] true to set this service as active
+    def active=(value)
+      if value == service.active?
+        unregister_change(:active)
+      else
+        register_change(:active, value)
+      end
+    end
 
     # Get the current start_mode
     def current_start_mode
@@ -208,8 +239,8 @@ module Yast2
 
     # Sets start mode to the underlying system
     def save_start_mode
-      return unless changes[:start_mode]
-      case changes[:start_mode]
+      return unless changed_value?(:start_mode)
+      case new_value_for(:start_mode)
       when :on_boot
         service.enable
         socket.disable
@@ -224,9 +255,9 @@ module Yast2
 
     # Sets service status
     def set_current_status
-      if changes[:active] && !service.active?
+      if new_value_for(:active) && !service.active?
         service.start
-      elsif changes[:active] == false && service.active?
+      elsif new_value_for(:active) == false && service.active?
         service.stop
       end
     end
@@ -236,6 +267,35 @@ module Yast2
     # @return [Yast::SystemdSocketClass::Socket]
     def socket
       service && service.socket
+    end
+
+    # Unregisters change for a given key
+    #
+    # @param [Symbol] Change key
+    def unregister_change(key)
+      changes.delete(key)
+    end
+
+    # Registers change for a given key
+    #
+    # @param [Symbol] Change key
+    # @param [Object] New value
+    def register_change(key, new_value)
+      changes[key] = new_value
+    end
+
+    # Clears changes
+    def clear_changes
+      changes.clear
+    end
+
+    # Returns the new value for a given key
+    #
+    # @param [Symbol] Change key
+    # @return [Object] New value
+    def new_value_for(key)
+      return nil unless changed_value?(key)
+      changes[key]
     end
   end
 end

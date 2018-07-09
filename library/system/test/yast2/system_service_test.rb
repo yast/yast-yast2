@@ -129,6 +129,10 @@ describe Yast2::SystemService do
     end
 
     context "when the wanted start_mode is the same than the current one" do
+      before do
+        system_service.start_mode = :on_demand
+      end
+
       it "ignores the change" do
         system_service.start_mode = :on_boot
         expect(system_service.changed?).to eq(false)
@@ -158,68 +162,154 @@ describe Yast2::SystemService do
     end
   end
 
-  describe "#active=" do
-    context "when set to true" do
-      let(:active?) { false }
+  describe "#start" do
+    let(:active?) { false }
 
-      it "sets #active to true" do
-        expect { system_service.active = true }.to change { system_service.active }
-          .from(false).to(true)
+    it "sets the service to be active" do
+      expect { system_service.start }.to change { system_service.active? }
+        .from(false).to(true)
+    end
+
+    it "sets the service as changed" do
+      expect { system_service.start }.to change { system_service.changed_value?(:active) }
+        .from(false).to(true)
+    end
+
+    context "and the service is already started (active)" do
+      let(:active?) { true }
+
+      it "sets the service to stay as active" do
+        expect { system_service.start }.to_not change { system_service.active? }
       end
 
-      context "and the service is already active" do
-        let(:active?) { true }
-
-        it "ignores the change" do
-          system_service.active = true
-          expect(system_service.changed?).to eq(false)
-        end
+      it "ignores the change" do
+        system_service.start
+        expect(system_service.changed?).to eq(false)
       end
     end
 
-    context "when set to false" do
+    context "and the service was set to be stopped" do
       let(:active?) { true }
 
-      it "sets #active to false" do
-        expect { system_service.active = false }.to change { system_service.active }
-          .from(true).to(false)
+      before do
+        system_service.stop
       end
 
-      context "and the service is already inactive" do
-        let(:active?) { false }
+      it "sets the service to stay as active" do
+        expect { system_service.start }.to change { system_service.active? }
+          .from(false).to(true)
+      end
 
-        it "ignores the change" do
-          system_service.active = false
-          expect(system_service.changed?).to eq(false)
-        end
+      it "cancels the previous change" do
+        system_service.start
+        expect(system_service.changed?).to eq(false)
       end
     end
   end
 
-  describe "#active" do
-    context "when service is active" do
+  describe "#stop" do
+    let(:active?) { true }
+
+    it "sets the service to be deactivated" do
+      expect { system_service.stop }.to change { system_service.active? }
+        .from(true).to(false)
+    end
+
+    it "sets the service as changed" do
+      expect { system_service.stop }.to change { system_service.changed_value?(:active) }
+        .from(false).to(true)
+    end
+
+    context "and the service is already stopped (inactive)" do
+      let(:active?) { false }
+
+      it "sets the service to stay as inactive" do
+        expect { system_service.stop }.to_not change { system_service.active? }
+      end
+
+      it "ignores the change" do
+        system_service.stop
+        expect(system_service.changed?).to eq(false)
+      end
+    end
+
+    context "and the services was set to be stopped" do
+      let(:active?) { false }
+
+      before do
+        system_service.start
+      end
+
+      it "sets the service to stay as active" do
+        expect { system_service.stop }.to change { system_service.active? }
+          .from(true).to(false)
+      end
+
+      it "cancels the previous change" do
+        system_service.stop
+        expect(system_service.changed?).to eq(false)
+      end
+    end
+  end
+
+  describe "#toggle" do
+    context "when the service is set to be started" do
+      before do
+        system_service.start
+      end
+
+      it "sets the services to be stopped" do
+        expect { system_service.toggle }.to change { system_service.active? }
+          .from(true).to(false)
+      end
+    end
+
+    context "when the service is set to be stopped" do
+      before do
+        system_service.stop
+      end
+
+      it "sets the services to be started" do
+        expect { system_service.toggle }.to change { system_service.active? }
+          .from(false).to(true)
+      end
+    end
+  end
+
+  describe "#active?" do
+    context "when the underlying service is active" do
       let(:active?) { true }
 
       it "returns true" do
-        expect(system_service.active).to eq(true)
+        expect(system_service.active?).to eq(true)
       end
     end
 
-    context "when service is inactive" do
+    context "when the underlying service is inactive" do
       let(:active?) { false }
 
       it "returns false" do
-        expect(system_service.active).to eq(false)
+        expect(system_service.active?).to eq(false)
       end
     end
 
-    context "when an active value was given" do
+    context "when service was set to be started" do
       before do
-        system_service.active = false
+        system_service.start
       end
 
-      it "returns the given value" do
-        expect(system_service.active).to eq(false)
+      it "returns true" do
+        expect(system_service.active?).to eq(true)
+      end
+    end
+
+    context "when service was set to be stopped" do
+      before do
+        system_service.stop
+      end
+
+      it "returns false" do
+        expect(system_service.active?).to eq(false)
       end
     end
   end
@@ -264,8 +354,8 @@ describe Yast2::SystemService do
       end
     end
 
-    context "when active is set to true" do
-      before { system_service.active = true }
+    context "when the service is set to be started" do
+      before { system_service.start }
 
       context "and the service is already active" do
         let(:active?) { true }
@@ -291,8 +381,8 @@ describe Yast2::SystemService do
       end
     end
 
-    context "when active is set to false" do
-      before { system_service.active = false }
+    context "when the service is set to be stopped" do
+      before { system_service.stop }
 
       context "and the service is active" do
         let(:active?) { true }
@@ -322,7 +412,7 @@ describe Yast2::SystemService do
   describe "#changed?" do
     context "when some change was made" do
       before do
-        system_service.active = false
+        system_service.stop
       end
 
       it "returns true" do
@@ -355,6 +445,24 @@ describe Yast2::SystemService do
 
       it "returns the service and socket full names" do
         expect(system_service.search_terms).to contain_exactly("cups.service", "cups.socket")
+      end
+    end
+  end
+
+  describe "#changed_value?" do
+    context "when no value has been changed" do
+      it "returns true" do
+        expect(system_service.changed_value?(:active)).to eq(false)
+      end
+    end
+
+    context "when some value has been changed" do
+      before do
+        system_service.stop
+      end
+
+      it "returns true" do
+        expect(system_service.changed_value?(:active)).to eq(true)
       end
     end
   end
