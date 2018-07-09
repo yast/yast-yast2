@@ -188,7 +188,7 @@ describe Yast2::SystemService do
       end
     end
 
-    context "and the services was set to be stopped" do
+    context "and the service was set to be stopped" do
       let(:active?) { true }
 
       before do
@@ -308,7 +308,7 @@ describe Yast2::SystemService do
         system_service.stop
       end
 
-      it "returns true" do
+      it "returns false" do
         expect(system_service.active?).to eq(false)
       end
     end
