@@ -31,6 +31,12 @@ Wed May 23 15:25:04 CEST 2018 - schubi@suse.de
 - 4.0.75
 
 -------------------------------------------------------------------
+Tue May 15 09:12:23 UTC 2018 - knut.anderssen@suse.com
+
+- Replace the deprecated firewallctl command with firewall-cmd for
+  obtaining the firewalld state (bsc#1093111)
+
+-------------------------------------------------------------------
 Mon May 14 09:00:43 UTC 2018 - lslezak@suse.cz
 
 - Support multiple "system-installation()" provides in one
