@@ -57,7 +57,7 @@ module Yast2
     attr_reader :errors
 
     def_delegators :@service, :running?, :start, :stop, :restart, :active?,
-      :active_state, :sub_state, :name, :description
+      :active_state, :sub_state, :name, :description, :static?
 
     class << self
       # Find a service
