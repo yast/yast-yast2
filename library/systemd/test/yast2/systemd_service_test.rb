@@ -1,11 +1,9 @@
 #!/usr/bin/env rspec
 
-require_relative "test_helper"
+require_relative "../test_helper"
 
-module Yast
-  import "SystemdService"
-
-  describe SystemdService do
+module Yast2
+  describe Systemd::Service do
     include SystemdServiceStubs
 
     before do
@@ -15,8 +13,8 @@ module Yast
     describe ".find" do
       it "returns the service unit object specified in parameter" do
         ["sshd", "sshd.service"].each do |service_name|
-          service = SystemdService.find(service_name)
-          expect(service).to be_a(SystemdUnit)
+          service = Systemd::Service.find(service_name)
+          expect(service).to be_a(Systemd::Unit)
           expect(service.unit_type).to eq("service")
           expect(service.unit_name).to eq("sshd")
         end
@@ -24,22 +22,22 @@ module Yast
 
       it "returns nil if the service unit does not exist" do
         stub_services(service: "unknown")
-        service = SystemdService.find("unknown")
+        service = Systemd::Service.find("unknown")
         expect(service).to be_nil
       end
     end
 
     describe ".find!" do
       it "returns the service unit object specified in parameter" do
-        service = SystemdService.find("sshd")
-        expect(service).to be_a(SystemdUnit)
+        service = Systemd::Service.find("sshd")
+        expect(service).to be_a(Systemd::Unit)
         expect(service.unit_type).to eq("service")
         expect(service.unit_name).to eq("sshd")
       end
 
-      it "raises SystemdServiceNotFound error if unit does not exist" do
+      it "raises Systemd::ServiceNotFound error if unit does not exist" do
         stub_services(service: "unknown")
-        expect { SystemdService.find!("unknown") }.to raise_error(SystemdServiceNotFound)
+        expect { Systemd::Service.find!("unknown") }.to raise_error(Systemd::ServiceNotFound)
       end
     end
 
@@ -48,20 +46,20 @@ module Yast
       let(:apparmor_double) { double("Service", name: "apparmor") }
       let(:cups_double) { double("Service", name: "cups") }
       let(:systemctl_stdout) do
-        File.read(File.join(__dir__, "data", "apparmor_and_cups_properties"))
+        File.read(File.join(SYSTEMD_DATA_PATH, "apparmor_and_cups_properties"))
       end
 
       before do
-        allow(Yast::Systemctl).to receive(:execute).with(
+        allow(Systemctl).to receive(:execute).with(
           "show  --property=Id,MainPID,Description,LoadState,ActiveState,SubState,UnitFileState," \
           "FragmentPath,TriggeredBy apparmor.service cups.service"
         ).and_return(systemctl_show)
-        allow(SystemdService).to receive(:find).with("apparmor", {}).and_return(apparmor_double)
-        allow(SystemdService).to receive(:find).with("cups", {}).and_return(cups_double)
+        allow(Systemd::Service).to receive(:find).with("apparmor", {}).and_return(apparmor_double)
+        allow(Systemd::Service).to receive(:find).with("cups", {}).and_return(cups_double)
       end
 
       it "returns the list of services" do
-        services = SystemdService.find_many(["apparmor", "cups"])
+        services = Systemd::Service.find_many(["apparmor", "cups"])
         expect(services).to contain_exactly(
           an_object_having_attributes("name" => "apparmor"),
           an_object_having_attributes("name" => "cups")
@@ -69,7 +67,7 @@ module Yast
       end
 
       it "includes 'TriggeredBy' property" do
-        cups = SystemdService.find_many(["apparmor", "cups"]).last
+        cups = Systemd::Service.find_many(["apparmor", "cups"]).last
         expect(cups.properties.triggered_by).to eq("cups.path cups.socket")
       end
 
@@ -77,7 +75,7 @@ module Yast
         let(:systemctl_show) { OpenStruct.new(stdout: "", stderr: "", exit: 1) }
 
         it "retrieve services information in a one-by-one basis" do
-          expect(SystemdService.find_many(["apparmor", "cups"]))
+          expect(Systemd::Service.find_many(["apparmor", "cups"]))
             .to eq([apparmor_double, cups_double])
         end
       end
@@ -86,7 +84,7 @@ module Yast
         let(:systemctl_show) { OpenStruct.new(stdout: "", stderr: "error", exit: 1) }
 
         it "retrieve services information in a one-by-one basis" do
-          expect(SystemdService.find_many(["apparmor", "cups"]))
+          expect(Systemd::Service.find_many(["apparmor", "cups"]))
             .to eq([apparmor_double, cups_double])
         end
       end
@@ -94,7 +92,7 @@ module Yast
 
     describe ".all" do
       it "returns all supported services found" do
-        services = SystemdService.all
+        services = Systemd::Service.all
         expect(services).to be_a(Array)
         expect(services).not_to be_empty
         services.each { |s| expect(s.unit_type).to eq("service") }
@@ -103,7 +101,7 @@ module Yast
 
     describe "#running?" do
       it "returns true if the service is running" do
-        service = SystemdService.find "sshd"
+        service = Systemd::Service.find "sshd"
         expect(service).to respond_to(:running?)
         expect(service.running?).to eq(true)
       end
@@ -111,7 +109,7 @@ module Yast
 
     describe "#pid" do
       it "returns the pid of the running service" do
-        service = SystemdService.find("sshd")
+        service = Systemd::Service.find("sshd")
         expect(service).to respond_to(:pid)
         expect(service.pid).not_to be_empty
       end
@@ -120,22 +118,22 @@ module Yast
     context "Start a service on the installation system" do
       it "starts a service with a specialized inst-sys helper if available" do
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
-        service = SystemdService.find("sshd")
-        allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
-        expect(service).not_to receive(:command) # SystemdUnit#command
+        service = Systemd::Service.find("sshd")
+        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
+        expect(service).not_to receive(:command) # Systemd::Unit#command
         expect(service.start).to eq(true)
       end
     end
 
     context "Restart a service on the installation system" do
       it "restarts a service with a specialized inst-sys helper if available" do
-        allow_any_instance_of(SystemdServiceClass::Service).to receive(:sleep).and_return(1)
+        allow_any_instance_of(Systemd::Service).to receive(:sleep).and_return(1)
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
-        service = SystemdService.find("sshd")
-        allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
+        service = Systemd::Service.find("sshd")
+        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
         expect(service).to receive(:stop).ordered.and_call_original
         expect(service).to receive(:start).ordered.and_call_original
-        expect(service).not_to receive(:command) # SystemdUnit#command
+        expect(service).not_to receive(:command) # Systemd::Unit#command
         expect(service.restart).to eq(true)
       end
     end
@@ -143,15 +141,15 @@ module Yast
     context "Stop a service on the installation system" do
       it "stops a service with a specialized inst-sys helper" do
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
-        service = SystemdService.find("sshd")
-        allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
-        expect(service).not_to receive(:command) # SystemdUnit#command
+        service = Systemd::Service.find("sshd")
+        allow(Yast::SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
+        expect(service).not_to receive(:command) # Systemd::Unit#command
         expect(service.stop).to eq(true)
       end
     end
 
     describe "#socket" do
-      subject(:service) { SystemdService.find(service_name) }
+      subject(:service) { Systemd::Service.find(service_name) }
 
       before { stub_services(service: service_name) }
 
@@ -159,7 +157,7 @@ module Yast
         let(:service_name) { "cups" }
 
         it "returns the socket" do
-          expect(service.socket).to be_a(Yast::SystemdSocketClass::Socket)
+          expect(service.socket).to be_a(Systemd::Socket)
           expect(service.socket.unit_name).to eq("iscsid")
         end
       end
@@ -174,7 +172,7 @@ module Yast
     end
 
     describe "#socket?" do
-      subject(:service) { SystemdService.find(service_name) }
+      subject(:service) { Systemd::Service.find(service_name) }
 
       before { stub_services(service: service_name) }
 

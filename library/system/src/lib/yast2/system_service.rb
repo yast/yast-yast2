@@ -20,7 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "forwardable"
-Yast.import "SystemdService"
+require "yast2/systemd/service"
 
 module Yast2
   # This class represents a system service
@@ -49,7 +49,7 @@ module Yast2
   class SystemService
     extend Forwardable
 
-    # @return [Yast::SystemdService]
+    # @return [Systemd::Service]
     attr_reader :service
 
     def_delegators :@service, :running?, :name, :description
@@ -70,22 +70,22 @@ module Yast2
       # @param name [String] Service name
       # @return [SystemService,nil] System service or nil when not found
       def find(name)
-        new(Yast::SystemdService.find(name))
+        new(Systemd::Service.find(name))
       end
 
       # Finds service names
       #
       # This method finds a set of system services. Currently it is just a wrapper around
-      # SystemdService.find_many.
+      # Systemd::Service.find_many.
       #
       # @param names [Array<String>] Service names to find
       # @return [Array<SystemService>] Found system services
       def find_many(names)
-        Yast::SystemdService.find_many(names).compact.map { |s| new(s) }
+        Systemd::Service.find_many(names).compact.map { |s| new(s) }
       end
     end
 
-    # @param service [Yast::SystemdServiceClass::Service]
+    # @param service [Systemd::Service]
     def initialize(service)
       @service = service
       @changes = {}
@@ -264,7 +264,7 @@ module Yast2
 
     # Returns the associated socket
     #
-    # @return [Yast::SystemdSocketClass::Socket]
+    # @return [Yast2::Systemd::Socket]
     def socket
       service && service.socket
     end

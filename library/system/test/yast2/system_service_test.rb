@@ -22,6 +22,7 @@
 
 require_relative "../test_helper"
 require "yast2/system_service"
+require "yast2/systemd/socket"
 
 describe Yast2::SystemService do
   subject(:system_service) { described_class.new(service) }
@@ -37,10 +38,10 @@ describe Yast2::SystemService do
   end
 
   describe ".find" do
-    let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+    let(:systemd_service) { instance_double(Yast2::Systemd::Service) }
 
     before do
-      allow(Yast::SystemdService).to receive(:find).with("cups").and_return(systemd_service)
+      allow(Yast2::Systemd::Service).to receive(:find).with("cups").and_return(systemd_service)
     end
 
     it "finds a systemd service" do
@@ -51,11 +52,11 @@ describe Yast2::SystemService do
   end
 
   describe ".find_many" do
-    let(:apparmor) { instance_double(Yast::SystemdServiceClass::Service) }
-    let(:cups) { instance_double(Yast::SystemdServiceClass::Service) }
+    let(:apparmor) { instance_double(Yast2::Systemd::Service) }
+    let(:cups) { instance_double(Yast2::Systemd::Service) }
 
     before do
-      allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
+      allow(Yast2::Systemd::Service).to receive(:find_many).with(["apparmor", "cups"])
         .and_return([apparmor, cups])
     end
 
@@ -67,7 +68,7 @@ describe Yast2::SystemService do
 
     context "when some service is not found" do
       before do
-        allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
+        allow(Yast2::Systemd::Service).to receive(:find_many).with(["apparmor", "cups"])
           .and_return([nil, cups])
       end
 
@@ -441,7 +442,7 @@ describe Yast2::SystemService do
     end
 
     context "when the service has an associated socket" do
-      let(:socket) { instance_double(Yast::SystemdSocketClass::Socket, id: "cups.socket") }
+      let(:socket) { instance_double(Yast2::Systemd::Socket, id: "cups.socket") }
 
       it "returns the service and socket full names" do
         expect(system_service.search_terms).to contain_exactly("cups.service", "cups.socket")
