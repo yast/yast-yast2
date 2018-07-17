@@ -56,6 +56,16 @@ module Yast2
     #   underlying system.
     attr_reader :errors
 
+    # @!method state
+    #
+    # @return [String]
+    def_delegator :@service, :active_state, :state
+
+    # @!method substate
+    #
+    # @return [String]
+    def_delegator :@service, :sub_state, :substate
+
     def_delegators :@service, :running?, :start, :stop, :restart, :active?,
       :active_state, :sub_state, :name, :description, :static?
 

@@ -391,7 +391,7 @@ describe Yast2::SystemService do
           it "does not register any error" do
             allow(service).to receive(:start).and_return(true)
             system_service.save
-            expect(system_service.errors).to_not have_key(:activate)
+            expect(system_service.errors).to_not have_key(:active)
           end
         end
 
@@ -430,7 +430,7 @@ describe Yast2::SystemService do
           it "does not register any error" do
             allow(service).to receive(:stop).and_return(true)
             system_service.save
-            expect(system_service.errors).to_not have_key(:activate)
+            expect(system_service.errors).to_not have_key(:active)
           end
         end
 
