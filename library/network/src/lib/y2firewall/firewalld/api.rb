@@ -103,9 +103,13 @@ module Y2Firewall
         offline? ? run_command("--disable") : Yast::Service.Disable("firewalld")
       end
 
-      # @return [Boolean] The firewalld service state (exit code)
+      # Return the current state of the firewalld service (running or not
+      # running)
+      #
+      # @return [String] firewalld service state
+      # @see http://www.firewalld.org/documentation/man-pages/firewall-cmd.html
       def state
-        case Yast::Execute.on_target("firewallctl", "state", allowed_exitstatus: [0, 252])
+        case Yast::Execute.on_target("firewall-cmd", "--state", allowed_exitstatus: [0, 252])
         when 0
           "running"
         when 252
