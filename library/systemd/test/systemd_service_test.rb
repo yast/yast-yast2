@@ -43,6 +43,55 @@ module Yast
       end
     end
 
+    describe ".find_many" do
+      let(:systemctl_show) { OpenStruct.new(stdout: systemctl_stdout, stderr: "", exit: 0) }
+      let(:apparmor_double) { double("Service", name: "apparmor") }
+      let(:cups_double) { double("Service", name: "cups") }
+      let(:systemctl_stdout) do
+        File.read(File.join(__dir__, "data", "apparmor_and_cups_properties"))
+      end
+
+      before do
+        allow(Yast::Systemctl).to receive(:execute).with(
+          "show  --property=Id,MainPID,Description,LoadState,ActiveState,SubState,UnitFileState," \
+          "FragmentPath,TriggeredBy apparmor.service cups.service"
+        ).and_return(systemctl_show)
+        allow(SystemdService).to receive(:find).with("apparmor", {}).and_return(apparmor_double)
+        allow(SystemdService).to receive(:find).with("cups", {}).and_return(cups_double)
+      end
+
+      it "returns the list of services" do
+        services = SystemdService.find_many(["apparmor", "cups"])
+        expect(services).to contain_exactly(
+          an_object_having_attributes("name" => "apparmor"),
+          an_object_having_attributes("name" => "cups")
+        )
+      end
+
+      it "includes 'TriggeredBy' property" do
+        cups = SystemdService.find_many(["apparmor", "cups"]).last
+        expect(cups.properties.triggered_by).to eq("cups.path cups.socket")
+      end
+
+      context "when 'systemctl show' fails to provide services information" do
+        let(:systemctl_show) { OpenStruct.new(stdout: "", stderr: "", exit: 1) }
+
+        it "retrieve services information in a one-by-one basis" do
+          expect(SystemdService.find_many(["apparmor", "cups"]))
+            .to eq([apparmor_double, cups_double])
+        end
+      end
+
+      context "when 'systemctl show' displays some error" do
+        let(:systemctl_show) { OpenStruct.new(stdout: "", stderr: "error", exit: 1) }
+
+        it "retrieve services information in a one-by-one basis" do
+          expect(SystemdService.find_many(["apparmor", "cups"]))
+            .to eq([apparmor_double, cups_double])
+        end
+      end
+    end
+
     describe ".all" do
       it "returns all supported services found" do
         services = SystemdService.all
@@ -98,6 +147,51 @@ module Yast
         allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
         expect(service).not_to receive(:command) # SystemdUnit#command
         expect(service.stop).to eq(true)
+      end
+    end
+
+    describe "#socket" do
+      subject(:service) { SystemdService.find(service_name) }
+
+      before { stub_services(service: service_name) }
+
+      context "when the service is triggered by a socket" do
+        let(:service_name) { "cups" }
+
+        it "returns the socket" do
+          expect(service.socket).to be_a(Yast::SystemdSocketClass::Socket)
+          expect(service.socket.unit_name).to eq("iscsid")
+        end
+      end
+
+      context "when the service is not triggered by a socket" do
+        let(:service_name) { "sshd" }
+
+        it "returns nil" do
+          expect(service.socket).to be_nil
+        end
+      end
+    end
+
+    describe "#socket?" do
+      subject(:service) { SystemdService.find(service_name) }
+
+      before { stub_services(service: service_name) }
+
+      context "when there is an associated socket" do
+        let(:service_name) { "cups" }
+
+        it "returns true" do
+          expect(service.socket?).to eq(true)
+        end
+      end
+
+      context "when there is no associated socket" do
+        let(:service_name) { "sshd" }
+
+        it "returns false" do
+          expect(service.socket?).to eq(false)
+        end
       end
     end
   end
