@@ -124,7 +124,7 @@ module Yast2
     def action_widget
       ComboBox(
         Id(:service_widget_action),
-        "After writting settings:",
+        "After writting configuration:",
         action_items
       )
     end
@@ -135,18 +135,18 @@ module Yast2
       reload_label = mixed ? _("Reload active and start inactive") : _("Reload")
       current_action = service_configuration.action
       [
-        Item(Id(:service_widget_action_start), _("Ensure it is running"), current_action == :start),
-        Item(Id(:service_widget_action_stop), _("Ensure it is stopped"), current_action == :stop),
+        Item(Id(:service_widget_action_start), _("Activate"), current_action == :start),
+        Item(Id(:service_widget_action_stop), _("Inactivate"), current_action == :stop),
         Item(Id(:service_widget_action_restart), restart_label, current_action == :restart),
         Item(Id(:service_widget_action_reload), reload_label, current_action == :reload),
-        Item(Id(:service_widget_action_nothing), _("Nothing"), current_action == :nothing)
+        Item(Id(:service_widget_action_nothing), _("Keep current state"), current_action == :nothing)
       ]
     end
 
     def autostart_widget
       ComboBox(
         Id(:service_widget_autostart),
-        "Start Service Automatically:",
+        "After reboot:",
         autostart_items
       )
     end
@@ -155,10 +155,10 @@ module Yast2
       current_autostart = service_configuration.autostart
       keep = [:inconsistent, :unknown].include?(current_autostart)
       [
-        Item(Id(:service_widget_autostart_on_boot), _("During boot"), current_autostart == :on_boot),
-        Item(Id(:service_widget_autostart_on_demand), _("On demand"), current_autostart == :on_demand),
-        Item(Id(:service_widget_autostart_manual), _("Never"), current_autostart == :manual),
-        Item(Id(:service_widget_autostart_inconsistent), _("Do not change"), keep)
+        Item(Id(:service_widget_autostart_on_boot), _("Start"), current_autostart == :on_boot),
+        Item(Id(:service_widget_autostart_on_demand), _("Start On demand"), current_autostart == :on_demand),
+        Item(Id(:service_widget_autostart_manual), _("Do not start"), current_autostart == :manual),
+        Item(Id(:service_widget_autostart_inconsistent), _("Keep current settings"), keep)
       ]
     end
   end
