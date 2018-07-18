@@ -132,13 +132,14 @@ module Yast2
     def action_items
       mixed = [:inconsistent, :unknown].include?(service_configuration.status)
       current_action = service_configuration.action
-      [
-        Item(Id(:service_widget_action_start), _("Start"), current_action == :start),
-        Item(Id(:service_widget_action_stop), _("Stop"), current_action == :stop),
-        Item(Id(:service_widget_action_restart), _("Restart"), restart_label, current_action == :restart),
-        Item(Id(:service_widget_action_reload), _("Reload"), current_action == :reload),
-        Item(Id(:service_widget_action_nothing), _("Keep current state"), current_action == :nothing)
-      ]
+      res = []
+      res << Item(Id(:service_widget_action_start), _("Start"), current_action == :start) unless service_configuration.status == :active
+      res << Item(Id(:service_widget_action_stop), _("Stop"), current_action == :stop) unless service_configuration.status == :inactive
+      res << Item(Id(:service_widget_action_restart), _("Restart"), current_action == :restart) unless service_configuration.status == :inactive
+      res << Item(Id(:service_widget_action_restart), _("Reload"), current_action == :reload) if service_configuration.status != :inactive && service_configuration.support_reload?
+      res << Item(Id(:service_widget_action_nothing), _("Keep current state"), current_action == :nothing)
+
+      res
     end
 
     def autostart_widget
@@ -152,12 +153,15 @@ module Yast2
     def autostart_items
       current_autostart = service_configuration.autostart
       keep = [:inconsistent, :unknown].include?(current_autostart)
-      [
-        Item(Id(:service_widget_autostart_on_boot), _("Start on boot"), current_autostart == :on_boot),
-        Item(Id(:service_widget_autostart_on_demand), _("Start on demand"), current_autostart == :on_demand),
-        Item(Id(:service_widget_autostart_manual), _("Do not start"), current_autostart == :manual),
-        Item(Id(:service_widget_autostart_inconsistent), _("Keep current settings"), keep)
-      ]
+      keep_option = [:inconsistent, :unknown].include?(service_configuration.system_autostart)
+      res = []
+
+      res << Item(Id(:service_widget_autostart_on_boot), _("Start on boot"), current_autostart == :on_boot)
+      res << Item(Id(:service_widget_autostart_on_demand), _("Start on demand"), current_autostart == :on_demand) if service_configuration.support_on_demand?
+      res << Item(Id(:service_widget_autostart_manual), _("Do not start"), current_autostart == :manual)
+      res << Item(Id(:service_widget_autostart_inconsistent), _("Keep current settings"), keep) if keep_option
+
+      res
     end
   end
 end
