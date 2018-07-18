@@ -108,6 +108,14 @@ module Yast2
       @autostart
     end
 
+    # Returns  system autostart configuration
+    # @see {#autostart}
+    def system_autostart
+      read unless @system_autostart
+
+      @system_autostart
+    end
+
     AUTOSTART_OPTIONS = [:on_boot, :on_demand, :manual, :inconsistent].freeze
     # sets autostart configuration.
     # @param [:on_boot, :on_demand, :manual, :inconsistent] autostart
@@ -157,6 +165,7 @@ module Yast2
       else
         :inconsistent
       end
+      @system_autostart = @autostart
     rescue Yast::SystemctlError => e
       log.error "systemctl failure: #{e.inspect}"
       @autostart = :unknown
