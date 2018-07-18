@@ -328,8 +328,8 @@ describe Yast2::SystemService do
       let(:start_mode) { :on_boot }
 
       it "enables the service to start on boot" do
-        expect(service).to receive(:enable)
-        expect(socket).to receive(:disable)
+        expect(service).to receive(:enable).and_return(true)
+        expect(socket).to receive(:disable).and_return(true)
         system_service.save
       end
     end
@@ -338,8 +338,8 @@ describe Yast2::SystemService do
       let(:start_mode) { :on_demand }
 
       it "enables the socket" do
-        expect(service).to receive(:disable)
-        expect(socket).to receive(:enable)
+        expect(service).to receive(:disable).and_return(true)
+        expect(socket).to receive(:enable).and_return(true)
         system_service.save
       end
     end
@@ -348,9 +348,22 @@ describe Yast2::SystemService do
       let(:start_mode) { :manual }
 
       it "disables the service and the socket" do
-        expect(service).to receive(:disable)
-        expect(socket).to receive(:disable)
+        expect(service).to receive(:disable).and_return(true)
+        expect(socket).to receive(:disable).and_return(true)
         system_service.save
+      end
+    end
+
+    context "when setting the start_mode fails" do
+      let(:start_mode) { :on_demand }
+
+      before do
+        allow(service).to receive(:disable).and_return(false)
+      end
+
+      it "registers the error" do
+        system_service.save
+        expect(system_service.errors).to eq(start_mode: :on_demand)
       end
     end
 
@@ -370,13 +383,34 @@ describe Yast2::SystemService do
         let(:active?) { false }
 
         it "tries to activate the service" do
-          expect(service).to receive(:start)
+          expect(service).to receive(:start).and_return(true)
           system_service.save
         end
 
-        it "does not active the service if the status must be ignored" do
-          expect(service).to_not receive(:start)
-          system_service.save(ignore_status: true)
+        context "and the service is successfully started" do
+          it "does not register any error" do
+            allow(service).to receive(:start).and_return(true)
+            system_service.save
+            expect(system_service.errors).to_not have_key(:active)
+          end
+        end
+
+        context "and the service could not be started" do
+          before do
+            allow(service).to receive(:start).and_return(false)
+          end
+
+          it "registers the error" do
+            system_service.save
+            expect(system_service.errors).to eq(active: true)
+          end
+        end
+
+        context "and the status must be ignored" do
+          it "does not try to activate the service" do
+            expect(service).to_not receive(:start)
+            system_service.save(ignore_status: true)
+          end
         end
       end
     end
@@ -392,13 +426,34 @@ describe Yast2::SystemService do
           system_service.save
         end
 
-        it "does not stop the service if the status must be ignored" do
-          expect(service).to_not receive(:start)
-          system_service.save(ignore_status: true)
+        context "and the service is successfully stopped" do
+          it "does not register any error" do
+            allow(service).to receive(:stop).and_return(true)
+            system_service.save
+            expect(system_service.errors).to_not have_key(:active)
+          end
+        end
+
+        context "and the service could not be stopped" do
+          before do
+            allow(service).to receive(:stop).and_return(false)
+          end
+
+          it "registers the error" do
+            system_service.save
+            expect(system_service.errors).to eq(active: false)
+          end
+        end
+
+        context "and the status must be ignored" do
+          it "does not try to stop the service" do
+            expect(service).to_not receive(:start)
+            system_service.save(ignore_status: true)
+          end
         end
       end
 
-      context "and the service is inactive" do
+      context "and the service is already inactive" do
         let(:active?) { false }
 
         it "does not try to stop the service again" do

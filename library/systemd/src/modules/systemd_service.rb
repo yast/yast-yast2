@@ -153,6 +153,10 @@ module Yast
         properties.running?
       end
 
+      def static?
+        properties.static?
+      end
+
       def start
         command = "#{START_SERVICE_INSTSYS_COMMAND} #{unit_name}"
         installation_system? ? run_instsys_command(command) : super
