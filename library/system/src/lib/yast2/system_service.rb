@@ -165,11 +165,11 @@ module Yast2
       clear_errors
       save_start_mode
       set_current_status unless ignore_status
-      reload
+      reset
     end
 
     # Reverts stored changes
-    def reload
+    def reset
       clear_changes
       @current_start_mode = nil
     end
