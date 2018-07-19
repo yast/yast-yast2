@@ -1627,7 +1627,7 @@ module Yast
       # starting firewall during second stage can cause deadlock in systemd - bnc#798620
       # Moreover, it is not needed. Firewall gets started via dependency on multi-user.target
       # when second stage is over.
-      if Mode.installation
+      if Mode.installation && !Mode.autoinst
         Builtins.y2milestone("Do not touch firewall services during installation")
 
         return true
