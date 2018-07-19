@@ -205,6 +205,16 @@ module Yast2
     def reload
     end
 
+    # TODO
+    #
+    # Action to perform when the service is saved (see {#save})
+    #
+    # @return [Symbol, nil] :start, :stop, :restart or :reload. It returns nil if no
+    #   action has been requested or the requested action does not modify the service
+    #   (e.g., to stop a service when the service is not active).
+    def action
+    end
+
     # TODO: remove this
     # Toggles the service status
     #
