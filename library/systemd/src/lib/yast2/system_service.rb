@@ -97,6 +97,52 @@ module Yast2
       @errors = {}
     end
 
+    # Get the current start_mode
+    def current_start_mode
+      @current_start_mode ||=
+        if service.enabled?
+          :on_boot
+        elsif socket && socket.enabled?
+          :on_demand
+        else
+          :manual
+        end
+    end
+
+    # TODO
+    def current_active?
+    end
+
+    # TODO
+    def support_reload?
+    end
+
+    # Returns the list of supported start modes
+    #
+    # * :on_boot:   The service will be started when the system boots.
+    # * :manual: The service is disabled and it will be started manually.
+    # * :on_demand: The service will be started on demand (using a Systemd socket).
+    #
+    # @return [Array<Symbol>] List of supported modes.
+    def start_modes
+      return @start_modes if @start_modes
+      @start_modes = [:on_boot, :manual]
+      @start_modes << :on_demand if socket
+      @start_modes
+    end
+
+    # Terms to search for this service
+    #
+    # In case the service has an associated socket, the socket name
+    # is included as search term.
+    #
+    # @return [Array<String>] e.g., #=> ["tftp.service", "tftp.socket"]
+    def search_terms
+      terms = [service.id]
+      terms << socket.id if socket
+      terms
+    end
+
     # Returns the start mode
     #
     # See {#start_modes} to find out the supported modes for a given service (usually :on_boot,
@@ -151,6 +197,25 @@ module Yast2
       self.active = false
     end
 
+    # TODO
+    def restart
+    end
+
+    # TODO
+    def reload
+    end
+
+    # TODO
+    #
+    # Action to perform when the service is saved (see {#save})
+    #
+    # @return [Symbol, nil] :start, :stop, :restart or :reload. It returns nil if no
+    #   action has been requested or the requested action does not modify the service
+    #   (e.g., to stop a service when the service is not active).
+    def action
+    end
+
+    # TODO: remove this
     # Toggles the service status
     #
     # @see #active=
@@ -181,32 +246,6 @@ module Yast2
       !changes.empty?
     end
 
-    # Returns the list of supported start modes
-    #
-    # * :on_boot:   The service will be started when the system boots.
-    # * :manual: The service is disabled and it will be started manually.
-    # * :on_demand: The service will be started on demand (using a Systemd socket).
-    #
-    # @return [Array<Symbol>] List of supported modes.
-    def start_modes
-      return @start_modes if @start_modes
-      @start_modes = [:on_boot, :manual]
-      @start_modes << :on_demand if socket
-      @start_modes
-    end
-
-    # Terms to search for this service
-    #
-    # In case the service has an associated socket, the socket name
-    # is included as search term.
-    #
-    # @return [Array<String>] e.g., #=> ["tftp.service", "tftp.socket"]
-    def search_terms
-      terms = [service.id]
-      terms << socket.id if socket
-      terms
-    end
-
     # Determines whether a value has been changed
     #
     # @return [Boolean] true if the value has been changed; false otherwise
@@ -230,18 +269,6 @@ module Yast2
       else
         register_change(:active, value)
       end
-    end
-
-    # Get the current start_mode
-    def current_start_mode
-      @current_start_mode ||=
-        if service.enabled?
-          :on_boot
-        elsif socket && socket.enabled?
-          :on_demand
-        else
-          :manual
-        end
     end
 
     # Sets start mode to the underlying system
