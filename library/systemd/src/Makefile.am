@@ -7,7 +7,8 @@ ylibdir = @ylibdir@/yast2
 ylib_DATA = \
   lib/yast2/service_configuration.rb \
   lib/yast2/systemctl.rb \
-  lib/yast2/systemd_unit.rb
+  lib/yast2/systemd_unit.rb \
+  lib/yast2/system_service.rb
 
 EXTRA_DIST = $(module_DATA) $(ylib_DATA)
 
