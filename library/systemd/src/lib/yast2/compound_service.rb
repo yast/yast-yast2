@@ -1,3 +1,24 @@
+# encoding: utf-8
+
+# Copyright (c) [2018] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
 require "yast"
 
 require "yast2/system_service"
@@ -5,22 +26,20 @@ require "yast2/system_service"
 module Yast2
   # Class that represents several related services that need to be synchronized.
   # It mimics behavior of single SystemService, just adds additional possible states.
-  class CompoungService
+  class CompoundService
     include Yast::Logger
 
     # managed services
-    # @return [Yast2::ServiceConfiguration]
+    # @return [Array<Yast2::SystemService>]
     attr_reader :services
 
     # creates new configuration that holds state for given services
-    # @param services<Yast::SystemdServiceClass::Service> services to configure
-    # @param reload<true,false> if use reload instead of restart action. If
-    #   service does not support reload or does not run, then restart is used.
+    # @param services [Array<Yast::SystemService>] services to configure
     #
     # @example three services
-    #   config = Yast2::ServiceConfiguration.new(s1, s2, s3)
+    #   service = Yast2::CompountService.new(s1, s2, s3)
     def initialize(*services)
-      if services.any? { |s| !s.is_a?(Yast2::SystemdService) }
+      if services.any? { |s| !s.is_a?(Yast2::SystemService) }
         raise ArgumentError, "Services can be only System Service - #{services.inspect}"
       end
 
@@ -29,9 +48,8 @@ module Yast2
 
     # writes services new status
     # @raise <Yast::SystemctlError> when set service to target state failed
-    def save(ignore_status: false)
-      services.each { |s| s.save(ignore_status: ignore_status) }
-      reset # to be consistent with underlaying services
+    def save(keep_state: false)
+      services.each { |s| s.save(keep_state: keep_state) }
     end
 
     # returns current running status.
@@ -74,18 +92,6 @@ module Yast2
     def action
       # TODO: check for inconsistencies?
       services.first.action
-    end
-
-    ACTIONS = [:start, :stop, :reload, :restart, :nothing].freeze
-    # sets target action for services
-    # @param action[:start, :stop, :restart, :reload, :nothing] for possible values and
-    #  its explanation please see return value of {target_action}
-    def action=(action)
-      if !ACTIONS.include?(action)
-        raise ArgumentError, "Invalid parameter #{action.inspect}"
-      end
-
-      @action = action
     end
 
     # returns current system start mode.
@@ -179,7 +185,7 @@ module Yast2
     end
 
     def services_mode(mode_method)
-      if services.all?(&mode_method.call(:enabled?))
+      if services.all?(&mode_method.call(:on_boot))
         :on_boot
       elsif services.all?(&mode_method.call(:manual))
         :manual
@@ -192,11 +198,11 @@ module Yast2
     end
 
     def services_with_socket
-      @services_with_socket ||= services.select{ |s| s.start_modes.include?(:on_demand) }
+      @services_with_socket ||= services.select{ |s| s.support_start_on_demand? }
     end
 
     def services_without_socket
-      @services_without_socket ||= services.reject{ |s| s.start_modes.include?(:on_demand) }
+      @services_without_socket ||= services.reject{ |s| s.support_start_on_demand? }
     end
   end
 end
