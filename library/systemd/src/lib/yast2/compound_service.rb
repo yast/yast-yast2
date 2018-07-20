@@ -74,8 +74,8 @@ module Yast2
       @start_modes ||= services.map(&:start_modes).reduce(:+).uniq
     end
 
-    def search_term
-      services.map(&:search_term).reduce(:+).uniq
+    def keywords
+      services.map(&:keywords).reduce(:+).uniq
     end
 
     # returns currently set target action. If it is not yet set it returns
