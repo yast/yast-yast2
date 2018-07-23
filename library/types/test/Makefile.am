@@ -4,7 +4,6 @@ TESTS = \
   hostname_test.rb \
   punycode_test.rb \
   string_test.rb \
-  type_repository_test.rb \
   url_test.rb \
   urlrecode_test.rb
 

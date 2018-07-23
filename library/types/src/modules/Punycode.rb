@@ -125,7 +125,7 @@ module Yast
       ret = nil
 
       # numbers and empty strings are not converted
-      return decoded_string if NOT_CACHED_REGEXP.match?(decoded_string)
+      return decoded_string if NOT_CACHED_REGEXP.match(decoded_string)
 
       counter = -1
       # searching through decoded strings to find the index
@@ -150,7 +150,7 @@ module Yast
       ret = nil
 
       # numbers and empty strings are not converted
-      return encoded_string if NOT_CACHED_REGEXP.match?(encoded_string)
+      return encoded_string if NOT_CACHED_REGEXP.match(encoded_string)
 
       counter = -1
       # searching through encoded strings to find the index
@@ -187,7 +187,7 @@ module Yast
       test_cached = strings_in.each_with_object({}) do |string_in, all|
         # Numbers, IPs and empty strings are not converted
         string_out =
-          if NOT_CACHED_REGEXP.match?(string_in)
+          if NOT_CACHED_REGEXP.match(string_in)
             string_in
           elsif to_punycode
             GetEncodedCachedString(string_in)
