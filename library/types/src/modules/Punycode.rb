@@ -30,16 +30,17 @@
 # $Id$
 #
 require "yast"
+require "simpleidn"
 
 module Yast
   class PunycodeClass < Module
+    # string, matching this regexp, is not cached
+    NOT_CACHED_REGEXP = /^[0123456789.]*$/
+
     def main
       textdomain "base"
 
       @tmp_dir = nil
-
-      # string, matching this regexp, is not cached
-      @not_cached_regexp = "^[0123456789.]*$"
 
       #
       # Encoded string in cache has the same index
@@ -124,9 +125,7 @@ module Yast
       ret = nil
 
       # numbers and empty strings are not converted
-      if Builtins.regexpmatch(decoded_string, @not_cached_regexp)
-        return decoded_string
-      end
+      return decoded_string if NOT_CACHED_REGEXP.match(decoded_string)
 
       counter = -1
       # searching through decoded strings to find the index
@@ -151,9 +150,7 @@ module Yast
       ret = nil
 
       # numbers and empty strings are not converted
-      if Builtins.regexpmatch(encoded_string, @not_cached_regexp)
-        return encoded_string
-      end
+      return encoded_string if NOT_CACHED_REGEXP.match(encoded_string)
 
       counter = -1
       # searching through encoded strings to find the index
@@ -183,105 +180,51 @@ module Yast
     # format. Unicode to Punycode or Punycode to Unicode (param to_punycode).
     # It uses a cache of already-converted strings.
     def ConvertBackAndForth(strings_in, to_punycode)
-      strings_in = deep_copy(strings_in)
-      # list of returned strings
-      strings_out = []
-
       # Some (or maybe all) strings needn't be cached
       not_cached = []
 
       # Check the cache for already entered strings
-      current_index = -1
-      test_cached = Builtins.listmap(strings_in) do |string_in|
+      test_cached = strings_in.each_with_object({}) do |string_in, all|
         # Numbers, IPs and empty strings are not converted
-        string_out = if Builtins.regexpmatch(string_in, @not_cached_regexp)
-          string_in
-        elsif to_punycode
-          GetEncodedCachedString(string_in)
-        else
-          GetDecodedCachedString(string_in)
-        end
+        string_out =
+          if NOT_CACHED_REGEXP.match(string_in)
+            string_in
+          elsif to_punycode
+            GetEncodedCachedString(string_in)
+          else
+            GetDecodedCachedString(string_in)
+          end
 
-        if string_out.nil?
-          current_index = Ops.add(current_index, 1)
-          Ops.set(not_cached, current_index, string_in)
-        end
-        { string_in => string_out }
+        not_cached << string_in if string_out.nil?
+        all[string_in] = string_out
       end
 
       converted_not_cached = []
 
       # There is something not cached, converting them at once
-      if not_cached != []
-        tmp_in = Ops.add(GetTmpDirectory(), "/tmp-idnconv-in.ycp")
-        tmp_out = Ops.add(GetTmpDirectory(), "/tmp-idnconv-out.ycp")
-
-        SCR.Write(path(".target.ycp"), tmp_in, not_cached)
-        convert_command = Builtins.sformat(
-          "/usr/bin/idnconv %1 %2 > %3",
-          to_punycode ? "" : "-reverse",
-          tmp_in,
-          tmp_out
-        )
-
-        if Convert.to_integer(
-          SCR.Execute(path(".target.bash"), convert_command)
-        ) != 0
-          Builtins.y2error("Conversion failed!")
-        else
-          converted_not_cached = Convert.convert(
-            SCR.Read(path(".target.ycp"), tmp_out),
-            from: "any",
-            to:   "list <string>"
-          )
-          # Parsing the YCP file failed
-          if converted_not_cached.nil?
-            Builtins.y2error(
-              "Erroneous YCP file: %1",
-              SCR.Read(path(".target.string"), tmp_out)
-            )
-          end
-        end
+      if !not_cached.empty?
+        meth = to_punycode ? :to_ascii : :to_unicode
+        converted_not_cached = not_cached.map { |v| SimpleIDN.public_send(meth, v) }
       end
 
       # Listing through the given list and adjusting the return list
-      current_index = -1
       found_index = -1
-      Builtins.foreach(strings_in) do |string_in|
-        current_index = Ops.add(current_index, 1)
+      strings_in.each_with_object([]) do |string_in, all|
         # Already cached string
-        if !Ops.get(test_cached, string_in).nil?
-          Ops.set(
-            strings_out,
-            current_index,
-            Ops.get(test_cached, string_in, "")
-          )
-
-          # Recently converted strings
-        else
-          found_index = Ops.add(found_index, 1)
-          Ops.set(
-            strings_out,
-            current_index,
-            Ops.get(converted_not_cached, found_index, "")
-          )
+        if test_cached[string_in]
+          all << test_cached[string_in]
+        else # Recently converted strings
+          found_index += 1
+          all << converted_not_cached[found_index] || ""
 
           # Adding converted strings to cache
           if to_punycode
-            CreateNewCacheRecord(
-              string_in,
-              Ops.get(converted_not_cached, found_index, "")
-            )
+            CreateNewCacheRecord(string_in, converted_not_cached[found_index] || "")
           else
-            CreateNewCacheRecord(
-              Ops.get(converted_not_cached, found_index, ""),
-              string_in
-            )
+            CreateNewCacheRecord(converted_not_cached[found_index] || "", string_in)
           end
         end
       end
-
-      deep_copy(strings_out)
     end
 
     # Converts list of UTF-8 strings into their Punycode
