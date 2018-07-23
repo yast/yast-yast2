@@ -134,8 +134,11 @@ module Yast2
 
       if configuration == :inconsistent
         reset(exclude: [:action])
+      elsif configuration == :on_demand
+        services_with_socket.each { |s| s.start_mode = :on_demand }
+        services_without_socket.each { |s| s.start_mode = :on_boot }
       else
-        services.all { |s| s.start_mode = configuration }
+        services.each { |s| s.start_mode = configuration }
       end
     end
 
@@ -150,10 +153,10 @@ module Yast2
     def reset(exclude: [])
       old_action = action
       old_start_mode = start_mode
-      services.all(&:reset)
+      services.each(&:reset)
       @current_start_mode = nil
-      public_send(old_action) if old_action != nil && !exclude.include?(:action)
-      if old_start_mode != :inconsistent && !exclude.include?(:start_mode)
+      public_send(old_action) if old_action != nil && exclude.include?(:action)
+      if old_start_mode != :inconsistent && exclude.include?(:start_mode)
         self.start_mode = old_start_mode
       end
     end
