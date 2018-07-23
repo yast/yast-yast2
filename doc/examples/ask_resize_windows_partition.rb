@@ -24,8 +24,8 @@
 # Example when to use a headline:
 #
 # There is lengthy text that advanced users might have read several times
-# before, so we give him a concise headline that identifies that dialog so he
-# can keep on working without having to read everything again.
+# before, so we give the users a concise headline that identifies that dialogue
+# so they can keep on working without having to read everything again.
 module Yast
   class AskResizeWindowsPartitionClient < Client
     def main
