@@ -66,14 +66,27 @@ module Yast
       active_state:    "ActiveState",
       sub_state:       "SubState",
       unit_file_state: "UnitFileState",
-      path:            "FragmentPath"
+      path:            "FragmentPath",
+      can_reload:      "CanReload"
     }.freeze
 
     # with ruby 2.4 delegating ostruct with Forwardable start to write warning
     # so define it manually (bsc#1049433)
-    [:id, :path, :description, :active?, :enabled?, :loaded?, :active_state, :sub_state].each do |m|
-      define_method(m) { properties.public_send(m) }
-    end
+    FORWARDED_METHODS = [
+      :id,
+      :path,
+      :description,
+      :active?,
+      :enabled?,
+      :loaded?,
+      :active_state,
+      :sub_state,
+      :can_reload?
+    ].freeze
+
+    private_constant :FORWARDED_METHODS
+
+    FORWARDED_METHODS.each { |m| define_method(m) { properties.public_send(m) } }
 
     # @return [String] eg. "apache2"
     #   (the canonical one, may be different from unit_name)
@@ -212,13 +225,14 @@ module Yast
         end
 
         extract_properties
-        self[:active?]    = ACTIVE_STATES.include?(active_state)
-        self[:running?]   = sub_state    == "running"
-        self[:loaded?]    = load_state   == "loaded"
-        self[:not_found?] = load_state   == "not-found"
-        self[:static?]    = load_state   == "static"
-        self[:enabled?]   = read_enabled_state
-        self[:supported?] = SUPPORTED_STATES.include?(unit_file_state)
+        self[:active?]     = ACTIVE_STATES.include?(active_state)
+        self[:running?]    = sub_state    == "running"
+        self[:loaded?]     = load_state   == "loaded"
+        self[:not_found?]  = load_state   == "not-found"
+        self[:static?]     = load_state   == "static"
+        self[:enabled?]    = read_enabled_state
+        self[:supported?]  = SUPPORTED_STATES.include?(unit_file_state)
+        self[:can_reload?] = can_reload == "yes"
       end
 
     private
