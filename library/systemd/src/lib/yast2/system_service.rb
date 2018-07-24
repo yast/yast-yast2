@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "forwardable"
+
 Yast.import "SystemdService"
 
 module Yast2
@@ -222,7 +223,7 @@ module Yast2
     #
     # @return [Boolean] true if the service must be active; false otherwise
     def active?
-      return new_value_for(:active) if changed_value?(:active)
+      return new_value_for(:active) if changed?(:active)
       current_active?
     end
 
@@ -311,18 +312,16 @@ module Yast2
       false
     end
 
-    # Whether there is any cached change that will be applyied by calling {#save}.
+    # Whether there is any cached change that will be applied by calling {#save}.
+    #
+    # Some specific change can be checked by using the key parameter.
+    #
+    # @example
+    #   service.changed?(:start_mode)
     #
     # @return [Boolean]
-    def changed?
-      !changes.empty?
-    end
-
-    # Whether a specific value has been changed
-    #
-    # @return [Boolean]
-    def changed_value?(key)
-      changes.key?(key)
+    def changed?(key = nil)
+      key ? changes.key?(key) : changes.any?
     end
 
   private
@@ -484,7 +483,7 @@ module Yast2
     # @param [Symbol] Change key
     # @return [Object] New value
     def new_value_for(key)
-      return nil unless changed_value?(key)
+      return nil unless changed?(key)
       changes[key]
     end
   end

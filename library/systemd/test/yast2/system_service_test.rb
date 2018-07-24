@@ -474,7 +474,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.start }.to change { system_service.changed_value?(:active) }
+        expect { system_service.start }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -525,7 +525,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.stop }.to change { system_service.changed_value?(:active) }
+        expect { system_service.stop }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -576,7 +576,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.restart }.to change { system_service.changed_value?(:active) }
+        expect { system_service.restart }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -591,7 +591,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.restart }.to change { system_service.changed_value?(:active) }
+        expect { system_service.restart }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -612,7 +612,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.reload }.to change { system_service.changed_value?(:active) }
+        expect { system_service.reload }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -627,7 +627,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.reload }.to change { system_service.changed_value?(:active) }
+        expect { system_service.reload }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -1037,13 +1037,13 @@ describe Yast2::SystemService do
     end
 
     it "clears all cached changes" do
-      expect(system_service.changed_value?(:start_mode)).to eq(true)
-      expect(system_service.changed_value?(:active)).to eq(true)
+      expect(system_service.changed?(:start_mode)).to eq(true)
+      expect(system_service.changed?(:active)).to eq(true)
 
       system_service.reset
 
-      expect(system_service.changed_value?(:start_mode)).to eq(false)
-      expect(system_service.changed_value?(:active)).to eq(false)
+      expect(system_service.changed?(:start_mode)).to eq(false)
+      expect(system_service.changed?(:active)).to eq(false)
     end
 
     it "returns true" do
@@ -1086,29 +1086,23 @@ describe Yast2::SystemService do
       it "returns true" do
         expect(system_service.changed?).to eq(true)
       end
+
+      context "and ask for that specific change" do
+        it "returns true" do
+          expect(system_service.changed?(:active)).to eq(true)
+        end
+      end
+
+      context "and ask for other change" do
+        it "returns false" do
+          expect(system_service.changed?(:start_mode)).to eq(false)
+        end
+      end
     end
 
     context "when no changes were made" do
       it "returns false" do
         expect(system_service.changed?).to eq(false)
-      end
-    end
-  end
-
-  describe "#changed_value?" do
-    context "when no value has been changed" do
-      it "returns true" do
-        expect(system_service.changed_value?(:active)).to eq(false)
-      end
-    end
-
-    context "when some value has been changed" do
-      before do
-        system_service.stop
-      end
-
-      it "returns true" do
-        expect(system_service.changed_value?(:active)).to eq(true)
       end
     end
   end
