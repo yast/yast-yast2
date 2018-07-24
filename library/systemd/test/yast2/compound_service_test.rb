@@ -41,8 +41,6 @@ describe Yast2::CompoundService do
     )
   end
 
-
-
   describe ".new" do
     it "raises ArgumentError if non service is passed" do
       expect { described_class.new(nil) }.to raise_error(ArgumentError)
@@ -257,8 +255,8 @@ describe Yast2::CompoundService do
     end
 
     context "parameter is :on_demand" do
-      let (:service1) { service(support_start_on_demand?: true) }
-      let (:service2) { service(support_start_on_demand?: false) }
+      let(:service1) { service(support_start_on_demand?: true) }
+      let(:service2) { service(support_start_on_demand?: false) }
 
       it "sets services that support it start on demand and rest on boot" do
         expect(service1).to receive(:start_mode=).with(:on_demand)
@@ -267,7 +265,6 @@ describe Yast2::CompoundService do
         subject.start_mode = :on_demand
       end
     end
-
 
     context "parameter is :inconsistent" do
       it "resets automatic start configuration on all services" do

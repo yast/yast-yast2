@@ -5,8 +5,8 @@ require "yast2/system_service"
 require "yast2/compound_service"
 
 def service
-  return @service if @service	
-#  @service ||= Yast2::SystemService.find("cups.service")
+  return @service if @service
+  #  @service ||= Yast2::SystemService.find("cups.service")
   service1 = Yast2::SystemService.find("cups.service")
   service2 = Yast2::SystemService.find("dbus.service")
   @service = Yast2::CompoundService.new(service1, service2)
