@@ -105,7 +105,7 @@ module Yast2
     # @see Yast::SystemService#current_start_mode
     # @note additional state `:inconsistent` that is not in SystemService
     def current_start_mode
-      @current_start_mode ||= services_mode(method(:has_current_mode))
+      @current_start_mode ||= services_mode(method(:current_mode?))
     end
 
     # returns configuration for start mode.
@@ -119,7 +119,7 @@ module Yast2
     # @see Yast::SystemService#start_mode
     # @note additional state `:inconsistent` that is not in SystemService
     def start_mode
-      services_mode(method(:has_mode))
+      services_mode(method(:mode?))
     end
 
     AUTOSTART_OPTIONS = [:on_boot, :on_demand, :manual, :inconsistent].freeze
@@ -155,10 +155,8 @@ module Yast2
       old_start_mode = start_mode
       services.each(&:reset)
       @current_start_mode = nil
-      public_send(old_action) if old_action != nil && exclude.include?(:action)
-      if old_start_mode != :inconsistent && exclude.include?(:start_mode)
-        self.start_mode = old_start_mode
-      end
+      public_send(old_action) if !old_action.nil? && exclude.include?(:action)
+      self.start_mode = old_start_mode if old_start_mode != :inconsistent && exclude.include?(:start_mode)
     end
 
     def start
@@ -179,11 +177,11 @@ module Yast2
 
   private
 
-    def has_current_mode(start_mode)
+    def current_mode?(start_mode)
       ->(service) { service.current_start_mode == start_mode }
     end
 
-    def has_mode(start_mode)
+    def mode?(start_mode)
       ->(service) { service.start_mode == start_mode }
     end
 
@@ -201,11 +199,11 @@ module Yast2
     end
 
     def services_with_socket
-      @services_with_socket ||= services.select{ |s| s.support_start_on_demand? }
+      @services_with_socket ||= services.select(&:support_start_on_demand?)
     end
 
     def services_without_socket
-      @services_without_socket ||= services.reject{ |s| s.support_start_on_demand? }
+      @services_without_socket ||= services.reject(&:support_start_on_demand?)
     end
   end
 end
