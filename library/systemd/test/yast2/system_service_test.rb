@@ -215,7 +215,7 @@ describe Yast2::SystemService do
   end
 
   describe "#start_mode=" do
-    it "caches the wanted start_mode" do
+    it "sets the wanted start_mode" do
       expect { system_service.start_mode = :on_demand }.to change { system_service.start_mode }
         .from(:on_boot).to(:on_demand)
     end
@@ -333,7 +333,7 @@ describe Yast2::SystemService do
     context "when the service has no associated socket" do
       let(:socket) { nil }
 
-      it "returns only the service full name" do
+      it "returns array with the service full name" do
         expect(system_service.keywords).to contain_exactly("cups.service")
       end
     end
@@ -345,7 +345,7 @@ describe Yast2::SystemService do
         allow(socket).to receive(:id).and_return("cups.socket")
       end
 
-      it "returns the service and socket full names" do
+      it "returns array with service and socket full names" do
         expect(system_service.keywords).to contain_exactly("cups.service", "cups.socket")
       end
     end
@@ -537,8 +537,8 @@ describe Yast2::SystemService do
     end
 
     it "resets the changes and refreshes the service" do
-      expect(system_service).to receive(:reset)
-      expect(system_service).to receive(:refresh)
+      expect(system_service).to receive(:reset).and_return(true)
+      expect(system_service).to receive(:refresh).and_return(true)
 
       system_service.save
     end
@@ -654,7 +654,7 @@ describe Yast2::SystemService do
             end
 
             it "does not try to start the service" do
-              allow(socket).to receive(:start)
+              allow(socket).to receive(:start).and_return(true)
               expect(service).to_not receive(:start)
 
               system_service.save
@@ -671,7 +671,7 @@ describe Yast2::SystemService do
             end
 
             it "does not try to start the socket" do
-              allow(service).to receive(:start)
+              allow(service).to receive(:start).and_return(true)
               expect(socket).to_not receive(:start)
 
               system_service.save
@@ -755,7 +755,7 @@ describe Yast2::SystemService do
         let(:action) { :restart }
 
         it "performs the stop action (see above)" do
-          expect(system_service).to receive(:perform_stop)
+          expect(system_service).to receive(:perform_stop).and_return(true)
 
           system_service.save
         end
@@ -766,7 +766,7 @@ describe Yast2::SystemService do
           end
 
           it "performs the start action (see above)" do
-            expect(system_service).to receive(:perform_start)
+            expect(system_service).to receive(:perform_start).and_return(true)
 
             system_service.save
           end
@@ -784,7 +784,7 @@ describe Yast2::SystemService do
           let(:support_reload) { false }
 
           it "performs the restart action (see above)" do
-            expect(system_service).to receive(:perform_restart)
+            expect(system_service).to receive(:perform_restart).and_return(true)
 
             system_service.save
           end
@@ -841,7 +841,7 @@ describe Yast2::SystemService do
             let(:socket_active) { true }
 
             it "stops the socket if active" do
-              allow(service).to receive(:reload)
+              allow(service).to receive(:reload).and_return(true)
               expect(socket).to receive(:stop).and_return(true)
 
               system_service.save
@@ -851,7 +851,7 @@ describe Yast2::SystemService do
               let(:service_active) { true }
 
               it "reloads the service" do
-                allow(socket).to receive(:stop)
+                allow(socket).to receive(:stop).and_return(true)
                 expect(service).to receive(:reload).and_return(true)
 
                 system_service.save
@@ -862,7 +862,7 @@ describe Yast2::SystemService do
               let(:service_active) { false }
 
               it "performs the start action (see above)" do
-                allow(socket).to receive(:stop)
+                allow(socket).to receive(:stop).and_return(true)
                 expect(system_service).to receive(:perform_start).and_return(true)
 
                 system_service.save
@@ -939,6 +939,10 @@ describe Yast2::SystemService do
       expect(system_service.changed_value?(:start_mode)).to eq(false)
       expect(system_service.changed_value?(:active)).to eq(false)
     end
+
+    it "returns true" do
+      expect(system_service.reset).to eq(true)
+    end
   end
 
   describe "#refresh" do
@@ -950,6 +954,20 @@ describe Yast2::SystemService do
       expect(service).to receive(:refresh!).and_return(true)
 
       system_service.refresh
+    end
+
+    it "returns true" do
+      expect(system_service.refresh).to eq(true)
+    end
+
+    context "when the service cannot be refreshed" do
+      before do
+        allow(service).to receive(:refresh!).and_raise(Yast::SystemctlError.new("error"))
+      end
+
+      it "returns false" do
+        expect(system_service.refresh).to eq(false)
+      end
     end
   end
 

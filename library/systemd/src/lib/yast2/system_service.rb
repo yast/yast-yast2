@@ -70,7 +70,7 @@ module Yast2
     # @return [String]
     def_delegator :@service, :sub_state, :substate
 
-    # @!method rupport_reload?
+    # @!method support_reload?
     #
     # @return [Boolean]
     def_delegator :@service, :can_reload?, :support_reload?
@@ -247,18 +247,18 @@ module Yast2
     #
     # @param keep_state [Boolean] Do not change service status. Useful when running on 1st stage.
     #
-    # @return [Boolean]
+    # @return [Boolean] true if the service was saved correctly; false otherwise.
     def save(keep_state: false)
       clear_errors
       save_start_mode
       perform_action unless keep_state
-      refresh
-      reset
+      reset && refresh
     end
 
     # Reverts cached changes
     #
-    # @return [Boolean]
+    # @return [Boolean] true if the service was reset correctly. Actually, the
+    #   service always can be reset.
     def reset
       clear_changes
       @action = nil
@@ -268,13 +268,14 @@ module Yast2
 
     # Refreshes the underlying service
     #
-    # @return [Boolean]
+    # @return [Boolean] true if the service was refreshed correctly; false otherwise.
     def refresh
       service.refresh!
       @start_modes = nil
       @current_start_mode = nil
-
       true
+    rescue Yast::SystemctlError
+      false
     end
 
     # Whether there is any cached change that will be applyied by calling {#save}.
@@ -352,9 +353,9 @@ module Yast2
       result = true
 
       if socket && start_mode == :on_demand
-        result &= socket.start unless socket_active?
+        result &&= socket.start unless socket_active?
       else
-        result &= service.start unless service.active?
+        result &&= service.start unless service.active?
       end
 
       result
@@ -366,8 +367,8 @@ module Yast2
     def perform_stop
       result = true
 
-      result &= service.stop if service.active?
-      result &= socket.stop if socket_active?
+      result &&= service.stop if service.active?
+      result &&= socket.stop if socket_active?
 
       result
     end
@@ -389,8 +390,8 @@ module Yast2
 
       result = true
 
-      result &= socket.stop if socket_active? && start_mode != :on_demand
-      result &= service.active? ? service.reload : perform_start
+      result &&= socket.stop if socket_active? && start_mode != :on_demand
+      result &&= service.active? ? service.reload : perform_start
 
       result
     end
