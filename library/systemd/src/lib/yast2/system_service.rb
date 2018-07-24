@@ -49,6 +49,9 @@ module Yast2
   class SystemService
     extend Forwardable
 
+    # Error when a service is not found
+    class NotFoundError < RuntimeError; end
+
     # @return [Yast::SystemdServiceClass::Service]
     attr_reader :service
 
@@ -68,23 +71,41 @@ module Yast2
     def_delegators :@service, :name, :static?, :running?, :description
 
     class << self
-      # Find a service
+      # Finds a service by its name
       #
-      # @param name [String] Service name
-      # @return [SystemService,nil] System service or nil when not found
+      # @param name [String] service name
+      # @return [SystemService, nil] nil if the service is not found
       def find(name)
-        new(Yast::SystemdService.find(name))
+        systemd_service = Yast::SystemdService.find(name)
+        return nil unless systemd_service
+
+        new(systemd_service)
       end
 
-      # Finds service names
+      # Finds a service by its name
       #
-      # This method finds a set of system services. Currently it is just a wrapper around
-      # SystemdService.find_many.
+      # @param name [String] service name
       #
-      # @param names [Array<String>] Service names to find
-      # @return [Array<SystemService>] Found system services
+      # @raise [NotFoundError] if the service is not found
+      # @return [SystemService]
+      def find!(name)
+        system_service = find(name)
+        raise NotFoundError unless system_service
+
+        system_service
+      end
+
+      # Finds a set of services by their names
+      #
+      # @param names [Array<String>] service names to find
+      #
+      # @raise [NotFoundError] if any service is not found
+      # @return [Array<SystemService>]
       def find_many(names)
-        Yast::SystemdService.find_many(names).compact.map { |s| new(s) }
+        systemd_services = Yast::SystemdService.find_many(names)
+        raise NotFoundError if systemd_services.any?(&:nil?)
+
+        systemd_services.map { |s| new(s) }
       end
     end
 
@@ -313,7 +334,7 @@ module Yast2
     # @param value [Symbol] :start, :stop, :restart, :reload
     attr_writer :action
 
-    # @return [Hash<String, Object>]
+    # @return [Hash<Symbol, Object>]
     attr_reader :changes
 
     # Sets whether the service should be active or not

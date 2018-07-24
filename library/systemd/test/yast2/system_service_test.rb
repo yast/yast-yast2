@@ -53,16 +53,52 @@ describe Yast2::SystemService do
   end
 
   describe ".find" do
-    let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
-
     before do
       allow(Yast::SystemdService).to receive(:find).with("cups").and_return(systemd_service)
     end
 
-    it "finds a systemd service" do
-      system_service = described_class.find("cups")
-      expect(system_service).to be_a(described_class)
-      expect(system_service.service).to eq(systemd_service)
+    context "when the service is found" do
+      let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+
+      it "returns the service" do
+        system_service = described_class.find("cups")
+
+        expect(system_service).to be_a(described_class)
+        expect(system_service.service).to eq(systemd_service)
+      end
+    end
+
+    context "when the service is not found" do
+      let(:systemd_service) { nil }
+
+      it "returns nil" do
+        expect(described_class.find("cups")).to be_nil
+      end
+    end
+  end
+
+  describe ".find!" do
+    before do
+      allow(Yast::SystemdService).to receive(:find).with("cups").and_return(systemd_service)
+    end
+
+    context "when the service is found" do
+      let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+
+      it "returns the service" do
+        system_service = described_class.find!("cups")
+
+        expect(system_service).to be_a(described_class)
+        expect(system_service.service).to eq(systemd_service)
+      end
+    end
+
+    context "when the service is not found" do
+      let(:systemd_service) { nil }
+
+      it "raises an exception" do
+        expect { described_class.find!("cups") }.to raise_error(Yast2::SystemService::NotFoundError)
+      end
     end
   end
 
@@ -87,9 +123,9 @@ describe Yast2::SystemService do
           .and_return([nil, cups])
       end
 
-      it "ignores the not found service" do
-        system_services = described_class.find_many(["apparmor", "cups"])
-        expect(system_services.map(&:service)).to eq([cups])
+      it "raises an exception" do
+        expect { described_class.find_many(["apparmor", "cups"]) }
+          .to raise_error(Yast2::SystemService::NotFoundError)
       end
     end
   end
