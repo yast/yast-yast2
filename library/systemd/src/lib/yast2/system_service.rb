@@ -29,12 +29,12 @@ module Yast2
   # (services, sockets, paths and so on). This class is able to group those units and
   # offer an API to handle them together.
   #
-  # Additionally, this class does not modify the underlying system until the #save
+  # Additionally, this class does not modify the underlying system until the {#save}
   # method is called.
   #
   # @example Enabling a service
   #   cups = SystemService.find("cups")
-  #   cups.start_mode = :boot
+  #   cups.start_mode = :on_boot
   #   cups.save
   #
   # @example Activating a service
@@ -45,7 +45,7 @@ module Yast2
   # @example Ignoring status changes on 1st stage
   #   cups = SystemService.find("cups")
   #   cups.start
-  #   cups.save(ignore_status: true)
+  #   cups.save(keep_state: true)
   class SystemService
     extend Forwardable
 
@@ -55,6 +55,10 @@ module Yast2
     # @return [Hash<Symbol,Object>] Errors when trying to write changes to the
     #   underlying system.
     attr_reader :errors
+
+    # @return [Symbol, nil] :start, :stop, :restart or :reload. It returns nil
+    #   if no action has been requested yet.
+    attr_reader :action
 
     # @!method state
     #
@@ -66,8 +70,12 @@ module Yast2
     # @return [String]
     def_delegator :@service, :sub_state, :substate
 
-    def_delegators :@service, :running?, :start, :stop, :restart, :active?,
-      :active_state, :sub_state, :name, :description, :static?
+    # @!method support_reload?
+    #
+    # @return [Boolean]
+    def_delegator :@service, :can_reload?, :support_reload?
+
+    def_delegators :@service, :name, :static?, :running?, :description
 
     class << self
       # Find a service
@@ -90,6 +98,8 @@ module Yast2
       end
     end
 
+    # Constructor
+    #
     # @param service [Yast::SystemdServiceClass::Service]
     def initialize(service)
       @service = service
@@ -97,7 +107,9 @@ module Yast2
       @errors = {}
     end
 
-    # Get the current start_mode
+    # Gets the current start_mode (as read from the system)
+    #
+    # @return [Symbol] :on_boot, :on_demand, :manual
     def current_start_mode
       @current_start_mode ||=
         if service.enabled?
@@ -109,19 +121,18 @@ module Yast2
         end
     end
 
-    # TODO
+    # Whether the service is currently active in the system
+    #
+    # @return [Boolean]
     def current_active?
-    end
-
-    # TODO
-    def support_reload?
+      service.active? || socket_active?
     end
 
     # Returns the list of supported start modes
     #
     # * :on_boot:   The service will be started when the system boots.
-    # * :manual: The service is disabled and it will be started manually.
-    # * :on_demand: The service will be started on demand (using a Systemd socket).
+    # * :on_demand: The service will be started on demand.
+    # * :manual:    The service is disabled and it will be started manually.
     #
     # @return [Array<Symbol>] List of supported modes.
     def start_modes
@@ -131,27 +142,15 @@ module Yast2
       @start_modes
     end
 
-    # Terms to search for this service
-    #
-    # In case the service has an associated socket, the socket name
-    # is included as search term.
-    #
-    # @return [Array<String>] e.g., #=> ["tftp.service", "tftp.socket"]
-    def search_terms
-      terms = [service.id]
-      terms << socket.id if socket
-      terms
-    end
-
     # Returns the start mode
     #
     # See {#start_modes} to find out the supported modes for a given service (usually :on_boot,
     # :manual and, in some cases, :on_demand).
     #
-    # When the service (:on_boot) and the socket (:on_demand) are enabled, the start mode is translated
-    # to :on_boot.
+    # @note This is a temporary value (not saved yet). Use {#current_start_mode} to get the actual
+    #   start mode of the service in the system.
     #
-    # @return [Symbol] Start mode (:on_boot, :on_demand, :manual)
+    # @return [Symbol] :on_boot, :on_demand, :manual
     def start_mode
       new_value_for(:start_mode) || current_start_mode
     end
@@ -159,9 +158,10 @@ module Yast2
     # Sets the service start mode
     #
     # See {#start_modes} to find out the supported modes for a given service (usually :on_boot,
-    # :manual and, in some cases, :on_demand). The given value will be applied after calling #save.
+    # :manual and, in some cases, :on_demand). The given value will be applied after calling {#save}.
     #
     # @see #start_modes
+    #
     # @raise ArgumentError when mode is not valid
     def start_mode=(mode)
       if !start_modes.include?(mode)
@@ -175,92 +175,138 @@ module Yast2
       end
     end
 
-    # Determine whether the service will be active after calling #save
+    # Whether the service supports :on_demand start mode
+    #
+    # @return [Boolean]
+    def support_start_on_demand?
+      start_modes.include?(:on_demand)
+    end
+
+    # Whether the service will be active after calling {#save}
+    #
+    # @note This is a temporary value (not saved yet). Use {#current_active?} to get the actual
+    #   active value of the service in the system.
     #
     # @return [Boolean] true if the service must be active; false otherwise
     def active?
       return new_value_for(:active) if changed_value?(:active)
-      service.active?
+      current_active?
     end
 
-    # Sets the service to be started after calling #save
+    # Keywords to search for this service
+    #
+    # In case the service has an associated socket, the socket name
+    # is included as keyword.
+    #
+    # @return [Array<String>] e.g., #=> ["tftp.service", "tftp.socket"]
+    def keywords
+      keywords = [service.id]
+      keywords << socket.id if socket
+      keywords
+    end
+
+    # Sets the service to be started after calling {#save}
     #
     # @see #active=
+    #
+    # @return [Symbol] :start
     def start
       self.active = true
+      self.action = :start
     end
 
-    # Sets the service to be stopped after calling #save
+    # Sets the service to be stopped after calling {#save}
     #
     # @see #active=
+    #
+    # @return [Symbol] :stop
     def stop
       self.active = false
+      self.action = :stop
     end
 
-    # TODO
+    # Sets the service to be restarted after calling {#save}
+    #
+    # @return [Symbol] :restart
     def restart
+      register_change(:active, true)
+      self.action = :restart
     end
 
-    # TODO
+    # Sets the service to be reloaded after calling {#save}
+    #
+    # @return [Symbol] :reload
     def reload
+      register_change(:active, true)
+      self.action = :reload
     end
 
-    # TODO
+    # Saves changes into the underlying system
     #
-    # Action to perform when the service is saved (see {#save})
+    # @note Cached changes are reset and the underlying service is refreshed.
     #
-    # @return [Symbol, nil] :start, :stop, :restart or :reload. It returns nil if no
-    #   action has been requested or the requested action does not modify the service
-    #   (e.g., to stop a service when the service is not active).
-    def action
-    end
-
-    # TODO: remove this
-    # Toggles the service status
+    # @param keep_state [Boolean] Do not change service status. Useful when running on 1st stage.
     #
-    # @see #active=
-    def toggle
-      self.active = !active?
-    end
-
-    # Saves changes to the underlying system
-    #
-    # @param set_status [Boolean] Do not change service status. Useful when running on 1st stage.
-    def save(ignore_status: false)
+    # @return [Boolean] true if the service was saved correctly; false otherwise.
+    def save(keep_state: false)
       clear_errors
       save_start_mode
-      set_current_status unless ignore_status
-      reset
+      perform_action unless keep_state
+      reset && refresh
     end
 
-    # Reverts stored changes
+    # Reverts cached changes
+    #
+    # @return [Boolean] true if the service was reset correctly. Actually, the
+    #   service always can be reset.
     def reset
       clear_changes
-      @current_start_mode = nil
+      @action = nil
+
+      true
     end
 
-    # Determines whether the system has been changed or not
+    # Refreshes the underlying service
     #
-    # @return [Boolean] true if the system has been changed
+    # @return [Boolean] true if the service was refreshed correctly; false otherwise.
+    def refresh
+      service.refresh!
+      @start_modes = nil
+      @current_start_mode = nil
+      true
+    rescue Yast::SystemctlError
+      false
+    end
+
+    # Whether there is any cached change that will be applyied by calling {#save}.
+    #
+    # @return [Boolean]
     def changed?
       !changes.empty?
     end
 
-    # Determines whether a value has been changed
+    # Whether a specific value has been changed
     #
-    # @return [Boolean] true if the value has been changed; false otherwise
+    # @return [Boolean]
     def changed_value?(key)
       changes.key?(key)
     end
 
   private
 
-    # @return [Hash<String,Object>]
+    # @!method action=(value)
+    #
+    # Action to perform when the service is saved (see {#save})
+    #
+    # @param value [Symbol] :start, :stop, :restart, :reload
+    attr_writer :action
+
+    # @return [Hash<String, Object>]
     attr_reader :changes
 
     # Sets whether the service should be active or not
     #
-    # The given value will be applied after calling #save.
+    # The given value will be applied after calling {#save}.
     #
     # @param value [Boolean] true to set this service as active
     def active=(value)
@@ -274,28 +320,80 @@ module Yast2
     # Sets start mode to the underlying system
     def save_start_mode
       return unless changes[:start_mode]
+
       result =
         case changes[:start_mode]
         when :on_boot
-          service.enable && socket.disable
+          service.enable && (socket ? socket.disable : true)
         when :on_demand
-          service.disable && socket.enable
+          service.disable && (socket ? socket.enable : true)
         when :manual
-          service.disable && socket.disable
+          service.disable && (socket ? socket.disable : true)
         end
+
       register_error(:start_mode) unless result
     end
 
-    # Sets service status
-    def set_current_status
-      return if changes[:active].nil?
-      result =
-        if changes[:active] && !service.active?
-          service.start
-        elsif changes[:active] == false && service.active?
-          service.stop
-        end
+    # Performs the indicated action (if any) in the underlying system
+    #
+    # @note In case the action cannot be performed, an error is registered,
+    #   see {#register_error}.
+    def perform_action
+      return unless action
+
+      result = send("perform_#{action}")
+
       register_error(:active) if result == false
+    end
+
+    # Starts the service in the underlying system
+    #
+    # @return [Boolean] true if the service was correctly started
+    def perform_start
+      result = true
+
+      if socket && start_mode == :on_demand
+        result &&= socket.start unless socket_active?
+      else
+        result &&= service.start unless service.active?
+      end
+
+      result
+    end
+
+    # Stops the service in the underlying system
+    #
+    # @return [Boolean] true if the service was correctly stopped
+    def perform_stop
+      result = true
+
+      result &&= service.stop if service.active?
+      result &&= socket.stop if socket_active?
+
+      result
+    end
+
+    # Restarts the service in the underlying system
+    #
+    # @return [Boolean] true if the service was correctly restarted
+    def perform_restart
+      perform_stop && perform_start
+    end
+
+    # Reloads the service in the underlying system
+    #
+    # @note The service is simply restarted when it does not support reload action.
+    #
+    # @return [Boolean] true if the service was correctly reloaded
+    def perform_reload
+      return perform_restart unless support_reload?
+
+      result = true
+
+      result &&= socket.stop if socket_active? && start_mode != :on_demand
+      result &&= service.active? ? service.reload : perform_start
+
+      result
     end
 
     # Registers error information
@@ -317,6 +415,15 @@ module Yast2
     # @return [Yast::SystemdSocketClass::Socket]
     def socket
       service && service.socket
+    end
+
+    # Whether the associated socket (if any) is actived
+    #
+    # @return [Boolean]
+    def socket_active?
+      return false unless socket
+
+      socket.active?
     end
 
     # Unregisters change for a given key
