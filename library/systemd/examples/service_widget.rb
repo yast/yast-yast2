@@ -1,24 +1,19 @@
 require "yast"
 
 require "yast2/service_widget"
-require "yast2/service_configuration"
-
-Yast.import "SystemdService"
+require "yast2/system_service"
+require "yast2/compound_service"
 
 def service
-  @service ||= Yast::SystemdService.find!("cups.service")
-end
-
-def service_configuration
-  @service_configuration ||= Yast2::ServiceConfiguration.new(service)
+  return @service if @service	
+#  @service ||= Yast2::SystemService.find("cups.service")
+  service1 = Yast2::SystemService.find("cups.service")
+  service2 = Yast2::SystemService.find("dbus.service")
+  @service = Yast2::CompoundService.new(service1, service2)
 end
 
 def service_widget
-  @service_widget ||= Yast2::ServiceWidget.new(service_configuration)
-end
-
-def read
-  service_configuration.read
+  @service_widget ||= Yast2::ServiceWidget.new(service)
 end
 
 include Yast::UIShortcuts
@@ -39,7 +34,6 @@ def write
   true
 end
 
-read
 ui_loop
 write
 
