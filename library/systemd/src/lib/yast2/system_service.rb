@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "forwardable"
+
 Yast.import "SystemdService"
 
 module Yast2
@@ -49,6 +50,9 @@ module Yast2
   class SystemService
     extend Forwardable
 
+    # Error when a service is not found
+    class NotFoundError < RuntimeError; end
+
     # @return [Yast::SystemdServiceClass::Service]
     attr_reader :service
 
@@ -60,16 +64,6 @@ module Yast2
     #   if no action has been requested yet.
     attr_reader :action
 
-    # @!method state
-    #
-    # @return [String]
-    def_delegator :@service, :active_state, :state
-
-    # @!method substate
-    #
-    # @return [String]
-    def_delegator :@service, :sub_state, :substate
-
     # @!method support_reload?
     #
     # @return [Boolean]
@@ -78,23 +72,41 @@ module Yast2
     def_delegators :@service, :name, :static?, :running?, :description
 
     class << self
-      # Find a service
+      # Finds a service by its name
       #
-      # @param name [String] Service name
-      # @return [SystemService,nil] System service or nil when not found
+      # @param name [String] service name
+      # @return [SystemService, nil] nil if the service is not found
       def find(name)
-        new(Yast::SystemdService.find(name))
+        systemd_service = Yast::SystemdService.find(name)
+        return nil unless systemd_service
+
+        new(systemd_service)
       end
 
-      # Finds service names
+      # Finds a service by its name
       #
-      # This method finds a set of system services. Currently it is just a wrapper around
-      # SystemdService.find_many.
+      # @param name [String] service name
       #
-      # @param names [Array<String>] Service names to find
-      # @return [Array<SystemService>] Found system services
+      # @raise [NotFoundError] if the service is not found
+      # @return [SystemService]
+      def find!(name)
+        system_service = find(name)
+        raise NotFoundError unless system_service
+
+        system_service
+      end
+
+      # Finds a set of services by their names
+      #
+      # @param names [Array<String>] service names to find
+      #
+      # @raise [NotFoundError] if any service is not found
+      # @return [Array<SystemService>]
       def find_many(names)
-        Yast::SystemdService.find_many(names).compact.map { |s| new(s) }
+        systemd_services = Yast::SystemdService.find_many(names)
+        raise NotFoundError if systemd_services.any?(&:nil?)
+
+        systemd_services.map { |s| new(s) }
       end
     end
 
@@ -105,6 +117,28 @@ module Yast2
       @service = service
       @changes = {}
       @errors = {}
+    end
+
+    # State of the service
+    #
+    # In case the service is not active but socket, the socket state is considered
+    #
+    # @return [String]
+    def state
+      return socket.active_state if socket_active? && !service.active?
+
+      service.active_state
+    end
+
+    # Substate of the service
+    #
+    # In case the service is not active but socket, the socket substate is considered
+    #
+    # @return [String]
+    def substate
+      return socket.sub_state if socket_active? && !service.active?
+
+      service.sub_state
     end
 
     # Gets the current start_mode (as read from the system)
@@ -189,7 +223,7 @@ module Yast2
     #
     # @return [Boolean] true if the service must be active; false otherwise
     def active?
-      return new_value_for(:active) if changed_value?(:active)
+      return new_value_for(:active) if changed?(:active)
       current_active?
     end
 
@@ -278,18 +312,16 @@ module Yast2
       false
     end
 
-    # Whether there is any cached change that will be applyied by calling {#save}.
+    # Whether there is any cached change that will be applied by calling {#save}.
+    #
+    # Some specific change can be checked by using the key parameter.
+    #
+    # @example
+    #   service.changed?(:start_mode)
     #
     # @return [Boolean]
-    def changed?
-      !changes.empty?
-    end
-
-    # Whether a specific value has been changed
-    #
-    # @return [Boolean]
-    def changed_value?(key)
-      changes.key?(key)
+    def changed?(key = nil)
+      key ? changes.key?(key) : changes.any?
     end
 
   private
@@ -301,7 +333,7 @@ module Yast2
     # @param value [Symbol] :start, :stop, :restart, :reload
     attr_writer :action
 
-    # @return [Hash<String, Object>]
+    # @return [Hash<Symbol, Object>]
     attr_reader :changes
 
     # Sets whether the service should be active or not
@@ -451,7 +483,7 @@ module Yast2
     # @param [Symbol] Change key
     # @return [Object] New value
     def new_value_for(key)
-      return nil unless changed_value?(key)
+      return nil unless changed?(key)
       changes[key]
     end
   end

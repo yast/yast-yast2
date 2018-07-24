@@ -53,16 +53,52 @@ describe Yast2::SystemService do
   end
 
   describe ".find" do
-    let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
-
     before do
       allow(Yast::SystemdService).to receive(:find).with("cups").and_return(systemd_service)
     end
 
-    it "finds a systemd service" do
-      system_service = described_class.find("cups")
-      expect(system_service).to be_a(described_class)
-      expect(system_service.service).to eq(systemd_service)
+    context "when the service is found" do
+      let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+
+      it "returns the service" do
+        system_service = described_class.find("cups")
+
+        expect(system_service).to be_a(described_class)
+        expect(system_service.service).to eq(systemd_service)
+      end
+    end
+
+    context "when the service is not found" do
+      let(:systemd_service) { nil }
+
+      it "returns nil" do
+        expect(described_class.find("cups")).to be_nil
+      end
+    end
+  end
+
+  describe ".find!" do
+    before do
+      allow(Yast::SystemdService).to receive(:find).with("cups").and_return(systemd_service)
+    end
+
+    context "when the service is found" do
+      let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+
+      it "returns the service" do
+        system_service = described_class.find!("cups")
+
+        expect(system_service).to be_a(described_class)
+        expect(system_service.service).to eq(systemd_service)
+      end
+    end
+
+    context "when the service is not found" do
+      let(:systemd_service) { nil }
+
+      it "raises an exception" do
+        expect { described_class.find!("cups") }.to raise_error(Yast2::SystemService::NotFoundError)
+      end
     end
   end
 
@@ -87,9 +123,79 @@ describe Yast2::SystemService do
           .and_return([nil, cups])
       end
 
-      it "ignores the not found service" do
-        system_services = described_class.find_many(["apparmor", "cups"])
-        expect(system_services.map(&:service)).to eq([cups])
+      it "raises an exception" do
+        expect { described_class.find_many(["apparmor", "cups"]) }
+          .to raise_error(Yast2::SystemService::NotFoundError)
+      end
+    end
+  end
+
+  describe "#state" do
+    before do
+      allow(service).to receive(:active_state).and_return("service state")
+      allow(socket).to receive(:active_state).and_return("socket state")
+    end
+
+    context "when the service is not active" do
+      let(:service_active) { false }
+
+      context "and the socket is active" do
+        let(:socket_active) { true }
+
+        it "returns the socket state" do
+          expect(system_service.state).to eq("socket state")
+        end
+      end
+
+      context "and the socket is not active" do
+        let(:socket_active) { false }
+
+        it "returns the service state" do
+          expect(system_service.state).to eq("service state")
+        end
+      end
+    end
+
+    context "when the service is active" do
+      let(:service_active) { true }
+
+      it "returns the service state" do
+        expect(system_service.state).to eq("service state")
+      end
+    end
+  end
+
+  describe "#substate" do
+    before do
+      allow(service).to receive(:sub_state).and_return("service substate")
+      allow(socket).to receive(:sub_state).and_return("socket substate")
+    end
+
+    context "when the service is not active" do
+      let(:service_active) { false }
+
+      context "and the socket is active" do
+        let(:socket_active) { true }
+
+        it "returns the socket substate" do
+          expect(system_service.substate).to eq("socket substate")
+        end
+      end
+
+      context "and the socket is not active" do
+        let(:socket_active) { false }
+
+        it "returns the service substate" do
+          expect(system_service.substate).to eq("service substate")
+        end
+      end
+    end
+
+    context "when the service is active" do
+      let(:service_active) { true }
+
+      it "returns the service substate" do
+        expect(system_service.substate).to eq("service substate")
       end
     end
   end
@@ -368,7 +474,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.start }.to change { system_service.changed_value?(:active) }
+        expect { system_service.start }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -419,7 +525,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.stop }.to change { system_service.changed_value?(:active) }
+        expect { system_service.stop }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -470,7 +576,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.restart }.to change { system_service.changed_value?(:active) }
+        expect { system_service.restart }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -485,7 +591,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.restart }.to change { system_service.changed_value?(:active) }
+        expect { system_service.restart }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -506,7 +612,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.reload }.to change { system_service.changed_value?(:active) }
+        expect { system_service.reload }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -521,7 +627,7 @@ describe Yast2::SystemService do
       end
 
       it "sets the service as changed" do
-        expect { system_service.reload }.to change { system_service.changed_value?(:active) }
+        expect { system_service.reload }.to change { system_service.changed?(:active) }
           .from(false).to(true)
       end
     end
@@ -931,13 +1037,13 @@ describe Yast2::SystemService do
     end
 
     it "clears all cached changes" do
-      expect(system_service.changed_value?(:start_mode)).to eq(true)
-      expect(system_service.changed_value?(:active)).to eq(true)
+      expect(system_service.changed?(:start_mode)).to eq(true)
+      expect(system_service.changed?(:active)).to eq(true)
 
       system_service.reset
 
-      expect(system_service.changed_value?(:start_mode)).to eq(false)
-      expect(system_service.changed_value?(:active)).to eq(false)
+      expect(system_service.changed?(:start_mode)).to eq(false)
+      expect(system_service.changed?(:active)).to eq(false)
     end
 
     it "returns true" do
@@ -980,29 +1086,23 @@ describe Yast2::SystemService do
       it "returns true" do
         expect(system_service.changed?).to eq(true)
       end
+
+      context "and ask for that specific change" do
+        it "returns true" do
+          expect(system_service.changed?(:active)).to eq(true)
+        end
+      end
+
+      context "and ask for other change" do
+        it "returns false" do
+          expect(system_service.changed?(:start_mode)).to eq(false)
+        end
+      end
     end
 
     context "when no changes were made" do
       it "returns false" do
         expect(system_service.changed?).to eq(false)
-      end
-    end
-  end
-
-  describe "#changed_value?" do
-    context "when no value has been changed" do
-      it "returns true" do
-        expect(system_service.changed_value?(:active)).to eq(false)
-      end
-    end
-
-    context "when some value has been changed" do
-      before do
-        system_service.stop
-      end
-
-      it "returns true" do
-        expect(system_service.changed_value?(:active)).to eq(true)
       end
     end
   end
