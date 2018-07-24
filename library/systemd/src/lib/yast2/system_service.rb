@@ -60,16 +60,6 @@ module Yast2
     #   if no action has been requested yet.
     attr_reader :action
 
-    # @!method state
-    #
-    # @return [String]
-    def_delegator :@service, :active_state, :state
-
-    # @!method substate
-    #
-    # @return [String]
-    def_delegator :@service, :sub_state, :substate
-
     # @!method support_reload?
     #
     # @return [Boolean]
@@ -105,6 +95,28 @@ module Yast2
       @service = service
       @changes = {}
       @errors = {}
+    end
+
+    # State of the service
+    #
+    # In case the service is not active but socket, the socket state is considered
+    #
+    # @return [String]
+    def state
+      return socket.active_state if socket_active? && !service.active?
+
+      service.active_state
+    end
+
+    # Substate of the service
+    #
+    # In case the service is not active but socket, the socket substate is considered
+    #
+    # @return [String]
+    def substate
+      return socket.sub_state if socket_active? && !service.active?
+
+      service.sub_state
     end
 
     # Gets the current start_mode (as read from the system)

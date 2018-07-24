@@ -94,6 +94,76 @@ describe Yast2::SystemService do
     end
   end
 
+  describe "#state" do
+    before do
+      allow(service).to receive(:active_state).and_return("service state")
+      allow(socket).to receive(:active_state).and_return("socket state")
+    end
+
+    context "when the service is not active" do
+      let(:service_active) { false }
+
+      context "and the socket is active" do
+        let(:socket_active) { true }
+
+        it "returns the socket state" do
+          expect(system_service.state).to eq("socket state")
+        end
+      end
+
+      context "and the socket is not active" do
+        let(:socket_active) { false }
+
+        it "returns the service state" do
+          expect(system_service.state).to eq("service state")
+        end
+      end
+    end
+
+    context "when the service is active" do
+      let(:service_active) { true }
+
+      it "returns the service state" do
+        expect(system_service.state).to eq("service state")
+      end
+    end
+  end
+
+  describe "#substate" do
+    before do
+      allow(service).to receive(:sub_state).and_return("service substate")
+      allow(socket).to receive(:sub_state).and_return("socket substate")
+    end
+
+    context "when the service is not active" do
+      let(:service_active) { false }
+
+      context "and the socket is active" do
+        let(:socket_active) { true }
+
+        it "returns the socket substate" do
+          expect(system_service.substate).to eq("socket substate")
+        end
+      end
+
+      context "and the socket is not active" do
+        let(:socket_active) { false }
+
+        it "returns the service substate" do
+          expect(system_service.substate).to eq("service substate")
+        end
+      end
+    end
+
+    context "when the service is active" do
+      let(:service_active) { true }
+
+      it "returns the service substate" do
+        expect(system_service.substate).to eq("service substate")
+      end
+    end
+  end
+
   describe "#current_start_mode" do
     context "when the service is enabled" do
       let(:service_enabled) { true }
