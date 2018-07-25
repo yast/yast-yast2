@@ -37,6 +37,9 @@ module CWM
     end
 
     def handle(event)
+      log.info "handling event #{event.inspect}"
+      return unless event
+
       @service_widget.handle_input(event["ID"])
     end
 
