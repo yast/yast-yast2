@@ -28,8 +28,8 @@ describe Yast2::ServiceWidget do
   let(:service) do
     double(
       "Yast2::SystemService",
-      current_active?: true,
-      start_mode: :on_boot,
+      current_active?:    true,
+      start_mode:         :on_boot,
       current_start_mode: :on_boot
     ).as_null_object
   end
@@ -64,8 +64,8 @@ describe Yast2::ServiceWidget do
     end
 
     it "calls action according to widget" do
-      allow(Yast::UI).to receive(:QueryWidget).with(Id(:service_widget_action), :CurrentItem).
-        and_return(:service_widget_action_restart)
+      allow(Yast::UI).to receive(:QueryWidget).with(Id(:service_widget_action), :CurrentItem)
+        .and_return(:service_widget_action_restart)
 
       expect(service).to receive(:restart)
 
@@ -73,8 +73,8 @@ describe Yast2::ServiceWidget do
     end
 
     it "sets start_mode according to widget" do
-      allow(Yast::UI).to receive(:QueryWidget).with(Id(:service_widget_autostart), :CurrentItem).
-        and_return(:service_widget_autostart_manual)
+      allow(Yast::UI).to receive(:QueryWidget).with(Id(:service_widget_autostart), :CurrentItem)
+        .and_return(:service_widget_autostart_manual)
 
       expect(service).to receive(:start_mode=).with(:manual)
 
