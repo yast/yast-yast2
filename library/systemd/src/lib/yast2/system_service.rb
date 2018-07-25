@@ -342,7 +342,7 @@ module Yast2
     #
     # @param value [Boolean] true to set this service as active
     def active=(value)
-      if value == service.active?
+      if value == current_active?
         unregister_change(:active)
       else
         register_change(:active, value)
