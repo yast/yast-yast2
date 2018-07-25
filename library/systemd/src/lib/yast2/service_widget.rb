@@ -19,6 +19,10 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
+
+Yast.import "UI"
+
 module Yast2
   # Class that represents widget that allows configuration of services.
   # It uses to hold configuration {Yast2::SystemService} or {Yast2::CompoundService}.
