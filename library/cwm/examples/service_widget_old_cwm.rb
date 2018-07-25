@@ -20,13 +20,13 @@ module Yast
       service = ::Yast2::SystemService.find("cups.service")
       service_widget = ::CWM::ServiceWidget.new(service)
       widgets = {
-        "lucky_number_widget" => {
+        "lucky_number_widget"    => {
           "widget" => :textentry,
-          "label" => _("Lucky Number")
+          "label"  => _("Lucky Number")
         },
-        "button_widget" => {
+        "button_widget"          => {
           "widget" => :push_button,
-          "label" => "Generate Lucky Number"
+          "label"  => "Generate Lucky Number"
         },
         service_widget.widget_id => service_widget.cwm_definition
       }
@@ -41,8 +41,8 @@ module Yast
       CWM.ShowAndRun(
         "widget_names" => widgets.keys,
         "widget_descr" => widgets,
-        "contents" => contents,
-        "caption" => _("Lucky number")
+        "contents"     => contents,
+        "caption"      => _("Lucky number")
       )
       Yast::Wizard.CloseDialog
 

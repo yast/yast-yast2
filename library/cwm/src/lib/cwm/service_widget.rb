@@ -23,8 +23,8 @@ require "yast2/service_widget"
 require "cwm/custom_widget"
 
 module CWM
+  # CWM wrapper for Yast2::ServiceWidget
   class ServiceWidget < CustomWidget
-
     # creates new widget instance for given service
     # @param service_configuration [Yast2::SystemService,Yast2::CompoundService] service
     def initialize(service)
@@ -48,4 +48,3 @@ module CWM
     end
   end
 end
-
