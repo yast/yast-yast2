@@ -466,16 +466,30 @@ describe Yast2::SystemService do
 
     context "when the service is not active" do
       let(:service_active) { false }
-      let(:socket) { nil }
 
-      it "sets the service to be active" do
-        expect { system_service.start }.to change { system_service.active? }
-          .from(false).to(true)
+      context "and the socket is not active" do
+        let(:socket_active) { false }
+
+        it "sets the service to be active" do
+          expect { system_service.start }.to change { system_service.active? }
+            .from(false).to(true)
+        end
+
+        it "sets the service as changed" do
+          expect { system_service.start }.to change { system_service.changed?(:active) }
+            .from(false).to(true)
+        end
       end
 
-      it "sets the service as changed" do
-        expect { system_service.start }.to change { system_service.changed?(:active) }
-          .from(false).to(true)
+      context "and the socket is active" do
+        it "sets the service to stay as active" do
+          expect { system_service.start }.to_not change { system_service.active? }
+        end
+
+        it "ignores the change" do
+          system_service.start
+          expect(system_service.changed?).to eq(false)
+        end
       end
     end
 
@@ -530,32 +544,49 @@ describe Yast2::SystemService do
       end
     end
 
-    context "when the service is already stopped (inactive)" do
+    context "when the service is not active" do
       let(:service_active) { false }
-      let(:socket) { nil }
 
-      it "sets the service to stay as inactive" do
-        expect { system_service.stop }.to_not change { system_service.active? }
-      end
-
-      it "ignores the change" do
-        system_service.stop
-        expect(system_service.changed?).to eq(false)
-      end
-
-      context "and the service was set to be started previously" do
-        before do
-          system_service.start
-        end
+      context "and the socket is not active" do
+        let(:socket_active) { false }
 
         it "sets the service to stay as inactive" do
+          expect { system_service.stop }.to_not change { system_service.active? }
+        end
+
+        it "ignores the change" do
+          system_service.stop
+          expect(system_service.changed?).to eq(false)
+        end
+
+        context "and the service was set to be started previously" do
+          before do
+            system_service.start
+          end
+
+          it "sets the service to stay as inactive" do
+            expect { system_service.stop }.to change { system_service.active? }
+              .from(true).to(false)
+          end
+
+          it "cancels the previous change" do
+            system_service.stop
+            expect(system_service.changed?).to eq(false)
+          end
+        end
+      end
+
+      context "and the socket is active" do
+        let(:socket_active) { true }
+
+        it "sets the service to be deactivated" do
           expect { system_service.stop }.to change { system_service.active? }
             .from(true).to(false)
         end
 
-        it "cancels the previous change" do
-          system_service.stop
-          expect(system_service.changed?).to eq(false)
+        it "sets the service as changed" do
+          expect { system_service.stop }.to change { system_service.changed?(:active) }
+            .from(false).to(true)
         end
       end
     end
