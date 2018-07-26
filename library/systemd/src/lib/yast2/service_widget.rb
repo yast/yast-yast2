@@ -64,7 +64,7 @@ module Yast2
     include Yast::UIShortcuts
 
     # creates new widget instance for given service
-    # @param service_configuration [Yast2::SystemService,Yast2::CompoundService] service
+    # @param service [Yast2::SystemService,Yast2::CompoundService] service
     def initialize(service)
       textdomain "base"
       @service = service
@@ -92,15 +92,17 @@ module Yast2
     # handles event to dynamically react on user configuration.
     # For events that does not happen inside widget it is ignored.
     # @param event_id [Object] id of UI element that cause event
-    # @return [void]
+    # @return [nil] it returns nil as it should allow to continue dialog loop
     def handle_input(event_id)
       log.info "handle event #{event_id}"
 
       nil
     end
 
-    # Stores current configuration. Should be called always even when going
+    # Stores current configuration. Should be called always before dialog close, even when going
     # back so configuration is persistent when going again forward.
+    # @note it requires content of dialog to query, so cannot be called after DialogClose or if
+    # another dialog is displayed instead of the one with {#content}
     def store
       service.reset # so we start from scratch
       store_action
