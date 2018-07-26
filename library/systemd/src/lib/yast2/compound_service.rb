@@ -153,13 +153,13 @@ module Yast2
 
     # returns true if any allow start on demand
     def support_start_on_demand?
-      @services.any?(&:support_start_on_demand?)
+      services.any?(&:support_start_on_demand?)
     end
 
     # @return [Hash<Symbol,Object>] Errors when trying to write changes to the
     #   underlying system.
     def errors
-      @services.each_with_object({}) do |s, result|
+      services.each_with_object({}) do |s, result|
         result.merge!(s.errors)
       end
     end
