@@ -47,9 +47,11 @@ module Yast2
     end
 
     # writes services new status
-    # @raise <Yast::SystemctlError> when set service to target state failed
+    # @return [true,false] returns false if saving any service failed
     def save(keep_state: false)
       services.each { |s| s.save(keep_state: keep_state) }
+
+      errors.empty?
     end
 
     # returns current running status.
@@ -152,6 +154,14 @@ module Yast2
     # returns true if any allow start on demand
     def support_start_on_demand?
       @services.any?(&:support_start_on_demand?)
+    end
+
+    # @return [Hash<Symbol,Object>] Errors when trying to write changes to the
+    #   underlying system.
+    def errors
+      @services.each_with_object({}) do |s, result|
+        result.merge!(s.errors)
+      end
     end
 
     # resets changes.
