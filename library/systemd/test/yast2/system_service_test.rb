@@ -675,7 +675,7 @@ describe Yast2::SystemService do
 
     it "resets the changes and refreshes the service" do
       expect(system_service).to receive(:reset).and_return(true)
-      expect(system_service).to receive(:refresh).and_return(true)
+      expect(system_service).to receive(:refresh!).and_return(true)
 
       system_service.save
     end
@@ -1039,6 +1039,10 @@ describe Yast2::SystemService do
 
           expect(system_service.errors).to_not have_key(:active)
         end
+
+        it "returns true" do
+          expect(system_service.save).to eq(true)
+        end
       end
 
       context "and the action cannot be performed" do
@@ -1056,6 +1060,50 @@ describe Yast2::SystemService do
           system_service.save
 
           expect(system_service.errors).to have_key(:active)
+        end
+
+        it "returns false" do
+          expect(system_service.save).to eq(false)
+        end
+      end
+
+      context "and the action command fails" do
+        before do
+          allow(service).to receive(:start).and_raise(Yast::SystemctlError.new("error"))
+          allow(socket).to receive(:start).and_return(true)
+        end
+
+        let(:service_active) { false }
+        let(:socket_active) { false }
+
+        let(:action) { :start }
+
+        it "registers an error for the action" do
+          system_service.save
+
+          expect(system_service.errors).to have_key(:active)
+        end
+
+        it "returns false" do
+          expect(system_service.save).to eq(false)
+        end
+      end
+
+      context "and the service cannot be refreshed" do
+        before do
+          allow(service).to receive(:start).and_return(true)
+          allow(socket).to receive(:start).and_return(true)
+
+          allow(service).to receive(:refresh!).and_raise(Yast::SystemctlError.new("error"))
+        end
+
+        let(:service_active) { false }
+        let(:socket_active) { false }
+
+        let(:action) { :start }
+
+        it "raises an exception" do
+          expect { system_service.save }.to raise_error(Yast::SystemctlError)
         end
       end
     end
