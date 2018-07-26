@@ -279,14 +279,18 @@ module Yast2
     #
     # @note Cached changes are reset and the underlying service is refreshed.
     #
-    # @param keep_state [Boolean] Do not change service status. Useful when running on 1st stage.
+    # @raise [Yast::SystemctlError] if the service cannot be refreshed
     #
+    # @param keep_state [Boolean] Do not change service status. Useful when running on 1st stage.
     # @return [Boolean] true if the service was saved correctly; false otherwise.
     def save(keep_state: false)
       clear_errors
       save_start_mode
       perform_action unless keep_state
-      reset && refresh
+      reset
+      refresh!
+
+      errors.none?
     end
 
     # Reverts cached changes
@@ -304,12 +308,22 @@ module Yast2
     #
     # @return [Boolean] true if the service was refreshed correctly; false otherwise.
     def refresh
+      refresh!
+    rescue Yast::SystemctlError
+      false
+    end
+
+    # Refreshes the underlying service
+    #
+    # @raise [Yast::SystemctlError] if the service cannot be refreshed
+    #
+    # @return [Boolean] true if the service was refreshed correctly
+    def refresh!
       service.refresh!
       @start_modes = nil
       @current_start_mode = nil
+
       true
-    rescue Yast::SystemctlError
-      false
     end
 
     # Whether there is any cached change that will be applied by calling {#save}.
@@ -370,15 +384,27 @@ module Yast2
     #
     # @note In case the action cannot be performed, an error is registered,
     #   see {#register_error}.
+    #
+    # @return [Boolean] true if the service is correctly save; false otherwise.
     def perform_action
-      return unless action
+      return true unless action
 
       result = send("perform_#{action}")
-
       register_error(:active) if result == false
+
+      result
+
+      # FIXME: SystemdService#{start, stop, etc} calls to refresh! internally, so when
+      # this exception is raised we cannot distinguish if the action is failing or
+      # refresh! is failing. For SP1, refresh! should raise a new kind of exception.
+    rescue Yast::SystemctlError
+      register_error(:active)
+      false
     end
 
     # Starts the service in the underlying system
+    #
+    # @raise [Yast::SystemctlError] if some service command fails
     #
     # @return [Boolean] true if the service was correctly started
     def perform_start
@@ -395,6 +421,8 @@ module Yast2
 
     # Stops the service in the underlying system
     #
+    # @raise [Yast::SystemctlError] if some service command fails
+    #
     # @return [Boolean] true if the service was correctly stopped
     def perform_stop
       result = true
@@ -407,6 +435,8 @@ module Yast2
 
     # Restarts the service in the underlying system
     #
+    # @raise [Yast::SystemctlError] if some service command fails
+    #
     # @return [Boolean] true if the service was correctly restarted
     def perform_restart
       perform_stop && perform_start
@@ -415,6 +445,8 @@ module Yast2
     # Reloads the service in the underlying system
     #
     # @note The service is simply restarted when it does not support reload action.
+    #
+    # @raise [Yast::SystemctlError] if some service command fails
     #
     # @return [Boolean] true if the service was correctly reloaded
     def perform_reload
