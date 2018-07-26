@@ -26,7 +26,7 @@ module CWM
   # CWM wrapper for Yast2::ServiceWidget
   class ServiceWidget < CustomWidget
     # creates new widget instance for given service
-    # @param service_configuration [Yast2::SystemService,Yast2::CompoundService] service
+    # @param service [Yast2::SystemService,Yast2::CompoundService] service to be configured
     def initialize(service)
       @service_widget = Yast2::ServiceWidget.new(service)
       self.handle_all_events = true

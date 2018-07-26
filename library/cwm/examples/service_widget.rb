@@ -54,7 +54,6 @@ module Yast
       lucky_number_widget = LuckyNumberWidget.new
       button_widget = GenerateButton.new(lucky_number_widget)
       service = ::Yast2::SystemService.find("cups.service")
-      puts service.public_methods
 
       contents = HBox(
         button_widget,
