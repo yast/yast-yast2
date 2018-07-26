@@ -28,6 +28,7 @@ describe Yast2::CompoundService do
   def service(*args)
     args[0] ||= {}
     args[0][:"is_a?"] = true
+    args[0][:errors] = {}
     double("Yast2::SystemService", *args).as_null_object
   end
 
@@ -53,6 +54,21 @@ describe Yast2::CompoundService do
       expect(service2).to receive(:save)
 
       subject.save
+    end
+
+    it "returns false if any service save failed" do
+      allow(service2).to receive(:errors).and_return(start_mode: :on_boot)
+
+      expect(subject.save).to eq false
+    end
+  end
+
+  describe "#errors" do
+    it "returns merge of all underlaying services errors" do
+      allow(service1).to receive(:errors).and_return(action: :restart)
+      allow(service2).to receive(:errors).and_return(start_mode: :on_boot)
+
+      expect(subject.errors).to eq action: :restart, start_mode: :on_boot
     end
   end
 
