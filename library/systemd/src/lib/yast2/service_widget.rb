@@ -109,7 +109,7 @@ module Yast2
       store_autostart
     end
 
- private
+  private
 
     attr_reader :service
 
