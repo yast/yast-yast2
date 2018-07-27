@@ -109,12 +109,12 @@ module Yast2
       store_autostart
     end
 
-  private
+ private
 
     attr_reader :service
 
     def store_action
-      action = Yast::UI.QueryWidget(Id(:service_widget_action), :CurrentItem)
+      action = Yast::UI.QueryWidget(Id(:service_widget_action), :Value)
       return unless action
 
       action = action.to_s.sub(/^service_widget_action_/, "").to_sym
@@ -124,7 +124,7 @@ module Yast2
     end
 
     def store_autostart
-      autostart = Yast::UI.QueryWidget(Id(:service_widget_autostart), :CurrentItem)
+      autostart = Yast::UI.QueryWidget(Id(:service_widget_autostart), :Value)
       return unless autostart
 
       autostart = autostart.to_s.sub(/^service_widget_autostart_/, "").to_sym
