@@ -64,7 +64,7 @@ describe Yast2::ServiceWidget do
     end
 
     it "calls action according to widget" do
-      allow(Yast::UI).to receive(:QueryWidget).with(Id(:service_widget_action), :CurrentItem)
+      allow(Yast::UI).to receive(:QueryWidget).with(Id(:service_widget_action), :Value)
         .and_return(:service_widget_action_restart)
 
       expect(service).to receive(:restart)
@@ -73,7 +73,7 @@ describe Yast2::ServiceWidget do
     end
 
     it "sets start_mode according to widget" do
-      allow(Yast::UI).to receive(:QueryWidget).with(Id(:service_widget_autostart), :CurrentItem)
+      allow(Yast::UI).to receive(:QueryWidget).with(Id(:service_widget_autostart), :Value)
         .and_return(:service_widget_autostart_manual)
 
       expect(service).to receive(:start_mode=).with(:manual)
