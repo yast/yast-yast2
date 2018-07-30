@@ -30,6 +30,8 @@ module Yast2
   # socket (or path or timer). This class is able to group those units and offer an API
   # to handle them together.
   #
+  # See also {file:library/systemd/doc/services_and_sockets.md}.
+  #
   # @note All changes performed over an object of this class are not applied into the
   # underlying system until the {#save} method is called.
   #
@@ -541,15 +543,15 @@ module Yast2
 
     # Unregisters change for a given key
     #
-    # @param [Symbol] Change key
+    # @param key [Symbol] Change key
     def unregister_change(key)
       changes.delete(key)
     end
 
     # Registers change for a given key
     #
-    # @param [Symbol] Change key
-    # @param [Object] New value
+    # @param key [Symbol] Change key
+    # @param new_value [Object] New value
     def register_change(key, new_value)
       changes[key] = new_value
     end
@@ -561,7 +563,7 @@ module Yast2
 
     # Returns the new value for a given key
     #
-    # @param [Symbol] Change key
+    # @param key [Symbol] Change key
     # @return [Object] New value
     def new_value_for(key)
       return nil unless changed?(key)

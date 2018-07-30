@@ -4,9 +4,9 @@ In systemd, it might happen that a single service is managed by a set of units, 
 
 When a service is configured by using YaST (e.g., with the Services Manager), all units related to each service must be taken into account. For example, when a service is stopped, the socket associated to such service should be also stopped. Otherwise, the sevice could be automatically activated again via its socket.
 
-This file describes a new class (named `SystemService`) to work with the service and its associated socket as a whole. The main goal of this new class is to perform actions over both, the service and the socket, when it is required.
+This file describes a new class (named {Yast2::SystemService}) to work with the service and its associated socket as a whole. The main goal of this new class is to perform actions over both, the service and the socket, when it is required.
 
-## `SystemService` class
+## {Yast2::SystemService} class
 
 This class is intended to represent a service from a high level point of view. It will offer an API to:
 
