@@ -186,6 +186,7 @@ module Yast
         socket_name = properties.triggered_by
         return unless socket_name
 
+        # this may be a space separated list
         socket_name = socket_name[/\S+\.socket/]
         return unless socket_name # triggered by non-socket
 

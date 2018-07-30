@@ -242,12 +242,12 @@ describe Yast2::SystemService do
     end
   end
 
-  describe "#current_active?" do
+  describe "#currently_active?" do
     context "when the service is active" do
       let(:service_active) { true }
 
       it "returns true" do
-        expect(system_service.current_active?).to eq(true)
+        expect(system_service.currently_active?).to eq(true)
       end
     end
 
@@ -261,7 +261,7 @@ describe Yast2::SystemService do
           let(:socket_active) { true }
 
           it "returns true" do
-            expect(system_service.current_active?).to eq(true)
+            expect(system_service.currently_active?).to eq(true)
           end
         end
 
@@ -269,7 +269,7 @@ describe Yast2::SystemService do
           let(:socket_active) { false }
 
           it "returns false" do
-            expect(system_service.current_active?).to eq(false)
+            expect(system_service.currently_active?).to eq(false)
           end
         end
       end
@@ -278,7 +278,7 @@ describe Yast2::SystemService do
         let(:socket) { nil }
 
         it "returns false" do
-          expect(system_service.current_active?).to eq(false)
+          expect(system_service.currently_active?).to eq(false)
         end
       end
     end

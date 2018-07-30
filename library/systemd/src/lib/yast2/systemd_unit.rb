@@ -120,6 +120,7 @@ module Yast
       @name = id.to_s.split(".").first || unit_name
     end
 
+    # @raise [Yast::SystemctlError] if 'systemctl show' cannot be executed
     def refresh!
       @properties = show
       @error = properties.error
@@ -127,56 +128,82 @@ module Yast
     end
 
     # Run 'systemctl show' and parse the unit properties
-    # @param property_text [String,nil]
-    #   if provided, use it instead of calling `systemctl show`
+    #
+    # @raise [Yast::SystemctlError] if 'systemctl show' cannot be executed
+    #
+    # @param property_text [String,nil] if provided, use it instead of calling `systemctl show`
     # @return [Properties]
     def show(property_text = nil)
       # Using different handler during first stage (installation, update, ...)
       Stage.initial ? InstallationProperties.new(self) : Properties.new(self, property_text)
     end
 
+    # @raise [Yast::SystemctlError] if the command cannot be executed
+    # @return [String]
     def status
       command("status", options: "2>&1").stdout
     end
 
+    # @raise [Yast::SystemctlError] if the command cannot be executed
+    # @return [Boolean] true if the unit was correctly started
     def start
       run_command! { command("start") }
     end
 
+    # @raise [Yast::SystemctlError] if the command cannot be executed
+    # @return [Boolean] true if the unit was correctly stopped
     def stop
       run_command! { command("stop") }
     end
 
+    # @raise [Yast::SystemctlError] if the command cannot be executed
+    # @return [Boolean] true if the unit was correctly enabled
     def enable
       run_command! { command("enable") }
     end
 
+    # @raise [Yast::SystemctlError] if the command cannot be executed
+    # @return [Boolean] true if the unit was correctly disabled
     def disable
       run_command! { command("disable") }
     end
 
+    # @raise [Yast::SystemctlError] if the command cannot be executed
+    # @return [Boolean] true if the unit was correctly restarted
     def restart
       run_command! { command("restart") }
     end
 
+    # @raise [Yast::SystemctlError] if the command cannot be executed
+    # @return [Boolean] true if the service was correctly restarted
     def try_restart
       run_command! { command("try-restart") }
     end
 
+    # @raise [Yast::SystemctlError] if the command cannot be executed
+    # @return [Boolean] true if the unit was correctly reloaded
     def reload
       run_command! { command("reload") }
     end
 
+    # @raise [Yast::SystemctlError] if the command cannot be executed
+    # @return [Boolean] true if the unit was correctly reloaded or restarted
     def reload_or_restart
       run_command! { command("reload-or-restart") }
     end
 
+    # @raise [Yast::SystemctlError] if the command cannot be executed
+    # @return [Boolean] true if the unit was correctly reloaded or restarted
     def reload_or_try_restart
       run_command! { command("reload-or-try-restart") }
     end
 
+    # Runs a command in the underlying system
+    #
+    # @raise [Yast::SystemctlError] if the command cannot be executed
+    #
     # @param command_name [String]
-    # @return [#command,#stdout,#stderr,#exit]
+    # @return [#command, #stdout, #stderr, #exit]
     def command(command_name, options = {})
       command = "#{command_name} #{unit_name}.#{unit_type} #{options[:options]}"
       Systemctl.execute(command)

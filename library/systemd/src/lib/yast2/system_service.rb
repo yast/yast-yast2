@@ -24,14 +24,14 @@ require "forwardable"
 Yast.import "SystemdService"
 
 module Yast2
-  # This class represents a system service
+  # This class represents a service from a high level point of view
   #
-  # When talking about systemd, it might happen that a service is compose by a set of units
-  # (services, sockets, paths and so on). This class is able to group those units and
-  # offer an API to handle them together.
+  # When talking about systemd, it might happen that a service could have an associated
+  # socket (or path or timer). This class is able to group those units and offer an API
+  # to handle them together.
   #
-  # Additionally, this class does not modify the underlying system until the {#save}
-  # method is called.
+  # @note All changes performed over an object of this class are not applied into the
+  # underlying system until the {#save} method is called.
   #
   # @example Enabling a service
   #   cups = SystemService.find("cups")
@@ -40,13 +40,42 @@ module Yast2
   #
   # @example Activating a service
   #   cups = SystemService.find("cups")
+  #
+  #   cups.currently_active? #=> false
+  #   cups.active?           #=> false
+  #
   #   cups.start
+  #
+  #   cups.currently_active? #=> false
+  #   cups.active?           #=> true
+  #
   #   cups.save
   #
-  # @example Ignoring status changes on 1st stage
+  #   cups.currently_active? #=> true
+  #   cups.active?           #=> true
+  #
+  # @example Changing start mode
+  #   cups = SystemService.find("cups")
+  #   cups.start_mode = :on_demand
+  #
+  #   cups.current_start_mode #=> :on_boot
+  #   cups.start_mode         #=> :on_demand
+  #
+  #   cups.save
+  #
+  #   cups.current_start_mode #=> :on_demand
+  #   cups.start_mode         #=> :on_demand
+  #
+  # @example Ignoring status changes (useful when changing the service on 1st stage)
   #   cups = SystemService.find("cups")
   #   cups.start
+  #
+  #   cups.currently_active? #=> false
+  #   cups.active?           #=> true
+  #
   #   cups.save(keep_state: true)
+  #
+  #   cups.currently_active? #=> false
   class SystemService
     extend Forwardable
 
@@ -56,8 +85,9 @@ module Yast2
     # @return [Yast::SystemdServiceClass::Service]
     attr_reader :service
 
-    # @return [Hash<Symbol,Object>] Errors when trying to write changes to the
-    #   underlying system.
+    # @return [Hash<Symbol, Object>] Errors when trying to write changes to the underlying system.
+    #   * :active [Boolean] whether the service should be active after saving
+    #   * :start_mode [Symbol] start mode the service should have after saving
     attr_reader :errors
 
     # @return [Symbol, nil] :start, :stop, :restart or :reload. It returns nil
@@ -69,12 +99,24 @@ module Yast2
     # @return [Boolean]
     def_delegator :@service, :can_reload?, :support_reload?
 
+    # @!method name
+    #   @see Yast::SystemdServiceClass::Service#name
+    #   @return [String]
+    # @!method static?
+    #   @see Yast::SystemdServiceClass::Service#static?
+    #   @return [Boolean]
+    # @!method running?
+    #   @see Yast::SystemdServiceClass::Service#running?
+    #   @return [Boolean]
+    # @!method description
+    #   @see Yast::SystemdServiceClass::Service#description
+    #   @return [String]
     def_delegators :@service, :name, :static?, :running?, :description
 
     class << self
       # Finds a service by its name
       #
-      # @param name [String] service name
+      # @param name [String] service name with or without extension (e.g., "cups" or "cups.service")
       # @return [SystemService, nil] nil if the service is not found
       def find(name)
         systemd_service = Yast::SystemdService.find(name)
@@ -91,7 +133,7 @@ module Yast2
       # @return [SystemService]
       def find!(name)
         system_service = find(name)
-        raise NotFoundError unless system_service
+        raise(NotFoundError, name) unless system_service
 
         system_service
       end
@@ -121,9 +163,9 @@ module Yast2
 
     # State of the service
     #
-    # In case the service is not active but socket, the socket state is considered
+    # In case the service is not active but socket is, the socket state is considered
     #
-    # @return [String]
+    # @return [String] all possible active_state values of systemd
     def state
       return socket.active_state if socket_active? && !service.active?
 
@@ -132,16 +174,20 @@ module Yast2
 
     # Substate of the service
     #
-    # In case the service is not active but socket, the socket substate is considered
+    # In case the service is not active but socket is, the socket substate is considered
     #
-    # @return [String]
+    # @return [String] all possible sub_state values of systemd
     def substate
       return socket.sub_state if socket_active? && !service.active?
 
       service.sub_state
     end
 
-    # Gets the current start_mode (as read from the system)
+    # Gets the current start_mode
+    #
+    # @note This is the start mode that the service currently has in the system.
+    #   Method {#start_mode} returns the last start mode that has been set to
+    #   the service, but that value has not been applied yet (only changed in memory).
     #
     # @return [Symbol] :on_boot, :on_demand, :manual
     def current_start_mode
@@ -158,11 +204,12 @@ module Yast2
     # Whether the service is currently active in the system
     #
     # @return [Boolean]
-    def current_active?
+    def currently_active?
       service.active? || socket_active?
     end
 
-    # Returns the list of supported start modes
+    # Returns the list of supported start modes for this service (if a socket
+    # unit is available, :on_demand is supported, otherwise not)
     #
     # * :on_boot:   The service will be started when the system boots.
     # * :on_demand: The service will be started on demand.
@@ -218,13 +265,13 @@ module Yast2
 
     # Whether the service will be active after calling {#save}
     #
-    # @note This is a temporary value (not saved yet). Use {#current_active?} to get the actual
+    # @note This is a temporary value (not saved yet). Use {#currently_active?} to get the actual
     #   active value of the service in the system.
     #
     # @return [Boolean] true if the service must be active; false otherwise
     def active?
       return new_value_for(:active) if changed?(:active)
-      current_active?
+      currently_active?
     end
 
     # Keywords to search for this service
@@ -243,7 +290,7 @@ module Yast2
     #
     # @see #active=
     #
-    # @return [Symbol] :start
+    # @return [void]
     def start
       self.active = true
       self.action = :start
@@ -253,7 +300,7 @@ module Yast2
     #
     # @see #active=
     #
-    # @return [Symbol] :stop
+    # @return [void]
     def stop
       self.active = false
       self.action = :stop
@@ -261,7 +308,7 @@ module Yast2
 
     # Sets the service to be restarted after calling {#save}
     #
-    # @return [Symbol] :restart
+    # @return [void]
     def restart
       register_change(:active, true)
       self.action = :restart
@@ -269,7 +316,7 @@ module Yast2
 
     # Sets the service to be reloaded after calling {#save}
     #
-    # @return [Symbol] :reload
+    # @return [void]
     def reload
       register_change(:active, true)
       self.action = :reload
@@ -294,6 +341,8 @@ module Yast2
     end
 
     # Reverts cached changes
+    #
+    # The underlying service is not refreshed. For that, see {#refresh}.
     #
     # @return [Boolean] true if the service was reset correctly. Actually, the
     #   service always can be reset.
@@ -356,7 +405,7 @@ module Yast2
     #
     # @param value [Boolean] true to set this service as active
     def active=(value)
-      if value == current_active?
+      if value == currently_active?
         unregister_change(:active)
       else
         register_change(:active, value)
