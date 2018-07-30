@@ -29,6 +29,23 @@ module Yast
       end
     end
 
+    describe ".build" do
+      it "returns the service unit object specified in parameter" do
+        ["sshd", "sshd.service"].each do |service_name|
+          service = SystemdService.build(service_name)
+          expect(service).to be_a(SystemdUnit)
+          expect(service.unit_type).to eq("service")
+          expect(service.unit_name).to eq("sshd")
+        end
+      end
+
+      it "returns a service instance even if the real service does not exist" do
+        stub_services(service: "unknown")
+        service = SystemdService.build("unknown")
+        expect(service.name).to eq("unknown")
+      end
+    end
+
     describe ".find!" do
       it "returns the service unit object specified in parameter" do
         service = SystemdService.find("sshd")

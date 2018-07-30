@@ -102,6 +102,28 @@ describe Yast2::SystemService do
     end
   end
 
+  describe ".build" do
+    let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+
+    it "returns a systemd service even if it does not exist" do
+      expect(Yast::SystemdService).to receive(:build).with("other")
+        .and_return(systemd_service)
+      system_service = described_class.build("other")
+      expect(system_service.service).to eq(systemd_service)
+    end
+  end
+
+  describe ".build" do
+    let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+
+    it "returns a systemd service even if it does not exist" do
+      expect(Yast::SystemdService).to receive(:build).with("other")
+        .and_return(systemd_service)
+      system_service = described_class.build("other")
+      expect(system_service.service).to eq(systemd_service)
+    end
+  end
+
   describe ".find_many" do
     let(:apparmor) { instance_double(Yast::SystemdServiceClass::Service) }
     let(:cups) { instance_double(Yast::SystemdServiceClass::Service) }

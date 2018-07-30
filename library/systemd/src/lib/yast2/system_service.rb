@@ -140,6 +140,16 @@ module Yast2
         system_service
       end
 
+      # Builds a service instance based on the given name
+      #
+      # @param name [String] Service name
+      # @return [SystemService] System service based on the given name
+      #
+      # @see Yast::SystemdServiceClass.build
+      def build(name)
+        new(Yast::SystemdService.build(name))
+      end
+
       # Finds a set of services by their names
       #
       # @param names [Array<String>] service names to find
