@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 25 08:13:31 UTC 2018 - jlopez@suse.com
+
+- Services: add class to manage systemd services with associated
+  socket (needed for bsc#1080738 and fate#319428).
+- 4.0.80
+
+-------------------------------------------------------------------
 Mon Jul 16 09:12:23 UTC 2018 - knut.anderssen@suse.com
 
 - Replace the deprecated firewallctl command with firewall-cmd for
