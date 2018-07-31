@@ -80,7 +80,7 @@ module Yast2
             HBox(
               Label(_("Current status:")),
               Label(" "),
-              Label(status)
+              Label(Id(:service_widget_status), status)
             )
           ),
           Left(action_widget),
