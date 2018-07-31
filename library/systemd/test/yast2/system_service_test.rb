@@ -673,11 +673,30 @@ describe Yast2::SystemService do
       allow(service_socket).to receive(:disable).and_return(true)
     end
 
-    it "resets the changes and refreshes the service" do
-      expect(system_service).to receive(:reset).and_return(true)
-      expect(system_service).to receive(:refresh!).and_return(true)
+    context "when all changes are correctly applied" do
+      it "resets the changes and refreshes the service" do
+        expect(system_service).to receive(:reset).and_return(true)
+        expect(system_service).to receive(:refresh!).and_return(true)
 
-      system_service.save
+        system_service.save
+      end
+    end
+
+    context "when some changes cannot be applied" do
+      before do
+        system_service.start_mode = start_mode
+
+        allow(service).to receive(:disable).and_return(false)
+      end
+
+      let(:start_mode) { :manual }
+
+      it "neither resets the changes nor refreshes the service" do
+        expect(system_service).to_not receive(:reset)
+        expect(system_service).to_not receive(:refresh!)
+
+        system_service.save
+      end
     end
 
     context "when start mode has changed" do
