@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 31 14:10:06 UTC 2018 - lslezak@suse.cz
+
+- Do not display "download failed" error when using unsigned
+  packages (bsc#1096027)
+- 3.2.48
+
+-------------------------------------------------------------------
 Mon Jul 23 09:07:05 UTC 2018 - knut.anderssen@suse.com
 
 - Backported the replacement of idnconv with simpleidn library
