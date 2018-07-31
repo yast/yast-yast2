@@ -36,6 +36,10 @@ module CWM
       @service_widget.content
     end
 
+    def refresh
+      @service_widget.refresh
+    end
+
     def handle(event)
       log.info "handling event #{event.inspect}"
       return unless event
