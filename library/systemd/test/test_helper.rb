@@ -6,6 +6,21 @@ Yast.import "SystemdSocket"
 Yast.import "SystemdService"
 Yast.import "SystemdTarget"
 
+# Find a Term in given content
+#
+# @param content [Yast::Term] the content in which perform the search
+# @param type [Symbol] wanted Term type
+# @param id [Symbol] wanted Term id
+#
+# @return [Yast::Term, nil] a Term when found; nil otherwise
+def find_term(content, type, id)
+  content.nested_find do |term|
+    next unless term.is_a?(Yast::Term) && term.value == type
+
+    term.params.select { |i| i.is_a?(Yast::Term) && i.params == [id] }
+  end
+end
+
 module SystemctlStubs
   def stub_systemctl(unit)
     case unit
