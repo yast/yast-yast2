@@ -89,6 +89,12 @@ module Yast2
       )
     end
 
+    def refresh
+      Yast::UI.ChangeWidget(Id(:service_widget_status), :Value, status)
+      Yast::UI.ChangeWidget(Id(:service_widget_action), :Items, action_items)
+      Yast::UI.ChangeWidget(Id(:service_widget_autostart), :Items, autostart_items)
+    end
+
     # handles event to dynamically react on user configuration.
     # For events that does not happen inside widget it is ignored.
     # @param event_id [Object] id of UI element that cause event

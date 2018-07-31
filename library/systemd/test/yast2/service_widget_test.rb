@@ -70,6 +70,30 @@ describe Yast2::ServiceWidget do
     end
   end
 
+  describe "#refresh" do
+    before do
+      allow(Yast::UI).to receive(:ChangeWidget).with(any_args)
+    end
+
+    it "updates the status" do
+      expect(Yast::UI).to receive(:ChangeWidget).with(Id(:service_widget_status), :Value, anything)
+
+      subject.refresh
+    end
+
+    it "updates available actions" do
+      expect(Yast::UI).to receive(:ChangeWidget).with(Id(:service_widget_action), :Items, anything)
+
+      subject.refresh
+    end
+
+    it "updates available options for start mode" do
+      expect(Yast::UI).to receive(:ChangeWidget).with(Id(:service_widget_autostart), :Items, anything)
+
+      subject.refresh
+    end
+  end
+
   describe "#store" do
     before do
       allow(Yast::UI).to receive(:QueryWidget)
