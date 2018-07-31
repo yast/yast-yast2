@@ -50,6 +50,24 @@ describe Yast2::ServiceWidget do
     it "returns Term" do
       expect(subject.content).to be_a(Yast::Term)
     end
+
+    it "includes status label" do
+      status_label = find_term(subject.content, :Label, :service_widget_status)
+
+      expect(status_label).to_not be_nil
+    end
+
+    it "includes action selector" do
+      action_selector = find_term(subject.content, :ComboBox, :service_widget_action)
+
+      expect(action_selector).to_not be_nil
+    end
+
+    it "includes start mode selector" do
+      autostart_selector = find_term(subject.content, :ComboBox, :service_widget_autostart)
+
+      expect(autostart_selector).to_not be_nil
+    end
   end
 
   describe "#store" do
