@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 31 14:10:06 UTC 2018 - lslezak@suse.cz
+
+- Do not display "download failed" error when using unsigned
+  packages (bsc#1096027)
+- 4.0.81
+
+-------------------------------------------------------------------
 Wed Jul 25 08:13:31 UTC 2018 - jlopez@suse.com
 
 - Services: add class to manage systemd services with associated
