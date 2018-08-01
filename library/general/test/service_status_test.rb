@@ -45,7 +45,7 @@ class DummyService
     @name == "active"
   end
 
-  def running?
+  def active?
     @name == "active"
   end
 

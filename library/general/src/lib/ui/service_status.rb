@@ -34,17 +34,15 @@ module UI
     include Yast::I18n
     include Yast::Logger
 
-    # @param service [Object] An object providing the following methods:
-    #   #name, #start, #stop, #enabled?, #running?
-    #   For systemd compliant services, just do
-    #   Yast::SystemdService.find("name_of_the_service")
+    # @param service [Yast::SystemdServiceClass::Service] systemd service. Usually the easiest way
+    #   is just calling `Yast::SystemdService.find("name_of_the_service")`
     #   Note that this widget will #start and #stop the service by itself but
     #   the actions referenced by the flags (reloading and enabling/disabling)
     #   are expected to be done by the caller, when the whole configuration is
     #   written.
     # @param reload_flag [Boolean] Initial value for the "reload" checkbox.
     #   Keep in mind it will always be displayed as unchecked if the service
-    #   is not running, despite the real value.
+    #   is not active, despite the real value.
     # @param reload_flag_label [Symbol] Type of label for the "reload" checkbox.
     #   :reload means the service will be reloaded.
     #   :restart means the service will be restarted.
@@ -104,8 +102,8 @@ module UI
     # Updates the widget to reflect the current status of the service and the
     # settings
     def refresh
-      Yast::UI.ChangeWidget(Id("#{id_prefix}_reload"), :Enabled, @service.running?)
-      Yast::UI.ChangeWidget(Id("#{id_prefix}_reload"), :Value, @service.running? && @reload_flag)
+      Yast::UI.ChangeWidget(Id("#{id_prefix}_reload"), :Enabled, @service.active?)
+      Yast::UI.ChangeWidget(Id("#{id_prefix}_reload"), :Value, @service.active? && @reload_flag)
       Yast::UI.ChangeWidget(Id("#{id_prefix}_enabled"), :Value, @enabled_flag)
       Yast::UI.ReplaceWidget(Id("#{id_prefix}_status"), status_widget)
     end
@@ -126,6 +124,7 @@ module UI
 
     # Content for the help
     def help
+      # TRANSLATORS: do not modify %{reload_label}
       _(
         "<p><b><big>Current status</big></b><br>\n"\
         "Displays the current status of the service. The status will remain "\
@@ -174,19 +173,20 @@ module UI
     # Widget to configure reloading of the running service
     def reload_widget
       opts = [:notify]
-      opts << :disabled unless @service.running?
+      opts << :disabled unless @service.active?
       Left(
         CheckBox(
           Id("#{id_prefix}_reload"),
           Opt(*opts),
           @reload_label,
-          @service.running? && @reload_flag
+          @service.active? && @reload_flag
         )
       )
     end
 
     def label_and_action_widgets
-      if @service.running?
+      # use active and not running. See https://bugzilla.suse.com/show_bug.cgi?id=1080738#c3
+      if @service.active?
         [
           # TRANSLATORS: status of a service
           Label(_("running")),
