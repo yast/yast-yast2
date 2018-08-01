@@ -191,15 +191,6 @@ module Yast
       ret.nil? ? "" : ret
     end
 
-    # Return a device type
-    # @param [String] dev device
-    # @return device type
-    # @example device_type("eth1") -> "eth"
-    # @example device_type("eth-pcmcia-0") -> "eth"
-    def device_type(dev)
-      ifcfg_part(dev, "1")
-    end
-
     # Detects a subtype of Ethernet device type according /sys or /proc content
     #
     # @example
@@ -342,7 +333,9 @@ module Yast
 
       type = GetTypeFromIfcfg(ifcfg) if IsEmpty(type)
 
-      type = device_type(dev) if type.nil?
+      # last instance - no record in sysfs, no configuration, device
+      # name is not bounded to a type -> use fallbac "eth" as wicked already does
+      type = "eth" if type.nil?
 
       log.debug("GetTypeFromIfcfgOrName: device='#{dev}' type='#{type}'")
 
