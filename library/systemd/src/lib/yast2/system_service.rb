@@ -261,11 +261,7 @@ module Yast2
         raise ArgumentError, "Invalid start mode: '#{mode}' for service '#{service.name}'"
       end
 
-      if mode == current_start_mode
-        unregister_change(:start_mode)
-      else
-        register_change(:start_mode, mode)
-      end
+      register_change(:start_mode, mode)
     end
 
     # Whether the service supports :on_demand start mode
@@ -416,16 +412,12 @@ module Yast2
     #
     # @param value [Boolean] true to set this service as active
     def active=(value)
-      if value == currently_active?
-        unregister_change(:active)
-      else
-        register_change(:active, value)
-      end
+      register_change(:active, value)
     end
 
     # Sets start mode to the underlying system
     def save_start_mode
-      return unless changes[:start_mode]
+      return if changes[:start_mode].nil? || changes[:start_mode] == current_start_mode
 
       result =
         case changes[:start_mode]
@@ -548,13 +540,6 @@ module Yast2
       return false unless socket
 
       socket.active?
-    end
-
-    # Unregisters change for a given key
-    #
-    # @param key [Symbol] Change key
-    def unregister_change(key)
-      changes.delete(key)
     end
 
     # Registers change for a given key
