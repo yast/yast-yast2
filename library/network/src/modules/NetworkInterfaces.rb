@@ -185,12 +185,6 @@ module Yast
       value.nil? ? true : value.empty?
     end
 
-    def ifcfg_part(ifcfg, part)
-      return "" if Builtins.regexpmatch(ifcfg, @ifcfg_name_regex) != true
-      ret = Builtins.regexpsub(ifcfg, @ifcfg_name_regex, "\\#{part}")
-      ret.nil? ? "" : ret
-    end
-
     # Detects a subtype of Ethernet device type according /sys or /proc content
     #
     # @example
