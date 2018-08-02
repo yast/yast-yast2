@@ -582,7 +582,6 @@ module Yast2
 
     # Determines whether some value has been changed
     #
-    # @param key [Symbol] Changed value
     # @return [Boolean] true if it has changed; false otherwise.
     def any_change?
       CURRENT_VALUE_METHODS.keys.any? { |k| changed_value?(k) }
