@@ -54,7 +54,7 @@ module Yast
       before do
         allow(Yast::Systemctl).to receive(:execute).with(
           "show  --property=Id,MainPID,Description,LoadState,ActiveState,SubState,UnitFileState," \
-          "FragmentPath,TriggeredBy apparmor.service cups.service"
+          "FragmentPath,CanReload,TriggeredBy apparmor.service cups.service"
         ).and_return(systemctl_show)
         allow(SystemdService).to receive(:find).with("apparmor", {}).and_return(apparmor_double)
         allow(SystemdService).to receive(:find).with("cups", {}).and_return(cups_double)
