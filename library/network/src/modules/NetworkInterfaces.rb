@@ -405,15 +405,6 @@ module Yast
       ifcfg_part(dev, "2")
     end
 
-    # Return a device alias number
-    # @param [String] dev device
-    # @return alias number
-    # @example alias_num("eth1#2") -> "2"
-    # @example alias_num("eth1#blah") -> "blah"
-    def alias_num(dev)
-      ifcfg_part(dev, "3")
-    end
-
     # Create a device name from its type and number
     # @param [String] typ device type
     # @param [String] num device number
@@ -828,26 +819,10 @@ module Yast
       # remove deleted devices
       log.info("Deleted=#{@Deleted}")
       Builtins.foreach(@Deleted) do |d|
-        anum = alias_num(d)
-        if anum == ""
-          # delete config file
-          p = Builtins.add(path(".network.section"), d)
-          log.debug("deleting: #{p}")
-          SCR.Write(p, nil)
-        else
-          dev = device_name_from_alias(d)
-          typ = GetType(dev)
-          base = Builtins.add(path(".network.value"), dev)
-          # look in OriginalDevs because we need to catch all variables
-          # of the alias
-
-          dev_aliases = original_devs.fetch(typ, {}).fetch(dev, {}).fetch("_aliases", {})
-          dev_aliases.fetch(anum, {}).keys.each do |key|
-            p = base + "#{key}_#{anum}"
-            log.debug("deleting: #{p}")
-            SCR.Write(p, nil)
-          end
-        end
+        # delete config file
+        p = Builtins.add(path(".network.section"), d)
+        log.debug("deleting: #{p}")
+        SCR.Write(p, nil)
       end
       @Deleted = []
 
@@ -1361,7 +1336,6 @@ module Yast
       Builtins.y2debug("Check(%1)", dev)
       typ = GetType(dev)
       #    string num = device_num(dev);
-      #    string anum = alias_num(dev);
       return false if !Builtins.haskey(@Devices, typ)
 
       devsmap = Ops.get(@Devices, typ, {})
@@ -1387,17 +1361,6 @@ module Yast
       @Name = name
       t = GetType(@Name)
       @Current = Ops.get(@Devices, [t, @Name], {})
-      a = alias_num(@Name)
-      if !a.nil? && a != ""
-        @Current = Ops.get_map(@Current, ["_aliases", a], {})
-      end
-
-      if @Current == {}
-        # Default device map
-        @Current =
-          # FIXME: remaining items
-          {}
-      end
 
       Builtins.y2debug("Name=%1", @Name)
       Builtins.y2debug("Current=%1", @Current)
@@ -1459,19 +1422,13 @@ module Yast
 
         t = int_type if Ops.greater_than(Builtins.size(int_type), 0)
       end
-      a = alias_num(name)
       Builtins.y2debug("ChangeDevice(%1)", name)
 
       devsmap = Ops.get(@Devices, t, {})
       devmap = Ops.get(devsmap, name, {})
       amap = Ops.get_map(devmap, "_aliases", {})
 
-      if a != ""
-        Ops.set(amap, a, newdev)
-        Ops.set(devmap, "_aliases", amap)
-      else
-        devmap = deep_copy(newdev)
-      end
+      devmap = deep_copy(newdev)
 
       Ops.set(devsmap, name, devmap)
       Ops.set(@Devices, t, devsmap)
@@ -1487,16 +1444,9 @@ module Yast
       end
 
       t = GetType(name)
-      a = alias_num(name)
       devsmap = Ops.get(@Devices, t, {})
 
-      if a != ""
-        amap = Ops.get_map(devsmap, [name, "_aliases"], {})
-        amap = Builtins.remove(amap, a)
-        Ops.set(devsmap, [name, "_aliases"], amap)
-      else
-        devsmap = Builtins.remove(devsmap, name)
-      end
+      devsmap = Builtins.remove(devsmap, name)
 
       Ops.set(@Devices, t, devsmap)
 
@@ -1747,7 +1697,6 @@ module Yast
     publish function: :GetType, type: "string (string)"
     publish function: :GetDeviceTypeName, type: "string (string)"
     publish function: :device_num, type: "string (string)"
-    publish function: :alias_num, type: "string (string)"
     publish function: :IsHotplug, type: "boolean (string)"
     publish function: :IsConnected, type: "boolean (string)"
     publish function: :RealType, type: "string (string, string)"
