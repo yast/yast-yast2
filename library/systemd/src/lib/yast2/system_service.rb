@@ -278,8 +278,8 @@ module Yast2
     #
     # @return [Boolean] true if the service must be active; false otherwise
     def active?
-      return new_value_for(:active) if changed?(:active)
-      currently_active?
+      new_value = new_value_for(:active)
+      new_value.nil? ? currently_active? : new_value
     end
 
     # Keywords to search for this service
@@ -391,7 +391,7 @@ module Yast2
     #
     # @return [Boolean]
     def changed?(key = nil)
-      key ? changes.key?(key) : changes.any?
+      key ? changed_value?(key) : any_change?
     end
 
   private
@@ -560,8 +560,31 @@ module Yast2
     # @param key [Symbol] Change key
     # @return [Object] New value
     def new_value_for(key)
-      return nil unless changed?(key)
       changes[key]
+    end
+
+    # Correspondence between changed values and methods to calculate their current value
+    CURRENT_VALUE_METHODS = {
+      active: :currently_active?,
+      start_mode: :current_start_mode
+    }.freeze
+
+    # Determines whether a value has been changed
+    #
+    # @param key [Symbol] Changed value
+    # @return [Boolean] true if it has changed; false otherwise.
+    def changed_value?(key)
+      new_value = new_value_for(key)
+      return false if new_value.nil?
+      new_value != send(CURRENT_VALUE_METHODS[key])
+    end
+
+    # Determines whether some value has been changed
+    #
+    # @param key [Symbol] Changed value
+    # @return [Boolean] true if it has changed; false otherwise.
+    def any_change?
+      CURRENT_VALUE_METHODS.keys.any? { |k| changed_value?(k) }
     end
   end
 end
