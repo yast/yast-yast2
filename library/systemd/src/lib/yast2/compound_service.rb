@@ -61,9 +61,9 @@ module Yast2
     #   - `true` when all services are active
     #   - `false` when all services are inactive
     #   - `:inconsistent` when part of services is active and part not.
-    def current_active?
-      return true if services.all?(&:current_active?)
-      return false if services.none?(&:current_active?)
+    def currently_active?
+      return true if services.all?(&:currently_active?)
+      return false if services.none?(&:currently_active?)
       :inconsistent
     end
 
