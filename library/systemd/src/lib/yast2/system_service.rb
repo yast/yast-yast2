@@ -203,7 +203,8 @@ module Yast2
     #
     # @return [Symbol] :on_boot, :on_demand, :manual
     def current_start_mode
-      @current_start_mode ||=
+      return @current_start_mode unless @current_start_mode.nil?
+      @current_start_mode =
         if service.enabled?
           :on_boot
         elsif socket && socket.enabled?
