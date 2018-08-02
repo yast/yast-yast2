@@ -145,7 +145,7 @@ module Yast2
       # @param name [String] Service name
       # @return [SystemService] System service based on the given name
       #
-      # @see Yast::SystemdServiceClass.build
+      # @see Yast::SystemdServiceClass#build
       def build(name)
         new(Yast::SystemdService.build(name))
       end
@@ -418,7 +418,7 @@ module Yast2
 
     # Sets start mode to the underlying system
     def save_start_mode
-      return if changes[:start_mode].nil? || changes[:start_mode] == current_start_mode
+      return unless changed?(:start_mode)
 
       result =
         case changes[:start_mode]

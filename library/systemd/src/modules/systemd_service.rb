@@ -143,7 +143,7 @@ module Yast
     #
     # @param service_name [String] "foo" or "foo.service"
     # @param propmap [SystemdUnit::PropMap]
-    # @return [Service] `nil` if not found
+    # @return [Service] System service with the given name
     def build(service_name, propmap = {})
       service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
       propmap = SERVICE_PROPMAP.merge(propmap)

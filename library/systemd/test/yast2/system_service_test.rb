@@ -105,7 +105,7 @@ describe Yast2::SystemService do
   describe ".build" do
     let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
 
-    it "returns a systemd service even if it does not exist" do
+    it "returns a systemd service with the given name" do
       expect(Yast::SystemdService).to receive(:build).with("other")
         .and_return(systemd_service)
       system_service = described_class.build("other")
