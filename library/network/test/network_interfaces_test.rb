@@ -197,17 +197,6 @@ describe Yast::NetworkInterfaces do
     end
   end
 
-  describe "#GetFreeDevices" do
-    it "returns an array with available device numbers" do
-      subject.instance_variable_set(:@Devices, "eth" => { "0" => {} })
-      expect(subject.GetFreeDevices("eth", 2)).to eql(["1", "2"])
-      subject.instance_variable_set(:@Devices, "eth" => { "1" => {} })
-      expect(subject.GetFreeDevices("eth", 2)).to eql(["0", "2"])
-      subject.instance_variable_set(:@Devices, "eth" => { "2" => {} })
-      expect(subject.GetFreeDevices("eth", 2)).to eql(["0", "1"])
-    end
-  end
-
   describe "#Locate" do
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
 
