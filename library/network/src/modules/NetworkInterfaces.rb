@@ -393,18 +393,6 @@ module Yast
       end
     end
 
-    # Return a device number
-    # @param [String] dev device
-    # @return device number
-    # @example device_num("eth1") -> "1"
-    # @example device_num("lo") -> ""
-    #
-    # Obsolete: It is incompatible with new device naming scheme.
-    def device_num(dev)
-      log.warn("Do not use device_num.")
-      ifcfg_part(dev, "2")
-    end
-
     # Create a device name from its type and number
     # @param [String] typ device type
     # @param [String] num device number
@@ -1280,40 +1268,6 @@ module Yast
       devs == original_devs
     end
 
-    # It returns an array of <num> elements corresponding to the integer
-    # part of the free device names available for the given device type.
-    #
-    # @example GetFreeDevices("eth", 2) -> [1, 2]
-    #
-    # @param [String] type device type
-    # @param [String] num number of free devices to return
-    # @return [Array] of free devices for given type
-    def GetFreeDevices(type, num)
-      log.debug("Devices=#{@Devices}")
-      log.debug("type,num=#{type},#{num}")
-      log.debug("Devices[#{type}]=#{@Devices[type]}")
-
-      curdevs = @Devices.fetch(type, {}).keys
-      curdevs.map! { |d| d.include?(type) ? device_num(d) : d }
-
-      i = 0
-      count = 0
-      ret = []
-
-      # Remaining numbered devices
-      while count < num
-        if !curdevs.include?(i.to_s)
-          ret << i.to_s
-          count += 1
-        end
-        i += 1
-      end
-
-      log.debug("Free devices=#{ret}")
-
-      ret
-    end
-
     # Return free device
     # @param [String] type device type
     # @return free device
@@ -1335,7 +1289,6 @@ module Yast
     def Check(dev)
       Builtins.y2debug("Check(%1)", dev)
       typ = GetType(dev)
-      #    string num = device_num(dev);
       return false if !Builtins.haskey(@Devices, typ)
 
       devsmap = Ops.get(@Devices, typ, {})
@@ -1696,7 +1649,6 @@ module Yast
     publish function: :GetTypeFromIfcfg, type: "string (map <string, any>)"
     publish function: :GetType, type: "string (string)"
     publish function: :GetDeviceTypeName, type: "string (string)"
-    publish function: :device_num, type: "string (string)"
     publish function: :IsHotplug, type: "boolean (string)"
     publish function: :IsConnected, type: "boolean (string)"
     publish function: :RealType, type: "string (string, string)"
