@@ -140,7 +140,7 @@ module Yast2
     end
 
     def status
-      case service.current_active?
+      case service.currently_active?
       # TRANSLATORS: Status of service
       when true
         _("Active")
@@ -151,7 +151,7 @@ module Yast2
         # TRANSLATORS: Status of service
         _("Partly Active")
       else
-        raise "Unknown status #{service.current_active?.inspect}"
+        raise "Unknown status #{service.currently_active?.inspect}"
       end
     end
 
@@ -166,10 +166,10 @@ module Yast2
     def action_items
       current_action = service.action
       res = []
-      res << Item(Id(:service_widget_action_start), _("Start"), current_action == :start) if service.current_active? != true
-      res << Item(Id(:service_widget_action_stop), _("Stop"), current_action == :stop) if service.current_active? != false
-      res << Item(Id(:service_widget_action_restart), _("Restart"), current_action == :restart) if service.current_active? != false
-      res << Item(Id(:service_widget_action_restart), _("Reload"), current_action == :reload) if service.current_active? != false && service.support_reload?
+      res << Item(Id(:service_widget_action_start), _("Start"), current_action == :start) if service.currently_active? != true
+      res << Item(Id(:service_widget_action_stop), _("Stop"), current_action == :stop) if service.currently_active? != false
+      res << Item(Id(:service_widget_action_restart), _("Restart"), current_action == :restart) if service.currently_active? != false
+      res << Item(Id(:service_widget_action_restart), _("Reload"), current_action == :reload) if service.currently_active? != false && service.support_reload?
       res << Item(Id(:service_widget_action_nothing), _("Keep current state"), current_action.nil?)
 
       res
