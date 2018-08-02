@@ -566,7 +566,7 @@ module Yast2
 
     # Correspondence between changed values and methods to calculate their current value
     CURRENT_VALUE_METHODS = {
-      active: :currently_active?,
+      active:     :currently_active?,
       start_mode: :current_start_mode
     }.freeze
 
