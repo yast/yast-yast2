@@ -1064,6 +1064,16 @@ describe Yast2::SystemService do
         expect(system_service.changed?).to eq(true)
       end
 
+      context "when the change would not modify the underlying service" do
+        before do
+          allow(system_service).to receive(:currently_active?).and_return(false)
+        end
+
+        it "returns false" do
+          expect(system_service.changed?).to eq(false)
+        end
+      end
+
       context "and ask for that specific change" do
         it "returns true" do
           expect(system_service.changed?(:active)).to eq(true)
