@@ -140,6 +140,16 @@ module Yast2
         system_service
       end
 
+      # Builds a service instance based on the given name
+      #
+      # @param name [String] Service name
+      # @return [SystemService] System service based on the given name
+      #
+      # @see Yast::SystemdServiceClass#build
+      def build(name)
+        new(Yast::SystemdService.build(name))
+      end
+
       # Finds a set of services by their names
       #
       # @param names [Array<String>] service names to find
@@ -193,7 +203,8 @@ module Yast2
     #
     # @return [Symbol] :on_boot, :on_demand, :manual
     def current_start_mode
-      @current_start_mode ||=
+      return @current_start_mode unless @current_start_mode.nil?
+      @current_start_mode =
         if service.enabled?
           :on_boot
         elsif socket && socket.enabled?
@@ -251,11 +262,7 @@ module Yast2
         raise ArgumentError, "Invalid start mode: '#{mode}' for service '#{service.name}'"
       end
 
-      if mode == current_start_mode
-        unregister_change(:start_mode)
-      else
-        register_change(:start_mode, mode)
-      end
+      register_change(:start_mode, mode)
     end
 
     # Whether the service supports :on_demand start mode
@@ -272,8 +279,8 @@ module Yast2
     #
     # @return [Boolean] true if the service must be active; false otherwise
     def active?
-      return new_value_for(:active) if changed?(:active)
-      currently_active?
+      new_value = new_value_for(:active)
+      new_value.nil? ? currently_active? : new_value
     end
 
     # Keywords to search for this service
@@ -385,7 +392,7 @@ module Yast2
     #
     # @return [Boolean]
     def changed?(key = nil)
-      key ? changes.key?(key) : changes.any?
+      key ? changed_value?(key) : any_change?
     end
 
   private
@@ -406,16 +413,12 @@ module Yast2
     #
     # @param value [Boolean] true to set this service as active
     def active=(value)
-      if value == currently_active?
-        unregister_change(:active)
-      else
-        register_change(:active, value)
-      end
+      register_change(:active, value)
     end
 
     # Sets start mode to the underlying system
     def save_start_mode
-      return unless changes[:start_mode]
+      return unless changed?(:start_mode)
 
       result =
         case changes[:start_mode]
@@ -540,13 +543,6 @@ module Yast2
       socket.active?
     end
 
-    # Unregisters change for a given key
-    #
-    # @param key [Symbol] Change key
-    def unregister_change(key)
-      changes.delete(key)
-    end
-
     # Registers change for a given key
     #
     # @param key [Symbol] Change key
@@ -565,8 +561,30 @@ module Yast2
     # @param key [Symbol] Change key
     # @return [Object] New value
     def new_value_for(key)
-      return nil unless changed?(key)
       changes[key]
+    end
+
+    # Correspondence between changed values and methods to calculate their current value
+    CURRENT_VALUE_METHODS = {
+      active:     :currently_active?,
+      start_mode: :current_start_mode
+    }.freeze
+
+    # Determines whether a value has been changed
+    #
+    # @param key [Symbol] Changed value
+    # @return [Boolean] true if it has changed; false otherwise.
+    def changed_value?(key)
+      new_value = new_value_for(key)
+      return false if new_value.nil?
+      new_value != send(CURRENT_VALUE_METHODS[key])
+    end
+
+    # Determines whether some value has been changed
+    #
+    # @return [Boolean] true if it has changed; false otherwise.
+    def any_change?
+      CURRENT_VALUE_METHODS.keys.any? { |k| changed_value?(k) }
     end
   end
 end
