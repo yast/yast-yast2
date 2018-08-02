@@ -1371,10 +1371,6 @@ module Yast
       end
       Builtins.y2debug("ChangeDevice(%1)", name)
 
-      devsmap = Ops.get(@Devices, t, {})
-      devmap = Ops.get(devsmap, name, {})
-      amap = Ops.get_map(devmap, "_aliases", {})
-
       devmap = deep_copy(newdev)
 
       Ops.set(devsmap, name, devmap)
