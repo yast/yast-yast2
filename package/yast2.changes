@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug  1 10:48:04 UTC 2018 - igonzalezsosa@suse.com
+
+- Fix support to handle services during early 1st stage
+  (related to fate#319428).
+- 4.0.82
+
+-------------------------------------------------------------------
 Tue Jul 31 14:10:06 UTC 2018 - lslezak@suse.cz
 
 - Do not display "download failed" error when using unsigned

@@ -78,9 +78,7 @@ module Yast
     # @param propmap [SystemdUnit::PropMap]
     # @return [Service,nil] `nil` if not found
     def find(service_name, propmap = {})
-      service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
-      propmap = SERVICE_PROPMAP.merge(propmap)
-      service = Service.new(service_name, propmap)
+      service = build(service_name, propmap)
       return nil if service.properties.not_found?
       service
     end
@@ -136,6 +134,20 @@ module Yast
       Systemctl.service_units.map do |service_unit|
         Service.new(service_unit, propmap)
       end
+    end
+
+    # Instantiate a SystemdService object based on the given name
+    #
+    # Use with caution as the service might exist or not. If you need to react when
+    # the service does not exist, use SystemdServiceClass.find.
+    #
+    # @param service_name [String] "foo" or "foo.service"
+    # @param propmap [SystemdUnit::PropMap]
+    # @return [Service] System service with the given name
+    def build(service_name, propmap = {})
+      service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
+      propmap = SERVICE_PROPMAP.merge(propmap)
+      Service.new(service_name, propmap)
     end
 
     class Service < SystemdUnit
