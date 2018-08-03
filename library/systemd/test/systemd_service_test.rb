@@ -22,10 +22,37 @@ module Yast
         end
       end
 
-      it "returns nil if the service unit does not exist" do
+      context "when the service does not exist" do
+        before do
+          properties = OpenStruct.new(
+            stdout: "", stderr: "Unit unknown.service could not be found.", exit: 1
+          )
+          allow_any_instance_of(Yast::SystemdUnit::Properties)
+            .to receive(:load_systemd_properties)
+            .and_return(properties)
+        end
+
+        it "returns nil" do
+          service = SystemdService.find("another")
+          expect(service).to be_nil
+        end
+      end
+    end
+
+    describe ".build" do
+      it "returns the service unit object specified in parameter" do
+        ["sshd", "sshd.service"].each do |service_name|
+          service = SystemdService.build(service_name)
+          expect(service).to be_a(SystemdUnit)
+          expect(service.unit_type).to eq("service")
+          expect(service.unit_name).to eq("sshd")
+        end
+      end
+
+      it "returns a service instance even if the real service does not exist" do
         stub_services(service: "unknown")
-        service = SystemdService.find("unknown")
-        expect(service).to be_nil
+        service = SystemdService.build("unknown")
+        expect(service.name).to eq("unknown")
       end
     end
 
