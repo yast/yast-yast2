@@ -89,10 +89,16 @@ module Yast2
       )
     end
 
+    # Updates the widget with current values of service
+    #
+    # Useful to update the information after certain actions like "Apply changes"
+    #
+    # @return [nil]
     def refresh
       Yast::UI.ChangeWidget(Id(:service_widget_status), :Value, status)
       Yast::UI.ChangeWidget(Id(:service_widget_action), :Items, action_items)
       Yast::UI.ChangeWidget(Id(:service_widget_autostart), :Items, autostart_items)
+      nil
     end
 
     # handles event to dynamically react on user configuration.
