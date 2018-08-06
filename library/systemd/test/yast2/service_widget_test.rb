@@ -28,7 +28,7 @@ describe Yast2::ServiceWidget do
   let(:service) do
     double(
       "Yast2::SystemService",
-      currently_active?:    true,
+      currently_active?:  true,
       start_mode:         :on_boot,
       current_start_mode: :on_boot
     ).as_null_object
