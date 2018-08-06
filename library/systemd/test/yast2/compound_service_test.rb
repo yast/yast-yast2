@@ -72,28 +72,28 @@ describe Yast2::CompoundService do
     end
   end
 
-  describe "#current_active?" do
+  describe "#currently_active?" do
     context "all services are active" do
-      subject { described_class.new(service(current_active?: true), service(current_active?: true)) }
+      subject { described_class.new(service(currently_active?: true), service(currently_active?: true)) }
 
       it "returns true" do
-        expect(subject.current_active?).to eq true
+        expect(subject.currently_active?).to eq true
       end
     end
 
     context "all services are inactive" do
-      subject { described_class.new(service(current_active?: false), service(current_active?: false)) }
+      subject { described_class.new(service(currently_active?: false), service(currently_active?: false)) }
 
       it "returns false" do
-        expect(subject.current_active?).to eq false
+        expect(subject.currently_active?).to eq false
       end
     end
 
     context "some services are active and some inactive" do
-      subject { described_class.new(service(current_active?: false), service(current_active?: true)) }
+      subject { described_class.new(service(currently_active?: false), service(currently_active?: true)) }
 
       it "returns :inconsistent" do
-        expect(subject.current_active?).to eq :inconsistent
+        expect(subject.currently_active?).to eq :inconsistent
       end
     end
   end
