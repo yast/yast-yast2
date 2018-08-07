@@ -28,14 +28,16 @@ describe Yast2::SystemService do
 
   let(:service) do
     instance_double(Yast::SystemdServiceClass::Service,
-      name:     "cups",
-      enabled?: service_enabled,
-      active?:  service_active,
-      refresh!: true)
+      name:       "cups",
+      enabled?:   service_enabled,
+      active?:    service_active,
+      not_found?: !service_found,
+      refresh!:   true)
   end
 
   let(:service_enabled) { true }
   let(:service_active) { true }
+  let(:service_found) { true }
 
   let(:service_socket) do
     instance_double(Yast::SystemdSocketClass::Socket,
@@ -309,6 +311,15 @@ describe Yast2::SystemService do
 
       it "returns :on_boot and :manual" do
         expect(system_service.start_modes).to contain_exactly(:on_boot, :manual)
+      end
+    end
+
+    context "when the service is not found" do
+      let(:socket) { nil }
+      let(:service_found) { false }
+
+      it "returns all available start modes" do
+        expect(system_service.start_modes).to contain_exactly(:on_boot, :manual, :on_demand)
       end
     end
   end
@@ -1090,6 +1101,24 @@ describe Yast2::SystemService do
     context "when no changes were made" do
       it "returns false" do
         expect(system_service.changed?).to eq(false)
+      end
+    end
+  end
+
+  describe "#found" do
+    context "when the service is found" do
+      let(:service_found) { true }
+
+      it "returns true" do
+        expect(system_service.found?).to eq(true)
+      end
+    end
+
+    context "when the service is not found" do
+      let(:service_found) { false }
+
+      it "returns false" do
+        expect(system_service.found?).to eq(false)
       end
     end
   end
