@@ -620,6 +620,17 @@ describe Yast2::SystemService do
 
           system_service.save
         end
+
+        context "but there is not associated socket (possible during 1st stage)" do
+          before do
+            allow(system_service).to receive(:socket).and_return(nil)
+          end
+
+          it "registers an error" do
+            system_service.save
+            expect(system_service.errors).to include(start_mode: :on_demand)
+          end
+        end
       end
 
       context "and the new start mode is :manual" do

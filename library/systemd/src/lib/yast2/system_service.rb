@@ -437,7 +437,7 @@ module Yast2
         when :on_boot
           service.enable && (socket ? socket.disable : true)
         when :on_demand
-          service.disable && (socket ? socket.enable : true)
+          service.disable && (socket ? socket.enable : false)
         when :manual
           service.disable && (socket ? socket.disable : true)
         end
