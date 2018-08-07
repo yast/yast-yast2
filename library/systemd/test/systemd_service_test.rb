@@ -179,20 +179,22 @@ module Yast
 
     describe "#socket" do
       subject(:service) { SystemdService.find(service_name) }
+      let(:service_name) { "sshd" }
 
-      before { stub_services(service: service_name) }
+      before do
+        allow(SystemdSocket).to receive(:find).with(service_name).and_return(socket)
+      end
 
-      context "when the service is triggered by a socket" do
-        let(:service_name) { "cups" }
+      context "when a socket named after the service exists" do
+        let(:socket) { instance_double(SystemdSocketClass::Socket) }
 
         it "returns the socket" do
-          expect(service.socket).to be_a(Yast::SystemdSocketClass::Socket)
-          expect(service.socket.unit_name).to eq("iscsid")
+          expect(service.socket).to eq(socket)
         end
       end
 
-      context "when the service is not triggered by a socket" do
-        let(:service_name) { "sshd" }
+      context "when no socket named after the service exists" do
+        let(:socket) { nil }
 
         it "returns nil" do
           expect(service.socket).to be_nil
@@ -201,12 +203,14 @@ module Yast
     end
 
     describe "#socket?" do
-      subject(:service) { SystemdService.find(service_name) }
+      subject(:service) { SystemdService.find("sshd") }
 
-      before { stub_services(service: service_name) }
+      before do
+        allow(service).to receive(:socket).and_return(socket)
+      end
 
       context "when there is an associated socket" do
-        let(:service_name) { "cups" }
+        let(:socket) { instance_double(SystemdSocketClass::Socket) }
 
         it "returns true" do
           expect(service.socket?).to eq(true)
@@ -214,7 +218,7 @@ module Yast
       end
 
       context "when there is no associated socket" do
-        let(:service_name) { "sshd" }
+        let(:socket) { nil }
 
         it "returns false" do
           expect(service.socket?).to eq(false)
