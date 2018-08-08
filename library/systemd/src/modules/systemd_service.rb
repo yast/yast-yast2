@@ -194,7 +194,7 @@ module Yast
       # 'Triggers' property of each socket would be a better way. However, it won't work
       # during installation as 'systemctl show' is not available.
       #
-      # @return [Yast::SystemdSocketClass::Socket]
+      # @return [Yast::SystemdSocketClass::Socket,nil]
       def socket
         @socket ||= Yast::SystemdSocket.find(name)
       end

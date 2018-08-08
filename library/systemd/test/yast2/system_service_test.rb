@@ -1116,7 +1116,7 @@ describe Yast2::SystemService do
     end
   end
 
-  describe "#found" do
+  describe "#found?" do
     context "when the service is found" do
       let(:service_found) { true }
 
