@@ -164,7 +164,7 @@ module Yast2
     def action_widget
       ComboBox(
         Id(:service_widget_action),
-        "After writting configuration:",
+        _("After writing configuration:"),
         action_items
       )
     end
@@ -184,7 +184,7 @@ module Yast2
     def autostart_widget
       ComboBox(
         Id(:service_widget_autostart),
-        "After reboot:",
+        _("After reboot:"),
         autostart_items
       )
     end
