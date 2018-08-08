@@ -50,5 +50,11 @@ module CWM
     def store
       @service_widget.store
     end
+
+    # The widget needs to be refreshed each time it is rendered. Otherwise, cached
+    # service values would not be selected (e.g., when switching in a DialogTree)
+    def init
+      refresh
+    end
   end
 end
