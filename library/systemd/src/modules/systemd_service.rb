@@ -190,19 +190,13 @@ module Yast
 
       # Returns socket associated with service or nil if there is no such socket
       #
-      # @return [Yast::SystemdSocketClass::Socket]
+      # @note The current implementation is too simplistic. At this point, checking the
+      # 'Triggers' property of each socket would be a better way. However, it won't work
+      # during installation as 'systemctl show' is not available.
+      #
+      # @return [Yast::SystemdSocketClass::Socket,nil]
       def socket
-        return @socket if @socket
-
-        # not triggered
-        socket_name = properties.triggered_by
-        return unless socket_name
-
-        # this may be a space separated list
-        socket_name = socket_name[/\S+\.socket/]
-        return unless socket_name # triggered by non-socket
-
-        @socket = Yast::SystemdSocket.find(socket_name)
+        @socket ||= Yast::SystemdSocket.find(name)
       end
 
       # Determines whether the service has an associated socket

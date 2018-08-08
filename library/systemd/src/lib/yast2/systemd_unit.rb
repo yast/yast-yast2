@@ -81,7 +81,8 @@ module Yast
       :loaded?,
       :active_state,
       :sub_state,
-      :can_reload?
+      :can_reload?,
+      :not_found?
     ].freeze
 
     private_constant :FORWARDED_METHODS

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Aug  8 10:09:55 UTC 2018 - igonzalezsosa@suse.com
+
+- Add a method to detect whether a systemd service exists in
+  the underlying system or not (related to fate#319428).
+- Fix systemd socket detection.
+- 4.0.83
+
+-------------------------------------------------------------------
 Wed Aug  1 10:48:04 UTC 2018 - igonzalezsosa@suse.com
 
 - Fix support to handle services during early 1st stage
@@ -18,12 +26,6 @@ Wed Jul 25 08:13:31 UTC 2018 - jlopez@suse.com
 - Services: add class to manage systemd services with associated
   socket (needed for bsc#1080738 and fate#319428).
 - 4.0.80
-
--------------------------------------------------------------------
-Mon Jul 16 09:12:23 UTC 2018 - knut.anderssen@suse.com
-
-- Replace the deprecated firewallctl command with firewall-cmd for
-  obtaining the firewalld state (bsc#1093111)
 
 -------------------------------------------------------------------
 Tue Jul  3 08:01:07 UTC 2018 - knut.anderssen@suse.com
@@ -56,6 +58,12 @@ Wed May 23 15:25:04 CEST 2018 - schubi@suse.de
 - Calling YAST module: Do not create a post Snapper image if the
   pre Snapper image has already been failed (bnc#1093374)
 - 4.0.75
+
+-------------------------------------------------------------------
+Tue May 15 09:12:23 UTC 2018 - knut.anderssen@suse.com
+
+- Replace the deprecated firewallctl command with firewall-cmd for
+  obtaining the firewalld state (bsc#1093111)
 
 -------------------------------------------------------------------
 Mon May 14 09:00:43 UTC 2018 - lslezak@suse.cz
