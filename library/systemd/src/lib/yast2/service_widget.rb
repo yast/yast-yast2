@@ -175,7 +175,7 @@ module Yast2
       res << Item(Id(:service_widget_action_start), _("Start"), current_action == :start) if service.currently_active? != true
       res << Item(Id(:service_widget_action_stop), _("Stop"), current_action == :stop) if service.currently_active? != false
       res << Item(Id(:service_widget_action_restart), _("Restart"), current_action == :restart) if service.currently_active? != false
-      res << Item(Id(:service_widget_action_restart), _("Reload"), current_action == :reload) if service.currently_active? != false && service.support_reload?
+      res << Item(Id(:service_widget_action_reload), _("Reload"), current_action == :reload) if service.currently_active? != false && service.support_reload?
       res << Item(Id(:service_widget_action_nothing), _("Keep current state"), current_action.nil?)
 
       res
