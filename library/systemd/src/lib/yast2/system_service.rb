@@ -173,6 +173,13 @@ module Yast2
       @errors = {}
     end
 
+    # Determines whether the service exists in the underlying system
+    #
+    # @return [Boolean] true if it exists; false otherwise.
+    def found?
+      !service.not_found?
+    end
+
     # State of the service
     #
     # In case the service is not active but socket is, the socket state is considered
@@ -228,8 +235,13 @@ module Yast2
     # * :on_demand: The service will be started on demand.
     # * :manual:    The service is disabled and it will be started manually.
     #
+    # @note When the service does not exist in the underlying system (for instance,
+    # during 1st stage) all possible start modes are returned, as there is no way
+    # to find out which of them are supported.
+    #
     # @return [Array<Symbol>] List of supported modes.
     def start_modes
+      @start_modes = [:on_boot, :manual, :on_demand] unless found?
       return @start_modes if @start_modes
       @start_modes = [:on_boot, :manual]
       @start_modes << :on_demand if socket
@@ -425,7 +437,7 @@ module Yast2
         when :on_boot
           service.enable && (socket ? socket.disable : true)
         when :on_demand
-          service.disable && (socket ? socket.enable : true)
+          service.disable && (socket ? socket.enable : false)
         when :manual
           service.disable && (socket ? socket.disable : true)
         end
