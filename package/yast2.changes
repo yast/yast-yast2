@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug  8 15:14:29 UTC 2018 - jlopez@suse.com
+
+- Added widget to configure services (part of fate#319428).
+- 4.1.0
+
+-------------------------------------------------------------------
 Wed Aug  8 10:09:55 UTC 2018 - igonzalezsosa@suse.com
 
 - Add a method to detect whether a systemd service exists in
