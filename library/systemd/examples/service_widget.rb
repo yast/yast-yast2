@@ -6,9 +6,12 @@ require "yast2/compound_service"
 
 def service
   return @service if @service
-  #  @service ||= Yast2::SystemService.find("cups.service")
+
   service1 = Yast2::SystemService.find("cups.service")
   service2 = Yast2::SystemService.find("dbus.service")
+
+  # Yast2::ServiceWidget can be used with both, a Yast2::SystemService or
+  # a Yast2::CompoundService
   @service = Yast2::CompoundService.new(service1, service2)
 end
 
