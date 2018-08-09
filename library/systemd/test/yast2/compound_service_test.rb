@@ -170,7 +170,7 @@ describe Yast2::CompoundService do
       end
     end
 
-    context "services which supports it start on demand and rest start on boot" do
+    context "services which supports it start on demand and the rest start on boot" do
       subject do
         described_class.new(
           service(current_start_mode: :on_demand, support_start_on_demand?: true),
@@ -211,7 +211,7 @@ describe Yast2::CompoundService do
       end
     end
 
-    context "all services are set to not start automatic" do
+    context "all services are set to not start automatically" do
       subject do
         described_class.new(
           service(start_mode: :manual),
@@ -224,7 +224,7 @@ describe Yast2::CompoundService do
       end
     end
 
-    context "services which supports it are started on demand and rest start on boot" do
+    context "services which supports it are started on demand and the rest start on boot" do
       subject do
         described_class.new(
           service(start_mode: :on_demand, support_start_on_demand?: true),
@@ -262,7 +262,7 @@ describe Yast2::CompoundService do
     end
 
     context "parameter is :manual" do
-      it "sets all services to not start automatic" do
+      it "sets all services to not start automatically" do
         expect(service1).to receive(:start_mode=).with(:manual)
         expect(service2).to receive(:start_mode=).with(:manual)
 
@@ -274,7 +274,7 @@ describe Yast2::CompoundService do
       let(:service1) { service(support_start_on_demand?: true) }
       let(:service2) { service(support_start_on_demand?: false) }
 
-      it "sets services that support it start on demand and rest on boot" do
+      it "sets services that support it start on demand and the rest on boot" do
         expect(service1).to receive(:start_mode=).with(:on_demand)
         expect(service2).to receive(:start_mode=).with(:on_boot)
 
