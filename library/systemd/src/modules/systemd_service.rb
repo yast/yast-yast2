@@ -72,7 +72,6 @@ module Yast
     include Yast::Logger
 
     UNIT_SUFFIX = ".service".freeze
-    SERVICE_PROPMAP = SystemdUnit::DEFAULT_PROPMAP.merge(triggered_by: "TriggeredBy")
 
     # @param service_name [String] "foo" or "foo.service"
     # @param propmap [SystemdUnit::PropMap]
@@ -101,17 +100,16 @@ module Yast
     private def find_many_at_once(service_names, propmap = {})
       return [] if Stage.initial
 
-      service_propmap = SERVICE_PROPMAP.merge(propmap)
       snames = service_names.map { |n| n + UNIT_SUFFIX unless n.end_with?(UNIT_SUFFIX) }
       snames_s = snames.join(" ")
-      pnames_s = service_propmap.values.join(",")
+      pnames_s = SystemdUnit::DEFAULT_PROPMAP.merge(propmap).values.join(",")
       out = Systemctl.execute("show  --property=#{pnames_s} #{snames_s}")
       log.error "returned #{out.exit}, #{out.stderr}" unless out.exit.zero? && out.stderr.empty?
       property_texts = out.stdout.split("\n\n")
       return [] unless snames.size == property_texts.size
 
       snames.zip(property_texts).each_with_object([]) do |(name, property_text), memo|
-        service = Service.new(name, service_propmap, property_text)
+        service = Service.new(name, propmap, property_text)
         memo << service unless service.not_found?
       end
     end
@@ -145,7 +143,6 @@ module Yast
     # @return [Service] System service with the given name
     def build(service_name, propmap = {})
       service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
-      propmap = SERVICE_PROPMAP.merge(propmap)
       Service.new(service_name, propmap)
     end
 

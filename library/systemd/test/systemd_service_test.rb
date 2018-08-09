@@ -95,11 +95,6 @@ module Yast
         )
       end
 
-      it "includes 'TriggeredBy' property" do
-        cups = SystemdService.find_many(["apparmor", "cups"]).last
-        expect(cups.properties.triggered_by).to eq("cups.path cups.socket")
-      end
-
       context "when 'systemctl show' fails to provide services information" do
         let(:systemctl_show) { OpenStruct.new(stdout: "", stderr: "", exit: 1) }
 
