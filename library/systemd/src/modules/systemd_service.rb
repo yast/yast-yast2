@@ -110,10 +110,9 @@ module Yast
       property_texts = out.stdout.split("\n\n")
       return [] unless snames.size == property_texts.size
 
-      snames.zip(property_texts).map do |service_name, property_text|
-        service = Service.new(service_name, service_propmap, property_text)
-        next nil if service.properties.not_found?
-        service
+      snames.zip(property_texts).each_with_object([]) do |(name, property_text), memo|
+        service = Service.new(name, service_propmap, property_text)
+        memo << service unless service.not_found?
       end
     end
 

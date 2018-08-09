@@ -154,13 +154,9 @@ module Yast2
       #
       # @param names [Array<String>] service names to find
       #
-      # @raise [NotFoundError] if any service is not found
       # @return [Array<SystemService>]
       def find_many(names)
-        systemd_services = Yast::SystemdService.find_many(names)
-        raise NotFoundError if systemd_services.any?(&:nil?)
-
-        systemd_services.map { |s| new(s) }
+        Yast::SystemdService.find_many(names).map { |s| new(s) }
       end
     end
 
