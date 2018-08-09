@@ -33,7 +33,7 @@ module Yast2
     # @return [Array<Yast2::SystemService>]
     attr_reader :services
 
-    # Creates new service composed by several services
+    # Creates a new service composed by several services
     #
     # @param services [Array<Yast2::SystemService>]
     #
@@ -66,7 +66,7 @@ module Yast2
     #
     #   - `true`          when all services are active
     #
-    #   - `false`         when all services are not active
+    #   - `false`         when no services are active
     #
     #   - `:inconsistent` when part of services are active and part not.
     #
@@ -89,7 +89,7 @@ module Yast2
     # Possible start modes taking into account all services
     #
     # If a service supports :on_boot and :manual start modes, but another
-    # service supports :on_demand too, the possible starts modes will the
+    # service supports :on_demand too, the possible start modes will the
     # all of them: :on_boot, on_demand and :manual.
     #
     # @see {Yast2::SystemService#start_modes}
@@ -114,12 +114,12 @@ module Yast2
     #
     # @return [:start, :stop, :restart, :reload, nil]
     #
-    #   - `:start`   starts all services. If service is already active, do nothing.
-    #                if service has socket it starts socket instead of service.
+    #   - `:start`   starts all services. If a service is already active, does nothing.
+    #                if a service has socket it starts socket instead of the service.
     #
-    #   - `:stop`    stops all services. If service already is inactive, do nothing.
+    #   - `:stop`    stops all services. If a service is inactive, does nothing.
     #
-    #   - `:restart` restarts all services. If service is inactive, it is started.
+    #   - `:restart` restarts all services. If a service is inactive, it is started.
     #
     #   - `:reload`  reloads all services that support it and restarts that does not
     #                support it. If service is inactive, it is started.
@@ -141,7 +141,8 @@ module Yast2
     #   - `:on_boot`      all services start during boot.
     #
     #   - `:on_demand`    all sockets associated with services are enabled and
-    #                     for services that do not have socket, they starts on boot.
+    #                     for services that do not have socket, they start on boot.
+    #
     #   - `:manual`       all services and all their associated sockets are disabled.
     #
     #   - `:inconsistent` mixture of start modes
@@ -175,7 +176,7 @@ module Yast2
     #
     # @note It offers and additional start mode `:inconsistent` that is not in {Yast2::SystemService}
     #
-    # @param [Symbol] new start_mode (e.g., :on_boot, :on_demand, :manual, :inconsistent)
+    # @param [Symbol] new start mode (e.g., :on_boot, :on_demand, :manual, :inconsistent)
     def start_mode=(configuration)
       if !AUTOSTART_OPTIONS.include?(configuration)
         raise ArgumentError, "Invalid parameter #{configuration.inspect}"
@@ -215,7 +216,7 @@ module Yast2
     #
     # @see Yast2::SystemService#reset
     #
-    # @param exclude [Array] exclude from reset some parts.
+    # @param exclude [Array] to exclude from reset some parts.
     #   Now supported: `:action` and `:start_mode`
     def reset(exclude: [])
       old_action = action
