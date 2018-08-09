@@ -4,6 +4,8 @@ TESTS = \
   systemd_socket_test.rb \
   systemd_target_test.rb \
   systemd_service_test.rb \
+  yast2/compound_service_test.rb \
+  yast2/service_widget_test.rb \
   yast2/system_service_test.rb
 
 TEST_EXTENSIONS = .rb
