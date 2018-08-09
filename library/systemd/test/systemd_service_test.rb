@@ -180,21 +180,26 @@ module Yast
     describe "#socket" do
       subject(:service) { SystemdService.find(service_name) }
       let(:service_name) { "sshd" }
+      let(:socket) { instance_double(SystemdSocketClass::Socket) }
 
-      before do
-        allow(SystemdSocket).to receive(:find).with(service_name).and_return(socket)
+      it "returns the socket for the service" do
+        expect(SystemdSocket).to receive(:for_service).with(service_name)
+          .and_return(socket)
+        expect(service.socket).to eq(socket)
       end
 
-      context "when a socket named after the service exists" do
-        let(:socket) { instance_double(SystemdSocketClass::Socket) }
+      it "asks for the socket only once" do
+        expect(SystemdSocket).to receive(:for_service).with(service_name)
+          .and_return(socket).once
+        expect(service.socket).to eq(socket)
+        expect(service.socket).to eq(socket)
+      end
 
-        it "returns the socket" do
-          expect(service.socket).to eq(socket)
+      context "when no associated socket is found" do
+        before do
+          allow(SystemdSocket).to receive(:for_service).with(service_name)
+            .and_return(nil)
         end
-      end
-
-      context "when no socket named after the service exists" do
-        let(:socket) { nil }
 
         it "returns nil" do
           expect(service.socket).to be_nil

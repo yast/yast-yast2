@@ -1,12 +1,13 @@
 #!/usr/bin/env rspec
-require "yast"
+
 require_relative "test_helper"
-require "yast2/systemd_unit"
 
 module Yast
   import "SystemdSocket"
 
   describe SystemdSocket do
+    subject(:systemd_socket) { SystemdSocketClass.new }
+
     include SystemdSocketStubs
 
     before do
@@ -42,6 +43,27 @@ module Yast
         expect(sockets).to be_a(Array)
         expect(sockets).not_to be_empty
         sockets.each { |s| expect(s.unit_type).to eq("socket") }
+      end
+
+      describe ".for_service" do
+        let(:finder) { instance_double(Yast2::SystemdSocketFinder, for_service: socket) }
+        let(:socket) { instance_double(SystemdSocketClass::Socket) }
+
+        before do
+          allow(Yast2::SystemdSocketFinder).to receive(:new).and_return(finder)
+        end
+
+        it "returns the socket for the given service" do
+          expect(subject.for_service("cups")).to eq(socket)
+        end
+
+        context "when there is not associated socket" do
+          let(:socket) { nil }
+
+          it "returns nil" do
+            expect(subject.for_service("cups")).to be_nil
+          end
+        end
       end
     end
 
