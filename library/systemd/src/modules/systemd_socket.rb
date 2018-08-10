@@ -1,4 +1,5 @@
 require "yast2/systemd_unit"
+require "yast2/systemd_socket_finder"
 
 module Yast
   ###
@@ -87,6 +88,15 @@ module Yast
         Socket.new(socket_unit, propmap)
       end
       sockets.select { |s| s.properties.supported? }
+    end
+
+    # Returns the socket for a given service
+    #
+    # @param service_name [String] Service name (without the `.service` extension)
+    # @return [Yast::SystemdSocketClass::Socket,nil]
+    def for_service(service_name)
+      @socket_finder ||= Yast2::SystemdSocketFinder.new
+      @socket_finder.for_service(service_name)
     end
 
     class Socket < SystemdUnit

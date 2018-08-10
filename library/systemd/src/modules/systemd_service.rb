@@ -72,7 +72,6 @@ module Yast
     include Yast::Logger
 
     UNIT_SUFFIX = ".service".freeze
-    SERVICE_PROPMAP = SystemdUnit::DEFAULT_PROPMAP.merge(triggered_by: "TriggeredBy")
 
     # @param service_name [String] "foo" or "foo.service"
     # @param propmap [SystemdUnit::PropMap]
@@ -101,19 +100,17 @@ module Yast
     private def find_many_at_once(service_names, propmap = {})
       return [] if Stage.initial
 
-      service_propmap = SERVICE_PROPMAP.merge(propmap)
       snames = service_names.map { |n| n + UNIT_SUFFIX unless n.end_with?(UNIT_SUFFIX) }
       snames_s = snames.join(" ")
-      pnames_s = service_propmap.values.join(",")
+      pnames_s = SystemdUnit::DEFAULT_PROPMAP.merge(propmap).values.join(",")
       out = Systemctl.execute("show  --property=#{pnames_s} #{snames_s}")
       log.error "returned #{out.exit}, #{out.stderr}" unless out.exit.zero? && out.stderr.empty?
       property_texts = out.stdout.split("\n\n")
       return [] unless snames.size == property_texts.size
 
-      snames.zip(property_texts).map do |service_name, property_text|
-        service = Service.new(service_name, service_propmap, property_text)
-        next nil if service.properties.not_found?
-        service
+      snames.zip(property_texts).each_with_object([]) do |(name, property_text), memo|
+        service = Service.new(name, propmap, property_text)
+        memo << service unless service.not_found?
       end
     end
 
@@ -146,7 +143,6 @@ module Yast
     # @return [Service] System service with the given name
     def build(service_name, propmap = {})
       service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
-      propmap = SERVICE_PROPMAP.merge(propmap)
       Service.new(service_name, propmap)
     end
 
@@ -190,13 +186,10 @@ module Yast
 
       # Returns socket associated with service or nil if there is no such socket
       #
-      # @note The current implementation is too simplistic. At this point, checking the
-      # 'Triggers' property of each socket would be a better way. However, it won't work
-      # during installation as 'systemctl show' is not available.
-      #
       # @return [Yast::SystemdSocketClass::Socket,nil]
+      # @see SystemdSocket.for_service
       def socket
-        @socket ||= Yast::SystemdSocket.find(name)
+        @socket ||= Yast::SystemdSocket.for_service(name)
       end
 
       # Determines whether the service has an associated socket

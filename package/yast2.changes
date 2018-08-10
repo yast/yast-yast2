@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug  9 13:02:38 UTC 2018 - imo@localhost
+
+- Improve systemd socket detection (related to fate#319428).
+- SystemService#find_many does not raise an exception anymore.
+- 4.0.84
+
+-------------------------------------------------------------------
 Wed Aug  8 10:09:55 UTC 2018 - igonzalezsosa@suse.com
 
 - Add a method to detect whether a systemd service exists in
