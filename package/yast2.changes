@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug  9 13:02:38 UTC 2018 - imo@localhost
+
+- Improve systemd socket detection (related to fate#319428).
+- SystemService#find_many does not raise an exception anymore.
+- 4.1.1
+
+-------------------------------------------------------------------
 Wed Aug  8 15:14:29 UTC 2018 - jlopez@suse.com
 
 - Added widget to configure services (part of fate#319428).
@@ -32,12 +39,6 @@ Wed Jul 25 08:13:31 UTC 2018 - jlopez@suse.com
 - Services: add class to manage systemd services with associated
   socket (needed for bsc#1080738 and fate#319428).
 - 4.0.80
-
--------------------------------------------------------------------
-Mon Jul 16 09:12:23 UTC 2018 - knut.anderssen@suse.com
-
-- Replace the deprecated firewallctl command with firewall-cmd for
-  obtaining the firewalld state (bsc#1093111)
 
 -------------------------------------------------------------------
 Tue Jul  3 08:01:07 UTC 2018 - knut.anderssen@suse.com
