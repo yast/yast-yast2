@@ -95,6 +95,22 @@ module Yast
         )
       end
 
+      context "when a service is not found" do
+        let(:not_found_double) { double("Service", name: "cups", not_found?: true) }
+
+        before do
+          allow(Yast::SystemdServiceClass::Service).to receive(:new).and_call_original
+          allow(Yast::SystemdServiceClass::Service).to receive(:new)
+            .with("cups.service", anything, anything)
+            .and_return(not_found_double)
+        end
+
+        it "does not include the not found service" do
+          services = SystemdService.find_many(["apparmor", "cups"])
+          expect(services.map(&:name)).to eq(["apparmor"])
+        end
+      end
+
       context "when 'systemctl show' fails to provide services information" do
         let(:systemctl_show) { OpenStruct.new(stdout: "", stderr: "", exit: 1) }
 
