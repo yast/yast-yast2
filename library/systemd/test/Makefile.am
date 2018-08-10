@@ -6,7 +6,7 @@ TESTS = \
   systemd_service_test.rb \
   yast2/compound_service_test.rb \
   yast2/service_widget_test.rb \
-  yast2/system_service_test.rb
+  yast2/system_service_test.rb \
   yast2/system_service_test.rb \
   yast2/systemd_socket_finder_test.rb
 
