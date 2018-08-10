@@ -57,7 +57,7 @@ module Yast
           expect(subject.for_service("cups")).to eq(socket)
         end
 
-        context "when there is not associated socket" do
+        context "when there is no associated socket" do
           let(:socket) { nil }
 
           it "returns nil" do

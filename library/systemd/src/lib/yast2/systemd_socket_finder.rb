@@ -39,6 +39,7 @@ module Yast2
   class SystemdSocketFinder
     # Returns the socket for a given service
     #
+    # @param service_name [String] Service name (without the `.service` extension)
     # @return [Yast2::SystemdSocketClass::Socket,nil]
     def for_service(service_name)
       socket_name = socket_name_for(service_name)
@@ -60,6 +61,8 @@ module Yast2
 
     # Builds a map between services and sockets
     #
+    # @note When more than one socket triggers the service, the last one will be used.
+    #
     # @return [Hash<String,String>] Sockets indexed by the name of the service they trigger
     def sockets_map
       return @sockets_map if @sockets_map
@@ -78,9 +81,11 @@ module Yast2
 
     # Returns the systemctl show command to get sockets details
     #
+    # @note The list is alphabetically ordered.
+    #
     # @return [String] systemctl show command
     def show_triggers_cmd
-      format(SHOW_TRIGGERS_CMD, unit_names: unit_names.join(" "))
+      format(SHOW_TRIGGERS_CMD, unit_names: unit_names.sort.join(" "))
     end
 
     # Returns the names of the socket units

@@ -94,6 +94,14 @@ describe Yast2::SystemService do
         expect(system_service.service).to eq(systemd_service)
       end
     end
+
+    context "when the service is not found" do
+      let(:systemd_service) { nil }
+
+      it "raises an exception" do
+        expect { described_class.find!("cups") }.to raise_error(Yast2::SystemService::NotFoundError)
+      end
+    end
   end
 
   describe ".build" do

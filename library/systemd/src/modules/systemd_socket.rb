@@ -92,6 +92,7 @@ module Yast
 
     # Returns the socket for a given service
     #
+    # @param service_name [String] Service name (without the `.service` extension)
     # @return [Yast::SystemdSocketClass::Socket,nil]
     def for_service(service_name)
       @socket_finder ||= Yast2::SystemdSocketFinder.new
