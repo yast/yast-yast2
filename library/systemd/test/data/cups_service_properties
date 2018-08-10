@@ -141,7 +141,6 @@ Requires=system.slice sysinit.target
 Conflicts=shutdown.target
 Before=shutdown.target
 After=system.slice cups.socket sysinit.target basic.target cups.path systemd-journald.socket
-TriggeredBy=iscsid.socket cups.path
 Documentation=man:cupsd(8)
 Description=CUPS Scheduler
 LoadState=loaded
