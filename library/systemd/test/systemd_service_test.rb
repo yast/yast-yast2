@@ -81,7 +81,7 @@ module Yast
       before do
         allow(Yast::Systemctl).to receive(:execute).with(
           "show  --property=Id,MainPID,Description,LoadState,ActiveState,SubState,UnitFileState," \
-          "FragmentPath,CanReload,TriggeredBy apparmor.service cups.service"
+          "FragmentPath,CanReload apparmor.service cups.service"
         ).and_return(systemctl_show)
         allow(SystemdService).to receive(:find).with("apparmor", {}).and_return(apparmor_double)
         allow(SystemdService).to receive(:find).with("cups", {}).and_return(cups_double)
@@ -95,9 +95,20 @@ module Yast
         )
       end
 
-      it "includes 'TriggeredBy' property" do
-        cups = SystemdService.find_many(["apparmor", "cups"]).last
-        expect(cups.properties.triggered_by).to eq("cups.path cups.socket")
+      context "when a service is not found" do
+        let(:not_found_double) { double("Service", name: "cups", not_found?: true) }
+
+        before do
+          allow(Yast::SystemdServiceClass::Service).to receive(:new).and_call_original
+          allow(Yast::SystemdServiceClass::Service).to receive(:new)
+            .with("cups.service", anything, anything)
+            .and_return(not_found_double)
+        end
+
+        it "does not include the not found service" do
+          services = SystemdService.find_many(["apparmor", "cups"])
+          expect(services.map(&:name)).to eq(["apparmor"])
+        end
       end
 
       context "when 'systemctl show' fails to provide services information" do
@@ -180,21 +191,26 @@ module Yast
     describe "#socket" do
       subject(:service) { SystemdService.find(service_name) }
       let(:service_name) { "sshd" }
+      let(:socket) { instance_double(SystemdSocketClass::Socket) }
 
-      before do
-        allow(SystemdSocket).to receive(:find).with(service_name).and_return(socket)
+      it "returns the socket for the service" do
+        expect(SystemdSocket).to receive(:for_service).with(service_name)
+          .and_return(socket)
+        expect(service.socket).to eq(socket)
       end
 
-      context "when a socket named after the service exists" do
-        let(:socket) { instance_double(SystemdSocketClass::Socket) }
+      it "asks for the socket only once" do
+        expect(SystemdSocket).to receive(:for_service).with(service_name)
+          .and_return(socket).once
+        expect(service.socket).to eq(socket)
+        expect(service.socket).to eq(socket)
+      end
 
-        it "returns the socket" do
-          expect(service.socket).to eq(socket)
+      context "when no associated socket is found" do
+        before do
+          allow(SystemdSocket).to receive(:for_service).with(service_name)
+            .and_return(nil)
         end
-      end
-
-      context "when no socket named after the service exists" do
-        let(:socket) { nil }
 
         it "returns nil" do
           expect(service.socket).to be_nil
