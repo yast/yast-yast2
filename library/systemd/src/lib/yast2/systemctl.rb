@@ -7,7 +7,6 @@ module Yast2
   # - has a timeout
   #
   module Systemctl
-
     # Exception when systemctl command failed
     class Error < StandardError
       # @param details [#to_s]

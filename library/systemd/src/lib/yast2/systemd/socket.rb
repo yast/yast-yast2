@@ -3,7 +3,7 @@ require "yast2/systemd/socket_finder"
 
 module Yast2
   module Systemd
-  # Respresent missed socket
+    # Respresent missed socket
     class SocketNotFound < StandardError
       def initialize(socket_name)
         super "Socket unit '#{socket_name}' not found"
