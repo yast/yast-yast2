@@ -27,7 +27,7 @@ describe Yast2::SystemService do
   subject(:system_service) { described_class.new(service) }
 
   let(:service) do
-    instance_double(Yast::SystemdServiceClass::Service,
+    instance_double(Yast::SystemdService,
       name:       "cups",
       enabled?:   service_enabled,
       active?:    service_active,
@@ -62,7 +62,7 @@ describe Yast2::SystemService do
     end
 
     context "when the service is found" do
-      let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+      let(:systemd_service) { instance_double(Yast::SystemdService) }
 
       it "returns the service" do
         system_service = described_class.find("cups")
@@ -87,7 +87,7 @@ describe Yast2::SystemService do
     end
 
     context "when the service is found" do
-      let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+      let(:systemd_service) { instance_double(Yast::SystemdService) }
 
       it "returns the service" do
         system_service = described_class.find!("cups")
@@ -107,7 +107,7 @@ describe Yast2::SystemService do
   end
 
   describe ".build" do
-    let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+    let(:systemd_service) { instance_double(Yast::SystemdService) }
 
     it "returns a systemd service with the given name" do
       expect(Yast::SystemdService).to receive(:build).with("other")
@@ -118,8 +118,8 @@ describe Yast2::SystemService do
   end
 
   describe ".find_many" do
-    let(:apparmor) { instance_double(Yast::SystemdServiceClass::Service) }
-    let(:cups) { instance_double(Yast::SystemdServiceClass::Service) }
+    let(:apparmor) { instance_double(Yast::SystemdService) }
+    let(:cups) { instance_double(Yast::SystemdService) }
 
     before do
       allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])

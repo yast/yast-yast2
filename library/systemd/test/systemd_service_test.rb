@@ -3,8 +3,6 @@
 require_relative "test_helper"
 
 module Yast
-  import "SystemdService"
-
   describe SystemdService do
     include SystemdServiceStubs
 
@@ -99,8 +97,8 @@ module Yast
         let(:not_found_double) { double("Service", name: "cups", not_found?: true) }
 
         before do
-          allow(Yast::SystemdServiceClass::Service).to receive(:new).and_call_original
-          allow(Yast::SystemdServiceClass::Service).to receive(:new)
+          allow(Yast::SystemdService).to receive(:new).and_call_original
+          allow(Yast::SystemdService).to receive(:new)
             .with("cups.service", anything, anything)
             .and_return(not_found_double)
         end
@@ -167,7 +165,7 @@ module Yast
 
     context "Restart a service on the installation system" do
       it "restarts a service with a specialized inst-sys helper if available" do
-        allow_any_instance_of(SystemdServiceClass::Service).to receive(:sleep).and_return(1)
+        allow_any_instance_of(SystemdService).to receive(:sleep).and_return(1)
         allow(File).to receive(:exist?).with("/bin/service_start").and_return(true)
         service = SystemdService.find("sshd")
         allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)

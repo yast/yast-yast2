@@ -31,10 +31,9 @@
 # Functions for systemd service handling used by other modules.
 
 require "yast"
+require "yast2/systemd_service"
 
 module Yast
-  import "SystemdService"
-
   class ServiceClass < Module
     include Yast::Logger
 
