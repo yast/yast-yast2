@@ -32,12 +32,14 @@ describe Yast2::SystemService do
       enabled?:   service_enabled,
       active?:    service_active,
       not_found?: !service_found,
+      static?:    service_static,
       refresh!:   true)
   end
 
   let(:service_enabled) { true }
   let(:service_active) { true }
   let(:service_found) { true }
+  let(:service_static) { false }
 
   let(:service_socket) do
     instance_double(Yast::SystemdSocketClass::Socket,
@@ -299,6 +301,14 @@ describe Yast2::SystemService do
 
       it "returns :on_boot and :manual" do
         expect(system_service.start_modes).to contain_exactly(:on_boot, :manual)
+      end
+    end
+
+    context "when the service has no associated socket" do
+      let(:service_static) { true }
+
+      it "returns :on_demand and :manual" do
+        expect(system_service.start_modes).to contain_exactly(:on_demand, :manual)
       end
     end
 

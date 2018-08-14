@@ -239,7 +239,8 @@ module Yast2
     def start_modes
       @start_modes = [:on_boot, :manual, :on_demand] unless found?
       return @start_modes if @start_modes
-      @start_modes = [:on_boot, :manual]
+      @start_modes = [:manual]
+      @start_modes << :on_boot unless service.static?
       @start_modes << :on_demand if socket
       @start_modes
     end
