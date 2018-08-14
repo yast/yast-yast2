@@ -2,11 +2,11 @@ require "yast"
 
 require "yast2/service_widget"
 require "yast2/service_configuration"
-require "yast2/systemd_service"
+require "yast2/systemd/service"
 require "ui/service_status"
 
 def service
-  @service ||= Yast::SystemdService.find!("cups.service")
+  @service ||= Yast2::Systemd::Service.find!("cups.service")
 end
 
 def service_configuration

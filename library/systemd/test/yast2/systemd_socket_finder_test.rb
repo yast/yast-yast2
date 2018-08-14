@@ -21,9 +21,9 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "yast2/systemd_socket_finder"
+require "yast2/systemd/socket_finder"
 
-describe Yast2::SystemdSocketFinder do
+describe Yast2::Systemd::SocketFinder do
   subject(:finder) { described_class.new }
 
   let(:systemctl_result) do
@@ -34,7 +34,7 @@ describe Yast2::SystemdSocketFinder do
   end
 
   before do
-    allow(Yast::Systemctl).to receive(:execute)
+    allow(Yast2::Systemctl).to receive(:execute)
       .with("show --property Id,Triggers cups.socket sckt1.socket")
       .and_return(systemctl_result)
     allow(Yast::Execute).to receive(:on_target).and_return(
@@ -48,7 +48,7 @@ describe Yast2::SystemdSocketFinder do
     let(:socket) { double("socket") }
 
     it "returns the related socket" do
-      expect(Yast::SystemdSocket).to receive(:find).with("sckt1").and_return(socket)
+      expect(Yast2::Systemd::Socket).to receive(:find).with("sckt1").and_return(socket)
       expect(finder.for_service("srvc1")).to eq(socket)
     end
 
@@ -58,7 +58,7 @@ describe Yast2::SystemdSocketFinder do
       end
 
       it "does not try to read the socket" do
-        expect(Yast::SystemdSocket).to_not receive(:find)
+        expect(Yast2::Systemd::Socket).to_not receive(:find)
         expect(finder.for_service("httpd")).to be_nil
       end
     end
@@ -69,13 +69,13 @@ describe Yast2::SystemdSocketFinder do
       end
 
       it "returns a socket named after the service" do
-        expect(Yast::SystemdSocket).to receive(:find).with("cups").and_return(socket)
+        expect(Yast2::Systemd::Socket).to receive(:find).with("cups").and_return(socket)
         expect(finder.for_service("cups")).to eq(socket)
       end
 
       context "when there is no related socket" do
         before do
-          allow(Yast::SystemdSocket).to receive(:find).with("httpd").and_return(nil)
+          allow(Yast2::Systemd::Socket).to receive(:find).with("httpd").and_return(nil)
         end
 
         it "returns nil" do

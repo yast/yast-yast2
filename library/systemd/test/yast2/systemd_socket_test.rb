@@ -1,14 +1,12 @@
 #!/usr/bin/env rspec
 
-require_relative "test_helper"
+require_relative "../test_helper"
 
-module Yast
-  import "SystemdSocket"
-
-  describe SystemdSocket do
-    subject(:systemd_socket) { described_class }
-
+module Yast2
+  describe Systemd::Socket do
     include SystemdSocketStubs
+
+    subject(:systemd_socket) { described_class }
 
     before do
       stub_sockets
@@ -17,7 +15,7 @@ module Yast
     describe ".find" do
       it "returns the unit object specified in parameter" do
         socket = systemd_socket.find "iscsid"
-        expect(socket).to be_a(SystemdUnit)
+        expect(socket).to be_a(Systemd::Unit)
         expect(socket.unit_type).to eq("socket")
         expect(socket.unit_name).to eq("iscsid")
       end
@@ -26,14 +24,14 @@ module Yast
     describe ".find!" do
       it "returns the unit object specified in parameter" do
         socket = systemd_socket.find "iscsid"
-        expect(socket).to be_a(SystemdUnit)
+        expect(socket).to be_a(Systemd::Unit)
         expect(socket.unit_type).to eq("socket")
         expect(socket.unit_name).to eq("iscsid")
       end
 
-      it "raises SystemdSocketNotFound error if unit does not exist" do
+      it "raises Systemd::SocketNotFound error if unit does not exist" do
         stub_sockets(socket: "unknown")
-        expect { systemd_socket.find!("unknown") }.to raise_error(SystemdSocketNotFound)
+        expect { systemd_socket.find!("unknown") }.to raise_error(Systemd::SocketNotFound)
       end
     end
 
@@ -46,11 +44,11 @@ module Yast
       end
 
       describe ".for_service" do
-        let(:finder) { instance_double(Yast2::SystemdSocketFinder, for_service: socket) }
-        let(:socket) { instance_double(SystemdSocket) }
+        let(:finder) { instance_double(Yast2::Systemd::SocketFinder, for_service: socket) }
+        let(:socket) { instance_double(Systemd::Socket) }
 
         before do
-          allow(Yast2::SystemdSocketFinder).to receive(:new).and_return(finder)
+          allow(Yast2::Systemd::SocketFinder).to receive(:new).and_return(finder)
         end
 
         it "returns the socket for the given service" do

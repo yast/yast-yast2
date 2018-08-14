@@ -20,8 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "forwardable"
-
-Yast.import "SystemdService"
+require "yast2/systemd/service"
 
 module Yast2
   # This class represents a service from a high level point of view
@@ -84,7 +83,7 @@ module Yast2
     # Error when a service is not found
     class NotFoundError < RuntimeError; end
 
-    # @return [Yast::SystemdServiceClass::Service]
+    # @return [Yast2::Systemd::Service]
     attr_reader :service
 
     # @return [Hash<Symbol, Object>] Errors when trying to write changes to the underlying system.
@@ -102,16 +101,16 @@ module Yast2
     def_delegator :@service, :can_reload?, :support_reload?
 
     # @!method name
-    #   @see Yast::SystemdServiceClass::Service#name
+    #   @see Yast2::Systemd::Service#name
     #   @return [String]
     # @!method static?
-    #   @see Yast::SystemdServiceClass::Service#static?
+    #   @see Yast2::Systemd::Service#static?
     #   @return [Boolean]
     # @!method running?
-    #   @see Yast::SystemdServiceClass::Service#running?
+    #   @see Yast2::Systemd::Service#running?
     #   @return [Boolean]
     # @!method description
-    #   @see Yast::SystemdServiceClass::Service#description
+    #   @see Yast2::Systemd::Service#description
     #   @return [String]
     def_delegators :@service, :name, :static?, :running?, :description
 
@@ -121,7 +120,7 @@ module Yast2
       # @param name [String] service name with or without extension (e.g., "cups" or "cups.service")
       # @return [SystemService, nil] nil if the service is not found
       def find(name)
-        systemd_service = Yast::SystemdService.find(name)
+        systemd_service = Yast2::Systemd::Service.find(name)
         return nil unless systemd_service
 
         new(systemd_service)
@@ -145,9 +144,9 @@ module Yast2
       # @param name [String] Service name
       # @return [SystemService] System service based on the given name
       #
-      # @see Yast::SystemdServiceClass#build
+      # @see Yast2::Systemd::ServiceClass#build
       def build(name)
-        new(Yast::SystemdService.build(name))
+        new(Yast2::Systemd::Service.build(name))
       end
 
       # Finds a set of services by their names
@@ -156,13 +155,13 @@ module Yast2
       #
       # @return [Array<SystemService>]
       def find_many(names)
-        Yast::SystemdService.find_many(names).map { |s| new(s) }
+        Yast2::Systemd::Service.find_many(names).map { |s| new(s) }
       end
     end
 
     # Constructor
     #
-    # @param service [Yast::SystemdServiceClass::Service]
+    # @param service [Yast2::Systemd::Service]
     def initialize(service)
       @service = service
       @changes = {}
@@ -345,7 +344,7 @@ module Yast2
     # @note All cached changes are reset and the underlying service is refreshed
     #   when the changes are correctly applied.
     #
-    # @raise [Yast::SystemctlError] if the service cannot be refreshed
+    # @raise [Yast2::Systemctl::Error] if the service cannot be refreshed
     #
     # @param keep_state [Boolean] Do not change service status. Useful when running on 1st stage.
     # @return [Boolean] true if the service was saved correctly; false otherwise.
@@ -375,13 +374,13 @@ module Yast2
     # @return [Boolean] true if the service was refreshed correctly; false otherwise.
     def refresh
       refresh!
-    rescue Yast::SystemctlError
+    rescue Yast2::Systemctl::Error
       false
     end
 
     # Refreshes the underlying service
     #
-    # @raise [Yast::SystemctlError] if the service cannot be refreshed
+    # @raise [Yast2::Systemctl::Error] if the service cannot be refreshed
     #
     # @return [Boolean] true if the service was refreshed correctly
     def refresh!
@@ -459,14 +458,14 @@ module Yast2
       # FIXME: SystemdService#{start, stop, etc} calls to refresh! internally, so when
       # this exception is raised we cannot distinguish if the action is failing or
       # refresh! is failing. For SP1, refresh! should raise a new kind of exception.
-    rescue Yast::SystemctlError
+    rescue Yast2::Systemctl::Error
       register_error(:active)
       false
     end
 
     # Starts the service in the underlying system
     #
-    # @raise [Yast::SystemctlError] if some service command fails
+    # @raise [Yast2::Systemctl::Error] if some service command fails
     #
     # @return [Boolean] true if the service was correctly started
     def perform_start
@@ -483,7 +482,7 @@ module Yast2
 
     # Stops the service in the underlying system
     #
-    # @raise [Yast::SystemctlError] if some service command fails
+    # @raise [Yast2::Systemctl::Error] if some service command fails
     #
     # @return [Boolean] true if the service was correctly stopped
     def perform_stop
@@ -497,7 +496,7 @@ module Yast2
 
     # Restarts the service in the underlying system
     #
-    # @raise [Yast::SystemctlError] if some service command fails
+    # @raise [Yast2::Systemctl::Error] if some service command fails
     #
     # @return [Boolean] true if the service was correctly restarted
     def perform_restart
@@ -508,7 +507,7 @@ module Yast2
     #
     # @note The service is simply restarted when it does not support reload action.
     #
-    # @raise [Yast::SystemctlError] if some service command fails
+    # @raise [Yast2::Systemctl::Error] if some service command fails
     #
     # @return [Boolean] true if the service was correctly reloaded
     def perform_reload

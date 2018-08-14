@@ -1,19 +1,21 @@
 require "ostruct"
 require "timeout"
 
-module Yast
-  # Exception when systemctl command failed
-  class SystemctlError < StandardError
-    # @param details [#to_s]
-    def initialize(details)
-      super "Systemctl command failed: #{details}"
-    end
-  end
-
+module Yast2
   # Wrapper around `systemctl` command.
   # - uses non-interactive flags
   # - has a timeout
+  #
   module Systemctl
+
+    # Exception when systemctl command failed
+    class Error < StandardError
+      # @param details [#to_s]
+      def initialize(details)
+        super "Systemctl command failed: #{details}"
+      end
+    end
+
     include Yast::Logger
 
     CONTROL         = "systemctl".freeze
@@ -32,10 +34,10 @@ module Yast
         log.info("systemctl #{command}")
         command = SYSTEMCTL + command
         log.debug "Executing `systemctl` command: #{command}"
-        result = ::Timeout.timeout(TIMEOUT) { SCR.Execute(BASH_SCR_PATH, command) }
+        result = ::Timeout.timeout(TIMEOUT) { Yast::SCR.Execute(BASH_SCR_PATH, command) }
         OpenStruct.new(result.merge!(command: command))
       rescue ::Timeout::Error
-        raise SystemctlError, "Timeout #{TIMEOUT} seconds: #{command}"
+        raise Yast2::Systemctl::Error, "Timeout #{TIMEOUT} seconds: #{command}"
       end
 
       # @return [Array<String>] like ["a.socket", "b.socket"]
