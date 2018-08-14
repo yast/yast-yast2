@@ -1,6 +1,13 @@
 require "yast2/systemd_unit"
 
 module Yast
+  # Represents that the given service does not exists
+  class SystemdTargetNotFound < StandardError
+    def initialize(target_name)
+      super "Target unit '#{target_name}' not found"
+    end
+  end
+
   ###
   # Systemd.target unit control API
   # @example How to find a custom systemd target
@@ -33,14 +40,7 @@ module Yast
   #   target.allow_isolate? # must be true to set default target
   #   target.set_default # returns true if success
   ###
-
-  class SystemdTargetNotFound < StandardError
-    def initialize(target_name)
-      super "Target unit '#{target_name}' not found"
-    end
-  end
-
-  class SystemdTargetClass < Module
+  class SystemdTarget < SystemdUnit
     include Yast::Logger
 
     UNIT_SUFFIX    = ".target".freeze
@@ -48,74 +48,73 @@ module Yast
     # @return [SystemdUnit::PropMap]
     PROPMAP        = { allow_isolate: "AllowIsolate" }.freeze
 
-    # @param propmap [SystemdUnit::PropMap]
-    def find(target_name, propmap = {})
-      target_name += UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)
-      target = Target.new(target_name, PROPMAP.merge(propmap))
+    # Disable unsupported methods for target units
+    undef_method :start, :stop, :enable, :disable, :restart
 
-      if target.properties.not_found?
-        log.error "Target #{target_name} not found: #{target.properties.inspect}"
-        return nil
+    class << self
+      # @param propmap [SystemdUnit::PropMap]
+      def find(target_name, propmap = {})
+        target_name += UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)
+        target = new(target_name, PROPMAP.merge(propmap))
+
+        if target.properties.not_found?
+          log.error "Target #{target_name} not found: #{target.properties.inspect}"
+          return nil
+        end
+
+        target
       end
 
-      target
-    end
-
-    # @param propmap [SystemdUnit::PropMap]
-    def find!(target_name, propmap = {})
-      find(target_name, propmap) || raise(SystemdTargetNotFound, target_name)
-    end
-
-    # @param propmap [SystemdUnit::PropMap]
-    def all(propmap = {})
-      targets = Systemctl.target_units.map do |target_unit_name|
-        find(target_unit_name, propmap)
-      end
-      targets.compact
-    end
-
-    def get_default
-      result = Systemctl.execute("get-default")
-      raise(SystemctlError, result) unless result.exit.zero?
-
-      find(result.stdout.strip)
-    end
-
-    def set_default(target)
-      target_unit = target.is_a?(Target) ? target : find(target)
-
-      unless target_unit
-        log.error "Cannot find target #{target.inspect}"
-        return false
+      # @param propmap [SystemdUnit::PropMap]
+      def find!(target_name, propmap = {})
+        find(target_name, propmap) || raise(SystemdTargetNotFound, target_name)
       end
 
-      target_unit.set_default
-    end
-
-    class Target < SystemdUnit
-      # Disable unsupported methods for target units
-      undef_method :start, :stop, :enable, :disable, :restart
-
-      def allow_isolate?
-        # We cannot find out a target properties from /mnt in inst-sys
-        # systemctl doesn't return any properties in chroot
-        # See bnc#889323
-        ["yes", nil].include?(properties.allow_isolate)
+      # @param propmap [SystemdUnit::PropMap]
+      def all(propmap = {})
+        targets = Systemctl.target_units.map do |target_unit_name|
+          find(target_unit_name, propmap)
+        end
+        targets.compact
       end
 
-      def set_default
-        unless allow_isolate?
-          log.error "Cannot set #{id.inspect} as default target: Cannot be isolated (#{properties.allow_isolate})"
+      def get_default # rubocop:disable Style/AccessorMethodName
+        result = Systemctl.execute("get-default")
+        raise(SystemctlError, result) unless result.exit.zero?
+
+        find(result.stdout.strip)
+      end
+
+      def set_default(target) # rubocop:disable Style/AccessorMethodName
+        target_unit = target.is_a?(SystemdTarget) ? target : find(target)
+
+        unless target_unit
+          log.error "Cannot find target #{target.inspect}"
           return false
         end
 
-        # Constructing a fallback target ID if we can't get it from systemctl
-        target_name = id ? id : "#{name}.target"
-
-        result = Systemctl.execute("set-default --force #{target_name}")
-        result.exit.zero?
+        target_unit.set_default
       end
     end
+
+    def allow_isolate?
+      # We cannot find out a target properties from /mnt in inst-sys
+      # systemctl doesn't return any properties in chroot
+      # See bnc#889323
+      ["yes", nil].include?(properties.allow_isolate)
+    end
+
+    def set_default
+      unless allow_isolate?
+        log.error "Cannot set #{id.inspect} as default target: Cannot be isolated (#{properties.allow_isolate})"
+        return false
+      end
+
+      # Constructing a fallback target ID if we can't get it from systemctl
+      target_name = id ? id : "#{name}.target"
+
+      result = Systemctl.execute("set-default --force #{target_name}")
+      result.exit.zero?
+    end
   end
-  SystemdTarget = SystemdTargetClass.new
 end

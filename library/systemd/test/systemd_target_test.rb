@@ -3,8 +3,6 @@
 require_relative "test_helper"
 
 module Yast
-  import "SystemdTarget"
-
   describe SystemdTarget do
     include SystemdTargetStubs
 
@@ -16,7 +14,7 @@ module Yast
       it "returns the target unit object specified in parameter" do
         target = SystemdTarget.find("graphical")
         expect(target).not_to be_nil
-        expect(target).to be_a(SystemdTargetClass::Target)
+        expect(target).to be_a(SystemdTarget)
         expect(target.unit_type).to eq("target")
       end
 
@@ -68,7 +66,7 @@ module Yast
         )
         target = SystemdTarget.get_default
         expect(target).not_to be_nil
-        expect(target).to be_a(SystemdTargetClass::Target)
+        expect(target).to be_a(SystemdTarget)
         expect(target.unit_name).to eq("graphical")
       end
     end

@@ -3,8 +3,8 @@ require_relative "../../../test/test_helper.rb"
 require "yast2/systemd_unit"
 require "yast2/systemd_service"
 require "yast2/systemd_socket"
+require "yast2/systemd_target"
 
-Yast.import "SystemdTarget"
 
 # Find a Term in given content
 #
