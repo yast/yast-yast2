@@ -189,7 +189,7 @@ module Yast
     describe "#socket" do
       subject(:service) { SystemdService.find(service_name) }
       let(:service_name) { "sshd" }
-      let(:socket) { instance_double(SystemdSocketClass::Socket) }
+      let(:socket) { instance_double(SystemdSocket) }
 
       it "returns the socket for the service" do
         expect(SystemdSocket).to receive(:for_service).with(service_name)
@@ -224,7 +224,7 @@ module Yast
       end
 
       context "when there is an associated socket" do
-        let(:socket) { instance_double(SystemdSocketClass::Socket) }
+        let(:socket) { instance_double(SystemdSocket) }
 
         it "returns true" do
           expect(service.socket?).to eq(true)

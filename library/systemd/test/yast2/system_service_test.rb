@@ -42,9 +42,7 @@ describe Yast2::SystemService do
   let(:service_static) { false }
 
   let(:service_socket) do
-    instance_double(Yast::SystemdSocketClass::Socket,
-      enabled?: socket_enabled,
-      active?:  socket_active)
+    instance_double(Yast::SystemdSocket, enabled?: socket_enabled, active?: socket_active)
   end
 
   let(:socket_enabled) { true }

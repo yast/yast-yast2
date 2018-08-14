@@ -6,7 +6,7 @@ module Yast
   import "SystemdSocket"
 
   describe SystemdSocket do
-    subject(:systemd_socket) { SystemdSocketClass.new }
+    subject(:systemd_socket) { described_class }
 
     include SystemdSocketStubs
 
@@ -16,7 +16,7 @@ module Yast
 
     describe ".find" do
       it "returns the unit object specified in parameter" do
-        socket = SystemdSocket.find "iscsid"
+        socket = systemd_socket.find "iscsid"
         expect(socket).to be_a(SystemdUnit)
         expect(socket.unit_type).to eq("socket")
         expect(socket.unit_name).to eq("iscsid")
@@ -25,7 +25,7 @@ module Yast
 
     describe ".find!" do
       it "returns the unit object specified in parameter" do
-        socket = SystemdSocket.find "iscsid"
+        socket = systemd_socket.find "iscsid"
         expect(socket).to be_a(SystemdUnit)
         expect(socket.unit_type).to eq("socket")
         expect(socket.unit_name).to eq("iscsid")
@@ -33,13 +33,13 @@ module Yast
 
       it "raises SystemdSocketNotFound error if unit does not exist" do
         stub_sockets(socket: "unknown")
-        expect { SystemdSocket.find!("unknown") }.to raise_error(SystemdSocketNotFound)
+        expect { systemd_socket.find!("unknown") }.to raise_error(SystemdSocketNotFound)
       end
     end
 
     describe ".all" do
       it "returns all supported sockets found" do
-        sockets = SystemdSocket.all
+        sockets = systemd_socket.all
         expect(sockets).to be_a(Array)
         expect(sockets).not_to be_empty
         sockets.each { |s| expect(s.unit_type).to eq("socket") }
@@ -47,7 +47,7 @@ module Yast
 
       describe ".for_service" do
         let(:finder) { instance_double(Yast2::SystemdSocketFinder, for_service: socket) }
-        let(:socket) { instance_double(SystemdSocketClass::Socket) }
+        let(:socket) { instance_double(SystemdSocket) }
 
         before do
           allow(Yast2::SystemdSocketFinder).to receive(:new).and_return(finder)
@@ -69,13 +69,15 @@ module Yast
 
     describe "#listening?" do
       it "returns true if the socket is accepting connections" do
-        socket = SystemdSocket.find "iscsid"
+        socket = systemd_socket.find "iscsid"
+
         expect(socket.listening?).to eq(true)
       end
 
       it "returns false if the socket is dead" do
-        socket = SystemdSocket.find "iscsid"
+        socket = systemd_socket.find "iscsid"
         socket.properties.sub_state = "dead"
+
         expect(socket.listening?).to eq(false)
       end
     end

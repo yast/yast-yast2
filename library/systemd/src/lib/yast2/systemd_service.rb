@@ -184,7 +184,7 @@ module Yast
 
     # Returns socket associated with service or nil if there is no such socket
     #
-    # @return [Yast::SystemdSocketClass::Socket,nil]
+    # @return [Yast::SystemdSocket,nil]
     # @see SystemdSocket.for_service
     def socket
       @socket ||= Yast::SystemdSocket.for_service(name)

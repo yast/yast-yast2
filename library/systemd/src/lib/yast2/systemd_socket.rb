@@ -2,6 +2,13 @@ require "yast2/systemd_unit"
 require "yast2/systemd_socket_finder"
 
 module Yast
+  # Respresent missed socket
+  class SystemdSocketNotFound < StandardError
+    def initialize(socket_name)
+      super "Socket unit '#{socket_name}' not found"
+    end
+  end
+
   ###
   #  Systemd.socket unit control API
   #
@@ -57,53 +64,41 @@ module Yast
   #    socket = Yast::SystemdSocket.find('iscsid', :can_start=>'CanStart', :triggers=>'Triggers')
   #    socket.properties.can_start  # 'yes'
   #    socket.properties.triggers   # 'iscsid.service'
-  #
-  ##
-
-  class SystemdSocketNotFound < StandardError
-    def initialize(socket_name)
-      super "Socket unit '#{socket_name}' not found"
-    end
-  end
-
-  class SystemdSocketClass < Module
+  class SystemdSocket < SystemdUnit
     UNIT_SUFFIX = ".socket".freeze
 
-    # @param propmap [SystemdUnit::PropMap]
-    def find(socket_name, propmap = {})
-      socket_name += UNIT_SUFFIX unless socket_name.end_with?(UNIT_SUFFIX)
-      socket = Socket.new(socket_name, propmap)
-      return nil if socket.properties.not_found?
-      socket
-    end
-
-    # @param propmap [SystemdUnit::PropMap]
-    def find!(socket_name, propmap = {})
-      find(socket_name, propmap) || raise(SystemdSocketNotFound, socket_name)
-    end
-
-    # @param propmap [SystemdUnit::PropMap]
-    def all(propmap = {})
-      sockets = Systemctl.socket_units.map do |socket_unit|
-        Socket.new(socket_unit, propmap)
+    class << self
+      # @param propmap [SystemdUnit::PropMap]
+      def find(socket_name, propmap = {})
+        socket_name += UNIT_SUFFIX unless socket_name.end_with?(UNIT_SUFFIX)
+        socket = new(socket_name, propmap)
+        return nil if socket.properties.not_found?
+        socket
       end
-      sockets.select { |s| s.properties.supported? }
-    end
 
-    # Returns the socket for a given service
-    #
-    # @param service_name [String] Service name (without the `.service` extension)
-    # @return [Yast::SystemdSocketClass::Socket,nil]
-    def for_service(service_name)
-      @socket_finder ||= Yast2::SystemdSocketFinder.new
-      @socket_finder.for_service(service_name)
-    end
-
-    class Socket < SystemdUnit
-      def listening?
-        properties.sub_state == "listening"
+      # @param propmap [SystemdUnit::PropMap]
+      def find!(socket_name, propmap = {})
+        find(socket_name, propmap) || raise(SystemdSocketNotFound, socket_name)
       end
+
+      # @param propmap [SystemdUnit::PropMap]
+      def all(propmap = {})
+        sockets = Systemctl.socket_units.map { |socket_unit| new(socket_unit, propmap) }
+        sockets.select { |s| s.properties.supported? }
+      end
+
+      # Returns the socket for a given service
+      #
+      # @param service_name [String] Service name (without the `.service` extension)
+      # @return [Yast::SystemdSocketClass::Socket,nil]
+      def for_service(service_name)
+        @socket_finder ||= Yast2::SystemdSocketFinder.new
+        @socket_finder.for_service(service_name)
+      end
+    end
+
+    def listening?
+      properties.sub_state == "listening"
     end
   end
-  SystemdSocket = SystemdSocketClass.new
 end
