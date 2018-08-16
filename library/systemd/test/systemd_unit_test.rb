@@ -83,6 +83,7 @@ module Yast
         expect(unit.properties[:loaded?]).not_to be_nil
         expect(unit.properties[:supported?]).not_to be_nil
         expect(unit.properties[:not_found?]).not_to be_nil
+        expect(unit.properties[:static?]).not_to be_nil
         expect(unit.properties[:path]).not_to be_nil
         expect(unit.properties[:error]).not_to be_nil
         expect(unit.properties[:raw]).not_to be_nil

@@ -239,7 +239,8 @@ module Yast2
     def start_modes
       @start_modes = [:on_boot, :manual, :on_demand] unless found?
       return @start_modes if @start_modes
-      @start_modes = [:on_boot, :manual]
+      @start_modes = [:manual]
+      @start_modes << :on_boot unless service.static?
       @start_modes << :on_demand if socket
       @start_modes
     end
@@ -433,9 +434,9 @@ module Yast2
         when :on_boot
           service.enable && (socket ? socket.disable : true)
         when :on_demand
-          service.disable && (socket ? socket.enable : false)
+          disable_service && (socket ? socket.enable : false)
         when :manual
-          service.disable && (socket ? socket.disable : true)
+          disable_service && (socket ? socket.disable : true)
         end
 
       register_error(:start_mode) unless result
@@ -593,6 +594,16 @@ module Yast2
     # @return [Boolean] true if it has changed; false otherwise.
     def any_change?
       CURRENT_VALUE_METHODS.keys.any? { |k| changed_value?(k) }
+    end
+
+    # Disable the service unless it is static
+    #
+    # @note It does not try to disable the service when it is an static one.
+    #
+    # @return [Boolean] false if the operation failed
+    def disable_service
+      return true if service.static?
+      service.disable
     end
   end
 end

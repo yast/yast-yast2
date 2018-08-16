@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Aug 14 17:32:02 UTC 2018 - igonzalezsosa@suse.com
+
+- Add support for systemd services that can only be started
+  on-demand (fate#319428 and bsc#1104568).
+- 4.1.2
+
+-------------------------------------------------------------------
 Thu Aug  9 13:02:38 UTC 2018 - igonzalezsosa@suse.com
 
 - Improve systemd socket detection (related to fate#319428).
