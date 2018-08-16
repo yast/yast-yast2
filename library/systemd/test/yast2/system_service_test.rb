@@ -629,6 +629,15 @@ describe Yast2::SystemService do
             expect(system_service.errors).to include(start_mode: :on_demand)
           end
         end
+
+        context "and the service is static" do
+          let(:service_static) { true }
+
+          it "does not try to disable the service" do
+            expect(service).to_not receive(:disable)
+            system_service.save
+          end
+        end
       end
 
       context "and the new start mode is :manual" do
@@ -652,6 +661,15 @@ describe Yast2::SystemService do
             allow(service).to receive(:disable).and_return(true)
             expect(socket).to receive(:disable).and_return(true)
 
+            system_service.save
+          end
+        end
+
+        context "and the service is static" do
+          let(:service_static) { true }
+
+          it "does not try to disable the service" do
+            expect(service).to_not receive(:disable)
             system_service.save
           end
         end
