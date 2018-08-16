@@ -319,8 +319,8 @@ module Yast
         return "C" if r == :abort
         return "R" if r == :retry
         if r == :ignore
-          # don't show the warning when a refresh fails
-          if !@autorefreshing
+          # don't show the warning when a refresh fails or for signature errors (error 3)
+          if !@autorefreshing && error != 3
             # TODO: add "Don't show again" checkbox
             # a warning popup displayed after pressing [Ignore] after a download error
             Popup.Warning(
