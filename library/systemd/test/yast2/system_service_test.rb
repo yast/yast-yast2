@@ -304,7 +304,7 @@ describe Yast2::SystemService do
       end
     end
 
-    context "when the service has no associated socket" do
+    context "when the service is static" do
       let(:service_static) { true }
 
       it "returns :on_demand and :manual" do
