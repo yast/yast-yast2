@@ -187,7 +187,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 
 # documentation (not included in devel subpackage)
 %doc %dir %{yast_docdir}
-%doc %{yast_docdir}/COPYING
+%license %{yast_docdir}/COPYING
 %{_mandir}/*/*
 %doc %{yast_vardir}/hooks/README.md
 

@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Aug 20 17:13:52 CEST 2018 - schubi@suse.de
+
+- Changed dir of COPYING file
+
+-------------------------------------------------------------------
 Tue Aug 14 17:32:02 UTC 2018 - igonzalezsosa@suse.com
 
 - Add support for systemd services that can only be started
