@@ -48,6 +48,7 @@ module Yast2
         let(:socket) { instance_double(Systemd::Socket) }
 
         before do
+          subject.reset
           allow(Yast2::Systemd::SocketFinder).to receive(:new).and_return(finder)
         end
 

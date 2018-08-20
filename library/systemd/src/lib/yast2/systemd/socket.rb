@@ -95,6 +95,11 @@ module Yast2
           @socket_finder ||= Yast2::Systemd::SocketFinder.new
           @socket_finder.for_service(service_name)
         end
+
+        # Resets the cache for socket finder
+        def reset
+          @socket_finder = nil
+        end
       end
 
       def listening?
