@@ -10,7 +10,7 @@ module Yast2
     #
     #  @example Create a systemd service unit
     #
-    #     class Service < Yast::Systemd::Unit
+    #     class Service < Yast2::Systemd::Unit
     #       SUFFIX = ".service"
     #       PROPMAP = {
     #         before: "Before"
@@ -277,7 +277,7 @@ module Yast2
           else
             # Check for exit code of `systemctl is-enabled systemd_unit.name` ; additionally
             # test the stdout of the command for valid values when the service is enabled
-            # http://www.freedesktop.org/software/systemd/man/systemctl.html#is-enabled%20NAME...
+            # https://www.freedesktop.org/software/systemd/man/systemctl.html#is-enabled%20UNIT%E2%80%A6
             status = systemd_unit.command("is-enabled")
             status.exit.zero? && state_name_enabled?(status.stdout)
           end

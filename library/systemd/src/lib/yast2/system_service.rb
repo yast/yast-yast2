@@ -144,7 +144,7 @@ module Yast2
       # @param name [String] Service name
       # @return [SystemService] System service based on the given name
       #
-      # @see Yast2::Systemd::ServiceClass#build
+      # @see Yast2::Systemd::Service.build
       def build(name)
         new(Yast2::Systemd::Service.build(name))
       end
@@ -537,7 +537,7 @@ module Yast2
 
     # Returns the associated socket
     #
-    # @return [Yast::SystemdSocketClass::Socket]
+    # @return [Yast2::Systemd::Socket]
     def socket
       service && service.socket
     end

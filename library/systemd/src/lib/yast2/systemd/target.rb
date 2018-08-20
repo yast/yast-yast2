@@ -1,3 +1,4 @@
+require "yast"
 require "yast2/systemd/unit"
 
 module Yast2
@@ -9,8 +10,8 @@ module Yast2
       end
     end
 
-    ###
-    # Systemd.target unit control API
+    # API to manage a systemd.target unit
+    #
     # @example How to find a custom systemd target
     #
     #   require 'yast'
@@ -39,7 +40,6 @@ module Yast2
     #   target = Yast2::Systemd::Target.find('graphical')
     #   target.allow_isolate? # must be true to set default target
     #   target.set_default # returns true if success
-    ###
     class Target < Unit
       include Yast::Logger
 

@@ -10,8 +10,7 @@ module Yast2
       end
     end
 
-    ###
-    #  Systemd.socket unit control API
+    #  API to manage a systemd.socket unit
     #
     #  @example How to use it in other yast libraries
     #
@@ -61,7 +60,7 @@ module Yast2
     #    # then available under the #properties instance method. To get an overview of
     #    # available socket properties, try e.g., `systemctl show iscsid.socket`
     #
-    #    socket = Yast::Systemd::Socket.find('iscsid', :can_start=>'CanStart', :triggers=>'Triggers')
+    #    socket = Yast2::Systemd::Socket.find('iscsid', :can_start=>'CanStart', :triggers=>'Triggers')
     #    socket.properties.can_start  # 'yes'
     #    socket.properties.triggers   # 'iscsid.service'
     class Socket < Unit
@@ -83,14 +82,14 @@ module Yast2
 
         # @param propmap [SystemdUnit::PropMap]
         def all(propmap = {})
-          sockets = Systemctl.socket_units.map { |socket_unit| new(socket_unit, propmap) }
+          sockets = Systemctl.socket_units.map { |s| new(s, propmap) }
           sockets.select { |s| s.properties.supported? }
         end
 
         # Returns the socket for a given service
         #
         # @param service_name [String] Service name (without the `.service` extension)
-        # @return [Yast::Systemd::Socket, nil]
+        # @return [Yast2::Systemd::Socket, nil]
         def for_service(service_name)
           @socket_finder ||= Yast2::Systemd::SocketFinder.new
           @socket_finder.for_service(service_name)

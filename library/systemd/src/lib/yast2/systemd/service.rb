@@ -1,15 +1,16 @@
+require "yast"
 require "yast2/systemd/unit"
 
 module Yast2
   module Systemd
-    # Represent a missed service
+    # Represent a missing service
     class ServiceNotFound < StandardError
       def initialize(service_name)
         super "Service unit '#{service_name}' not found"
       end
     end
 
-    # Systemd.service unit control API
+    # API to manage a systemd.service unit
     #
     # @example How to use it in other yast libraries
     #    require 'yast'
@@ -18,17 +19,17 @@ module Yast2
     #    ## Get a service unit by its name
     #    ## If the service unit can't be found, you'll get nil
     #
-    #    service = Yast::Systemd::Service.find('sshd') # service unit object
+    #    service = Yast2::Systemd::Service.find('sshd') # service unit object
     #
     #    # or using the full unit id 'sshd.service'
     #
-    #    service = Yast::Systemd::Service.find('sshd.service')
+    #    service = Yast2::Systemd::Service.find('sshd.service')
     #
     #    ## If you can't handle any nil at the place of calling,
     #    ## use the finder with exclamation mark;
     #    ## Systemd::ServiceNotFound exception will be raised
     #
-    #    service = Yast::Systemd::Service.find!('IcanHasMoar') # Systemd::ServiceNotFound: Service unit 'IcanHasMoar' not found
+    #    service = Yast2::Systemd::Service.find!('IcanHasMoar') # Systemd::ServiceNotFound: Service unit 'IcanHasMoar' not found
     #
     #    ## Get basic unit properties
     #
@@ -65,7 +66,7 @@ module Yast2
     #    # no automatical casting is done by yast.
     #    # To get an overview of available service properties, try e.g., `systemctl show sshd.service`
     #
-    #    service = Yast::Systemd::Service.find('sshd', :type=>'Type')
+    #    service = Yast2::Systemd::Service.find('sshd', :type=>'Type')
     #    service.properties.type  # 'simple'
     class Service < Unit
       Yast.import "Stage"
@@ -129,7 +130,7 @@ module Yast2
         # @param propmap [Systemd::Unit::PropMap]
         # @return [Array<Service>]
         def all(propmap = {})
-          Systemctl.service_units.map { |service_unit| new(service_unit, propmap) }
+          Systemctl.service_units.map { |s| new(s, propmap) }
         end
 
         # Instantiate a Systemd::Service object based on the given name
@@ -197,6 +198,8 @@ module Yast2
       def socket?
         !socket.nil?
       end
+
+    private
 
       def installation_system?
         File.exist?(START_SERVICE_INSTSYS_COMMAND)
