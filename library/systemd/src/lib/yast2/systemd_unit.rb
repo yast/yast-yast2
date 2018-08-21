@@ -3,6 +3,14 @@ require "yast2/systemctl"
 require "ostruct"
 
 module Yast
+  # Represent a fail when systemctl command tries to refresh the service
+  class CouldNotRefreshUnitError < SystemctlError
+    # @param unit [Yast::SystemdUnit]
+    def initialize(unit)
+      super "Could not refresh #{unit.name}"
+    end
+  end
+
   ###
   #  Use this class always as a parent class for implementing various systemd units.
   #  Do not use it directly for ad-hoc implementation of systemd units.
@@ -121,11 +129,15 @@ module Yast
       @name = id.to_s.split(".").first || unit_name
     end
 
-    # @raise [Yast::SystemctlError] if 'systemctl show' cannot be executed
+    # @raise [Yast::CouldNotRefreshUnitError] if 'systemctl show' cannot be executed
     def refresh!
       @properties = show
       @error = properties.error
       properties
+    rescue Yast::SystemctlError
+      @error = "Fails to refresh unit"
+
+      raise Yast::CouldNotRefreshUnitError, self
     end
 
     # Run 'systemctl show' and parse the unit properties

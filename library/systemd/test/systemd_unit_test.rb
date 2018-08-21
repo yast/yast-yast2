@@ -214,8 +214,19 @@ module Yast
     end
 
     describe "#refresh!" do
+      let(:unit) { SystemdUnit.new("your.socket") }
+
+      context "when `show` command cannot be executed" do
+        before do
+          allow_any_instance_of(Yast::SystemdUnit).to receive(:show).and_raise(Yast::SystemctlError, unit)
+        end
+
+        it "raises a `CouldNotRefreshUnitError`" do
+          expect { unit.refresh! }.to raise_error(Yast::CouldNotRefreshUnitError)
+        end
+      end
+
       it "rewrites and returns the properties instance variable" do
-        unit = SystemdUnit.new("your.socket")
         properties = unit.properties
         expect(unit.refresh!).not_to equal(properties)
       end

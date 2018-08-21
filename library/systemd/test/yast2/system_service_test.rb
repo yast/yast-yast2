@@ -531,7 +531,7 @@ describe Yast2::SystemService do
     end
   end
 
-  describe "#save=" do
+  describe "#save" do
     before do
       allow(service).to receive(:enable).and_return(true)
       allow(service).to receive(:disable).and_return(true)
@@ -979,6 +979,19 @@ describe Yast2::SystemService do
         it "returns true" do
           expect(system_service.save).to eq(true)
         end
+
+        context "but it could not refresh the service" do
+          before do
+            allow(service).to receive(:refresh!)
+            allow(system_service).to receive(:perform_start).and_raise(Yast::CouldNotRefreshUnitError, service)
+          end
+
+          it "does not register any error for the action" do
+            system_service.save
+
+            expect(system_service.errors).to_not have_key(:active)
+          end
+        end
       end
 
       context "and the action cannot be performed" do
@@ -1030,7 +1043,7 @@ describe Yast2::SystemService do
           allow(service).to receive(:start).and_return(true)
           allow(socket).to receive(:start).and_return(true)
 
-          allow(service).to receive(:refresh!).and_raise(Yast::SystemctlError.new("error"))
+          allow(service).to receive(:refresh!).and_raise(Yast::CouldNotRefreshUnitError, service)
         end
 
         let(:service_active) { false }
@@ -1038,8 +1051,8 @@ describe Yast2::SystemService do
 
         let(:action) { :start }
 
-        it "raises an exception" do
-          expect { system_service.save }.to raise_error(Yast::SystemctlError)
+        it "reutrns true" do
+          expect(system_service.save).to eq(true)
         end
       end
     end
@@ -1083,7 +1096,7 @@ describe Yast2::SystemService do
 
     context "when the service cannot be refreshed" do
       before do
-        allow(service).to receive(:refresh!).and_raise(Yast::SystemctlError.new("error"))
+        allow(service).to receive(:refresh!).and_raise(Yast::CouldNotRefreshUnitError, service)
       end
 
       it "returns false" do
