@@ -1043,7 +1043,7 @@ describe Yast2::SystemService do
           allow(service).to receive(:start).and_return(true)
           allow(socket).to receive(:start).and_return(true)
 
-          allow(service).to receive(:refresh!).and_raise(Yast::SystemctlError.new("error"))
+          allow(service).to receive(:refresh!).and_raise(Yast::CouldNotRefreshUnitError, service)
         end
 
         let(:service_active) { false }
@@ -1051,8 +1051,8 @@ describe Yast2::SystemService do
 
         let(:action) { :start }
 
-        it "raises an exception" do
-          expect { system_service.save }.to raise_error(Yast::SystemctlError)
+        it "reutrns true" do
+          expect(system_service.save).to eq(true)
         end
       end
     end

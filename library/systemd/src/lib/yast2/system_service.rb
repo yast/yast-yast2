@@ -354,9 +354,15 @@ module Yast2
 
       result = errors.none?
 
-      result && reset && refresh
+      if result
+        reset && refresh
+      end
 
       result
+    rescue Yast::SystemctlError
+      register_error(:active)
+
+      false
     end
 
     # Reverts cached changes
@@ -456,9 +462,8 @@ module Yast2
       result = send("perform_#{action}")
       register_error(:active) if result == false
       result
-    rescue => e
-      register_error(:active) if e.kind_of?(Yast::SystemctlError)
-      false
+    rescue Yast::CouldNotRefreshUnitError
+      true
     end
 
     # Starts the service in the underlying system
