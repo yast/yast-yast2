@@ -45,14 +45,14 @@ module Yast2
 
       UNIT_SUFFIX    = ".target".freeze
       DEFAULT_TARGET = "default.target".freeze
-      # @return [Systemd::Unit::PropMap]
+      # @return [Yast2::Systemd::UnitPropMap]
       PROPMAP        = { allow_isolate: "AllowIsolate" }.freeze
 
       # Disable unsupported methods for target units
       undef_method :start, :stop, :enable, :disable, :restart
 
       class << self
-        # @param propmap [Systemd::Unit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         def find(target_name, propmap = {})
           target_name += UNIT_SUFFIX unless target_name.end_with?(UNIT_SUFFIX)
           target = new(target_name, PROPMAP.merge(propmap))
@@ -65,12 +65,12 @@ module Yast2
           target
         end
 
-        # @param propmap [Systemd::Unit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         def find!(target_name, propmap = {})
           find(target_name, propmap) || raise(Systemd::TargetNotFound, target_name)
         end
 
-        # @param propmap [Systemd::Unit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         def all(propmap = {})
           targets = Systemctl.target_units.map do |target_unit_name|
             find(target_unit_name, propmap)

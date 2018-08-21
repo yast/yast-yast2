@@ -1,5 +1,6 @@
 require "yast"
 require "yast2/systemd/unit"
+require "yast2/systemd/unit_prop_map"
 
 module Yast2
   module Systemd
@@ -76,35 +77,35 @@ module Yast2
 
       class << self
         # @param service_name [String] "foo" or "foo.service"
-        # @param propmap [Systemd::Unit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         # @return [Service,nil] `nil` if not found
-        def find(service_name, propmap = {})
+        def find(service_name, propmap = UnitPropMap.new)
           service = build(service_name, propmap)
           return nil if service.properties.not_found?
           service
         end
 
         # @param service_name [String] "foo" or "foo.service"
-        # @param propmap [Systemd::Unit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         # @return [Service]
         # @raise [Systemd::ServiceNotFound]
-        def find!(service_name, propmap = {})
+        def find!(service_name, propmap = UnitPropMap.new)
           find(service_name, propmap) || raise(Systemd::ServiceNotFound, service_name)
         end
 
         # @param service_names [Array<String>] "foo" or "foo.service"
-        # @param propmap [Systemd::Unit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         # @return [Array<Service,nil>] `nil` if a service is not found,
         #   [] if this helper cannot be used:
         #   either we're in the inst-sys without systemctl,
         #   or it has returned fewer services than requested
         #   (and we cannot match them up)
-        def find_many_at_once(service_names, propmap = {})
+        def find_many_at_once(service_names, propmap = UnitPropMap.new)
           return [] if Yast::Stage.initial
 
           snames = service_names.map { |n| n + UNIT_SUFFIX unless n.end_with?(UNIT_SUFFIX) }
           snames_s = snames.join(" ")
-          pnames_s = Systemd::Unit::DEFAULT_PROPMAP.merge(propmap).values.join(",")
+          pnames_s = UnitPropMap::DEFAULT.merge(propmap).values.join(",")
           out = Systemctl.execute("show  --property=#{pnames_s} #{snames_s}")
           log.error "returned #{out.exit}, #{out.stderr}" unless out.exit.zero? && out.stderr.empty?
           property_texts = out.stdout.split("\n\n")
@@ -117,9 +118,9 @@ module Yast2
         end
 
         # @param service_names [Array<String>] "foo" or "foo.service"
-        # @param propmap [Systemd::Unit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         # @return [Array<Service,nil>] `nil` if not found
-        def find_many(service_names, propmap = {})
+        def find_many(service_names, propmap = UnitPropMap.new)
           services = find_many_at_once(service_names, propmap)
           return services unless services.empty?
 
@@ -127,9 +128,9 @@ module Yast2
           service_names.map { |n| find(n, propmap) }
         end
 
-        # @param propmap [Systemd::Unit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         # @return [Array<Service>]
-        def all(propmap = {})
+        def all(propmap = UnitPropMap.new)
           Systemctl.service_units.map { |s| new(s, propmap) }
         end
 
@@ -139,9 +140,9 @@ module Yast2
         # react when the service does not exist, use Systemd::Service.find.
         #
         # @param service_name [String] "foo" or "foo.service"
-        # @param propmap [Systemd::Unit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         # @return [Service] System service with the given name
-        def build(service_name, propmap = {})
+        def build(service_name, propmap = UnitPropMap.new)
           service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
           new(service_name, propmap)
         end

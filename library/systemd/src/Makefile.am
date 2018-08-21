@@ -9,6 +9,9 @@ ylib_DATA = \
 systemddir = @ylibdir@/yast2/systemd
 systemd_DATA = \
   lib/yast2/systemd/unit.rb \
+  lib/yast2/systemd/unit_prop_map.rb \
+  lib/yast2/systemd/unit_properties.rb \
+  lib/yast2/systemd/unit_installation_properties.rb \
   lib/yast2/systemd/service.rb \
   lib/yast2/systemd/socket.rb \
   lib/yast2/systemd/target.rb \

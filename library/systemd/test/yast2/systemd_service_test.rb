@@ -25,7 +25,7 @@ module Yast2
           properties = OpenStruct.new(
             stdout: "", stderr: "Unit unknown.service could not be found.", exit: 1
           )
-          allow_any_instance_of(Systemd::Unit::Properties)
+          allow_any_instance_of(Systemd::UnitProperties)
             .to receive(:load_systemd_properties)
             .and_return(properties)
         end

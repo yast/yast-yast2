@@ -1,6 +1,7 @@
 require_relative "../../../test/test_helper.rb"
 
 require "yast2/systemd/unit"
+require "yast2/systemd/unit_properties"
 require "yast2/systemd/service"
 require "yast2/systemd/socket"
 require "yast2/systemd/target"
@@ -155,7 +156,7 @@ module SystemdSocketStubs
     stub_unit_command
     stub_systemctl(:socket)
     properties = load_socket_properties(socket)
-    allow_any_instance_of(Yast2::Systemd::Unit::Properties)
+    allow_any_instance_of(Yast2::Systemd::UnitProperties)
       .to receive(:load_systemd_properties)
       .and_return(properties)
   end
@@ -169,7 +170,7 @@ module SystemdServiceStubs
     stub_unit_command
     stub_systemctl(:service)
     properties = load_service_properties(service)
-    allow_any_instance_of(Yast2::Systemd::Unit::Properties)
+    allow_any_instance_of(Yast2::Systemd::UnitProperties)
       .to receive(:load_systemd_properties)
       .and_return(properties)
   end
@@ -191,7 +192,7 @@ module SystemdTargetStubs
     stub_unit_command
     stub_systemctl(:target)
     properties = load_target_properties(target)
-    allow_any_instance_of(Yast2::Systemd::Unit::Properties)
+    allow_any_instance_of(Yast2::Systemd::UnitProperties)
       .to receive(:load_systemd_properties)
       .and_return(properties)
   end

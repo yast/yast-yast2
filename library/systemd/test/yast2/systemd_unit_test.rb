@@ -32,7 +32,7 @@ module Yast2
                 OpenStruct.new("stderr" => "", "stdout" => "enabled", "exit" => 0)
               )
             unit = Systemd::Unit.new("sshd.service")
-            expect(unit.properties).to be_a(Systemd::Unit::InstallationProperties)
+            expect(unit.properties).to be_a(Systemd::UnitInstallationProperties)
             expect(unit.properties.not_found?).to eq(false)
           end
 
@@ -63,7 +63,7 @@ module Yast2
             stub_services(service: "unknown")
             stub_unit_command(success: false)
             unit = Systemd::Unit.new("unknown.service")
-            expect(unit.properties).to be_a(Systemd::Unit::InstallationProperties)
+            expect(unit.properties).to be_a(Systemd::UnitInstallationProperties)
             expect(unit.properties.not_found?).to eq(true)
           end
         end
@@ -73,7 +73,7 @@ module Yast2
     describe "#properties" do
       it "always returns struct including default properties" do
         unit = Systemd::Unit.new("iscsi.socket")
-        expect(unit.properties.to_h.keys).to include(*Systemd::Unit::DEFAULT_PROPMAP.keys)
+        expect(unit.properties.to_h.keys).to include(*Yast2::Systemd::UnitPropMap::DEFAULT.keys)
       end
 
       it "provides status properties methods" do

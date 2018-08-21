@@ -67,7 +67,7 @@ module Yast2
       UNIT_SUFFIX = ".socket".freeze
 
       class << self
-        # @param propmap [SystemdUnit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         def find(socket_name, propmap = {})
           socket_name += UNIT_SUFFIX unless socket_name.end_with?(UNIT_SUFFIX)
           socket = new(socket_name, propmap)
@@ -75,12 +75,12 @@ module Yast2
           socket
         end
 
-        # @param propmap [SystemdUnit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         def find!(socket_name, propmap = {})
           find(socket_name, propmap) || raise(Systemd::SocketNotFound, socket_name)
         end
 
-        # @param propmap [SystemdUnit::PropMap]
+        # @param propmap [Yast2::Systemd::UnitPropMap]
         def all(propmap = {})
           sockets = Systemctl.socket_units.map { |s| new(s, propmap) }
           sockets.select { |s| s.properties.supported? }
