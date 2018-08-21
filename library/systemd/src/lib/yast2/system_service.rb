@@ -342,10 +342,8 @@ module Yast2
 
     # Saves changes into the underlying system
     #
-    # @note All cached changes are reset and the underlying service is refreshed
-    #   when the changes are correctly applied.
-    #
-    # @raise [Yast::SystemctlError] if the service cannot be refreshed
+    # @note All cached changes are reset and the underlying service will be refreshed when the changes
+    #   are correctly applied.
     #
     # @param keep_state [Boolean] Do not change service status. Useful when running on 1st stage.
     # @return [Boolean] true if the service was saved correctly; false otherwise.
@@ -354,7 +352,11 @@ module Yast2
       save_start_mode
       perform_action unless keep_state
 
-      errors.none? && reset && refresh!
+      result = errors.none?
+
+      result && reset && refresh
+
+      result
     end
 
     # Reverts cached changes
