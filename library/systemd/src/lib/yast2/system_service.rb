@@ -375,7 +375,7 @@ module Yast2
     # @return [Boolean] true if the service was refreshed correctly; false otherwise.
     def refresh
       refresh!
-    rescue Yast::SystemctlError
+    rescue Yast::CouldNotRefreshUnitError
       false
     end
 
@@ -453,14 +453,9 @@ module Yast2
 
       result = send("perform_#{action}")
       register_error(:active) if result == false
-
       result
-
-      # FIXME: SystemdService#{start, stop, etc} calls to refresh! internally, so when
-      # this exception is raised we cannot distinguish if the action is failing or
-      # refresh! is failing. For SP1, refresh! should raise a new kind of exception.
-    rescue Yast::SystemctlError
-      register_error(:active)
+    rescue => e
+      register_error(:active) if e.kind_of?(Yast::SystemctlError)
       false
     end
 
