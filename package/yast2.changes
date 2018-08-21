@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Aug 21 14:15:07 UTC 2018 - dgonzalez@suse.com
+
+- Refactor systemd classes, reorganizing them in real classes
+  under the Yast2::Systemd namespace instead of using modules
+  (related to fate#319428).
+- 4.1.3
+
+-------------------------------------------------------------------
 Mon Aug 20 17:13:52 CEST 2018 - schubi@suse.de
 
 - Changed dir of COPYING file
