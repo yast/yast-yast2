@@ -1,6 +1,7 @@
 require "yast"
 require "yast2/systemd/unit"
 require "yast2/systemd/unit_prop_map"
+require "yast2/systemd/socket"
 
 module Yast2
   module Systemd
@@ -190,7 +191,7 @@ module Yast2
       # @return [Yast2::Systemd::Socket,nil]
       # @see Yast2::Systemd::Socket.for_service
       def socket
-        @socket ||= Yast2::Systemd::Socket.for_service(name)
+        @socket ||= Socket.for_service(name)
       end
 
       # Determines whether the service has an associated socket
