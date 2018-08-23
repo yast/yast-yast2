@@ -1,15 +1,15 @@
 #!/usr/bin/env rspec
 
-require_relative "test_helper"
+require_relative "../test_helper"
 require "yast2/systemctl"
 
-module Yast
+module Yast2
   describe Systemctl do
     include SystemctlStubs
 
     describe ".execute" do
       it "returns a struct with command results" do
-        expect(SCR).to receive(:Execute).and_return(
+        expect(Yast::SCR).to receive(:Execute).and_return(
           "exit" => 1, "stderr" => "", "stdout" => ""
         )
         result = Systemctl.execute("enable cups.service")
@@ -21,10 +21,10 @@ module Yast
       end
 
       it "raises exception if the execution has timed out" do
-        stub_const("Yast::Systemctl::TIMEOUT", 1)
-        allow(SCR).to receive(:Execute) { sleep 5 }
-        expect(SCR).to receive(:Execute)
-        expect { Systemctl.execute("disable cups.service") }.to raise_error(SystemctlError)
+        stub_const("Yast2::Systemctl::TIMEOUT", 1)
+        allow(Yast::SCR).to receive(:Execute) { sleep 5 }
+        expect(Yast::SCR).to receive(:Execute)
+        expect { Systemctl.execute("disable cups.service") }.to raise_error(Systemctl::Error)
       end
     end
 

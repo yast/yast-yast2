@@ -27,7 +27,7 @@ describe Yast2::SystemService do
   subject(:system_service) { described_class.new(service) }
 
   let(:service) do
-    instance_double(Yast::SystemdServiceClass::Service,
+    instance_double(Yast2::Systemd::Service,
       name:       "cups",
       enabled?:   service_enabled,
       active?:    service_active,
@@ -42,9 +42,7 @@ describe Yast2::SystemService do
   let(:service_static) { false }
 
   let(:service_socket) do
-    instance_double(Yast::SystemdSocketClass::Socket,
-      enabled?: socket_enabled,
-      active?:  socket_active)
+    instance_double(Yast2::Systemd::Socket, enabled?: socket_enabled, active?: socket_active)
   end
 
   let(:socket_enabled) { true }
@@ -58,11 +56,11 @@ describe Yast2::SystemService do
 
   describe ".find" do
     before do
-      allow(Yast::SystemdService).to receive(:find).with("cups").and_return(systemd_service)
+      allow(Yast2::Systemd::Service).to receive(:find).with("cups").and_return(systemd_service)
     end
 
     context "when the service is found" do
-      let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+      let(:systemd_service) { instance_double(Yast2::Systemd::Service) }
 
       it "returns the service" do
         system_service = described_class.find("cups")
@@ -83,11 +81,11 @@ describe Yast2::SystemService do
 
   describe ".find!" do
     before do
-      allow(Yast::SystemdService).to receive(:find).with("cups").and_return(systemd_service)
+      allow(Yast2::Systemd::Service).to receive(:find).with("cups").and_return(systemd_service)
     end
 
     context "when the service is found" do
-      let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+      let(:systemd_service) { instance_double(Yast2::Systemd::Service) }
 
       it "returns the service" do
         system_service = described_class.find!("cups")
@@ -107,10 +105,10 @@ describe Yast2::SystemService do
   end
 
   describe ".build" do
-    let(:systemd_service) { instance_double(Yast::SystemdServiceClass::Service) }
+    let(:systemd_service) { instance_double(Yast2::Systemd::Service) }
 
     it "returns a systemd service with the given name" do
-      expect(Yast::SystemdService).to receive(:build).with("other")
+      expect(Yast2::Systemd::Service).to receive(:build).with("other")
         .and_return(systemd_service)
       system_service = described_class.build("other")
       expect(system_service.service).to eq(systemd_service)
@@ -118,11 +116,11 @@ describe Yast2::SystemService do
   end
 
   describe ".find_many" do
-    let(:apparmor) { instance_double(Yast::SystemdServiceClass::Service) }
-    let(:cups) { instance_double(Yast::SystemdServiceClass::Service) }
+    let(:apparmor) { instance_double(Yast2::Systemd::Service) }
+    let(:cups) { instance_double(Yast2::Systemd::Service) }
 
     before do
-      allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
+      allow(Yast2::Systemd::Service).to receive(:find_many).with(["apparmor", "cups"])
         .and_return([apparmor, cups])
     end
 
@@ -1005,7 +1003,7 @@ describe Yast2::SystemService do
 
       context "and the action command fails" do
         before do
-          allow(service).to receive(:start).and_raise(Yast::SystemctlError.new("error"))
+          allow(service).to receive(:start).and_raise(Yast2::Systemctl::Error.new("error"))
           allow(socket).to receive(:start).and_return(true)
         end
 
@@ -1030,7 +1028,7 @@ describe Yast2::SystemService do
           allow(service).to receive(:start).and_return(true)
           allow(socket).to receive(:start).and_return(true)
 
-          allow(service).to receive(:refresh!).and_raise(Yast::SystemctlError.new("error"))
+          allow(service).to receive(:refresh!).and_raise(Yast2::Systemctl::Error.new("error"))
         end
 
         let(:service_active) { false }
@@ -1039,7 +1037,7 @@ describe Yast2::SystemService do
         let(:action) { :start }
 
         it "raises an exception" do
-          expect { system_service.save }.to raise_error(Yast::SystemctlError)
+          expect { system_service.save }.to raise_error(Yast2::Systemctl::Error)
         end
       end
     end
@@ -1083,7 +1081,7 @@ describe Yast2::SystemService do
 
     context "when the service cannot be refreshed" do
       before do
-        allow(service).to receive(:refresh!).and_raise(Yast::SystemctlError.new("error"))
+        allow(service).to receive(:refresh!).and_raise(Yast2::Systemctl::Error.new("error"))
       end
 
       it "returns false" do
