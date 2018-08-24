@@ -29,6 +29,8 @@ module UI
   # It also provides checkboxes (reload_flag and enabled_flag) for the user
   # to specify whether the service must be reloaded/restarted after
   # configuration changes and whether it must be enabled at boot time.
+  #
+  # @deprecated Use Yast2::ServiceWidget instead.
   class ServiceStatus
     include Yast::UIShortcuts
     include Yast::I18n

@@ -58,6 +58,9 @@ module Yast2
   #       @service.save
   #     end
   #   end
+  #
+  # @todo Allow to specify the widget ID. Currently, it uses always the same, so you can not use
+  #   more than one instance of this class at the same time.
   class ServiceWidget
     include Yast::I18n
     include Yast::Logger
