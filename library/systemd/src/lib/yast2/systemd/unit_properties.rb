@@ -48,10 +48,10 @@ module Yast2
 
         extract_properties
         self[:active?]     = ACTIVE_STATES.include?(active_state)
-        self[:running?]    = sub_state    == "running"
-        self[:loaded?]     = load_state   == "loaded"
-        self[:not_found?]  = load_state   == "not-found"
-        self[:static?]     = load_state   == "static"
+        self[:running?]    = sub_state  == "running"
+        self[:loaded?]     = load_state == "loaded"
+        self[:not_found?]  = load_state == "not-found"
+        self[:static?]     = unit_file_state == "static"
         self[:enabled?]    = read_enabled_state
         self[:supported?]  = SUPPORTED_STATES.include?(unit_file_state)
         self[:can_reload?] = can_reload == "yes"
