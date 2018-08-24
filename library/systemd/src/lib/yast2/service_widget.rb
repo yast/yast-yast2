@@ -194,7 +194,7 @@ module Yast2
       system_start_mode = service.current_start_mode
       res = []
 
-      res << Item(Id(:service_widget_autostart_on_boot), _("Start on boot"), current_start_mode == :on_boot)
+      res << Item(Id(:service_widget_autostart_on_boot), _("Start on boot"), current_start_mode == :on_boot) if service.support_start_on_boot?
       res << Item(Id(:service_widget_autostart_on_demand), _("Start on demand"), current_start_mode == :on_demand) if service.support_start_on_demand?
       res << Item(Id(:service_widget_autostart_manual), _("Do not start"), current_start_mode == :manual)
       res << Item(Id(:service_widget_autostart_inconsistent), _("Keep current settings"), current_start_mode == :inconsistent) if system_start_mode == :inconsistent
