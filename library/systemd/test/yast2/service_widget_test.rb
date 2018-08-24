@@ -90,14 +90,10 @@ describe Yast2::ServiceWidget do
       let(:autostart_selector) { find_term(subject.content, :ComboBox, :service_widget_autostart) }
       let(:items) { autostart_selector.params.last }
 
-      before do
-        allow(service).to receive(:support_start_on_demand?).and_return(on_demand)
-      end
-
       context "when the service supports to be started on demand" do
         let(:on_demand) { true }
 
-        it "includes a on demand option" do
+        it "includes an 'on demand' option" do
           expect(has_item?(autostart_selector, :service_widget_autostart_on_demand)).to eq(true)
         end
       end
@@ -105,7 +101,7 @@ describe Yast2::ServiceWidget do
       context "when the service does not support to be started on demand" do
         let(:on_demand) { false }
 
-        it "does not include an on demand option" do
+        it "does not include an 'on demand' option" do
           expect(has_item?(autostart_selector, :service_widget_autostart_on_demand)).to eq(false)
         end
       end
@@ -113,7 +109,7 @@ describe Yast2::ServiceWidget do
       context "when the service supports to be started on boot" do
         let(:on_boot) { true }
 
-        it "includes a on boot option" do
+        it "includes an 'on boot' option" do
           expect(has_item?(autostart_selector, :service_widget_autostart_on_boot)).to eq(true)
         end
       end
@@ -121,12 +117,12 @@ describe Yast2::ServiceWidget do
       context "when the service does not support to be started on boot" do
         let(:on_boot) { false }
 
-        it "does not include an on boot option" do
+        it "does not include an 'on boot' option" do
           expect(has_item?(autostart_selector, :service_widget_autostart_on_boot)).to eq(false)
         end
       end
 
-      it "includes an manual option" do
+      it "includes a 'manual' option" do
         expect(has_item?(autostart_selector, :service_widget_autostart_manual)).to eq(true)
       end
     end

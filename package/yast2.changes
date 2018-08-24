@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Fri Aug 24 13:36:42 UTC 2018 - igonzalezsosa@suse.com
 
-- Fix the Yast2::ServiceWidget to not should "On Boot" option
-  for on-demand only services (related to fate#319428).
+- Fix the Yast2::ServiceWidget to not show the "On Boot" option
+  when it is not supported (related to fate#319428).
 - 4.1.4
 
 -------------------------------------------------------------------
