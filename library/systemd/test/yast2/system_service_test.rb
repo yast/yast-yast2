@@ -369,6 +369,24 @@ describe Yast2::SystemService do
     end
   end
 
+  describe "#support_start_on_boot?" do
+    context "when the service is not static" do
+      let(:service_static) { false }
+
+      it "returns true" do
+        expect(system_service.support_start_on_boot?).to eq(true)
+      end
+    end
+
+    context "when the service is static" do
+      let(:service_static) { true }
+
+      it "returns false" do
+        expect(system_service.support_start_on_boot?).to eq(false)
+      end
+    end
+  end
+
   describe "#active?" do
     context "when no action has been performed over the system service" do
       context "and the underlying service is active" do
