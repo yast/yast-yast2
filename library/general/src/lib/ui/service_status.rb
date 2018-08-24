@@ -30,7 +30,7 @@ module UI
   # to specify whether the service must be reloaded/restarted after
   # configuration changes and whether it must be enabled at boot time.
   #
-  # @deprecated Use Yast2::ServiceWidget instead.
+  # @deprecated Use CWM::ServiceWidget instead.
   class ServiceStatus
     include Yast::UIShortcuts
     include Yast::I18n

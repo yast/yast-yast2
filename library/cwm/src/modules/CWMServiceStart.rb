@@ -27,7 +27,7 @@ require "yast"
 module Yast
   # Routines for service start widget handling.
   #
-  # @deprecated Use Yast2::ServiceWidget instead.
+  # @deprecated Use CWM::ServiceWidget instead.
   class CWMServiceStartClass < Module
     def main
       Yast.import "UI"
