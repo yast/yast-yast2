@@ -23,16 +23,33 @@
 require_relative "../test_helper"
 
 require "yast2/service_widget"
+require "yast2/system_service"
 
 describe Yast2::ServiceWidget do
-  let(:service) do
-    double(
-      "Yast2::SystemService",
-      currently_active?:  true,
-      start_mode:         :on_boot,
-      current_start_mode: :on_boot
-    ).as_null_object
+  # @param combobox [Yast::Term]
+  # @param id [Symbol]
+  def has_item?(combobox, id)
+    items = combobox.params.last
+    items.any? { |i| i.params[0].params == [id] }
   end
+
+  let(:service) do
+    instance_double(
+      Yast2::SystemService,
+      currently_active?:        true,
+      start_mode:               :on_boot,
+      current_start_mode:       :on_boot,
+      start_modes:              [:on_boot, :on_demand, :manual],
+      support_reload?:          true,
+      support_start_on_boot?:   on_boot,
+      support_start_on_demand?: on_demand,
+      reset:                    nil,
+      action:                   nil
+    )
+  end
+
+  let(:on_demand) { true }
+  let(:on_boot) { true }
 
   subject do
     described_class.new(
@@ -67,6 +84,47 @@ describe Yast2::ServiceWidget do
       autostart_selector = find_term(subject.content, :ComboBox, :service_widget_autostart)
 
       expect(autostart_selector).to_not be_nil
+    end
+
+    describe "start mode selector" do
+      let(:autostart_selector) { find_term(subject.content, :ComboBox, :service_widget_autostart) }
+      let(:items) { autostart_selector.params.last }
+
+      context "when the service supports to be started on demand" do
+        let(:on_demand) { true }
+
+        it "includes an 'on demand' option" do
+          expect(has_item?(autostart_selector, :service_widget_autostart_on_demand)).to eq(true)
+        end
+      end
+
+      context "when the service does not support to be started on demand" do
+        let(:on_demand) { false }
+
+        it "does not include an 'on demand' option" do
+          expect(has_item?(autostart_selector, :service_widget_autostart_on_demand)).to eq(false)
+        end
+      end
+
+      context "when the service supports to be started on boot" do
+        let(:on_boot) { true }
+
+        it "includes an 'on boot' option" do
+          expect(has_item?(autostart_selector, :service_widget_autostart_on_boot)).to eq(true)
+        end
+      end
+
+      context "when the service does not support to be started on boot" do
+        let(:on_boot) { false }
+
+        it "does not include an 'on boot' option" do
+          expect(has_item?(autostart_selector, :service_widget_autostart_on_boot)).to eq(false)
+        end
+      end
+
+      it "includes a 'manual' option" do
+        expect(has_item?(autostart_selector, :service_widget_autostart_manual)).to eq(true)
+      end
     end
   end
 

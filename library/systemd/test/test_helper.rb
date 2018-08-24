@@ -19,7 +19,7 @@ def find_term(content, type, id)
   content.nested_find do |term|
     next unless term.is_a?(Yast::Term) && term.value == type
 
-    term.params.select { |i| i.is_a?(Yast::Term) && i.params == [id] }
+    term.params.any? { |i| i.is_a?(Yast::Term) && i.params == [id] }
   end
 end
 

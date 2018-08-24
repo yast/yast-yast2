@@ -280,6 +280,13 @@ module Yast2
       start_modes.include?(:on_demand)
     end
 
+    # Whether the service supports :on_boot start mode
+    #
+    # @return [Boolean]
+    def support_start_on_boot?
+      start_modes.include?(:on_boot)
+    end
+
     # Whether the service will be active after calling {#save}
     #
     # @note This is a temporary value (not saved yet). Use {#currently_active?} to get the actual

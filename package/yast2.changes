@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Aug 24 13:36:42 UTC 2018 - igonzalezsosa@suse.com
+
+- Fix the Yast2::ServiceWidget to not show the "On Boot" option
+  when it is not supported (related to fate#319428).
+- 4.1.4
+
+-------------------------------------------------------------------
 Tue Aug 21 14:15:07 UTC 2018 - dgonzalez@suse.com
 
 - Refactor systemd classes, reorganizing them in real classes
