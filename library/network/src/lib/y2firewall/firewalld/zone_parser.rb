@@ -51,7 +51,6 @@ module Y2Firewall
         @zones_definition.reject(&:empty?).each do |line|
           attribute, _value = line.split("\s")
           next if !attribute
-
           if @zone_names.include?(attribute)
             zone = Zone.new(name: attribute)
             zones << zone
@@ -61,10 +60,14 @@ module Y2Firewall
           next unless zone
 
           attribute, value = line.lstrip.split(":\s")
+          attribute = "short" if attribute == "summary"
+          attribute = "rich_rules" if attribute == "rich rules"
 
           next unless zone.respond_to?("#{attribute}=")
           if BOOLEAN_ATTRIBUTES.include?(attribute)
             zone.public_send("#{attribute}=", value == "yes" ? true : false)
+          elsif zone.attributes.include?(attribute.to_sym)
+            zone.public_send("#{attribute}=", value.to_s)
           else
             zone.public_send("#{attribute}=", value.to_s.split)
           end

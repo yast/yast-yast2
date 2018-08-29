@@ -1032,7 +1032,7 @@ module Yast
       ipaddr = NetworkInterfaces.GetValue(name, "IPADDR")
       # BNC #483455: Interface zone name
       zone = firewalld.zones.find { |z| z.interfaces.include?(name) }
-      zone_full_name = zone ? zone.full_name : _("Interface is not assigned to any zone")
+      zone_short_name = zone ? zone.short : _("Interface is not assigned to any zone")
       if label == "static" || label == "" || label.nil?
         label = ipaddr
       else
@@ -1042,7 +1042,7 @@ module Yast
       if label.nil? || label == ""
         name
       else
-        "#{name} (#{label} / #{zone_full_name})"
+        "#{name} (#{label} / #{zone_short_name})"
       end
     end
 

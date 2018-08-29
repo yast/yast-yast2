@@ -31,6 +31,35 @@ module  Y2Firewall
         end
       end
 
+      # @param attributes [Array<Symbol] relation or attribute names
+      def has_attribute(*attributes, cache: false)
+        define_method "attributes" do
+          attributes
+        end
+
+        attributes.each do |attribute|
+          attr_reader attribute
+
+          define_method "#{attribute}=" do |item|
+            instance_variable_set("@#{attribute}", item)
+
+            modified!(attribute) if cache
+          end
+
+          define_method "current_#{attribute}" do
+            api.public_send(attribute, name)
+          end
+        end
+
+        define_method "apply_attributes_changes!" do
+          attributes.each do |attribute|
+            next if cache && !modified?(attribute)
+            api.public_send("#{attribute}=", name, public_send(attribute))
+          end
+          true
+        end
+      end
+
       # Defines a set of methods to operate over array based firewalld
       # attributes like services, interfaces, protocols, ports... Bang! methods
       # applies the object modifications into the firewalld zone using the
@@ -83,7 +112,7 @@ module  Y2Firewall
       #   # Apply all the relations changes
       #   zone.apply_relations_changes!
       #
-      # @param args [Array<Symbol] relation or attribute names
+      # @param relations [Array<Symbol] relation or attribute names
       def has_many(*relations, scope: nil, cache: false) # rubocop:disable Style/PredicateName
         scope = "#{scope}_" if scope
         enable_modifications_cache if cache

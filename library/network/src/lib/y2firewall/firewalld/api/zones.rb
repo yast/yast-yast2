@@ -73,15 +73,23 @@ module Y2Firewall
         # @param permanent [Boolean] if true it adds the --permanent option the
         # command to be executed
         # @return [Array<String>] list of all information for given zone
-        def list_all(zone, permanent: permanent?)
-          string_command("--zone=#{zone}", "--list-all", permanent: permanent).split(" ")
+        def list_all(zone, permanent: permanent?, verbose: false)
+          if verbose
+            string_command("--zone=#{zone}", "--verbose", "--list-all", permanent: permanent).split(" ")
+          else
+            string_command("--zone=#{zone}", "--list-all", permanent: permanent).split(" ")
+          end
         end
 
         # @param permanent [Boolean] if true it adds the --permanent option the
         # command to be executed
         # @return [Array<String>] list of all information for all firewall zones
-        def list_all_zones(permanent: permanent?)
-          string_command("--list-all-zones", permanent: permanent).split("\n")
+        def list_all_zones(permanent: permanent?, verbose: false)
+          if verbose
+            string_command("--list-all-zones", "--verbose", permanent: permanent).split("\n")
+          else
+            string_command("--list-all-zones", permanent: permanent).split("\n")
+          end
         end
 
         ### Interfaces ###
@@ -258,6 +266,30 @@ module Y2Firewall
           return true if !masquerade_enabled?(zone)
 
           run_command("--zone=#{zone}", "--remove-masquerade")
+        end
+
+        def short(zone)
+          string_command("--zone=#{zone}", "--get-short")
+        end
+
+        def short=(zone, short_description)
+          string_command("--zone=#{zone}", "--set-short=#{short_description}")
+        end
+
+        def description(zone)
+          string_command("--zone=#{zone}", "--get-description")
+        end
+
+        def description=(zone, long_description)
+          run_command("--zone=#{zone}", "--set-description=#{long_description}")
+        end
+
+        def target(zone)
+          string_command("--zone=#{zone}", "--get-target")
+        end
+
+        def target=(zone,target)
+          run_command("--zone=#{zone}", "--set-target=#{target}")
         end
       end
     end

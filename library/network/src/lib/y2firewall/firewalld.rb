@@ -83,7 +83,7 @@ module Y2Firewall
     # @return [Boolean] true
     def read
       return false unless installed?
-      @zones = ZoneParser.new(api.zones, api.list_all_zones).parse
+      @zones = ZoneParser.new(api.zones, api.list_all_zones(verbose: true)).parse
       @log_denied_packets = api.log_denied_packets
       @default_zone       = api.default_zone
       # The list of services is not read or initialized because takes time and

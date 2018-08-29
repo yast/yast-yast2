@@ -33,24 +33,12 @@ module Y2Firewall
 
       textdomain "base"
 
-      # Map of known zone names and description
-      KNOWN_ZONES = {
-        "block"    => N_("Block Zone"),
-        "dmz"      => N_("Demilitarized Zone"),
-        "drop"     => N_("Drop Zone"),
-        "external" => N_("External Zone"),
-        "home"     => N_("Home Zone"),
-        "internal" => N_("Internal Zone"),
-        "public"   => N_("Public Zone"),
-        "trusted"  => N_("Trusted Zone"),
-        "work"     => N_("Work Zone")
-      }.freeze
-
       # @return [String] Zone name
       attr_reader :name
 
       # @see Y2Firewall::Firewalld::Relations
       has_many :services, :interfaces, :protocols, :ports, :sources, cache: true
+      has_attribute :name, :short, :description, :target, cache: true
 
       # @return [Boolean] Whether masquerade is enabled or not
       attr_reader :masquerade
@@ -67,10 +55,6 @@ module Y2Firewall
         @name = name || api.default_zone
       end
 
-      def self.known_zones
-        KNOWN_ZONES
-      end
-
       # Setter method for enabling masquerading.
       #
       # @param enabled [Boolean] true for enable; false for disable
@@ -80,20 +64,12 @@ module Y2Firewall
         @masquerade = enable || false
       end
 
-      # Known full name of the known zones. Usefull when the API is not
-      # accessible or when make sense to not call it directly to obtain
-      # the full name.
-      #
-      # @return [String] zone full name
-      def full_name
-        self.class.known_zones[name]
-      end
-
       # Apply all the changes in firewalld but do not reload it
       def apply_changes!
         return true unless modified?
 
         apply_relations_changes!
+        apply_attributes_changes!
         if modified?(:masquerade)
           masquerade? ? api.add_masquerade(name) : api.remove_masquerade(name)
         end
