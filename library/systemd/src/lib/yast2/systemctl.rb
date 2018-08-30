@@ -21,7 +21,7 @@ module Yast2
     COMMAND_OPTIONS = " --no-legend --no-pager --no-ask-password ".freeze
     ENV_VARS        = " LANG=C TERM=dumb COLUMNS=1024 ".freeze
     SYSTEMCTL       = ENV_VARS + CONTROL + COMMAND_OPTIONS
-    TIMEOUT         = 30 # seconds
+    TIMEOUT         = 40 # seconds
 
     class << self
       BASH_SCR_PATH = Yast::Path.new(".target.bash_output")
