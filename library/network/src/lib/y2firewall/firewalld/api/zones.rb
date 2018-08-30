@@ -33,6 +33,22 @@ module Y2Firewall
           string_command("--get-zones").split(" ")
         end
 
+        # Create the given zone in firewalld. New zones must be created
+        # permanently
+        #
+        # @param zone [String] The firewall zone name
+        def create_zone(zone)
+          run_command("--new-zone=#{zone}", permanent: offline? ? false : true)
+        end
+
+        # Delete the given zone from firewalld. Deleted zones must be deleted
+        # permanently
+        #
+        # @param zone [String] The firewall zone name to be deleted
+        def delete_zone(zone)
+          run_command("--delete-zone=#{zone}", permanent: offline? ? false : true)
+        end
+
         # @param zone [String] The firewall zone
         # @param permanent [Boolean] if true it adds the --permanent option the
         # command to be executed

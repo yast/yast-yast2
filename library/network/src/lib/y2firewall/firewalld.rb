@@ -54,6 +54,8 @@ module Y2Firewall
     attr_accessor :api
     # @return [Array <Y2Firewall::Firewalld::Zone>] firewalld zones
     attr_accessor :zones
+    # @return [Array <String>] current zone names
+    attr_accessor :current_zones
     # @return [Array <Y2Firewall::Firewalld::Service>] firewalld services. To
     # avoid performance problems it is empty by default and the services are
     # added when needed by the find_service method.
@@ -83,12 +85,30 @@ module Y2Firewall
     # @return [Boolean] true
     def read
       return false unless installed?
+      @current_zones = api.zones
       @zones = ZoneParser.new(api.zones, api.list_all_zones(verbose: true)).parse
       @log_denied_packets = api.log_denied_packets
       @default_zone       = api.default_zone
       # The list of services is not read or initialized because takes time and
       # affects to the performance and also the services are rarely touched.
       @read = true
+    end
+
+    # Add a not existent zones to the list of zones
+    #
+    # @return [Boolean] true if a new one is added; false otherwise
+    def add_zone(name)
+      return false if find_zone(name)
+      zones << Y2Firewall::Firewalld::Zone.new(name: name)
+      true
+    end
+
+    # Remove the given zone from the list of zones
+    #
+    # @return [Boolean] true if it was removed; false otherwise
+    def remove_zone(name)
+      removed = zones.reject! {|z| z.name == name }
+      !removed.nil?
     end
 
     # Return from the zones list the one which matches the given name
@@ -131,7 +151,7 @@ module Y2Firewall
     def modified?
       default_zone != api.default_zone ||
         log_denied_packets != api.log_denied_packets ||
-        zones.any?(&:modified?)
+        zones_modified?
     end
 
     # Apply the changes to the modified zones and sets the logging option
@@ -143,10 +163,30 @@ module Y2Firewall
     def write_only
       return false unless installed?
       read unless read?
-      zones.each { |z| z.apply_changes! if z.modified? }
+      apply_zones_changes!
       api.log_denied_packets = log_denied_packets if log_denied_packets != api.log_denied_packets
       api.default_zone       = default_zone if default_zone != api.default_zone
       true
+    end
+
+    # Apply the changes done in each of the modified zones. It will create or
+    # delete all the new or removed zones depending on each case.
+    def apply_zones_changes!
+      zones.each do |zone|
+        api.create_zone(zone.name) unless current_zones.include?(zone.name)
+        zone.apply_changes! if zone.modified?
+      end
+      current_zones.each do |name|
+        api.delete_zone(name) unless zones.any? {|zone| zone.name == name }
+      end
+      true
+    end
+
+    # Return whether the current zones have been modified or not
+    #
+    # @return [Boolean] true if some zone have changed; false otherwise
+    def zones_modified?
+      (current_zones.sort != zones.map(&:name).sort) || zones.any?(&:modified?)
     end
 
     # Return a map with current firewalld settings.
