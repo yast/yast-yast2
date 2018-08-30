@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug 30 11:21:14 UTC 2018 - David Díaz <dgonzalez@suse.com>
+
+- Increase timeout for the execution of systemctl commands
+  (bsc#1098910).
+- 4.1.5
+
+-------------------------------------------------------------------
 Fri Aug 24 13:36:42 UTC 2018 - igonzalezsosa@suse.com
 
 - Fix the Yast2::ServiceWidget to not show the "On Boot" option
