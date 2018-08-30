@@ -201,6 +201,15 @@ module Yast2
       services.any?(&:support_start_on_demand?)
     end
 
+    # Whether the service supports :on_boot start mode
+    #
+    # @see Yast2::SystemService#support_start_on_boot?
+    #
+    # @return [Boolean]
+    def support_start_on_boot?
+      services.any?(&:support_start_on_boot?)
+    end
+
     # Errors when trying to write changes to the underlying system
     #
     # @see Yast2::SystemService#errors

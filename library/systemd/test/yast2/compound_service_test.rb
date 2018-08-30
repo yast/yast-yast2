@@ -292,10 +292,46 @@ describe Yast2::CompoundService do
   end
 
   describe "#support_start_on_demand?" do
-    subject { described_class.new(service(support_start_on_demand?: true), service(support_start_on_demand?: false)) }
+    let(:service1) { service(support_start_on_demand?: false) }
 
-    it "returns true if any service supports starting on demand" do
-      expect(subject.support_start_on_demand?).to eq true
+    subject { described_class.new(service1, service2) }
+
+    context "when any service supports starting on demand" do
+      let(:service2) { service(support_start_on_demand?: true) }
+
+      it "returns true" do
+        expect(subject.support_start_on_demand?).to eq true
+      end
+    end
+
+    context "when no service support starting on demand" do
+      let(:service2) { service(support_start_on_demand?: false) }
+
+      it "returns false" do
+        expect(subject.support_start_on_demand?).to eq false
+      end
+    end
+  end
+
+  describe "#support_start_on_boot?" do
+    let(:service1) { service(support_start_on_boot?: false) }
+
+    subject { described_class.new(service1, service2) }
+
+    context "when any service supports starting on boot" do
+      let(:service2) { service(support_start_on_boot?: true) }
+
+      it "returns true" do
+        expect(subject.support_start_on_boot?).to eq true
+      end
+    end
+
+    context "when no service support starting on boot" do
+      let(:service2) { service(support_start_on_boot?: false) }
+
+      it "returns false" do
+        expect(subject.support_start_on_boot?).to eq false
+      end
     end
   end
 
