@@ -28,7 +28,10 @@ module Y2Firewall
     class ZoneParser
       include Yast::Logger
 
+      attr_accessor :zone_names, :zone_entries, :zones_definition
+
       BOOLEAN_ATTRIBUTES = ["icmp-block-inversion", "masquerade"].freeze
+      MULTIPLE_ENTRIES = ["rich_rules", "forward_ports"]
 
       # Constructor
       #
@@ -38,6 +41,7 @@ module Y2Firewall
       def initialize(zone_names, zones_definition)
         @zone_names = zone_names
         @zones_definition = zones_definition
+        @zone_entries = {}
       end
 
       # It parses the zone definition instantiating the defined zones and
@@ -46,36 +50,74 @@ module Y2Firewall
       # @return [Array<Y2Firewall::Firewalld::Zone>]
       def parse
         return [] if !@zone_names || @zone_names.empty?
-        zone = nil
+        parse_zones
+        initialize_zones
+      end
+
+    private
+
+      def initialize_zones
         zones = []
-        @zones_definition.reject(&:empty?).each do |line|
-          attribute, _value = line.split("\s")
-          next if !attribute
-          if @zone_names.include?(attribute)
-            zone = Zone.new(name: attribute)
-            zones << zone
-            next
+        zone_entries.each do |name, config|
+          zone = Zone.new(name: name)
+          zones << zone
+
+          config.each do |attribute, entries|
+            attribute = "short" if attribute == "summary"
+            attribute = "rich_rules" if attribute == "rich rules"
+            next unless zone.respond_to?("#{attribute}=")
+
+            value = MULTIPLE_ENTRIES.include?(attribute) ? entries.reject(&:empty?) : entries.first.to_s
+
+            if BOOLEAN_ATTRIBUTES.include?(attribute)
+              zone.public_send("#{attribute}=", value == "yes" ? true : false)
+            elsif MULTIPLE_ENTRIES.include?(attribute)
+              zone.public_send("#{attribute}=", value)
+            else
+              if zone.attributes.include?(attribute.to_sym)
+                zone.public_send("#{attribute}=", value)
+              else
+                zone.public_send("#{attribute}=", value.split)
+              end
+            end
           end
 
-          next unless zone
-
-          attribute, value = line.lstrip.split(":\s")
-          attribute = "short" if attribute == "summary"
-          attribute = "rich_rules" if attribute == "rich rules"
-
-          next unless zone.respond_to?("#{attribute}=")
-          if BOOLEAN_ATTRIBUTES.include?(attribute)
-            zone.public_send("#{attribute}=", value == "yes" ? true : false)
-          elsif zone.attributes.include?(attribute.to_sym)
-            zone.public_send("#{attribute}=", value.to_s)
-          else
-            zone.public_send("#{attribute}=", value.to_s.split)
-          end
+          zone.untouched!
         end
 
-        zones.map(&:untouched!)
-
         zones
+      end
+
+      def parse_zones
+        current_zone = nil
+        current_attribute = nil
+        zones_definition.each do |line|
+          next if line.lstrip.empty?
+          # If  the entry looks like a zone name
+          if line.start_with?(/\w/)
+            attribute, _value = line.split(/\s*\(active\)\s*$/)
+            if !attribute || !zone_names.include?(attribute)
+              current_zone = nil
+              next
+            end
+
+            current_zone = attribute
+          else
+            if current_zone
+              attribute, value = line.split(":\s")
+              if attribute && attribute.start_with?(/\s\s\w/)
+                current_attribute = attribute.lstrip.gsub("-","_")
+                zone_entries[current_zone] ||= {}
+                zone_entries[current_zone][current_attribute] ||= [value.to_s]
+              else
+                if current_attribute
+                  zone_entries[current_zone][current_attribute] ||= []
+                  zone_entries[current_zone][current_attribute] << line.lstrip
+                end
+              end
+            end
+          end
+        end
       end
     end
   end

@@ -37,7 +37,8 @@ module Y2Firewall
       attr_reader :name
 
       # @see Y2Firewall::Firewalld::Relations
-      has_many :services, :interfaces, :protocols, :ports, :sources, cache: true
+      has_many :services, :interfaces, :protocols, :ports, :sources,
+        :source_ports, :forward_ports, :rich_rules, cache: true
       has_attribute :name, :short, :description, :target, cache: true
 
       # @return [Boolean] Whether masquerade is enabled or not
