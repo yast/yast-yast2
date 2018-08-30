@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Thu Aug 30 11:21:14 UTC 2018 - David Díaz <dgonzalez@suse.com>
+Thu Aug 30 11:21:14 UTC 2018 - dgonzalez@suse.com
 
 - Increase timeout for the execution of systemctl commands
   (bsc#1098910).
