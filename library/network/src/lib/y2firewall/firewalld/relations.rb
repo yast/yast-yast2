@@ -32,7 +32,8 @@ module  Y2Firewall
       end
 
       # @param attributes [Array<Symbol] relation or attribute names
-      def has_attribute(*attributes, cache: false) # rubocop:disable Style/PredicateName
+      def has_attribute(*attributes, scope: nil, cache: false) # rubocop:disable Style/PredicateName
+        scope = "#{scope}_" if scope
         define_method "attributes" do
           attributes
         end
@@ -47,7 +48,11 @@ module  Y2Firewall
           end
 
           define_method "current_#{attribute}" do
-            api.public_send(attribute, name)
+            if scope
+              api.public_send("#{scope}#{attribute}", name)
+            else
+              api.public_send(attribute, name)
+            end
           end
         end
 

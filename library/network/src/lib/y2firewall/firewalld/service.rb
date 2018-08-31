@@ -54,7 +54,7 @@ module Y2Firewall
 
       has_many :ports, :protocols, scope: "service", cache: true
       # FIXME: scope is missing
-      has_attribute :short, :description
+      has_attribute :short, :description, scope: "service", cache: true
 
       # Convenience method for setting the tcp and udp ports of a given
       # service. If the service is found, it modify the ports according to the
@@ -103,8 +103,8 @@ module Y2Firewall
       # @return [Boolean] true if read
       def read
         return false unless supported?
-        @short        = api.service_short(name)
-        @description  = api.service_description(name)
+        @short        = current_short
+        @description  = current_description
         @protocols    = current_protocols
         @ports        = current_ports
         untouched!

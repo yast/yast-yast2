@@ -137,7 +137,9 @@ module Y2Firewall
     # @return [Y2Firewall::Firewalld::Service] the recently added service
     def read_service(name)
       raise(Service::NotFound, name) unless installed?
-      service_parser.parse(name)
+      service = service_parser.parse(name)
+      services << service
+      service
     end
 
     # Return true if the logging config or any of the zones where modified

@@ -19,6 +19,7 @@
 # current contact information at www.suse.com.
 # ------------------------------------------------------------------------------
 
+require "English"
 require "yast"
 require "y2firewall/firewalld/api"
 require "y2firewall/firewalld/service"
