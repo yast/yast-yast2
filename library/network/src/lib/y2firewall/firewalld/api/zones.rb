@@ -88,6 +88,30 @@ module Y2Firewall
         # @param zone [String] The firewall zone
         # @param permanent [Boolean] if true it adds the --permanent option the
         # command to be executed
+        # @return [Array<String>] list of zone's source ports
+        def list_source_ports(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-source-ports", permanent: permanent).split(" ")
+        end
+
+        # @param zone [String] The firewall zone
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
+        # @return [Array<String>] list of zone's forward ports
+        def list_forward_ports(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-forward-ports", permanent: permanent).split("\n")
+        end
+
+        # @param zone [String] The firewall zone
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
+        # @return [Array<String>] list of zone's rich rules
+        def list_rich_rules(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-rich-rules", permanent: permanent).split("\n")
+        end
+
+        # @param zone [String] The firewall zone
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
         # @return [Array<String>] list of all information for given zone
         def list_all(zone, permanent: permanent?, verbose: false)
           if verbose
@@ -181,6 +205,60 @@ module Y2Firewall
         # @return [Boolean] True if source was changed
         def change_source(zone, source, permanent: permanent?)
           run_command("--zone=#{zone}", "--change-source=#{source}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param port [String] The network source port
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
+        # @return [Boolean] True if the port was added
+        def add_source_port(zone, port, permanent: permanent?)
+          run_command("--zone=#{zone}", "--add-source-port=#{port}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param port [String] The network source port
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
+        # @return [Boolean] True if the port was removed
+        def remove_source_port(zone, port, permanent: permanent?)
+          run_command("--zone=#{zone}", "--remove-source-port=#{port}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param port [String] The network forward port
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
+        # @return [Boolean] True if the port was added
+        def add_forward_port(zone, port, permanent: permanent?)
+          run_command("--zone=#{zone}", "--add-forward-port=#{port}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param port [String] The network source port
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
+        # @return [Boolean] True if the port was removed
+        def remove_forward_port(zone, port, permanent: permanent?)
+          run_command("--zone=#{zone}", "--remove-forward-port=#{port}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param rule [String] The firewalld rule to be added
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
+        # @return [Boolean] True if the rich rule was added
+        def add_rich_rule(zone, rule, permanent: permanent?)
+          run_command("--zone=#{zone}", "--add-rich-rule=#{rule}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param rule [String] The firewalld rich rule to be removed
+        # @param permanent [Boolean] if true it adds the --permanent option the
+        # command to be executed
+        # @return [Boolean] True if the rich rule was removed
+        def remove_rich_rule(zone, rule, permanent: permanent?)
+          run_command("--zone=#{zone}", "--remove-rich-rule=#{rule}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -304,7 +382,7 @@ module Y2Firewall
           string_command("--zone=#{zone}", "--get-target")
         end
 
-        def target=(zone,target)
+        def target=(zone, target)
           run_command("--zone=#{zone}", "--set-target=#{target}")
         end
       end

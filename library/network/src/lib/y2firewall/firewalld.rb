@@ -107,7 +107,7 @@ module Y2Firewall
     #
     # @return [Boolean] true if it was removed; false otherwise
     def remove_zone(name)
-      removed = zones.reject! {|z| z.name == name }
+      removed = zones.reject! { |z| z.name == name }
       !removed.nil?
     end
 
@@ -177,7 +177,7 @@ module Y2Firewall
         zone.apply_changes! if zone.modified?
       end
       current_zones.each do |name|
-        api.delete_zone(name) unless zones.any? {|zone| zone.name == name }
+        api.delete_zone(name) unless zones.any? { |zone| zone.name == name }
       end
       true
     end

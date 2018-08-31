@@ -37,8 +37,10 @@ module Y2Firewall
       attr_reader :name
 
       # @see Y2Firewall::Firewalld::Relations
-      has_many :services, :interfaces, :protocols, :ports, :sources,
-        :source_ports, :forward_ports, :rich_rules, cache: true
+      has_many :services, :interfaces, :protocols, :rich_rules, :sources,
+        :ports, :source_ports, :forward_ports, :icmp_blocks, cache: true
+
+      # @see Y2Firewall::Firewalld::Relations
       has_attribute :name, :short, :description, :target, cache: true
 
       # @return [Boolean] Whether masquerade is enabled or not
@@ -107,15 +109,16 @@ module Y2Firewall
       #
       # @return [Hash] zone configuration
       def export
-        {
-          "name"       => name,
-          "interfaces" => interfaces,
-          "services"   => services,
-          "ports"      => ports,
-          "protocols"  => protocols,
-          "sources"    => sources,
-          "masquerade" => masquerade
-        }
+        profile = {}
+        attributes.each do |attribute|
+          profile[attribute.to_s] = public_send(attribute)
+        end
+        profile["masquerade"] = masquerade
+        relations.each do |relation|
+          profile[relation.to_s] = public_send(relation)
+        end
+
+        profile
       end
 
       # Override relation method to be more defensive. An interface can only

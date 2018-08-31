@@ -32,7 +32,7 @@ module  Y2Firewall
       end
 
       # @param attributes [Array<Symbol] relation or attribute names
-      def has_attribute(*attributes, cache: false)
+      def has_attribute(*attributes, cache: false) # rubocop:disable Style/PredicateName
         define_method "attributes" do
           attributes
         end
@@ -49,6 +49,11 @@ module  Y2Firewall
           define_method "current_#{attribute}" do
             api.public_send(attribute, name)
           end
+        end
+
+        define_method "read_attributes" do
+          attributes.each { |a| instance_variable_set("@#{a}", public_send("current_#{a}")) }
+          true
         end
 
         define_method "apply_attributes_changes!" do

@@ -31,7 +31,7 @@ module Y2Firewall
       attr_accessor :zone_names, :zone_entries, :zones_definition
 
       BOOLEAN_ATTRIBUTES = ["icmp-block-inversion", "masquerade"].freeze
-      MULTIPLE_ENTRIES = ["rich_rules", "forward_ports"]
+      MULTIPLE_ENTRIES = ["rich_rules", "forward_ports"].freeze
 
       # Constructor
       #
@@ -73,12 +73,10 @@ module Y2Firewall
               zone.public_send("#{attribute}=", value == "yes" ? true : false)
             elsif MULTIPLE_ENTRIES.include?(attribute)
               zone.public_send("#{attribute}=", value)
+            elsif zone.attributes.include?(attribute.to_sym)
+              zone.public_send("#{attribute}=", value)
             else
-              if zone.attributes.include?(attribute.to_sym)
-                zone.public_send("#{attribute}=", value)
-              else
-                zone.public_send("#{attribute}=", value.split)
-              end
+              zone.public_send("#{attribute}=", value.split)
             end
           end
 
@@ -96,28 +94,25 @@ module Y2Firewall
           # If  the entry looks like a zone name
           if line.start_with?(/\w/)
             attribute, _value = line.split(/\s*\(active\)\s*$/)
-            if !attribute || !zone_names.include?(attribute)
-              current_zone = nil
-              next
-            end
-
+            attribute = nil unless zone_names.include?(attribute)
             current_zone = attribute
-          else
-            if current_zone
-              attribute, value = line.split(":\s")
-              if attribute && attribute.start_with?(/\s\s\w/)
-                current_attribute = attribute.lstrip.gsub("-","_")
-                zone_entries[current_zone] ||= {}
-                zone_entries[current_zone][current_attribute] ||= [value.to_s]
-              else
-                if current_attribute
-                  zone_entries[current_zone][current_attribute] ||= []
-                  zone_entries[current_zone][current_attribute] << line.lstrip
-                end
-              end
-            end
+            next
+          end
+
+          next unless current_zone
+
+          attribute, value = line.split(":\s")
+          if attribute && attribute.start_with?(/\s\s\w/)
+            current_attribute = attribute.lstrip.tr("-", "_")
+            zone_entries[current_zone] ||= {}
+            zone_entries[current_zone][current_attribute] ||= [value.to_s]
+          elsif current_attribute
+            zone_entries[current_zone][current_attribute] ||= []
+            zone_entries[current_zone][current_attribute] << line.lstrip
           end
         end
+
+        true
       end
     end
   end
