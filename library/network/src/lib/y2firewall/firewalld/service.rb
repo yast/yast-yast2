@@ -51,12 +51,10 @@ module Y2Firewall
 
       # @return name [String] service name
       attr_reader :name
-      # @return short [String] service short description
-      attr_reader :short
-      # @return description [String] service long description
-      attr_reader :description
 
       has_many :ports, :protocols, scope: "service", cache: true
+      # FIXME: scope is missing
+      has_attribute :short, :description
 
       # Convenience method for setting the tcp and udp ports of a given
       # service. If the service is found, it modify the ports according to the

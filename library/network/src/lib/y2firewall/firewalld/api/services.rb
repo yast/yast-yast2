@@ -44,8 +44,12 @@ module Y2Firewall
         # @param permanent [Boolean] if true it adds the --permanent option the
         # command to be executed
         # @return [Array<String>] list of all information for the given service
-        def info_service(service, permanent: permanent?)
-          string_command("--info-service", service.to_s, permanent: permanent).split("\n")
+        def info_service(service, permanent: permanent?, verbose: false)
+          if verbose
+            string_command("--info-service=#{service}", "--verbose", permanent: permanent).split("\n")
+          else
+            string_command("--info-service=#{service}", permanent: permanent).split("\n")
+          end
         end
 
         # @param service [String] The firewall service

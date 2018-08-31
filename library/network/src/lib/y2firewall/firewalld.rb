@@ -26,6 +26,7 @@ require "y2firewall/firewalld/api"
 require "y2firewall/firewalld/service"
 require "y2firewall/firewalld/zone"
 require "y2firewall/firewalld/zone_parser"
+require "y2firewall/firewalld/service_parser"
 require "singleton"
 
 Yast.import "PackageSystem"
@@ -86,7 +87,7 @@ module Y2Firewall
     def read
       return false unless installed?
       @current_zones = api.zones
-      @zones = ZoneParser.new(api.zones, api.list_all_zones(verbose: true)).parse
+      @zones = zone_parser.parse
       @log_denied_packets = api.log_denied_packets
       @default_zone       = api.default_zone
       # The list of services is not read or initialized because takes time and
@@ -136,12 +137,7 @@ module Y2Firewall
     # @return [Y2Firewall::Firewalld::Service] the recently added service
     def read_service(name)
       raise(Service::NotFound, name) unless installed?
-      service = Y2Firewall::Firewalld::Service.new(name: name)
-      raise(Service::NotFound, name) if !service.supported?
-
-      service.read
-      @services << service
-      service
+      service_parser.parse(name)
     end
 
     # Return true if the logging config or any of the zones where modified
@@ -254,6 +250,16 @@ module Y2Firewall
     # otherwise
     def read?
       @read
+    end
+
+  private
+
+    def zone_parser
+      ZoneParser.new(api.zones, api.list_all_zones(verbose: true))
+    end
+
+    def service_parser
+      ServiceParser.new
     end
   end
 end
