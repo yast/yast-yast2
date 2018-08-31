@@ -31,14 +31,6 @@ describe Y2Firewall::Firewalld::Zone do
     allow(firewalld).to receive(:installed?).and_return(true)
   end
 
-  describe ".known_zones" do
-    it "returns a hash with known zone names and descriptions" do
-      expect(described_class.known_zones).to be_a(Hash)
-      expect(described_class.known_zones).to include "public"
-      expect(described_class.known_zones["dmz"]).to eq(N_("Demilitarized Zone"))
-    end
-  end
-
   describe "#initialize" do
     context "when :name is specified" do
       subject { described_class.new(name: "test") }
@@ -64,11 +56,12 @@ describe Y2Firewall::Firewalld::Zone do
 
     before do
       allow(firewalld).to receive(:api).and_return(api)
+      subject.relations.each do |r|
+        allow(subject).to receive(:public_send).with("current_#{r}").and_return([])
+      end
       allow(subject).to receive(:public_send).with("current_services").and_return(["ssh"])
       allow(subject).to receive(:public_send).with("current_interfaces").and_return(["eth0", "eth1"])
       allow(subject).to receive(:public_send).with("current_ports").and_return(["80/tcp", "443/tcp"])
-      allow(subject).to receive(:public_send).with("current_protocols").and_return([])
-      allow(subject).to receive(:public_send).with("current_sources").and_return([])
       allow(subject).to receive(:public_send).with(:interfaces).and_call_original
     end
 

@@ -45,18 +45,26 @@ describe Y2Firewall::Firewalld::ZoneParser do
         "\t",
         "",
         "public (active)",
+        "  summary: Public",
+        "  description: For use in public areas. You do not trust the other" \
+        " computers on networks to not harm your computer." \
+        " Only selected incoming connections are accepted.",
         "  target: default",
         "  icmp-block-inversion: no",
         "  interfaces: eth0 ens3",
-        "  sources: ",
+        "  sources: 192.168.0.0/24 192.168.1.0/24 192.168.2.0/24",
         "  services: ssh iscsi-target",
         "  ports: 123/udp 21/udp 111/tcp 111/udp 1123/udp 530/udp 530/tcp",
         "  protocols: ",
         "  masquerade: yes",
-        "  forward-ports: ",
+        "  forward-ports: port=2222:proto=tcp:toport=22:toaddr=",
+        "        port=9080:proto=tcp:toport=80:toaddr=",
         "  source-ports: ",
-        "  icmp-blocks: ",
+        "  icmp-blocks: echo-request echo-reply",
         "  rich rules: ",
+        "        rule service name=\"http\" accept",
+        "        rule service name=\"https\" accept",
+        "        rule service name=\"ssh\" accept",
         "\t"
       ]
     end
@@ -80,11 +88,21 @@ describe Y2Firewall::Firewalld::ZoneParser do
         zones = subject.parse
 
         public_zone = zones.find { |z| z.name == "public" }
-
+        expect(public_zone.target).to eq("default")
+        expect(public_zone.short).to eq("Public")
+        expect(public_zone.description).to include("You do not trust the other computers")
         expect(public_zone.services).to eq(["ssh", "iscsi-target"])
         expect(public_zone.interfaces).to eq(["eth0", "ens3"])
         expect(public_zone.ports).to include("123/udp", "530/udp")
         expect(public_zone.masquerade).to eq(true)
+        expect(public_zone.icmp_blocks).to eq(["echo-request", "echo-reply"])
+        expect(public_zone.sources).to eq(["192.168.0.0/24", "192.168.1.0/24", "192.168.2.0/24"])
+        expect(public_zone.rich_rules)
+          .to eq([
+                   "rule service name=\"http\" accept",
+                   "rule service name=\"https\" accept",
+                   "rule service name=\"ssh\" accept"
+                 ])
 
         dmz_zone = zones.find { |z| z.name == "dmz" }
         expect(dmz_zone.masquerade).to eq(false)

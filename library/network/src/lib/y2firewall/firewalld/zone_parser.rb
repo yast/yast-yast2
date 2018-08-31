@@ -21,6 +21,7 @@
 
 require "yast"
 require "y2firewall/firewalld/api"
+require "y2firewall/firewalld/zone"
 
 module Y2Firewall
   class Firewalld
