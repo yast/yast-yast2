@@ -37,7 +37,9 @@ module Y2Firewall
       #
       # @return [Y2Firewall::Firewalld] a firewalld instance
       def firewalld
-        Y2Firewall::Firewalld.instance
+        fw = Y2Firewall::Firewalld.instance
+        fw.read unless fw.read?
+        fw
       end
 
       # Return the name of interfaces which belongs to the default zone
@@ -81,6 +83,7 @@ module Y2Firewall
       def known_interfaces
         return @known_interfaces if @known_interfaces
 
+        Yast::NetworkInterfaces.Read
         interfaces = Yast::NetworkInterfaces.List("").reject { |i| i == "lo" }
 
         @known_interfaces = interfaces.map do |interface|
