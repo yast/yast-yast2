@@ -32,7 +32,7 @@ module Yast2
   # See also {file:library/systemd/doc/services_and_sockets.md}.
   #
   # @note All changes performed over an object of this class are not applied into the
-  # underlying system until the {#save} method is called.
+  #   underlying system until the {#save} method is called.
   #
   # @example Enabling a service
   #   cups = SystemService.find("cups")
