@@ -38,7 +38,7 @@ module Y2Firewall
         #
         # @param zone [String] The firewall zone name
         def create_zone(zone)
-          run_command("--new-zone=#{zone}", permanent: offline? ? false : true)
+          run_command("--new-zone=#{zone}", permanent: !offline?)
         end
 
         # Delete the given zone from firewalld. Deleted zones must be deleted
@@ -46,7 +46,7 @@ module Y2Firewall
         #
         # @param zone [String] The firewall zone name to be deleted
         def delete_zone(zone)
-          run_command("--delete-zone=#{zone}", permanent: offline? ? false : true)
+          run_command("--delete-zone=#{zone}", permanent: !offline?)
         end
 
         # @param zone [String] The firewall zone
@@ -342,48 +342,73 @@ module Y2Firewall
 
         # @param zone [String] The firewall zone
         # @return [Boolean] True if masquerade is enabled in zone
-        def masquerade_enabled?(zone)
-          query_command("--zone=#{zone}", "--query-masquerade")
+        def masquerade_enabled?(zone, permanent: permanent?)
+          query_command("--zone=#{zone}", "--query-masquerade", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
         # @return [Boolean] True if masquerade was enabled in zone
-        def add_masquerade(zone)
-          return true if masquerade_enabled?(zone)
+        def add_masquerade(zone, permanent: permanent?)
+          return true if masquerade_enabled?(zone, permanent: permanent)
 
-          run_command("--zone=#{zone}", "--add-masquerade")
+          run_command("--zone=#{zone}", "--add-masquerade", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
         # @return [Boolean] True if masquerade was removed in zone
-        def remove_masquerade(zone)
-          return true if !masquerade_enabled?(zone)
+        def remove_masquerade(zone, permanent: permanent?)
+          return true if !masquerade_enabled?(zone, permanent: permanent)
 
-          run_command("--zone=#{zone}", "--remove-masquerade")
+          run_command("--zone=#{zone}", "--remove-masquerade", permanent: permanent)
         end
 
+        # Full name or short description of the zone
+        #
+        # @param zone [String] The firewall zone
         def short(zone)
-          string_command("--zone=#{zone}", "--get-short")
+          string_command("--zone=#{zone}", "--get-short", permanent: !offline?)
         end
 
+        # Modiy the full name or short description of the zone
+        #
+        # @param zone [String] The firewall zone
+        # @param short_description [String] the new zone name or description
         def short=(zone, short_description)
-          string_command("--zone=#{zone}", "--set-short=#{short_description}")
+          string_command("--zone=#{zone}", "--set-short=#{short_description}",
+            permanent: !offline?)
         end
 
+        # Long description of the zone
+        #
+        # @param zone [String] The firewall zone
         def description(zone)
-          string_command("--zone=#{zone}", "--get-description")
+          string_command("--zone=#{zone}", "--get-description",
+            permanent: !offline?)
         end
 
+        # Modiy the long description of the zone
+        #
+        # @param zone [String] The firewall zone
+        # @param long_description [String] the new zone description
         def description=(zone, long_description)
-          run_command("--zone=#{zone}", "--set-description=#{long_description}")
+          run_command("--zone=#{zone}", "--set-description=#{long_description}",
+            permanent: !offline?)
         end
 
+        # The target of the zone
+        #
+        # @param zone [String] The firewall zone
         def target(zone)
           string_command("--zone=#{zone}", "--get-target")
         end
 
+        # Modiy the current target of the zone
+        #
+        # @param zone [String] The firewall zone
+        # @param target [String] the new target
         def target=(zone, target)
-          run_command("--zone=#{zone}", "--set-target=#{target}")
+          run_command("--zone=#{zone}", "--set-target=#{target}",
+            permanent: !offline?)
         end
       end
     end

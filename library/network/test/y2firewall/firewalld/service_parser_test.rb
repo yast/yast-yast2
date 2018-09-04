@@ -25,9 +25,15 @@ require "y2firewall/firewalld"
 require "y2firewall/firewalld/service_parser"
 
 describe Y2Firewall::Firewalld::ServiceParser do
+  let(:firewalld) { Y2Firewall::Firewalld.instance }
+  let(:api) { instance_double("Y2Firewall::Firewalld::Api", state: "not_running") }
+
+  before do
+    allow(firewalld).to receive(:api).and_return(api)
+    `echo true`
+  end
+
   describe "#parse" do
-    let(:firewalld) { Y2Firewall::Firewalld.instance }
-    let(:api) { Y2Firewall::Firewalld::Api.new }
     let(:service_info) do
       [
         "radius",
@@ -44,16 +50,14 @@ describe Y2Firewall::Firewalld::ServiceParser do
       ]
     end
 
-    before do
-      allow(firewalld).to receive(:api).and_return(api)
-    end
-
     context "when the service is not present" do
       let(:service_name) { "not_present" }
-      it "raises a non Found exception" do
-        expect(api).to receive(:info_service).with(service_name, verbose: true)
-        expect($CHILD_STATUS).to receive(:exitstatus).and_return(101)
+      before do
+        allow(api).to receive(:info_service).with(service_name, verbose: true)
+        allow($CHILD_STATUS).to receive(:exitstatus).and_return(101)
+      end
 
+      it "raises a non Found exception" do
         expect { subject.parse(service_name) }.to raise_error(Y2Firewall::Firewalld::Service::NotFound)
       end
     end

@@ -51,12 +51,14 @@ module Y2Firewall
     include Yast::Logger
     extend Forwardable
 
-    # @return Y2Firewall::Firewalld::Api instance
-    attr_accessor :api
+    # @param Y2Firewall::Firewalld::Api instance
+    attr_writer :api
     # @return [Array <Y2Firewall::Firewalld::Zone>] firewalld zones
     attr_accessor :zones
-    # @return [Array <String>] current zone names
-    attr_accessor :current_zones
+    # @return [Array <String>] current zone names.
+    attr_accessor :current_zone_names
+    # @return [Array <String>] current service names.
+    attr_accessor :current_service_names
     # @return [Array <Y2Firewall::Firewalld::Service>] firewalld services. To
     # avoid performance problems it is empty by default and the services are
     # added when needed by the find_service method.
@@ -70,11 +72,12 @@ module Y2Firewall
     PACKAGE = "firewalld".freeze
     SERVICE = "firewalld".freeze
 
-    def_delegators :@api, :enable!, :disable!, :reload, :running?
+    def_delegators :api, :enable!, :disable!, :reload, :running?
 
     # Constructor
     def initialize
-      @api = Api.new
+      @current_zone_names = []
+      @current_service_names = []
       @zones = []
       @services = []
       @read = false
@@ -86,8 +89,9 @@ module Y2Firewall
     # @return [Boolean] true
     def read
       return false unless installed?
-      @current_zones = api.zones
       @zones = zone_parser.parse
+      @current_zone_names = api.zones
+      @current_service_names = api.services
       @log_denied_packets = api.log_denied_packets
       @default_zone       = api.default_zone
       # The list of services is not read or initialized because takes time and
@@ -171,10 +175,10 @@ module Y2Firewall
     # delete all the new or removed zones depending on each case.
     def apply_zones_changes!
       zones.each do |zone|
-        api.create_zone(zone.name) unless current_zones.include?(zone.name)
+        api.create_zone(zone.name) unless current_zone_names.include?(zone.name)
         zone.apply_changes! if zone.modified?
       end
-      current_zones.each do |name|
+      current_zone_names.each do |name|
         api.delete_zone(name) unless zones.any? { |zone| zone.name == name }
       end
       true
@@ -184,7 +188,7 @@ module Y2Firewall
     #
     # @return [Boolean] true if some zone have changed; false otherwise
     def zones_modified?
-      (current_zones.sort != zones.map(&:name).sort) || zones.any?(&:modified?)
+      (current_zone_names.sort != zones.map(&:name).sort) || zones.any?(&:modified?)
     end
 
     # Return a map with current firewalld settings.
@@ -254,12 +258,23 @@ module Y2Firewall
       @read
     end
 
+    # Convenience method for initializing and retrieving an API instance
+    def api
+      @api ||= Api.new
+    end
+
   private
 
+    # Convenience method for instantiate a new zone parser
+    #
+    # @return [ZoneParser]
     def zone_parser
       ZoneParser.new(api.zones, api.list_all_zones(verbose: true))
     end
 
+    # Convenience method for instantiate a services parser
+    #
+    # @return [ServiceParser]
     def service_parser
       ServiceParser.new
     end

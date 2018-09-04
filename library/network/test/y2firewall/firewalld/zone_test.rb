@@ -22,13 +22,16 @@
 
 require_relative "../../test_helper"
 require "y2firewall/firewalld"
+require "y2firewall/firewalld/api"
 require "y2firewall/firewalld/zone"
 
 describe Y2Firewall::Firewalld::Zone do
   let(:firewalld) { Y2Firewall::Firewalld.instance }
+  let(:api) { instance_double("Y2Firewall::Firewalld::Api", default_zone: "default") }
 
   before do
     allow(firewalld).to receive(:installed?).and_return(true)
+    allow(firewalld).to receive(:api).and_return(api)
   end
 
   describe "#initialize" do
@@ -40,11 +43,7 @@ describe Y2Firewall::Firewalld::Zone do
     end
 
     context "when :name is not specified" do
-      let(:api) { instance_double("Y2Firewall::Firewalld::Api", default_zone: "default") }
-
       it "uses the default zone name" do
-        allow(firewalld).to receive(:api).and_return(api)
-
         expect(subject.name).to eq("default")
       end
     end

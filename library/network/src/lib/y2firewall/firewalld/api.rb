@@ -109,7 +109,7 @@ module Y2Firewall
       # @return [String] firewalld service state
       # @see http://www.firewalld.org/documentation/man-pages/firewall-cmd.html
       def state
-        case Yast::Execute.on_target("firewall-cmd", "--state", allowed_exitstatus: [0, 252])
+        case Yast::Execute.on_target!("firewall-cmd", "--state", allowed_exitstatus: [0, 252])
         when 0
           "running"
         when 252
@@ -197,7 +197,7 @@ module Y2Firewall
         arguments.concat(args)
         log.info("Executing #{command} with #{arguments.inspect}")
 
-        Yast::Execute.on_target(
+        Yast::Execute.on_target!(
           command, *arguments, stdout: :capture, allowed_exitstatus: allowed_exitstatus
         )
       end
