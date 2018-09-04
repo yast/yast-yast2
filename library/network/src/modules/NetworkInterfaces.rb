@@ -1481,23 +1481,6 @@ module Yast
       ret
     end
 
-    # Locate devices which attributes doesn't match given key and value
-    #
-    # @param [String] key device key
-    # @param [String] val device value
-    # @return [Array] of devices with key!=val
-    def LocateNOT(key, val)
-      ret = []
-
-      @Devices.values.each do |devsmap|
-        devsmap.each do |device, conf|
-          ret << device if conf[key] != val
-        end
-      end
-
-      ret
-    end
-
     # @deprecated No longer needed
     # @return true
     def CleanHotplugSymlink
@@ -1587,14 +1570,6 @@ module Yast
       String.ValidCharsFilename
     end
 
-    # list of all devices except given one by parameter dev
-    # also loopback is ommited
-
-    def ListDevicesExcept(dev)
-      devices = Builtins.filter(LocateNOT("DEVICE", dev)) { |s| s != "lo" }
-      deep_copy(devices)
-    end
-
   private
 
     # Device configuration files are matched against this regexp
@@ -1672,7 +1647,6 @@ module Yast
     publish function: :Fastest, type: "string ()"
     publish function: :FastestType, type: "string (string)"
     publish function: :ValidCharsIfcfg, type: "string ()"
-    publish function: :ListDevicesExcept, type: "list <string> (string)"
   end
 
   NetworkInterfaces = NetworkInterfacesClass.new

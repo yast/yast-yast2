@@ -218,21 +218,4 @@ describe Yast::NetworkInterfaces do
     end
   end
 
-  describe "#Locate" do
-    let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
-
-    around do |example|
-      change_scr_root(data_dir, &example)
-    end
-
-    before do
-      subject.CleanCacheRead
-    end
-
-    it "returns an array of devices which have got a different key,value than given ones" do
-      skip("needs improvement due to obsolete API removal")
-      expect(subject.LocateNOT("BOOTPROTO", "static")).to eql(["arc5", "br1", "cold", "ppp0", "vlan3"])
-    end
-  end
-
 end
