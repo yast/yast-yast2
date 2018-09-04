@@ -34,6 +34,7 @@ describe Y2Firewall::Firewalld do
   let(:installed?) { true }
   before do
     allow(firewalld).to receive(:installed?).and_return(installed?)
+    allow_any_instance_of(Y2Firewall::Firewalld::Api).to receive(:running?).and_return(false)
   end
 
   describe "#installed?" do
