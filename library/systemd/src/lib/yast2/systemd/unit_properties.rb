@@ -8,7 +8,7 @@ module Yast2
 
       SUPPORTED_STATES = %w(enabled disabled).freeze
 
-      # Values of {#active_state} fow which we consider a unit "active".
+      # Values of `#active_state` fow which we consider a unit "active".
       #
       # systemctl.c:check_unit_active uses (active, reloading)
       # For bsc#884756 we also consider "activating" to be active.

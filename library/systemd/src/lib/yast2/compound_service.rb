@@ -51,7 +51,7 @@ module Yast2
 
     # Saves all services
     #
-    # @see {Yast2::SystemService#save}
+    # @see Yast2::SystemService#save
     #
     # @return [Boolean] true if all services were correctly saved; false otherwise
     def save(keep_state: false)
@@ -79,7 +79,7 @@ module Yast2
 
     # Whether any service supports reload
     #
-    # @see {Yast2::SystemService#support_reload?}
+    # @see Yast2::SystemService#support_reload?
     #
     # @return [Boolean]
     def support_reload?
@@ -92,7 +92,7 @@ module Yast2
     # service supports :on_demand too, the possible start modes will the
     # all of them: :on_boot, on_demand and :manual.
     #
-    # @see {Yast2::SystemService#start_modes}
+    # @see Yast2::SystemService#start_modes
     #
     # @return [Array<Symbol>] start modes (:on_boot, :on_demand, :manual)
     def start_modes
@@ -101,7 +101,7 @@ module Yast2
 
     # Keywords that can be used to search for involved underlying units
     #
-    # @see {Yast2::SystemService#keywords}
+    # @see Yast2::SystemService#keywords
     #
     # @return [Array<String>]
     def keywords
@@ -176,7 +176,7 @@ module Yast2
     #
     # @note It offers and additional start mode `:inconsistent` that is not in {Yast2::SystemService}
     #
-    # @param [Symbol] new start mode (e.g., :on_boot, :on_demand, :manual, :inconsistent)
+    # @param configuration [Symbol] new start mode (e.g., :on_boot, :on_demand, :manual, :inconsistent)
     def start_mode=(configuration)
       if !AUTOSTART_OPTIONS.include?(configuration)
         raise ArgumentError, "Invalid parameter #{configuration.inspect}"
