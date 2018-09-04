@@ -27,7 +27,7 @@ to:
 One goal in this class is to offer an agnostic API. At this moment it uses Systemd in low levels
 layers, but in future this could change and the API should remain as much as possible.
 
-### Actions over Systemd units
+## Actions over Systemd units
 
 The following table describes the actions to perform over a systemd service and its associated
 socket (if any) when we try to start, stop, restart or reload a `SystemService`.
@@ -39,7 +39,7 @@ socket (if any) when we try to start, stop, restart or reload a `SystemService`.
 | Socket & Service running | nothing                                        | stop service and socket | stop service and socket and start service/socket (depending on start mode) | reload service (if it support, otherwise restart) |
 | Nothing runs             | start service/socket (depending on start mode) | nothing                 | start service/socket (depending on start mode)                             | start service/socket (depending on start mode)    |
 
-### Detailed actions
+## Detailed actions
 
 Here each `SystemService` action is decribed in a more detailed way.
 
