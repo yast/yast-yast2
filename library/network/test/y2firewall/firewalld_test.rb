@@ -31,12 +31,16 @@ describe Y2Firewall::Firewalld do
   let(:known_zones) { %w(dmz drop external home internal public trusted work) }
   let(:known_services) { %w(http https samba ssh) }
   let(:empty_zones) { known_zones.map { |z| Y2Firewall::Firewalld::Zone.new(name: z) } }
-
+  let(:installed?) { true }
   before do
-    allow_any_instance_of(Y2Firewall::Firewalld::Api).to receive(:state).and_return("not running")
+    allow(firewalld).to receive(:installed?).and_return(installed?)
   end
 
   describe "#installed?" do
+    before do
+      allow(firewalld).to receive(:installed?).and_call_original
+    end
+
     it "returns false it the firewalld is not installed" do
       allow(Yast::PackageSystem).to receive("Installed")
         .with(described_class::PACKAGE).and_return(false)
@@ -53,6 +57,10 @@ describe Y2Firewall::Firewalld do
   end
 
   describe "#enabled?" do
+    before do
+      allow(firewalld).to receive(:installed?).and_return(true)
+    end
+
     it "returns true if the firewalld service is enable" do
       allow(Yast::Service).to receive("Enabled")
         .with(described_class::SERVICE).and_return(true)

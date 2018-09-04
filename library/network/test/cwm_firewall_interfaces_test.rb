@@ -8,20 +8,21 @@ Yast.import "Mode"
 Yast.import "UI"
 
 describe Yast::CWMFirewallInterfaces do
-
   subject { Yast::CWMFirewallInterfaces }
+  let(:firewalld) { Y2Firewall::Firewalld.instance }
+  let(:api) { instance_double("Y2Firewall::Firewalld::Api") }
+
+  before do
+    allow(api).to receive(:service_supported?)
+    allow(firewalld).to receive(:api).and_return(api)
+  end
 
   describe "#CreateOpenFirewallWidget" do
     let(:widget_settings) { { "services" => [] } }
-    let(:api) { Y2Firewall::Firewalld::Api.new }
     let(:installed) { true }
 
     before do
-      allow_any_instance_of(Y2Firewall::Firewalld)
-        .to receive(:api).and_return(api)
-      allow_any_instance_of(Y2Firewall::Firewalld)
-        .to receive(:installed?).and_return(installed)
-      allow(api).to receive(:service_supported?)
+      allow(firewalld).to receive(:installed?).and_return(installed)
     end
 
     context "when firewalld is not installed" do
