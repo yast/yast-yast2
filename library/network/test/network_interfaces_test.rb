@@ -98,6 +98,8 @@ describe Yast::NetworkInterfaces do
   end
 
   describe "#FilterDevices" do
+    TYPE_SYS_PATH = "/sys/class/net/ppp0/type".freeze
+
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
     # Defined in test/data/etc/sysconfig/ifcfg-*
     let(:netcard_devices) { ["bond", "br", "eth", "vlan"] }
@@ -106,11 +108,28 @@ describe Yast::NetworkInterfaces do
       change_scr_root(data_dir, &example)
     end
 
-    before do
-      subject.CleanCacheRead
-    end
-
     context "when given regex is some of the predefined ones 'netcard', 'modem', 'isdn', 'dsl'." do
+      before do
+        # mock type id for ppp device in sysfs
+        allow(Yast::FileUtils)
+          .to receive(:Exists)
+          .and_return false
+        allow(Yast::FileUtils)
+          .to receive(:Exists)
+          .with(TYPE_SYS_PATH)
+          .and_return true
+
+        allow(Yast::SCR)
+          .to receive(:Read)
+          .and_call_original
+        allow(Yast::SCR)
+          .to receive(:Read)
+          .with(path(".target.string"), TYPE_SYS_PATH)
+          .and_return "512\n"
+
+        subject.CleanCacheRead
+      end
+
       it "returns devices of the given type" do
         expect(subject.FilterDevices("netcard").keys.sort).to eql(netcard_devices)
         expect(subject.FilterDevices("modem").keys).to eql(["ppp"])
@@ -118,6 +137,7 @@ describe Yast::NetworkInterfaces do
         expect(subject.FilterDevices("isdn").keys).to eql([])
       end
     end
+
     context "when given regex is not a predefined one" do
       it "returns devices whose type exactly match the given regex" do
         expect(subject.FilterDevices("br").keys).to eql(["br"])

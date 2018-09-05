@@ -254,7 +254,6 @@ module Yast
       sys_type = Convert.to_string(
         SCR.Read(path(".target.string"), sys_type_path)
       )
-
       sys_type = if sys_type
         Builtins.regexpsub(sys_type, "(.*)\n", "\\1")
       else
