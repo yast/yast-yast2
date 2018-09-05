@@ -39,6 +39,16 @@ describe "CWM::Dialog" do
       expect(subject.class.run).to eq(:launch)
     end
 
+    it "passes the next handler to CWM#show" do
+      expect(Yast::CWM).to receive(:show) do |_content, options|
+        expect(options).to include(:next_handler)
+        # Checking the default handler is passed (simply returns true)
+        expect(options[:next_handler].call).to eq(true)
+      end
+
+      subject.class.run
+    end
+
     it "passes the back handler to CWM#show" do
       expect(Yast::CWM).to receive(:show) do |_content, options|
         expect(options).to include(:back_handler)
