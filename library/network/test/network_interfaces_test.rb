@@ -47,9 +47,8 @@ describe Yast::NetworkInterfaces do
     end
 
     it "loads all valid devices from ifcfg-* definition" do
-      skip("needs improvement due to obsolete API removal")
       subject.Read
-      expect(subject.List("")).to eql devices
+      expect(subject.List("").sort).to eql devices
     end
 
     it "doesn't load ifcfgs with a backup extension" do
@@ -101,7 +100,7 @@ describe Yast::NetworkInterfaces do
   describe "#FilterDevices" do
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
     # Defined in test/data/etc/sysconfig/ifcfg-*
-    let(:netcard_devices) { ["arc", "bond", "br", "em", "eth", "vlan"] }
+    let(:netcard_devices) { ["arc", "bond", "br", "eth", "vlan"] }
 
     around do |example|
       change_scr_root(data_dir, &example)
@@ -113,7 +112,6 @@ describe Yast::NetworkInterfaces do
 
     context "when given regex is some of the predefined ones 'netcard', 'modem', 'isdn', 'dsl'." do
       it "returns devices of the given type" do
-        skip("needs improvement due to obsolete API removal")
         expect(subject.FilterDevices("netcard").keys).to eql(netcard_devices)
         expect(subject.FilterDevices("modem").keys).to eql(["ppp"])
         expect(subject.FilterDevices("dsl").keys).to eql([])
@@ -209,7 +207,7 @@ describe Yast::NetworkInterfaces do
     end
 
     it "returns an array of devices which have got given key,value" do
-      expect(subject.Locate("BOOTPROTO", "static")).to eql(["bond0", "em1", "eth0", "eth1", "eth2"])
+      expect(subject.Locate("BOOTPROTO", "static").sort).to eql(["bond0", "em1", "eth0", "eth1", "eth2"])
       expect(subject.Locate("BONDING_MASTER", "YES")).to eql(["bond0"])
     end
 
