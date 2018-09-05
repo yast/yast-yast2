@@ -53,7 +53,7 @@ describe Y2Firewall::Firewalld::ServiceParser do
     context "when the service is not present" do
       let(:service_name) { "not_present" }
       before do
-        allow(api).to receive(:info_service).with(service_name, verbose: true)
+        allow(api).to receive(:info_service).with(service_name)
         allow($CHILD_STATUS).to receive(:exitstatus).and_return(101)
       end
 
@@ -65,7 +65,7 @@ describe Y2Firewall::Firewalld::ServiceParser do
     context "when the service configuration exists" do
       let(:service_name) { "radius" }
       before do
-        allow(api).to receive(:info_service).with(service_name, verbose: true)
+        allow(api).to receive(:info_service).with(service_name)
           .and_return(service_info)
         allow($CHILD_STATUS).to receive(:exitstatus).and_return(1)
       end

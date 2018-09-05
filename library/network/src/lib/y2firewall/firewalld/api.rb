@@ -59,12 +59,7 @@ module Y2Firewall
 
       # Constructor
       def initialize(mode: nil, permanent: true)
-        @mode =
-          if mode == :running || running?
-            :running
-          else
-            :offline
-          end
+        @mode = (mode || running? ? :running : :offline)
         @permanent = permanent
       end
 
@@ -109,7 +104,7 @@ module Y2Firewall
       # @return [String] firewalld service state
       # @see http://www.firewalld.org/documentation/man-pages/firewall-cmd.html
       def state
-        case Yast::Execute.on_target!("firewall-cmd", "--state", allowed_exitstatus: [0, 252])
+        case Yast::Execute.on_target("firewall-cmd", "--state", allowed_exitstatus: [0, 252])
         when 0
           "running"
         when 252
@@ -155,16 +150,16 @@ module Y2Firewall
       ### Logging ###
 
       # @param kind [String] Denied packets to log. Possible values are:
-      # all, unicast, broadcast, multicast and off
+      #   all, unicast, broadcast, multicast and off
       # @return [Boolean] True if desired packet type is being logged when denied
       def log_denied_packets?(kind)
-        string_command("--get-log-denied").strip == kind ? true : false
+        string_command("--get-log-denied").strip == kind
       end
 
       # @param kind [String] Denied packets to log. Possible values are:
-      # all, unicast, broadcast, multicast and off
+      #   all, unicast, broadcast, multicast and off
       # @return [Boolean] True if desired packet type was set to being logged
-      # when denied
+      #   when denied
       def log_denied_packets=(kind)
         run_command("--set-log-denied=#{kind}")
       end
@@ -188,16 +183,15 @@ module Y2Firewall
       # @see Yast::Execute
       # @param args [Array<String>] list of command optional arguments
       # @param permanent [Boolean] if true it adds the --permanent option the
-      # command to be executed
+      #   command to be executed
       # @param allowed_exitstatus [Fixnum, .include?, nil] allowed exit codes
-      # which do not cause an exception.
-      # command to be executed
+      #   which do not cause an exception.
       def run_command(*args, permanent: false, allowed_exitstatus: nil)
         arguments = permanent ? ["--permanent"] : []
         arguments.concat(args)
         log.info("Executing #{command} with #{arguments.inspect}")
 
-        Yast::Execute.on_target!(
+        Yast::Execute.on_target(
           command, *arguments, stdout: :capture, allowed_exitstatus: allowed_exitstatus
         )
       end
@@ -209,7 +203,7 @@ module Y2Firewall
       # @return [String] the chomped output of the run command
       # @param args [Array<String>] list of command optional arguments
       # @param permanent [Boolean] if true it adds the --permanent option the
-      # command to be executed
+      #   command to be executed
       def string_command(*args, permanent: false)
         run_command(*args, permanent: permanent).to_s.chomp
       end

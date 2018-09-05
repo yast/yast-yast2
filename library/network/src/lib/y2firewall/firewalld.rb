@@ -51,20 +51,19 @@ module Y2Firewall
     include Yast::Logger
     extend Forwardable
 
-    # @param Y2Firewall::Firewalld::Api instance
     attr_writer :api
-    # @return [Array <Y2Firewall::Firewalld::Zone>] firewalld zones
+    # @return [Array<Y2Firewall::Firewalld::Zone>] firewalld zones
     attr_accessor :zones
-    # @return [Array <String>] current zone names.
+    # @return [Array<String>] current zone names.
     attr_accessor :current_zone_names
-    # @return [Array <String>] current service names.
+    # @return [Array<String>] current service names.
     attr_accessor :current_service_names
-    # @return [Array <Y2Firewall::Firewalld::Service>] firewalld services. To
-    # avoid performance problems it is empty by default and the services are
-    # added when needed by the find_service method.
+    # @return [Array<Y2Firewall::Firewalld::Service>] firewalld services. To
+    #   avoid performance problems it is empty by default and the services are
+    #   added when needed by the find_service method.
     attr_accessor :services
     # @return [String] Type of log denied packets (reject & drop rules).
-    # Possible values are: all, unicast, broadcast, multicast and off
+    #   Possible values are: all, unicast, broadcast, multicast and off
     attr_accessor :log_denied_packets
     # @return [String] firewalld default zone name
     attr_accessor :default_zone
@@ -99,9 +98,12 @@ module Y2Firewall
       @read = true
     end
 
-    # Add a not existent zones to the list of zones
+    # Given a zone name it will add a new Zone to the current list of defined
+    # ones just in case it does not exist yet.
     #
-    # @return [Boolean] true if a new one is added; false otherwise
+    # @param name [String] zone name
+    # @return [Boolean] true if the new zone was added; false in case the zone
+    #   was alredy defined
     def add_zone(name)
       return false if find_zone(name)
       zones << Y2Firewall::Firewalld::Zone.new(name: name)
@@ -110,6 +112,7 @@ module Y2Firewall
 
     # Remove the given zone from the list of zones
     #
+    # @param name [String] zone name
     # @return [Boolean] true if it was removed; false otherwise
     def remove_zone(name)
       removed = zones.reject! { |z| z.name == name }
@@ -120,7 +123,7 @@ module Y2Firewall
     #
     # @param name [String] the zone name
     # @return [Y2Firewall::Firewalld::Zone, nil] the firewalld zone with the
-    # given name
+    #   given name
     def find_zone(name)
       zones.find { |z| z.name == name }
     end
@@ -129,7 +132,7 @@ module Y2Firewall
     #
     # @param name [String] the service name
     # @return [Y2Firewall::Firewalld::Service] the firewalld service with
-    # the given name
+    #   the given name
     def find_service(name)
       services.find { |s| s.name == name } || read_service(name)
     end
@@ -179,9 +182,8 @@ module Y2Firewall
         zone.apply_changes! if zone.modified?
       end
       current_zone_names.each do |name|
-        api.delete_zone(name) unless zones.any? { |zone| zone.name == name }
+        api.delete_zone(name) if !zones.any? { |z| z.name == name }
       end
-      true
     end
 
     # Return whether the current zones have been modified or not
@@ -253,26 +255,26 @@ module Y2Firewall
     # Return whether the configuration has been read
     #
     # @return [Boolean] true if the configuration has been read; false
-    # otherwise
+    #   otherwise
     def read?
       @read
     end
 
-    # Convenience method for initializing and retrieving an API instance
+    # Convenience method to instantiate the firewalld API
     def api
       @api ||= Api.new
     end
 
   private
 
-    # Convenience method for instantiate a new zone parser
+    # Convenience method to isntantiate a new zone parser
     #
     # @return [ZoneParser]
     def zone_parser
       ZoneParser.new(api.zones, api.list_all_zones(verbose: true))
     end
 
-    # Convenience method for instantiate a services parser
+    # Convenience method tosisntantiate a services parser
     #
     # @return [ServiceParser]
     def service_parser

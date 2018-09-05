@@ -32,7 +32,7 @@ module Y2Firewall
 
       # @return [Array<Y2Firewall::Firewalld::Service>]
       def parse(name)
-        info = Y2Firewall::Firewalld.instance.api.info_service(name, verbose: true)
+        info = Y2Firewall::Firewalld.instance.api.info_service(name)
         raise(Service::NotFound, name) if $CHILD_STATUS.exitstatus == 101
         service = Service.new(name: name)
 
