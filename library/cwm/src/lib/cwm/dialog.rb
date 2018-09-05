@@ -76,6 +76,15 @@ module CWM
       []
     end
 
+    # Handler when the next button is used
+    #
+    # If returns false, then it does not go next.
+    #
+    # @return [Boolean]
+    def next_handler
+      true
+    end
+
     # Handler when the back button is used
     #
     # If returns false, then it does not go back.
@@ -116,6 +125,7 @@ module CWM
         next_button:     next_button,
         skip_store_for:  skip_store_for,
         disable_buttons: disable_buttons,
+        next_handler:    proc { next_handler },
         back_handler:    proc { back_handler },
         abort_handler:   proc { abort_handler }
       )
