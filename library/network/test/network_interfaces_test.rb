@@ -100,7 +100,7 @@ describe Yast::NetworkInterfaces do
   describe "#FilterDevices" do
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
     # Defined in test/data/etc/sysconfig/ifcfg-*
-    let(:netcard_devices) { ["arc", "bond", "br", "eth", "vlan"] }
+    let(:netcard_devices) { ["bond", "br", "eth", "vlan"] }
 
     around do |example|
       change_scr_root(data_dir, &example)
@@ -112,7 +112,7 @@ describe Yast::NetworkInterfaces do
 
     context "when given regex is some of the predefined ones 'netcard', 'modem', 'isdn', 'dsl'." do
       it "returns devices of the given type" do
-        expect(subject.FilterDevices("netcard").keys).to eql(netcard_devices)
+        expect(subject.FilterDevices("netcard").keys.sort).to eql(netcard_devices)
         expect(subject.FilterDevices("modem").keys).to eql(["ppp"])
         expect(subject.FilterDevices("dsl").keys).to eql([])
         expect(subject.FilterDevices("isdn").keys).to eql([])

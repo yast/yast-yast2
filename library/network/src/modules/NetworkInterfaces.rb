@@ -101,7 +101,7 @@ module Yast
       @CardRegex =
         # other: irlan|lo|plip|...
         {
-          "netcard" => "arc|ath|bnep|ci|ctc|slc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
+          "netcard" => "ath|bnep|ci|ctc|slc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
           "modem"   => "ppp|modem",
           "isdn"    => "isdn|ippp",
           "dsl"     => "dsl"
@@ -1021,7 +1021,6 @@ module Yast
 
       # device types which cannot be present on s390 arch
       s390_unknown_dev_types = [
-        "arc",
         "bnep",
         "dummy",
         "fddi",
