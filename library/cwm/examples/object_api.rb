@@ -58,10 +58,12 @@ module Yast
       )
 
       Yast::Wizard.CreateDialog
+      next_handler = proc { Yast::Popup.YesNo("Really go next?") }
       back_handler = proc { Yast::Popup.YesNo("Really go back?") }
       abort_handler = proc { Yast::Popup.YesNo("Really abort?") }
       CWM.show(contents,
         caption:       _("Lucky number"),
+        next_handler:  next_handler,
         back_handler:  back_handler,
         abort_handler: abort_handler)
       Yast::Wizard.CloseDialog
