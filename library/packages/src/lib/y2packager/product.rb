@@ -41,13 +41,15 @@ module Y2Packager
     attr_reader :order
     # @return [String] package including installation.xml for install on top of lean os
     attr_reader :installation_package
+    # @return [Integer] repository for the installation_package
+    attr_reader :installation_package_repo
 
     class << self
       PKG_BINDINGS_ATTRS = ["name", "short_name", "display_name", "version", "arch",
                             "category", "vendor"].freeze
 
       # Create a product from pkg-bindings hash data.
-      # @param p [Hash] the pkg-binindgs product hash
+      # @param p [Hash] the pkg-bindings product hash
       # @return [Y2Packager::Product] converted product
       def from_h(p)
         params = PKG_BINDINGS_ATTRS.each_with_object({}) { |a, h| h[a.to_sym] = p[a] }

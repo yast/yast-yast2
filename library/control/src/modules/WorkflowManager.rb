@@ -1494,10 +1494,13 @@ module Yast
       log.info "Merging #{product.label} workflow"
 
       if merged_base_product
-        Yast::WorkflowManager.RemoveWorkflow(:package, 0, merged_base_product.installation_package)
+        Yast::WorkflowManager.RemoveWorkflow(
+          :package,
+          merged_base_product.installation_package_repo,
+          merged_base_product.installation_package)
       end
 
-      AddWorkflow(:package, 0, product.installation_package)
+      AddWorkflow(:package, product.installation_package_repo, product.installation_package)
       MergeWorkflows()
       RedrawWizardSteps()
       self.merged_base_product = product
@@ -1604,12 +1607,18 @@ module Yast
       if pkgs.empty?
         log.warn("The installer extension package #{package_name} was not found")
         return nil
-      elsif pkgs.size > 1
-        log.warn("More than one control package found: #{pkgs}")
-        log.warn("Using the first one: #{pkgs.first}")
       end
 
-      pkgs.first["source"]
+      latest_package = pkgs.reduce(nil) do |a, p|
+        !a || (Pkg.CompareVersions(a["version"], p["version"]) < 0) ? p : a
+      end
+
+      if pkgs.size > 1
+        log.warn("More than one control package found: #{pkgs}")
+        log.info("Using the latest package: #{latest_package}")
+      end
+
+      latest_package["source"]
     end
 
     # Download and extract a package from a repository.
