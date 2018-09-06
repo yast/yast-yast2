@@ -60,6 +60,8 @@ module Y2Firewall
           string_command("--info-service=#{service}", "--verbose", permanent: permanent).split("\n")
         end
 
+        # Full name or short description of the service
+        #
         # @param service [String] The firewall service
         # @param permanent [Boolean] if true and firewalld is running it
         #   reads the permanent configuration
@@ -69,12 +71,30 @@ module Y2Firewall
           string_command("--service=#{service}", "--get-short", permanent: permanent)
         end
 
+        # Modify the full name or short description of the service
+        #
+        # @param service [String] The firewall service
+        # @param short_description [String] the new service name or description
+        def service_short=(service, short_description)
+          string_command("--service=#{service}", "--set-short=#{short_description}",
+            permanent: !offline?)
+        end
+
         # @param service [String] the firewall service
         # @param permanent [Boolean] if true and firewalld is running it
         #   reads the permanent configuration
         # @return [String] Description for service
         def service_description(service, permanent: permanent?)
           string_command("--service=#{service}", "--get-description", permanent: permanent)
+        end
+
+        # Modify the long description of the service
+        #
+        # @param service [String] The firewall service
+        # @param long_description [String] the new service description
+        def service_description=(service, long_description)
+          run_command("--service=#{service}", "--set-description=#{long_description}",
+            permanent: !offline?)
         end
 
         # Returns whether the service definition for the service name given is

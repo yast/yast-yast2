@@ -25,11 +25,18 @@ require "y2firewall/firewalld/zone"
 
 module Y2Firewall
   class Firewalld
-    # Class to help parsing firewall-cmd --list_all_zones output
-    class ZoneParser
+    # Class to help parsing firewall-cmd --list-all-zones output
+    class ZoneReader
       include Yast::Logger
 
-      attr_accessor :zone_names, :zone_entries, :zones_definition
+      # @return [Array<String] configured zone names
+      attr_accessor :zone_names
+      # @return [Hash<String,Hash>] stores the parsed configuration for eac
+      #   zone indexed by its name
+      attr_accessor :zone_entries
+      # @return [String] zones definition to be parsed for initializing the
+      #   zone objects
+      attr_accessor :zones_definition
 
       BOOLEAN_ATTRIBUTES = ["icmp-block-inversion", "masquerade"].freeze
       MULTIPLE_ENTRIES = ["rich_rules", "forward_ports"].freeze
@@ -38,18 +45,18 @@ module Y2Firewall
       #
       # @param zone_names [Array<String>] zone names
       # @param zones_definition [String] text with the complete definition of
-      # existing zones.
+      #   existing zones.
       def initialize(zone_names, zones_definition)
         @zone_names = zone_names
         @zones_definition = zones_definition
         @zone_entries = {}
       end
 
-      # It parses the zone definition instantiating the defined zones and
+      # It reads the zone definition instantiating the defined zones and
       # settings their attributes.
       #
       # @return [Array<Y2Firewall::Firewalld::Zone>]
-      def parse
+      def read
         return [] if !@zone_names || @zone_names.empty?
         parse_zones
         initialize_zones
@@ -57,6 +64,40 @@ module Y2Firewall
 
     private
 
+      # Iterates over the zones definition filling the zone entries with the
+      # parsed information of each zone
+      def parse_zones
+        current_zone = nil
+        current_attribute = nil
+        zones_definition.each do |line|
+          next if line.lstrip.empty?
+          # If  the entry looks like a zone name
+          if line.start_with?(/\w/)
+            attribute, _value = line.split(/\s*\(active\)\s*$/)
+            attribute = nil unless zone_names.include?(attribute)
+            current_zone = attribute
+            next
+          end
+
+          next unless current_zone
+
+          attribute, value = line.split(":\s")
+          if attribute && attribute.start_with?(/\s\s\w/)
+            current_attribute = attribute.lstrip.tr("-", "_")
+            zone_entries[current_zone] ||= {}
+            zone_entries[current_zone][current_attribute] ||= [value.to_s]
+          elsif current_attribute
+            zone_entries[current_zone][current_attribute] ||= []
+            zone_entries[current_zone][current_attribute] << line.lstrip
+          end
+        end
+      end
+
+      # Iterates over the zone entries instantiating a zone object per each of
+      # the entries and returning an array with all of them.
+      #
+      # @return [Array<Y2Firewall::Firewalld::Zone] the list of zones obtained
+      #   from the parsed definition
       def initialize_zones
         zones = []
         zone_entries.each do |name, config|
@@ -85,35 +126,6 @@ module Y2Firewall
         end
 
         zones
-      end
-
-      def parse_zones
-        current_zone = nil
-        current_attribute = nil
-        zones_definition.each do |line|
-          next if line.lstrip.empty?
-          # If  the entry looks like a zone name
-          if line.start_with?(/\w/)
-            attribute, _value = line.split(/\s*\(active\)\s*$/)
-            attribute = nil unless zone_names.include?(attribute)
-            current_zone = attribute
-            next
-          end
-
-          next unless current_zone
-
-          attribute, value = line.split(":\s")
-          if attribute && attribute.start_with?(/\s\s\w/)
-            current_attribute = attribute.lstrip.tr("-", "_")
-            zone_entries[current_zone] ||= {}
-            zone_entries[current_zone][current_attribute] ||= [value.to_s]
-          elsif current_attribute
-            zone_entries[current_zone][current_attribute] ||= []
-            zone_entries[current_zone][current_attribute] << line.lstrip
-          end
-        end
-
-        true
       end
     end
   end

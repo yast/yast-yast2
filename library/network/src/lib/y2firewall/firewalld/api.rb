@@ -58,6 +58,11 @@ module Y2Firewall
       attr_accessor :mode
 
       # Constructor
+      #
+      # @param permanent [Boolean] whether the configuration should be written
+      #   permanently or in runtime when firewalld is running.
+      # @param mode [Symbol, nil] defines which cmdline should be used if the
+      #   running or the offline one. Possible values are: :offline, :running
       def initialize(mode: nil, permanent: true)
         @mode = (mode || running? ? :running : :offline)
         @permanent = permanent
@@ -126,7 +131,7 @@ module Y2Firewall
       # @param zone [String] The firewall zone
       # @return [String] default zone
       def default_zone=(zone)
-        run_command("--set-default-zone=#{zone}")
+        run_command("--set-default-zone=#{zone}") == "success"
       end
 
       # Do a reload of the firewall if running. In offline mode just return
@@ -161,7 +166,7 @@ module Y2Firewall
       # @return [Boolean] True if desired packet type was set to being logged
       #   when denied
       def log_denied_packets=(kind)
-        run_command("--set-log-denied=#{kind}")
+        string_command("--set-log-denied=#{kind}") == "success"
       end
 
       # @return [String] packet type which is being logged when denied
@@ -187,7 +192,7 @@ module Y2Firewall
       # @param allowed_exitstatus [Fixnum, .include?, nil] allowed exit codes
       #   which do not cause an exception.
       def run_command(*args, permanent: false, allowed_exitstatus: nil)
-        arguments = permanent ? ["--permanent"] : []
+        arguments = !offline? && permanent ? ["--permanent"] : []
         arguments.concat(args)
         log.info("Executing #{command} with #{arguments.inspect}")
 

@@ -49,7 +49,7 @@ module Y2Firewall
       include Yast::I18n
       extend Yast::I18n
 
-      # @return name [String] service name
+      # @return [String] service name
       attr_reader :name
 
       has_many :ports, :protocols, scope: "service", cache: true

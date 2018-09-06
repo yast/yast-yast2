@@ -21,10 +21,10 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require "y2firewall/firewalld/zone_parser"
+require "y2firewall/firewalld/zone_reader"
 
-describe Y2Firewall::Firewalld::ZoneParser do
-  describe "#parse" do
+describe Y2Firewall::Firewalld::ZoneReader do
+  describe "#read" do
     subject { described_class.new(zone_names, zones_definition) }
     let(:zone_names) { ["public", "dmz"] }
     let(:zones_definition) do
@@ -73,19 +73,19 @@ describe Y2Firewall::Firewalld::ZoneParser do
       let(:zone_names) { [] }
 
       it "returns an empty array" do
-        expect(subject.parse).to eq([])
+        expect(subject.read).to eq([])
       end
     end
 
     context "when some zone is configured" do
       it "returns an array of Y2Firewall::Firewalld::Zone" do
-        zones = subject.parse
+        zones = subject.read
         expect(zones.size).to eq(2)
         expect(zones).to all(be_an(Y2Firewall::Firewalld::Zone))
       end
 
       it "initializes each zone based on the zone definition" do
-        zones = subject.parse
+        zones = subject.read
 
         public_zone = zones.find { |z| z.name == "public" }
         expect(public_zone.target).to eq("default")

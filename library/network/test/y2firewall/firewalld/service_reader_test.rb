@@ -1,7 +1,7 @@
 #!/usr/bin/env rspec
 # encoding: utf-8
 #
-# Copyright (c) [2017] SUSE LLC
+# Copyright (c) [2018] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -22,9 +22,9 @@
 
 require_relative "../../test_helper"
 require "y2firewall/firewalld"
-require "y2firewall/firewalld/service_parser"
+require "y2firewall/firewalld/service_reader"
 
-describe Y2Firewall::Firewalld::ServiceParser do
+describe Y2Firewall::Firewalld::ServiceReader do
   let(:firewalld) { Y2Firewall::Firewalld.instance }
   let(:api) { instance_double("Y2Firewall::Firewalld::Api", state: "not_running") }
 
@@ -33,7 +33,7 @@ describe Y2Firewall::Firewalld::ServiceParser do
     `echo true`
   end
 
-  describe "#parse" do
+  describe "#read" do
     let(:service_info) do
       [
         "radius",
@@ -57,8 +57,8 @@ describe Y2Firewall::Firewalld::ServiceParser do
         allow($CHILD_STATUS).to receive(:exitstatus).and_return(101)
       end
 
-      it "raises a non Found exception" do
-        expect { subject.parse(service_name) }.to raise_error(Y2Firewall::Firewalld::Service::NotFound)
+      it "raises a NotFound exception" do
+        expect { subject.read(service_name) }.to raise_error(Y2Firewall::Firewalld::Service::NotFound)
       end
     end
 
@@ -71,7 +71,7 @@ describe Y2Firewall::Firewalld::ServiceParser do
       end
 
       it "returns the service with the parsed configuration" do
-        service = subject.parse(service_name)
+        service = subject.read(service_name)
         expect(service.short).to eq("RADIUS")
         expect(service.ports).to eq(["1812/tcp", "1812/udp", "1813/tcp", "1813/udp"])
         expect(service.protocols).to eq([])

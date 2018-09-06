@@ -26,12 +26,12 @@ require "y2firewall/firewalld/service"
 
 module Y2Firewall
   class Firewalld
-    # Class to help parsing firewall-cmd --list_all_zones output
-    class ServiceParser
+    # Class to help parsing firewall-cmd --info-service=service output
+    class ServiceReader
       include Yast::Logger
 
       # @return [Array<Y2Firewall::Firewalld::Service>]
-      def parse(name)
+      def read(name)
         info = Y2Firewall::Firewalld.instance.api.info_service(name)
         raise(Service::NotFound, name) if $CHILD_STATUS.exitstatus == 101
         service = Service.new(name: name)

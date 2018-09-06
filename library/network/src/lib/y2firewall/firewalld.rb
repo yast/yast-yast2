@@ -23,10 +23,11 @@
 # ***************************************************************************
 
 require "y2firewall/firewalld/api"
+require "y2firewall/firewalld/relations"
 require "y2firewall/firewalld/service"
 require "y2firewall/firewalld/zone"
-require "y2firewall/firewalld/zone_parser"
-require "y2firewall/firewalld/service_parser"
+require "y2firewall/firewalld/zone_reader"
+require "y2firewall/firewalld/service_reader"
 require "singleton"
 
 Yast.import "PackageSystem"
@@ -50,6 +51,7 @@ module Y2Firewall
     include Singleton
     include Yast::Logger
     extend Forwardable
+    extend Relations
 
     attr_writer :api
     # @return [Array<Y2Firewall::Firewalld::Zone>] firewalld zones
@@ -62,16 +64,12 @@ module Y2Firewall
     #   avoid performance problems it is empty by default and the services are
     #   added when needed by the find_service method.
     attr_accessor :services
-    # @return [String] Type of log denied packets (reject & drop rules).
-    #   Possible values are: all, unicast, broadcast, multicast and off
-    attr_accessor :log_denied_packets
-    # @return [String] firewalld default zone name
-    attr_accessor :default_zone
 
     PACKAGE = "firewalld".freeze
     SERVICE = "firewalld".freeze
 
     def_delegators :api, :enable!, :disable!, :reload, :running?
+    has_attribute :log_denied_packets, :default_zone, cache: true
 
     # Constructor
     def initialize
@@ -88,11 +86,10 @@ module Y2Firewall
     # @return [Boolean] true
     def read
       return false unless installed?
-      @zones = zone_parser.parse
+      @zones = zone_reader.read
       @current_zone_names = api.zones
       @current_service_names = api.services
-      @log_denied_packets = api.log_denied_packets
-      @default_zone       = api.default_zone
+      read_attributes
       # The list of services is not read or initialized because takes time and
       # affects to the performance and also the services are rarely touched.
       @read = true
@@ -144,7 +141,7 @@ module Y2Firewall
     # @return [Y2Firewall::Firewalld::Service] the recently added service
     def read_service(name)
       raise(Service::NotFound, name) unless installed?
-      service = service_parser.parse(name)
+      service = service_reader.read(name)
       services << service
       service
     end
@@ -153,10 +150,10 @@ module Y2Firewall
     # since read
     #
     # @return [Boolean] true if the config was modified; false otherwise
-    def modified?
-      default_zone != api.default_zone ||
-        log_denied_packets != api.log_denied_packets ||
-        zones_modified?
+    def modified?(*item)
+      return modified.include?(item.first) if !item.empty?
+
+      !modified.empty? || zones_modified?
     end
 
     # Apply the changes to the modified zones and sets the logging option
@@ -169,8 +166,8 @@ module Y2Firewall
       return false unless installed?
       read unless read?
       apply_zones_changes!
-      api.log_denied_packets = log_denied_packets if log_denied_packets != api.log_denied_packets
-      api.default_zone       = default_zone if default_zone != api.default_zone
+      apply_attributes_changes!
+      untouched!
       true
     end
 
@@ -267,18 +264,18 @@ module Y2Firewall
 
   private
 
-    # Convenience method to isntantiate a new zone parser
+    # Convenience method to instantiate a new zone reader
     #
-    # @return [ZoneParser]
-    def zone_parser
-      ZoneParser.new(api.zones, api.list_all_zones(verbose: true))
+    # @return [ZoneReader]
+    def zone_reader
+      ZoneReader.new(api.zones, api.list_all_zones(verbose: true))
     end
 
-    # Convenience method tosisntantiate a services parser
+    # Convenience method to instantiate a services reader
     #
-    # @return [ServiceParser]
-    def service_parser
-      ServiceParser.new
+    # @return [ServiceReader]
+    def service_reader
+      ServiceReader.new
     end
   end
 end

@@ -292,6 +292,7 @@ describe Y2Firewall::Firewalld do
         allow(zone).to receive(:modified?).and_return(modified_zone)
       end
       firewalld.log_denied_packets = "all"
+      firewalld.untouched!
     end
 
     context "when some of the attributes have been modified since read" do
@@ -303,8 +304,6 @@ describe Y2Firewall::Firewalld do
 
     context "when no attribute has been modified since read" do
       it "returns false" do
-        firewalld.default_zone = "public"
-        firewalld.log_denied_packets = "off"
         expect(firewalld.modified?).to eq(false)
       end
     end
@@ -344,7 +343,6 @@ describe Y2Firewall::Firewalld do
       firewalld.log_denied_packets = "off"
       firewalld.default_zone = "drop"
 
-      expect(api).to receive(:log_denied_packets).and_return("on")
       expect(api).to receive(:default_zone=).with("drop")
       expect(api).to receive(:log_denied_packets=).with("off")
 

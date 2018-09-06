@@ -60,7 +60,7 @@ module Y2Firewall
 
       # Setter method for enabling masquerading.
       #
-      # @param enabled [Boolean] true for enable; false for disable
+      # @param enable [Boolean] true for enable; false for disable
       # @return [Boolean] whether it is enabled or not
       def masquerade=(enable)
         modified!(:masquerade)
