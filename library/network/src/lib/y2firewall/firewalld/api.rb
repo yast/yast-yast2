@@ -95,10 +95,12 @@ module Y2Firewall
         state == "running"
       end
 
+      # Enables the firewalld service
       def enable!
         offline? ? run_command("--enable") : Yast::Service.Enable("firewalld")
       end
 
+      # Disables the firewalld service
       def disable!
         offline? ? run_command("--disable") : Yast::Service.Disable("firewalld")
       end
@@ -129,9 +131,9 @@ module Y2Firewall
       # Set the default zone
       #
       # @param zone [String] The firewall zone
-      # @return [String] default zone
+      # @return [Boolean] true if the default zone was modified correctly
       def default_zone=(zone)
-        run_command("--set-default-zone=#{zone}") == "success"
+        string_command("--set-default-zone=#{zone}") == "success"
       end
 
       # Do a reload of the firewall if running. In offline mode just return
@@ -163,8 +165,7 @@ module Y2Firewall
 
       # @param kind [String] Denied packets to log. Possible values are:
       #   all, unicast, broadcast, multicast and off
-      # @return [Boolean] True if desired packet type was set to being logged
-      #   when denied
+      # @return [Boolean] true if the type of packages to log was set correctly
       def log_denied_packets=(kind)
         string_command("--set-log-denied=#{kind}") == "success"
       end

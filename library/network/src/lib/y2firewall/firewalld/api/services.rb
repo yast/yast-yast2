@@ -93,8 +93,8 @@ module Y2Firewall
         # @param service [String] The firewall service
         # @param long_description [String] the new service description
         def service_description=(service, long_description)
-          run_command("--service=#{service}", "--set-description=#{long_description}",
-            permanent: !offline?)
+          string_command("--service=#{service}", "--set-description=#{long_description}",
+            permanent: !offline?) == "success"
         end
 
         # Returns whether the service definition for the service name given is
