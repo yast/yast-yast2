@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Sep  5 10:19:27 UTC 2018 - jlopez@suse.com
+
+- CWM: allow to define next handler for CWM#show.
+- CWM: define default next handler in CWM::Dialog.
+- Needed for Expert Partitioner (fate#318196).
+- 4.0.87
+
+-------------------------------------------------------------------
 Thu Aug 30 11:21:14 UTC 2018 - dgonzalez@suse.com
 
 - Increase timeout for the execution of systemctl commands
