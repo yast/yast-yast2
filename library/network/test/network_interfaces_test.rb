@@ -8,6 +8,8 @@ describe Yast::NetworkInterfaces do
 
   subject { Yast::NetworkInterfaces }
 
+  TYPE_SYS_PATH = "/sys/class/net/ppp0/type".freeze
+
   describe "#CanonicalizeIP" do
     context "Handling IPv6 address" do
       it "Sets ipaddr, prefix and empty mask" do
@@ -98,8 +100,6 @@ describe Yast::NetworkInterfaces do
   end
 
   describe "#FilterDevices" do
-    TYPE_SYS_PATH = "/sys/class/net/ppp0/type".freeze
-
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
     # Defined in test/data/etc/sysconfig/ifcfg-*
     let(:netcard_devices) { ["bond", "br", "eth", "vlan"] }
@@ -130,7 +130,7 @@ describe Yast::NetworkInterfaces do
         subject.CleanCacheRead
       end
 
-      it "returns devices of the given type" do
+      it "returns device groups of the given type" do
         expect(subject.FilterDevices("netcard").keys.sort).to eql(netcard_devices)
         expect(subject.FilterDevices("modem").keys).to eql(["ppp"])
         expect(subject.FilterDevices("dsl").keys).to eql([])
@@ -139,7 +139,7 @@ describe Yast::NetworkInterfaces do
     end
 
     context "when given regex is not a predefined one" do
-      it "returns devices whose type exactly match the given regex" do
+      it "returns device groups whose type exactly match the given regex" do
         expect(subject.FilterDevices("br").keys).to eql(["br"])
         expect(subject.FilterDevices("br").size).to eql(1)
         expect(subject.FilterDevices("vlan").keys).to eql(["vlan"])
@@ -158,14 +158,30 @@ describe Yast::NetworkInterfaces do
     end
 
     before do
+      # mock type id for ppp device in sysfs
+      allow(Yast::FileUtils)
+        .to receive(:Exists)
+        .and_return false
+      allow(Yast::FileUtils)
+        .to receive(:Exists)
+        .with(TYPE_SYS_PATH)
+        .and_return true
+
+      allow(Yast::SCR)
+        .to receive(:Read)
+        .and_call_original
+      allow(Yast::SCR)
+        .to receive(:Read)
+        .with(path(".target.string"), TYPE_SYS_PATH)
+        .and_return "512\n"
+
       subject.CleanCacheRead
     end
 
     context "given a list of device types and a regex" do
-      it "returns device types that don't match the given regex" do
-        skip("needs improvement due to obsolete API removal")
+      it "returns device groups that don't match the given regex" do
         expect(subject.FilterNOT(subject.FilterDevices(""), "eth").keys)
-          .to eql(["arc", "bond", "br", "cold", "em", "ppp", "vlan"])
+          .to eql(["bond", "br", "ppp", "vlan"])
       end
     end
   end
