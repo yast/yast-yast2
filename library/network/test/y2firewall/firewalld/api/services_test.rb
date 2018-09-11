@@ -66,7 +66,7 @@ describe Y2Firewall::Firewalld::Api::Services do
   end
 
   describe "#service_short" do
-    it "obtains the service short description of the given service" do
+    it "obtains the service short description" do
       allow(api).to receive(:string_command)
         .with("--service=test", "--get-short", permanent: api.permanent?)
         .and_return("Test short")
@@ -76,7 +76,7 @@ describe Y2Firewall::Firewalld::Api::Services do
   end
 
   describe "#modify_service_short" do
-    it "set the service short description of the given service" do
+    it "modifies the service short description" do
       expect(api).to receive(:modify_command)
         .with("--service=test", "--set-short=Modified", permanent: api.permanent?)
 
@@ -85,7 +85,7 @@ describe Y2Firewall::Firewalld::Api::Services do
   end
 
   describe "#service_description" do
-    let(:description) { "This is the long description of the test zone." }
+    let(:description) { "This is the long description of the test service." }
     it "obtains the service long description of the given service" do
       allow(api).to receive(:string_command)
         .with("--service=test", "--get-description", permanent: api.permanent?)
@@ -95,12 +95,78 @@ describe Y2Firewall::Firewalld::Api::Services do
     end
   end
 
-  describe "#modify_service_short" do
-    it "set the service long description of the given service" do
+  describe "#modify_service_description" do
+    it "modifies the service long description" do
       expect(api).to receive(:modify_command)
         .with("--service=test", "--set-description=Modified Long", permanent: api.permanent?)
 
       subject.modify_service_description("test", "Modified Long")
+    end
+  end
+
+  describe "#service_supported?" do
+    before do
+      allow(api).to receive(:services).and_return(["ssh", "samba"])
+    end
+
+    context "when the given service is in the list of the defined ones" do
+      it "returns true" do
+        expect(api.service_supported?("ssh")).to eql(true)
+      end
+    end
+
+    context "when the given service is not included the list of the defined ones" do
+      it "returns false" do
+        expect(api.service_supported?("apache")).to eql(false)
+      end
+    end
+  end
+
+  describe "#service_ports" do
+    it "returns the list of ports opened by the given service" do
+      allow(api).to receive(:string_command)
+        .with("--service=test", "--get-ports", permanent: api.permanent?)
+        .and_return("80/tcp 443/tcp")
+
+      expect(api.service_ports("test")).to eql(["80/tcp", "443/tcp"])
+    end
+  end
+
+  describe "#service_protocols" do
+    it "returns the list of protocols opened by the given service" do
+      allow(api).to receive(:string_command)
+        .with("--service=test", "--get-protocols", permanent: api.permanent?)
+        .and_return("egp gre")
+
+      expect(api.service_protocols("test")).to eql(["egp", "gre"])
+    end
+  end
+
+  describe "#service_modules" do
+    it "returns the list of netfilter kernel helpers loaded by the given service" do
+      allow(api).to receive(:string_command)
+        .with("--service=test", "--get-modules", permanent: api.permanent?)
+        .and_return("ftp")
+
+      expect(api.service_modules("test")).to eql(["ftp"])
+    end
+  end
+
+  describe "#remove_service_port" do
+    it "removes the given port from the given service configured ports" do
+      expect(api).to receive(:modify_command)
+        .with("--service=test", "--remove-port=80/tcp", permanent: api.permanent?)
+
+      api.remove_service_port("test", "80/tcp")
+    end
+  end
+
+  describe "#add_service_port" do
+    it "adds the given port to the given service configured ports" do
+      expect(api).to receive(:modify_command)
+        .with("--service=test", "--add-port=80/tcp", permanent: api.permanent?)
+
+      api.add_service_port("test", "80/tcp")
     end
   end
 end

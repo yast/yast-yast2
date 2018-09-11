@@ -170,29 +170,28 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if source was changed
         def change_source(zone, source, permanent: permanent?)
-          modify_command("--zone=#{zone}", "--change-source=#{source}",
-            permanent: permanent)
+          modify_command("--zone=#{zone}", "--change-source=#{source}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
         # @param service [String] The firewall service
         # @return [Boolean] True if service is enabled in zone
-        def service_enabled?(zone, service)
-          query_command("--zone=#{zone}", "--query-service=#{service}")
+        def service_enabled?(zone, service, permanent: permanent?)
+          query_command("--zone=#{zone}", "--query-service=#{service}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
         # @param port [String] The firewall port
         # @return [Boolean] True if port is enabled in zone
-        def port_enabled?(zone, port)
-          query_command("--zone=#{zone}", "--query-port=#{port}")
+        def port_enabled?(zone, port, permanent: permanent?)
+          query_command("--zone=#{zone}", "--query-port=#{port}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
         # @param protocol [String] The zone protocol
         # @return [Boolean] True if protocol is enabled in zone
-        def protocol_enabled?(zone, protocol)
-          query_command("--zone=#{zone}", "--query-protocol=#{protocol}")
+        def protocol_enabled?(zone, protocol, permanent: permanent?)
+          query_command("--zone=#{zone}", "--query-protocol=#{protocol}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -201,8 +200,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if service was added to zone
         def add_service(zone, service, permanent: permanent?)
-          modify_command("--zone=#{zone}", "--add-service=#{service}",
-            permanent: permanent)
+          modify_command("--zone=#{zone}", "--add-service=#{service}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -316,7 +314,7 @@ module Y2Firewall
         #
         # @param zone [String] The firewall zone
         def target(zone)
-          string_command("--zone=#{zone}", "--get-target")
+          string_command("--zone=#{zone}", "--get-target", permanent: !offline?)
         end
 
         # Modify the current target of the zone

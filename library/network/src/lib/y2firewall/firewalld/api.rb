@@ -231,10 +231,12 @@ module Y2Firewall
       # current mode return the exit status 0.
       #
       # @see #run_command
-      # @return [Boolean] true if the exit status of the executed command is 0
       # @param args [Array<String>] list of command optional arguments
-      def query_command(*args)
-        _output, exit_status = run_command(*args, allowed_exitstatus: [0, 1])
+      # @param permanent [Boolean] if true and firewalld is running it
+      #   operates over the permanent configuration
+      # @return [Boolean] true if the exit status of the executed command is 0
+      def query_command(*args, permanent: false)
+        _output, exit_status = run_command(*args, allowed_exitstatus: [0, 1], permanent: permanent)
 
         exit_status == 0
       end
