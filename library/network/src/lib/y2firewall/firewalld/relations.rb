@@ -4,8 +4,6 @@ module  Y2Firewall
     # attributes common logic.
     module Relations
       def enable_modifications_cache
-        attr_writer :modified
-
         # Return an array with all the modified attributes/relations
         define_method "modified" do
           @modified ||= []
@@ -31,14 +29,93 @@ module  Y2Firewall
         end
       end
 
+      # Defines a set of methods to operate over single-value firewalld
+      # attributes like name, description, default_zone... Bang! methods
+      # apply the object modifications into the firewalld configuration
+      # using the firewalld API.
+      #
+      # A modifications cache can be enable with the cache param.
+      #
+      # @example
+      #
+      #   class Zone
+      #     extend Relations
+      #
+      #     has_attributes :short, :description, :target, cache: true
+      #   end
+      #
+      #   zone = Zone.new
+      #
+      #   # Return all the declared attributes
+      #   zone.attributes #=> [:short, :description, :target]
+      #   # Read all the attributes initializing the object
+      #   zone.read_attributes
+      #   # Obtain the configured zone name (not the object one)
+      #   zone.current_short
+      #   # Returns whether the zone has been modified since last read or write
+      #   zone.modified? #=> false
+      #   # Modifies the zone target
+      #   zone.target = "DROP"
+      #   zone.modified? #=> true
+      #   # Apply all the attributes changes in firewalld
+      #   zone.apply_attributes_changes!
+      #   zone.modified? #=> false
+      #   zone.target = "DROP"
+      #   zone.modified? #=> true
+      #   Reset all the modifications
+      #   zone.untouched!
+      #   zone.modified? #=> false
+      #
+      # @param attributes [Array<Symbol>] relation or attribute names
+      # @param scope [String, nil] prepend some API calls with the given scope
+      # @param cache [Boolean] if enabled will define some methods for caching
+      #   the object modifications
+      def has_attributes(*attributes, scope: nil, cache: false) # rubocop:disable Style/PredicateName
+        scope_method = scope ? "#{scope}_" : ""
+        enable_modifications_cache if cache
+        define_method "attributes" do
+          attributes
+        end
+
+        attributes.each do |attribute|
+          attr_reader attribute
+
+          define_method "#{attribute}=" do |item|
+            instance_variable_set("@#{attribute}", item)
+
+            modified!(attribute) if cache
+          end
+
+          define_method "current_#{attribute}" do
+            params = ["#{scope_method}#{attribute}"]
+            params << name if respond_to?("name")
+            api.public_send(*params)
+          end
+        end
+
+        define_method "read_attributes" do
+          attributes.each { |a| instance_variable_set("@#{a}", public_send("current_#{a}")) }
+          true
+        end
+
+        define_method "apply_attributes_changes!" do
+          attributes.each do |attribute|
+            next if cache && !modified?(attribute)
+            params = ["#{scope_method}#{attribute}="]
+            params << name if respond_to?("name")
+            params << public_send(attribute)
+            api.public_send(*params)
+          end
+          true
+        end
+      end
+
       # Defines a set of methods to operate over array based firewalld
       # attributes like services, interfaces, protocols, ports... Bang! methods
-      # applies the object modifications into the firewalld zone using the
-      # Firewalld API.
+      # apply the object modifications into the firewalld configuration
+      # using the firewalld cmdline API.
       #
-      # A modifications cache can be enable with the cache param. In that
-      # case it is important to initialize objects with the instance variable
-      # @modified as an empty array.
+      # A modifications cache can be enable with the cache param.       #
       #
       # @example
       #
@@ -46,10 +123,6 @@ module  Y2Firewall
       #     extend Relations
       #
       #     has_many :services, cache: true
-      #
-      #     def initialize
-      #       @modified = []
-      #     end
       #   end
       #
       #   zone = Zone.new
@@ -83,7 +156,10 @@ module  Y2Firewall
       #   # Apply all the relations changes
       #   zone.apply_relations_changes!
       #
-      # @param args [Array<Symbol] relation or attribute names
+      # @param relations [Array<Symbol>] relation or attribute names
+      # @param scope [String, nil] prepend some API calls with the given scope
+      # @param cache [Boolean] if enabled will define some methods for caching
+      #   the object modifications
       def has_many(*relations, scope: nil, cache: false) # rubocop:disable Style/PredicateName
         scope = "#{scope}_" if scope
         enable_modifications_cache if cache

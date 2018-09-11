@@ -27,11 +27,21 @@ Yast.import "PackageSystem"
 Yast.import "Service"
 
 describe Y2Firewall::Firewalld do
-  let(:firewalld) { described_class.instance }
-  let(:known_zones) { Y2Firewall::Firewalld::Zone.known_zones.keys }
+  let(:firewalld) { described_class.clone.instance }
+  let(:known_zones) { %w(dmz drop external home internal public trusted work) }
+  let(:known_services) { %w(http https samba ssh) }
   let(:empty_zones) { known_zones.map { |z| Y2Firewall::Firewalld::Zone.new(name: z) } }
+  let(:installed?) { true }
+  before do
+    allow(firewalld).to receive(:installed?).and_return(installed?)
+    allow_any_instance_of(Y2Firewall::Firewalld::Api).to receive(:running?).and_return(false)
+  end
 
   describe "#installed?" do
+    before do
+      allow(firewalld).to receive(:installed?).and_call_original
+    end
+
     it "returns false it the firewalld is not installed" do
       allow(Yast::PackageSystem).to receive("Installed")
         .with(described_class::PACKAGE).and_return(false)
@@ -48,6 +58,10 @@ describe Y2Firewall::Firewalld do
   end
 
   describe "#enabled?" do
+    before do
+      allow(firewalld).to receive(:installed?).and_return(true)
+    end
+
     it "returns true if the firewalld service is enable" do
       allow(Yast::Service).to receive("Enabled")
         .with(described_class::SERVICE).and_return(true)
@@ -172,7 +186,7 @@ describe Y2Firewall::Firewalld do
     it "returns true if the service is running" do
       expect(firewalld.api).to receive(:running?).and_return(true)
 
-      firewalld.running?
+      expect(firewalld.running?).to eq(true)
     end
   end
 
@@ -205,7 +219,8 @@ describe Y2Firewall::Firewalld do
         log_denied_packets: "off",
         default_zone:       "dmz",
         list_all_zones:     zones_definition,
-        zones:              known_zones)
+        zones:              known_zones,
+        services:           known_services)
     end
 
     before do
@@ -216,6 +231,14 @@ describe Y2Firewall::Firewalld do
       allow(firewalld).to receive(:installed?).and_return(false)
 
       expect(firewalld.read).to eq(false)
+    end
+
+    it "stores the list of available zone names" do
+      expect { firewalld.read }.to change { firewalld.current_zone_names }.from([]).to(known_zones)
+    end
+
+    it "stores the list of available service names" do
+      expect { firewalld.read }.to change { firewalld.current_service_names }.from([]).to(known_services)
     end
 
     it "initializes the list of zones parsing the firewalld summary" do
@@ -251,18 +274,21 @@ describe Y2Firewall::Firewalld do
 
   describe "#modified?" do
     let(:api) do
-      instance_double(Y2Firewall::Firewalld::Api, log_denied_packets: "off", default_zone: "public")
+      instance_double(Y2Firewall::Firewalld::Api, log_denied_packets: "off",
+                      default_zone: "public", zones: known_zones, services: ["http"])
     end
 
     let(:modified_zone) { false }
 
     before do
       allow(firewalld).to receive("api").and_return api
+      firewalld.zones = empty_zones
+      firewalld.current_zone_names = known_zones
       empty_zones.each do |zone|
         allow(zone).to receive(:modified?).and_return(modified_zone)
       end
-      firewalld.zones = empty_zones
       firewalld.log_denied_packets = "all"
+      firewalld.untouched!
     end
 
     context "when some of the attributes have been modified since read" do
@@ -272,10 +298,8 @@ describe Y2Firewall::Firewalld do
       end
     end
 
-    context "when no attribute has been modifiede since read" do
+    context "when no attribute has been modified since read" do
       it "returns false" do
-        firewalld.default_zone = "public"
-        firewalld.log_denied_packets = "off"
         expect(firewalld.modified?).to eq(false)
       end
     end
@@ -285,15 +309,21 @@ describe Y2Firewall::Firewalld do
     let(:api) do
       Y2Firewall::Firewalld::Api.new
     end
+    let(:api) do
+      instance_double(Y2Firewall::Firewalld::Api, log_denied_packets: "on",
+                      default_zone: "public", zones: known_zones, services: ["http"])
+    end
 
     before do
-      allow(firewalld).to receive("read?").and_return(true)
       firewalld.zones = empty_zones
-      allow(firewalld).to receive("api").and_return api
+      firewalld.current_zone_names = known_zones
       empty_zones.each do |zone|
         allow(zone).to receive(:modified?).and_return(false)
       end
 
+      allow(firewalld).to receive("read?").and_return(true)
+      allow(firewalld).to receive("api").and_return api
+      allow(firewalld).to receive(:apply_zones_changes!)
       allow(api).to receive(:default_zone=)
       allow(api).to receive(:log_denied_packets=)
     end
@@ -316,6 +346,7 @@ describe Y2Firewall::Firewalld do
     end
 
     it "only apply changes to the modified zones" do
+      expect(firewalld).to receive(:apply_zones_changes!).and_call_original
       dmz = firewalld.find_zone("dmz")
       allow(dmz).to receive(:modified?).and_return(true)
       expect(dmz).to receive(:apply_changes!)
@@ -369,11 +400,11 @@ describe Y2Firewall::Firewalld do
         log_denied_packets: "all",
         default_zone:       "work",
         list_all_zones:     zones_definition,
-        zones:              known_zones)
+        zones:              known_zones,
+        services:           known_services)
     end
 
     before do
-      allow(firewalld).to receive("api").and_return api
       allow(firewalld).to receive("api").and_return api
       allow(firewalld).to receive("running?").and_return true
       allow(firewalld).to receive("enabled?").and_return false

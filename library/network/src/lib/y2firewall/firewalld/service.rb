@@ -49,14 +49,11 @@ module Y2Firewall
       include Yast::I18n
       extend Yast::I18n
 
-      # @return name [String] service name
+      # @return [String] service name
       attr_reader :name
-      # @return short [String] service short description
-      attr_reader :short
-      # @return description [String] service long description
-      attr_reader :description
 
       has_many :ports, :protocols, scope: "service", cache: true
+      has_attributes :short, :description, scope: "service", cache: true
 
       # Convenience method for setting the tcp and udp ports of a given
       # service. If the service is found, it modify the ports according to the
@@ -105,8 +102,8 @@ module Y2Firewall
       # @return [Boolean] true if read
       def read
         return false unless supported?
-        @short        = api.service_short(name)
-        @description  = api.service_description(name)
+        @short        = current_short
+        @description  = current_description
         @protocols    = current_protocols
         @ports        = current_ports
         untouched!

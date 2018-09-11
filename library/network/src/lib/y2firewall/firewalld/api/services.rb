@@ -25,71 +25,108 @@
 module Y2Firewall
   class Firewalld
     class Api
-      # This module contains specific api methods for handling services
+      # This module contains specific API methods for handling services
       # definition and configuration.
       module Services
+        # Creates a new service definition for the given service name
+        #
         # @param service [String] The firewall service
-        # @param permanent [Boolean] if true it adds the --permanent option the
-        # command to be executed
-        def new_service(service, permanent: permanent?)
-          query_command("--new-service=#{service}", permanent: permanent)
+        def create_service(service)
+          string_command("--new-service=#{service}", permanent: !offline?) == "success"
         end
 
+        # Remove the service definition for the given service name
+        #
+        # @param service [String] The firewall service
+        def delete_service(service)
+          string_command("--delete-service=#{service}", permanent: !offline?) == "success"
+        end
+
+        # Return the list of availale firewalld services
+        #
         # @return [Array<String>] List of firewall services
         def services
           string_command("--get-services").split(" ")
         end
 
-        # @param service [String] The firewall service
-        # @param permanent [Boolean] if true it adds the --permanent option the
-        # command to be executed
+        # Show all the service declaration (name, description, ports,
+        # protocols and modules)
+        #
+        # @param service [String] The firewall service name
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   reads the permanent configuration
         # @return [Array<String>] list of all information for the given service
         def info_service(service, permanent: permanent?)
-          string_command("--info-service", service.to_s, permanent: permanent).split("\n")
+          string_command("--info-service=#{service}", "--verbose", permanent: permanent).split("\n")
         end
 
+        # Full name or short description of the service
+        #
         # @param service [String] The firewall service
-        # @param permanent [Boolean] if true it adds the --permanent option the
-        # command to be executed
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   reads the permanent configuration
         # @return [String] Short description for service
         def service_short(service, permanent: permanent?)
           # these may not exist on early firewalld releases
           string_command("--service=#{service}", "--get-short", permanent: permanent)
         end
 
+        # Modify the full name or short description of the service
+        #
+        # @param service [String] The firewall service
+        # @param short_description [String] the new service name or description
+        def service_short=(service, short_description)
+          string_command("--service=#{service}", "--set-short=#{short_description}",
+            permanent: !offline?)
+        end
+
         # @param service [String] the firewall service
-        # @param permanent [Boolean] if true it adds the --permanent option the
-        # command to be executed
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   reads the permanent configuration
         # @return [String] Description for service
         def service_description(service, permanent: permanent?)
           string_command("--service=#{service}", "--get-description", permanent: permanent)
         end
 
+        # Modify the long description of the service
+        #
+        # @param service [String] The firewall service
+        # @param long_description [String] the new service description
+        def service_description=(service, long_description)
+          string_command("--service=#{service}", "--set-description=#{long_description}",
+            permanent: !offline?) == "success"
+        end
+
+        # Returns whether the service definition for the service name given is
+        # present or not.
+        #
         # @param service [String] The firewall service
         # @return [Boolean] True if service definition exists
         def service_supported?(service)
           services.include?(service)
         end
 
+        # Return the list of ports allowed by the given service
+        #
         # @param service [String] The firewall service
-        # @param permanent [Boolean] if true it adds the --permanent option the
-        # command to be executed
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   reads the permanent configuration
         # @return [Array<String>] The firewall service ports
         def service_ports(service, permanent: permanent?)
           string_command("--service=#{service}", "--get-ports", permanent: permanent).split(" ")
         end
 
         # @param service [String] The firewall service
-        # @param permanent [Boolean] if true it adds the --permanent option the
-        # command to be executed
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   reads the permanent configuration
         # @return [Array<String>] The firewall service protocols
         def service_protocols(service, permanent: permanent?)
           string_command("--service=#{service}", "--get-protocols", permanent: permanent).split(" ")
         end
 
         # @param service [String] The firewall service
-        # @param permanent [Boolean] if true it adds the --permanent option the
-        # command to be executed
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   reads the permanent configuration
         # @return [Array<String>] The firewall service modules
         def service_modules(service, permanent: permanent?)
           string_command("--service=#{service}", "--get-modules", permanent: permanent).split(" ")
@@ -97,20 +134,20 @@ module Y2Firewall
 
         # @param service [String] The firewall service
         # @param port [String] The firewall port
-        # @param permanent [Boolean] if true it adds the --permanent option the
-        # command to be executed
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   modifies the permanent configuration
         # @return [Boolean] True if port was removed from service
         def remove_service_port(service, port, permanent: permanent?)
-          string_command("--service=#{service}", "--remove-port=#{port}", permanent: permanent)
+          string_command("--service=#{service}", "--remove-port=#{port}", permanent: permanent) == "success"
         end
 
         # @param service [String] The firewall firewall
         # @param port [String] The firewall port
-        # @param permanent [Boolean] if true it adds the --permanent option the
-        # command to be executed
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   modifies the permanent configuration
         # @return [Boolean] True if port was removed from service
         def add_service_port(service, port, permanent: permanent?)
-          string_command("--service=#{service}", "--add-port=#{port}", permanent: permanent)
+          string_command("--service=#{service}", "--add-port=#{port}", permanent: permanent) == "success"
         end
       end
     end
