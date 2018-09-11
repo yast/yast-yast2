@@ -133,7 +133,7 @@ module Y2Firewall
       # Set the default zone
       #
       # @param zone [String] The firewall zone
-      def default_zone=(zone)
+      def modify_default_zone(zone)
         modify_command("--set-default-zone=#{zone}")
       end
 
@@ -166,7 +166,7 @@ module Y2Firewall
 
       # @param kind [String] Denied packets to log. Possible values are:
       #   all, unicast, broadcast, multicast and off
-      def log_denied_packets=(kind)
+      def modify_log_denied_packets(kind)
         modify_command("--set-log-denied=#{kind}")
       end
 

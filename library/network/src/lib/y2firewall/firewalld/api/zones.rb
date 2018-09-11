@@ -290,7 +290,7 @@ module Y2Firewall
         # @param zone [String] The firewall zone
         # @param short_description [String] the new zone name or description
         # @return [Boolean] true if the short description was modified
-        def short=(zone, short_description)
+        def modify_short(zone, short_description)
           modify_command("--zone=#{zone}", "--set-short=#{short_description}",
             permanent: !offline?)
         end
@@ -307,7 +307,7 @@ module Y2Firewall
         # @param zone [String] The firewall zone
         # @param long_description [String] the new zone description
         # @return [Boolean] true if the long description was modified
-        def description=(zone, long_description)
+        def modify_description(zone, long_description)
           modify_command("--zone=#{zone}", "--set-description=#{long_description}",
             permanent: !offline?)
         end
@@ -324,7 +324,7 @@ module Y2Firewall
         # @param zone [String] The firewall zone
         # @param target [String] the new target
         # @return [Boolean] true if the zone target was modified
-        def target=(zone, target)
+        def modify_target(zone, target)
           modify_command("--zone=#{zone}", "--set-target=#{target}", permanent: !offline?)
         end
       end

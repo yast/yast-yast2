@@ -88,7 +88,7 @@ describe Y2Firewall::Firewalld::Relations do
 
     it "defines the 'apply_attributes_changes!' method" do
       subject.description = "modified dummy text"
-      expect(api).to receive(:public_send).with("description=", "modified dummy text")
+      expect(api).to receive(:public_send).with("modify_description", "modified dummy text")
 
       subject.apply_attributes_changes!
     end

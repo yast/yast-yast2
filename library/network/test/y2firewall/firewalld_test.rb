@@ -324,8 +324,8 @@ describe Y2Firewall::Firewalld do
       allow(firewalld).to receive("read?").and_return(true)
       allow(firewalld).to receive("api").and_return api
       allow(firewalld).to receive(:apply_zones_changes!)
-      allow(api).to receive(:default_zone=)
-      allow(api).to receive(:log_denied_packets=)
+      allow(api).to receive(:modify_default_zone)
+      allow(api).to receive(:modify_log_denied_packets)
     end
 
     it "enforces a read of the configuration if not read before" do
@@ -339,8 +339,8 @@ describe Y2Firewall::Firewalld do
       firewalld.log_denied_packets = "off"
       firewalld.default_zone = "drop"
 
-      expect(api).to receive(:default_zone=).with("drop")
-      expect(api).to receive(:log_denied_packets=).with("off")
+      expect(api).to receive(:modify_default_zone).with("drop")
+      expect(api).to receive(:modify_log_denied_packets).with("off")
 
       firewalld.write_only
     end

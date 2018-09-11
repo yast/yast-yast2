@@ -101,7 +101,7 @@ module  Y2Firewall
         define_method "apply_attributes_changes!" do
           attributes.each do |attribute|
             next if cache && !modified?(attribute)
-            params = ["#{scope_method}#{attribute}="]
+            params = ["modify_#{scope_method}#{attribute}"]
             params << name if respond_to?("name")
             params << public_send(attribute)
             api.public_send(*params)

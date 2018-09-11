@@ -181,10 +181,10 @@ describe Y2Firewall::Firewalld::Api do
     end
   end
 
-  describe "#log_denied_packets=" do
+  describe "#modify_log_denied_packets" do
     it "modifies the kind of packets to be logged" do
       expect(api).to receive(:string_command).with("--set-log-denied=broadcast", permanent: false)
-      api.log_denied_packets = "broadcast"
+      api.modify_log_denied_packets("broadcast")
     end
   end
 
@@ -198,10 +198,10 @@ describe Y2Firewall::Firewalld::Api do
     end
   end
 
-  describe "#default_zone=" do
+  describe "#modify_default_zone" do
     it "modifies the firewalld default zone" do
       expect(api).to receive(:string_command).with("--set-default-zone=external", permanent: false)
-      api.default_zone = "external"
+      api.modify_default_zone("external")
     end
   end
 
