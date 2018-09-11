@@ -296,7 +296,7 @@ module Yast
         rule_key = Ops.get(key_type, 0, "")
         rule_value = Ops.get(key_type, 1, "")
         rule_type = Ops.get(key_type, 2, "")
-        type = rule_type if (ifcfg[rule_key] || "").downcase == rule_value.downcase
+        type = rule_type if (ifcfg[rule_key] || "").casecmp?(rule_value)
       end
 
       Builtins.foreach(@TypeByKeyExistence) do |key_type|
