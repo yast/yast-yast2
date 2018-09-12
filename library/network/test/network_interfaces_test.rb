@@ -4,6 +4,25 @@ require_relative "test_helper"
 
 Yast.import("NetworkInterfaces")
 
+def mock_ppp
+  # mock type id for ppp device in sysfs
+  allow(Yast::FileUtils)
+    .to receive(:Exists)
+    .and_return false
+  allow(Yast::FileUtils)
+    .to receive(:Exists)
+    .with(TYPE_SYS_PATH)
+    .and_return true
+
+  allow(Yast::SCR)
+    .to receive(:Read)
+    .and_call_original
+  allow(Yast::SCR)
+    .to receive(:Read)
+    .with(path(".target.string"), TYPE_SYS_PATH)
+    .and_return "512\n"
+end
+
 describe Yast::NetworkInterfaces do
 
   subject { Yast::NetworkInterfaces }
@@ -110,22 +129,7 @@ describe Yast::NetworkInterfaces do
 
     context "when given regex is some of the predefined ones 'netcard', 'modem', 'isdn', 'dsl'." do
       before do
-        # mock type id for ppp device in sysfs
-        allow(Yast::FileUtils)
-          .to receive(:Exists)
-          .and_return false
-        allow(Yast::FileUtils)
-          .to receive(:Exists)
-          .with(TYPE_SYS_PATH)
-          .and_return true
-
-        allow(Yast::SCR)
-          .to receive(:Read)
-          .and_call_original
-        allow(Yast::SCR)
-          .to receive(:Read)
-          .with(path(".target.string"), TYPE_SYS_PATH)
-          .and_return "512\n"
+        mock_ppp
 
         subject.CleanCacheRead
       end
@@ -158,22 +162,7 @@ describe Yast::NetworkInterfaces do
     end
 
     before do
-      # mock type id for ppp device in sysfs
-      allow(Yast::FileUtils)
-        .to receive(:Exists)
-        .and_return false
-      allow(Yast::FileUtils)
-        .to receive(:Exists)
-        .with(TYPE_SYS_PATH)
-        .and_return true
-
-      allow(Yast::SCR)
-        .to receive(:Read)
-        .and_call_original
-      allow(Yast::SCR)
-        .to receive(:Read)
-        .with(path(".target.string"), TYPE_SYS_PATH)
-        .and_return "512\n"
+      mock_ppp
 
       subject.CleanCacheRead
     end
@@ -183,6 +172,30 @@ describe Yast::NetworkInterfaces do
         expect(subject.FilterNOT(subject.FilterDevices(""), "eth").keys)
           .to eql(["bond", "br", "ppp", "vlan"])
       end
+    end
+  end
+
+  describe "#Export" do
+    let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+    # Defined in test/data/etc/sysconfig/ifcfg-*
+    let(:netcard_types) { ["bond", "br", "eth", "ppp", "vlan"].sort }
+
+    around do |example|
+      change_scr_root(data_dir, &example)
+    end
+
+    before do
+      mock_ppp
+
+      subject.CleanCacheRead
+    end
+
+    it "exports all devices in a hash with device type as a key and list of devices as value" do
+      exported_devs = subject.Export("")
+
+      expect(exported_devs.keys.sort).to eql netcard_types
+      expect(exported_devs["eth"]).to include("cold", "em1", "eth0")
+      expect(exported_devs["ppp"]).to include("ppp0")
     end
   end
 
