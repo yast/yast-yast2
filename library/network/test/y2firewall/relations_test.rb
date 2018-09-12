@@ -1,7 +1,7 @@
 #!/usr/bin/env rspec
 # encoding: utf-8
 #
-# Copyright (c) [2017] SUSE LLC
+# Copyright (c) 2018 SUSE LLC
 #
 # All Rights Reserved.
 #

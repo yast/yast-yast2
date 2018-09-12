@@ -1,7 +1,7 @@
 #!/usr/bin/env rspec
 # encoding: utf-8
 #
-# Copyright (c) [2017] SUSE LLC
+# Copyright (c) 2018 SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -110,7 +110,7 @@ describe Y2Firewall::Firewalld::Api::Zones do
   end
 
   describe "#list_ports" do
-    it "returns the list of ports opened by the zone" do
+    it "returns the list of ports used by the zone" do
       allow(api).to receive(:string_command)
         .with("--zone=test", "--list-ports", permanent: api.permanent?)
         .and_return("80/tcp 443/tcp")
@@ -120,12 +120,100 @@ describe Y2Firewall::Firewalld::Api::Zones do
   end
 
   describe "#list_protocols" do
-    it "returns the list of protocols opened by the zone" do
+    it "returns the list of protocols used by the zone" do
       allow(api).to receive(:string_command)
         .with("--zone=test", "--list-protocols", permanent: api.permanent?)
         .and_return("egp gre")
 
       expect(api.list_protocols("test")).to eql(["egp", "gre"])
+    end
+  end
+
+  describe "#list_sources" do
+    it "returns the list of sources binded to the zone" do
+      allow(api).to receive(:string_command)
+        .with("--zone=test", "--list-sources", permanent: api.permanent?)
+        .and_return("192.168.5.0/24")
+
+      expect(api.list_sources("test")).to eql(["192.168.5.0/24"])
+    end
+  end
+
+  describe "#add_source" do
+    it "binds the given source with the zone" do
+      expect(api).to receive(:modify_command)
+        .with("--zone=test", "--add-source=192.168.4.0/24", permanent: api.permanent?)
+
+      api.add_source("test", "192.168.4.0/24")
+    end
+  end
+
+  describe "#remove_source" do
+    it "unbinds the given source from the zone" do
+      expect(api).to receive(:modify_command)
+        .with("--zone=test", "--remove-source=192.168.4.0/24", permanent: api.permanent?)
+
+      api.remove_source("test", "192.168.4.0/24")
+    end
+  end
+
+  describe "#source_enabled?" do
+    it "returns false if the source is not binded to the zone" do
+      allow(api).to receive(:query_command)
+        .with("--zone=public", "--query-source=192.168.4.0/24", permanent: api.permanent?)
+        .and_return(false)
+      expect(subject.source_enabled?("public", "192.168.4.0/24")).to eql(false)
+    end
+
+    it "returns true if the souce is binded by the zone" do
+      allow(api).to receive(:query_command)
+        .with("--zone=public", "--query-source=192.168.4.0/24", permanent: api.permanent?)
+        .and_return(true)
+      expect(subject.source_enabled?("public", "192.168.4.0/24")).to eql(true)
+    end
+  end
+
+  describe "#interface_zone" do
+    it "returns the name of the zone the interface belongs to" do
+      allow(api).to receive(:string_command)
+        .with("--get-zone-of-interface=eth0", permanent: api.permanent?)
+        .and_return("public")
+
+      expect(api.interface_zone("eth0")).to eql("public")
+    end
+  end
+
+  describe "#interface_enabled?" do
+    it "returns false if the interface is not binded to the zone" do
+      allow(api).to receive(:query_command)
+        .with("--zone=public", "--query-interface=eth0", permanent: !api.offline?)
+        .and_return(false)
+      expect(subject.interface_enabled?("public", "eth0")).to eql(false)
+    end
+
+    it "returns false if the interface is binded to the zone" do
+      allow(api).to receive(:query_command)
+        .with("--zone=public", "--query-interface=eth1", permanent: !api.offline?)
+        .and_return(true)
+      expect(subject.interface_enabled?("public", "eth1")).to eql(true)
+    end
+  end
+
+  describe "#add_interface" do
+    it "binds the given interface to the zone" do
+      expect(api).to receive(:modify_command)
+        .with("--zone=test", "--add-interface=eth0", permanent: api.permanent?)
+
+      api.add_interface("test", "eth0")
+    end
+  end
+
+  describe "#remove_interface" do
+    it "unbinds the given interface from the zone" do
+      expect(api).to receive(:modify_command)
+        .with("--zone=test", "--remove-interface=eth0", permanent: api.permanent?)
+
+      api.remove_interface("test", "eth0")
     end
   end
 
@@ -158,22 +246,6 @@ describe Y2Firewall::Firewalld::Api::Zones do
     it "returns true if the port is allowed by the zone" do
       allow(api).to receive(:query_command)
         .with("--zone=public", "--query-port=22/tcp", permanent: !api.offline?)
-        .and_return(true)
-      expect(subject.port_enabled?("public", "22/tcp")).to eql(true)
-    end
-  end
-
-  describe "#port_enabled?" do
-    it "returns false if the port is not allowed by the zone" do
-      allow(api).to receive(:query_command)
-        .with("--zone=public", "--query-port=80/tcp", permanent: api.permanent?)
-        .and_return(false)
-      expect(subject.port_enabled?("public", "80/tcp")).to eql(false)
-    end
-
-    it "returns true if the port is allowed by the zone" do
-      allow(api).to receive(:query_command)
-        .with("--zone=public", "--query-port=22/tcp", permanent: api.permanent?)
         .and_return(true)
       expect(subject.port_enabled?("public", "22/tcp")).to eql(true)
     end

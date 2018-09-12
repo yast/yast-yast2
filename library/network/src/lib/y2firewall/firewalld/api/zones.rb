@@ -112,7 +112,7 @@ module Y2Firewall
         # @param interface [String] The network interface
         # @return [Boolean] True if interface is assigned to zone
         def interface_enabled?(zone, interface, permanent: permanent?)
-          query_command("--zone=#{zone} --query-interface=#{interface}", permanent: permanent)
+          query_command("--zone=#{zone}", "--query-interface=#{interface}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -192,6 +192,13 @@ module Y2Firewall
         # @return [Boolean] True if protocol is enabled in zone
         def protocol_enabled?(zone, protocol, permanent: permanent?)
           query_command("--zone=#{zone}", "--query-protocol=#{protocol}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param source [String] The network source
+        # @return [Boolean] True if the source is binded to the zone
+        def source_enabled?(zone, source, permanent: permanent?)
+          query_command("--zone=#{zone}", "--query-source=#{source}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone

@@ -1,7 +1,7 @@
 #!/usr/bin/env rspec
 # encoding: utf-8
 #
-# Copyright (c) [2017] SUSE LLC
+# Copyright (c) 2018 SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -123,7 +123,7 @@ describe Y2Firewall::Firewalld::Api::Services do
   end
 
   describe "#service_ports" do
-    it "returns the list of ports opened by the given service" do
+    it "returns the list of ports used by the given service" do
       allow(api).to receive(:string_command)
         .with("--service=test", "--get-ports", permanent: api.permanent?)
         .and_return("80/tcp 443/tcp")
@@ -133,7 +133,7 @@ describe Y2Firewall::Firewalld::Api::Services do
   end
 
   describe "#service_protocols" do
-    it "returns the list of protocols opened by the given service" do
+    it "returns the list of protocols used by the given service" do
       allow(api).to receive(:string_command)
         .with("--service=test", "--get-protocols", permanent: api.permanent?)
         .and_return("egp gre")
