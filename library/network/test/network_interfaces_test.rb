@@ -202,8 +202,8 @@ describe Yast::NetworkInterfaces do
   describe "#Import" do
     let(:network_devices) do
       {
-        "eth" => { "enp0s3" => { "STARTMODE" => "auto" }},
-        "ppp" => { "ppp1"   => { "DEVICE" => "ppp1" }}
+        "eth" => { "enp0s3" => { "STARTMODE" => "auto" } },
+        "ppp" => { "ppp1"   => { "DEVICE" => "ppp1" } }
       }
     end
 
