@@ -834,7 +834,6 @@ module Yast
           end
         end
 
-        ret = :next if ret == :ok
         ret = :abort if ret == :cancel
 
         if ret == :next && functions[:next]
