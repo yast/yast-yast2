@@ -199,6 +199,21 @@ describe Yast::NetworkInterfaces do
     end
   end
 
+  describe "#Import" do
+    let(:network_devices) do
+      {
+        "eth" => { "enp0s3" => { "STARTMODE" => "auto" }},
+        "ppp" => { "ppp1"   => { "DEVICE" => "ppp1" }}
+      }
+    end
+
+    it "imports all devices" do
+      subject.Import("", network_devices)
+
+      expect(subject.List("")).to include("enp0s3", "ppp1")
+    end
+  end
+
   describe "#ConcealSecrets1" do
     let(:ifcfg_out) do
       {
