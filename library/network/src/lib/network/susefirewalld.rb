@@ -1017,6 +1017,12 @@ module Yast
       true
     end
 
+    # FIXME: this method currently does nothing at all and has been added just
+    # for having the same API than SuSEFirewall2 but it is deprecated
+    def full_init_on_boot(new_state)
+      new_state
+    end
+
   private
 
     def set_zone_modified(zone, zone_params)
@@ -1338,5 +1344,6 @@ module Yast
     publish function: :AddService, type: "boolean (string, string, string)"
     publish function: :RemoveService, type: "boolean (string, string, string)"
     publish function: :AddXenSupport, type: "void ()"
+    publish function: :full_init_on_boot, type: "boolean (boolean)"
   end
 end
