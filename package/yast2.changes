@@ -1,4 +1,16 @@
 -------------------------------------------------------------------
+Mon Sep 10 13:02:04 UTC 2018 - knut.anderssen@suse.com
+
+- Extended the firewall API supporting the use of single-value
+  attributes and also prepared it for introducing  more complex
+  relations like 'forward-ports' and 'rich-rules' in the future.
+  (fate#324662)
+- Improved the parser for zones and added a parser for services.
+- Improved test mocking fixing a Polkit popup shown when running the
+  test (bsc#087867)
+- 4.0.88
+
+-------------------------------------------------------------------
 Wed Sep  5 10:19:27 UTC 2018 - jlopez@suse.com
 
 - CWM: allow to define next handler for CWM#show.

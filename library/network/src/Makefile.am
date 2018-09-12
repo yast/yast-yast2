@@ -5,7 +5,6 @@ module_DATA = \
   modules/SuSEFirewall.rb \
   modules/NetworkConfig.rb \
   modules/Internet.rb \
-  modules/SuSEFirewallProposal.rb \
   modules/PortRanges.rb \
   modules/NetworkInterfaces.rb \
   modules/CWMFirewallInterfaces.rb \
@@ -45,7 +44,8 @@ yfwdlib_DATA = \
   lib/y2firewall/firewalld/relations.rb \
   lib/y2firewall/firewalld/service.rb \
   lib/y2firewall/firewalld/zone.rb \
-  lib/y2firewall/firewalld/zone_parser.rb
+  lib/y2firewall/firewalld/zone_reader.rb \
+  lib/y2firewall/firewalld/service_reader.rb
 
 yfwdapilibdir = @ylibdir@/y2firewall/firewalld/api/
 yfwdapilib_DATA = \

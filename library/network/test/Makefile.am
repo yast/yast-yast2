@@ -3,7 +3,6 @@ TESTS = \
   network_interfaces_test.rb \
   network_interfaces_helpers_test.rb \
   network_service_test.rb \
-  susefirewall_proposal_test.rb \
   susefirewall_services_test.rb \
   susefirewall_test.rb \
   susefirewalld_test.rb
