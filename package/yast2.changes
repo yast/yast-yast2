@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Sep 12 14:11:56 UTC 2018 - jlopez@suse.com
+
+- CWM: avoid to always return :next when accepting a dialog.
+- Needed for Expert Partitioner (fate#318196).
+- 4.1.11
+
+-------------------------------------------------------------------
 Wed Sep 12 14:05:49 UTC 2018 - knut.anderssen@suse.com
 
 - Added the missing SuSEFirewallProposal.rb file to the Makefile
