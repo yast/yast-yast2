@@ -437,7 +437,8 @@ describe Yast::WorkflowManager do
 
   describe "#merge_product_workflow" do
     let(:product) do
-      instance_double("Y2Packager::Product", label: "SLES", installation_package: "package")
+      instance_double("Y2Packager::Product", label: "SLES", installation_package: "package",
+        installation_package_repo: 42)
     end
 
     before do
@@ -448,7 +449,7 @@ describe Yast::WorkflowManager do
     end
 
     it "merges installation package workflow" do
-      expect(subject).to receive(:AddWorkflow).with(:package, 0, "package")
+      expect(subject).to receive(:AddWorkflow).with(:package, product.installation_package_repo, "package")
       subject.merge_product_workflow(product)
     end
 
@@ -458,7 +459,7 @@ describe Yast::WorkflowManager do
       end
 
       it "removes the previous workflow" do
-        expect(subject).to receive(:RemoveWorkflow).with(:package, 0, "package")
+        expect(subject).to receive(:RemoveWorkflow).with(:package, product.installation_package_repo, "package")
         subject.merge_product_workflow(product)
       end
     end

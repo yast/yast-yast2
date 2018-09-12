@@ -1497,7 +1497,8 @@ module Yast
         Yast::WorkflowManager.RemoveWorkflow(
           :package,
           merged_base_product.installation_package_repo,
-          merged_base_product.installation_package)
+          merged_base_product.installation_package
+        )
       end
 
       AddWorkflow(:package, product.installation_package_repo, product.installation_package)
