@@ -8,20 +8,21 @@ Yast.import "Mode"
 Yast.import "UI"
 
 describe Yast::CWMFirewallInterfaces do
-
   subject { Yast::CWMFirewallInterfaces }
+  let(:firewalld) { Y2Firewall::Firewalld.instance }
+  let(:api) { instance_double("Y2Firewall::Firewalld::Api") }
+
+  before do
+    allow(api).to receive(:service_supported?)
+    allow(firewalld).to receive(:api).and_return(api)
+  end
 
   describe "#CreateOpenFirewallWidget" do
     let(:widget_settings) { { "services" => [] } }
-    let(:api) { Y2Firewall::Firewalld::Api.new }
     let(:installed) { true }
 
     before do
-      allow_any_instance_of(Y2Firewall::Firewalld)
-        .to receive(:api).and_return(api)
-      allow_any_instance_of(Y2Firewall::Firewalld)
-        .to receive(:installed?).and_return(installed)
-      allow(api).to receive(:service_supported?)
+      allow(firewalld).to receive(:installed?).and_return(installed)
     end
 
     context "when firewalld is not installed" do
@@ -198,6 +199,18 @@ describe Yast::CWMFirewallInterfaces do
   end
 
   describe "#Selected2Opened" do
+    let(:known_interfaces) do
+      [
+        { "id" => "eth0", "name" => "Ethernet 1", "zone" => "external" },
+        { "id" => "eth1", "name" => "Ethernet 2", "zone" => "public" },
+        { "id" => "eth2", "name" => "Ethernet 3", "zone" => "dmz" }
+      ]
+    end
+
+    before do
+      allow(subject).to receive(:known_interfaces).and_return(known_interfaces)
+    end
+
     context "given a list of selected interfaces" do
       let(:zone) do
         instance_double("Y2Firewall::Firewalld::Zone", interfaces: ["eth0", "eth1"], name: "public")
@@ -205,7 +218,7 @@ describe Yast::CWMFirewallInterfaces do
 
       before do
         allow(subject).to receive(:interface_zone).with("eth0").and_return("public")
-        allow_any_instance_of(Y2Firewall::Firewalld).to receive(:find_zone).and_return(zone)
+        allow(firewalld).to receive(:find_zone).and_return(zone)
       end
 
       it "returns all the interfaces that belongs to same zone of the given interfaces" do
@@ -222,10 +235,12 @@ describe Yast::CWMFirewallInterfaces do
         { "id" => "eth2", "name" => "Ethernet 3", "zone" => nil }
       ]
     end
+
     let(:external_zone) do
       instance_double("Y2Firewall::Firewalld::Zone", name: "external",
                       interfaces: ["eth0"], services: [])
     end
+
     let(:public_zone) do
       instance_double("Y2Firewall::Firewalld::Zone", name: "public",
                       interfaces: ["eth1"], services: ["dns"])
@@ -234,8 +249,9 @@ describe Yast::CWMFirewallInterfaces do
     let(:zones) { [external_zone, public_zone] }
 
     before do
-      allow(subject).to receive(:known_interfaces).and_return(known_interfaces)
-      allow_any_instance_of(Y2Firewall::Firewalld).to receive(:zones).and_return(zones)
+      expect(subject).to receive(:known_interfaces).and_return(known_interfaces)
+      expect(subject).to receive(:allowed_interfaces).and_return(["eth0", "eth1"])
+      allow(firewalld).to receive(:zones).and_return(zones)
       allow(subject).to receive(:default_zone).and_return(public_zone)
       allow(subject).to receive(:configuration_changed).and_return(true)
       allow(subject).to receive(:allowed_interfaces).and_return(["eth0", "eth1", "eth2"])
