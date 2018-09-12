@@ -5,6 +5,7 @@ module_DATA = \
   modules/SuSEFirewall.rb \
   modules/NetworkConfig.rb \
   modules/Internet.rb \
+  modules/SuSEFirewallProposal.rb \
   modules/PortRanges.rb \
   modules/NetworkInterfaces.rb \
   modules/CWMFirewallInterfaces.rb \
