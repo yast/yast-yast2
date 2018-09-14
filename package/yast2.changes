@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep 17 11:52:51 UTC 2018 - knut.anderssen@suse.com
+
+- Y2Firewall::Firewalld: Added convenience method to obtain the
+  firewalld service object (fate#324662)
+- 4.0.93
+
+-------------------------------------------------------------------
 Mon Sep 17 11:21:58 UTC 2018 - knut.anderssen@suse.com
 
 - Firewalld: Fixed the API cmd call for removing services from
