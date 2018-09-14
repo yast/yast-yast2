@@ -28,6 +28,7 @@ require "y2firewall/firewalld/service"
 require "y2firewall/firewalld/zone"
 require "y2firewall/firewalld/zone_reader"
 require "y2firewall/firewalld/service_reader"
+require "yast2/system_service"
 require "singleton"
 
 Yast.import "PackageSystem"
@@ -224,8 +225,17 @@ module Y2Firewall
     end
 
     # Convenience method to instantiate the firewalld API
+    #
+    # @return [Y2Firewall::Firewalld::Api]
     def api
       @api ||= Api.new
+    end
+
+    # Convenience method to instantiate the firewalld system service
+    #
+    # @return [Yast2::SystemService, nil]
+    def system_service
+      @system_service ||= Yast2::SystemService.find(SERVICE)
     end
 
   private
