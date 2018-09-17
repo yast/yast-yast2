@@ -1260,21 +1260,6 @@ module Yast
       devs == original_devs
     end
 
-    # Return free device
-    # @param [String] type device type
-    # @return free device
-    # @example GetFreeDevice("eth") -&gt; "1"
-    def GetFreeDevice(type)
-      log.debug("type=#{type}")
-
-      free_dev = GetFreeDevices(type, 1).first
-
-      log.error("Free device location error: #{free_dev}") if free_dev.nil?
-      log.debug("Free device=#{free_dev}")
-
-      free_dev
-    end
-
     # Check presence of the device (alias)
     # @param [String] dev device identifier
     # @return true if device is present
