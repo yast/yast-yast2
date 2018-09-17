@@ -196,6 +196,27 @@ describe Y2Firewall::Firewalld do
     end
   end
 
+  describe "#system_service" do
+    let(:service) { Yast2::SystemService.build(Y2Firewall::Firewalld::SERVICE) }
+    before do
+      allow(Yast2::SystemService).to receive(:find).and_return(service)
+    end
+
+    context "if the firewalld service is found" do
+      it "returns the firewalld Yast2::SystemService object" do
+        expect(firewalld.system_service).to be_a Yast2::SystemService
+      end
+    end
+
+    context "if the firewalld service is not found" do
+      let(:service) { nil }
+
+      it "returns nil" do
+        expect(firewalld.system_service).to eq(nil)
+      end
+    end
+  end
+
   describe "#read" do
     let(:zones_definition) do
       ["dmz",
