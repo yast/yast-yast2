@@ -149,6 +149,15 @@ describe Y2Firewall::Firewalld::Api do
   end
 
   describe "#state" do
+    subject(:api) { described_class.new(mode: :running) }
+
+    it "returns 'unknown' in case of an unexpected state" do
+      allow(Yast::Execute).to receive(:on_target)
+        .with("firewall-cmd", "--state", allowed_exitstatus: [0, 252]).and_return(24)
+
+      expect(api.state).to eql("unknown")
+    end
+
     it "returns 'running' when the firewall is running" do
       allow(Yast::Execute).to receive(:on_target)
         .with("firewall-cmd", "--state", allowed_exitstatus: [0, 252]).and_return(0)
@@ -161,13 +170,6 @@ describe Y2Firewall::Firewalld::Api do
         .with("firewall-cmd", "--state", allowed_exitstatus: [0, 252]).and_return(252)
 
       expect(api.state).to eql("not running")
-    end
-
-    it "returns 'unknown' in case of an unexpected state" do
-      allow(Yast::Execute).to receive(:on_target)
-        .with("firewall-cmd", "--state", allowed_exitstatus: [0, 252]).and_return(24)
-
-      expect(api.state).to eql("unknown")
     end
   end
 
