@@ -131,8 +131,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if the interface was removed from the zone
         def remove_interface(zone, interface, permanent: permanent?)
-          modify_command("--zone=#{zone}", "--remove-interface=#{interface}",
-            permanent: permanent)
+          modify_command("--zone=#{zone}", "--remove-interface=#{interface}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -234,7 +233,8 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if service was removed from zone
         def remove_service(zone, service, permanent: permanent?)
-          modify_command("--zone=#{zone}", "--remove-service=#{service}", permanent: permanent)
+          remove_arg = offline? ? "--remove-service-from-zone" : "--remove-service"
+          modify_command("--zone=#{zone}", "#{remove_arg}=#{service}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone

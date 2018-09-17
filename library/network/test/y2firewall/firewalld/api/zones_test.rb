@@ -157,6 +157,29 @@ describe Y2Firewall::Firewalld::Api::Zones do
     end
   end
 
+  describe "#add_service" do
+    it "adds the given service to the specified zone" do
+      expect(api).to receive(:modify_command)
+        .with("--zone=test", "--add-service=samba", permanent: api.permanent?)
+
+      api.add_service("test", "samba")
+    end
+  end
+
+  describe "#remove_service" do
+    let(:api_running) { Y2Firewall::Firewalld::Api.new(mode: :running) }
+
+    it "removes the given service from the specified zone" do
+      expect(api).to receive(:modify_command)
+        .with("--zone=public", "--remove-service-from-zone=ssh", permanent: api.permanent?)
+      api.remove_service("public", "ssh")
+
+      expect(api_running).to receive(:modify_command)
+        .with("--zone=public", "--remove-service=vnc", permanent: api_running.permanent?)
+      api_running.remove_service("public", "vnc")
+    end
+  end
+
   describe "#source_enabled?" do
     it "returns false if the source is not binded to the zone" do
       allow(api).to receive(:query_command)
