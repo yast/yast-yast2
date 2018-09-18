@@ -4,6 +4,7 @@ TESTS = \
 	custom_widget_test.rb \
 	dialog_test.rb \
 	pager_test.rb \
+	popup_test.rb \
 	replace_point_test.rb \
 	table_test.rb \
 	tree_test.rb \
