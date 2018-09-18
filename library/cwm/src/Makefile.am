@@ -25,6 +25,7 @@ ycwm_DATA = \
   lib/cwm/tabs.rb \
   lib/cwm/tree.rb \
   lib/cwm/tree_pager.rb \
+  lib/cwm/ui_state.rb \
   lib/cwm/widget.rb \
   lib/cwm/wrapper_widget.rb
 
