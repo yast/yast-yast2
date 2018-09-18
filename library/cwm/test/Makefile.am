@@ -9,6 +9,7 @@ TESTS = \
 	table_test.rb \
 	tree_test.rb \
 	tree_pager_test.rb \
+	ui_state_test.rb \
 	wrapper_widget_test.rb
 
 TEST_EXTENSIONS = .rb
