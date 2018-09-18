@@ -88,14 +88,8 @@ module CWM
     # Called through {.create_instance}, starts with a blank situation (which
     # means default for each widget will be honored).
     def initialize
-      textdomain(textdomain_name)
       @candidate_nodes = []
     end
-
-    # Specify textdomain name
-    #
-    # @return [String] Textdomain (e.g., "firewall")
-    abstract_method :textdomain_name
 
     # Method to be called when the user decides to visit a given page by
     # clicking in one node of the general tree.

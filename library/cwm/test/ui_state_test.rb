@@ -24,34 +24,29 @@ require_relative "test_helper"
 require "cwm/ui_state"
 
 describe CWM::UIState do
-  class MyUIState < CWM::UIState
-    def textdomain_name
-      "base"
-    end
-  end
-  subject(:ui_state) { MyUIState.instance }
+  subject(:ui_state) { described_class.instance }
 
   describe ".new" do
     it "cannot be used directly" do
-      expect { MyUIState.new }.to raise_error(/private method/)
+      expect { described_class.new }.to raise_error(/private method/)
     end
   end
 
   describe ".instance" do
     it "returns the singleton object in subsequent calls" do
-      initial = MyUIState.create_instance
-      second = MyUIState.instance
+      initial = described_class.create_instance
+      second = described_class.instance
       # Note using equal to ensure is actually the same object (same object_id)
       expect(second).to equal initial
-      expect(MyUIState.instance).to equal initial
+      expect(described_class.instance).to equal initial
     end
   end
 
   describe ".create_instance" do
     it "returns a new singleton UIState object" do
-      initial = MyUIState.instance
-      result = MyUIState.create_instance
-      expect(result).to be_a MyUIState
+      initial = described_class.instance
+      result = described_class.create_instance
+      expect(result).to be_a described_class
       expect(result).to_not equal initial
     end
   end
@@ -64,7 +59,7 @@ describe CWM::UIState do
     let(:pages) { [page1, page2] }
 
     context "if the user has still not visited any node" do
-      before { MyUIState.create_instance }
+      before { described_class.create_instance }
 
       it "returns nil" do
         expect(ui_state.find_tree_node(pages)).to be_nil
@@ -100,7 +95,7 @@ describe CWM::UIState do
       let(:tabs) { [tab1, tab2] }
 
       context "if the user has still not clicked in any tab" do
-        before { MyUIState.create_instance }
+        before { described_class.create_instance }
 
         it "returns nil" do
           expect(ui_state.find_tab(tabs)).to be_nil
@@ -132,7 +127,7 @@ describe CWM::UIState do
     describe "#row_id" do
       let(:row_id) { "my-row" }
       context "if the user has still not selected any row" do
-        before { MyUIState.create_instance }
+        before { described_class.create_instance }
 
         it "returns nil" do
           expect(ui_state.row_id).to be_nil
