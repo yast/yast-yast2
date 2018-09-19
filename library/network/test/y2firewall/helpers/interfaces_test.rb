@@ -26,7 +26,7 @@ describe Y2Firewall::Helpers::Interfaces do
 
   describe "#interface_zone" do
     it "returns the zone name of the given interface" do
-      expect(subject.interface_zone("eth0")).to eql("external")
+      expect(subject.interface_zone("eth0")).to eql(external)
     end
 
     it "returns nil if the interface does not belong to any zone" do

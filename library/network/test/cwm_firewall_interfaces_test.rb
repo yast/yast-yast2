@@ -217,7 +217,7 @@ describe Yast::CWMFirewallInterfaces do
       end
 
       before do
-        allow(subject).to receive(:interface_zone).with("eth0").and_return("public")
+        allow(subject).to receive(:interface_zone).with("eth0").and_return(zone)
         allow(firewalld).to receive(:find_zone).and_return(zone)
       end
 

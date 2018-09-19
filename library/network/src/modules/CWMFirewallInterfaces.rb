@@ -161,7 +161,11 @@ module Yast
     # @return a list of interfaces that will be opened
     def Selected2Opened(ifaces, _nm_ifaces_have_to_be_selected)
       log.info("Selected ifaces: #{ifaces}")
-      zone_names = ifaces.map { |i| interface_zone(i) || default_zone.name }.uniq
+      zone_names = ifaces.map do |name|
+        zone = interface_zone(name)
+        zone ? zone.name : default_zone.name
+      end
+      zone_names.uniq!
       log.info("Ifaces zone names: #{zone_names}")
 
       zone_ifaces =
