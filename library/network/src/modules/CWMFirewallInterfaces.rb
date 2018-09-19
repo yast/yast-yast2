@@ -250,19 +250,19 @@ module Yast
 
       zones =
         known_interfaces.each_with_object([]) do |known_interface, a|
-          if allowed_interfaces.include?(known_interface["id"])
-            zone_name = known_interface["zone"] || default_zone.name
+          if allowed_interfaces.include?(known_interface.name)
+            zone_name = known_interface.zone || firewalld.default_zone
             a << zone_name
           end
         end
 
-      firewalld.zones.map do |zone|
+      firewalld.zones.each do |zone|
         if zones.include?(zone.name)
-          services.map do |service|
+          services.each do |service|
             zone.add_service(service) unless zone.services.include?(service)
           end
         else
-          services.map do |service|
+          services.each do |service|
             zone.remove_service(service) if zone.services.include?(service)
           end
         end

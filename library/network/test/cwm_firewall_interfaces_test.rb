@@ -201,9 +201,9 @@ describe Yast::CWMFirewallInterfaces do
   describe "#Selected2Opened" do
     let(:known_interfaces) do
       [
-        { "id" => "eth0", "name" => "Ethernet 1", "zone" => "external" },
-        { "id" => "eth1", "name" => "Ethernet 2", "zone" => "public" },
-        { "id" => "eth2", "name" => "Ethernet 3", "zone" => "dmz" }
+        mock_firewalld_interface(:eth0, "Ethernet 1", "external"),
+        mock_firewalld_interface(:eth1, "Ethernet 2", "public"),
+        mock_firewalld_interface(:eth2, "Ethernet 3", "dmz")
       ]
     end
 
@@ -230,9 +230,9 @@ describe Yast::CWMFirewallInterfaces do
   describe "#StoreAllowedInterfaces" do
     let(:known_interfaces) do
       [
-        { "id" => "eth0", "name" => "Ethernet 1", "zone" => "external" },
-        { "id" => "eth1", "name" => "Ethernet 2", "zone" => "public" },
-        { "id" => "eth2", "name" => "Ethernet 3", "zone" => nil }
+        mock_firewalld_interface(:eth0, "Ethernet 1", "external"),
+        mock_firewalld_interface(:eth1, "Ethernet 2", "public"),
+        mock_firewalld_interface(:eth2, "Ethernet 3", "nil")
       ]
     end
 
@@ -249,10 +249,9 @@ describe Yast::CWMFirewallInterfaces do
     let(:zones) { [external_zone, public_zone] }
 
     before do
-      expect(subject).to receive(:known_interfaces).and_return(known_interfaces)
-      expect(subject).to receive(:allowed_interfaces).and_return(["eth0", "eth1"])
+      allow(subject).to receive(:known_interfaces).and_return(known_interfaces)
       allow(firewalld).to receive(:zones).and_return(zones)
-      allow(subject).to receive(:default_zone).and_return(public_zone)
+      allow(firewalld).to receive(:default_zone).and_return("public")
       allow(subject).to receive(:configuration_changed).and_return(true)
       allow(subject).to receive(:allowed_interfaces).and_return(["eth0", "eth1", "eth2"])
     end

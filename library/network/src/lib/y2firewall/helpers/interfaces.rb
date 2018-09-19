@@ -22,7 +22,7 @@
 #
 # ***************************************************************************
 require "yast"
-require "y2firewall/firewalld"
+require "y2firewall/firewalld/interface"
 
 module Y2Firewall
   module Helpers
@@ -44,7 +44,7 @@ module Y2Firewall
       #
       # @return [Array<String>] default zone interface names
       def default_interfaces
-        known_interfaces.select { |i| i["zone"].to_s.empty? }.map { |i| i["id"] }
+        known_interfaces.select { |i| !i.zone }.map(&:name)
       end
 
       # Return the zone name for a given interface from the firewalld instance
@@ -65,31 +65,13 @@ module Y2Firewall
         @default_zone ||= firewalld.find_zone(firewalld.default_zone)
       end
 
-      # Return a hash of all the known interfaces with their "id", "name" and
-      # "zone".
+      # Return an array with all the known or configured interfaces
       #
-      # @example
-      #   CWMFirewallInterfaces.known_interfaces #=>
-      #     [
-      #       { "id" => "eth0", "name" => "Intel Ethernet Connection I217-LM", "zone" => "external"},
-      #       { "id" => "eth1", "name" => "Intel Ethernet Connection I217-LM", "zone" => "public"},
-      #       { "id" => "eth2", "name" => "Intel Ethernet Connection I217-LM", "zone" => nil},
-      #       { "id" => "eth3", "name" => "Intel Ethernet Connection I217-LM", "zone" => nil},
-      #     ]
-      #
-      # @return [Array<Hash<String,String>>] known interfaces "id", "name" and "zone"
+      # @return [Array<Y2Firewall::Firewalld::Interface>] known interfaces
       def known_interfaces
         return @known_interfaces if @known_interfaces
 
-        interfaces = Yast::NetworkInterfaces.List("").reject { |i| i == "lo" }
-
-        @known_interfaces = interfaces.map do |interface|
-          {
-            "id"   => interface,
-            "name" => Yast::NetworkInterfaces.GetValue(interface, "NAME"),
-            "zone" => interface_zone(interface)
-          }
-        end
+        @known_interfaces = Y2Firewall::Firewalld::Interface.known
       end
     end
   end
