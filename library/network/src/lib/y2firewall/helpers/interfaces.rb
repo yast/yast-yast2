@@ -44,7 +44,7 @@ module Y2Firewall
       #
       # @return [Array<String>] default zone interface names
       def default_interfaces
-        known_interfaces.select { |i| !i.zone }.map(&:name)
+        known_interfaces.reject(&:zone).map(&:name)
       end
 
       # Return the zone name for a given interface from the firewalld instance
@@ -63,7 +63,8 @@ module Y2Firewall
         @default_zone ||= firewalld.find_zone(firewalld.default_zone)
       end
 
-      # Return an array with all the known or configured interfaces
+      # Return an array with all the known (sysconfig configured) firewalld
+      # interfaces.
       #
       # @return [Array<Y2Firewall::Firewalld::Interface>] known interfaces
       def known_interfaces
