@@ -53,9 +53,7 @@ module Y2Firewall
       # @param name [String] interface name
       # @return [String, nil] zone name whether belongs to some or nil if not
       def interface_zone(name)
-        zone = firewalld.zones.find { |z| z.interfaces.include?(name) }
-
-        zone ? zone.name : nil
+        Y2Firewall::Firewalld::Interface.new(name).zone
       end
 
       # Convenience method to return the default zone object

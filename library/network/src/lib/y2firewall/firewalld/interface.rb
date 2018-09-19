@@ -26,10 +26,16 @@ module Y2Firewall
   class Firewalld
     # Class to work with firewalld interfaces
     class Interface
+      # @return [Symbol]
       attr_accessor :id
 
-      def self.build(name)
-        new(name)
+      # Constructor
+      #
+      # @param name [String] interface name
+      def initialize(name)
+        Yast.import "NetworkInterfaces"
+
+        @id = name.to_sym
       end
 
       # Return an array with all the known or configured interfaces
@@ -39,7 +45,7 @@ module Y2Firewall
         Yast.import "NetworkInterfaces"
         interfaces = Yast::NetworkInterfaces.List("").reject { |i| i == "lo" }
 
-        interfaces.map { |i| build(i) }
+        interfaces.map { |i| new(i) }
       end
 
       # @return [String] interface name
@@ -55,7 +61,6 @@ module Y2Firewall
       # Return the zone name for a given interface from the firewalld instance
       # instead of from the API.
       #
-      # @param name [String] interface name
       # @return [String, nil] zone name whether belongs to some or nil if not
       def zone
         zone = fw.zones.find { |z| z.interfaces.include?(id.to_s) }
@@ -64,15 +69,6 @@ module Y2Firewall
       end
 
     private
-
-      # Constructor
-      #
-      # @param name [String] interface name
-      def initialize(name)
-        Yast.import "NetworkInterfaces"
-
-        @id = name.to_sym
-      end
 
       # Return an instance of Y2Firewall::Firewalld
       #
