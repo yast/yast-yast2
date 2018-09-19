@@ -101,7 +101,7 @@ module Yast
       @CardRegex =
         # other: irlan|lo|plip|...
         {
-          "netcard" => "arc|ath|bnep|ci|ctc|slc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
+          "netcard" => "ath|bnep|ci|ctc|slc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
           "modem"   => "ppp|modem",
           "isdn"    => "isdn|ippp",
           "dsl"     => "dsl"
@@ -185,21 +185,6 @@ module Yast
       value.nil? ? true : value.empty?
     end
 
-    def ifcfg_part(ifcfg, part)
-      return "" if Builtins.regexpmatch(ifcfg, @ifcfg_name_regex) != true
-      ret = Builtins.regexpsub(ifcfg, @ifcfg_name_regex, "\\#{part}")
-      ret.nil? ? "" : ret
-    end
-
-    # Return a device type
-    # @param [String] dev device
-    # @return device type
-    # @example device_type("eth1") -> "eth"
-    # @example device_type("eth-pcmcia-0") -> "eth"
-    def device_type(dev)
-      ifcfg_part(dev, "1")
-    end
-
     # Detects a subtype of Ethernet device type according /sys or /proc content
     #
     # @example
@@ -269,7 +254,6 @@ module Yast
       sys_type = Convert.to_string(
         SCR.Read(path(".target.string"), sys_type_path)
       )
-
       sys_type = if sys_type
         Builtins.regexpsub(sys_type, "(.*)\n", "\\1")
       else
@@ -312,7 +296,7 @@ module Yast
         rule_key = Ops.get(key_type, 0, "")
         rule_value = Ops.get(key_type, 1, "")
         rule_type = Ops.get(key_type, 2, "")
-        type = rule_type if Ops.get_string(ifcfg, rule_key, "") == rule_value
+        type = rule_type if (ifcfg[rule_key] || "").casecmp?(rule_value)
       end
 
       Builtins.foreach(@TypeByKeyExistence) do |key_type|
@@ -342,7 +326,9 @@ module Yast
 
       type = GetTypeFromIfcfg(ifcfg) if IsEmpty(type)
 
-      type = device_type(dev) if type.nil?
+      # last instance - no record in sysfs, no configuration, device
+      # name is not bounded to a type -> use fallbac "eth" as wicked already does
+      type = "eth" if type.nil?
 
       log.debug("GetTypeFromIfcfgOrName: device='#{dev}' type='#{type}'")
 
@@ -398,27 +384,6 @@ module Yast
       else
         return _("Unknown")
       end
-    end
-
-    # Return a device number
-    # @param [String] dev device
-    # @return device number
-    # @example device_num("eth1") -> "1"
-    # @example device_num("lo") -> ""
-    #
-    # Obsolete: It is incompatible with new device naming scheme.
-    def device_num(dev)
-      log.warn("Do not use device_num.")
-      ifcfg_part(dev, "2")
-    end
-
-    # Return a device alias number
-    # @param [String] dev device
-    # @return alias number
-    # @example alias_num("eth1#2") -> "2"
-    # @example alias_num("eth1#blah") -> "blah"
-    def alias_num(dev)
-      ifcfg_part(dev, "3")
     end
 
     # Create a device name from its type and number
@@ -835,26 +800,10 @@ module Yast
       # remove deleted devices
       log.info("Deleted=#{@Deleted}")
       Builtins.foreach(@Deleted) do |d|
-        anum = alias_num(d)
-        if anum == ""
-          # delete config file
-          p = Builtins.add(path(".network.section"), d)
-          log.debug("deleting: #{p}")
-          SCR.Write(p, nil)
-        else
-          dev = device_name_from_alias(d)
-          typ = GetType(dev)
-          base = Builtins.add(path(".network.value"), dev)
-          # look in OriginalDevs because we need to catch all variables
-          # of the alias
-
-          dev_aliases = original_devs.fetch(typ, {}).fetch(dev, {}).fetch("_aliases", {})
-          dev_aliases.fetch(anum, {}).keys.each do |key|
-            p = base + "#{key}_#{anum}"
-            log.debug("deleting: #{p}")
-            SCR.Write(p, nil)
-          end
-        end
+        # delete config file
+        p = Builtins.add(path(".network.section"), d)
+        log.debug("deleting: #{p}")
+        SCR.Write(p, nil)
       end
       @Deleted = []
 
@@ -1071,7 +1020,6 @@ module Yast
 
       # device types which cannot be present on s390 arch
       s390_unknown_dev_types = [
-        "arc",
         "bnep",
         "dummy",
         "fddi",
@@ -1312,63 +1260,12 @@ module Yast
       devs == original_devs
     end
 
-    # It returns an array of <num> elements corresponding to the integer
-    # part of the free device names available for the given device type.
-    #
-    # @example GetFreeDevices("eth", 2) -> [1, 2]
-    #
-    # @param [String] type device type
-    # @param [String] num number of free devices to return
-    # @return [Array] of free devices for given type
-    def GetFreeDevices(type, num)
-      log.debug("Devices=#{@Devices}")
-      log.debug("type,num=#{type},#{num}")
-      log.debug("Devices[#{type}]=#{@Devices[type]}")
-
-      curdevs = @Devices.fetch(type, {}).keys
-      curdevs.map! { |d| d.include?(type) ? device_num(d) : d }
-
-      i = 0
-      count = 0
-      ret = []
-
-      # Remaining numbered devices
-      while count < num
-        if !curdevs.include?(i.to_s)
-          ret << i.to_s
-          count += 1
-        end
-        i += 1
-      end
-
-      log.debug("Free devices=#{ret}")
-
-      ret
-    end
-
-    # Return free device
-    # @param [String] type device type
-    # @return free device
-    # @example GetFreeDevice("eth") -&gt; "1"
-    def GetFreeDevice(type)
-      log.debug("type=#{type}")
-
-      free_dev = GetFreeDevices(type, 1).first
-
-      log.error("Free device location error: #{free_dev}") if free_dev.nil?
-      log.debug("Free device=#{free_dev}")
-
-      free_dev
-    end
-
     # Check presence of the device (alias)
     # @param [String] dev device identifier
     # @return true if device is present
     def Check(dev)
       Builtins.y2debug("Check(%1)", dev)
       typ = GetType(dev)
-      #    string num = device_num(dev);
-      #    string anum = alias_num(dev);
       return false if !Builtins.haskey(@Devices, typ)
 
       devsmap = Ops.get(@Devices, typ, {})
@@ -1394,17 +1291,6 @@ module Yast
       @Name = name
       t = GetType(@Name)
       @Current = Ops.get(@Devices, [t, @Name], {})
-      a = alias_num(@Name)
-      if !a.nil? && a != ""
-        @Current = Ops.get_map(@Current, ["_aliases", a], {})
-      end
-
-      if @Current == {}
-        # Default device map
-        @Current =
-          # FIXME: remaining items
-          {}
-      end
 
       Builtins.y2debug("Name=%1", @Name)
       Builtins.y2debug("Current=%1", @Current)
@@ -1466,19 +1352,9 @@ module Yast
 
         t = int_type if Ops.greater_than(Builtins.size(int_type), 0)
       end
-      a = alias_num(name)
       Builtins.y2debug("ChangeDevice(%1)", name)
 
-      devsmap = Ops.get(@Devices, t, {})
-      devmap = Ops.get(devsmap, name, {})
-      amap = Ops.get_map(devmap, "_aliases", {})
-
-      if a != ""
-        Ops.set(amap, a, newdev)
-        Ops.set(devmap, "_aliases", amap)
-      else
-        devmap = deep_copy(newdev)
-      end
+      devmap = deep_copy(newdev)
 
       Ops.set(devsmap, name, devmap)
       Ops.set(@Devices, t, devsmap)
@@ -1494,16 +1370,9 @@ module Yast
       end
 
       t = GetType(name)
-      a = alias_num(name)
       devsmap = Ops.get(@Devices, t, {})
 
-      if a != ""
-        amap = Ops.get_map(devsmap, [name, "_aliases"], {})
-        amap = Builtins.remove(amap, a)
-        Ops.set(devsmap, [name, "_aliases"], amap)
-      else
-        devsmap = Builtins.remove(devsmap, name)
-      end
+      devsmap = Builtins.remove(devsmap, name)
 
       Ops.set(@Devices, t, devsmap)
 
@@ -1589,23 +1458,6 @@ module Yast
       @Devices.values.each do |devsmap|
         devsmap.each do |device, conf|
           ret << device if conf[key] == val
-        end
-      end
-
-      ret
-    end
-
-    # Locate devices which attributes doesn't match given key and value
-    #
-    # @param [String] key device key
-    # @param [String] val device value
-    # @return [Array] of devices with key!=val
-    def LocateNOT(key, val)
-      ret = []
-
-      @Devices.values.each do |devsmap|
-        devsmap.each do |device, conf|
-          ret << device if conf[key] != val
         end
       end
 
@@ -1701,14 +1553,6 @@ module Yast
       String.ValidCharsFilename
     end
 
-    # list of all devices except given one by parameter dev
-    # also loopback is ommited
-
-    def ListDevicesExcept(dev)
-      devices = Builtins.filter(LocateNOT("DEVICE", dev)) { |s| s != "lo" }
-      deep_copy(devices)
-    end
-
   private
 
     # Device configuration files are matched against this regexp
@@ -1749,12 +1593,9 @@ module Yast
     publish variable: :Name, type: "string"
     publish variable: :Current, type: "map <string, any>"
     publish variable: :CardRegex, type: "map <string, string>"
-    publish function: :device_type, type: "string (string)"
     publish function: :GetTypeFromIfcfg, type: "string (map <string, any>)"
     publish function: :GetType, type: "string (string)"
     publish function: :GetDeviceTypeName, type: "string (string)"
-    publish function: :device_num, type: "string (string)"
-    publish function: :alias_num, type: "string (string)"
     publish function: :IsHotplug, type: "boolean (string)"
     publish function: :IsConnected, type: "boolean (string)"
     publish function: :RealType, type: "string (string, string)"
@@ -1769,8 +1610,6 @@ module Yast
     publish function: :GetDeviceTypes, type: "list <string> ()"
     publish function: :GetDevTypeDescription, type: "string (string, boolean)"
     publish function: :Export, type: "map <string, map> (string)"
-    publish function: :GetFreeDevices, type: "list <string> (string, integer)"
-    publish function: :GetFreeDevice, type: "string (string)"
     publish function: :Check, type: "boolean (string)"
     publish function: :Select, type: "boolean (string)"
     publish function: :Add, type: "boolean ()"
@@ -1788,7 +1627,6 @@ module Yast
     publish function: :Fastest, type: "string ()"
     publish function: :FastestType, type: "string (string)"
     publish function: :ValidCharsIfcfg, type: "string ()"
-    publish function: :ListDevicesExcept, type: "list <string> (string)"
   end
 
   NetworkInterfaces = NetworkInterfacesClass.new

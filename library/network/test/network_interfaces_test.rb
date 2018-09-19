@@ -4,9 +4,30 @@ require_relative "test_helper"
 
 Yast.import("NetworkInterfaces")
 
+def mock_ppp
+  # mock type id for ppp device in sysfs
+  allow(Yast::FileUtils)
+    .to receive(:Exists)
+    .and_return false
+  allow(Yast::FileUtils)
+    .to receive(:Exists)
+    .with(TYPE_SYS_PATH)
+    .and_return true
+
+  allow(Yast::SCR)
+    .to receive(:Read)
+    .and_call_original
+  allow(Yast::SCR)
+    .to receive(:Read)
+    .with(path(".target.string"), TYPE_SYS_PATH)
+    .and_return "512\n"
+end
+
 describe Yast::NetworkInterfaces do
 
   subject { Yast::NetworkInterfaces }
+
+  TYPE_SYS_PATH = "/sys/class/net/ppp0/type".freeze
 
   describe "#CanonicalizeIP" do
     context "Handling IPv6 address" do
@@ -48,7 +69,7 @@ describe Yast::NetworkInterfaces do
 
     it "loads all valid devices from ifcfg-* definition" do
       subject.Read
-      expect(subject.List("")).to eql devices
+      expect(subject.List("").sort).to eql devices
     end
 
     it "doesn't load ifcfgs with a backup extension" do
@@ -100,26 +121,29 @@ describe Yast::NetworkInterfaces do
   describe "#FilterDevices" do
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
     # Defined in test/data/etc/sysconfig/ifcfg-*
-    let(:netcard_devices) { ["arc", "bond", "br", "em", "eth", "vlan"] }
+    let(:netcard_devices) { ["bond", "br", "eth", "vlan"] }
 
     around do |example|
       change_scr_root(data_dir, &example)
     end
 
-    before do
-      subject.CleanCacheRead
-    end
-
     context "when given regex is some of the predefined ones 'netcard', 'modem', 'isdn', 'dsl'." do
-      it "returns devices of the given type" do
-        expect(subject.FilterDevices("netcard").keys).to eql(netcard_devices)
+      before do
+        mock_ppp
+
+        subject.CleanCacheRead
+      end
+
+      it "returns device groups of the given type" do
+        expect(subject.FilterDevices("netcard").keys.sort).to eql(netcard_devices)
         expect(subject.FilterDevices("modem").keys).to eql(["ppp"])
         expect(subject.FilterDevices("dsl").keys).to eql([])
         expect(subject.FilterDevices("isdn").keys).to eql([])
       end
     end
+
     context "when given regex is not a predefined one" do
-      it "returns devices whose type exactly match the given regex" do
+      it "returns device groups whose type exactly match the given regex" do
         expect(subject.FilterDevices("br").keys).to eql(["br"])
         expect(subject.FilterDevices("br").size).to eql(1)
         expect(subject.FilterDevices("vlan").keys).to eql(["vlan"])
@@ -138,14 +162,55 @@ describe Yast::NetworkInterfaces do
     end
 
     before do
+      mock_ppp
+
       subject.CleanCacheRead
     end
 
     context "given a list of device types and a regex" do
-      it "returns device types that don't match the given regex" do
+      it "returns device groups that don't match the given regex" do
         expect(subject.FilterNOT(subject.FilterDevices(""), "eth").keys)
-          .to eql(["arc", "bond", "br", "cold", "em", "ppp", "vlan"])
+          .to eql(["bond", "br", "ppp", "vlan"])
       end
+    end
+  end
+
+  describe "#Export" do
+    let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+    # Defined in test/data/etc/sysconfig/ifcfg-*
+    let(:netcard_types) { ["bond", "br", "eth", "ppp", "vlan"].sort }
+
+    around do |example|
+      change_scr_root(data_dir, &example)
+    end
+
+    before do
+      mock_ppp
+
+      subject.CleanCacheRead
+    end
+
+    it "exports all devices in a hash with device type as a key and list of devices as value" do
+      exported_devs = subject.Export("")
+
+      expect(exported_devs.keys.sort).to eql netcard_types
+      expect(exported_devs["eth"]).to include("cold", "em1", "eth0")
+      expect(exported_devs["ppp"]).to include("ppp0")
+    end
+  end
+
+  describe "#Import" do
+    let(:network_devices) do
+      {
+        "eth" => { "enp0s3" => { "STARTMODE" => "auto" } },
+        "ppp" => { "ppp1"   => { "DEVICE" => "ppp1" } }
+      }
+    end
+
+    it "imports all devices" do
+      subject.Import("", network_devices)
+
+      expect(subject.List("")).to include("enp0s3", "ppp1")
     end
   end
 
@@ -194,17 +259,6 @@ describe Yast::NetworkInterfaces do
     end
   end
 
-  describe "#GetFreeDevices" do
-    it "returns an array with available device numbers" do
-      subject.instance_variable_set(:@Devices, "eth" => { "0" => {} })
-      expect(subject.GetFreeDevices("eth", 2)).to eql(["1", "2"])
-      subject.instance_variable_set(:@Devices, "eth" => { "1" => {} })
-      expect(subject.GetFreeDevices("eth", 2)).to eql(["0", "2"])
-      subject.instance_variable_set(:@Devices, "eth" => { "2" => {} })
-      expect(subject.GetFreeDevices("eth", 2)).to eql(["0", "1"])
-    end
-  end
-
   describe "#Locate" do
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
 
@@ -217,28 +271,12 @@ describe Yast::NetworkInterfaces do
     end
 
     it "returns an array of devices which have got given key,value" do
-      expect(subject.Locate("BOOTPROTO", "static")).to eql(["bond0", "em1", "eth0", "eth1", "eth2"])
+      expect(subject.Locate("BOOTPROTO", "static").sort).to eql(["bond0", "em1", "eth0", "eth1", "eth2"])
       expect(subject.Locate("BONDING_MASTER", "YES")).to eql(["bond0"])
     end
 
     it "returns an empty array if not device match given criteria" do
       expect(subject.Locate("NOTMATCH", "value")).to eql([])
-    end
-  end
-
-  describe "#Locate" do
-    let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
-
-    around do |example|
-      change_scr_root(data_dir, &example)
-    end
-
-    before do
-      subject.CleanCacheRead
-    end
-
-    it "returns an array of devices which have got a different key,value than given ones" do
-      expect(subject.LocateNOT("BOOTPROTO", "static")).to eql(["arc5", "br1", "cold", "ppp0", "vlan3"])
     end
   end
 
