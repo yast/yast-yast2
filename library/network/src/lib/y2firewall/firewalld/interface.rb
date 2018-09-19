@@ -21,6 +21,7 @@
 
 require "yast"
 require "y2firewall/firewalld"
+Yast.import "NetworkInterfaces"
 
 module Y2Firewall
   class Firewalld
@@ -33,8 +34,6 @@ module Y2Firewall
       #
       # @param name [String] interface name
       def initialize(name)
-        Yast.import "NetworkInterfaces"
-
         @id = name.to_sym
       end
 
@@ -42,9 +41,7 @@ module Y2Firewall
       #
       # @return [Array<Y2Firewall::Firewalld::Interface>] known interfaces
       def self.known
-        Yast.import "NetworkInterfaces"
         interfaces = Yast::NetworkInterfaces.List("").reject { |i| i == "lo" }
-
         interfaces.map { |i| new(i) }
       end
 
