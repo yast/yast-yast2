@@ -4,10 +4,12 @@ TESTS = \
 	custom_widget_test.rb \
 	dialog_test.rb \
 	pager_test.rb \
+	popup_test.rb \
 	replace_point_test.rb \
 	table_test.rb \
 	tree_test.rb \
 	tree_pager_test.rb \
+	ui_state_test.rb \
 	wrapper_widget_test.rb
 
 TEST_EXTENSIONS = .rb
