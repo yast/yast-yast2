@@ -40,7 +40,7 @@ describe Y2Firewall::Helpers::Interfaces do
       expect(known_interfaces.size).to eql(2)
       eth0 = known_interfaces.find { |i| i.id == :eth0 }
       expect(eth0.name).to eq("eth0")
-      expect(eth0.zone).to eq("external")
+      expect(eth0.zone.name).to eq("external")
       expect(eth0.device_name).to eq("Intel I217-LM")
       expect(eth0).to be_a(Y2Firewall::Firewalld::Interface)
     end

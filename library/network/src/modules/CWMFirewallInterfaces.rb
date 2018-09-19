@@ -249,10 +249,10 @@ module Yast
       return if !configuration_changed
 
       zones =
-        known_interfaces.each_with_object([]) do |known_interface, a|
+        known_interfaces.each_with_object([]) do |known_interface, memo|
           if allowed_interfaces.include?(known_interface.name)
-            zone_name = known_interface.zone || firewalld.default_zone
-            a << zone_name
+            zone_name = known_interface.zone ? known_interface.zone.name : firewalld.default_zone
+            memo << zone_name
           end
         end
 
