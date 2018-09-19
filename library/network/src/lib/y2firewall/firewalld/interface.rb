@@ -61,11 +61,9 @@ module Y2Firewall
       # Return the zone name for a given interface from the firewalld instance
       # instead of from the API.
       #
-      # @return [String, nil] zone name whether belongs to some or nil if not
+      # @return [Y2Firewall::Firewalld::Zone,nil] zone if it belongs to some or nil otherwise
       def zone
-        zone = fw.zones.find { |z| z.interfaces.include?(id.to_s) }
-
-        zone ? zone.name : nil
+        fw.zones.find { |z| z.interfaces.include?(name) }
       end
 
     private
