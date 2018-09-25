@@ -1,6 +1,7 @@
 #!/usr/bin/env rspec
 
 require_relative "test_helper"
+require "network/firewall_chooser"
 
 Yast.import "Mode"
 Yast.import "PackageSystem"
@@ -13,7 +14,7 @@ def reset_SuSEFirewallIsInstalled_cache
 end
 
 # Instantiate an SF2 object
-FakeFirewall = Yast::FirewallClass.create(:sf2)
+FakeFirewall = Yast::FirewallChooser.choose(:sf2)
 FakeFirewall.main
 
 describe FakeFirewall do
