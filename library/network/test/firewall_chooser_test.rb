@@ -4,33 +4,33 @@ require_relative "test_helper"
 require "network/firewall_chooser"
 
 describe Yast::FirewallChooser do
-  describe ".installed_backeds" do
-
-  end
-
-  describe ".choose" do
-    context "when :sf2 is specified" do
+  describe "#choose" do
+    context "when :sf2 is pre-selected" do
+      subject { described_class.new(:sf2) }
       it "returns a SuSEFirewall2Class object" do
-        expect(described_class.choose(:sf2)).to be_a(Yast::SuSEFirewall2Class)
+        expect(subject.choose).to be_a(Yast::SuSEFirewall2Class)
       end
     end
 
-    context "when :fwd is specified" do
+    context "when :fwd is pre-selected" do
+      subject { described_class.new(:fwd) }
       it "returns a SuSEFirewalldClass object" do
-        expect(described_class.choose(:fwd)).to be_a(Yast::SuSEFirewalldClass)
+        expect(subject.choose).to be_a(Yast::SuSEFirewalldClass)
       end
     end
 
-    context "when no backend is specified" do
-      it "returns and object of the detected one" do
-        expect(described_class).to receive(:detect).and_return(:sf2, :fwd)
-        expect(described_class.choose).to be_a(Yast::SuSEFirewall2Class)
-        expect(described_class.choose).to be_a(Yast::SuSEFirewalldClass)
+    context "when no backend has been pre-selected" do
+      it "returns and object of the find_preferreded one" do
+        expect(subject).to receive(:find_preferred).and_return(:sf2, :fwd)
+        subject.selected = nil
+        expect(subject.choose).to be_a(Yast::SuSEFirewall2Class)
+        subject.selected = nil
+        expect(subject.choose).to be_a(Yast::SuSEFirewalldClass)
       end
     end
   end
 
-  describe ".detect" do
+  describe "#find_preferred" do
     let(:fwd_installed) { false }
     let(:fwd_enabled) { false }
     let(:fwd_running) { false }
@@ -50,21 +50,21 @@ describe Yast::FirewallChooser do
 
     context "when neither firewalld nor SuSEfirewall2 are running" do
       it "returns :sf2 as the fallback" do
-        expect(Yast::FirewallChooser.detect).to eql(:sf2)
+        expect(subject.find_preferred).to eql(:sf2)
       end
     end
 
     context "when only firewalld is installed" do
       let(:fwd_installed) { true }
       it "returns :fwd" do
-        expect(Yast::FirewallChooser.detect).to eql(:fwd)
+        expect(subject.find_preferred).to eql(:fwd)
       end
     end
 
     context "when only SuSEFirewall2 is installed" do
       let(:sf2_installed) { true }
       it "returns :sf2" do
-        expect(Yast::FirewallChooser.detect).to eql(:sf2)
+        expect(subject.find_preferred).to eql(:sf2)
       end
     end
 
@@ -75,7 +75,7 @@ describe Yast::FirewallChooser do
       context "and neither firewalld nor SuSEfirewall2 are running" do
         context "and no one is enabled" do
           it "returns :sf2 as the fallback" do
-            expect(Yast::FirewallChooser.detect).to eql(:sf2)
+            expect(subject.find_preferred).to eql(:sf2)
           end
         end
 
@@ -84,7 +84,7 @@ describe Yast::FirewallChooser do
           let(:sf2_enabled) { true }
 
           it "returns :sf2" do
-            expect(Yast::FirewallChooser.detect).to eql(:sf2)
+            expect(subject.find_preferred).to eql(:sf2)
           end
         end
 
@@ -92,7 +92,7 @@ describe Yast::FirewallChooser do
           let(:fwd_enabled) { true }
 
           it "returns :fwd" do
-            expect(Yast::FirewallChooser.detect).to eql(:fwd)
+            expect(subject.find_preferred).to eql(:fwd)
           end
         end
 
@@ -100,7 +100,7 @@ describe Yast::FirewallChooser do
           let(:sf2_enabled) { true }
 
           it "returns :sf2" do
-            expect(Yast::FirewallChooser.detect).to eql(:sf2)
+            expect(subject.find_preferred).to eql(:sf2)
           end
         end
       end
@@ -108,7 +108,7 @@ describe Yast::FirewallChooser do
       context "and firewalld is running" do
         let(:fwd_running) { true }
         it "returns :fwd" do
-          expect(Yast::FirewallChooser.detect).to eql(:fwd)
+          expect(subject.find_preferred).to eql(:fwd)
         end
       end
 
@@ -117,7 +117,7 @@ describe Yast::FirewallChooser do
         let(:fwd_installed) { true }
         let(:sf2_running) { true }
         it "returns :sf2" do
-          expect(Yast::FirewallChooser.detect).to eql(:sf2)
+          expect(subject.find_preferred).to eql(:sf2)
         end
       end
 
@@ -128,7 +128,7 @@ describe Yast::FirewallChooser do
         let(:fwd_running) { true }
 
         it "raises and exception" do
-          expect { Yast::FirewallChooser.detect }
+          expect { subject.find_preferred }
             .to raise_error(Yast::SuSEFirewallMultipleBackends)
         end
       end

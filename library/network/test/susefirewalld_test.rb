@@ -25,7 +25,7 @@ end
 need_API_mock = true
 
 # Re-instansiate our objects
-FakeFirewallD = Yast::FirewallChooser.choose(:fwd)
+FakeFirewallD = Yast::FirewallChooser.new(:fwd).choose
 
 describe FakeFirewallD do
 

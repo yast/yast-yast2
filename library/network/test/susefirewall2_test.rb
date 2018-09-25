@@ -14,7 +14,7 @@ def reset_SuSEFirewallIsInstalled_cache
 end
 
 # Instantiate an SF2 object
-FakeFirewall = Yast::FirewallChooser.choose(:sf2)
+FakeFirewall = Yast::FirewallChooser.new(:sf2).choose
 FakeFirewall.main
 
 describe FakeFirewall do

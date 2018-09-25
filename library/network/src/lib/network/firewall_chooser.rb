@@ -46,11 +46,19 @@ module Yast
       fwd: "firewalld"
     }.freeze
 
+    # @!attribute [rw] selected
+    #   @return [Symbol] backend selected
+    attr_accessor :selected
+
+    def initialize(selected = nil)
+      @selected = selected
+    end
+
     # Check if backend is installed on the system.
     #
     # @param backend_sym [Symbol] Firewall backend
     # @return [Boolean] True if backend is installed.
-    def self.backend_available?(backend_sym)
+    def backend_available?(backend_sym)
       # SF2 has it's own method of checking if it's installed. This is
       # used internally by SF2. Here, we simply care if the package
       # is present on the system.
@@ -60,14 +68,14 @@ module Yast
     # Obtain backends which are installed on the system
     #
     # @return [Array<Symbol>] List of installed backends.
-    def self.installed_backends
+    def installed_backends
       FIREWALL_BACKENDS.select { |b, _p| backend_available?(b) }.keys
     end
 
     # Obtain list of enabled backends.
     #
     # @return [Array<Symbol>] List of enabled backends.
-    def self.enabled_backends
+    def enabled_backends
       installed_backends.select { |b| Service.Enabled(FIREWALL_BACKENDS[b]) }
     end
 
@@ -77,24 +85,19 @@ module Yast
     #   since FirewallD and SF2 systemd service files conflict with each other.
     #
     # @return [Array<Symbol>] List of running backends.
-    def self.running_backends
+    def running_backends
       installed_backends.select { |b| Service.Active(FIREWALL_BACKENDS[b]) }
     end
 
-    # Return an instance of the firewall given or detected
+    # Return an instance of the firewall selected or find the preferred one
     #
+    # @see find_preferred
     # @return [SuSEFirewall2Class, SuSEFirewalldClass]
-    def self.choose(backend_sym = nil)
-      backend = backend_sym || detect
-      # For the old testsuite, always generate SF2 instance. FirewallD tests
-      # will be committed later on but they will only affect the new
-      # testsuite
-
+    def choose
       # If backend is specificed, go ahead and create an instance. Otherwise, try
       # to detect which backend is enabled and create the appropriate instance.
-      backend = detect unless backend
-
-      backend == :sf2 ? SuSEFirewall2Class.new : SuSEFirewalldClass.new
+      @selected ||= find_preferred
+      selected == :sf2 ? SuSEFirewall2Class.new : SuSEFirewalldClass.new
     end
 
     # Determine which firewall should be selected as the backend depending on
@@ -104,8 +107,10 @@ module Yast
     # @raise [SuSEFirewallMultipleBackends] if firewalld and SuSEfirewalld2 are
     #   running
     # @return [Symbol] the backend that should be used
-    def self.detect
-      # Old testsuite
+    def find_preferred
+      # For the old testsuite, always generate SF2 instance. FirewallD tests
+      # will be committed later on but they will only affect the new
+      # testsuite
       return :sf2 if Mode.testsuite
 
       # Only one running backend is permitted.
@@ -116,11 +121,11 @@ module Yast
       if running_backends.empty? && enabled_backends.size > 1
         Builtins.y2warning("Both SuSEfirewall2 and firewalld services are enabled. " \
                             "Defaulting to SuSEfirewall2")
-        enabled_backends[0] = :sf2
+        return :sf2
       end
 
       # Set a good default. The running one takes precedence over the enabled one.
-      selected_backend = running_backends[0] ? running_backends[0] : enabled_backends[0]
+      selected_backend = (running_backends.empty? ? enabled_backends : running_backends).first
       # Fallback to the first installed backend or to SuSEfirewall2 if not
       selected_backend = (installed_backends.first || :sf2) if selected_backend.to_s.empty?
 

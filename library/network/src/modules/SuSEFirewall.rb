@@ -33,6 +33,6 @@ require "network/firewall_chooser"
 require "network/susefirewall2"
 
 module Yast
-  SuSEFirewall = FirewallChooser.choose
+  SuSEFirewall = FirewallChooser.new.choose
   SuSEFirewall.main if SuSEFirewall.is_a?(SuSEFirewall2Class)
 end
