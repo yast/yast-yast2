@@ -119,8 +119,8 @@ module Yast
       # If both firewalls are enabled, then make SF2 the default one and
       # emit a warning
       if running_backends.empty? && enabled_backends.size > 1
-        Builtins.y2warning("Both SuSEfirewall2 and firewalld services are enabled. " \
-                            "Defaulting to SuSEfirewall2")
+        log.info("Both SuSEfirewall2 and firewalld services are enabled. " \
+          "Defaulting to SuSEfirewall2")
         return :sf2
       end
 
@@ -134,7 +134,7 @@ module Yast
     rescue SuSEFirewallMultipleBackends
       # This should never happen since FirewallD and SF2 systemd services
       # conflict with each other
-      Builtins.y2error("Multiple firewall backends are running. One needs to be shutdown to continue.")
+      log.error("Multiple firewall backends are running. One needs to be shutdown to continue.")
       # Re-raise it
       raise SuSEFirewallMultipleBackends
     end
