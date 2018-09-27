@@ -1354,10 +1354,8 @@ module Yast
       end
       Builtins.y2debug("ChangeDevice(%1)", name)
 
-      devmap = deep_copy(newdev)
-
-      Ops.set(devsmap, name, devmap)
-      Ops.set(@Devices, t, devsmap)
+      # newdev is already a deep_copy created above
+      @Devices[t] = @Devices.fetch(t, {}).merge(name => newdev)
 
       Builtins.y2debug("Devices=%1", @Devices)
       true
