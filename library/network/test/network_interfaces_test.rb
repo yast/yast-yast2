@@ -280,4 +280,9 @@ describe Yast::NetworkInterfaces do
     end
   end
 
+  describe "Change2" do
+    it "passes smoke test" do
+      expect { subject.Change2("eth0", {}, false) }.not_to raise_error
+    end
+  end
 end
