@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Sep 28 08:05:15 UTC 2018 - knut.anderssen@suse.com
+
+- Y2Firewall::Firewalld: Single attributes setter will not modify
+  the value of the attribute in case it is the same (bsc#1109812)
+- 4.1.18
+
+-------------------------------------------------------------------
 Wed Sep 19 13:36:40 UTC 2018 - igonzalezsosa@suse.com
 
 - Improve Y2Firewall::Firewalld::Interface#zone to return an
