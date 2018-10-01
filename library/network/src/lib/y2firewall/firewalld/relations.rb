@@ -81,6 +81,7 @@ module  Y2Firewall
           attr_reader attribute
 
           define_method "#{attribute}=" do |item|
+            return item if public_send(attribute) == item
             instance_variable_set("@#{attribute}", item)
 
             modified!(attribute) if cache
@@ -183,6 +184,7 @@ module  Y2Firewall
           attr_reader relation
 
           define_method "#{relation}=" do |item|
+            return item if public_send(relation) == item
             instance_variable_set("@#{relation}", item)
 
             modified!(relation) if cache
