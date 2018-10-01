@@ -281,8 +281,29 @@ describe Yast::NetworkInterfaces do
   end
 
   describe "Change2" do
+    let(:device) { "eth0" }
+    let(:device_type) { "eth" }
+    let(:device_map)  { { "BOOTPROTO" => "dhcp" } }
+
+    before(:each) do
+      allow(subject).to receive(:GetType).and_return(device_type)
+    end
+
     it "passes smoke test" do
-      expect { subject.Change2("eth0", {}, false) }.not_to raise_error
+      expect { subject.Change2(device, {}, false) }.not_to raise_error
+    end
+
+    it "successfully merges devices of unknown type" do
+      expect(subject.Change2(device, device_map, false)).to be true
+      expect(subject.Devices).to have_key(device_type)
+      expect(subject.Devices[device_type]).to include(device => device_map)
+    end
+
+    it "successfully adds device to existing type group" do
+      expect(subject.Change2(device, device_map, false)).to be true
+      expect(subject.Devices).to have_key(device_type)
+      expect(subject.Change2("eth1", {}, false)).to be true
+      expect(subject.Devices[device_type]).to include(device => device_map, "eth1" => {})
     end
   end
 end
