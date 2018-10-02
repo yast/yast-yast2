@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct  2 11:11:26 UTC 2018 - lslezak@suse.cz
+
+- Make the service status label stretchable so the updated status
+  is displayed correctly (bsc#1110407)
+- 4.1.20
+
+-------------------------------------------------------------------
 Mon Oct  1 17:29:17 UTC 2018 - mfilka@suse.com
 
 - bnc#964856
