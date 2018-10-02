@@ -68,29 +68,37 @@ module Y2Firewall
 
     PACKAGE = "firewalld".freeze
     SERVICE = "firewalld".freeze
+    DEFAULT_ZONE = "public".freeze
+    DEFAULT_LOG = "off".freeze
 
     def_delegators :api, :enable!, :disable!, :reload, :running?
     has_attributes :log_denied_packets, :default_zone, cache: true
 
     # Constructor
     def initialize
-      @current_zone_names = []
-      @current_service_names = []
-      @zones = []
-      @services = []
+      load_defaults
+      untouched!
       @read = false
     end
 
     # Read the current firewalld configuration initializing the zones and other
     # attributes as logging.
     #
+    # @note when a minimal read is requested it does not parse the zones
+    #   definition and also does not initialize any single value attributes
+    #
+    # @param minimal [Boolean] when true does a minimal object initialization
     # @return [Boolean] true
-    def read
+    def read(minimal: false)
       return false unless installed?
-      @zones = zone_reader.read
       @current_zone_names = api.zones
       @current_service_names = api.services
-      read_attributes
+      if minimal
+        @zones = current_zone_names.map { |n| Zone.new(name: n) }
+      else
+        @zones = zone_reader.read
+        read_attributes
+      end
       # The list of services is not read or initialized because takes time and
       # affects to the performance and also the services are rarely touched.
       @read = true
@@ -238,13 +246,30 @@ module Y2Firewall
       @system_service ||= Yast2::SystemService.find(SERVICE)
     end
 
+    # Reset all the changes done initializing the instance with the defaults
+    def reset
+      load_defaults
+      untouched!
+      @read = false
+    end
+
   private
+
+    # Modifies the instance with default values
+    def load_defaults
+      @current_zone_names = []
+      @current_service_names = []
+      @zones = []
+      @services = []
+      @log_denied_packets = DEFAULT_LOG
+      @default_zone = DEFAULT_ZONE
+    end
 
     # Convenience method to instantiate a new zone reader
     #
     # @return [ZoneReader]
     def zone_reader
-      ZoneReader.new(api.zones, api.list_all_zones(verbose: true))
+      ZoneReader.new(current_zone_names, api.list_all_zones(verbose: true))
     end
   end
 end
