@@ -82,8 +82,8 @@ module Yast2
           Left(
             HBox(
               Label(_("Current status:")),
-              Label(" "),
-              Label(Id(:service_widget_status), status)
+              HSpacing(1),
+              Label(Id(:service_widget_status), Opt(:hstretch), status)
             )
           ),
           Left(action_widget),
