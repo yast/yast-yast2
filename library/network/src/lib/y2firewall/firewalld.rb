@@ -84,8 +84,8 @@ module Y2Firewall
     # Read the current firewalld configuration initializing the zones and other
     # attributes as logging.
     #
-    # @note when a minimal read is requested it does not parse the zones
-    #   definition and also does not initialize any single value attributes
+    # @note when a minimal read is requested it neither parses the zones
+    #   definition nor initializes any single value attributes
     #
     # @param minimal [Boolean] when true does a minimal object initialization
     # @return [Boolean] true
