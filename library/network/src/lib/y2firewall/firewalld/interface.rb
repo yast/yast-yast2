@@ -27,6 +27,7 @@ module Y2Firewall
   class Firewalld
     # Class to work with firewalld interfaces
     class Interface
+      include Yast::I18n
       # @return [Symbol]
       attr_accessor :id
 
@@ -34,15 +35,43 @@ module Y2Firewall
       #
       # @param name [String] interface name
       def initialize(name)
+        textdomain "firewall"
         @id = name.to_sym
       end
 
-      # Return an array with all the known or configured interfaces
+      class << self
+        # Return an instance of Y2Firewall::Firewalld
+        #
+        # @return [Y2Firewall::Firewalld] a firewalld instance
+        def fw
+          Y2Firewall::Firewalld.instance
+        end
+
+        # Return an array with all the known or configured interfaces
+        #
+        # @return [Array<Y2Firewall::Firewalld::Interface>] known interfaces
+        def known
+          interfaces = Yast::NetworkInterfaces.List("").reject { |i| i == "lo" }
+          interfaces.map { |i| new(i) }
+        end
+
+        # Return an array with all the interfaces that belongs to some firewalld
+        # zone but are not known (sysconfig configured)
+        #
+        # @return [Array<Y2Firewall::Firewalld::Interface>] known interfaces
+        def unknown
+          known_interfaces = Yast::NetworkInterfaces.List("").reject { |i| i == "lo" }
+          configured_interfaces = fw.zones.map(&:interfaces).flatten.compact
+          (configured_interfaces - known_interfaces).map { |i| new(i) }
+        end
+      end
+
+      # Return whether the zone is a known one
       #
-      # @return [Array<Y2Firewall::Firewalld::Interface>] known interfaces
-      def self.known
-        interfaces = Yast::NetworkInterfaces.List("").reject { |i| i == "lo" }
-        interfaces.map { |i| new(i) }
+      # @see .known
+      # @return [Boolean] true if the interface is known
+      def known?
+        Yast::NetworkInterfaces.List("").reject { |i| i == "lo" }.include?(name)
       end
 
       # @return [String] interface name
@@ -50,8 +79,12 @@ module Y2Firewall
         id.to_s
       end
 
-      # @return [String] device name
+      # Return the network interface device name in case it is configured or
+      # 'Unknown' in other case
+      #
+      # @return [String] its device name or 'Unknown' if not configured
       def device_name
+        return _("Unknown") unless known?
         Yast::NetworkInterfaces.GetValue(name, "NAME")
       end
 
