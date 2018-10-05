@@ -157,7 +157,7 @@ describe Yast::FirewalldWrapper do
     context "interfaces are available" do
       it "returns all interfaces" do
         expect(Y2Firewall::Firewalld::Interface).to receive(:known).and_return([interface])
-        expect(subject.all_known_interfaces()).to eq([{"id"=>"eth0", "zone"=>"external", "name"=>nil}])
+        expect(subject.all_known_interfaces).to eq([{ "id" => "eth0", "zone" => "external", "name" => nil }])
       end
     end
   end
@@ -171,7 +171,7 @@ describe Yast::FirewalldWrapper do
       end
     end
 
-   context "interface has a zone" do
+    context "interface has a zone" do
       it "set services" do
         expect_any_instance_of(Y2Firewall::Firewalld::Zone).to receive(:add_service)
         expect_any_instance_of(Y2Firewall::Firewalld::Zone).not_to receive(:remove_service)

@@ -134,7 +134,7 @@ module Yast
     # @param zone [String] zone name
     #
     # @return [Boolean] true if service is in zone
-    def is_service_in_zone(service,zone_name)
+    def is_service_in_zone(service, zone_name)
       zone = firewalld.find_zone(zone_name)
       return false unless zone
       zone.services.include?(service)
@@ -143,12 +143,12 @@ module Yast
     # Return an array with all the known (sysconfig configured) firewalld
     # interfaces.
     #
-    #@return [Array<Hash>] known interfaces
+    # @return [Array<Hash>] known interfaces
     #        e.g. [{ "id":"eth0", "name":"Askey 815C", "zone":"EXT"} , ... ]
-    def all_known_interfaces()
+    def all_known_interfaces
       ret = []
       Y2Firewall::Firewalld::Interface.known.each do |interface|
-        ret << {"id" => interface.name, "zone" => interface.zone.name,
+        ret << { "id" => interface.name, "zone" => interface.zone.name,
                 "name" => interface.device_name }
       end
       ret
@@ -162,12 +162,11 @@ module Yast
     def set_services(services, interfaces, status)
       interfaces.each do |interface|
         zone = interface_zone(interface)
-        if zone
-          if status
-            services.each { |service| zone.add_service(service) }
-          else
-            services.each { |service| zone.remove_service(service) }
-          end
+        next unless zone
+        if status
+          services.each { |service| zone.add_service(service) }
+        else
+          services.each { |service| zone.remove_service(service) }
         end
       end
     end
