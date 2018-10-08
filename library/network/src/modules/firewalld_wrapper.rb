@@ -181,7 +181,7 @@ module Yast
     publish function: :zone_name_of_interface, type: "string (string)"
     publish function: :is_service_in_zone, type: "boolean (string,string)"
     publish function: :all_known_interfaces, type: "list <map <string, any>> ()"
-    publish function: :set_services, type: "void (list<string>, list<string>)"
+    publish function: :set_services, type: "void (list<string>, list<string>, boolean)"
 
   private
 
