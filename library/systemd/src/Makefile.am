@@ -6,7 +6,9 @@ module_DATA = \
 ylibdir = @ylibdir@/yast2
 ylib_DATA = \
   lib/yast2/systemctl.rb \
-  lib/yast2/systemd_unit.rb
+  lib/yast2/system_service.rb \
+  lib/yast2/systemd_unit.rb \
+  lib/yast2/systemd_socket_finder.rb
 
 EXTRA_DIST = $(module_DATA) $(ylib_DATA)
 

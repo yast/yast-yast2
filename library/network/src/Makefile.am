@@ -42,10 +42,12 @@ yfwlib_DATA = \
 yfwdlibdir = @ylibdir@/y2firewall/firewalld
 yfwdlib_DATA = \
   lib/y2firewall/firewalld/api.rb \
+  lib/y2firewall/firewalld/interface.rb \
   lib/y2firewall/firewalld/relations.rb \
   lib/y2firewall/firewalld/service.rb \
   lib/y2firewall/firewalld/zone.rb \
-  lib/y2firewall/firewalld/zone_parser.rb
+  lib/y2firewall/firewalld/zone_reader.rb \
+  lib/y2firewall/firewalld/service_reader.rb
 
 yfwdapilibdir = @ylibdir@/y2firewall/firewalld/api/
 yfwdapilib_DATA = \

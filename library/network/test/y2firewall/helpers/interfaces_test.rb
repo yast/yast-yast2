@@ -26,7 +26,7 @@ describe Y2Firewall::Helpers::Interfaces do
 
   describe "#interface_zone" do
     it "returns the zone name of the given interface" do
-      expect(subject.interface_zone("eth0")).to eql("external")
+      expect(subject.interface_zone("eth0")).to eql(external)
     end
 
     it "returns nil if the interface does not belong to any zone" do
@@ -35,14 +35,14 @@ describe Y2Firewall::Helpers::Interfaces do
   end
 
   describe "#known_interfaces" do
-    it "returns a hash with the 'id', 'name' and zone of the current interfaces" do
-      expect(subject.known_interfaces)
-        .to eql(
-          [
-            { "id" => "eth0", "name" => "Intel I217-LM", "zone" => "external" },
-            { "id" => "eth1", "name" => "Intel I217-LM", "zone" => nil }
-          ]
-        )
+    it "returns an array with the known firewalld interfaces" do
+      known_interfaces = subject.known_interfaces
+      expect(known_interfaces.size).to eql(2)
+      eth0 = known_interfaces.find { |i| i.id == :eth0 }
+      expect(eth0.name).to eq("eth0")
+      expect(eth0.zone.name).to eq("external")
+      expect(eth0.device_name).to eq("Intel I217-LM")
+      expect(eth0).to be_a(Y2Firewall::Firewalld::Interface)
     end
   end
 

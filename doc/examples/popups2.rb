@@ -58,7 +58,7 @@ module Yast
             "Really delete world?",
             "You in your infinite wisdom have chosen to delete this only world of ours.\n" \
               "This will mean the end to all of mankind and all life in the only known planet\n" \
-              "known to habitate intelligent or other life in the entire universe.\n" \
+              "known to be inhabited by intelligent or other life in the entire universe.\n" \
               "\n" \
               "Even though it is well known that mankind and human character are far from perfect,\n" \
               "we urgently request you to reconsider that decision.\n" \
@@ -72,17 +72,17 @@ module Yast
               "\n" \
               "\n" \
               "\n" \
-              "If make the wrong decision, creatures from outer space may decide\n" \
+              "If you make the wrong decision, creatures from outer space may choose\n" \
               "\n" \
-              "to get rid of that planet of ours to make room for some interstellar\n" \
+              "to get rid of this planet of ours to make room for some interstellar\n" \
               "\n" \
               "hyper expressway.\n" \
               "\n" \
               "\n" \
               "\n" \
-              "So: Do you fail to be aware to recognize the lack of not being able\n" \
-              "\n" \
-              "to face this kind of indecision may kill all of mankind?",
+              "So: Do you fail to recognize that your inability to confront\n" \
+             "\n" \
+              "this kind of indecision may destroy all of mankind?",
             "&Everything you say",
             "I'll &buy one of it",
             :focus_no
@@ -94,17 +94,17 @@ module Yast
               "\n" \
               "\n" \
               "\n" \
-              "If make the wrong decision, creatures from outer space may decide\n" \
+              "If you make the wrong decision, creatures from outer space may choose\n" \
               "\n" \
-              "to get rid of that planet of ours to make room for some interstellar\n" \
+              "to get rid of this planet of ours to make room for some interstellar\n" \
               "\n" \
               "hyper expressway.\n" \
               "\n" \
               "\n" \
               "\n" \
-              "So: Do you fail to be aware to recognize the lack of not being able\n" \
-              "\n" \
-              "to face this kind of indecision may kill all of mankind?",
+              "So: Do you fail to recognize that your inability to confront\n" \
+             "\n" \
+              "this kind of indecision may destroy all of mankind?",
             "&Everything you say",
             "I'll &buy one of it",
             "But I don't have a &car",

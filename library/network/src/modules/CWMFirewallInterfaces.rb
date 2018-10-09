@@ -161,7 +161,11 @@ module Yast
     # @return a list of interfaces that will be opened
     def Selected2Opened(ifaces, _nm_ifaces_have_to_be_selected)
       log.info("Selected ifaces: #{ifaces}")
-      zone_names = ifaces.map { |i| interface_zone(i) || default_zone.name }.uniq
+      zone_names = ifaces.map do |name|
+        zone = interface_zone(name)
+        zone ? zone.name : default_zone.name
+      end
+      zone_names.uniq!
       log.info("Ifaces zone names: #{zone_names}")
 
       zone_ifaces =
@@ -249,20 +253,20 @@ module Yast
       return if !configuration_changed
 
       zones =
-        known_interfaces.each_with_object([]) do |known_interface, a|
-          if allowed_interfaces.include?(known_interface["id"])
-            zone_name = known_interface["zone"] || default_zone.name
-            a << zone_name
+        known_interfaces.each_with_object([]) do |iface, memo|
+          if allowed_interfaces.include?(iface.name)
+            zone_name = iface.zone ? iface.zone.name : firewalld.default_zone
+            memo << zone_name
           end
         end
 
-      firewalld.zones.map do |zone|
+      firewalld.zones.each do |zone|
         if zones.include?(zone.name)
-          services.map do |service|
+          services.each do |service|
             zone.add_service(service) unless zone.services.include?(service)
           end
         else
-          services.map do |service|
+          services.each do |service|
             zone.remove_service(service) if zone.services.include?(service)
           end
         end

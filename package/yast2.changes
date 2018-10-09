@@ -3,6 +3,169 @@ Tue Oct  9 13:57:18 CEST 2018 - schubi@suse.de
 
 - Added new methods to firewalld_wrapper in order to switch
   yast2-dhcp-server to new firewall module. (bsc#1108942)
+- 4.0.100  
+  
+-------------------------------------------------------------------
+Tue Oct  9 08:25:42 UTC 2018 - lslezak@suse.cz
+
+- Log viewer: replace invalid UTF-8 characters from the displayed
+  log to avoid a crash (bsc#1110549)
+- 4.0.99
+
+-------------------------------------------------------------------
+Wed Oct  3 07:48:30 UTC 2018 - knut.anderssen@suse.com
+
+- Network (Firewall):
+  - Added some methods needed for AutoYaST configuration
+  (fate#324662)
+- 4.0.98
+
+-------------------------------------------------------------------
+Fri Sep 28 08:05:15 UTC 2018 - knut.anderssen@suse.com
+
+- Y2Firewall::Firewalld: Single attributes setter will not modify
+  the value of the attribute in case it is the same (bsc#1109812)
+- 4.0.97
+
+-------------------------------------------------------------------
+Wed Sep 19 13:36:40 UTC 2018 - igonzalezsosa@suse.com
+
+- Improve Y2Firewall::Firewalld::Interface#zone to return an
+  Zone object (fate#324662).
+- 4.0.96
+
+-------------------------------------------------------------------
+Wed Sep 19 09:53:09 UTC 2018 - knut.anderssen@suse.com
+
+- Network (Firewall)
+  - Added Y2Firewall::Firewalld::Interface class.
+  - Adapted interfaces helpers to work with the new class.
+  (fate#324662)
+- 4.0.95
+
+-------------------------------------------------------------------
+Tue Sep 18 08:28:02 UTC 2018 - igonzalezsosa@suse.com
+
+- Add a new popup widget (fate#324662).
+- Add a helper class UIState to keep the UI states when using CWM.
+- 4.0.94
+
+-------------------------------------------------------------------
+Mon Sep 17 11:52:51 UTC 2018 - knut.anderssen@suse.com
+
+- Y2Firewall::Firewalld: Added convenience method to obtain the
+  firewalld service object (fate#324662)
+- 4.0.93
+
+-------------------------------------------------------------------
+Mon Sep 17 11:21:58 UTC 2018 - knut.anderssen@suse.com
+
+- Firewalld: Fixed the API cmd call for removing services from
+  zones when the firewall is in offline mode (bsc#1108628)
+- 4.0.92
+
+-------------------------------------------------------------------
+Wed Sep 12 14:11:56 UTC 2018 - jlopez@suse.com
+
+- CWM: avoid to always return :next when accepting a dialog.
+- Needed for Expert Partitioner (fate#318196).
+- 4.0.91
+
+-------------------------------------------------------------------
+Wed Sep 12 14:05:49 UTC 2018 - knut.anderssen@suse.com
+
+- Added the missing SuSEFirewallProposal.rb file to the Makefile
+- 4.0.90
+
+-------------------------------------------------------------------
+Wed Sep 12 13:00:43 UTC 2018 - knut.anderssen@suse.com
+
+- Bring back the SuSEFirewallProposal fixing the class unit tests
+  until yast2-network drops the import of the module completely.
+  (bsc#1087867)
+- 4.0.89
+
+-------------------------------------------------------------------
+Mon Sep 10 13:02:04 UTC 2018 - knut.anderssen@suse.com
+
+- Extended the firewall API supporting the use of single-value
+  attributes and also prepared it for introducing  more complex
+  relations like 'forward-ports' and 'rich-rules' in the future.
+  (fate#324662)
+- Improved the parser for zones and added a parser for services.
+- Improved test mocking fixing a Polkit popup shown when running the
+  test (bsc#1087867)
+- 4.0.88
+
+-------------------------------------------------------------------
+Wed Sep  5 10:19:27 UTC 2018 - jlopez@suse.com
+
+- CWM: allow to define next handler for CWM#show.
+- CWM: define default next handler in CWM::Dialog.
+- Needed for Expert Partitioner (fate#318196).
+- 4.0.87
+
+-------------------------------------------------------------------
+Thu Aug 30 11:21:14 UTC 2018 - dgonzalez@suse.com
+
+- Increase timeout for the execution of systemctl commands
+  (bsc#1098910).
+- 4.0.86
+
+-------------------------------------------------------------------
+Tue Aug 14 17:32:02 UTC 2018 - igonzalezsosa@suse.com
+
+- Add support for systemd services that can only be started
+  on-demand (fate#319428 and bsc#1104568).
+- 4.0.85
+
+-------------------------------------------------------------------
+Thu Aug  9 13:02:38 UTC 2018 - igonzalezsosa@suse.com
+
+- Improve systemd socket detection (related to fate#319428).
+- SystemService#find_many does not raise an exception anymore.
+- 4.0.84
+
+-------------------------------------------------------------------
+Wed Aug  8 10:09:55 UTC 2018 - igonzalezsosa@suse.com
+
+- Add a method to detect whether a systemd service exists in
+  the underlying system or not (related to fate#319428).
+- Fix systemd socket detection.
+- 4.0.83
+
+-------------------------------------------------------------------
+Wed Aug  1 10:48:04 UTC 2018 - igonzalezsosa@suse.com
+
+- Fix support to handle services during early 1st stage
+  (related to fate#319428).
+- 4.0.82
+
+-------------------------------------------------------------------
+Tue Jul 31 14:10:06 UTC 2018 - lslezak@suse.cz
+
+- Do not display "download failed" error when using unsigned
+  packages (bsc#1096027)
+- 4.0.81
+
+-------------------------------------------------------------------
+Wed Jul 25 08:13:31 UTC 2018 - jlopez@suse.com
+
+- Services: add class to manage systemd services with associated
+  socket (needed for bsc#1080738 and fate#319428).
+- 4.0.80
+
+-------------------------------------------------------------------
+Mon Jul 16 09:12:23 UTC 2018 - knut.anderssen@suse.com
+
+- Replace the deprecated firewallctl command with firewall-cmd for
+  obtaining the firewalld state (bsc#1093111)
+
+-------------------------------------------------------------------
+Tue Jul  3 08:01:07 UTC 2018 - knut.anderssen@suse.com
+
+- Network: Prevent from crashing when trying to delete some ip
+  aliases from the original devices (bsc#1098919)
 - 4.0.79
 
 -------------------------------------------------------------------

@@ -81,3 +81,9 @@ module NetworkStubs
     }
   }.freeze
 end
+
+def mock_firewalld_interface(id, name, zone_name)
+  zone = instance_double("Y2Firewall::Firewalld::Zone", name: zone_name)
+  instance_double("Y2Firewall::Firewalld::Interface",
+    id: id, name: id.to_s, device_name: name, zone: zone)
+end

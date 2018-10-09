@@ -23,9 +23,12 @@
 # ***************************************************************************
 
 require "y2firewall/firewalld/api"
+require "y2firewall/firewalld/relations"
 require "y2firewall/firewalld/service"
 require "y2firewall/firewalld/zone"
-require "y2firewall/firewalld/zone_parser"
+require "y2firewall/firewalld/zone_reader"
+require "y2firewall/firewalld/service_reader"
+require "yast2/system_service"
 require "singleton"
 
 Yast.import "PackageSystem"
@@ -49,43 +52,53 @@ module Y2Firewall
     include Singleton
     include Yast::Logger
     extend Forwardable
+    extend Relations
 
-    # @return Y2Firewall::Firewalld::Api instance
-    attr_accessor :api
-    # @return [Array <Y2Firewall::Firewalld::Zone>] firewalld zones
+    attr_writer :api
+    # @return [Array<Y2Firewall::Firewalld::Zone>] firewalld zones
     attr_accessor :zones
-    # @return [Array <Y2Firewall::Firewalld::Service>] firewalld services. To
-    # avoid performance problems it is empty by default and the services are
-    # added when needed by the find_service method.
+    # @return [Array<String>] current zone names.
+    attr_accessor :current_zone_names
+    # @return [Array<String>] current service names.
+    attr_accessor :current_service_names
+    # @return [Array<Y2Firewall::Firewalld::Service>] firewalld services. To
+    #   avoid performance problems it is empty by default and the services are
+    #   added when needed by the find_service method.
     attr_accessor :services
-    # @return [String] Type of log denied packets (reject & drop rules).
-    # Possible values are: all, unicast, broadcast, multicast and off
-    attr_accessor :log_denied_packets
-    # @return [String] firewalld default zone name
-    attr_accessor :default_zone
 
     PACKAGE = "firewalld".freeze
     SERVICE = "firewalld".freeze
+    DEFAULT_ZONE = "public".freeze
+    DEFAULT_LOG = "off".freeze
 
-    def_delegators :@api, :enable!, :disable!, :reload, :running?
+    def_delegators :api, :enable!, :disable!, :reload, :running?
+    has_attributes :log_denied_packets, :default_zone, cache: true
 
     # Constructor
     def initialize
-      @api = Api.new
-      @zones = []
-      @services = []
+      load_defaults
+      untouched!
       @read = false
     end
 
     # Read the current firewalld configuration initializing the zones and other
     # attributes as logging.
     #
+    # @note when a minimal read is requested it neither parses the zones
+    #   definition nor initializes any single value attributes
+    #
+    # @param minimal [Boolean] when true does a minimal object initialization
     # @return [Boolean] true
-    def read
+    def read(minimal: false)
       return false unless installed?
-      @zones = ZoneParser.new(api.zones, api.list_all_zones).parse
-      @log_denied_packets = api.log_denied_packets
-      @default_zone       = api.default_zone
+      @current_zone_names = api.zones
+      @current_service_names = api.services
+      if minimal
+        @zones = current_zone_names.map { |n| Zone.new(name: n) }
+      else
+        @zones = zone_reader.read
+        read_attributes
+      end
       # The list of services is not read or initialized because takes time and
       # affects to the performance and also the services are rarely touched.
       @read = true
@@ -95,7 +108,7 @@ module Y2Firewall
     #
     # @param name [String] the zone name
     # @return [Y2Firewall::Firewalld::Zone, nil] the firewalld zone with the
-    # given name
+    #   given name
     def find_zone(name)
       zones.find { |z| z.name == name }
     end
@@ -104,7 +117,7 @@ module Y2Firewall
     #
     # @param name [String] the service name
     # @return [Y2Firewall::Firewalld::Service] the firewalld service with
-    # the given name
+    #   the given name
     def find_service(name)
       services.find { |s| s.name == name } || read_service(name)
     end
@@ -116,11 +129,8 @@ module Y2Firewall
     # @return [Y2Firewall::Firewalld::Service] the recently added service
     def read_service(name)
       raise(Service::NotFound, name) unless installed?
-      service = Y2Firewall::Firewalld::Service.new(name: name)
-      raise(Service::NotFound, name) if !service.supported?
-
-      service.read
-      @services << service
+      service = ServiceReader.new.read(name)
+      services << service
       service
     end
 
@@ -128,10 +138,10 @@ module Y2Firewall
     # since read
     #
     # @return [Boolean] true if the config was modified; false otherwise
-    def modified?
-      default_zone != api.default_zone ||
-        log_denied_packets != api.log_denied_packets ||
-        zones.any?(&:modified?)
+    def modified?(*item)
+      return modified.include?(item.first) if !item.empty?
+
+      !modified.empty? || zones.any?(&:modified?)
     end
 
     # Apply the changes to the modified zones and sets the logging option
@@ -143,10 +153,16 @@ module Y2Firewall
     def write_only
       return false unless installed?
       read unless read?
-      zones.each { |z| z.apply_changes! if z.modified? }
-      api.log_denied_packets = log_denied_packets if log_denied_packets != api.log_denied_packets
-      api.default_zone       = default_zone if default_zone != api.default_zone
+      apply_zones_changes!
+      apply_attributes_changes!
+      untouched!
       true
+    end
+
+    # Apply the changes done in each of the modified zones. It will create or
+    # delete all the new or removed zones depending on each case.
+    def apply_zones_changes!
+      zones.select(&:modified?).each(&:apply_changes!)
     end
 
     # Return a map with current firewalld settings.
@@ -211,9 +227,49 @@ module Y2Firewall
     # Return whether the configuration has been read
     #
     # @return [Boolean] true if the configuration has been read; false
-    # otherwise
+    #   otherwise
     def read?
       @read
+    end
+
+    # Convenience method to instantiate the firewalld API
+    #
+    # @return [Y2Firewall::Firewalld::Api]
+    def api
+      @api ||= Api.new
+    end
+
+    # Convenience method to instantiate the firewalld system service
+    #
+    # @return [Yast2::SystemService, nil]
+    def system_service
+      @system_service ||= Yast2::SystemService.find(SERVICE)
+    end
+
+    # Reset all the changes done initializing the instance with the defaults
+    def reset
+      load_defaults
+      untouched!
+      @read = false
+    end
+
+  private
+
+    # Modifies the instance with default values
+    def load_defaults
+      @current_zone_names = []
+      @current_service_names = []
+      @zones = []
+      @services = []
+      @log_denied_packets = DEFAULT_LOG
+      @default_zone = DEFAULT_ZONE
+    end
+
+    # Convenience method to instantiate a new zone reader
+    #
+    # @return [ZoneReader]
+    def zone_reader
+      ZoneReader.new(current_zone_names, api.list_all_zones(verbose: true))
     end
   end
 end

@@ -22,10 +22,37 @@ module Yast
         end
       end
 
-      it "returns nil if the service unit does not exist" do
+      context "when the service does not exist" do
+        before do
+          properties = OpenStruct.new(
+            stdout: "", stderr: "Unit unknown.service could not be found.", exit: 1
+          )
+          allow_any_instance_of(Yast::SystemdUnit::Properties)
+            .to receive(:load_systemd_properties)
+            .and_return(properties)
+        end
+
+        it "returns nil" do
+          service = SystemdService.find("another")
+          expect(service).to be_nil
+        end
+      end
+    end
+
+    describe ".build" do
+      it "returns the service unit object specified in parameter" do
+        ["sshd", "sshd.service"].each do |service_name|
+          service = SystemdService.build(service_name)
+          expect(service).to be_a(SystemdUnit)
+          expect(service.unit_type).to eq("service")
+          expect(service.unit_name).to eq("sshd")
+        end
+      end
+
+      it "returns a service instance even if the real service does not exist" do
         stub_services(service: "unknown")
-        service = SystemdService.find("unknown")
-        expect(service).to be_nil
+        service = SystemdService.build("unknown")
+        expect(service.name).to eq("unknown")
       end
     end
 
@@ -40,6 +67,66 @@ module Yast
       it "raises SystemdServiceNotFound error if unit does not exist" do
         stub_services(service: "unknown")
         expect { SystemdService.find!("unknown") }.to raise_error(SystemdServiceNotFound)
+      end
+    end
+
+    describe ".find_many" do
+      let(:systemctl_show) { OpenStruct.new(stdout: systemctl_stdout, stderr: "", exit: 0) }
+      let(:apparmor_double) { double("Service", name: "apparmor") }
+      let(:cups_double) { double("Service", name: "cups") }
+      let(:systemctl_stdout) do
+        File.read(File.join(__dir__, "data", "apparmor_and_cups_properties"))
+      end
+
+      before do
+        allow(Yast::Systemctl).to receive(:execute).with(
+          "show  --property=Id,MainPID,Description,LoadState,ActiveState,SubState,UnitFileState," \
+          "FragmentPath,CanReload apparmor.service cups.service"
+        ).and_return(systemctl_show)
+        allow(SystemdService).to receive(:find).with("apparmor", {}).and_return(apparmor_double)
+        allow(SystemdService).to receive(:find).with("cups", {}).and_return(cups_double)
+      end
+
+      it "returns the list of services" do
+        services = SystemdService.find_many(["apparmor", "cups"])
+        expect(services).to contain_exactly(
+          an_object_having_attributes("name" => "apparmor"),
+          an_object_having_attributes("name" => "cups")
+        )
+      end
+
+      context "when a service is not found" do
+        let(:not_found_double) { double("Service", name: "cups", not_found?: true) }
+
+        before do
+          allow(Yast::SystemdServiceClass::Service).to receive(:new).and_call_original
+          allow(Yast::SystemdServiceClass::Service).to receive(:new)
+            .with("cups.service", anything, anything)
+            .and_return(not_found_double)
+        end
+
+        it "does not include the not found service" do
+          services = SystemdService.find_many(["apparmor", "cups"])
+          expect(services.map(&:name)).to eq(["apparmor"])
+        end
+      end
+
+      context "when 'systemctl show' fails to provide services information" do
+        let(:systemctl_show) { OpenStruct.new(stdout: "", stderr: "", exit: 1) }
+
+        it "retrieve services information in a one-by-one basis" do
+          expect(SystemdService.find_many(["apparmor", "cups"]))
+            .to eq([apparmor_double, cups_double])
+        end
+      end
+
+      context "when 'systemctl show' displays some error" do
+        let(:systemctl_show) { OpenStruct.new(stdout: "", stderr: "error", exit: 1) }
+
+        it "retrieve services information in a one-by-one basis" do
+          expect(SystemdService.find_many(["apparmor", "cups"]))
+            .to eq([apparmor_double, cups_double])
+        end
       end
     end
 
@@ -98,6 +185,60 @@ module Yast
         allow(SCR).to receive(:Execute).and_return("stderr" => "", "stdout" => "", "exit" => 0)
         expect(service).not_to receive(:command) # SystemdUnit#command
         expect(service.stop).to eq(true)
+      end
+    end
+
+    describe "#socket" do
+      subject(:service) { SystemdService.find(service_name) }
+      let(:service_name) { "sshd" }
+      let(:socket) { instance_double(SystemdSocketClass::Socket) }
+
+      it "returns the socket for the service" do
+        expect(SystemdSocket).to receive(:for_service).with(service_name)
+          .and_return(socket)
+        expect(service.socket).to eq(socket)
+      end
+
+      it "asks for the socket only once" do
+        expect(SystemdSocket).to receive(:for_service).with(service_name)
+          .and_return(socket).once
+        expect(service.socket).to eq(socket)
+        expect(service.socket).to eq(socket)
+      end
+
+      context "when no associated socket is found" do
+        before do
+          allow(SystemdSocket).to receive(:for_service).with(service_name)
+            .and_return(nil)
+        end
+
+        it "returns nil" do
+          expect(service.socket).to be_nil
+        end
+      end
+    end
+
+    describe "#socket?" do
+      subject(:service) { SystemdService.find("sshd") }
+
+      before do
+        allow(service).to receive(:socket).and_return(socket)
+      end
+
+      context "when there is an associated socket" do
+        let(:socket) { instance_double(SystemdSocketClass::Socket) }
+
+        it "returns true" do
+          expect(service.socket?).to eq(true)
+        end
+      end
+
+      context "when there is no associated socket" do
+        let(:socket) { nil }
+
+        it "returns false" do
+          expect(service.socket?).to eq(false)
+        end
       end
     end
   end

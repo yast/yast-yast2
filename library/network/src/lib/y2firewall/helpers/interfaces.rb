@@ -22,7 +22,7 @@
 #
 # ***************************************************************************
 require "yast"
-require "y2firewall/firewalld"
+require "y2firewall/firewalld/interface"
 
 module Y2Firewall
   module Helpers
@@ -44,7 +44,7 @@ module Y2Firewall
       #
       # @return [Array<String>] default zone interface names
       def default_interfaces
-        known_interfaces.select { |i| i["zone"].to_s.empty? }.map { |i| i["id"] }
+        known_interfaces.reject(&:zone).map(&:name)
       end
 
       # Return the zone name for a given interface from the firewalld instance
@@ -53,9 +53,7 @@ module Y2Firewall
       # @param name [String] interface name
       # @return [String, nil] zone name whether belongs to some or nil if not
       def interface_zone(name)
-        zone = firewalld.zones.find { |z| z.interfaces.include?(name) }
-
-        zone ? zone.name : nil
+        Y2Firewall::Firewalld::Interface.new(name).zone
       end
 
       # Convenience method to return the default zone object
@@ -65,31 +63,22 @@ module Y2Firewall
         @default_zone ||= firewalld.find_zone(firewalld.default_zone)
       end
 
-      # Return a hash of all the known interfaces with their "id", "name" and
-      # "zone".
+      # Return an array with all the known (sysconfig configured) firewalld
+      # interfaces.
       #
-      # @example
-      #   CWMFirewallInterfaces.known_interfaces #=>
-      #     [
-      #       { "id" => "eth0", "name" => "Intel Ethernet Connection I217-LM", "zone" => "external"},
-      #       { "id" => "eth1", "name" => "Intel Ethernet Connection I217-LM", "zone" => "public"},
-      #       { "id" => "eth2", "name" => "Intel Ethernet Connection I217-LM", "zone" => nil},
-      #       { "id" => "eth3", "name" => "Intel Ethernet Connection I217-LM", "zone" => nil},
-      #     ]
-      #
-      # @return [Array<Hash<String,String>>] known interfaces "id", "name" and "zone"
+      # @return [Array<Y2Firewall::Firewalld::Interface>] known interfaces
       def known_interfaces
         return @known_interfaces if @known_interfaces
 
-        interfaces = Yast::NetworkInterfaces.List("").reject { |i| i == "lo" }
+        @known_interfaces = Y2Firewall::Firewalld::Interface.known
+      end
 
-        @known_interfaces = interfaces.map do |interface|
-          {
-            "id"   => interface,
-            "name" => Yast::NetworkInterfaces.GetValue(interface, "NAME"),
-            "zone" => interface_zone(interface)
-          }
-        end
+      # Return an array with all the interfaces configured in some firewalld
+      # zone but not configured in sysconfig.
+      #
+      # @return [Array<Y2Firewall::Firewalld::Interface>] unknown interfaces
+      def unknown_interfaces
+        Y2Firewall::Firewalld::Interface.unknown
       end
     end
   end

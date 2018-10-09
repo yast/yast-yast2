@@ -835,30 +835,14 @@ module Yast
         end
 
         ret = :abort if ret == :cancel
-        if ret == :abort
-          if Ops.get(functions, :abort)
-            toEval = Convert.convert(
-              Ops.get(functions, :abort),
-              from: "any",
-              to:   "boolean ()"
-            )
-            if !toEval.nil?
-              eval_ret = toEval.call
-              ret = eval_ret ? :abort : nil
-            end
-          end
-        elsif ret == :back
-          if Ops.get(functions, :back)
-            toEval = Convert.convert(
-              Ops.get(functions, :back),
-              from: "any",
-              to:   "boolean ()"
-            )
-            if !toEval.nil?
-              eval_ret = toEval.call
-              ret = eval_ret ? :back : nil
-            end
-          end
+
+        if ret == :next && functions[:next]
+          ret = nil unless functions[:next].call
+          save = false if ret.nil?
+        elsif ret == :back && functions[:back]
+          ret = nil unless functions[:back].call
+        elsif ret == :abort && functions[:abort]
+          ret = nil unless functions[:abort].call
         end
 
         next if ret.nil?
@@ -930,27 +914,31 @@ module Yast
     end
 
     # Display the dialog and run its event loop using new widget API
-    # @param [::CWM::WidgetTerm] contents is UI term including instances of {CWM::AbstractWidget}
-    # @param [String] caption of dialog
-    # @param [String, nil] back_button label for dialog back button,
+    # @param contents [::CWM::WidgetTerm] UI term including instances of {CWM::AbstractWidget}
+    # @param caption [String] caption of dialog
+    # @param back_button [String, nil] label for dialog back button,
     #   `nil` to use the default label, `""` to omit the button
-    # @param [String, nil] next_button label for dialog next button,
+    # @param next_button [String, nil] label for dialog next button,
     #   `nil` to use the default label, `""` to omit the button
-    # @param [String, nil] abort_button label for dialog abort button,
+    # @param abort_button [String, nil] label for dialog abort button,
     #   `nil` to use the default label, `""` to omit the button
-    # @param [Array] skip_store_for list of events for which the value of the widget will not be stored.
+    # @param skip_store_for [Array] list of events for which the value of the widget will not be stored.
     #   Useful mainly when some widget returns an event that should not trigger the storing,
     #   like a reset button or a redrawing.  It will skip also validation, because it is not needed
     #   as nothing is stored.
-    # @param [Proc] back_handler handler that is called after clicking on back. If it returns false,
+    # @param next_handler [Proc] handler that is called after clicking on next. If it returns false,
+    #   then it does not go next. If it returns true, then :next symbol is returned. If handler is not
+    #   defined, then it acts like if it returns true.
+    # @param back_handler [Proc] handler that is called after clicking on back. If it returns false,
     #   then it does not go back. If it returns true, then :back symbol is returned. If handler is not
     #   defined, then it acts like if it returns true.
-    # @param [Proc] abort_handler handler that is called after clicking on abort. If it returns false,
+    # @param abort_handler [Proc] handler that is called after clicking on abort. If it returns false,
     #   then it stops abort. If it returns true, then :abort symbol is returned. If handler is not
     #   defined, then it acts like if it returns true.
+    #
     # @return [Symbol] wizard sequencer symbol
     def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil, skip_store_for: [],
-      disable_buttons: [], back_handler: nil, abort_handler: nil)
+      disable_buttons: [], next_handler: nil, back_handler: nil, abort_handler: nil)
       widgets = widgets_in_contents(contents)
       options = {
         "contents"     => widgets_contents(contents),
@@ -964,6 +952,7 @@ module Yast
       options["skip_store_for"] = skip_store_for
       options["disable_buttons"] = disable_buttons
       options["fallback_functions"] = {}
+      options["fallback_functions"][:next] = Yast.fun_ref(next_handler, "boolean ()") if next_handler
       options["fallback_functions"][:back] = Yast.fun_ref(back_handler, "boolean ()") if back_handler
       options["fallback_functions"][:abort] = Yast.fun_ref(abort_handler, "boolean ()") if abort_handler
 

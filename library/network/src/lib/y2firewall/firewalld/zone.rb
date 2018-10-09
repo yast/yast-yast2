@@ -46,14 +46,11 @@ module Y2Firewall
         "work"     => N_("Work Zone")
       }.freeze
 
-      # @return [String] Zone name
-      attr_reader :name
-
       # @see Y2Firewall::Firewalld::Relations
       has_many :services, :interfaces, :protocols, :ports, :sources, cache: true
 
-      # @return [Boolean] Whether masquerade is enabled or not
-      attr_reader :masquerade
+      # @see Y2Firewall::Firewalld::Relations
+      has_attributes :name, :masquerade, :short, :description, :target, cache: true
 
       alias_method :masquerade?, :masquerade
 
@@ -65,6 +62,7 @@ module Y2Firewall
       # @param name [String] zone name
       def initialize(name: nil)
         @name = name || api.default_zone
+        relations.each { |r| public_send("#{r}=", []) }
       end
 
       def self.known_zones
@@ -73,7 +71,7 @@ module Y2Firewall
 
       # Setter method for enabling masquerading.
       #
-      # @param enabled [Boolean] true for enable; false for disable
+      # @param enable [Boolean] true for enable; false for disable
       # @return [Boolean] whether it is enabled or not
       def masquerade=(enable)
         modified!(:masquerade)
@@ -94,6 +92,7 @@ module Y2Firewall
         return true unless modified?
 
         apply_relations_changes!
+        apply_attributes_changes!
         if modified?(:masquerade)
           masquerade? ? api.add_masquerade(name) : api.remove_masquerade(name)
         end
@@ -130,15 +129,10 @@ module Y2Firewall
       #
       # @return [Hash] zone configuration
       def export
-        {
-          "name"       => name,
-          "interfaces" => interfaces,
-          "services"   => services,
-          "ports"      => ports,
-          "protocols"  => protocols,
-          "sources"    => sources,
-          "masquerade" => masquerade
-        }
+        (attributes + relations)
+          .each_with_object({}) do |field, profile|
+            profile[field.to_s] = public_send(field) unless public_send(field).nil?
+          end
       end
 
       # Override relation method to be more defensive. An interface can only

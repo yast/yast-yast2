@@ -1,5 +1,7 @@
 require "yast2/systemd_unit"
 
+Yast.import "SystemdSocket"
+
 module Yast
   class SystemdServiceNotFound < StandardError
     def initialize(service_name)
@@ -75,8 +77,7 @@ module Yast
     # @param propmap [SystemdUnit::PropMap]
     # @return [Service,nil] `nil` if not found
     def find(service_name, propmap = {})
-      service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
-      service = Service.new(service_name, propmap)
+      service = build(service_name, propmap)
       return nil if service.properties.not_found?
       service
     end
@@ -107,10 +108,9 @@ module Yast
       property_texts = out.stdout.split("\n\n")
       return [] unless snames.size == property_texts.size
 
-      snames.zip(property_texts).map do |service_name, property_text|
-        service = Service.new(service_name, propmap, property_text)
-        next nil if service.properties.not_found?
-        service
+      snames.zip(property_texts).each_with_object([]) do |(name, property_text), memo|
+        service = Service.new(name, propmap, property_text)
+        memo << service unless service.not_found?
       end
     end
 
@@ -133,6 +133,19 @@ module Yast
       end
     end
 
+    # Instantiate a SystemdService object based on the given name
+    #
+    # Use with caution as the service might exist or not. If you need to react when
+    # the service does not exist, use SystemdServiceClass.find.
+    #
+    # @param service_name [String] "foo" or "foo.service"
+    # @param propmap [SystemdUnit::PropMap]
+    # @return [Service] System service with the given name
+    def build(service_name, propmap = {})
+      service_name += UNIT_SUFFIX unless service_name.end_with?(UNIT_SUFFIX)
+      Service.new(service_name, propmap)
+    end
+
     class Service < SystemdUnit
       include Yast::Logger
 
@@ -146,6 +159,10 @@ module Yast
 
       def running?
         properties.running?
+      end
+
+      def static?
+        properties.static?
       end
 
       def start
@@ -165,6 +182,21 @@ module Yast
         stop
         sleep(1)
         start
+      end
+
+      # Returns socket associated with service or nil if there is no such socket
+      #
+      # @return [Yast::SystemdSocketClass::Socket,nil]
+      # @see SystemdSocket.for_service
+      def socket
+        @socket ||= Yast::SystemdSocket.for_service(name)
+      end
+
+      # Determines whether the service has an associated socket
+      #
+      # @return [Boolean] true if an associated socket exists; false otherwise.
+      def socket?
+        !socket.nil?
       end
 
     private

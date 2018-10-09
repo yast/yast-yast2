@@ -278,12 +278,12 @@ module Yast
 
     # Function returns whether the feature 'any' network interface is supported in the
     # firewall configuration. The string 'any' must be in the 'EXT' zone.
-    # Updated: Currently returns only 'true' as every unasigned interface is
+    # Updated: Currently returns only 'true' as every unassigned interface is
     # automatically assigned to the EXT zone by SuSEfirewall2.
     #
     # @return [Boolean] is_supported whether the feature is supported or not
     def IsAnyNetworkInterfaceSupported
-      # Currently unasigned interfaces belong to the EXT zone by dafault
+      # Currently unassigned interfaces belong to the EXT zone by dafault
       true
     end
 
@@ -360,7 +360,7 @@ module Yast
       nil
     end
 
-    # Local function for reseting list of sysconfig variables in internal variables.
+    # Local function for resetting list of sysconfig variables in internal variables.
     #
     # @param [Array<String>] variables of sysconfig variables
     def ResetSysconfigSuSEFirewall(variables)
@@ -492,7 +492,7 @@ module Yast
       nil
     end
 
-    # Local function return map of allowed ports (without aliases).
+    # Local function returns map of allowed ports (without aliases).
     # If any list for zone is defined but empty, all allowed
     # UDP ports for this zone also accept broadcast packets.
     # This function returns only ports that are mentioned in configuration,
@@ -526,7 +526,7 @@ module Yast
           # BNC #694782: "yes" is automatically translated by SuSEfirewall2
         elsif broadcast == "yes"
           Ops.set(allowed_ports, zone, ["yes"])
-          # only listed ports allows broadcast
+          # only listed ports allow broadcast
         else
           Ops.set(allowed_ports, zone, Builtins.splitstring(broadcast, " "))
           Ops.set(
@@ -1627,7 +1627,7 @@ module Yast
       # starting firewall during second stage can cause deadlock in systemd - bnc#798620
       # Moreover, it is not needed. Firewall gets started via dependency on multi-user.target
       # when second stage is over.
-      if Mode.installation
+      if Mode.installation && !Mode.autoinst
         Builtins.y2milestone("Do not touch firewall services during installation")
 
         return true
@@ -1761,7 +1761,7 @@ module Yast
       true
     end
 
-    # Helper function for the backward compatibility.
+    # Helper function for backward compatibility.
     # See WriteConfiguration(). Remove from code ASAP.
     #
     # @return [Boolean] if succesful
@@ -1769,7 +1769,7 @@ module Yast
       WriteConfiguration()
     end
 
-    # Function for writing and enabling configuration it is an union of
+    # Function for writing and enabling configuration, it is a union of
     # WriteConfiguration() and ActivateConfiguration().
     #
     # @return [Boolean] if succesfull
@@ -1789,7 +1789,7 @@ module Yast
     # This powerful function returns list of services/ports which are
     # not assigned to any fully-supported known-services.
     # This function doesn't check for services defined by packages.
-    # They are listed by a different way.
+    # They are listed by a different method.
     #
     # @return [Array<String>] of additional (unassigned) services
     #
@@ -1939,7 +1939,7 @@ module Yast
       nil
     end
 
-    # Functions adds special string into defined zone.
+    # Function adds special string into defined zone.
     #
     # @param [String] interface
     # @param [String] zone
@@ -1985,7 +1985,7 @@ module Yast
 
       Ops.set(@SETTINGS, "FW_MASQUERADE", enable ? "yes" : "no")
 
-      # routing is needed for masquerading, but we can't swithc it off when disabling masquerading
+      # routing is needed for masquerading, but we can't switch it off when disabling masquerading
       Ops.set(@SETTINGS, "FW_ROUTE", "yes") if enable
 
       nil
@@ -2223,7 +2223,7 @@ module Yast
       nil
     end
 
-    # Function returns yes/no - ingoring broadcast for zone
+    # Function returns yes/no - ignoring broadcast for zone
     #
     # @param [String] zone
     # @return [String] "yes" or "no"
@@ -2240,7 +2240,7 @@ module Yast
       Ops.get_string(@SETTINGS, Ops.add("FW_IGNORE_FW_BROADCAST_", zone), "no")
     end
 
-    # Function sets yes/no - ingoring broadcast for zone
+    # Function sets yes/no - ignoring broadcast for zone
     #
     # @param [String] zone
     # @param [String] bcast ignore 'yes' or 'no'
@@ -2261,7 +2261,7 @@ module Yast
       nil
     end
 
-    # Firewall Expert Rulezz
+    # Firewall Expert Rules
 
     # Returns list of rules describing protocols and ports that are allowed
     # to be accessed from listed hosts. All is returned as a single string.

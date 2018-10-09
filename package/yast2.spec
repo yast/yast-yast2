@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.0.79
+Version:        4.0.100
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0-only
@@ -69,8 +69,8 @@ Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
 Requires:       rubygem(%{rb_default_ruby_abi}:cfa)
 # For converting to/from punycode strings
-Requires:       sysconfig >= 0.80.0
 Requires:       rubygem(%{rb_default_ruby_abi}:simpleidn)
+Requires:       sysconfig >= 0.80.0
 # for running scripts
 Requires:       rubygem(%{rb_default_ruby_abi}:cheetah)
 # ag_ini section_private

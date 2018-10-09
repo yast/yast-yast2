@@ -10,6 +10,34 @@ Yast.import "Linuxrc"
 describe Yast::SuSEFirewallProposal do
   subject { Yast::SuSEFirewallProposal }
 
+  describe "#ProposeFunctions" do
+    context "when iscsi is used" do
+      it "calls the iscsi proposal" do
+        allow(Yast::Linuxrc).to receive(:useiscsi).and_return(true)
+        expect(subject).to receive(:propose_iscsi).and_return(nil)
+
+        subject.ProposeFunctions
+      end
+    end
+
+    context "when iscsi is not used" do
+      it "does not call the iscsi proposal" do
+        allow(Yast::Linuxrc).to receive(:useiscsi).and_return(false)
+        expect(subject).not_to receive(:propose_iscsi)
+
+        subject.ProposeFunctions
+      end
+    end
+  end
+
+  describe "#propose_iscsi" do
+    it "proposes full firewall initialization on boot" do
+      expect(Yast::SuSEFirewall).to receive(:full_init_on_boot).and_return(true)
+
+      subject.propose_iscsi
+    end
+  end
+
   describe "#EnableFallbackPorts" do
     let(:fallback_ports) { ["port1", "port2"] }
 

@@ -83,9 +83,11 @@ module Yast
         expect(unit.properties[:loaded?]).not_to be_nil
         expect(unit.properties[:supported?]).not_to be_nil
         expect(unit.properties[:not_found?]).not_to be_nil
+        expect(unit.properties[:static?]).not_to be_nil
         expect(unit.properties[:path]).not_to be_nil
         expect(unit.properties[:error]).not_to be_nil
         expect(unit.properties[:raw]).not_to be_nil
+        expect(unit.properties[:can_reload?]).not_to be_nil
       end
 
       it "delegates the status properties onto the unit object" do
@@ -94,6 +96,7 @@ module Yast
         expect(unit).to respond_to(:active?)
         expect(unit).to respond_to(:loaded?)
         expect(unit).to respond_to(:path)
+        expect(unit).to respond_to(:can_reload?)
       end
     end
 

@@ -848,8 +848,8 @@ module Yast
           # look in OriginalDevs because we need to catch all variables
           # of the alias
 
-          dev_aliases = original_devs[typ][dev]["_aliases"][anum] || {}
-          dev_aliases.keys.each do |key|
+          dev_aliases = original_devs.fetch(typ, {}).fetch(dev, {}).fetch("_aliases", {})
+          dev_aliases.fetch(anum, {}).keys.each do |key|
             p = base + "#{key}_#{anum}"
             log.debug("deleting: #{p}")
             SCR.Write(p, nil)
