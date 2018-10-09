@@ -1,12 +1,14 @@
 #!/usr/bin/env rspec
 
 require_relative "test_helper"
+require "y2firewall/firewalld/interface"
 
 Yast.import "FirewalldWrapper"
 
 describe Yast::FirewalldWrapper do
   let(:firewalld) { Y2Firewall::Firewalld.instance }
   let(:external) { Y2Firewall::Firewalld::Zone.new(name: "external") }
+  let(:interface) { Y2Firewall::Firewalld::Interface.new("eth0") }
   let(:zones) { [external] }
 
   before do
@@ -14,6 +16,7 @@ describe Yast::FirewalldWrapper do
     allow(firewalld).to receive(:zones).and_return(zones)
     allow(firewalld).to receive(:installed?).and_return(true)
     external.interfaces = ["eth0"]
+    external.services = ["service:dhcp-server"]
   end
 
   describe "#read" do
@@ -29,6 +32,22 @@ describe Yast::FirewalldWrapper do
       expect(firewalld).to receive(:write)
 
       subject.write
+    end
+  end
+
+  describe "#is_enabled" do
+    it "calls firewalld.enabled?" do
+      expect(firewalld).to receive(:enabled?)
+
+      subject.is_enabled
+    end
+  end
+
+  describe "#is_modified" do
+    it "calls firewalld.modified?" do
+      expect(firewalld).to receive(:modified?)
+
+      subject.is_modified
     end
   end
 
@@ -95,6 +114,74 @@ describe Yast::FirewalldWrapper do
         expect(external).to_not receive(:remove_port)
 
         subject.remove_port("80", "TCP", "eth1")
+      end
+    end
+  end
+
+  describe "#zone_name_of_interface" do
+    context "interface cannot be found" do
+      it "returns nil" do
+        expect(subject.zone_name_of_interface("wrong_interface")).to eq(nil)
+      end
+    end
+
+    context "interface is available" do
+      it "returns interface zone name" do
+        expect(subject.zone_name_of_interface("eth0")).to eq(external.name)
+      end
+    end
+  end
+
+  describe "#is_service_in_zone" do
+    context "zone cannot be found" do
+      it "returns false" do
+        allow(firewalld).to receive(:find_zone).and_return(nil)
+        expect(subject.is_service_in_zone("service", "wrong_zone")).to eq(false)
+      end
+    end
+
+    context "zone is available" do
+      it "returns false if service cannot be found" do
+        allow(firewalld).to receive(:zones).and_return(zones)
+        expect(subject.is_service_in_zone("wrong_service", "wrong_zone")).to eq(false)
+      end
+
+      it "returns true if service can be found" do
+        allow(firewalld).to receive(:zones).and_return(zones)
+        expect(subject.is_service_in_zone(external.services.first, "wrong_zone")).to eq(false)
+      end
+    end
+  end
+
+  describe "#all_known_interfaces" do
+    context "interfaces are available" do
+      it "returns all interfaces" do
+        expect(Y2Firewall::Firewalld::Interface).to receive(:known).and_return([interface])
+        expect(subject.all_known_interfaces).to eq([{ "id" => "eth0", "zone" => "external", "name" => nil }])
+      end
+    end
+  end
+
+  describe "#set_services" do
+    context "interface has no zone" do
+      it "do not set services" do
+        expect_any_instance_of(Y2Firewall::Firewalld::Zone).not_to receive(:add_service)
+        expect_any_instance_of(Y2Firewall::Firewalld::Zone).not_to receive(:remove_service)
+        subject.set_services(["service:dhcp-server"], ["wrong_interface"], true)
+      end
+    end
+
+    context "interface has a zone" do
+      it "set services" do
+        expect_any_instance_of(Y2Firewall::Firewalld::Zone).to receive(:add_service)
+        expect_any_instance_of(Y2Firewall::Firewalld::Zone).not_to receive(:remove_service)
+        subject.set_services(["service:dhcp-server"], ["eth0"], true)
+      end
+
+      it "unset services" do
+        expect_any_instance_of(Y2Firewall::Firewalld::Zone).not_to receive(:add_service)
+        expect_any_instance_of(Y2Firewall::Firewalld::Zone).to receive(:remove_service)
+        subject.set_services(["service:dhcp-server"], ["eth0"], false)
       end
     end
   end
