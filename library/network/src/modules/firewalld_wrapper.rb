@@ -146,12 +146,10 @@ module Yast
     # @return [Array<Hash>] known interfaces
     #        e.g. [{ "id":"eth0", "name":"Askey 815C", "zone":"EXT"} , ... ]
     def all_known_interfaces
-      ret = []
-      Y2Firewall::Firewalld::Interface.known.each do |interface|
-        ret << { "id" => interface.name, "zone" => interface.zone.name,
-                "name" => interface.device_name }
+      Y2Firewall::Firewalld::Interface.known.map do |interface|
+        { "id" => interface.name, "zone" => interface.zone.name,
+          "name" => interface.device_name }
       end
-      ret
     end
 
     # sets status for several services on several network interfaces.
@@ -159,7 +157,7 @@ module Yast
     # @param	list <string> service ids
     # @param	list <string> network interfaces
     # @param	boolean new status of services
-    def set_services(services, interfaces, status)
+    def modify_interface_services(services, interfaces, status)
       interfaces.each do |interface|
         zone = interface_zone(interface)
         next unless zone
@@ -181,7 +179,7 @@ module Yast
     publish function: :zone_name_of_interface, type: "string (string)"
     publish function: :is_service_in_zone, type: "boolean (string,string)"
     publish function: :all_known_interfaces, type: "list <map <string, any>> ()"
-    publish function: :set_services, type: "void (list<string>, list<string>, boolean)"
+    publish function: :modify_interface_services, type: "void (list<string>, list<string>, boolean)"
 
   private
 
