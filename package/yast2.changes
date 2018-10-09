@@ -3,6 +3,13 @@ Fri Oct  5 13:55:39 CEST 2018 - schubi@suse.de
 
 - Added new methods to firewalld_wrapper in order to switch
   yast2-dhcp-server to new firewall module. (bsc#1108942)
+- 4.1.21
+
+-------------------------------------------------------------------  
+Tue Oct  2 11:11:26 UTC 2018 - lslezak@suse.cz
+
+- Make the service status label stretchable so the updated status
+  is displayed correctly (bsc#1110407)
 - 4.1.20
 
 -------------------------------------------------------------------
