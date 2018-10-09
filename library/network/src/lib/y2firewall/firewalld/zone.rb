@@ -50,10 +50,7 @@ module Y2Firewall
       has_many :services, :interfaces, :protocols, :ports, :sources, cache: true
 
       # @see Y2Firewall::Firewalld::Relations
-      has_attributes :name, :short, :description, :target, cache: true
-
-      # @return [Boolean] Whether masquerade is enabled or not
-      attr_reader :masquerade
+      has_attributes :name, :masquerade, :short, :description, :target, cache: true
 
       alias_method :masquerade?, :masquerade
 
@@ -65,6 +62,7 @@ module Y2Firewall
       # @param name [String] zone name
       def initialize(name: nil)
         @name = name || api.default_zone
+        relations.each { |r| public_send("#{r}=", []) }
       end
 
       def self.known_zones
@@ -132,8 +130,8 @@ module Y2Firewall
       # @return [Hash] zone configuration
       def export
         (attributes + relations)
-          .each_with_object("masquerade" => masquerade) do |field, profile|
-            profile[field.to_s] = public_send(field)
+          .each_with_object({}) do |field, profile|
+            profile[field.to_s] = public_send(field) unless public_send(field).nil?
           end
       end
 

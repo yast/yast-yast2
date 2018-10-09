@@ -25,17 +25,35 @@ require "y2firewall/firewalld/interface"
 
 describe Y2Firewall::Firewalld::Interface do
   subject(:iface) { described_class.new("eth0") }
+  subject(:unknown_iface) { described_class.new("virbr0") }
+
+  before do
+    allow(Yast::NetworkInterfaces).to receive(:List).with("")
+      .and_return(["eth0", "lo", "wlan0"])
+  end
 
   describe ".known" do
-    before do
-      allow(Yast::NetworkInterfaces).to receive(:List).with("")
-        .and_return(["eth0", "lo", "wlan0"])
-    end
-
     it "returns an object for each known interface except 'lo'" do
       expect(described_class.known).to contain_exactly(
         an_object_having_attributes(name: "eth0"),
         an_object_having_attributes(name: "wlan0")
+      )
+    end
+  end
+
+  describe ".unknown" do
+    let(:public_zone) do
+      instance_double(Y2Firewall::Firewalld::Zone, interfaces: ["eth0", "eth1", "wlan0"])
+    end
+
+    before do
+      allow(Y2Firewall::Firewalld.instance).to receive(:zones)
+        .and_return([public_zone])
+    end
+
+    it "returns an object for each unknown interface enabled in some firewalld zone" do
+      expect(described_class.unknown).to contain_exactly(
+        an_object_having_attributes(name: "eth1")
       )
     end
   end
@@ -60,8 +78,16 @@ describe Y2Firewall::Firewalld::Interface do
         .and_return(DEVICE_NAME)
     end
 
-    it "returns the device name" do
-      expect(iface.device_name).to eq(DEVICE_NAME)
+    context "when the interface is known" do
+      it "returns the device name" do
+        expect(iface.device_name).to eq(DEVICE_NAME)
+      end
+    end
+
+    context "when the interface is not known" do
+      it "returns the translated 'Unknown' string" do
+        expect(unknown_iface.device_name).to eq("Unknown")
+      end
     end
   end
 
@@ -81,6 +107,20 @@ describe Y2Firewall::Firewalld::Interface do
 
     it "returns the zone where the interface belongs to" do
       expect(iface.zone).to eq(dmz_zone)
+    end
+  end
+
+  describe "#known?" do
+    context "when the interface is known" do
+      it "returns true" do
+        expect(iface.known?).to eql(true)
+      end
+    end
+
+    context "when the interface is unknown" do
+      it "returns false" do
+        expect(unknown_iface.known?).to eql(false)
+      end
     end
   end
 end

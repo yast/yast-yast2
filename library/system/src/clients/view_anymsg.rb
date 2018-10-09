@@ -192,6 +192,8 @@ module Yast
         file_content = SCR.Read(path(".target.string"), @filename)
 
         if file_content
+          # replace invalid byte sequences with Unicode "replacement character"
+          file_content.scrub!("�")
           # remove ANSI color escape sequences
           file_content.remove_ansi_sequences
           # remove remaining ASCII control characters (ASCII 0-31 and 127 (DEL))

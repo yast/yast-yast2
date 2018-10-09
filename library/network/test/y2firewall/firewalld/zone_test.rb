@@ -79,6 +79,7 @@ describe Y2Firewall::Firewalld::Zone do
 
     context "when the zone was not modified since read" do
       it "returns false" do
+        subject.read
         expect(subject.modified?).to eq(false)
       end
     end
@@ -175,6 +176,11 @@ describe Y2Firewall::Firewalld::Zone do
     end
 
     context "when the zone has been modified" do
+      before do
+        allow(subject).to receive(:apply_relations_changes!)
+        allow(subject).to receive(:apply_attributes_changes!)
+      end
+
       subject { described_class.new(name: "test") }
 
       it "applies all the changes done in its relations" do

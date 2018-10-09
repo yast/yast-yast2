@@ -72,6 +72,14 @@ module Y2Firewall
 
         @known_interfaces = Y2Firewall::Firewalld::Interface.known
       end
+
+      # Return an array with all the interfaces configured in some firewalld
+      # zone but not configured in sysconfig.
+      #
+      # @return [Array<Y2Firewall::Firewalld::Interface>] unknown interfaces
+      def unknown_interfaces
+        Y2Firewall::Firewalld::Interface.unknown
+      end
     end
   end
 end
