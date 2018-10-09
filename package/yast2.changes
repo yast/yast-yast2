@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct  9 13:57:18 CEST 2018 - schubi@suse.de
+
+- Added new methods to firewalld_wrapper in order to switch
+  yast2-dhcp-server to new firewall module. (bsc#1108942)
+- 4.0.79
+
+-------------------------------------------------------------------
 Wed Jun 27 15:42:04 CEST 2018 - schubi@suse.de
 
 - Added additional searchkeys to desktop file (fate#321043).

@@ -24,6 +24,7 @@
 
 require "yast"
 require "y2firewall/firewalld"
+require "y2firewall/firewalld/interface"
 
 module Yast
   # This module add support for handling firewalld configuration and it is
@@ -101,11 +102,86 @@ module Yast
       zone.remove_port(port)
     end
 
+    # Check whether the firewalld service is enable or not
+    #
+    # @return [Boolean] true if it is enable; false otherwise
+    def is_enabled
+      firewalld.enabled?
+    end
+
+    # Return true if the logging config or any of the zones where modified
+    # since read
+    #
+    # @return [Boolean] true if the config was modified; false otherwise
+    def is_modified
+      firewalld.modified?
+    end
+
+    # Evaluate the zone name of an interface
+    #
+    # @param interface [String] interface name
+    #
+    # @return [String] zone name (nil; not found)
+    def zone_name_of_interface(interface)
+      zone = interface_zone(interface)
+      return nil unless zone
+      zone.name
+    end
+
+    # Check if the service belongs to the zone
+    #
+    # @param service [String] service name
+    # @param zone [String] zone name
+    #
+    # @return [Boolean] true if service is in zone
+    def is_service_in_zone(service, zone_name)
+      zone = firewalld.find_zone(zone_name)
+      return false unless zone
+      zone.services.include?(service)
+    end
+
+    # Return an array with all the known (sysconfig configured) firewalld
+    # interfaces.
+    #
+    # @return [Array<Hash>] known interfaces
+    #        e.g. [{ "id":"eth0", "name":"Askey 815C", "zone":"EXT"} , ... ]
+    def all_known_interfaces
+      ret = []
+      Y2Firewall::Firewalld::Interface.known.each do |interface|
+        ret << { "id" => interface.name, "zone" => interface.zone.name,
+                "name" => interface.device_name }
+      end
+      ret
+    end
+
+    # sets status for several services on several network interfaces.
+    #
+    # @param	list <string> service ids
+    # @param	list <string> network interfaces
+    # @param	boolean new status of services
+    def set_services(services, interfaces, status)
+      interfaces.each do |interface|
+        zone = interface_zone(interface)
+        next unless zone
+        if status
+          services.each { |service| zone.add_service(service) }
+        else
+          services.each { |service| zone.remove_service(service) }
+        end
+      end
+    end
+
     publish function: :read, type: "boolean ()"
     publish function: :write, type: "boolean ()"
     publish function: :write_only, type: "boolean ()"
     publish function: :add_port, type: "boolean (string, string, string)"
     publish function: :remove_port, type: "boolean (string, string, string)"
+    publish function: :is_enabled, type: "boolean ()"
+    publish function: :is_modified, type: "boolean ()"
+    publish function: :zone_name_of_interface, type: "string (string)"
+    publish function: :is_service_in_zone, type: "boolean (string,string)"
+    publish function: :all_known_interfaces, type: "list <map <string, any>> ()"
+    publish function: :set_services, type: "void (list<string>, list<string>, boolean)"
 
   private
 
