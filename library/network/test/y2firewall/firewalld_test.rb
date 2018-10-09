@@ -357,11 +357,11 @@ describe Y2Firewall::Firewalld do
     end
 
     it "applies in firewalld all the changes done in the object since read" do
-      firewalld.log_denied_packets = "off"
+      firewalld.log_denied_packets = "unicast"
       firewalld.default_zone = "drop"
 
       expect(api).to receive(:modify_default_zone).with("drop")
-      expect(api).to receive(:modify_log_denied_packets).with("off")
+      expect(api).to receive(:modify_log_denied_packets).with("unicast")
 
       firewalld.write_only
     end
