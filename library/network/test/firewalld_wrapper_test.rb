@@ -162,12 +162,12 @@ describe Yast::FirewalldWrapper do
     end
   end
 
-  describe "#set_services" do
+  describe "#modify_interface_services" do
     context "interface has no zone" do
       it "do not set services" do
         expect_any_instance_of(Y2Firewall::Firewalld::Zone).not_to receive(:add_service)
         expect_any_instance_of(Y2Firewall::Firewalld::Zone).not_to receive(:remove_service)
-        subject.set_services(["service:dhcp-server"], ["wrong_interface"], true)
+        subject.modify_interface_services(["service:dhcp-server"], ["wrong_interface"], true)
       end
     end
 
@@ -175,13 +175,13 @@ describe Yast::FirewalldWrapper do
       it "set services" do
         expect_any_instance_of(Y2Firewall::Firewalld::Zone).to receive(:add_service)
         expect_any_instance_of(Y2Firewall::Firewalld::Zone).not_to receive(:remove_service)
-        subject.set_services(["service:dhcp-server"], ["eth0"], true)
+        subject.modify_interface_services(["service:dhcp-server"], ["eth0"], true)
       end
 
       it "unset services" do
         expect_any_instance_of(Y2Firewall::Firewalld::Zone).not_to receive(:add_service)
         expect_any_instance_of(Y2Firewall::Firewalld::Zone).to receive(:remove_service)
-        subject.set_services(["service:dhcp-server"], ["eth0"], false)
+        subject.modify_interface_services(["service:dhcp-server"], ["eth0"], false)
       end
     end
   end
