@@ -16,7 +16,7 @@ describe Yast::FirewalldWrapper do
     allow(firewalld).to receive(:zones).and_return(zones)
     allow(firewalld).to receive(:installed?).and_return(true)
     external.interfaces = ["eth0"]
-    external.services = ["service:dhcp-server"]
+    external.services = ["dhcp"]
   end
 
   describe "#read" do
