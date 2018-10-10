@@ -190,7 +190,6 @@ module Yast
     # @param [String] type string type information
     # @return [Boolean] true on success or if do not know how to validate
     def ValidateBasicType(value, type)
-      value = deep_copy(value)
       return Ops.is_term?(value) if type == "term"
       return Ops.is_string?(value) if type == "string"
       return Ops.is_symbol?(value) if type == "symbol"
@@ -210,7 +209,6 @@ module Yast
     # @param [String] widget any name of the widget/option
     # @return [Boolean] true if validation succeeded
     def ValidateValueType(key, value, widget)
-      value = deep_copy(value)
       types = {
         # general
         "widget"        => "symbol",
@@ -268,7 +266,6 @@ module Yast
     # @param [String] widget any name of the widget/option
     # @return [Boolean] true if validation succeeded
     def ValidateValueContents(key, value, widget)
-      value = deep_copy(value)
       error = ""
       if key == "label"
         s = Convert.to_string(value)
@@ -291,8 +288,9 @@ module Yast
       false
     end
 
+    # @param widgets [Array<::CWM::WidgetHash>] list of widget maps
+    # @return [Integer] the lowest 'ui_timeout' value, or 0
     def GetLowestTimeout(widgets)
-      widgets = deep_copy(widgets)
       minimum = 0
       Builtins.foreach(widgets) do |w|
         timeout = Ops.get_integer(w, "ui_timeout", 0)
@@ -868,9 +866,9 @@ module Yast
     end
 
     # Disable given bottom buttons of the wizard sequencer
-    # @param buttons list of buttons to be disabled
+    # @param buttons [Array<String>] list of buttons to be disabled:
+    #   "back_button", "abort_button", "next_button"
     def DisableButtons(buttons)
-      buttons = deep_copy(buttons)
       Builtins.foreach(buttons) do |button|
         Wizard.DisableBackButton if button == "back_button"
         Wizard.DisableAbortButton if button == "abort_button"
@@ -913,7 +911,6 @@ module Yast
     # Set handler to be called after validation of a dialog failed
     # @param [void ()] handler a function reference to be caled. If nil, nothing is called
     def SetValidationFailedHandler(handler)
-      handler = deep_copy(handler)
       @validation_failed_handler = deep_copy(handler)
 
       nil
