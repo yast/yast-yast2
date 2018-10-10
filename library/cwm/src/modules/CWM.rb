@@ -714,6 +714,7 @@ module Yast
     # @param [Hash <String, ::CWM::WidgetHash] source a map containing the widgets
     # @return [Array<::CWM::WidgetHash>] of maps representing widgets
     def CreateWidgets(names, source)
+      Builtins.y2milestone("CreaWid BEG %1", t1 = Time.now.to_f)
       names = deep_copy(names)
       source = deep_copy(source)
       ValidateMaps(source) # FIXME: find better place
@@ -726,7 +727,9 @@ module Yast
         deep_copy(m)
       end
       ret = Builtins.maplist(ret) { |w| prepareWidget(w) }
-      deep_copy(ret)
+      r = deep_copy(ret)
+      Builtins.y2milestone("CreaWid END %1; %2", t2 = Time.now.to_f, t2 - t1)
+      r
     end
 
     # Merge helps from the widgets
@@ -749,6 +752,7 @@ module Yast
     # @param widgets [Array<::CWM::WidgetHash>] list of widget description maps
     # @return [::CWM::UITerm] updated term ready to be used as a dialog
     def PrepareDialog(dialog, widgets)
+      Builtins.y2milestone("PrepDia BEG %1", t1 = Time.now.to_f)
       dialog = deep_copy(dialog)
       widgets = deep_copy(widgets)
       args = Builtins.size(dialog)
@@ -757,7 +761,9 @@ module Yast
         widget_key = Ops.get_string(w, "_cwm_key", "")
         { widget_key => w }
       end
-      ProcessTerm(dialog, m)
+      t = ProcessTerm(dialog, m)
+      Builtins.y2milestone("PrepDia END %1; %2", t2 = Time.now.to_f, t2 - t1)
+      t
     end
 
     # Replace help for a particular widget
