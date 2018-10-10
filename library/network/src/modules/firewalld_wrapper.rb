@@ -147,7 +147,7 @@ module Yast
     #        e.g. [{ "id":"eth0", "name":"Askey 815C", "zone":"EXT"} , ... ]
     def all_known_interfaces
       Y2Firewall::Firewalld::Interface.known.map do |interface|
-        { "id" => interface.name, "zone" => zone_name_of_interface(interface),
+        { "id" => interface.name, "zone" => zone_name_of_interface(interface.name),
           "name" => interface.device_name }
       end
     end
