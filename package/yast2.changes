@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct  9 13:57:18 CEST 2018 - schubi@suse.de
+
+- Added new methods to firewalld_wrapper in order to switch
+  yast2-dhcp-server to new firewall module. (bsc#1108942)
+- 4.1.22
+  
+-------------------------------------------------------------------
 Tue Oct  9 08:25:42 UTC 2018 - lslezak@suse.cz
 
 - Log viewer: replace invalid UTF-8 characters from the displayed
