@@ -193,6 +193,8 @@ describe Yast::CWMClass do
     end
   end
 
+  # Used by many packages. All known uses are of the form
+  # `contents = CWM.PrepareDialog(contents, ...)`
   describe "#PrepareDialog" do
     it "returns early if the term is empty" do
       expect(subject).to_not receive(:ProcessTerm)
@@ -206,6 +208,7 @@ describe Yast::CWMClass do
   end
 
   # tested via its adapter PrepareDialog
+  # YAY, a private method
   describe "#ProcessTerm" do
     it "replaces string ids with UI terms" do
       ret = subject.PrepareDialog(test_stringterm, created_widgets)
