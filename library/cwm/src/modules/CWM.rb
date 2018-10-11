@@ -742,7 +742,6 @@ module Yast
         [widget_key, w]
       end.to_h
       t = ProcessTerm(dialog, m)
-      t = deep_copy(t)
       Builtins.y2milestone("PrepDia END %1; %2", t2 = Time.now.to_f, t2 - t1)
       t
     end
