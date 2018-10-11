@@ -344,7 +344,6 @@ module Yast
     # @param [Hash] event_descr map event that occured
     # @return [Symbol] modified action (sometimes may be needed) or nil
     def handleWidgets(widgets, event_descr)
-      widgets = deep_copy(widgets)
       event_descr = deep_copy(event_descr)
       ret = nil
       Builtins.foreach(widgets) do |w|
