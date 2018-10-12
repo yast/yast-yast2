@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Fri Oct 12 10:28:48 CEST 2018 - schubi@suse.de
+
+- Added tags full_system_media_name and full_system_download_url
+  in control.xml which describe the location for the
+  "all-packages" medium. This information will be shown if the
+  registration has been scipped by the user. No hint will be shown
+  if these tags have not been defined. (fate#325834)
+- 4.1.23
+
+-------------------------------------------------------------------
 Tue Oct  9 13:57:18 CEST 2018 - schubi@suse.de
 
 - Added new methods to firewalld_wrapper in order to switch

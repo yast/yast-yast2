@@ -70,7 +70,9 @@ module Yast
           "enable_clone"                    => false,
           "disable_os_prober"               => false,
           # FATE #304865
-          "base_product_license_directory"  => "/etc/YaST2/licenses/base/"
+          "base_product_license_directory"  => "/etc/YaST2/licenses/base/",
+          "full_system_media_name"          => "",
+          "full_system_download_url"        => ""
         },
         "partitioning" => {
           "use_flexible_partitioning"    => false,
