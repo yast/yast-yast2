@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.1.23
+Version:        4.1.24
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0-only
@@ -87,6 +87,8 @@ Requires:       yast2-xml
 # new UI::SetApplicationTitle
 Requires:       yast2-ycp-ui-bindings >= 3.2.0
 Requires:       yui_backend
+# scripts for collecting YAST logs
+Requires:       yast2-logs
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq
 # xdg-su in .desktops
@@ -191,8 +193,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %{_mandir}/*/*
 %doc %{yast_vardir}/hooks/README.md
 
-/sbin/*
-%{_sbindir}/*
+/sbin/yast*
+%{_sbindir}/yast*
 
 # wizard
 %dir %{yast_yncludedir}/wizard
@@ -206,5 +208,19 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %dir %{yast_yncludedir}/hwinfo
 %{yast_yncludedir}/hwinfo/*.rb
 %{yast_desktopdir}/messages.desktop
+
+%package logs
+
+Summary:        Collecting YAST information
+Group:          System/YaST
+
+Provides:       yast2:/usr/sbin/save_y2logs
+
+%description logs
+This package contains scripts for handling YAST logs.
+
+%files logs
+%defattr(-,root,root)
+/usr/sbin/save_y2logs
 
 %changelog
