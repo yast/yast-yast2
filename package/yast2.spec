@@ -87,6 +87,8 @@ Requires:       yast2-xml
 # new UI::SetApplicationTitle
 Requires:       yast2-ycp-ui-bindings >= 3.2.0
 Requires:       yui_backend
+# collection YAST logs
+Requires:       yast2-logs
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq
 # xdg-su in .desktops
@@ -212,9 +214,11 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 Summary:        Collecting YAST information
 Group:          System/YaST
 
+Provides:       yast2:/usr/sbin/save_y2logs
+
 %description logs
-This package contains scripts for collecting information while sytem
-installation via YAST
+This package contains scripts for collecting information while system
+installation via YAST.
 
 %files logs
 %defattr(-,root,root)
