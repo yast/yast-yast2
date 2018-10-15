@@ -218,6 +218,6 @@ installation via YAST
 
 %files logs
 %defattr(-,root,root)
-/sbin/yast*
+/usr/sbin/save_y2logs
 
 %changelog
