@@ -191,8 +191,8 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %{_mandir}/*/*
 %doc %{yast_vardir}/hooks/README.md
 
-/sbin/*
-%{_sbindir}/*
+/sbin/yast*
+%{_sbindir}/yast*
 
 # wizard
 %dir %{yast_yncludedir}/wizard
@@ -206,5 +206,18 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %dir %{yast_yncludedir}/hwinfo
 %{yast_yncludedir}/hwinfo/*.rb
 %{yast_desktopdir}/messages.desktop
+
+%package logs
+
+Summary:        Collecting YAST information
+Group:          System/YaST
+
+%description logs
+This package contains scripts for collecting information while sytem
+installation via YAST
+
+%files logs
+%defattr(-,root,root)
+/sbin/yast*
 
 %changelog
