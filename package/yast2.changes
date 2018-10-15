@@ -2,7 +2,7 @@
 Mon Oct 15 16:40:32 CEST 2018 - schubi@suse.de
 
 - Splitting yast2 package into yast2 and yast2-logs. yast2-logs
-  contains only scipts for handling YAST logs (fate#325737)
+  contains only scripts for handling YaST logs (fate#325737).
 - 4.1.24
 
 -------------------------------------------------------------------
