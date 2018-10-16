@@ -326,7 +326,7 @@ module Yast
           )
         end
         # set initial values
-        @processed_widget = deep_copy(w)
+        self.processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "init"),
           from: "any",
@@ -348,7 +348,7 @@ module Yast
       ret = nil
       Builtins.foreach(widgets) do |w|
         if ret.nil?
-          @processed_widget = deep_copy(w)
+          self.processed_widget = deep_copy(w)
           events = Ops.get_list(w, "handle_events", [])
           toEval = Convert.convert(
             Ops.get(w, "handle"),
@@ -374,7 +374,7 @@ module Yast
       widgets = deep_copy(widgets)
       event = deep_copy(event)
       Builtins.foreach(widgets) do |w|
-        @processed_widget = deep_copy(w)
+        self.processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "store"),
           from: "any",
@@ -392,7 +392,7 @@ module Yast
     def cleanupWidgets(widgets)
       widgets = deep_copy(widgets)
       Builtins.foreach(widgets) do |w|
-        @processed_widget = deep_copy(w)
+        self.processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "cleanup"),
           from: "any",
@@ -630,7 +630,7 @@ module Yast
     def validateWidget(widget, event, key)
       widget = deep_copy(widget)
       event = deep_copy(event)
-      @processed_widget = deep_copy(widget)
+      self.processed_widget = deep_copy(widget)
       failed = false
       val_type = Ops.get_symbol(widget, "validate_type")
       if val_type == :function || val_type == :function_no_popup
@@ -1106,6 +1106,13 @@ module Yast
       end
 
       res
+    end
+
+  private
+
+    # such an accessor enables testing
+    def processed_widget=(w)
+      @processed_widget = w
     end
   end
 

@@ -81,6 +81,10 @@ describe Yast::CWMClass do
           method(:w2_validate),
           "boolean (string, map)"
         )
+      },
+      "w3" => {
+        "widget"        => :custom,
+        "custom_widget" => HBox("w2", "w2")
       }
     }
   end
@@ -134,10 +138,20 @@ describe Yast::CWMClass do
     end
 
     # used via GetProcessedWidget by yast2-slp-server and yast2
-    xit "sets @processed_widget" do
+    it "sets @processed_widget" do
+      allow(self).to receive(:w1_init)
+      allow(self).to receive(:generic_init)
+      expect(subject).to receive(:processed_widget=).twice
+      subject.initWidgets(run_widgets)
     end
 
-    xit "sets ValidChars" do
+    it "sets ValidChars" do
+      allow(self).to receive(:w1_init)
+      allow(self).to receive(:generic_init)
+      widgets = deep_copy(run_widgets)
+      widgets[0]["valid_chars"] = "ABC"
+      expect(Yast::UI).to receive(:ChangeWidget).with(Id("w1"), :ValidChars, "ABC")
+      subject.initWidgets(widgets)
     end
   end
 
@@ -150,7 +164,11 @@ describe Yast::CWMClass do
     end
 
     # used via GetProcessedWidget by yast2-slp-server and yast2
-    xit "sets @processed_widget" do
+    it "sets @processed_widget" do
+      allow(self).to receive(:generic_save)
+      allow(self).to receive(:w2_store)
+      expect(subject).to receive(:processed_widget=).twice
+      subject.saveWidgets(run_widgets, "ID" => :event)
     end
   end
 
@@ -168,10 +186,19 @@ describe Yast::CWMClass do
       expect(subject.handleWidgets(run_widgets, "ID" => :event)).to eq(:foo)
     end
 
-    xit "sets @processed_widget" do
+    it "sets @processed_widget" do
+      allow(self).to receive(:w1_handle).and_return(nil)
+      allow(self).to receive(:w2_handle).and_return(nil)
+      expect(subject).to receive(:processed_widget=).twice
+      subject.handleWidgets(run_widgets, "ID" => :event)
     end
 
-    xit "filters the events if 'handle_events' is specified" do
+    it "filters the events if 'handle_events' is specified" do
+      expect(self).to_not receive(:w1_handle)
+      allow(self).to receive(:w2_handle)
+      widgets = deep_copy(run_widgets)
+      widgets[0]["handle_events"] = [:special_event]
+      subject.handleWidgets(widgets, "ID" => :event)
     end
   end
 
@@ -182,14 +209,26 @@ describe Yast::CWMClass do
       expect(subject.validateWidgets(run_widgets, "ID" => :event)).to eq(true)
     end
 
-    it "breaks the loop if a handler returns false" do
-      expect(self).to receive(:w1_validate).with("w1", "ID" => :event).and_return(false)
-      expect(self).to_not receive(:w2_validate)
-      expect(subject.validateWidgets(run_widgets, "ID" => :event)).to eq(false)
-    end
+    context "if a handler returns false" do
+      before do
+        expect(self).to receive(:w1_validate).with("w1", "ID" => :event).and_return(false)
+      end
 
-    # SetValidationFailedHandler
-    xit "calls validation_failed_handler if..." do
+      it "breaks the loop if a handler returns false" do
+        expect(self).to_not receive(:w2_validate)
+        expect(subject.validateWidgets(run_widgets, "ID" => :event)).to eq(false)
+      end
+
+      # SetValidationFailedHandler
+      it "calls validation_failed_handler if it has been set" do
+        called = false
+        handler = -> { called = true }
+        subject.SetValidationFailedHandler(handler)
+
+        subject.validateWidgets(run_widgets, "ID" => :event)
+        # we cannot set an expectation on `handler` because a copy is made
+        expect(called).to eq(true)
+      end
     end
   end
 
@@ -205,6 +244,24 @@ describe Yast::CWMClass do
       expect(subject).to receive(:ProcessTerm).with(test_stringterm, Hash)
       subject.PrepareDialog(test_stringterm, created_widgets)
     end
+
+    # Test that *block* does not modify its argument,
+    # by storing a deep_copy of it and expecting equality afterwards
+    # @param value [Object]
+    # @yieldparam a copy of *value*
+    def expect_not_modified(value, &block)
+      copy = deep_copy(value)
+      block.call(copy)
+      expect(copy).to eq(value)
+    end
+
+    it "does not modify its arguments" do
+      expect_not_modified(test_stringterm) do |contents|
+        expect_not_modified(created_widgets) do |widgets|
+          subject.PrepareDialog(contents, widgets)
+        end
+      end
+    end
   end
 
   # tested via its adapter PrepareDialog
@@ -216,7 +273,15 @@ describe Yast::CWMClass do
       expect(w1).to eq(CheckBox(Id("w1"), Opt(:notify, :immediate), "Check&Box"))
     end
 
-    xit "recurses into container widgets" do
+    it "recurses into container widgets" do
+      created_widgets = subject.CreateWidgets(["w2", "w3"], test_widgets)
+      ret = subject.PrepareDialog(VBox("w2", "w3"), created_widgets)
+      w3 = ret.params[1]
+      expected = HBox(
+        InputField(Id("w2"), Opt(:hstretch), "Text&Entry"),
+        InputField(Id("w2"), Opt(:hstretch), "Text&Entry")
+      )
+      expect(w3).to eq(expected)
     end
 
     it "leaves Frame titles alone" do
