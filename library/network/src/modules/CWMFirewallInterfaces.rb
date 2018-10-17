@@ -211,8 +211,6 @@ module Yast
     def InitAllowedInterfaces(services)
       service_status = {}
 
-      services.each { |s| firewalld.find_service(s) }
-
       zone_services(services).each do |_s, status|
         status.each do |iface, en|
           service_status[iface] = service_status.fetch(iface, true) && en
@@ -833,7 +831,7 @@ module Yast
         return { "widget" => :custom, "custom_widget" => not_installed_widget, "help" => "" }
       end
 
-      if services.any? { |s| !firewalld.api.service_supported?(s) }
+      if services.any? { |s| !firewalld.current_service_names.include?(s) }
         return {
           "widget"        => :custom,
           "custom_widget" => services_not_defined_widget(services),
@@ -1009,7 +1007,7 @@ module Yast
       services_status = {}
 
       services.each do |service|
-        service_supported = firewalld.api.service_supported?(service)
+        service_supported = firewalld.current_service_names.include?(service)
         services_status[service] = {}
 
         firewalld.zones.each do |zone|
@@ -1058,7 +1056,7 @@ module Yast
     def services_not_defined_widget(services)
       services_list =
         services.map do |service|
-          if !firewalld.api.service_supported?(service)
+          if !firewalld.current_service_names.include?(service)
             # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
             # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
             HBox(HSpacing(2), Left(Label(_("- %{service} (Not available)") % { service: service })))
