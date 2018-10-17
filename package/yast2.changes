@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Oct 17 15:17:04 UTC 2018 - knut.anderssen@suse.com
+
+- CWMFirewallInterfaces: Improved the user UX replacing the api
+  calls for checking supported services once the list supported
+  ones are already known by the firewalld instance (fate#324662)
+- 4.0.102
+
+-------------------------------------------------------------------
 Fri Oct 12 10:28:48 CEST 2018 - schubi@suse.de
 
 - Added tags full_system_media_name and full_system_download_url
