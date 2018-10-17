@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 17 14:38:53 CEST 2018 - schubi@suse.de
+
+- Added flag save_y2logs to control.xml file in order to save
+  YaST logs at the end of installation (fate#325737)
+- 4.1.25
+
+-------------------------------------------------------------------
 Mon Oct 15 16:40:32 CEST 2018 - schubi@suse.de
 
 - Splitting yast2 package into yast2 and yast2-logs. yast2-logs
