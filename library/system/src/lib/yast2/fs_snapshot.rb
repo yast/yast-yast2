@@ -73,8 +73,8 @@ module Yast2
 
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | grep \"^root \" >/dev/null".freeze
     CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description \"%{description}\"".freeze
-    LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list".freeze
-    VALID_LINE_REGEX = /\A\w+\s+\| \d+/
+    LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list --disable-used-space".freeze
+    VALID_LINE_REGEX = /\A\s*\d+[-+*]?\s*\|\s*\w+/
 
     # Predefined snapshot cleanup strategies (the user can define custom ones, too)
     CLEANUP_STRATEGY = { number: "number", timeline: "timeline" }.freeze
@@ -259,7 +259,7 @@ module Yast2
         log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
         lines.each_with_object([]) do |line, snapshots|
           data = line.split("|").map(&:strip)
-          next if data[1] == "0" # Ignores 'current' snapshot (id = 0) because it's not a real snapshot
+          next if data[0] == "0" # Ignores 'current' snapshot (id = 0) because it's not a real snapshot
           begin
             timestamp = DateTime.parse(data[3])
           rescue ArgumentError
@@ -267,7 +267,7 @@ module Yast2
             timestamp = nil
           end
           previous_number = data[2] == "" ? nil : data[2].to_i
-          snapshots << new(data[1].to_i, data[0].to_sym, previous_number, timestamp,
+          snapshots << new(data[0].to_i, data[1].to_sym, previous_number, timestamp,
             data[4], data[5].to_sym, data[6])
         end
       end
