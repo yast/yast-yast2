@@ -36,7 +36,6 @@ module CWM
     # handled.
     # @param widget [CWM::AbstractWidget] widget to display and process events
     def replace(widget)
-      Yast::Builtins.y2milestone("REPLACE BEG %1", t1 = Time.now.to_f)
       widgets = Yast::CWM.widgets_in_contents([widget])
       @widgets_hash = widgets.map { |w| Yast::CWM.prepareWidget(w.cwm_definition) }
       # VBox as CWM ignore top level term and process string inside it,
@@ -46,7 +45,6 @@ module CWM
       Yast::CWM.initWidgets(@widgets_hash)
       @widget = widget
       refresh_help
-      Yast::Builtins.y2milestone("REPLACE END %1; %2", t2 = Time.now.to_f, t2 - t1)
     end
 
     # Passes to replace point content
