@@ -54,6 +54,33 @@ describe Y2Firewall::Firewalld::Api::Zones do
     end
   end
 
+  describe "#modify_masquerade" do
+    it "does nothing if the masquerade is already at the requested state" do
+      allow(subject).to receive(:masquerade_enabled?).and_return(true)
+
+      expect(api).to_not receive(:modify_command)
+        .with("--zone=test", "--add-masquerade", permanent: api.permanent?)
+
+      subject.modify_masquerade("test", true)
+    end
+
+    it "enables masquerade from the zone if enabled is true" do
+      allow(subject).to receive(:masquerade_enabled?).and_return(false)
+      expect(api).to receive(:modify_command)
+        .with("--zone=test", "--add-masquerade", permanent: api.permanent?)
+
+      subject.modify_masquerade("test", true)
+    end
+
+    it "removes masquerade from the zone if enabled is true" do
+      allow(subject).to receive(:masquerade_enabled?).and_return(true)
+      expect(api).to receive(:modify_command)
+        .with("--zone=test", "--remove-masquerade", permanent: api.permanent?)
+
+      subject.modify_masquerade("test", false)
+    end
+  end
+
   describe "#description" do
     let(:description) { "This is the long description of the test zone." }
     it "obtains the zone long description" do
