@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/DialogTree.ycp
-# Package:	Common widget manipulation
-# Summary:	Routines for handling the dialog with tree on the left side
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/DialogTree.ycp
+# Package:  Common widget manipulation
+# Summary:  Routines for handling the dialog with tree on the left side
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -85,9 +83,7 @@ module Yast
       event = deep_copy(event)
       ret = Ops.get(event, "ID")
 
-      if ret == :wizardTree
-        ret = Convert.to_string(UI.QueryWidget(Id(:wizardTree), :CurrentItem))
-      end
+      ret = Convert.to_string(UI.QueryWidget(Id(:wizardTree), :CurrentItem)) if ret == :wizardTree
       @previous_screen = @selected_screen
       @selected_screen = Convert.to_string(ret)
       :_cwm_internal_tree_handle
@@ -230,9 +226,11 @@ module Yast
       functions = Ops.get_map(settings, "functions", {})
 
       initial_screen = "" if initial_screen.nil?
-      Builtins.foreach(screens) do |k, _v|
-        initial_screen = k if initial_screen == ""
-      end if initial_screen == ""
+      if initial_screen == ""
+        Builtins.foreach(screens) do |k, _v|
+          initial_screen = k if initial_screen == ""
+        end
+      end
 
       @selected_screen = initial_screen
       ids = Builtins.maplist(screens) { |k, _v| k }

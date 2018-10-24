@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -50,7 +48,7 @@ module Yast
       @opt_resolvables_to_install = {}
 
       # List of currently supported types of resolvables
-      @supported_resolvables = [:package, :pattern]
+      @supported_resolvables = %i[package pattern]
     end
 
     # Resets all resolvables to install (both required and optional). Use carefully.

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CWM.ycp
-# Package:	Common widget manipulation
-# Summary:	Routines for common widget manipulation
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/CWM.ycp
+# Package:  Common widget manipulation
+# Summary:  Routines for common widget manipulation
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -60,29 +58,29 @@ module Yast
     # UI containers, layout helpers that contain other widgets.  Used by
     # functions that recurse through "contents" to decide whether to go
     # deeper.
-    CONTAINER_WIDGETS = [
-      :Frame,
-      :RadioButtonGroup,
-      :VBox,
-      :HBox,
-      :MarginBox,
-      :MinWidth,
-      :MinHeight,
-      :MinSize,
-      :Left,
-      :Right,
-      :Top,
-      :Bottom,
-      :HCenter,
-      :VCenter,
-      :HVCenter,
-      :HSquash,
-      :VSquash,
-      :HVSquash,
-      :HWeight,
-      :VWeight,
-      :DumbTab,
-      :ReplacePoint
+    CONTAINER_WIDGETS = %i[
+      Frame
+      RadioButtonGroup
+      VBox
+      HBox
+      MarginBox
+      MinWidth
+      MinHeight
+      MinSize
+      Left
+      Right
+      Top
+      Bottom
+      HCenter
+      VCenter
+      HVCenter
+      HSquash
+      VSquash
+      HVSquash
+      HWeight
+      VWeight
+      DumbTab
+      ReplacePoint
     ].freeze
 
     # local functions
@@ -114,6 +112,7 @@ module Yast
     # @return [::CWM::UITerm] updated term ready to be used as a dialog
     def ProcessTerm(t, widgets)
       return t if t.empty?
+
       ret = Yast::Term.new(t.value)
 
       is_frame = t.value == :Frame
@@ -127,17 +126,13 @@ module Yast
         elsif is_frame && index == 1 && is_id_frame && arg.is_a?(::String) # no action
           Builtins.y2debug("Leaving untouched %1", arg)
         elsif Ops.is_term?(arg) # recurse
-          if CONTAINER_WIDGETS.include?(arg.value)
-            arg = ProcessTerm(arg, widgets)
-          end
+          arg = ProcessTerm(arg, widgets) if CONTAINER_WIDGETS.include?(arg.value)
         elsif Ops.is_string?(arg) # action
           Builtins.y2error("find string '#{arg}' without associated widget in StringTerm #{t.inspect}") unless widgets[arg]
           Builtins.y2milestone("Known widgets #{widgets.inspect}") unless widgets[arg]
 
           arg = widgets.fetch(arg, {}).fetch("widget") { VBox() }
-          if CONTAINER_WIDGETS.include?(arg.value)
-            arg = ProcessTerm(arg, widgets)
-          end
+          arg = ProcessTerm(arg, widgets) if CONTAINER_WIDGETS.include?(arg.value)
         end
         ret << arg
       end
@@ -159,9 +154,7 @@ module Yast
         if current == :Frame && index == 0 # no action
           Builtins.y2debug("Leaving untouched %1", arg)
         elsif Ops.is_term?(arg)
-          if CONTAINER_WIDGETS.include?(arg.value)
-            rets = Ops.add(rets, StringsOfTerm(Convert.to_term(arg)))
-          end
+          rets = Ops.add(rets, StringsOfTerm(Convert.to_term(arg))) if CONTAINER_WIDGETS.include?(arg.value)
         elsif Ops.is_string?(arg) # action
           rets = Builtins.add(rets, Convert.to_string(arg))
         end
@@ -211,8 +204,8 @@ module Yast
       }
       type = Ops.get(types, key)
       success = true
-      if type.nil?
-        success = case key
+      success = if type.nil?
+        case key
         when "widget_func" then Ops.is(value, "term ()")
         when "init" then Ops.is(value, "void (string)")
         when "handle" then Ops.is(value, "symbol (string, map)")
@@ -230,7 +223,7 @@ module Yast
           true
         end
       else
-        success = ValidateBasicType(value, type)
+        ValidateBasicType(value, type)
       end
 
       if !success
@@ -511,9 +504,7 @@ module Yast
 
         if widget == :inputfield || widget == :textentry
           # backward compatibility
-          if !Builtins.contains(Builtins.argsof(opt_term), :hstretch)
-            opt_term = Builtins.add(opt_term, :hstretch)
-          end
+          opt_term = Builtins.add(opt_term, :hstretch) if !Builtins.contains(Builtins.argsof(opt_term), :hstretch)
           Ops.set(w, "widget", InputField(id_term, opt_term, label))
         elsif widget == :password
           Ops.set(w, "widget", Password(id_term, opt_term, label))
@@ -650,9 +641,7 @@ module Yast
         end
       elsif val_type == :list
         possible = Ops.get_list(widget, "validate_condition", [])
-        if !Builtins.contains(possible, UI.QueryWidget(Id(:_tp_value), :Value))
-          failed = true
-        end
+        failed = true if !Builtins.contains(possible, UI.QueryWidget(Id(:_tp_value), :Value))
       end
 
       if failed && val_type != :function
@@ -685,9 +674,7 @@ module Yast
         widget_key = Ops.get_string(w, "_cwm_key", "")
         result &&= validateWidget(w, event, widget_key)
       end
-      if !result && !@validation_failed_handler.nil?
-        @validation_failed_handler.call
-      end
+      @validation_failed_handler.call if !result && !@validation_failed_handler.nil?
       result
     end
 
@@ -732,6 +719,7 @@ module Yast
     # @return [::CWM::UITerm] updated term ready to be used as a dialog
     def PrepareDialog(dialog, widgets)
       return dialog.clone if dialog.empty?
+
       m = widgets.map do |w|
         widget_key = w.fetch("_cwm_key", "")
         [widget_key, w]
@@ -789,7 +777,7 @@ module Yast
       UI.FakeUserInput("ID" => "_cwm_wakeup")
 
       ret = nil
-      save_exits = [:next, :ok]
+      save_exits = %i[next ok]
       save = false
       event_descr = {}
       timeout = GetLowestTimeout(widgets)
@@ -800,9 +788,7 @@ module Yast
           UI.WaitForEvent
         end
         ret = Ops.get(event_descr, "ID")
-        if Ops.get_string(event_descr, "EventType", "") == "DebugEvent"
-          handleDebug
-        end
+        handleDebug if Ops.get_string(event_descr, "EventType", "") == "DebugEvent"
         handle_ret = handleWidgets(widgets, event_descr)
         if !handle_ret.nil? ||
             Ops.is_symbol?(ret) && Builtins.contains(save_exits, ret)
@@ -1003,7 +989,6 @@ module Yast
       contents = deep_copy(contents)
       fallback = deep_copy(fallback)
       ShowAndRun(
-
         "widget_names"       => widget_names,
         "widget_descr"       => widget_descr,
         "contents"           => contents,
@@ -1011,7 +996,6 @@ module Yast
         "back_button"        => back_button,
         "next_button"        => next_button,
         "fallback_functions" => fallback
-
       )
     end
 
@@ -1026,8 +1010,8 @@ module Yast
 
     # Do-nothing replacement for a widget storing function.
     # Used for push buttons if all the other widgets have a fallback.
-    # @param [String] _key	id of the widget
-    # @param [Hash] _event	the event being handled
+    # @param [String] _key  id of the widget
+    # @param [Hash] _event  the event being handled
     def StoreNull(_key, _event)
       nil
     end

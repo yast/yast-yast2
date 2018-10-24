@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -25,9 +23,9 @@
 # Package:     YaST2
 # Authors:     Lukas Ocilka <lukas.ocilka@suse.cz>
 # Summary:     Module for getting information about files and directories.
-#		Their types and sizes and functions for checking, creating and
-#		removing them.
-# Flags:	Stable
+#    Their types and sizes and functions for checking, creating and
+#    removing them.
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -44,30 +42,31 @@ module Yast
 
     # Function which determines if the requested file/directory exists.
     #
-    # @return	true if exists
-    # @param	string file name
+    # @return  true if exists
+    # @param  string file name
     #
     # @example
-    #	FileUtils::Exists ("/tmp") -> true
-    #	FileUtils::Exists ("/var/log/messages") -> true
-    #	FileUtils::Exists ("/does-not-exist") -> false
+    #  FileUtils::Exists ("/tmp") -> true
+    #  FileUtils::Exists ("/var/log/messages") -> true
+    #  FileUtils::Exists ("/does-not-exist") -> false
     def Exists(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
 
       return true if info != {}
+
       false
     end
 
     # Function which determines if the requested file/directory is a directory
     # or it is a link to a directory.
     #
-    # @return	true if it is a directory, nil if doesn't exist
-    # @param	string file name
+    # @return  true if it is a directory, nil if doesn't exist
+    # @param  string file name
     #
     # @example
-    #	FileUtils::IsDirectory ("/var") -> true
-    #	FileUtils::IsDirectory ("/var/log/messages") -> false
-    #	FileUtils::IsDirectory ("/does-not-exist") -> nil
+    #  FileUtils::IsDirectory ("/var") -> true
+    #  FileUtils::IsDirectory ("/var/log/messages") -> false
+    #  FileUtils::IsDirectory ("/does-not-exist") -> nil
     def IsDirectory(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
       defaultv = info != {} ? false : nil
@@ -78,13 +77,13 @@ module Yast
     # Function which determines if the requested file/directory is a regular file
     # or it is a link to a regular file.
     #
-    # @return	true if it is a regular file, nil if doesn't exist
-    # @param	string file name
+    # @return  true if it is a regular file, nil if doesn't exist
+    # @param  string file name
     #
     # @example
-    #	FileUtils::IsFile ("/var") -> false
-    #	FileUtils::IsFile ("/var/log/messages") -> true
-    #	FileUtils::IsFile ("/does-not-exist") -> nil
+    #  FileUtils::IsFile ("/var") -> false
+    #  FileUtils::IsFile ("/var/log/messages") -> true
+    #  FileUtils::IsFile ("/does-not-exist") -> nil
     def IsFile(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
       defaultv = info != {} ? false : nil
@@ -95,13 +94,13 @@ module Yast
     # Function which determines if the requested file/directory is a block file (device)
     # or link to a block device.
     #
-    # @return	true if it is a block file, nil if doesn't exist
-    # @param	string file name
+    # @return  true if it is a block file, nil if doesn't exist
+    # @param  string file name
     #
     # @example
-    #	FileUtils::IsBlock ("/var") -> false
-    #	FileUtils::IsBlock ("/dev/sda2") -> true
-    #	FileUtils::IsBlock ("/dev/does-not-exist") -> nil
+    #  FileUtils::IsBlock ("/var") -> false
+    #  FileUtils::IsBlock ("/dev/sda2") -> true
+    #  FileUtils::IsBlock ("/dev/does-not-exist") -> nil
     def IsBlock(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
       defaultv = info != {} ? false : nil
@@ -112,8 +111,8 @@ module Yast
     # Function which determines if the requested file/directory is a fifo
     # or link to a fifo.
     #
-    # @return	true if it is a fifo, nil if doesn't exist
-    # @param	string file name
+    # @return  true if it is a fifo, nil if doesn't exist
+    # @param  string file name
     def IsFifo(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
       defaultv = info != {} ? false : nil
@@ -123,8 +122,8 @@ module Yast
 
     # Function which determines if the requested file/directory is a link.
     #
-    # @return	true if it is a link, nil if doesn't exist
-    # @param	string file name
+    # @return  true if it is a link, nil if doesn't exist
+    # @param  string file name
     def IsLink(target)
       info = Convert.to_map(SCR.Read(path(".target.lstat"), target))
       defaultv = info != {} ? false : nil
@@ -135,8 +134,8 @@ module Yast
     # Function which determines if the requested file/directory is a socket
     # or link to a socket.
     #
-    # @return	true if it is a socket, nil if doesn't exist
-    # @param	string file name
+    # @return  true if it is a socket, nil if doesn't exist
+    # @param  string file name
     def IsSocket(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
       defaultv = info != {} ? false : nil
@@ -147,8 +146,8 @@ module Yast
     # Function which determines if the requested file/directory is
     # a character device or link to a character device.
     #
-    # @return	true if it is a charcater device, nil if doesn't exist
-    # @param	string file name
+    # @return  true if it is a charcater device, nil if doesn't exist
+    # @param  string file name
     def IsCharacterDevice(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
       defaultv = info != {} ? false : nil
@@ -159,13 +158,13 @@ module Yast
     # Function returns the real type of requested file/directory.
     # If the file is a link to any object, "link" is returned.
     #
-    # @return	[String] file type (directory|regular|block|fifo|link|socket|chr_device), nil if doesn't exist
-    # @param	string file name
+    # @return  [String] file type (directory|regular|block|fifo|link|socket|chr_device), nil if doesn't exist
+    # @param  string file name
     #
     # @example
-    #	FileUtils::GetFileRealType ("/var") -> "directory"
-    #	FileUtils::GetFileRealType ("/etc/passwd") -> "file"
-    #	FileUtils::GetFileRealType ("/does-not-exist") -> nil
+    #  FileUtils::GetFileRealType ("/var") -> "directory"
+    #  FileUtils::GetFileRealType ("/etc/passwd") -> "file"
+    #  FileUtils::GetFileRealType ("/does-not-exist") -> nil
     def GetFileRealType(target)
       info = Convert.to_map(SCR.Read(path(".target.lstat"), target))
 
@@ -189,8 +188,8 @@ module Yast
     # Function returns the type of requested file/directory.
     # If the file is a link to any object, the object's type is returned.
     #
-    # @return	[String] fle type (directory|regular|block|fifo|link|socket|chr_device), nil if doesn't exist
-    # @param	string file name
+    # @return  [String] fle type (directory|regular|block|fifo|link|socket|chr_device), nil if doesn't exist
+    # @param  string file name
     def GetFileType(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
 
@@ -213,24 +212,24 @@ module Yast
 
     # Function which returns the size of requested file/directory.
     #
-    # @return	[Fixnum] file size, -1 if doesn't exist
-    # @param	string file name
+    # @return  [Fixnum] file size, -1 if doesn't exist
+    # @param  string file name
     #
     # @example
-    #	FileUtils::GetSize ("/var/log/YaST2") -> 12348
-    #	FileUtils::GetSize ("/does-not-exist") -> -1
+    #  FileUtils::GetSize ("/var/log/YaST2") -> 12348
+    #  FileUtils::GetSize ("/does-not-exist") -> -1
     def GetSize(target)
       Convert.to_integer(SCR.Read(path(".target.size"), target))
     end
 
     # Function which determines the owner's user ID of requested file/directory.
     #
-    # @return	[Fixnum] UID, nil if doesn't exist
-    # @param	string file name
+    # @return  [Fixnum] UID, nil if doesn't exist
+    # @param  string file name
     #
     # @example
-    #	FileUtils::GetOwnerUserID ("/etc/passwd") -> 0
-    #	FileUtils::GetOwnerUserID ("/does-not-exist") -> nil
+    #  FileUtils::GetOwnerUserID ("/etc/passwd") -> 0
+    #  FileUtils::GetOwnerUserID ("/does-not-exist") -> nil
     def GetOwnerUserID(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
 
@@ -239,12 +238,12 @@ module Yast
 
     # Function which determines the owner's group ID of requested file/directory.
     #
-    # @return	[Fixnum] GID, nil if doesn't exist
-    # @param	string file name
+    # @return  [Fixnum] GID, nil if doesn't exist
+    # @param  string file name
     #
     # @example
-    #	FileUtils::GetOwnerGroupID ("/etc/passwd") -> 0
-    #	FileUtils::GetOwnerGroupID ("/does-not-exist") -> nil
+    #  FileUtils::GetOwnerGroupID ("/etc/passwd") -> 0
+    #  FileUtils::GetOwnerGroupID ("/does-not-exist") -> nil
     def GetOwnerGroupID(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
 
@@ -266,9 +265,7 @@ module Yast
       # remove the final slash
       # but never the last one "/"
       # bugzilla #203363
-      if Builtins.regexpmatch(check_path, "/$") && check_path != "/"
-        check_path = Builtins.regexpsub(check_path, "^(.*)/$", "\\1")
-      end
+      check_path = Builtins.regexpsub(check_path, "^(.*)/$", "\\1") if Builtins.regexpmatch(check_path, "/$") && check_path != "/"
       Builtins.y2milestone("Checking existency of %1 path", check_path)
 
       # Directory (path) already exists
@@ -336,12 +333,12 @@ module Yast
 
     # Function return the MD5 sum of the file.
     #
-    # @return	[String] MD5 sum of the file, nil if doesn't exist
-    # @param	string file name
+    # @return  [String] MD5 sum of the file, nil if doesn't exist
+    # @param  string file name
     #
     # @example
-    #	FileUtils::MD5sum ("/etc/passwd") -> "74855f6ac9bf728fccec4792d1dba828"
-    #	FileUtils::MD5sum ("/does-not-exist") -> nil
+    #  FileUtils::MD5sum ("/etc/passwd") -> "74855f6ac9bf728fccec4792d1dba828"
+    #  FileUtils::MD5sum ("/does-not-exist") -> nil
     def MD5sum(target)
       if !Exists(target)
         Builtins.y2error("File %1 doesn't exist", target)
@@ -375,14 +372,14 @@ module Yast
 
     # Changes ownership of a file/directory
     #
-    # @return	[Boolean] true if succeeded
-    # @param	string user and group name (in the form 'user:group')
+    # @return  [Boolean] true if succeeded
+    # @param  string user and group name (in the form 'user:group')
     # @param [String] file name
     # @param [Boolean] recursive, true if file (2nd param) is a directory
     #
     # @example
-    #	FileUtils::Chown ( "somebody:somegroup", "/etc/passwd", false) -> 'chown somebody:somegroup /etc/passwd'
-    #	FileUtils::Chown ( "nobody:nogroup", "/tmp", true) -> 'chown nobody:nogroup -R /tmp'
+    #  FileUtils::Chown ( "somebody:somegroup", "/etc/passwd", false) -> 'chown somebody:somegroup /etc/passwd'
+    #  FileUtils::Chown ( "nobody:nogroup", "/tmp", true) -> 'chown nobody:nogroup -R /tmp'
 
     def Chown(usergroup, file, recursive)
       Builtins.y2milestone(
@@ -407,14 +404,14 @@ module Yast
 
     # Changes access rights to a file/directory
     #
-    # @return	[Boolean] true if succeeded
+    # @return  [Boolean] true if succeeded
     # @param [String] modes ( e.g. '744' or 'u+x')
     # @param [String] file name
     # @param [Boolean] recursive, true if file (2nd param) is a directory
     #
     # @example
-    #	FileUtils::Chmod ( "go-rwx", "/etc/passwd", false) -> 'chmod go-rwx /etc/passwd'
-    #	FileUtils::Chmod ( "700", "/tmp", true) -> 'chmod 700 -R /tmp'
+    #  FileUtils::Chmod ( "go-rwx", "/etc/passwd", false) -> 'chmod go-rwx /etc/passwd'
+    #  FileUtils::Chmod ( "700", "/tmp", true) -> 'chmod 700 -R /tmp'
 
     def Chmod(modes, file, recursive)
       Builtins.y2milestone(
@@ -475,13 +472,13 @@ module Yast
 
     # Creates temporary file
     #
-    # @return	[String] resulting file name or nil on failure
+    # @return  [String] resulting file name or nil on failure
     # @param [String] template for file name e.g. 'tmp.XXXX'
-    # @param	string tmp file owner in a form 'user:group'
-    # @param	string tmp file access rights
+    # @param  string tmp file owner in a form 'user:group'
+    # @param  string tmp file access rights
     #
     # @example
-    #	FileUtils::MkTempFile ( "/tmp/tmpfile.XXXX", "somebody:somegroup", "744")
+    #  FileUtils::MkTempFile ( "/tmp/tmpfile.XXXX", "somebody:somegroup", "744")
 
     def MkTempFile(template, usergroup, modes)
       MkTempInternal(template, usergroup, modes, false)
@@ -490,7 +487,7 @@ module Yast
     # The same as MkTempFile, for directories ('mktemp -d ... '). See above
     #
     # @example
-    #	FileUtils::MkTempDirectory ( "/tmp/tmpdir.XXXX", "nobody:nogroup", "go+x")
+    #  FileUtils::MkTempDirectory ( "/tmp/tmpdir.XXXX", "nobody:nogroup", "go+x")
     def MkTempDirectory(template, usergroup, modes)
       MkTempInternal(template, usergroup, modes, true)
     end

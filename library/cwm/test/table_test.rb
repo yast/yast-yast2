@@ -34,8 +34,8 @@ describe CWM::Table do
 
     context "when called with an array of ids" do
       it "passes the same array to UI.ChangeWidget" do
-        expect(Yast::UI).to receive(:ChangeWidget).with(anything, anything, [:id1, :id2])
-        table.value = [:id1, :id2]
+        expect(Yast::UI).to receive(:ChangeWidget).with(anything, anything, %i[id1 id2])
+        table.value = %i[id1 id2]
       end
     end
   end

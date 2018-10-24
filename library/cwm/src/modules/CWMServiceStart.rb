@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -57,13 +55,14 @@ module Yast
     def UpdateServiceStatusWidget(widget)
       widget = deep_copy(widget)
       return if !UI.WidgetExists(Id("_cwm_service_status_rp"))
+
       if Mode.config
         UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, false)
         UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, false)
         # service status - label
         UI.ReplaceWidget(Id("_cwm_service_status_rp"), Label(_("Unavailable")))
       else
-        status = 0 == Service.Status(Ops.get_string(widget, "service_id", ""))
+        status = Service.Status(Ops.get_string(widget, "service_id", "")) == 0
         if status != @last_status
           UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, !status)
           UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, status)
@@ -83,6 +82,7 @@ module Yast
     def UpdateLdapWidget(widget)
       widget = deep_copy(widget)
       return if !UI.WidgetExists(Id("_cwm_use_ldap"))
+
       get_use_ldap = Convert.convert(
         Ops.get(widget, "get_use_ldap"),
         from: "any",
@@ -384,7 +384,6 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-
           "widget"        => :custom,
           "custom_widget" => booting,
           "help"          => help,
@@ -396,7 +395,6 @@ module Yast
             method(:AutoStartStoreWrapper),
             "void (string, map)"
           )
-
         ),
         from: "map",
         to:   "map <string, any>"
@@ -644,7 +642,6 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-
           "widget"        => :custom,
           "custom_widget" => immediate_actions,
           "help"          => help,
@@ -662,15 +659,12 @@ module Yast
             "_cwm_stop_service_now",
             "_cwm_save_settings_now"
           ]
-
         ),
         from: "map",
         to:   "map <string, any>"
       )
 
-      if Builtins.haskey(settings, "service_id")
-        Ops.set(ret, "ui_timeout", 5000)
-      end
+      Ops.set(ret, "ui_timeout", 5000) if Builtins.haskey(settings, "service_id")
       deep_copy(ret)
     end
 
@@ -789,7 +783,6 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-
           "widget"        => :custom,
           "custom_widget" => ldap_settings,
           "help"          => help,
@@ -802,7 +795,6 @@ module Yast
             "symbol (string, map)"
           ),
           "handle_events" => ["_cwm_use_ldap"]
-
         ),
         from: "map",
         to:   "map <string, any>"

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -22,10 +20,10 @@
 #
 # ***************************************************************************
 # Module:      Linuxrc
-# File:	modules/Linuxrc.ycp
-# Purpose:	Interaction with linuxrc
+# File:  modules/Linuxrc.ycp
+# Purpose:  Interaction with linuxrc
 #
-# Author:	Anas Nashif <nashif@suse.de?
+# Author:  Anas Nashif <nashif@suse.de?
 # $Id$
 require "yast"
 
@@ -91,6 +89,7 @@ module Yast
 
     def manual
       return @_manual if !@_manual.nil?
+
       @_manual = InstallInf("Manual") == "1"
       if !@_manual
         tmp = Convert.to_string(
@@ -145,7 +144,7 @@ module Yast
     # end of install.inf reading routines
 
     # Write /etc/yast.inf during installation
-    # @param [Hash{String => String}] linuxrc	map of key value pairs for /etc/yast.inf
+    # @param [Hash{String => String}] linuxrc  map of key value pairs for /etc/yast.inf
     # @return [void]
     def WriteYaSTInf(linuxrc)
       linuxrc = deep_copy(linuxrc)

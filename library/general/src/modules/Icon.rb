@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -25,7 +23,7 @@
 # Package:     YaST2
 # Authors:     Lukas Ocilka <lukas.ocilka@suse.cz>
 # Summary:     Transparent access to Icons
-# Flags:	Stable
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -76,7 +74,7 @@ module Yast
     # @see Icon::Image() for details
     #
     # @example
-    #	Icon::IconPath ("warning") -> "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_warning.png"
+    #  Icon::IconPath ("warning") -> "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_warning.png"
     def IconPath(icon_type)
       LazyInit()
 

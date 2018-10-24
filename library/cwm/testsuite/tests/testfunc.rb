@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 module Yast
   module TestfuncInclude
     def initialize_testfunc(include_target)
@@ -24,7 +22,7 @@ module Yast
       @widgets = {
         "w1" => {
           "widget"            => :checkbox,
-          "opt"               => [:notify, :immediate],
+          "opt"               => %i[notify immediate],
           "label"             => "Check&Box",
           "init"              => fun_ref(method(:w1_init), "void (string)"),
           "handle"            => fun_ref(

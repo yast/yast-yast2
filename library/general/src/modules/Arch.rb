@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Arch.ycp
-# Module:	yast2
-# Summary:	Architecture, board and bios data
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
-# Flags:	Stable
+# File:  modules/Arch.ycp
+# Module:  yast2
+# Summary:  Architecture, board and bios data
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -263,9 +261,7 @@ module Yast
         end
         # avoid future re-probing if probing failed
         # also avoid passing nil outside the module
-        if fun_ref(method(:board_compatible), "string ()").nil?
-          @_board_compatible = ""
-        end
+        @_board_compatible = "" if fun_ref(method(:board_compatible), "string ()").nil?
       end
       @_board_compatible
     end
@@ -329,9 +325,7 @@ module Yast
     # @see #is_laptop
     # @return true if the system supports PCMCIA
     def has_pcmcia
-      if @_has_pcmcia.nil?
-        @_has_pcmcia = Convert.to_boolean(SCR.Read(path(".probe.has_pcmcia")))
-      end
+      @_has_pcmcia = Convert.to_boolean(SCR.Read(path(".probe.has_pcmcia"))) if @_has_pcmcia.nil?
       @_has_pcmcia
     end
 
@@ -358,9 +352,7 @@ module Yast
     # @deprecated
     # @return true if the system is UML
     def is_uml
-      if @_is_uml.nil?
-        @_is_uml = Convert.to_boolean(SCR.Read(path(".probe.is_uml")))
-      end
+      @_is_uml = Convert.to_boolean(SCR.Read(path(".probe.is_uml"))) if @_is_uml.nil?
       @_is_uml
     end
     # ************************************************************
@@ -482,9 +474,7 @@ module Yast
     #
     # @return true if running on multiprocessor board
     def has_smp
-      if @_has_smp.nil?
-        @_has_smp = Convert.to_boolean(SCR.Read(path(".probe.has_smp")))
-      end
+      @_has_smp = Convert.to_boolean(SCR.Read(path(".probe.has_smp"))) if @_has_smp.nil?
       if alpha
         # get smp for alpha from /etc/install.inf
         setSMP(SCR.Read(path(".etc.install_inf.SMP")) == "1")
@@ -502,6 +492,7 @@ module Yast
     def x11_setup_needed
       # disable X11 setup after initial boot
       return false if board_iseries || s390
+
       true
     end
 
