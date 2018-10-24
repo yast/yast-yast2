@@ -41,7 +41,7 @@ require "fileutils"
 module Yast
   class InstallationClass < Module
     # usual mountpoint for the source (i.e. CD)
-    SOURCEDIR = "/run/YaST2/mount"
+    SOURCEDIR = "/run/YaST2/mount".freeze
 
     def main
       Yast.import "Stage"

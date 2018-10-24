@@ -24,5 +24,3 @@ describe Yast::Installation do
     end
   end
 end
-
-
