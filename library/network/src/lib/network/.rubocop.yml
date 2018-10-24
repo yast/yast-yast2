@@ -2,7 +2,7 @@
 inherit_from:
   - ../../../../../.rubocop.yml
 
-Style/MethodName:
+Naming/MethodName:
   Exclude:
     - "susefirewall.rb"
     - "susefirewalld.rb"
@@ -14,7 +14,7 @@ Style/Next:
   Exclude:
     - "susefirewalld.rb"
 
-Style/VariableName:
+Naming/VariableName:
   Exclude:
     - "susefirewall.rb"
     - "susefirewalld.rb"

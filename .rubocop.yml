@@ -29,7 +29,7 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 65
 
-Style/AccessorMethodName:
+Naming/AccessorMethodName:
   # keep backward compatibility, but do not allow new code to be non-ruby style
   Exclude:
     - library/systemd/src/modules/systemd_target.rb
@@ -39,7 +39,7 @@ AllCops:
   TargetRubyVersion: 2.2
 
 # UI_ID module is not camel case
-Style/ClassAndModuleCamelCase:
+Naming/ClassAndModuleCamelCase:
   Enabled: false
 
 Style/ClassVars:
@@ -52,16 +52,16 @@ Style/Documentation:
   Include:
     - "library/*/src/lib/**/*.rb"
 
-Style/FileName:
+Naming/FileName:
   Include:
     - "library/*/src/lib/**/*.rb"
 
-Style/MethodName:
+Naming/MethodName:
   Include:
     - "library/*/src/lib/**/*.rb"
 
 # keep it as it is part of API for old code
-Style/PredicateName:
+Naming/PredicateName:
   Include:
     - "library/*/src/lib/**/*.rb"
 
@@ -70,6 +70,6 @@ Style/TrivialAccessors:
   Include:
     - "library/*/src/lib/**/*.rb"
 
-Style/VariableName:
+Naming/VariableName:
   Include:
     - "library/*/src/lib/**/*.rb"
