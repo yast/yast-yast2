@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 24 15:55:08 UTC 2018 - jreidinger@suse.com
+
+- Ensure that Installation.sourcedir exists (bsc#1097700)
+- Use LSB compliant Installation.sourcedir
+- 4.1.30
+
+-------------------------------------------------------------------
 Wed Oct 24 12:48:18 UTC 2018 - knut.anderssen@suse.com
 
 - CWMFirewallInterfaces: make some "current state" methods public
@@ -24,7 +31,7 @@ Thu Oct 18 13:28:51 UTC 2018 - mvidner@suse.com
 
 - Small CWM optimization by avoiding deep_copy on big data
   (bsc#1112402).
-- 4.1.26 
+- 4.1.26
 
 -------------------------------------------------------------------
 Wed Oct 17 15:17:04 UTC 2018 - knut.anderssen@suse.com
