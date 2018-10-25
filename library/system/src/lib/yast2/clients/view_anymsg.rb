@@ -57,6 +57,10 @@ module Yast
     def main
       textdomain "base"
 
+      # the command line description map
+      return CommandLine.Run("id" => "view_anymsg") if WFM.Args.first == "help"
+
+
       # Check if the filename list is present
       if !FileUtils.Exists(filenames_path)
         SCR.Execute(
@@ -91,10 +95,6 @@ module Yast
           @set_default = true
         end
       end
-
-      # the command line description map
-      @cmdline = { "id" => "view_anymsg" }
-      return CommandLine.Run(@cmdline) if @filename == "help"
 
       # build up ComboBox
 
