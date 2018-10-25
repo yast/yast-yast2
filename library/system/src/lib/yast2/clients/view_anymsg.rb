@@ -60,71 +60,7 @@ module Yast
       # the command line description map
       return CommandLine.Run("id" => "view_anymsg") if WFM.Args.first == "help"
 
-      ensure_filenames_exist
-
-
-      # get filename list
-      @filenames = Convert.to_string(
-        SCR.Read(path(".target.string"), filenames_path)
-      )
-
-      @filenames ||= ""
-
-      # convert \n separated string to ycp list.
-
-      @all_files = Builtins.splitstring(@filenames, "\n")
-      @all_files |= DEFAULT_FILENAMES
-
-      @set_default = false
-      @combo_files = []
-
-      # check if default given as argument
-
-      @filename = ""
-      if Ops.greater_than(Builtins.size(WFM.Args), 0) &&
-          Ops.is_string?(WFM.Args(0))
-        @filename = Convert.to_string(WFM.Args(0))
-        if @filename != ""
-          @combo_files = [Item(Id(@filename), @filename, true)]
-          @set_default = true
-        end
-      end
-
-      # build up ComboBox
-
-      Builtins.foreach(@all_files) do |name|
-        # empty lines or lines starting with "#" are ignored
-        if name != "" && Builtins.substring(name, 0, 1) != "#"
-          # the default is either given via WFM::Args() -> filename != ""
-          # or by a filename starting with "*"
-          if Builtins.substring(name, 0, 1) == "*"
-            name = Builtins.substring(name, 1) # strip leading "*"
-            if name != @filename # do not add it twice
-              @combo_files = Builtins.add(
-                @combo_files,
-                Item(Id(name), name, !@set_default)
-              )
-            end
-            if !@set_default
-              @filename = name if @filename == ""
-              @set_default = true
-            end
-          elsif name != @filename # do not add it twice
-            @combo_files = Builtins.add(@combo_files, Item(Id(name), name))
-          end
-        end
-      end
-
-      if !@set_default && @filename != ""
-        @all_files = Builtins.add(@all_files, Ops.add("*", @filename))
-        @combo_files = Builtins.add(
-          @combo_files,
-          Item(Id(@filename), @filename)
-        )
-      end
-
       # set up dialogue
-
       UI.OpenDialog(
         Opt(:decorated, :defaultsize),
         VBox(
@@ -135,7 +71,7 @@ module Yast
               Id(:custom_file),
               Opt(:editable, :notify, :hstretch),
               "",
-              @combo_files
+              combobox_items
             ),
             HStretch()
           ),
@@ -167,9 +103,9 @@ module Yast
 
       while @go_on
         # Fill the LogView with file content
-        UI.ChangeWidget(Id(:log), :Value, file_content(@filename))
+        UI.ChangeWidget(Id(:log), :Value, file_content(selected_filename))
 
-        heading = Builtins.sformat(_("System Log (%1)"), @filename)
+        heading = Builtins.sformat(_("System Log (%1)"), selected_filename)
         UI.ChangeWidget(Id(:log), :Label, heading)
 
         # wait for user input
@@ -186,64 +122,49 @@ module Yast
         elsif @ret == :custom_file
           # adapt to combo box settings
 
-          @new_file = Convert.to_string(
+          new_file = Convert.to_string(
             UI.QueryWidget(Id(:custom_file), :Value)
           )
-          @filename = @new_file if !@new_file.nil?
+          self.selected_filename = new_file if !new_file.nil?
         else
           Builtins.y2milestone("bad UserInput (%1)", @ret)
         end
       end
 
-      # write new list of filenames
-
-      @new_files = []
-      @set_default = false
-
-      # re-build list to get new default correct
-      Builtins.foreach(@all_files) do |file|
-        if Builtins.substring(file, 0, 1) == "*"
-          old_default = Builtins.substring(file, 1) # strip leading "*"
-          if old_default == @filename # default unchanged
-            @new_files = Builtins.add(@new_files, file)
-            @set_default = true # new default
-          else
-            @new_files = Builtins.add(@new_files, old_default)
-          end
-        elsif file != ""
-          if file == @filename # mark new default
-            @new_files = Builtins.add(@new_files, Ops.add("*", @filename))
-            @set_default = true
-          else
-            @new_files = Builtins.add(@new_files, file)
-          end
-        end
-      end
-      # if we don't have a default by now, it wasn't in the list before
-      # so add it here.
-
-      if !@set_default && @filename != ""
-        @new_files = Builtins.add(@new_files, Ops.add("*", @filename))
-      end
-
-      @new_files = Builtins.toset(@new_files)
-
-      # convert ycp list back to \n separated string
-
-      @filenames = Ops.add(Builtins.mergestring(@new_files, "\n"), "\n")
-
-      SCR.Write(
-        path(".target.string"),
-        filenames_path,
-        @filenames
-      )
-
+      write_new_filenames
       UI.CloseDialog
 
       true
     end
 
   private
+
+    def write_new_filenames
+      result = []
+
+      to_write = (available_filenames + [selected_filename]).uniq
+
+      # re-build list to get new default correct
+      filenames_content.lines.each do |line|
+        line.strip!
+        result << line if line.empty? || line.start_with?("#")
+
+        line = line[1..-1] if line.start_with?("*")
+        to_write.delete(line) # remember that we already write it
+        line = "*" + line if selected_filename == line
+        result << line
+      end
+      to_write.each do |line|
+        line = "*" + line if selected_filename == line
+        result << line
+      end
+
+      SCR.Write(
+        path(".target.string"),
+        filenames_path,
+        result.join("\n")
+      )
+    end
 
     def filenames_path
       @filenames_path ||= ::File.join(Directory.vardir, "filenames")
@@ -257,6 +178,14 @@ module Yast
           "/bin/cp #{::File.join(Directory.ydatadir, "filenames")} #{filenames_path}"
         )
       end
+    end
+
+    attr_writer :selected_filename
+
+    def selected_filename
+      return @selected_filename if @selected_filename
+
+      @selected_filename = default_filename
     end
 
     def file_content(filename)
@@ -278,5 +207,62 @@ module Yast
       result
     end
 
+    def filenames_list
+      @filenames_list ||= filenames_content.lines.each_with_object([]) do |line, result|
+        line.strip!
+        next if line.empty?
+        next if line.start_with?("#")
+
+        line = line[1..-1] if line.start_with?("*")
+        result << line
+      end
+    end
+
+    def available_filenames
+      return @available_filenames if @available_filenames
+
+      result = filenames_list + DEFAULT_FILENAMES + [arg_filename]
+      @available_filenames = result.uniq.compact
+    end
+
+    def arg_filename
+      arg = WFM.Args.first
+      if arg.is_a?(::String) && !arg.empty?
+        return arg
+      else
+        nil
+      end
+    end
+
+    def filenames_content
+      return @filenames_content if @filenames_content
+
+      ensure_filenames_exist
+
+      # get filename list
+      @filenames_content = Convert.to_string(
+        SCR.Read(path(".target.string"), filenames_path)
+      )
+
+      @filenames_content ||= ""
+    end
+
+    def default_filename
+      return @default_filename if @default_filename
+
+      return @default_filename = arg_filename if arg_filename
+
+      default_line = filenames_content.lines.find { |l| l.start_with?("*") }
+
+      return @default_filename = available_filenames.first unless default_line
+
+      @default_filename = default_line[1..-1].strip
+    end
+
+    def combobox_items
+      available_filenames.map do |filename|
+        Item(Id(filename), filename, filename == default_filename)
+      end
+    end
   end
 end
