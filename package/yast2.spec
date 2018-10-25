@@ -19,7 +19,7 @@
 Name:           yast2
 Version:        4.1.67
 Release:        0
-Summary:        YaST2 - Main Package
+Summary:        YaST2 Main Package
 License:        GPL-2.0-only
 Group:          System/YaST
 Url:            https://github.com/yast/yast-yast2
@@ -213,8 +213,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %{yast_icondir}
 
 %package logs
-
-Summary:        Collecting YAST information
+Summary:        Scripts for handling YAST logs
 Group:          System/YaST
 
 Provides:       yast2:/usr/sbin/save_y2logs
