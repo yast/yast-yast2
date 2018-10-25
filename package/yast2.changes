@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 24 16:55:08 UTC 2018 - schubi@suse.de
+
+- Added flag save_y2logs to control.xml file in order to save
+  YaST logs at the end of installation (fate#325737)
+- 4.1.31  
+
+-------------------------------------------------------------------
 Wed Oct 24 15:55:08 UTC 2018 - jreidinger@suse.com
 
 - Ensure that Installation.sourcedir exists (bsc#1097700)

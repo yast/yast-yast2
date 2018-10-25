@@ -72,7 +72,8 @@ module Yast
           # FATE #304865
           "base_product_license_directory"  => "/etc/YaST2/licenses/base/",
           "full_system_media_name"          => "",
-          "full_system_download_url"        => ""
+          "full_system_download_url"        => "",
+          "save_y2logs"                     => true
         },
         "partitioning" => {
           "use_flexible_partitioning"    => false,
