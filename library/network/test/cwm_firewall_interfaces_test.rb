@@ -11,10 +11,11 @@ describe Yast::CWMFirewallInterfaces do
   subject { Yast::CWMFirewallInterfaces }
   let(:firewalld) { Y2Firewall::Firewalld.instance }
   let(:api) { instance_double("Y2Firewall::Firewalld::Api") }
+  let(:supported_services) { [] }
 
   before do
-    allow(api).to receive(:service_supported?)
     allow(firewalld).to receive(:api).and_return(api)
+    allow(firewalld).to receive(:current_service_names).and_return(supported_services)
   end
 
   describe "#CreateOpenFirewallWidget" do
@@ -56,10 +57,6 @@ describe Yast::CWMFirewallInterfaces do
     context "when the widget settings does not contain any service" do
       let(:widget_settings) { { "services" => ["service"] } }
 
-      before do
-        allow(api).to receive(:service_supported?).with("service").and_return(false)
-      end
-
       it "returns a hash with only the 'widget', 'custom_widget' and 'help' keys" do
         allow(subject).to receive(:services_not_defined_widget).with(["service"])
           .and_return(Frame("unsupported_services_summary"))
@@ -72,7 +69,6 @@ describe Yast::CWMFirewallInterfaces do
       it "returns a summary with the unavailable services as the 'custom_widget'" do
         expect(subject).to receive(:services_not_defined_widget).with(["service"])
           .and_return(Frame("unsupported_services_summary"))
-        expect(api).to receive(:service_supported?).with("service").and_return(false)
 
         ret = subject.CreateOpenFirewallWidget(widget_settings)
 

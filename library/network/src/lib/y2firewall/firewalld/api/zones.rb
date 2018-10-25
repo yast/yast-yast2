@@ -283,6 +283,17 @@ module Y2Firewall
           modify_command("--zone=#{zone}", "--remove-masquerade", permanent: permanent)
         end
 
+        # Enable or disable masquerade in the zone
+        #
+        # @param zone [String] The firewall zone
+        # @param enabled [Boolean] whether masquerade should be enabled or not
+        # @return [Boolean] whether masquerade was modified or not
+        def modify_masquerade(zone, enabled)
+          method = enabled ? "add_masquerade" : "remove_masquerade"
+
+          public_send(method, zone, permanent: !offline?)
+        end
+
         # Full name or short description of the zone
         #
         # @param zone [String] The firewall zone

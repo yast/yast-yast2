@@ -211,8 +211,6 @@ module Yast
     def InitAllowedInterfaces(services)
       service_status = {}
 
-      services.each { |s| firewalld.find_service(s) }
-
       zone_services(services).each do |_s, status|
         status.each do |iface, en|
           service_status[iface] = service_status.fetch(iface, true) && en
@@ -833,7 +831,7 @@ module Yast
         return { "widget" => :custom, "custom_widget" => not_installed_widget, "help" => "" }
       end
 
-      if services.any? { |s| !firewalld.api.service_supported?(s) }
+      if services.any? { |s| !firewalld.current_service_names.include?(s) }
         return {
           "widget"        => :custom,
           "custom_widget" => services_not_defined_widget(services),
@@ -906,55 +904,6 @@ module Yast
       firewalld.modified?
     end
 
-    publish function: :InitAllowedInterfaces, type: "void (list <string>)"
-    publish function: :StoreAllowedInterfaces, type: "void (list <string>)"
-    publish function: :InterfacesInit, type: "void (map <string, any>, string)"
-    publish function: :InterfacesHandle, type: "symbol (map <string, any>, string, map)"
-    publish function: :InterfacesStore, type: "void (map <string, any>, string, map)"
-    publish function: :InterfacesValidate, type: "boolean (map <string, any>, string, map)"
-    publish function: :InterfacesInitWrapper, type: "void (string)"
-    publish function: :InterfacesHandleWrapper, type: "symbol (string, map)"
-    publish function: :InterfacesStoreWrapper, type: "void (string, map)"
-    publish function: :InterfacesValidateWrapper, type: "boolean (string, map)"
-    publish function: :CreateInterfacesWidget, type: "map <string, any> (map <string, any>)"
-    publish function: :DisplayDetailsPopup, type: "symbol (map <string, any>)"
-    publish function: :OpenFirewallInit, type: "void (map <string, any>, string)"
-    publish function: :OpenFirewallStore, type: "void (map <string, any>, string, map)"
-    publish function: :OpenFirewallHandle, type: "symbol (map <string, any>, string, map)"
-    publish function: :OpenFirewallInitWrapper, type: "void (string)"
-    publish function: :OpenFirewallStoreWrapper, type: "void (string, map)"
-    publish function: :OpenFirewallHandleWrapper, type: "symbol (string, map)"
-    publish function: :OpenFirewallModified, type: "boolean (string)"
-    publish function: :EnableOpenFirewallWidget, type: "void ()"
-    publish function: :DisableOpenFirewallWidget, type: "void ()"
-    publish function: :OpenFirewallWidgetExists, type: "boolean ()"
-    publish function: :OpenFirewallHelpTemplate, type: "string (boolean)"
-    publish function: :OpenFirewallHelp, type: "string (boolean)"
-    publish function: :CreateOpenFirewallWidget, type: "map <string, any> (map <string, any>)"
-    publish function: :Modified, type: "boolean ()"
-
-  private
-
-    # Return whether the '_cwm_open_firewall' widget exists or not logging the
-    # error in case of non-existence.
-    #
-    # @return [Boolean] true if the open firewall widget exists
-    def open_firewall_widget?
-      unless UI.WidgetExists(Id("_cwm_open_firewall"))
-        log.error("Widget _cwm_open_firewall does not exist")
-        return false
-      end
-
-      true
-    end
-
-    # Return an instance of Y2Firewall::Firewalld
-    #
-    # @return [Y2Firewall::Firewalld] a firewalld instance
-    def firewalld
-      Y2Firewall::Firewalld.instance
-    end
-
     # Return the current status of the firewall related to the interfaces
     # opened or available
     #
@@ -1005,11 +954,60 @@ module Yast
       end
     end
 
+    publish function: :InitAllowedInterfaces, type: "void (list <string>)"
+    publish function: :StoreAllowedInterfaces, type: "void (list <string>)"
+    publish function: :InterfacesInit, type: "void (map <string, any>, string)"
+    publish function: :InterfacesHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :InterfacesStore, type: "void (map <string, any>, string, map)"
+    publish function: :InterfacesValidate, type: "boolean (map <string, any>, string, map)"
+    publish function: :InterfacesInitWrapper, type: "void (string)"
+    publish function: :InterfacesHandleWrapper, type: "symbol (string, map)"
+    publish function: :InterfacesStoreWrapper, type: "void (string, map)"
+    publish function: :InterfacesValidateWrapper, type: "boolean (string, map)"
+    publish function: :CreateInterfacesWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :DisplayDetailsPopup, type: "symbol (map <string, any>)"
+    publish function: :OpenFirewallInit, type: "void (map <string, any>, string)"
+    publish function: :OpenFirewallStore, type: "void (map <string, any>, string, map)"
+    publish function: :OpenFirewallHandle, type: "symbol (map <string, any>, string, map)"
+    publish function: :OpenFirewallInitWrapper, type: "void (string)"
+    publish function: :OpenFirewallStoreWrapper, type: "void (string, map)"
+    publish function: :OpenFirewallHandleWrapper, type: "symbol (string, map)"
+    publish function: :OpenFirewallModified, type: "boolean (string)"
+    publish function: :EnableOpenFirewallWidget, type: "void ()"
+    publish function: :DisableOpenFirewallWidget, type: "void ()"
+    publish function: :OpenFirewallWidgetExists, type: "boolean ()"
+    publish function: :OpenFirewallHelpTemplate, type: "string (boolean)"
+    publish function: :OpenFirewallHelp, type: "string (boolean)"
+    publish function: :CreateOpenFirewallWidget, type: "map <string, any> (map <string, any>)"
+    publish function: :Modified, type: "boolean ()"
+
+  private
+
+    # Return whether the '_cwm_open_firewall' widget exists or not logging the
+    # error in case of non-existence.
+    #
+    # @return [Boolean] true if the open firewall widget exists
+    def open_firewall_widget?
+      unless UI.WidgetExists(Id("_cwm_open_firewall"))
+        log.error("Widget _cwm_open_firewall does not exist")
+        return false
+      end
+
+      true
+    end
+
+    # Return an instance of Y2Firewall::Firewalld
+    #
+    # @return [Y2Firewall::Firewalld] a firewalld instance
+    def firewalld
+      Y2Firewall::Firewalld.instance
+    end
+
     def zone_services(services)
       services_status = {}
 
       services.each do |service|
-        service_supported = firewalld.api.service_supported?(service)
+        service_supported = firewalld.current_service_names.include?(service)
         services_status[service] = {}
 
         firewalld.zones.each do |zone|
@@ -1058,7 +1056,7 @@ module Yast
     def services_not_defined_widget(services)
       services_list =
         services.map do |service|
-          if !firewalld.api.service_supported?(service)
+          if !firewalld.current_service_names.include?(service)
             # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
             # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
             HBox(HSpacing(2), Left(Label(_("- %{service} (Not available)") % { service: service })))

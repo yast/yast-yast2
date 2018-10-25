@@ -1,5 +1,6 @@
 TESTS = \
   InstExtensionImage_test.rb \
+  installation_test.rb \
   ProductFeatures_test.rb \
   workflow_manager_test.rb
 
