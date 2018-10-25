@@ -60,14 +60,8 @@ module Yast
       # the command line description map
       return CommandLine.Run("id" => "view_anymsg") if WFM.Args.first == "help"
 
+      ensure_filenames_exist
 
-      # Check if the filename list is present
-      if !FileUtils.Exists(filenames_path)
-        SCR.Execute(
-          path(".target.bash"),
-          "/bin/cp #{::File.join(Directory.ydatadir, "filenames")} #{filenames_path}"
-        )
-      end
 
       # get filename list
       @filenames = Convert.to_string(
@@ -270,5 +264,17 @@ module Yast
     def filenames_path
       @filenames_path ||= ::File.join(Directory.vardir, "filenames")
     end
+
+    def ensure_filenames_exist
+      # Check if the filename list is present
+      if !FileUtils.Exists(filenames_path)
+        SCR.Execute(
+          path(".target.bash"),
+          "/bin/cp #{::File.join(Directory.ydatadir, "filenames")} #{filenames_path}"
+        )
+      end
+    end
+
+
   end
 end
