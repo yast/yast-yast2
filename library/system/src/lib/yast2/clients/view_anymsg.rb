@@ -166,24 +166,8 @@ module Yast
       # check if ComboBox selected and change view accordingly
 
       while @go_on
-
-        # read file content
-        file_content = SCR.Read(path(".target.string"), @filename)
-
-        if file_content
-          # replace invalid byte sequences with Unicode "replacement character"
-          file_content.scrub!("�")
-          # remove ANSI color escape sequences
-          file_content.remove_ansi_sequences
-          # remove remaining ASCII control characters (ASCII 0-31 and 127 (DEL))
-          # except new line (LF = 0xa) and carriage return (CR = 0xd)
-          file_content.tr!("\u0000-\u0009\u000b\u000c\u000e-\u001f\u007f", "")
-        else
-          file_content = _("File not found.")
-        end
-
         # Fill the LogView with file content
-        UI.ChangeWidget(Id(:log), :Value, file_content)
+        UI.ChangeWidget(Id(:log), :Value, file_content(@filename))
 
         heading = Builtins.sformat(_("System Log (%1)"), @filename)
         UI.ChangeWidget(Id(:log), :Label, heading)
@@ -275,6 +259,24 @@ module Yast
       end
     end
 
+    def file_content(filename)
+      # read file content
+      result = SCR.Read(path(".target.string"), @filename)
+
+      if result
+        # replace invalid byte sequences with Unicode "replacement character"
+        result.scrub!("�")
+        # remove ANSI color escape sequences
+        result.remove_ansi_sequences
+        # remove remaining ASCII control characters (ASCII 0-31 and 127 (DEL))
+        # except new line (LF = 0xa) and carriage return (CR = 0xd)
+        result.tr!("\u0000-\u0009\u000b\u000c\u000e-\u001f\u007f", "")
+      else
+        result = _("File not found.")
+      end
+
+      result
+    end
 
   end
 end
