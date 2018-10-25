@@ -58,22 +58,16 @@ module Yast
       textdomain "base"
 
       # Check if the filename list is present
-      if !FileUtils.Exists(Ops.add(vardir, "/filenames"))
+      if !FileUtils.Exists(filenames_path)
         SCR.Execute(
           path(".target.bash"),
-          Ops.add(
-            Ops.add(
-              Ops.add(Ops.add("/bin/cp ", Directory.ydatadir), "/filenames "),
-              vardir
-            ),
-            "/filenames"
-          )
+          "/bin/cp #{::File.join(Directory.ydatadir, "filenames")} #{filenames_path}"
         )
       end
 
       # get filename list
       @filenames = Convert.to_string(
-        SCR.Read(path(".target.string"), Ops.add(vardir, "/filenames"))
+        SCR.Read(path(".target.string"), filenames_path)
       )
 
       @filenames ||= ""
@@ -262,7 +256,7 @@ module Yast
 
       SCR.Write(
         path(".target.string"),
-        Ops.add(vardir, "/filenames"),
+        filenames_path,
         @filenames
       )
 
@@ -273,8 +267,8 @@ module Yast
 
   private
 
-    def vardir
-      @vardir ||= Directory.vardir
+    def filenames_path
+      @filenames_path ||= ::File.join(Directory.vardir, "filenames")
     end
   end
 end
