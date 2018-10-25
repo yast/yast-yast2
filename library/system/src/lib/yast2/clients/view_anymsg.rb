@@ -63,37 +63,7 @@ module Yast
       # set up dialogue
       UI.OpenDialog(
         Opt(:decorated, :defaultsize),
-        VBox(
-          HSpacing(70), # force width
-          HBox(
-            HSpacing(1.0),
-            ComboBox(
-              Id(:custom_file),
-              Opt(:editable, :notify, :hstretch),
-              "",
-              combobox_items
-            ),
-            HStretch()
-          ),
-          VSpacing(0.3),
-          VWeight(
-            1,
-            HBox(
-              VSpacing(18), # force height
-              HSpacing(0.7),
-              LogView(
-                Id(:log),
-                "",
-                3, # height
-                0
-              ), # number of lines to show
-              HSpacing(0.7)
-            )
-          ),
-          VSpacing(0.3),
-          PushButton(Id(:ok), Label.OKButton),
-          VSpacing(0.3)
-        )
+        dialog_content
       )
 
       @go_on = true
@@ -138,6 +108,40 @@ module Yast
     end
 
   private
+
+    def dialog_content
+      VBox(
+        HSpacing(70), # force width
+        HBox(
+          HSpacing(1.0),
+          ComboBox(
+            Id(:custom_file),
+            Opt(:editable, :notify, :hstretch),
+            "",
+            combobox_items
+          ),
+          HStretch()
+        ),
+        VSpacing(0.3),
+        VWeight(
+          1,
+          HBox(
+            VSpacing(18), # force height
+            HSpacing(0.7),
+            LogView(
+              Id(:log),
+              "",
+              3, # height
+              0
+            ), # number of lines to show
+            HSpacing(0.7)
+          )
+        ),
+        VSpacing(0.3),
+        PushButton(Id(:ok), Label.OKButton),
+        VSpacing(0.3)
+      )
+    end
 
     def write_new_filenames
       result = []
