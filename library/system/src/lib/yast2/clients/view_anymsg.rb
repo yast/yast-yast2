@@ -57,16 +57,14 @@ module Yast
     def main
       textdomain "base"
 
-      @vardir = Directory.vardir
-
       # Check if the filename list is present
-      if !FileUtils.Exists(Ops.add(@vardir, "/filenames"))
+      if !FileUtils.Exists(Ops.add(vardir, "/filenames"))
         SCR.Execute(
           path(".target.bash"),
           Ops.add(
             Ops.add(
               Ops.add(Ops.add("/bin/cp ", Directory.ydatadir), "/filenames "),
-              @vardir
+              vardir
             ),
             "/filenames"
           )
@@ -75,7 +73,7 @@ module Yast
 
       # get filename list
       @filenames = Convert.to_string(
-        SCR.Read(path(".target.string"), Ops.add(@vardir, "/filenames"))
+        SCR.Read(path(".target.string"), Ops.add(vardir, "/filenames"))
       )
 
       @filenames ||= ""
@@ -264,13 +262,19 @@ module Yast
 
       SCR.Write(
         path(".target.string"),
-        Ops.add(@vardir, "/filenames"),
+        Ops.add(vardir, "/filenames"),
         @filenames
       )
 
       UI.CloseDialog
 
       true
+    end
+
+  private
+
+    def vardir
+      @vardir ||= Directory.vardir
     end
   end
 end
