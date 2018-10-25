@@ -43,7 +43,7 @@ module Yast
       # list of currently known slides, in the order they should be shown
       @slides = []
       # base path to look for slides
-      @slide_base_path = Ops.add(Installation.sourcedir, "/suse/setup/slide")
+      @slide_base_path = Ops.add(InstallationClass::SOURCEDIR, "/suse/setup/slide")
       # path to look for texts of slides
       @slide_txt_path = ""
       # path to look for images of slides

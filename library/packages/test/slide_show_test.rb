@@ -10,6 +10,7 @@ include Yast::Logger
 describe "Yast::SlideShow" do
   before(:each) do
     log.info "--------- Running test ---------"
+    allow(::File).to receive(:exist?).and_return(true)
   end
 
   TOTAL_PROGRESS_ID = Yast::SlideShowClass::UI_ID::TOTAL_PROGRESS
