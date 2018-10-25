@@ -21,6 +21,8 @@ describe Yast::ViewAnymsgClient do
 
       # WFM mock
       allow(Yast::WFM).to receive(:Args).and_return([])
+
+      allow(Yast::FileUtils).to receive(:GetSize).and_return(1)
     end
 
     it "returns true" do

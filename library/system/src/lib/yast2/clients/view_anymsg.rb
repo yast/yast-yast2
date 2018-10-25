@@ -24,11 +24,14 @@
 
 require "yast/core_ext"
 
+require "yast2/popup"
+
 Yast.import "UI"
 Yast.import "CommandLine"
 Yast.import "Directory"
 Yast.import "FileUtils"
 Yast.import "Label"
+Yast.import "Package"
 
 module Yast
   # Reads a \n separated list of filenames from
@@ -77,8 +80,12 @@ module Yast
         heading = Builtins.sformat(_("System Log (%1)"), selected_filename)
         UI.ChangeWidget(Id(:log), :Label, heading)
 
-        # wait for user input
+        if start_journal?
+          res = :journal
+          break
+        end
 
+        # wait for user input
         res = UI.UserInput
 
         case res
@@ -95,10 +102,52 @@ module Yast
       write_new_filenames if res == :ok
       UI.CloseDialog
 
+      Yast::WFM.CallFunction("journal") if res == :journal
+
       true
     end
 
   private
+
+    def start_journal?
+      return false if [nil, 0, -1].include?(FileUtils.GetSize(selected_filename))
+
+      res = Yast2::Popup.show(
+        _(
+          "Selected log file does not exist or is empty.\n" \
+          "Many system components now log into systemd journal.\n" \
+          "Do you want to start YaST module for systemd journal?"
+        ),
+        buttons: :yes_no,
+        focus: :no
+      ) == :yes
+
+      return false unless res
+
+      if !Package.Installed("yast2-journal")
+        if !Package.Available("yast2-journal")
+          Yast2::Popup.show(
+            _(
+              "YaST2 journal module is not available. Please check your repositories."
+            ),
+            headline: :error
+          )
+          return false
+        end
+
+        if !Package.DoInstall("yast2-journal")
+          Yast2::Popup.show(
+            _(
+              "YaST2 journal module failed to install."
+            ),
+            headline: :error
+          )
+          return false
+        end
+      end
+
+      true
+    end
 
     def dialog_content
       VBox(
@@ -185,7 +234,7 @@ module Yast
 
     def file_content(filename)
       # read file content
-      result = SCR.Read(path(".target.string"), @filename)
+      result = SCR.Read(path(".target.string"), filename)
 
       if result
         # replace invalid byte sequences with Unicode "replacement character"
