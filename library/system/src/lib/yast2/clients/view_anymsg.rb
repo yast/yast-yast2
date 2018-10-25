@@ -66,12 +66,11 @@ module Yast
         dialog_content
       )
 
-      @go_on = true
-
       # wait until user clicks "OK"
       # check if ComboBox selected and change view accordingly
+      res = nil
 
-      while @go_on
+      loop do
         # Fill the LogView with file content
         UI.ChangeWidget(Id(:log), :Value, file_content(selected_filename))
 
@@ -80,28 +79,20 @@ module Yast
 
         # wait for user input
 
-        @ret = Convert.to_symbol(UI.UserInput)
+        res = UI.UserInput
 
-        # clicked "OK" -> exit
-
-        if @ret == :ok
-          @go_on = false
-        elsif @ret == :cancel # close window
-          UI.CloseDialog
-          return true
-        elsif @ret == :custom_file
+        case res
+        when :ok, :cancel then break
+        when :custom_file
           # adapt to combo box settings
-
-          new_file = Convert.to_string(
-            UI.QueryWidget(Id(:custom_file), :Value)
-          )
+          new_file = UI.QueryWidget(Id(:custom_file), :Value)
           self.selected_filename = new_file if !new_file.nil?
         else
-          Builtins.y2milestone("bad UserInput (%1)", @ret)
+          Builtins.y2milestone("bad UserInput (%1)", res)
         end
       end
 
-      write_new_filenames
+      write_new_filenames if res == :ok
       UI.CloseDialog
 
       true
