@@ -14,6 +14,8 @@ describe Yast::ViewAnymsgClient do
       allow(Yast::UI).to receive(:UserInput).and_return(:ok)
       allow(Yast::UI).to receive(:CloseDialog)
 
+      allow(Yast2::Popup).to receive(:show)
+
       # SCR mock
       allow(Yast::SCR).to receive(:Execute)
       allow(Yast::SCR).to receive(:Read)
@@ -21,6 +23,7 @@ describe Yast::ViewAnymsgClient do
 
       # WFM mock
       allow(Yast::WFM).to receive(:Args).and_return([])
+      allow(Yast::WFM).to receive(:CallFunction)
 
       allow(Yast::FileUtils).to receive(:GetSize).and_return(1)
     end
@@ -52,7 +55,7 @@ describe Yast::ViewAnymsgClient do
 
     context "filenames list" do
       def combobox_items(&block)
-        expect(Yast::UI).to receive(:OpenDialog) do |opts, term|
+        expect(Yast::UI).to receive(:OpenDialog) do |_opts, term|
           items = term.nested_find do |i|
             i.is_a?(::Array) && i.first.is_a?(Yast::Term) && i.first.value == :item
           end
@@ -110,7 +113,7 @@ describe Yast::ViewAnymsgClient do
         combobox_items do |items|
           items.each do |item|
             value = item.params[1]
-            expect(value).to_not match /lest/
+            expect(value).to_not match(/lest/)
           end
         end
 
@@ -170,6 +173,50 @@ describe Yast::ViewAnymsgClient do
         allow(Yast::UI).to receive(:UserInput).and_return(:cancel)
 
         expect(Yast::SCR).to_not receive(:Write)
+
+        subject.main
+      end
+    end
+
+    context "log file does not exist or is empty" do
+      before do
+        allow(Yast::FileUtils).to receive(:GetSize).and_return(-1)
+        allow(Yast::Package).to receive(:Installed).and_return(true)
+        allow(Yast2::Popup).to receive(:show).and_return(:yes)
+      end
+
+      it "ask if open journal instead" do
+        expect(Yast2::Popup).to receive(:show).and_return(:no)
+
+        subject.main
+      end
+
+      it "checks if yast2-journal is installed if user answer yes" do
+        expect(Yast::Package).to receive(:Installed).and_return(true)
+
+        subject.main
+      end
+
+      it "installs yast2-journal if it is not yet installed" do
+        allow(Yast::Package).to receive(:Installed).and_return(false)
+        allow(Yast::Package).to receive(:Available).and_return(true)
+        expect(Yast::Package).to receive(:DoInstall).and_return(true)
+
+        subject.main
+      end
+
+      it "reports error if package is not available" do
+        allow(Yast::Package).to receive(:Installed).and_return(false)
+        expect(Yast::Package).to receive(:Available).and_return(false)
+        expect(Yast::Package).to_not receive(:DoInstall)
+
+        expect(Yast2::Popup).to receive(:show).with(anything, headline: :error)
+
+        subject.main
+      end
+
+      it "switches to yast2-journal module if user want and all goes well" do
+        expect(Yast::WFM).to receive(:CallFunction).with("journal")
 
         subject.main
       end

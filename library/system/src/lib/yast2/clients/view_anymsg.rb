@@ -1,4 +1,4 @@
-# encoding: utf-8
+#       encoding: utf-8
 
 # ***************************************************************************
 #
@@ -110,7 +110,7 @@ module Yast
   private
 
     def start_journal?
-      return false if [nil, 0, -1].include?(FileUtils.GetSize(selected_filename))
+      return false unless [nil, 0, -1].include?(FileUtils.GetSize(selected_filename))
 
       res = Yast2::Popup.show(
         _(
@@ -119,7 +119,7 @@ module Yast
           "Do you want to start YaST module for systemd journal?"
         ),
         buttons: :yes_no,
-        focus: :no
+        focus:   :no
       ) == :yes
 
       return false unless res
@@ -135,15 +135,7 @@ module Yast
           return false
         end
 
-        if !Package.DoInstall("yast2-journal")
-          Yast2::Popup.show(
-            _(
-              "YaST2 journal module failed to install."
-            ),
-            headline: :error
-          )
-          return false
-        end
+        return Package.DoInstall("yast2-journal")
       end
 
       true
@@ -216,12 +208,12 @@ module Yast
 
     def ensure_filenames_exist
       # Check if the filename list is present
-      if !FileUtils.Exists(filenames_path)
-        SCR.Execute(
-          path(".target.bash"),
-          "/bin/cp #{::File.join(Directory.ydatadir, "filenames")} #{filenames_path}"
-        )
-      end
+      return if FileUtils.Exists(filenames_path)
+
+      SCR.Execute(
+        path(".target.bash"),
+        "/bin/cp #{::File.join(Directory.ydatadir, "filenames")} #{filenames_path}"
+      )
     end
 
     attr_writer :selected_filename
@@ -271,11 +263,7 @@ module Yast
 
     def arg_filename
       arg = WFM.Args.first
-      if arg.is_a?(::String) && !arg.empty?
-        return arg
-      else
-        nil
-      end
+      return arg if arg.is_a?(::String) && !arg.empty?
     end
 
     def filenames_content
