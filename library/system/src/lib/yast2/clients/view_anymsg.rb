@@ -135,7 +135,7 @@ module Yast
           return false
         end
 
-        return Package.DoInstall("yast2-journal")
+        return Package.DoInstall(["yast2-journal"])
       end
 
       true
