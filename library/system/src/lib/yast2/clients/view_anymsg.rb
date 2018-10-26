@@ -124,7 +124,7 @@ module Yast
 
       return false unless res
 
-      return Package.Install("yast2-journal")
+      Package.Install("yast2-journal")
     end
 
     def dialog_content
