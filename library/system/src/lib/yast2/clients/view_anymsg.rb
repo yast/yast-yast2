@@ -135,6 +135,14 @@ module Yast
           return false
         end
 
+        return false if Yast2::Popup.show(
+          _(
+            "YaST2 journal module is not installed. Do you want to install it now?"
+          ),
+          buttons: :yes_no,
+          focus: :yes
+        ) == :no
+
         return Package.DoInstall(["yast2-journal"])
       end
 
