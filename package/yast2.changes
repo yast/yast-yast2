@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Oct 26 11:46:16 UTC 2018 - jreidinger@suse.com
+
+- view_anymsg: allow user to switch to yast2-journal if file does
+  not exist or is empty (bsc#948729)
+- 4.1.32
+
+-------------------------------------------------------------------
 Wed Oct 24 16:55:08 UTC 2018 - schubi@suse.de
 
 - Added flag save_y2logs to control.xml file in order to save

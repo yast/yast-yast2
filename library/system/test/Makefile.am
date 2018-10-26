@@ -1,4 +1,5 @@
 TESTS = \
+  clients/view_anymsg_test.rb \
   execute_test.rb \
   kernel_test.rb \
   hw_detection_test.rb \
