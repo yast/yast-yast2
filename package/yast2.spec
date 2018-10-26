@@ -51,7 +51,7 @@ BuildRequires:  yast2-testsuite
 # UI::.SetApplicationTitle
 BuildRequires:  yast2-ycp-ui-bindings >= 3.2.0
 # for the PackageExtractor tests, just make sure they are present,
- these should be installed in the default build anyway
+# these should be installed in the default build anyway
 BuildRequires:  cpio
 BuildRequires:  rpm
 
