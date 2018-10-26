@@ -140,7 +140,7 @@ module Yast
             "YaST2 journal module is not installed. Do you want to install it now?"
           ),
           buttons: :yes_no,
-          focus: :yes
+          focus:   :yes
         ) == :no
 
         return Package.DoInstall(["yast2-journal"])
