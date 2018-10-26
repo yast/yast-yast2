@@ -124,29 +124,7 @@ module Yast
 
       return false unless res
 
-      if !Package.Installed("yast2-journal")
-        if !Package.Available("yast2-journal")
-          Yast2::Popup.show(
-            _(
-              "YaST2 journal module is not available. Please check your repositories."
-            ),
-            headline: :error
-          )
-          return false
-        end
-
-        return false if Yast2::Popup.show(
-          _(
-            "YaST2 journal module is not installed. Do you want to install it now?"
-          ),
-          buttons: :yes_no,
-          focus:   :yes
-        ) == :no
-
-        return Package.DoInstall(["yast2-journal"])
-      end
-
-      true
+      return Package.Install("yast2-journal")
     end
 
     def dialog_content

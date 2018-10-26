@@ -181,7 +181,7 @@ describe Yast::ViewAnymsgClient do
     context "log file does not exist or is empty" do
       before do
         allow(Yast::FileUtils).to receive(:GetSize).and_return(-1)
-        allow(Yast::Package).to receive(:Installed).and_return(true)
+        allow(Yast::Package).to receive(:Install).and_return(true)
         allow(Yast2::Popup).to receive(:show).and_return(:yes)
       end
 
@@ -191,26 +191,8 @@ describe Yast::ViewAnymsgClient do
         subject.main
       end
 
-      it "checks if yast2-journal is installed if user answer yes" do
-        expect(Yast::Package).to receive(:Installed).and_return(true)
-
-        subject.main
-      end
-
-      it "installs yast2-journal if it is not yet installed" do
-        allow(Yast::Package).to receive(:Installed).and_return(false)
-        allow(Yast::Package).to receive(:Available).and_return(true)
-        expect(Yast::Package).to receive(:DoInstall).and_return(true)
-
-        subject.main
-      end
-
-      it "reports error if package is not available" do
-        allow(Yast::Package).to receive(:Installed).and_return(false)
-        expect(Yast::Package).to receive(:Available).and_return(false)
-        expect(Yast::Package).to_not receive(:DoInstall)
-
-        expect(Yast2::Popup).to receive(:show).with(anything, headline: :error)
+      it "ensures yast2-journal is installed" do
+        expect(Yast::Package).to receive(:Install).and_return(true)
 
         subject.main
       end
