@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov  6 14:14:04 UTC 2018 - jreidinger@suse.com
+
+- WorkflowManager: Allow system roles to live in
+  /usr/share/system-roles/*.xml (bsc#1108176)
+- 4.1.33
+
+-------------------------------------------------------------------
 Fri Oct 26 11:46:16 UTC 2018 - jreidinger@suse.com
 
 - view_anymsg: allow user to switch to yast2-journal if file does
@@ -10,7 +17,7 @@ Wed Oct 24 16:55:08 UTC 2018 - schubi@suse.de
 
 - Added flag save_y2logs to control.xml file in order to save
   YaST logs at the end of installation (fate#325737)
-- 4.1.31  
+- 4.1.31
 
 -------------------------------------------------------------------
 Wed Oct 24 15:55:08 UTC 2018 - jreidinger@suse.com
