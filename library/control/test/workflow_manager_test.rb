@@ -396,6 +396,13 @@ describe Yast::WorkflowManager do
       # the returned path contains "/installation.xml" at the end
       expect(subject.control_file(repo_id)).to end_with("/installation.xml")
     end
+
+    it "returns path leading to system-roles dir if it exists" do
+      allow(Dir).to receive(:glob).and_return(["/tmp/usr/share/system-roles/superyast.xml"])
+      expect(File).to receive(:exist?).with("/tmp/usr/share/system-roles/superyast.xml").and_return(true)
+
+      expect(subject.control_file(repo_id)).to eq "/tmp/usr/share/system-roles/superyast.xml"
+    end
   end
 
   describe "#addon_control_dir" do

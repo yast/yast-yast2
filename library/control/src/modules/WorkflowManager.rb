@@ -439,7 +439,18 @@ module Yast
       dir = addon_control_dir(src, cleanup: true)
       fetch_package(src, package, dir)
 
-      path = File.join(dir, "installation.xml")
+      # lets first try FHS compliant path (bsc#1114573)
+      # sadly no glob escaping - https://bugs.ruby-lang.org/issues/8258
+      # but as we generate directory, it should be ok
+      files = Dir.glob("#{dir}/usr/share/system-roles/*.xml")
+      if files.size == 1
+        path = files.first
+      elsif files.size > 1
+        log.error "more then one file in system role #{files.inspect}"
+        path = files.first
+      else
+        path = File.join(dir, "installation.xml")
+      end
       return nil unless File.exist?(path)
 
       log.info("installation.xml path: #{path}")
