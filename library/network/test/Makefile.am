@@ -5,7 +5,7 @@ TESTS = \
   network_service_test.rb \
   susefirewall_proposal_test.rb \
   susefirewall_services_test.rb \
-  susefirewall_test.rb \
+  susefirewall2_test.rb \
   susefirewalld_test.rb
 
 TEST_EXTENSIONS = .rb

@@ -2,6 +2,7 @@
 
 require_relative "test_helper"
 require "network/firewalld"
+require "network/firewall_chooser"
 
 Yast.import "Mode"
 Yast.import "PackageSystem"
@@ -24,7 +25,7 @@ end
 need_API_mock = true
 
 # Re-instansiate our objects
-FakeFirewallD = Yast::FirewallClass.create(:fwd)
+FakeFirewallD = Yast::FirewallChooser.new(:fwd).choose
 
 describe FakeFirewallD do
 
