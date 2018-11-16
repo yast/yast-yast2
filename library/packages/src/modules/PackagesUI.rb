@@ -312,7 +312,8 @@ module Yast
         widget_options
       )
 
-      UI.OpenDialog(
+      # exception text
+      raise _("Opening package selector failed.") if !UI.OpenDialog(
         Opt(:defaultsize),
         if !widget_options.empty?
           PackageSelector(Id(:packages), widget_options, "")
