@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 16 14:38:31 CET 2018 - aschnell@suse.com
+
+- check return value of OpenDialog to prevent crash (bsc#1115745)
+- 4.1.34
+
+-------------------------------------------------------------------
 Tue Nov  6 14:14:04 UTC 2018 - jreidinger@suse.com
 
 - WorkflowManager: Allow system roles to live in
