@@ -69,6 +69,7 @@ module Yast
           "vendor_url"                      => "",
           "enable_clone"                    => false,
           "disable_os_prober"               => false,
+          "enable_local_users"              => true,
           # FATE #304865
           "base_product_license_directory"  => "/etc/YaST2/licenses/base/",
           "full_system_media_name"          => "",
