@@ -9,10 +9,6 @@ xversion_DATA =			\
 
 scalabledir = @icondir@/hicolor/scalable/apps
 scalable_DATA = \
-	icons/hicolor/scalable/apps/dialog-error.svg \
-	icons/hicolor/scalable/apps/dialog-information.svg \
-	icons/hicolor/scalable/apps/dialog-question.svg \
-	icons/hicolor/scalable/apps/dialog-warning.svg \
 	icons/hicolor/scalable/apps/yast-hardware-group.svg \
 	icons/hicolor/scalable/apps/yast-high_availability-group.svg \
 	icons/hicolor/scalable/apps/yast-messages.svg \
@@ -24,7 +20,11 @@ scalable_DATA = \
 	icons/hicolor/scalable/apps/yast-software-group.svg \
 	icons/hicolor/scalable/apps/yast-support-group.svg \
 	icons/hicolor/scalable/apps/yast-system-group.svg \
-	icons/hicolor/scalable/apps/yast-vm-group.svg
+	icons/hicolor/scalable/apps/yast-vm-group.svg \
+	icons/hicolor/scalable/status/dialog-error.svg \
+	icons/hicolor/scalable/status/dialog-information.svg \
+	icons/hicolor/scalable/status/dialog-question.svg \
+	icons/hicolor/scalable/status/dialog-warning.svg
 
 EXTRA_DIST = $(xversion_DATA) $(scalable_DATA)
 include $(top_srcdir)/Makefile.am.common
