@@ -8,6 +8,8 @@
 @YAST2-CHECKS-YCP@
 @YAST2-CHECKS-TESTSUITE@
 
+icondir=/usr/share/icons
+AC_SUBST(icondir)
 AC_MSG_CHECKING([for ifcfg location])
 # fallback, default on openSUSE
 IFCFG_DIR=/etc/sysconfig/network
