@@ -115,7 +115,7 @@ describe "UI::Greasemonkey" do
     let(:new) do
       Left(
         HBox(
-          Image("/usr/share/YaST2/theme/current/icons/22x22/apps/icon", ""),
+          Image("icon", ""),
           Heading("title")
         )
       )
