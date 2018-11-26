@@ -9,6 +9,10 @@ xversion_DATA =			\
 
 scalabledir = @icondir@/hicolor/scalable/apps
 scalable_DATA = \
+	icons/hicolor/scalable/apps/dialog-error.svg \
+	icons/hicolor/scalable/apps/dialog-information.svg \
+	icons/hicolor/scalable/apps/dialog-question.svg \
+	icons/hicolor/scalable/apps/dialog-warning.svg \
 	icons/hicolor/scalable/apps/yast-hardware-group.svg \
 	icons/hicolor/scalable/apps/yast-high_availability-group.svg \
 	icons/hicolor/scalable/apps/yast-messages.svg \

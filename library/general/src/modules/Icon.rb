@@ -37,11 +37,8 @@ module Yast
 
       textdomain "base"
 
-      Yast.import "Directory"
-
       @has_image_support = nil
       @icons_map = {}
-      @icon_32x32_path = nil
     end
 
     def LazyInit
@@ -54,49 +51,14 @@ module Yast
         false
       )
 
-      @icon_32x32_path = Ops.add(
-        Directory.themedir,
-        "/current/icons/32x32/apps/"
-      )
-
       @icons_map = {
-        "warning"  => "msg_warning.png",
-        "info"     => "msg_info.png",
-        "error"    => "msg_error.png",
-        "question" => "msg_question.png"
+        "warning"  => "dialog-warning",
+        "info"     => "dialog-information",
+        "error"    => "dialog-error",
+        "question" => "dialog-question"
       }
 
       nil
-    end
-
-    # Returns path to an image
-    #
-    # @param [String] icon_type
-    #
-    # @see Icon::Image() for details
-    #
-    # @example
-    #	Icon::IconPath ("warning") -> "/usr/share/YaST2/theme/current/icons/32x32/apps/msg_warning.png"
-    def IconPath(icon_type)
-      LazyInit()
-
-      icon_path = nil
-
-      if Ops.get(@icons_map, icon_type)
-        icon_path = Ops.add(
-          @icon_32x32_path,
-          Ops.get(@icons_map, icon_type, "")
-        )
-      else
-        icon_path = Ops.add(Ops.add(@icon_32x32_path, icon_type), ".png")
-        Builtins.y2debug(
-          "Image '%1' is not defined, using '%2'",
-          icon_type,
-          icon_path
-        )
-      end
-
-      icon_path
     end
 
     # Returns `Image() term defined by parameters. Returns `Empty() if the current
@@ -137,7 +99,9 @@ module Yast
 
       icon_label = Ops.get_string(options, "label", icon_type)
 
-      this_image = term(:Image, Id(icon_id), IconPath(icon_type), icon_label)
+      icon_name = Ops.get(@icons_map, icon_type) ? Ops.get(@icons_map, icon_type, "") : icon_type
+
+      this_image = term(:Image, Id(icon_id), icon_name, icon_label)
 
       # left and/or right margin defined
       if Ops.get_integer(options, "margin_left", 0) != 0 ||
@@ -185,7 +149,6 @@ module Yast
       Image("info", {})
     end
 
-    publish function: :IconPath, type: "string (string)"
     publish function: :Image, type: "term (string, map <string, any>)"
     publish function: :Simple, type: "term (string)"
     publish function: :Warning, type: "term ()"

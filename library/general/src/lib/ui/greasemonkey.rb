@@ -232,10 +232,7 @@ module UI
       args = Builtins.argsof(old)
 
       title = Ops.get_string(args, 0, "")
-      icon = Ops.add(
-        Ops.add(Yast::Directory.icondir, "22x22/apps/"),
-        Ops.get_string(args, 1, "")
-      )
+      icon = Ops.get_string(args, 1, "")
 
       Left(HBox(Image(icon, ""), Heading(title)))
     end
