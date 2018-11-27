@@ -9,7 +9,7 @@ X-SuSE-YaST-Group=Misc
 X-SuSE-YaST-SortKey=99
 
 OnlyShowIn=X-SuSE-YaST;
-Icon=yast-misc
+Icon=yast-misc-group
 
 Name=Miscellaneous
 

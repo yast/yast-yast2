@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.1.35
+Version:        4.1.36
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0-only
@@ -200,14 +200,17 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %dir %{yast_yncludedir}/wizard
 %{yast_yncludedir}/wizard/*.rb
 
-#packags
+# packages
 %dir %{yast_yncludedir}/packages
 %{yast_yncludedir}/packages/*.rb
 
-#system
+# system
 %dir %{yast_yncludedir}/hwinfo
 %{yast_yncludedir}/hwinfo/*.rb
 %{yast_desktopdir}/messages.desktop
+
+# icons
+%{_datadir}/icons/*
 
 %package logs
 

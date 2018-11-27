@@ -1867,28 +1867,8 @@ module Yast
     #
     # @return [Boolean] true if the application icon was set; false otherwise
     def set_icon
-      icon_path = paths_for(@icon_name).first.to_s
-
-      if icon_path.empty?
-        Builtins.y2warning("Cannot set application icon to \"%1.png\"", @icon_name)
-        @icon_name = DEFAULT_ICON_NAME
-        return false
-      end
-
-      UI.SetApplicationIcon(icon_path)
+      UI.SetApplicationIcon(@icon_name)
       true
-    end
-
-    # Convenience method that returns all the available icon paths for a given
-    # icon name
-    #
-    # @param name [String] icon name
-    # @return [Array<String>] list with the available icon paths
-    def paths_for(icon_name)
-      icon_dirs = "{#{Directory.icondir}, #{FALLBACK_ICON_DIR}}"
-      sizes = "{64x64,48x48,32x32,22x22,16x16}"
-
-      Dir.glob(File.join(icon_dirs, sizes, "apps", "#{icon_name}.png"))
     end
   end
 

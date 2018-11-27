@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 26 07:07:26 UTC 2018 - Noah Davis <noahadvs@gmail.com>
+
+- Provide icon with module (boo#1109310)
+- Move virtualization group from yast-vm to yast2
+- 4.1.36
+
+-------------------------------------------------------------------
 Wed Nov 21 17:23:00 UTC 2018 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Added global parameter enable_local_users (Fate#326447)
