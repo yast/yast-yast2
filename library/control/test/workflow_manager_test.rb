@@ -396,6 +396,13 @@ describe Yast::WorkflowManager do
       # the returned path contains "/installation.xml" at the end
       expect(subject.control_file(repo_id)).to end_with("/installation.xml")
     end
+
+    it "returns path leading to system-roles dir if it exists" do
+      allow(Dir).to receive(:glob).and_return(["/tmp/usr/share/system-roles/superyast.xml"])
+      expect(File).to receive(:exist?).with("/tmp/usr/share/system-roles/superyast.xml").and_return(true)
+
+      expect(subject.control_file(repo_id)).to eq "/tmp/usr/share/system-roles/superyast.xml"
+    end
   end
 
   describe "#addon_control_dir" do
@@ -437,7 +444,8 @@ describe Yast::WorkflowManager do
 
   describe "#merge_product_workflow" do
     let(:product) do
-      instance_double("Y2Packager::Product", label: "SLES", installation_package: "package")
+      instance_double("Y2Packager::Product", label: "SLES", installation_package: "package",
+        installation_package_repo: 42)
     end
 
     before do
@@ -448,7 +456,7 @@ describe Yast::WorkflowManager do
     end
 
     it "merges installation package workflow" do
-      expect(subject).to receive(:AddWorkflow).with(:package, 0, "package")
+      expect(subject).to receive(:AddWorkflow).with(:package, product.installation_package_repo, "package")
       subject.merge_product_workflow(product)
     end
 
@@ -458,7 +466,7 @@ describe Yast::WorkflowManager do
       end
 
       it "removes the previous workflow" do
-        expect(subject).to receive(:RemoveWorkflow).with(:package, 0, "package")
+        expect(subject).to receive(:RemoveWorkflow).with(:package, product.installation_package_repo, "package")
         subject.merge_product_workflow(product)
       end
     end

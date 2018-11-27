@@ -33,18 +33,25 @@ module Y2Firewall
 
       textdomain "base"
 
-      # @return [String] Zone name
-      attr_reader :name
+      # Map of known zone names and description
+      KNOWN_ZONES = {
+        "block"    => N_("Block Zone"),
+        "dmz"      => N_("Demilitarized Zone"),
+        "drop"     => N_("Drop Zone"),
+        "external" => N_("External Zone"),
+        "home"     => N_("Home Zone"),
+        "internal" => N_("Internal Zone"),
+        "public"   => N_("Public Zone"),
+        "trusted"  => N_("Trusted Zone"),
+        "work"     => N_("Work Zone")
+      }.freeze
 
       # @see Y2Firewall::Firewalld::Relations
       has_many :services, :interfaces, :protocols, :rich_rules, :sources,
         :ports, :source_ports, :forward_ports, :icmp_blocks, cache: true
 
       # @see Y2Firewall::Firewalld::Relations
-      has_attribute :name, :short, :description, :target, cache: true
-
-      # @return [Boolean] Whether masquerade is enabled or not
-      attr_reader :masquerade
+      has_attributes :name, :masquerade, :short, :description, :target, cache: true
 
       alias_method :masquerade?, :masquerade
 
@@ -56,6 +63,11 @@ module Y2Firewall
       # @param name [String] zone name
       def initialize(name: nil)
         @name = name || api.default_zone
+        relations.each { |r| public_send("#{r}=", []) }
+      end
+
+      def self.known_zones
+        KNOWN_ZONES
       end
 
       # Setter method for enabling masquerading.
@@ -65,6 +77,15 @@ module Y2Firewall
       def masquerade=(enable)
         modified!(:masquerade)
         @masquerade = enable || false
+      end
+
+      # Known full name of the known zones. Usefull when the API is not
+      # accessible or when make sense to not call it directly to obtain
+      # the full name.
+      #
+      # @return [String] zone full name
+      def full_name
+        self.class.known_zones[name]
       end
 
       # Apply all the changes in firewalld but do not reload it
@@ -109,16 +130,10 @@ module Y2Firewall
       #
       # @return [Hash] zone configuration
       def export
-        profile = {}
-        attributes.each do |attribute|
-          profile[attribute.to_s] = public_send(attribute)
-        end
-        profile["masquerade"] = masquerade
-        relations.each do |relation|
-          profile[relation.to_s] = public_send(relation)
-        end
-
-        profile
+        (attributes + relations)
+          .each_with_object({}) do |field, profile|
+            profile[field.to_s] = public_send(field) unless public_send(field).nil?
+          end
       end
 
       # Override relation method to be more defensive. An interface can only

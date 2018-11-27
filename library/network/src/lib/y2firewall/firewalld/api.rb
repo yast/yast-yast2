@@ -52,6 +52,8 @@ module Y2Firewall
       COMMAND = { offline: "firewall-offline-cmd", running: "firewall-cmd" }.freeze
       # FIXME: Do not like to define twice
       PACKAGE = "firewalld".freeze
+      # Modification commands were applied successfully
+      SUCCESS = "success".freeze
 
       # Determines the mode in which firewalld is running and as consequence the
       # command to be used.
@@ -59,13 +61,13 @@ module Y2Firewall
 
       # Constructor
       #
-      # @param permanent [Boolean] whether the configuration should be written
-      #   permanently or in runtime when firewalld is running.
       # @param mode [Symbol, nil] defines which cmdline should be used if the
       #   running or the offline one. Possible values are: :offline, :running
+      # @param permanent [Boolean] whether the configuration should be written
+      #   permanently or in runtime when firewalld is running.
       def initialize(mode: nil, permanent: true)
-        @mode = (mode || running? ? :running : :offline)
-        @permanent = permanent
+        @mode = mode || (running? ? :running : :offline)
+        @permanent = !offline? && permanent
       end
 
       # Whether the mode is :offline or not
@@ -122,7 +124,7 @@ module Y2Firewall
       end
 
       # Return the default zone
-      #
+
       # @return [String] default zone
       def default_zone
         string_command("--get-default-zone")
@@ -131,27 +133,26 @@ module Y2Firewall
       # Set the default zone
       #
       # @param zone [String] The firewall zone
-      # @return [Boolean] true if the default zone was modified correctly
-      def default_zone=(zone)
-        string_command("--set-default-zone=#{zone}") == "success"
+      def modify_default_zone(zone)
+        modify_command("--set-default-zone=#{zone}")
       end
 
       # Do a reload of the firewall if running. In offline mode just return
       # true as a reload is not needed to apply the changes.
       #
-      # @return [Boolean] The firewalld reload result (exit code)
+      # @return [Boolean] true if the firewall was reloaded successfully
       def reload
         return true if offline?
-        run_command("--reload")
+        modify_command("--reload")
       end
 
       # Do a complete reload of the firewall if running. In offline mode just
       # return true as a reload is not needed to apply the changes
       #
-      # @return [Boolean] The firewalld complete-reload result (exit code)
+      # @return [Boolean] true if the firewall was reloaded completely with success
       def complete_reload
         return true if offline?
-        run_command("--complete-reload")
+        modify_command("--complete-reload")
       end
 
       ### Logging ###
@@ -165,9 +166,8 @@ module Y2Firewall
 
       # @param kind [String] Denied packets to log. Possible values are:
       #   all, unicast, broadcast, multicast and off
-      # @return [Boolean] true if the type of packages to log was set correctly
-      def log_denied_packets=(kind)
-        string_command("--set-log-denied=#{kind}") == "success"
+      def modify_log_denied_packets(kind)
+        modify_command("--set-log-denied=#{kind}")
       end
 
       # @return [String] packet type which is being logged when denied
@@ -188,8 +188,8 @@ module Y2Firewall
       # @see #command
       # @see Yast::Execute
       # @param args [Array<String>] list of command optional arguments
-      # @param permanent [Boolean] if true it adds the --permanent option the
-      #   command to be executed
+      # @param permanent [Boolean] if true and firewalld is running it
+      #   operates over the permanent configuration
       # @param allowed_exitstatus [Fixnum, .include?, nil] allowed exit codes
       #   which do not cause an exception.
       def run_command(*args, permanent: false, allowed_exitstatus: nil)
@@ -206,22 +206,37 @@ module Y2Firewall
       # the output as a string and chomping it
       #
       # @see #run_command
-      # @return [String] the chomped output of the run command
       # @param args [Array<String>] list of command optional arguments
-      # @param permanent [Boolean] if true it adds the --permanent option the
-      #   command to be executed
+      # @param permanent [Boolean] if true and firewalld is running it
+      #   operates over the permanent configuration
+      # @return [String] the chomped output of the run command
       def string_command(*args, permanent: false)
         run_command(*args, permanent: permanent).to_s.chomp
+      end
+
+      # Convenience method that run the given modification command for the
+      # current mode returning whether it was applied successfully or not
+      #
+      #
+      # @see #run_command
+      # @param args [Array<String>] list of command optional arguments
+      # @param permanent [Boolean] if true and firewalld is running it
+      #   operates over the permanent configuration
+      # @return [Boolean] true if the executed command returns succesfully
+      def modify_command(*args, permanent: false)
+        string_command(*args, permanent: permanent) == SUCCESS
       end
 
       # Convenience method which return true whether the run command for the
       # current mode return the exit status 0.
       #
       # @see #run_command
-      # @return [Boolean] true if the exit status of the executed command is 0
       # @param args [Array<String>] list of command optional arguments
-      def query_command(*args)
-        _output, exit_status = run_command(*args, allowed_exitstatus: [0, 1])
+      # @param permanent [Boolean] if true and firewalld is running it
+      #   operates over the permanent configuration
+      # @return [Boolean] true if the exit status of the executed command is 0
+      def query_command(*args, permanent: false)
+        _output, exit_status = run_command(*args, allowed_exitstatus: [0, 1], permanent: permanent)
 
         exit_status == 0
       end

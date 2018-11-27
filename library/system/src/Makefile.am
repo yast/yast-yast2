@@ -36,7 +36,13 @@ ylib_DATA = \
   lib/yast2/target_file.rb \
   lib/yast2/system_time.rb
 
+ylibclientsdir = @ylibdir@/yast2/clients
+ylibclients_DATA = \
+  lib/yast2/clients/view_anymsg.rb
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(scrconf_DATA) $(desktop_DATA) $(ylib_DATA)
+
+
+
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(scrconf_DATA) $(desktop_DATA) $(ylib_DATA) $(ylibclients_DATA)
 
 include $(top_srcdir)/Makefile.am.common

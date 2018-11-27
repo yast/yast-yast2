@@ -1,7 +1,7 @@
 #!/usr/bin/env rspec
 # encoding: utf-8
 #
-# Copyright (c) [2017] SUSE LLC
+# Copyright (c) 2018 SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -28,7 +28,7 @@ describe Y2Firewall::Firewalld::Relations do
     extend Y2Firewall::Firewalld::Relations
     attr_accessor :api
 
-    has_attribute :description
+    has_attributes :description
     has_many :dummies
 
     enable_modifications_cache
@@ -58,7 +58,7 @@ describe Y2Firewall::Firewalld::Relations do
     end
   end
 
-  describe ".has_attribute" do
+  describe ".has_attributes" do
     subject { Dummy.new }
 
     let(:api) do
@@ -68,7 +68,7 @@ describe Y2Firewall::Firewalld::Relations do
 
     before { allow(subject).to receive(:api).and_return(api) }
 
-    it "defines an getter an setter for each given attribute" do
+    it "defines a getter and a setter for each given attribute" do
       expect(subject.respond_to?("description")).to eq(true)
       expect(subject.respond_to?("description=")).to eq(true)
     end
@@ -77,7 +77,7 @@ describe Y2Firewall::Firewalld::Relations do
       expect(subject.attributes).to eq([:description])
     end
 
-    it "defines the \"current_'attribute}'\" method" do
+    it "defines the \"current_'attribute'\" method" do
       subject.current_description
     end
 
@@ -88,7 +88,7 @@ describe Y2Firewall::Firewalld::Relations do
 
     it "defines the 'apply_attributes_changes!' method" do
       subject.description = "modified dummy text"
-      expect(api).to receive(:public_send).with("description=", "modified dummy text")
+      expect(api).to receive(:public_send).with("modify_description", "modified dummy text")
 
       subject.apply_attributes_changes!
     end

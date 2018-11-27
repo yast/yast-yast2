@@ -25,21 +25,23 @@
 module Y2Firewall
   class Firewalld
     class Api
-      # This module contains specific api methods for handling services
+      # This module contains specific API methods for handling services
       # definition and configuration.
       module Services
         # Creates a new service definition for the given service name
         #
         # @param service [String] The firewall service
+        # @return [Boolean] true if the new service was created
         def create_service(service)
-          string_command("--new-service=#{service}", permanent: !offline?) == "success"
+          modify_command("--new-service=#{service}", permanent: !offline?)
         end
 
-        # Creates a new service definition for the given service name
+        # Remove the service definition for the given service name
         #
         # @param service [String] The firewall service
+        # @return [Boolean] true if the service was deleted
         def delete_service(service)
-          string_command("--delete-service=#{service}", permanent: !offline?) == "success"
+          modify_command("--delete-service=#{service}", permanent: !offline?)
         end
 
         # Return the list of availale firewalld services
@@ -75,8 +77,8 @@ module Y2Firewall
         #
         # @param service [String] The firewall service
         # @param short_description [String] the new service name or description
-        def service_short=(service, short_description)
-          string_command("--service=#{service}", "--set-short=#{short_description}",
+        def modify_service_short(service, short_description)
+          modify_command("--service=#{service}", "--set-short=#{short_description}",
             permanent: !offline?)
         end
 
@@ -92,9 +94,9 @@ module Y2Firewall
         #
         # @param service [String] The firewall service
         # @param long_description [String] the new service description
-        def service_description=(service, long_description)
-          string_command("--service=#{service}", "--set-description=#{long_description}",
-            permanent: !offline?) == "success"
+        def modify_service_description(service, long_description)
+          modify_command("--service=#{service}", "--set-description=#{long_description}",
+            permanent: !offline?)
         end
 
         # Returns whether the service definition for the service name given is
@@ -138,7 +140,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if port was removed from service
         def remove_service_port(service, port, permanent: permanent?)
-          string_command("--service=#{service}", "--remove-port=#{port}", permanent: permanent) == "success"
+          modify_command("--service=#{service}", "--remove-port=#{port}", permanent: permanent)
         end
 
         # @param service [String] The firewall firewall
@@ -147,7 +149,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if port was removed from service
         def add_service_port(service, port, permanent: permanent?)
-          string_command("--service=#{service}", "--add-port=#{port}", permanent: permanent) == "success"
+          modify_command("--service=#{service}", "--add-port=#{port}", permanent: permanent)
         end
       end
     end

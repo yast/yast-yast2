@@ -40,6 +40,9 @@ require "fileutils"
 
 module Yast
   class InstallationClass < Module
+    # usual mountpoint for the source (i.e. CD)
+    SOURCEDIR = "/run/YaST2/mount".freeze
+
     def main
       Yast.import "Stage"
       Yast.import "Linuxrc"
@@ -55,10 +58,6 @@ module Yast
       # Usual mountpoint for the destination seen from the (default) SCR.  It's
       # set to "/" when the SCR is restarted in the target system.
       @scr_destdir = "/"
-
-      # usual mountpoint for the source (i.e. CD)
-
-      @sourcedir = "/var/adm/mount"
 
       @yast2dir = "/var/lib/YaST2"
 
@@ -287,10 +286,19 @@ module Yast
       @_no_x11
     end
 
+    # Gets directory suitable for source mount. It ensures that directory exists.
+    # It does not ensure unmounting previous content.
+    #
+    # @return [String]
+    def sourcedir
+      ::FileUtils.mkdir_p(SOURCEDIR) unless ::File.exist?(SOURCEDIR)
+
+      SOURCEDIR
+    end
+
     publish variable: :scr_handle, type: "integer"
     publish variable: :destdir, type: "string"
     publish variable: :scr_destdir, type: "string"
-    publish variable: :sourcedir, type: "string"
     publish variable: :yast2dir, type: "string"
     publish variable: :mountlog, type: "string"
     publish variable: :encoding, type: "string"
@@ -326,6 +334,7 @@ module Yast
     publish function: :x11_setup_needed, type: "boolean ()"
     publish function: :text_fallback, type: "boolean ()"
     publish function: :no_x11, type: "boolean ()"
+    publish function: :sourcedir, type: "string ()"
   end
 
   Installation = InstallationClass.new

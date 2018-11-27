@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 # ------------------------------------------------------------------------------
-# Copyright (c) 2017 SUSE LLC
+# Copyright (c) 2018 SUSE LLC
 #
 #
 # This program is free software; you can redistribute it and/or modify it under
@@ -69,13 +69,11 @@ module Y2Firewall
       def parse_zones
         current_zone = nil
         current_attribute = nil
-        zones_definition.each do |line|
+        zones_definition.each_with_object(zone_entries) do |line, entries|
           next if line.lstrip.empty?
           # If  the entry looks like a zone name
           if line.start_with?(/\w/)
-            attribute, _value = line.split(/\s*\(active\)\s*$/)
-            attribute = nil unless zone_names.include?(attribute)
-            current_zone = attribute
+            current_zone = current_zone_from(line)
             next
           end
 
@@ -84,29 +82,33 @@ module Y2Firewall
           attribute, value = line.split(":\s")
           if attribute && attribute.start_with?(/\s\s\w/)
             current_attribute = attribute.lstrip.tr("-", "_")
-            zone_entries[current_zone] ||= {}
-            zone_entries[current_zone][current_attribute] ||= [value.to_s]
+            entries[current_zone] ||= {}
+            entries[current_zone][current_attribute] ||= [value.to_s]
           elsif current_attribute
-            zone_entries[current_zone][current_attribute] ||= []
-            zone_entries[current_zone][current_attribute] << line.lstrip
+            entries[current_zone][current_attribute] ||= []
+            entries[current_zone][current_attribute] << line.lstrip
           end
         end
       end
 
+      def current_zone_from(line)
+        attribute, _value = line.split(/\s*\(active\)\s*$/)
+        zone_names.include?(attribute) ? attribute : nil
+      end
+
+      ATTRIBUTE_MAPPING = { "summary" => "short", "rich rules" => "rich_rules" }.freeze
       # Iterates over the zone entries instantiating a zone object per each of
       # the entries and returning an array with all of them.
       #
       # @return [Array<Y2Firewall::Firewalld::Zone] the list of zones obtained
       #   from the parsed definition
       def initialize_zones
-        zones = []
-        zone_entries.each do |name, config|
+        zone_entries.each_with_object([]) do |(name, config), zones|
           zone = Zone.new(name: name)
           zones << zone
 
           config.each do |attribute, entries|
-            attribute = "short" if attribute == "summary"
-            attribute = "rich_rules" if attribute == "rich rules"
+            attribute = ATTRIBUTE_MAPPING[attribute] if ATTRIBUTE_MAPPING[attribute]
             next unless zone.respond_to?("#{attribute}=")
 
             value = MULTIPLE_ENTRIES.include?(attribute) ? entries.reject(&:empty?) : entries.first.to_s
@@ -124,8 +126,6 @@ module Y2Firewall
 
           zone.untouched!
         end
-
-        zones
       end
     end
   end

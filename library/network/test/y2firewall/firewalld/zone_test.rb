@@ -1,7 +1,7 @@
 #!/usr/bin/env rspec
 # encoding: utf-8
 #
-# Copyright (c) [2017] SUSE LLC
+# Copyright (c) 2018 SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -79,8 +79,17 @@ describe Y2Firewall::Firewalld::Zone do
 
     context "when the zone was not modified since read" do
       it "returns false" do
+        subject.read
         expect(subject.modified?).to eq(false)
       end
+    end
+  end
+
+  describe "#reload!" do
+    it "forces a reload of the firewalld configuration" do
+      expect(api).to receive(:reload)
+
+      subject.reload!
     end
   end
 
@@ -118,6 +127,90 @@ describe Y2Firewall::Firewalld::Zone do
       subject.untouched!
       expect(subject.modified?).to eq(false)
       expect(subject.interfaces).to eq(["eth0", "eth1"])
+    end
+  end
+
+  describe "#add_interface!" do
+    subject { described_class.new(name: "test") }
+
+    it "calls the API changing the specified interface to this zone" do
+      expect(api).to receive(:change_interface).with("test", "eth0")
+
+      subject.add_interface!("eth0")
+    end
+  end
+
+  describe "#add_source!" do
+    subject { described_class.new(name: "test") }
+
+    it "calls the API changing the specified source to this zone" do
+      expect(api).to receive(:change_source).with("test", "192.168.1.0/24")
+
+      subject.add_source!("192.168.1.0/24")
+    end
+  end
+
+  describe "#service_open?" do
+    it "returns whether the service is allowed or not in the zone" do
+      allow(subject).to receive(:services).and_return(["ssh", "vnc"])
+
+      expect(subject.service_open?("ssh")).to eql(true)
+      expect(subject.service_open?("samba")).to eql(false)
+    end
+  end
+
+  describe "#full_name" do
+    subject { described_class.new(name: "block") }
+
+    it "returns the zone known full name" do
+      expect(subject.full_name).to eq("Block Zone")
+    end
+  end
+
+  describe "#apply_changes!" do
+    context "when the zone has not been modified" do
+      it "returns true" do
+        allow(subject).to receive(:modified?).and_return(false)
+        expect(subject.apply_changes!).to eql(true)
+      end
+    end
+
+    context "when the zone has been modified" do
+      before do
+        allow(subject).to receive(:apply_relations_changes!)
+        allow(subject).to receive(:apply_attributes_changes!)
+      end
+
+      subject { described_class.new(name: "test") }
+
+      it "applies all the changes done in its relations" do
+        subject.services = ["ssh"]
+        expect(subject).to receive(:apply_relations_changes!)
+        subject.apply_changes!
+      end
+
+      it "applies all the changes done in its attributes" do
+        subject.target = "ACCEPT"
+        expect(subject).to receive(:apply_attributes_changes!)
+        subject.apply_changes!
+      end
+
+      it "applies the masquerading modifications if it was modified" do
+        expect(api).to receive(:add_masquerade)
+        subject.masquerade = true
+        subject.apply_changes!
+      end
+
+      it "sets the zone as not modified once applied all the changes" do
+        subject.modified!(:false_value)
+        expect(subject.modified?).to eql(true)
+        subject.apply_changes!
+        expect(subject.modified?).to eql(false)
+      end
+
+      it "returns true when applied all the changes" do
+        expect(subject.apply_changes!).to eql(true)
+      end
     end
   end
 end

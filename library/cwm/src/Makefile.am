@@ -18,12 +18,15 @@ ycwm_DATA = \
   lib/cwm/dialog.rb \
   lib/cwm/page.rb \
   lib/cwm/pager.rb \
+  lib/cwm/popup.rb \
+  lib/cwm/service_widget.rb \
   lib/cwm/replace_point.rb \
   lib/cwm/rspec.rb \
   lib/cwm/table.rb \
   lib/cwm/tabs.rb \
   lib/cwm/tree.rb \
   lib/cwm/tree_pager.rb \
+  lib/cwm/ui_state.rb \
   lib/cwm/widget.rb \
   lib/cwm/wrapper_widget.rb
 

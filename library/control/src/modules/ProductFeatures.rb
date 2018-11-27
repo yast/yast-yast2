@@ -69,8 +69,12 @@ module Yast
           "vendor_url"                      => "",
           "enable_clone"                    => false,
           "disable_os_prober"               => false,
+          "enable_local_users"              => true,
           # FATE #304865
-          "base_product_license_directory"  => "/etc/YaST2/licenses/base/"
+          "base_product_license_directory"  => "/etc/YaST2/licenses/base/",
+          "full_system_media_name"          => "",
+          "full_system_download_url"        => "",
+          "save_y2logs"                     => true
         },
         "partitioning" => {
           "use_flexible_partitioning"    => false,
@@ -238,6 +242,27 @@ module Yast
       Ops.is_string?(value) && Builtins.tolower(Convert.to_string(value)) == "yes"
     end
 
+    # Get value of a boolean feature with a fallback value.
+    #
+    # @note This is a stable API function
+    # @param [String] section string section of the feature
+    # @param [String] feature feature name
+    # @param [Boolean] fallback
+    #
+    # @return [Boolean] the feature value or fallback if not specified
+    def GetBooleanFeatureWithFallback(section, feature, fallback)
+      value = GetFeature(section, feature)
+      return fallback if value.nil?
+      return value if Ops.is_boolean?(value)
+
+      if value.respond_to?(:downcase)
+        return true  if ["yes", "true"].include?(value.downcase)
+        return false if ["no", "false"].include?(value.downcase)
+      end
+
+      fallback
+    end
+
     # Get value of a feature
     # @note This is a stable API function
     # @param [String] section string section of the feature
@@ -355,6 +380,7 @@ module Yast
     publish function: :InitIfNeeded, type: "void ()"
     publish function: :GetFeature, type: "any (string, string)"
     publish function: :GetBooleanFeature, type: "boolean (string, string)"
+    publish function: :GetBooleanFeatureWithFallback, type: "boolean (string, string, boolean)"
     publish function: :GetIntegerFeature, type: "integer (string, string)"
     publish function: :SetFeature, type: "void (string, string, any)"
     publish function: :SetStringFeature, type: "void (string, string, string)"

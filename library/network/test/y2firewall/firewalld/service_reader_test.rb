@@ -37,15 +37,12 @@ describe Y2Firewall::Firewalld::ServiceReader do
     let(:service_info) do
       [
         "radius",
-        "  summary: RADIUS",
-        "  description: The Remote Authentication Dial In User Service (RADIUS)" \
-        " is a protocol for user authentication over networks. It is mostly used" \
-        " for modem, DSL or wireless user authentication. If you plan to provide" \
-        " a RADIUS service (e.g. with freeradius), enable this option.",
-        "  ports: 1812/tcp 1812/udp 1813/tcp 1813/udp",
-        "  protocols: ",
+        "  summary: My service",
+        "  description: This is my service description",
+        "  ports: 137/tcp 137/udp",
+        "  protocols: igmp",
         "  source-ports: ",
-        "  modules: ",
+        "  modules: nf_conntrack_netbios_ns",
         "  destination: "
       ]
     end
@@ -72,9 +69,9 @@ describe Y2Firewall::Firewalld::ServiceReader do
 
       it "returns the service with the parsed configuration" do
         service = subject.read(service_name)
-        expect(service.short).to eq("RADIUS")
-        expect(service.ports).to eq(["1812/tcp", "1812/udp", "1813/tcp", "1813/udp"])
-        expect(service.protocols).to eq([])
+        expect(service.short).to eq("My service")
+        expect(service.ports).to eq(["137/tcp", "137/udp"])
+        expect(service.protocols).to eq(["igmp"])
       end
     end
   end

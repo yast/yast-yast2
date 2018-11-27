@@ -66,7 +66,7 @@ module Y2Packager
     # @return [Array<Product>] Available products
     def all_products
       @all_products ||= available_products.map do |prod|
-        prod_pkg = product_package(prod["product_package"], prod["source"])
+        prod_pkg = product_package(prod["product_package"])
 
         if prod_pkg
           prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Adisplayorder\(\s*([0-9]+)\s*\)\z/ }
@@ -114,10 +114,12 @@ module Y2Packager
       installed_products.map { |p| Y2Packager::Product.from_h(p) }
     end
 
-    def product_package(name, repo_id)
+    def product_package(name, _repo_id = nil)
       return nil unless name
-      Yast::Pkg.ResolvableDependencies(name, :package, "").find do |prod|
-        prod["source"] == repo_id
+
+      # find the highest version
+      Yast::Pkg.ResolvableDependencies(name, :package, "").reduce(nil) do |a, p|
+        !a || (Yast::Pkg.CompareVersions(a["version"], p["version"]) < 0) ? p : a
       end
     end
 

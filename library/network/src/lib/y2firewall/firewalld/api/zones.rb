@@ -25,7 +25,7 @@
 module Y2Firewall
   class Firewalld
     class Api
-      # This module contains specific api methods for handling zones
+      # This module contains specific API methods for handling zones
       # configuration.
       module Zones
         # @return [Array<String>] List of firewall zones
@@ -37,18 +37,16 @@ module Y2Firewall
         # permanently
         #
         # @param zone [String] The firewall zone name
-        # @return [Boolean] true if the new zone was created
         def create_zone(zone)
-          string_command("--new-zone=#{zone}", permanent: !offline?) == "success"
+          modify_command("--new-zone=#{zone}", permanent: !offline?)
         end
 
         # Delete the given zone from firewalld. Deleted zones must be deleted
         # permanently
         #
         # @param zone [String] The firewall zone name to be deleted
-        # @return [Boolean] true if the zone was deleted
         def delete_zone(zone)
-          string_command("--delete-zone=#{zone}", permanent: !offline?) == "success"
+          modify_command("--delete-zone=#{zone}", permanent: !offline?)
         end
 
         # @param zone [String] The firewall zone
@@ -120,22 +118,20 @@ module Y2Firewall
         #   reads the permanent configuration
         # @return [Array<String>] list of all information for given zone
         def list_all(zone, permanent: permanent?, verbose: false)
-          if verbose
-            string_command("--zone=#{zone}", "--verbose", "--list-all", permanent: permanent).split(" ")
-          else
-            string_command("--zone=#{zone}", "--list-all", permanent: permanent).split(" ")
-          end
+          args = ["--zone=#{zone}", "--list-all"]
+          args << "--verbose" if verbose
+
+          string_command(*args, permanent: permanent).split(" ")
         end
 
         # @param permanent [Boolean] if true and firewalld is running it
         #   reads the permanent configuration
         # @return [Array<String>] list of all information for all firewall zones
         def list_all_zones(permanent: permanent?, verbose: false)
-          if verbose
-            string_command("--list-all-zones", "--verbose", permanent: permanent).split("\n")
-          else
-            string_command("--list-all-zones", permanent: permanent).split("\n")
-          end
+          args = ["--list-all-zones"]
+          args << "--verbose" if verbose
+
+          string_command(*args, permanent: permanent).split("\n")
         end
 
         ### Interfaces ###
@@ -156,7 +152,7 @@ module Y2Firewall
         # @param interface [String] The network interface
         # @return [Boolean] True if interface is assigned to zone
         def interface_enabled?(zone, interface, permanent: permanent?)
-          query_command("--zone=#{zone} --query-interface=#{interface}", permanent: permanent)
+          query_command("--zone=#{zone}", "--query-interface=#{interface}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -165,8 +161,8 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if interface was added to zone
         def add_interface(zone, interface, permanent: permanent?)
-          string_command("--zone=#{zone}", "--add-interface=#{interface}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--add-interface=#{interface}",
+            permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -175,8 +171,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if the interface was removed from the zone
         def remove_interface(zone, interface, permanent: permanent?)
-          string_command("--zone=#{zone}", "--remove-interface=#{interface}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--remove-interface=#{interface}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -185,8 +180,8 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if interface was changed
         def change_interface(zone, interface, permanent: permanent?)
-          string_command("--zone=#{zone}", "--change-interface=#{interface}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--change-interface=#{interface}",
+            permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -195,8 +190,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if source was added
         def add_source(zone, source, permanent: permanent?)
-          string_command("--zone=#{zone}", "--add-source=#{source}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--add-source=#{source}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -205,8 +199,8 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if source was removed
         def remove_source(zone, source, permanent: permanent?)
-          string_command("--zone=#{zone}", "--remove-source=#{source}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--remove-source=#{source}",
+            permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -215,8 +209,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if source was changed
         def change_source(zone, source, permanent: permanent?)
-          string_command("--zone=#{zone}", "--change-source=#{source}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--change-source=#{source}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -225,8 +218,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if the port was added
         def add_source_port(zone, port, permanent: permanent?)
-          string_command("--zone=#{zone}", "--add-source-port=#{port}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--add-source-port=#{port}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -235,7 +227,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if the port was removed
         def remove_source_port(zone, port, permanent: permanent?)
-          run_command("--zone=#{zone}", "--remove-source-port=#{port}", permanent: permanent)
+          modify_command("--zone=#{zone}", "--remove-source-port=#{port}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -244,8 +236,8 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if the port was added
         def add_forward_port(zone, port, permanent: permanent?)
-          string_command("--zone=#{zone}", "--add-forward-port=#{port}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--add-forward-port=#{port}",
+            permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -254,8 +246,8 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if the port was removed
         def remove_forward_port(zone, port, permanent: permanent?)
-          string_command("--zone=#{zone}", "--remove-forward-port=#{port}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--remove-forward-port=#{port}",
+            permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -264,8 +256,8 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if the rich rule was added
         def add_rich_rule(zone, rule, permanent: permanent?)
-          string_command("--zone=#{zone}", "--add-rich-rule=#{rule}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--add-rich-rule=#{rule}",
+            permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -274,29 +266,36 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if the rich rule was removed
         def remove_rich_rule(zone, rule, permanent: permanent?)
-          string_command("--zone=#{zone}", "--remove-rich-rule=#{rule}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--remove-rich-rule=#{rule}",
+            permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
         # @param service [String] The firewall service
         # @return [Boolean] True if service is enabled in zone
-        def service_enabled?(zone, service)
-          query_command("--zone=#{zone}", "--query-service=#{service}")
+        def service_enabled?(zone, service, permanent: permanent?)
+          query_command("--zone=#{zone}", "--query-service=#{service}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
         # @param port [String] The firewall port
         # @return [Boolean] True if port is enabled in zone
-        def port_enabled?(zone, port)
-          query_command("--zone=#{zone}", "--query-port=#{port}")
+        def port_enabled?(zone, port, permanent: permanent?)
+          query_command("--zone=#{zone}", "--query-port=#{port}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
         # @param protocol [String] The zone protocol
         # @return [Boolean] True if protocol is enabled in zone
-        def protocol_enabled?(zone, protocol)
-          query_command("--zone=#{zone}", "--query-protocol=#{protocol}")
+        def protocol_enabled?(zone, protocol, permanent: permanent?)
+          query_command("--zone=#{zone}", "--query-protocol=#{protocol}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param source [String] The network source
+        # @return [Boolean] True if the source is binded to the zone
+        def source_enabled?(zone, source, permanent: permanent?)
+          query_command("--zone=#{zone}", "--query-source=#{source}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -305,8 +304,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if service was added to zone
         def add_service(zone, service, permanent: permanent?)
-          string_command("--zone=#{zone}", "--add-service=#{service}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--add-service=#{service}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -315,7 +313,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if port was added to zone
         def add_port(zone, port, permanent: permanent?)
-          string_command("--zone=#{zone}", "--add-port=#{port}", permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--add-port=#{port}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -324,8 +322,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if protocol was added to zone
         def add_protocol(zone, protocol, permanent: permanent?)
-          string_command("--zone=#{zone}", "--add-protocol=#{protocol}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--add-protocol=#{protocol}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -334,8 +331,8 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if service was removed from zone
         def remove_service(zone, service, permanent: permanent?)
-          string_command("--zone=#{zone}", "--remove-service=#{service}",
-            permanent: permanent) == "success"
+          remove_arg = offline? ? "--remove-service-from-zone" : "--remove-service"
+          modify_command("--zone=#{zone}", "#{remove_arg}=#{service}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -344,8 +341,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if port was removed from zone
         def remove_port(zone, port, permanent: permanent?)
-          string_command("--zone=#{zone}", "--remove-port=#{port}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--remove-port=#{port}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -354,8 +350,7 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if protocol was removed from zone
         def remove_protocol(zone, protocol, permanent: permanent?)
-          string_command("--zone=#{zone}", "--remove-protocol=#{protocol}",
-            permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--remove-protocol=#{protocol}", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -373,7 +368,7 @@ module Y2Firewall
         def add_masquerade(zone, permanent: permanent?)
           return true if masquerade_enabled?(zone, permanent: permanent)
 
-          string_command("--zone=#{zone}", "--add-masquerade", permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--add-masquerade", permanent: permanent)
         end
 
         # @param zone [String] The firewall zone
@@ -381,9 +376,20 @@ module Y2Firewall
         #   modifies the permanent configuration
         # @return [Boolean] True if masquerade was removed in zone
         def remove_masquerade(zone, permanent: permanent?)
-          return true if !masquerade_enabled?(zone, permanent: permanent)
+          return true unless masquerade_enabled?(zone, permanent: permanent)
 
-          string_command("--zone=#{zone}", "--remove-masquerade", permanent: permanent) == "success"
+          modify_command("--zone=#{zone}", "--remove-masquerade", permanent: permanent)
+        end
+
+        # Enable or disable masquerade in the zone
+        #
+        # @param zone [String] The firewall zone
+        # @param enabled [Boolean] whether masquerade should be enabled or not
+        # @return [Boolean] whether masquerade was modified or not
+        def modify_masquerade(zone, enabled)
+          method = enabled ? "add_masquerade" : "remove_masquerade"
+
+          public_send(method, zone, permanent: !offline?)
         end
 
         # Full name or short description of the zone
@@ -398,17 +404,16 @@ module Y2Firewall
         # @param zone [String] The firewall zone
         # @param short_description [String] the new zone name or description
         # @return [Boolean] true if the short description was modified
-        def short=(zone, short_description)
-          string_command("--zone=#{zone}", "--set-short=#{short_description}",
-            permanent: !offline?) == "success"
+        def modify_short(zone, short_description)
+          modify_command("--zone=#{zone}", "--set-short=#{short_description}",
+            permanent: !offline?)
         end
 
         # Long description of the zone
         #
         # @param zone [String] The firewall zone
         def description(zone)
-          string_command("--zone=#{zone}", "--get-description",
-            permanent: !offline?)
+          string_command("--zone=#{zone}", "--get-description", permanent: !offline?)
         end
 
         # Modify the long description of the zone
@@ -416,16 +421,16 @@ module Y2Firewall
         # @param zone [String] The firewall zone
         # @param long_description [String] the new zone description
         # @return [Boolean] true if the long description was modified
-        def description=(zone, long_description)
-          string_command("--zone=#{zone}", "--set-description=#{long_description}",
-            permanent: !offline?) == "success"
+        def modify_description(zone, long_description)
+          modify_command("--zone=#{zone}", "--set-description=#{long_description}",
+            permanent: !offline?)
         end
 
         # The target of the zone
         #
         # @param zone [String] The firewall zone
         def target(zone)
-          string_command("--zone=#{zone}", "--get-target")
+          string_command("--zone=#{zone}", "--get-target", permanent: !offline?)
         end
 
         # Modify the current target of the zone
@@ -433,9 +438,8 @@ module Y2Firewall
         # @param zone [String] The firewall zone
         # @param target [String] the new target
         # @return [Boolean] true if the zone target was modified
-        def target=(zone, target)
-          string_command("--zone=#{zone}", "--set-target=#{target}",
-            permanent: !offline?) == "success"
+        def modify_target(zone, target)
+          modify_command("--zone=#{zone}", "--set-target=#{target}", permanent: !offline?)
         end
       end
     end

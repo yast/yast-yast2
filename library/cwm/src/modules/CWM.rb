@@ -55,35 +55,35 @@ module Yast
 
       # Handler to be called after validation of a dialog fails
       @validation_failed_handler = nil
-
-      # UI containers, layout helpers that contain other widgets.  Used by
-      # functions that recurse through "contents" to decide whether to go
-      # deeper.
-      @ContainerWidgets = [
-        :Frame,
-        :RadioButtonGroup,
-        :VBox,
-        :HBox,
-        :MarginBox,
-        :MinWidth,
-        :MinHeight,
-        :MinSize,
-        :Left,
-        :Right,
-        :Top,
-        :Bottom,
-        :HCenter,
-        :VCenter,
-        :HVCenter,
-        :HSquash,
-        :VSquash,
-        :HVSquash,
-        :HWeight,
-        :VWeight,
-        :DumbTab,
-        :ReplacePoint
-      ]
     end
+
+    # UI containers, layout helpers that contain other widgets.  Used by
+    # functions that recurse through "contents" to decide whether to go
+    # deeper.
+    CONTAINER_WIDGETS = [
+      :Frame,
+      :RadioButtonGroup,
+      :VBox,
+      :HBox,
+      :MarginBox,
+      :MinWidth,
+      :MinHeight,
+      :MinSize,
+      :Left,
+      :Right,
+      :Top,
+      :Bottom,
+      :HCenter,
+      :VCenter,
+      :HVCenter,
+      :HSquash,
+      :VSquash,
+      :HVSquash,
+      :HWeight,
+      :VWeight,
+      :DumbTab,
+      :ReplacePoint
+    ].freeze
 
     # local functions
 
@@ -113,49 +113,35 @@ module Yast
     # @param widgets [Hash{String => ::CWM::WidgetHash}] widget name -> widget description
     # @return [::CWM::UITerm] updated term ready to be used as a dialog
     def ProcessTerm(t, widgets)
-      t = deep_copy(t)
-      widgets = deep_copy(widgets)
-      args = Builtins.size(t)
-      return deep_copy(t) if args == 0
-      ret = Builtins.toterm(
-        Builtins.substring(Builtins.sformat("%1", Builtins.symbolof(t)), 1)
-      )
-      id_frame = false
-      index = 0
-      current = Builtins.symbolof(t)
-      while Ops.less_than(index, args)
-        arg = Ops.get(t, index)
-        # FIXME: still there is a problem for frames without label
-        if current == :Frame && index == 0 # no action
+      return t if t.empty?
+      ret = Yast::Term.new(t.value)
+
+      is_frame = t.value == :Frame
+      is_id_frame = false
+
+      t.each.with_index do |arg, index|
+        if is_frame && index == 0 # no action
           # frame can have id and also label, so mark if id is used
-          id_frame = true if arg.is_a?(Yast::Term) && arg.value == :id
+          is_id_frame = arg.is_a?(Yast::Term) && arg.value == :id
           Builtins.y2debug("Leaving untouched %1", arg)
-        elsif current == :Frame && index == 1 && id_frame && arg.is_a?(::String) # no action
-          id_frame = false
+        elsif is_frame && index == 1 && is_id_frame && arg.is_a?(::String) # no action
           Builtins.y2debug("Leaving untouched %1", arg)
-        elsif Ops.is_term?(arg) && !arg.nil? # recurse
-          s = Builtins.symbolof(Convert.to_term(arg))
-          if Builtins.contains(@ContainerWidgets, s)
-            arg = ProcessTerm(Convert.to_term(arg), widgets)
+        elsif Ops.is_term?(arg) # recurse
+          if CONTAINER_WIDGETS.include?(arg.value)
+            arg = ProcessTerm(arg, widgets)
           end
         elsif Ops.is_string?(arg) # action
           Builtins.y2error("find string '#{arg}' without associated widget in StringTerm #{t.inspect}") unless widgets[arg]
           Builtins.y2milestone("Known widgets #{widgets.inspect}") unless widgets[arg]
 
-          arg = Ops.get_term(
-            widgets,
-            [Convert.to_string(arg), "widget"],
-            VBox()
-          )
-          s = Builtins.symbolof(arg)
-          if Builtins.contains(@ContainerWidgets, s)
+          arg = widgets.fetch(arg, {}).fetch("widget") { VBox() }
+          if CONTAINER_WIDGETS.include?(arg.value)
             arg = ProcessTerm(arg, widgets)
           end
         end
-        ret = Builtins.add(ret, arg)
-        index = Ops.add(index, 1)
+        ret << arg
       end
-      deep_copy(ret)
+      ret
     end
 
     # Process term with the dialog, return all strings.
@@ -172,9 +158,8 @@ module Yast
         current = Builtins.symbolof(t)
         if current == :Frame && index == 0 # no action
           Builtins.y2debug("Leaving untouched %1", arg)
-        elsif Ops.is_term?(arg) && !arg.nil? # recurse
-          s = Builtins.symbolof(Convert.to_term(arg))
-          if Builtins.contains(@ContainerWidgets, s)
+        elsif Ops.is_term?(arg)
+          if CONTAINER_WIDGETS.include?(arg.value)
             rets = Ops.add(rets, StringsOfTerm(Convert.to_term(arg)))
           end
         elsif Ops.is_string?(arg) # action
@@ -190,7 +175,6 @@ module Yast
     # @param [String] type string type information
     # @return [Boolean] true on success or if do not know how to validate
     def ValidateBasicType(value, type)
-      value = deep_copy(value)
       return Ops.is_term?(value) if type == "term"
       return Ops.is_string?(value) if type == "string"
       return Ops.is_symbol?(value) if type == "symbol"
@@ -210,7 +194,6 @@ module Yast
     # @param [String] widget any name of the widget/option
     # @return [Boolean] true if validation succeeded
     def ValidateValueType(key, value, widget)
-      value = deep_copy(value)
       types = {
         # general
         "widget"        => "symbol",
@@ -268,7 +251,6 @@ module Yast
     # @param [String] widget any name of the widget/option
     # @return [Boolean] true if validation succeeded
     def ValidateValueContents(key, value, widget)
-      value = deep_copy(value)
       error = ""
       if key == "label"
         s = Convert.to_string(value)
@@ -291,8 +273,9 @@ module Yast
       false
     end
 
+    # @param widgets [Array<::CWM::WidgetHash>] list of widget maps
+    # @return [Integer] the lowest 'ui_timeout' value, or 0
     def GetLowestTimeout(widgets)
-      widgets = deep_copy(widgets)
       minimum = 0
       Builtins.foreach(widgets) do |w|
         timeout = Ops.get_integer(w, "ui_timeout", 0)
@@ -343,7 +326,7 @@ module Yast
           )
         end
         # set initial values
-        @processed_widget = deep_copy(w)
+        self.processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "init"),
           from: "any",
@@ -361,12 +344,11 @@ module Yast
     # @param [Hash] event_descr map event that occured
     # @return [Symbol] modified action (sometimes may be needed) or nil
     def handleWidgets(widgets, event_descr)
-      widgets = deep_copy(widgets)
       event_descr = deep_copy(event_descr)
       ret = nil
       Builtins.foreach(widgets) do |w|
         if ret.nil?
-          @processed_widget = deep_copy(w)
+          self.processed_widget = deep_copy(w)
           events = Ops.get_list(w, "handle_events", [])
           toEval = Convert.convert(
             Ops.get(w, "handle"),
@@ -392,7 +374,7 @@ module Yast
       widgets = deep_copy(widgets)
       event = deep_copy(event)
       Builtins.foreach(widgets) do |w|
-        @processed_widget = deep_copy(w)
+        self.processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "store"),
           from: "any",
@@ -410,7 +392,7 @@ module Yast
     def cleanupWidgets(widgets)
       widgets = deep_copy(widgets)
       Builtins.foreach(widgets) do |w|
-        @processed_widget = deep_copy(w)
+        self.processed_widget = deep_copy(w)
         toEval = Convert.convert(
           Ops.get(w, "cleanup"),
           from: "any",
@@ -648,7 +630,7 @@ module Yast
     def validateWidget(widget, event, key)
       widget = deep_copy(widget)
       event = deep_copy(event)
-      @processed_widget = deep_copy(widget)
+      self.processed_widget = deep_copy(widget)
       failed = false
       val_type = Ops.get_symbol(widget, "validate_type")
       if val_type == :function || val_type == :function_no_popup
@@ -749,14 +731,11 @@ module Yast
     # @param widgets [Array<::CWM::WidgetHash>] list of widget description maps
     # @return [::CWM::UITerm] updated term ready to be used as a dialog
     def PrepareDialog(dialog, widgets)
-      dialog = deep_copy(dialog)
-      widgets = deep_copy(widgets)
-      args = Builtins.size(dialog)
-      return deep_copy(dialog) if args == 0
-      m = Builtins.listmap(widgets) do |w|
-        widget_key = Ops.get_string(w, "_cwm_key", "")
-        { widget_key => w }
-      end
+      return dialog.clone if dialog.empty?
+      m = widgets.map do |w|
+        widget_key = w.fetch("_cwm_key", "")
+        [widget_key, w]
+      end.to_h
       ProcessTerm(dialog, m)
     end
 
@@ -835,30 +814,14 @@ module Yast
         end
 
         ret = :abort if ret == :cancel
-        if ret == :abort
-          if Ops.get(functions, :abort)
-            toEval = Convert.convert(
-              Ops.get(functions, :abort),
-              from: "any",
-              to:   "boolean ()"
-            )
-            if !toEval.nil?
-              eval_ret = toEval.call
-              ret = eval_ret ? :abort : nil
-            end
-          end
-        elsif ret == :back
-          if Ops.get(functions, :back)
-            toEval = Convert.convert(
-              Ops.get(functions, :back),
-              from: "any",
-              to:   "boolean ()"
-            )
-            if !toEval.nil?
-              eval_ret = toEval.call
-              ret = eval_ret ? :back : nil
-            end
-          end
+
+        if ret == :next && functions[:next]
+          ret = nil unless functions[:next].call
+          save = false if ret.nil?
+        elsif ret == :back && functions[:back]
+          ret = nil unless functions[:back].call
+        elsif ret == :abort && functions[:abort]
+          ret = nil unless functions[:abort].call
         end
 
         next if ret.nil?
@@ -878,9 +841,9 @@ module Yast
     end
 
     # Disable given bottom buttons of the wizard sequencer
-    # @param buttons list of buttons to be disabled
+    # @param buttons [Array<String>] list of buttons to be disabled:
+    #   "back_button", "abort_button", "next_button"
     def DisableButtons(buttons)
-      buttons = deep_copy(buttons)
       Builtins.foreach(buttons) do |button|
         Wizard.DisableBackButton if button == "back_button"
         Wizard.DisableAbortButton if button == "abort_button"
@@ -923,34 +886,39 @@ module Yast
     # Set handler to be called after validation of a dialog failed
     # @param [void ()] handler a function reference to be caled. If nil, nothing is called
     def SetValidationFailedHandler(handler)
-      handler = deep_copy(handler)
       @validation_failed_handler = deep_copy(handler)
 
       nil
     end
 
     # Display the dialog and run its event loop using new widget API
-    # @param [::CWM::WidgetTerm] contents is UI term including instances of {CWM::AbstractWidget}
-    # @param [String] caption of dialog
-    # @param [String, nil] back_button label for dialog back button,
+    # @param contents [::CWM::WidgetTerm] UI term including instances of {CWM::AbstractWidget}
+    # @param caption [String] caption of dialog
+    # @param back_button [String, nil] label for dialog back button,
     #   `nil` to use the default label, `""` to omit the button
-    # @param [String, nil] next_button label for dialog next button,
+    # @param next_button [String, nil] label for dialog next button,
     #   `nil` to use the default label, `""` to omit the button
-    # @param [String, nil] abort_button label for dialog abort button,
+    # @param abort_button [String, nil] label for dialog abort button,
     #   `nil` to use the default label, `""` to omit the button
-    # @param [Array] skip_store_for list of events for which the value of the widget will not be stored.
+    # @param skip_store_for [Array] list of events for which the value of the widget will not be stored.
     #   Useful mainly when some widget returns an event that should not trigger the storing,
     #   like a reset button or a redrawing.  It will skip also validation, because it is not needed
     #   as nothing is stored.
-    # @param [Proc] back_handler handler that is called after clicking on back. If it returns false,
+    # @param disable_buttons [Array<String>] buttons to disable:
+    #   "back_button", "abort_button", "next_button"
+    # @param next_handler [Proc] handler that is called after clicking on next. If it returns false,
+    #   then it does not go next. If it returns true, then :next symbol is returned. If handler is not
+    #   defined, then it acts like if it returns true.
+    # @param back_handler [Proc] handler that is called after clicking on back. If it returns false,
     #   then it does not go back. If it returns true, then :back symbol is returned. If handler is not
     #   defined, then it acts like if it returns true.
-    # @param [Proc] abort_handler handler that is called after clicking on abort. If it returns false,
+    # @param abort_handler [Proc] handler that is called after clicking on abort. If it returns false,
     #   then it stops abort. If it returns true, then :abort symbol is returned. If handler is not
     #   defined, then it acts like if it returns true.
+    #
     # @return [Symbol] wizard sequencer symbol
     def show(contents, caption: nil, back_button: nil, next_button: nil, abort_button: nil, skip_store_for: [],
-      disable_buttons: [], back_handler: nil, abort_handler: nil)
+      disable_buttons: [], next_handler: nil, back_handler: nil, abort_handler: nil)
       widgets = widgets_in_contents(contents)
       options = {
         "contents"     => widgets_contents(contents),
@@ -964,6 +932,7 @@ module Yast
       options["skip_store_for"] = skip_store_for
       options["disable_buttons"] = disable_buttons
       options["fallback_functions"] = {}
+      options["fallback_functions"][:next] = Yast.fun_ref(next_handler, "boolean ()") if next_handler
       options["fallback_functions"][:back] = Yast.fun_ref(back_handler, "boolean ()") if back_handler
       options["fallback_functions"][:abort] = Yast.fun_ref(abort_handler, "boolean ()") if abort_handler
 
@@ -1027,6 +996,7 @@ module Yast
     # @param [Hash] fallback map initialize/save/handle fallbacks if not specified
     #   with the widgets.
     # @return [Symbol] wizard sequencer symbol
+    # @deprecated Use {#show} or {#ShowAndRun}
     def ShowAndRunOrig(widget_names, widget_descr, contents, caption, back_button, next_button, fallback)
       widget_names = deep_copy(widget_names)
       widget_descr = deep_copy(widget_descr)
@@ -1130,6 +1100,13 @@ module Yast
       end
 
       res
+    end
+
+  private
+
+    # such an accessor enables testing
+    def processed_widget=(w)
+      @processed_widget = w
     end
   end
 

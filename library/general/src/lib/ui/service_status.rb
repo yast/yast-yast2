@@ -29,13 +29,15 @@ module UI
   # It also provides checkboxes (reload_flag and enabled_flag) for the user
   # to specify whether the service must be reloaded/restarted after
   # configuration changes and whether it must be enabled at boot time.
+  #
+  # @deprecated Use CWM::ServiceWidget instead.
   class ServiceStatus
     include Yast::UIShortcuts
     include Yast::I18n
     include Yast::Logger
 
-    # @param service [Yast::SystemdServiceClass::Service] systemd service. Usually the easiest way
-    #   is just calling `Yast::SystemdService.find("name_of_the_service")`
+    # @param service [Yast2::Systemd::Service] systemd service. Usually the easiest way
+    #   is just calling `Yast2::Systemd::Service.find("name_of_the_service")`
     #   Note that this widget will #start and #stop the service by itself but
     #   the actions referenced by the flags (reloading and enabling/disabling)
     #   are expected to be done by the caller, when the whole configuration is

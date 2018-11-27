@@ -1,16 +1,289 @@
 -------------------------------------------------------------------
+Wed Nov 21 17:23:00 UTC 2018 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Added global parameter enable_local_users (Fate#326447)
+- Added ProductFeatures::GetBooleanFeatureWithFallback
+- 4.1.35
+
+-------------------------------------------------------------------
+Fri Nov 16 14:38:31 CET 2018 - aschnell@suse.com
+
+- check return value of OpenDialog to prevent crash (bsc#1115745)
+- 4.1.34
+
+-------------------------------------------------------------------
+Tue Nov  6 14:14:04 UTC 2018 - jreidinger@suse.com
+
+- WorkflowManager: Allow system roles to live in
+  /usr/share/system-roles/*.xml (bsc#1108176)
+- 4.1.33
+
+-------------------------------------------------------------------
+Fri Oct 26 11:46:16 UTC 2018 - jreidinger@suse.com
+
+- view_anymsg: allow user to switch to yast2-journal if file does
+  not exist or is empty (bsc#948729)
+- 4.1.32
+
+-------------------------------------------------------------------
+Wed Oct 24 16:55:08 UTC 2018 - schubi@suse.de
+
+- Added flag save_y2logs to control.xml file in order to save
+  YaST logs at the end of installation (fate#325737)
+- 4.1.31
+
+-------------------------------------------------------------------
+Wed Oct 24 15:55:08 UTC 2018 - jreidinger@suse.com
+
+- Ensure that Installation.sourcedir exists (bsc#1097700)
+- Use LSB compliant Installation.sourcedir
+- 4.1.30
+
+-------------------------------------------------------------------
+Wed Oct 24 12:48:18 UTC 2018 - knut.anderssen@suse.com
+
+- CWMFirewallInterfaces: make some "current state" methods public
+  needed by yast2-rmt (fate#326634)
+- 4.1.29
+
+-------------------------------------------------------------------
+Tue Oct 23 08:55:40 UTC 2018 - knut.anderssen@suse.com
+
+- Network (Firewall): Added modify_masquerade method to zones API
+  unifying the way changes are applied to single value attributes.
+  (bsc#1112547)
+- 4.1.28
+
+-------------------------------------------------------------------
+Thu Oct 18 21:29:45 CEST 2018 - aschnell@suse.com
+
+- adapted to extended output of snapper (fate#326479, bsc#1111831)
+- 4.1.27
+
+-------------------------------------------------------------------
+Thu Oct 18 13:28:51 UTC 2018 - mvidner@suse.com
+
+- Small CWM optimization by avoiding deep_copy on big data
+  (bsc#1112402).
+- 4.1.26
+
+-------------------------------------------------------------------
+Wed Oct 17 15:17:04 UTC 2018 - knut.anderssen@suse.com
+
+- CWMFirewallInterfaces: Improved the user UX replacing the api
+  calls for checking supported services once the list supported
+  ones are already known by the firewalld instance (fate#324662)
+- 4.1.25
+
+-------------------------------------------------------------------
+Mon Oct 15 16:40:32 CEST 2018 - schubi@suse.de
+
+- Splitting yast2 package into yast2 and yast2-logs. yast2-logs
+  contains only scripts for handling YaST logs (fate#325737).
+- 4.1.24
+
+-------------------------------------------------------------------
+Fri Oct 12 10:28:48 CEST 2018 - schubi@suse.de
+
+- Added tags full_system_media_name and full_system_download_url
+  in control.xml which describe the location for the
+  "all-packages" medium. This information will be shown if the
+  registration has been scipped by the user. No hint will be shown
+  if these tags have not been defined. (fate#325834)
+- 4.1.23
+
+-------------------------------------------------------------------
+Tue Oct  9 13:57:18 CEST 2018 - schubi@suse.de
+
+- Added new methods to firewalld_wrapper in order to switch
+  yast2-dhcp-server to new firewall module. (bsc#1108942)
+- 4.1.22
+
+-------------------------------------------------------------------
+Tue Oct  9 08:25:42 UTC 2018 - lslezak@suse.cz
+
+- Log viewer: replace invalid UTF-8 characters from the displayed
+  log to avoid a crash (bsc#1110549)
+- 4.1.21
+
+-------------------------------------------------------------------
+Wed Oct  3 07:48:30 UTC 2018 - knut.anderssen@suse.com
+
+- Network (Firewall):
+  - Added some methods needed for AutoYaST configuration
+  (fate#324662)
+
+-------------------------------------------------------------------
+
+Tue Oct  2 11:11:26 UTC 2018 - lslezak@suse.cz
+
+- Make the service status label stretchable so the updated status
+  is displayed correctly (bsc#1110407)
+- 4.1.20
+
+-------------------------------------------------------------------
+Mon Oct  1 17:29:17 UTC 2018 - mfilka@suse.com
+
+- bnc#964856
+  - fixed internal error - do not crash when updating device config 
+- 4.1.19
+
+-------------------------------------------------------------------
+Fri Sep 28 08:05:15 UTC 2018 - knut.anderssen@suse.com
+
+- Y2Firewall::Firewalld: Single attributes setter will not modify
+  the value of the attribute in case it is the same (bsc#1109812)
+- 4.1.18
+
+-------------------------------------------------------------------
+Wed Sep 19 13:36:40 UTC 2018 - igonzalezsosa@suse.com
+
+- Improve Y2Firewall::Firewalld::Interface#zone to return an
+  Zone object (fate#324662).
+- 4.1.17
+
+-------------------------------------------------------------------
+Wed Sep 19 12:55:51 UTC 2018 - mfilka@suse.com
+
+- bnc#964856
+  - removed obsolete parts of NetworkInterfaces API:
+    ifcfg_part, device_type, device_num, alias_num,
+    GetFreeDevices, GetFreeDevice, LocateNOT, ListDevicesExcept
+- 4.1.16
+
+-------------------------------------------------------------------
+Wed Sep 19 09:53:09 UTC 2018 - knut.anderssen@suse.com
+
+- Network (Firewall)
+  - Added Y2Firewall::Firewalld::Interface class.
+  - Adapted interfaces helpers to work with the new class.
+  (fate#324662)
+- 4.1.15
+
+-------------------------------------------------------------------
+Tue Sep 19 08:31:02 UTC 2018 - igonzalezsosa@suse.com
+
+- Add a new popup widget (fate#324662).
+- Add a helper class UIState to keep the UI states when using CWM.
+
+-------------------------------------------------------------------
+Tue Sep 18 08:30:51 UTC 2018 - knut.anderssen@suse.com
+
+- Y2Firewall::Firewalld: Added convenience method to obtain the
+  firewalld service object (fate#324662)
+- 4.1.14
+
+-------------------------------------------------------------------
+Mon Sep 17 12:12:52 UTC 2018 - lslezak@suse.cz
+
+- Allow reading the installation.xml (skelcd-* package) from other
+  repository than the initial one (e.g. the self update), select
+  the highest version of the package (instead of the first found)
+  (bsc#1101016)
+- 4.1.13
+
+-------------------------------------------------------------------
+Mon Sep 17 11:21:58 UTC 2018 - knut.anderssen@suse.com
+
+- Firewalld: Fixed the API cmd call for removing services from
+  zones when the firewall is in offline mode (bsc#1108628)
+- 4.1.12
+
+-------------------------------------------------------------------
+Wed Sep 12 14:11:56 UTC 2018 - jlopez@suse.com
+
+- CWM: avoid to always return :next when accepting a dialog.
+- Needed for Expert Partitioner (fate#318196).
+- 4.1.11
+
+-------------------------------------------------------------------
+Wed Sep 12 14:05:49 UTC 2018 - knut.anderssen@suse.com
+
+- Added the missing SuSEFirewallProposal.rb file to the Makefile
+  (bsc#1087867)
+- 4.1.10
+
+-------------------------------------------------------------------
+Wed Sep 12 13:00:43 UTC 2018 - knut.anderssen@suse.com
+
+- Bring back the SuSEFirewallProposal fixing the class unit tests
+  until yast2-network drops the import of the module completely.
+  (bsc#1087867)
+- 4.1.9
+
+-------------------------------------------------------------------
+Mon Sep 10 13:02:04 UTC 2018 - knut.anderssen@suse.com
+
+- Extended the firewall API supporting the use of single-value
+  attributes and also prepared it for introducing  more complex
+  relations like 'forward-ports' and 'rich-rules' in the future.
+  (fate#324662)
+- Improved the parser for zones and added a parser for services.
+- Improved test mocking fixing a Polkit popup shown when running the
+  test (bsc#1087867)
+- 4.1.8
+
+-------------------------------------------------------------------
+Wed Sep  5 10:19:27 UTC 2018 - jlopez@suse.com
+
+- CWM: allow to define next handler for CWM#show.
+- CWM: define default next handler in CWM::Dialog.
+- Needed for Expert Partitioner (fate#318196).
+- 4.1.7
+
+-------------------------------------------------------------------
+Thu Aug 30 13:39:02 UTC 2018 - igonzalezsosa@suse.com
+
+- Add missing CompoundService#support_start_on_boot?
+  (bsc#1106591).
+- 4.1.6
+
+-------------------------------------------------------------------
+Thu Aug 30 11:21:14 UTC 2018 - dgonzalez@suse.com
+
+- Increase timeout for the execution of systemctl commands
+  (bsc#1098910).
+- 4.1.5
+
+-------------------------------------------------------------------
+Fri Aug 24 13:36:42 UTC 2018 - igonzalezsosa@suse.com
+
+- Fix the Yast2::ServiceWidget to not show the "On Boot" option
+  when it is not supported (related to fate#319428).
+- 4.1.4
+
+-------------------------------------------------------------------
+Tue Aug 21 14:15:07 UTC 2018 - dgonzalez@suse.com
+
+- Refactor systemd classes, reorganizing them in real classes
+  under the Yast2::Systemd namespace instead of using modules
+  (related to fate#319428).
+- 4.1.3
+
+-------------------------------------------------------------------
+Mon Aug 20 17:13:52 CEST 2018 - schubi@suse.de
+
+- Changed dir of COPYING file
+
+-------------------------------------------------------------------
 Tue Aug 14 17:32:02 UTC 2018 - igonzalezsosa@suse.com
 
 - Add support for systemd services that can only be started
   on-demand (fate#319428 and bsc#1104568).
-- 4.0.85
+- 4.1.2
 
 -------------------------------------------------------------------
 Thu Aug  9 13:02:38 UTC 2018 - igonzalezsosa@suse.com
 
 - Improve systemd socket detection (related to fate#319428).
 - SystemService#find_many does not raise an exception anymore.
-- 4.0.84
+- 4.1.1
+
+-------------------------------------------------------------------
+Wed Aug  8 15:14:29 UTC 2018 - jlopez@suse.com
+
+- Added widget to configure services (part of fate#319428).
+- 4.1.0
 
 -------------------------------------------------------------------
 Wed Aug  8 10:09:55 UTC 2018 - igonzalezsosa@suse.com
