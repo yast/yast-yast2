@@ -21,6 +21,7 @@ scalable_DATA = \
 	icons/hicolor/scalable/apps/yast-support-group.svg \
 	icons/hicolor/scalable/apps/yast-system-group.svg \
 	icons/hicolor/scalable/apps/yast-vm-group.svg \
+	icons/hicolor/scalable/apps/yast.svg \
 	icons/hicolor/scalable/status/dialog-error.svg \
 	icons/hicolor/scalable/status/dialog-information.svg \
 	icons/hicolor/scalable/status/dialog-question.svg \
