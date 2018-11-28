@@ -30,6 +30,7 @@ module Y2Firewall
       extend Relations
       include Yast::I18n
       extend Yast::I18n
+      include Yast::Logger
 
       textdomain "base"
 
@@ -48,7 +49,7 @@ module Y2Firewall
 
       # @see Y2Firewall::Firewalld::Relations
       has_many :services, :interfaces, :protocols, :rich_rules, :sources,
-        :ports, :source_ports, :forward_ports, :icmp_blocks, cache: true
+        :ports, :source_ports, :forward_ports, cache: true
 
       # @see Y2Firewall::Firewalld::Relations
       has_attributes :name, :masquerade, :short, :description, :target, cache: true
@@ -90,6 +91,11 @@ module Y2Firewall
 
       # Apply all the changes in firewalld but do not reload it
       def apply_changes!
+        # newly created zone
+        if !api.zones.include?(name)
+          log.info "adding new zone #{inspect}"
+          api.create_zone(name)
+        end
         return true unless modified?
 
         apply_relations_changes!

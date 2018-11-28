@@ -176,6 +176,8 @@ module Y2Firewall
       read unless read?
       apply_zones_changes!
       apply_attributes_changes!
+      # remove zones that is not in new zones map
+      (api.zones - zones.map(&:name)).each { |n| api.delete_zone(n) }
       untouched!
       true
     end
