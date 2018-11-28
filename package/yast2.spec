@@ -210,7 +210,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %{yast_desktopdir}/messages.desktop
 
 # icons
-%{_datadir}/icons/*
+%{yast_icondir}
 
 %package logs
 
