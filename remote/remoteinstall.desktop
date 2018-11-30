@@ -14,7 +14,7 @@ X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=
 
-Icon=yast-remoteinstall
+Icon=yast-remote-install
 Exec=/usr/bin/xdg-su -c '/sbin/yast2 remoteinstall'
 
 Name=Remote Installation

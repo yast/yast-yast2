@@ -9,7 +9,7 @@ X-SuSE-YaST-Group=Hardware
 X-SuSE-YaST-SortKey=20
 
 OnlyShowIn=X-SuSE-YaST;
-Icon=yast-hardware
+Icon=yast-hardware-group
 
 Name=Hardware
 

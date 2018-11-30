@@ -2,6 +2,13 @@
 Fri Nov 30 14:22:29 UTC 2018 - jreidinger@suse.com
 
 - firewalld: add ability to add/edit/remove zones (fate#324662) 
+- 4.1.37
+
+-------------------------------------------------------------------
+Mon Nov 26 07:07:26 UTC 2018 - Noah Davis <noahadvs@gmail.com>
+
+- Provide icon with module (boo#1109310)
+- Move virtualization group from yast-vm to yast2
 - 4.1.36
 
 -------------------------------------------------------------------

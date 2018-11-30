@@ -9,7 +9,7 @@ X-SuSE-YaST-Group=Security
 X-SuSE-YaST-SortKey=50
 
 OnlyShowIn=X-SuSE-YaST;
-Icon=yast-security
+Icon=yast-security-group
 
 Name=Security and Users
 

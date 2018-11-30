@@ -9,7 +9,7 @@ X-SuSE-YaST-Group=High_Availability
 X-SuSE-YaST-SortKey=20
 
 OnlyShowIn=X-SuSE-YaST;
-Icon=yast-high_availability
+Icon=yast-high_availability-group
 
 Name=High Availability
 
