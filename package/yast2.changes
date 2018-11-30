@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Nov 30 14:22:29 UTC 2018 - jreidinger@suse.com
+
+- firewalld: add ability to add/edit/remove zones (fate#324662) 
+- 4.1.36
+
+-------------------------------------------------------------------
 Wed Nov 21 17:23:00 UTC 2018 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Added global parameter enable_local_users (Fate#326447)
