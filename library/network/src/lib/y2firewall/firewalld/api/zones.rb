@@ -33,6 +33,22 @@ module Y2Firewall
           string_command("--get-zones").split(" ")
         end
 
+        # Create the given zone in firewalld. New zones must be created
+        # permanently
+        #
+        # @param zone [String] The firewall zone name
+        def create_zone(zone)
+          modify_command("--new-zone=#{zone}", permanent: !offline?)
+        end
+
+        # Delete the given zone from firewalld. Deleted zones must be deleted
+        # permanently
+        #
+        # @param zone [String] The firewall zone name to be deleted
+        def delete_zone(zone)
+          modify_command("--delete-zone=#{zone}", permanent: !offline?)
+        end
+
         # @param zone [String] The firewall zone
         # @param permanent [Boolean] if true and firewalld is running it
         #   reads the permanent configuration
@@ -71,6 +87,30 @@ module Y2Firewall
         # @return [Array<String>] list of zone's sources
         def list_sources(zone, permanent: permanent?)
           string_command("--zone=#{zone}", "--list-sources", permanent: permanent).split(" ")
+        end
+
+        # @param zone [String] The firewall zone
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   reads the permanent configuration
+        # @return [Array<String>] list of zone's source ports
+        def list_source_ports(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-source-ports", permanent: permanent).split(" ")
+        end
+
+        # @param zone [String] The firewall zone
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   reads the permanent configuration
+        # @return [Array<String>] list of zone's forward ports
+        def list_forward_ports(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-forward-ports", permanent: permanent).split("\n")
+        end
+
+        # @param zone [String] The firewall zone
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   reads the permanent configuration
+        # @return [Array<String>] list of zone's rich rules
+        def list_rich_rules(zone, permanent: permanent?)
+          string_command("--zone=#{zone}", "--list-rich-rules", permanent: permanent).split("\n")
         end
 
         # @param zone [String] The firewall zone
@@ -170,6 +210,64 @@ module Y2Firewall
         # @return [Boolean] True if source was changed
         def change_source(zone, source, permanent: permanent?)
           modify_command("--zone=#{zone}", "--change-source=#{source}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param port [String] The network source port
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   modifies the permanent configuration
+        # @return [Boolean] True if the port was added
+        def add_source_port(zone, port, permanent: permanent?)
+          modify_command("--zone=#{zone}", "--add-source-port=#{port}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param port [String] The network source port
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   modifies the permanent configuration
+        # @return [Boolean] True if the port was removed
+        def remove_source_port(zone, port, permanent: permanent?)
+          modify_command("--zone=#{zone}", "--remove-source-port=#{port}", permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param port [String] The network forward port
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   modifies the permanent configuration
+        # @return [Boolean] True if the port was added
+        def add_forward_port(zone, port, permanent: permanent?)
+          modify_command("--zone=#{zone}", "--add-forward-port=#{port}",
+            permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param port [String] The network source port
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   modifies the permanent configuration
+        # @return [Boolean] True if the port was removed
+        def remove_forward_port(zone, port, permanent: permanent?)
+          modify_command("--zone=#{zone}", "--remove-forward-port=#{port}",
+            permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param rule [String] The firewalld rule to be added
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   modifies the permanent configuration
+        # @return [Boolean] True if the rich rule was added
+        def add_rich_rule(zone, rule, permanent: permanent?)
+          modify_command("--zone=#{zone}", "--add-rich-rule=#{rule}",
+            permanent: permanent)
+        end
+
+        # @param zone [String] The firewall zone
+        # @param rule [String] The firewalld rich rule to be removed
+        # @param permanent [Boolean] if true and firewalld is running it
+        #   modifies the permanent configuration
+        # @return [Boolean] True if the rich rule was removed
+        def remove_rich_rule(zone, rule, permanent: permanent?)
+          modify_command("--zone=#{zone}", "--remove-rich-rule=#{rule}",
+            permanent: permanent)
         end
 
         # @param zone [String] The firewall zone

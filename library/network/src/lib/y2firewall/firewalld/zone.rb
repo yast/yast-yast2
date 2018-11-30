@@ -30,6 +30,7 @@ module Y2Firewall
       extend Relations
       include Yast::I18n
       extend Yast::I18n
+      include Yast::Logger
 
       textdomain "base"
 
@@ -47,7 +48,8 @@ module Y2Firewall
       }.freeze
 
       # @see Y2Firewall::Firewalld::Relations
-      has_many :services, :interfaces, :protocols, :ports, :sources, cache: true
+      has_many :services, :interfaces, :protocols, :rich_rules, :sources,
+        :ports, :source_ports, :forward_ports, cache: true
 
       # @see Y2Firewall::Firewalld::Relations
       has_attributes :name, :masquerade, :short, :description, :target, cache: true

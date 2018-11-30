@@ -104,6 +104,27 @@ module Y2Firewall
       @read = true
     end
 
+    # Given a zone name it will add a new Zone to the current list of defined
+    # ones just in case it does not exist yet.
+    #
+    # @param name [String] zone name
+    # @return [Boolean] true if the new zone was added; false in case the zone
+    #   was alredy defined
+    def add_zone(name)
+      return false if find_zone(name)
+      zones << Y2Firewall::Firewalld::Zone.new(name: name)
+      true
+    end
+
+    # Remove the given zone from the list of zones
+    #
+    # @param name [String] zone name
+    # @return [Boolean] true if it was removed; false otherwise
+    def remove_zone(name)
+      removed = zones.reject! { |z| z.name == name }
+      !removed.nil?
+    end
+
     # Return from the zones list the one which matches the given name
     #
     # @param name [String] the zone name
@@ -162,7 +183,13 @@ module Y2Firewall
     # Apply the changes done in each of the modified zones. It will create or
     # delete all the new or removed zones depending on each case.
     def apply_zones_changes!
-      zones.select(&:modified?).each(&:apply_changes!)
+      zones.each do |zone|
+        api.create_zone(zone.name) unless current_zone_names.include?(zone.name)
+        zone.apply_changes! if zone.modified?
+      end
+      current_zone_names.each do |name|
+        api.delete_zone(name) if zones.none? { |z| z.name == name }
+      end
     end
 
     # Return a map with current firewalld settings.
