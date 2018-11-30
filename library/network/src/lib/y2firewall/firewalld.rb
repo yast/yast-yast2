@@ -176,8 +176,6 @@ module Y2Firewall
       read unless read?
       apply_zones_changes!
       apply_attributes_changes!
-      # remove zones that is not in new zones map
-      (api.zones - zones.map(&:name)).each { |n| api.delete_zone(n) }
       untouched!
       true
     end
@@ -185,7 +183,13 @@ module Y2Firewall
     # Apply the changes done in each of the modified zones. It will create or
     # delete all the new or removed zones depending on each case.
     def apply_zones_changes!
-      zones.select(&:modified?).each(&:apply_changes!)
+      zones.each do |zone|
+        api.create_zone(zone.name) unless current_zone_names.include?(zone.name)
+        zone.apply_changes! if zone.modified?
+      end
+      current_zone_names.each do |name|
+        api.delete_zone(name) if zones.none? { |z| z.name == name }
+      end
     end
 
     # Return a map with current firewalld settings.

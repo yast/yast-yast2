@@ -91,11 +91,6 @@ module Y2Firewall
 
       # Apply all the changes in firewalld but do not reload it
       def apply_changes!
-        # newly created zone
-        if !api.zones.include?(name)
-          log.info "adding new zone #{inspect}"
-          api.create_zone(name)
-        end
         return true unless modified?
 
         apply_relations_changes!
