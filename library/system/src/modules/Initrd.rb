@@ -400,9 +400,9 @@ module Yast
         path(".target.bash"),
         Builtins.sformat(
           "/sbin/mkinitrd %1 %2 >> %3 2>&1",
-          param,
-          @additional_parameters,
-          Ops.add(Directory.logdir, "/y2logmkinitrd")
+          param, # cannot escaped due multiple possible params
+          @additional_parameters, # cannot escaped due multiple possible params
+          File.join(Directory.logdir, "y2logmkinitrd")
         )
       ) != 0
         log = Convert.to_string(

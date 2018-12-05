@@ -1,5 +1,6 @@
 require "ostruct"
 require "timeout"
+require "shellwords"
 
 module Yast2
   # Wrapper around `systemctl` command.
@@ -17,7 +18,7 @@ module Yast2
 
     include Yast::Logger
 
-    CONTROL         = "systemctl".freeze
+    CONTROL         = "/usr/bin/systemctl".freeze
     COMMAND_OPTIONS = " --no-legend --no-pager --no-ask-password ".freeze
     ENV_VARS        = " LANG=C TERM=dumb COLUMNS=1024 ".freeze
     SYSTEMCTL       = ENV_VARS + CONTROL + COMMAND_OPTIONS
@@ -82,14 +83,14 @@ module Yast2
 
       def list_unit_files(type: nil)
         command = " list-unit-files "
-        command << " --type=#{type} " if type
+        command << " --type=#{type.shellescape} " if type
         execute(command).stdout
       end
 
       def list_units(type: nil, all: true)
         command = " list-units "
         command << " --all " if all
-        command << " --type=#{type} " if type
+        command << " --type=#{type.shellescape} " if type
         execute(command).stdout
       end
 

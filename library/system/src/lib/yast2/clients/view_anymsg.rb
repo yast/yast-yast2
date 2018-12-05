@@ -24,6 +24,8 @@
 
 require "yast/core_ext"
 
+require "shellwords"
+
 require "yast2/popup"
 
 Yast.import "UI"
@@ -198,7 +200,7 @@ module Yast
 
       SCR.Execute(
         path(".target.bash"),
-        "/bin/cp #{::File.join(Directory.ydatadir, "filenames")} #{filenames_path}"
+        "/bin/cp #{::File.join(Directory.ydatadir, "filenames").shellescape} #{filenames_path.shellescape}"
       )
     end
 

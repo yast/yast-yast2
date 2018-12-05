@@ -8,8 +8,8 @@ describe Yast2::FsSnapshot do
     described_class.log
   end
 
-  FIND_CONFIG = "/usr/bin/snapper --no-dbus --root=/ list-configs | grep \"^root \" >/dev/null".freeze
-  FIND_IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | grep \"^root \" >/dev/null".freeze
+  FIND_CONFIG = "/usr/bin/snapper --no-dbus --root=/ list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
+  FIND_IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
   LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list --disable-used-space".freeze
 
   let(:dummy_snapshot) { double("snapshot") }

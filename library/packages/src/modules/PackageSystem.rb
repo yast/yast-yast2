@@ -33,6 +33,7 @@
 # The documentation is maintained at
 # <a href="../index.html">.../docs/index.html</a>.
 require "yast"
+require "shellwords"
 
 module Yast
   class PackageSystemClass < Module
@@ -66,7 +67,7 @@ module Yast
       Yast.include self, "packages/common.rb"
 
       @_rpm_query_binary_initialized = false
-      @_rpm_query_binary = "rpm"
+      @_rpm_query_binary = "/usr/bin/rpm"
     end
 
     # Ensure that Pkg:: calls work.
@@ -348,7 +349,7 @@ module Yast
         Convert.to_integer(
           SCR.Execute(
             path(".target.bash"),
-            Ops.add("rpm -q --whatprovides ", package)
+            Ops.add("/usr/bin/rpm -q --whatprovides ", package.shellescape)
           )
         )
       # return Pkg::IsProvided (package);
@@ -366,7 +367,7 @@ module Yast
         Convert.to_integer(
           SCR.Execute(
             path(".target.bash"),
-            Ops.add(@_rpm_query_binary, package)
+            "#{@_rpm_query_binary} #{package.shellescape}"
           )
         )
     end
@@ -451,7 +452,7 @@ module Yast
 
       # check whether tag "kernel" is provided
       # do not initialize the package manager if it's not necessary
-      rpm_command = "/bin/rpm -q --whatprovides kernel"
+      rpm_command = "/usr/bin/rpm -q --whatprovides kernel"
       Builtins.y2milestone("Starting RPM query: %1", rpm_command)
       output = Convert.to_map(
         SCR.Execute(path(".target.bash_output"), rpm_command)

@@ -45,26 +45,19 @@ module Yast
     end
 
     def SaveLogs
-      cmd = Convert.to_map(
-        WFM.Execute(path(".local.bash_output"), "echo ${HOME}")
-      )
-      homedir = "/"
+      env_home = ENV["HOME"]
 
-      if Ops.get_integer(cmd, "exit", -1) == 0
-        homedir = Ops.get(
-          Builtins.splitstring(Ops.get_string(cmd, "stdout", "/"), "\n"),
-          0,
-          "/"
-        )
-        homedir = "/" if homedir == ""
+      homedir = if env_home && !env_home.empty?
+        env_home
       else
         Builtins.y2warning(
           "Unable to find out home dir: %1, using %2",
           cmd,
           homedir
         )
+        "/"
       end
-      homedir = Builtins.sformat("%1/y2logs.tgz", homedir)
+      homedir << "/y2logs.tgz"
 
       savelogsto = UI.AskForSaveFileName(
         homedir,
@@ -83,7 +76,7 @@ module Yast
       cmd = Convert.to_map(
         WFM.Execute(
           path(".local.bash_output"),
-          Builtins.sformat("save_y2logs '%1'", String.Quote(savelogsto))
+          Builtins.sformat("/usr/sbin/save_y2logs '%1'", String.Quote(savelogsto))
         )
       )
       dialog_ret = nil
@@ -213,7 +206,7 @@ module Yast
       cmd = Convert.to_map(
         WFM.Execute(
           path(".local.bash_output"),
-          "tail -n 200 /var/log/YaST2/y2log | grep ' <\\(3\\|5\\)> '"
+          "/usr/bin/tail -n 200 /var/log/YaST2/y2log | /usr/bin/grep ' <\\(3\\|5\\)> '"
         )
       )
 

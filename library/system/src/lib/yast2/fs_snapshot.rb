@@ -29,6 +29,7 @@
 require "yast"
 require "date"
 require "yast2/execute"
+require "shellwords"
 
 module Yast2
   # Represents the fact that Snapper is not configured for "/" (root).
@@ -71,7 +72,7 @@ module Yast2
     Yast.import "Linuxrc"
     Yast.import "Mode"
 
-    FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | grep \"^root \" >/dev/null".freeze
+    FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
     CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description \"%{description}\"".freeze
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list --disable-used-space".freeze
     VALID_LINE_REGEX = /\A\s*\d+[-+*]?\s*\|\s*\w+/
@@ -127,7 +128,7 @@ module Yast2
 
         out = Yast::SCR.Execute(
           Yast::Path.new(".target.bash_output"),
-          format(FIND_CONFIG_CMD, root: target_root)
+          format(FIND_CONFIG_CMD, root: target_root.shellescape)
         )
 
         log.info("Checking if Snapper is configured: \"#{FIND_CONFIG_CMD}\" returned: #{out}")
@@ -253,7 +254,7 @@ module Yast2
 
         out = Yast::SCR.Execute(
           Yast::Path.new(".target.bash_output"),
-          format(LIST_SNAPSHOTS_CMD, root: target_root)
+          format(LIST_SNAPSHOTS_CMD, root: target_root.shellescape)
         )
         lines = out["stdout"].lines.grep(VALID_LINE_REGEX) # relevant lines from output.
         log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
@@ -302,15 +303,15 @@ module Yast2
         raise SnapperNotConfigured unless configured?
 
         cmd = format(CREATE_SNAPSHOT_CMD,
-          root:          target_root,
-          snapshot_type: snapshot_type,
-          description:   description)
-        cmd << " --pre-num #{previous.number}" if previous
+          root:          target_root.shellescape,
+          snapshot_type: snapshot_type.to_s.shellescape,
+          description:   description.shellescape)
+        cmd << " --pre-num #{previous.number.to_s.shellescape}" if previous
         cmd << " --userdata \"important=yes\"" if important
 
         if cleanup
           strategy = CLEANUP_STRATEGY[cleanup]
-          cmd << " --cleanup \"#{strategy}\"" if strategy
+          cmd << " --cleanup \"#{strategy.shellescape}\"" if strategy
         end
 
         log.info("Executing: \"#{cmd}\"")

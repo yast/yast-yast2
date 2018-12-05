@@ -31,6 +31,7 @@
 # This module provides GPG key related functions. It is a wrapper around gpg
 # binary. It uses caching for reading GPG keys from the keyrings.
 require "yast"
+require "shellwords"
 
 module Yast
   class GPGClass < Module
@@ -90,7 +91,7 @@ module Yast
     # @return [String] gpg option string
     def buildGPGcommand(options)
       home_opt = @home.empty? ? "" : "--homedir '#{String.Quote(@home)}' "
-      ret = "gpg #{home_opt} #{options}"
+      ret = "/usr/bin/gpg #{home_opt} #{options}"
       Builtins.y2milestone("gpg command: %1", ret)
 
       ret
@@ -100,7 +101,7 @@ module Yast
     # @param [String] options additional gpg options
     # @return [Hash] result of the execution
     def callGPG(options)
-      command = Ops.add("LC_ALL=en_US.UTF-8 ", buildGPGcommand(options))
+      command = "LC_ALL=en_US.UTF-8 " + buildGPGcommand(options)
 
       ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
 
@@ -240,22 +241,12 @@ module Yast
           "/gpg_tmp_exit_file"
         )
         if FileUtils.Exists(exit_file)
-          SCR.Execute(path(".target.bash"), Ops.add("rm -f ", exit_file))
+          SCR.Execute(path(".target.bash"), "/usr/bin/rm -f #{exit_file.shellescape}")
         end
 
-        command = Ops.add(
-          Ops.add(
-            Ops.add(
-              Ops.add(
-                Ops.add(Ops.add("LC_ALL=en_US.UTF-8 ", xterm), " -e \""),
-                command
-              ),
-              "; echo $? > "
-            ),
-            exit_file
-          ),
-          "\""
-        )
+        command = "LC_ALL=en_US.UTF-8 #{xterm.shellescape} -e " \
+          "\"#{command}; echo $? > #{exit_file.shellescape}\""
+
         Builtins.y2internal("Executing: %1", command)
 
         # in Qt start GPG in a xterm window
@@ -324,7 +315,7 @@ module Yast
         # remove the existing key
         SCR.Execute(
           path(".target.bash"),
-          Builtins.sformat("rm -f '%1%2'", String.Quote(file), suffix)
+          "/usr/bin/rm -f #{(file+suffix).shellescape}"
         )
       end
 
