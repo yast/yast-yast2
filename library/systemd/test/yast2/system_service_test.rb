@@ -137,7 +137,7 @@ describe Yast2::SystemService do
     context "no service can be found on the system" do
       before do
         allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
-          .and_return([nil,nil])
+          .and_return([nil, nil])
       end
 
       it "returns a list of empty/nil services" do
