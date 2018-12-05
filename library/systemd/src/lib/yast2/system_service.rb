@@ -154,7 +154,7 @@ module Yast2
       #
       # @param names [Array<String>] service names to find
       #
-      # @return [Array<SystemService>]
+      # @return [Array<SystemService>] not found: SystemService.service is nil
       def find_many(names)
         Yast::SystemdService.find_many(names).map { |s| new(s) }
       end
