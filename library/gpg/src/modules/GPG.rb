@@ -315,7 +315,7 @@ module Yast
         # remove the existing key
         SCR.Execute(
           path(".target.bash"),
-          "/usr/bin/rm -f #{(file+suffix).shellescape}"
+          "/usr/bin/rm -f #{(file + suffix).shellescape}"
         )
       end
 

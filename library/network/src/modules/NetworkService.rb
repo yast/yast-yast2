@@ -289,9 +289,9 @@ module Yast
     # test for IPv4
     def isNetworkv4Running
       net = SCR.Execute(
-          path(".target.bash"),
-          "/bin/ip addr | /usr/bin/grep -v '127.0.0\\|inet6' | /usr/bin/grep -c inet"
-        )
+        path(".target.bash"),
+        "/bin/ip addr | /usr/bin/grep -v '127.0.0\\|inet6' | /usr/bin/grep -c inet"
+      )
       if net == 0
         Builtins.y2milestone("IPv4 network is running ...")
         return true
