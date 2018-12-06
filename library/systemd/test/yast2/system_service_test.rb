@@ -121,15 +121,30 @@ describe Yast2::SystemService do
     let(:apparmor) { instance_double(Yast::SystemdServiceClass::Service) }
     let(:cups) { instance_double(Yast::SystemdServiceClass::Service) }
 
-    before do
-      allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
-        .and_return([apparmor, cups])
+    context "services can be found on the system" do
+      before do
+        allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
+          .and_return([apparmor, cups])
+      end
+
+      it "finds a set of systemd services" do
+        system_services = described_class.find_many(["apparmor", "cups"])
+        expect(system_services).to be_all(Yast2::SystemService)
+        expect(system_services.map(&:service)).to eq([apparmor, cups])
+      end
     end
 
-    it "finds a set of systemd services" do
-      system_services = described_class.find_many(["apparmor", "cups"])
-      expect(system_services).to be_all(Yast2::SystemService)
-      expect(system_services.map(&:service)).to eq([apparmor, cups])
+    context "no service can be found on the system" do
+      before do
+        allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
+          .and_return([nil, nil])
+      end
+
+      it "returns a list of empty/nil services" do
+        system_services = described_class.find_many(["apparmor", "cups"])
+        expect(system_services).to be_all(Yast2::SystemService)
+        expect(system_services.map(&:service)).to eq([nil, nil])
+      end
     end
   end
 
