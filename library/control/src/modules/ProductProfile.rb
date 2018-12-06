@@ -100,7 +100,7 @@ module Yast
           tmp_path = Ops.add(Ops.add(@profiles_dir, name), ".profile")
           SCR.Execute(
             path(".target.bash"),
-            Builtins.sformat("/bin/cp -a '%1' '%2'", profile.shellescape, tmp_path.shellescape)
+            Builtins.sformat("/bin/cp -a %1 %2", profile.shellescape, tmp_path.shellescape)
           )
           @all_profiles = Builtins.add(@all_profiles, tmp_path)
           Ops.set(@productid2name, src_id, name)
