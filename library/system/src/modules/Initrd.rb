@@ -36,6 +36,7 @@
 # $Id$
 #
 require "yast"
+require "shellwords"
 
 module Yast
   class InitrdClass < Module
@@ -394,15 +395,17 @@ module Yast
               )
             )
           )
-        param = Builtins.sformat("-s %1", @splash)
+        param = "-s #{@splash.shellescape}"
       end
       if SCR.Execute(
         path(".target.bash"),
         Builtins.sformat(
           "/sbin/mkinitrd %1 %2 >> %3 2>&1",
-          param, # cannot escaped due multiple possible params
-          @additional_parameters, # cannot escaped due multiple possible params
-          File.join(Directory.logdir, "y2logmkinitrd")
+          param, # escaped already above
+          # cannot escape it as it can contain multiple params and
+          # shell escape makes it single broken param
+          @additional_parameters,
+          File.join(Directory.logdir, "y2logmkinitrd").shellescape
         )
       ) != 0
         log = Convert.to_string(

@@ -132,7 +132,7 @@ module Yast
 
           if max_lines != 0
             lc_command = Builtins.sformat(
-              "/usr/bin/cat %1 | /usr/bin/grep %2 | /usr/bin/wc -l",
+              "/usr/bin/grep -c %2 %1",
               file.shellescape,
               grep.shellescape
             )

@@ -143,8 +143,8 @@ module Yast
 
     # Internal function for loading unknown ports into memory and returning them as list[string]
     def LoadAndReturnPortToName(port_number)
-      command = "grep \"^[^#].*[ \\t]#{port_number}/\" /etc/services " \
-        "| sed \"s/\\([^ \\t]*\\)[ \\t]*.*/\\1/\""
+      command = "/usr/bin/grep \"^[^#].*[ \\t]#{port_number}/\" /etc/services " \
+        "| /usr/bin/sed \"s/\\([^ \\t]*\\)[ \\t]*.*/\\1/\""
       found = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
       aliases = []
 
@@ -180,8 +180,8 @@ module Yast
       end
 
       grep_regexp = "^#{port_name}[ \\t]".shellescape
-      command = "grep --perl-regexp #{grep_regexp} /etc/services " \
-        "| sed \"s/[^ \\t]*[ \\t]*\\([^/ \\t]*\\).*/\\1/\""
+      command = "/usr/bin/grep --perl-regexp #{grep_regexp} /etc/services " \
+        "| /usr/bin/sed \"s/[^ \\t]*[ \\t]*\\([^/ \\t]*\\).*/\\1/\""
       found = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
       alias_found = nil
 

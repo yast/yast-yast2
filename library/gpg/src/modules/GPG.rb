@@ -218,10 +218,10 @@ module Yast
       deep_copy(@private_keys)
     end
 
+    XTERM_PATH = "/usr/bin/xterm".freeze
     # Create a new gpg key. Executes 'gpg --gen-key' in an xterm window (in the QT UI)
     # or in the terminal window (in the ncurses UI).
     def CreateKey
-      xterm = "/usr/bin/xterm"
       command = Ops.add("GPG_AGENT_INFO='' ", buildGPGcommand("--gen-key"))
       text_mode = Ops.get_boolean(UI.GetDisplayInfo, "TextMode", false)
 
@@ -230,7 +230,7 @@ module Yast
       ret = false
 
       if !text_mode
-        if Ops.less_than(SCR.Read(path(".target.size"), xterm), 0)
+        if Ops.less_than(SCR.Read(path(".target.size"), XTERM_PATH), 0)
           # FIXME: do it
           Report.Error(_("Xterm is missing, install xterm package."))
           return false
@@ -244,7 +244,7 @@ module Yast
           SCR.Execute(path(".target.bash"), "/usr/bin/rm -f #{exit_file.shellescape}")
         end
 
-        command = "LC_ALL=en_US.UTF-8 #{xterm.shellescape} -e " \
+        command = "LC_ALL=en_US.UTF-8 #{XTERM_PATH} -e " \
           "\"#{command}; echo $? > #{exit_file.shellescape}\""
 
         Builtins.y2internal("Executing: %1", command)

@@ -50,14 +50,10 @@ module Yast
       homedir = if env_home && !env_home.empty?
         env_home
       else
-        Builtins.y2warning(
-          "Unable to find out home dir: %1, using %2",
-          cmd,
-          homedir
-        )
+        Builtins.y2warning("Home is not defined in env. Using '/'")
         "/"
       end
-      homedir << "/y2logs.tgz"
+      homedir += "/y2logs.tgz"
 
       savelogsto = UI.AskForSaveFileName(
         homedir,

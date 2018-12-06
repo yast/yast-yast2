@@ -66,10 +66,6 @@ module Yast
       wicked:          "wicked"
     }.freeze
 
-    SYSTEMCTL = "/bin/systemctl".freeze
-
-    WICKED = "/usr/sbin/wicked".freeze
-
     DEFAULT_BACKEND = :wicked
 
     include Yast::Logger
@@ -94,15 +90,14 @@ module Yast
     # Helper to run systemctl actions
     # @return exit code
     def RunSystemCtl(service, action)
-      cmd = Builtins.sformat("%1 %2 %3.service", SYSTEMCTL.shellescape,
-        action.shellescape, service.shellescape)
+      cmd = "/usr/bin/systemctl #{action.shellescape} #{service.shellescape}.service"
       ret = SCR.Execute(path(".target.bash_output"), cmd, "TERM" => "raw")
       Builtins.y2debug("RunSystemCtl: Command '%1' returned '%2'", cmd, ret)
       Ops.get_integer(ret, "exit", -1)
     end
 
     def run_wicked(*params)
-      cmd = "#{WICKED} #{params.map(&:shellescape).join(" ")}"
+      cmd = "/usr/sbin/wicked #{params.map(&:shellescape).join(" ")}"
       ret = SCR.Execute(
         path(".target.bash"),
         cmd

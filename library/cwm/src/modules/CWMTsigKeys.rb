@@ -398,7 +398,7 @@ module Yast
             SCR.Execute(
               path(".target.bash"),
               Builtins.sformat(
-                "/usr/bin/rm -rf `ls /etc/named.d/K%1\\.*`",
+                "/usr/bin/rm -rf `/usr/bin/ls /etc/named.d/K%1\\.*`",
                 Builtins.tolower(key2).shellescape
               )
             )
