@@ -38,6 +38,8 @@ require "shellwords"
 
 module Yast
   class PortAliasesClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
 
@@ -175,34 +177,35 @@ module Yast
     # Internal function for loading unknown ports into memory and returning them as integer
     def LoadAndReturnNameToPort(port_name)
       if !IsAllowedPortName(port_name)
-        Builtins.y2error("Disallwed port-name '%1'", port_name)
+        Builtins.y2error("Disallowed port-name '%1'", port_name)
         return nil
       end
 
-      grep_regexp = "^#{port_name}[ \\t]".shellescape
-      command = "/usr/bin/grep --perl-regexp #{grep_regexp} /etc/services " \
-        "| /usr/bin/sed \"s/[^ \\t]*[ \\t]*\\([^/ \\t]*\\).*/\\1/\""
-      found = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
-      alias_found = nil
-
-      if found["exit"] == 0
-        found["stdout"].split("\n").each do |alias_|
-          next if alias_.empty?
-          alias_found = Builtins.tointeger(alias_)
-        end
-      else
-        Builtins.y2error(
-          "Services Command: %1 -> %2",
-          command,
-          Ops.get_string(found, "stderr", "")
-        )
+      path = File.join(WFM.scr_root, "etc/services")
+      content = ::File.read(path)
+      # find line with given port_name. Line looks like:
+      #   http               80/tcp       # World Wide Web HTTP
+      matching_lines = content.lines.grep(/^#{Regexp.escape(port_name)}\s/)
+      if matching_lines.empty?
+        log.error "service name not found. File.content #{content}"
         return nil
       end
+
+      # lets use the first found entry, as often there are two entries for tcp and udp
+      port = matching_lines.first[/^\S+\s+(\d+)/, 1]
+      if port.nil?
+        log.error "wrong line in /etc/services: #{matching_lines.first}"
+        return nil
+      end
+
+      alias_found = port.to_i
 
       # store results for later requests
       Ops.set(@SERVICE_NAME_TO_PORT, port_name, alias_found)
 
       alias_found
+    rescue Errno, IOError => e
+      log.error "failed to read /etc/services #{e.inspect}"
     end
 
     # Function returns list of aliases (port-names and port-numbers) for
