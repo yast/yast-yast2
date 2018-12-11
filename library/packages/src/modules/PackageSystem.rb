@@ -321,15 +321,13 @@ module Yast
       return if @_rpm_query_binary_initialized
 
       # rpmqpack is a way faster
-      if Ops.greater_than(
-        SCR.Read(path(".target.size"), "/usr/bin/rpmqpack"),
-        -1
-      )
+      if SCR.Read(path(".target.size"), "/usr/bin/rpmqpack") > -1
         @_rpm_query_binary = "/usr/bin/rpmqpack "
-        # than rpm itself
-      elsif Ops.greater_than(SCR.Read(path(".target.size"), "/usr/bin/rpm"), -1)
+      # than rpm itself
+      elsif SCR.Read(path(".target.size"), "/usr/bin/rpm") > -1
         @_rpm_query_binary = "/usr/bin/rpm -q "
       end
+      # FIXME: else branch if none is installed? critical failure without rpm?
 
       @_rpm_query_binary_initialized = true
 

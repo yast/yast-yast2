@@ -37,7 +37,7 @@ describe Yast::PortAliases do
       expect(Yast::PortAliases.LoadAndReturnNameToPort("b.*s")).to eq nil
     end
 
-    it "respect SCR chroot" do
+    it "respects SCR chroot" do
       allow(Yast::WFM).to receive(:scr_root).and_return("/mnt")
       expect(::File).to receive(:read).with("/mnt/etc/services").and_return(FILE_CONTENT)
 
