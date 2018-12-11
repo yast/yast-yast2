@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Dec 11 17:23:47 UTC 2018 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- WorkflowManager: find product definitions located at
+  /usr/share/installation-products/ (part of fate#325482)
+- 4.1.39
+
+-------------------------------------------------------------------
 Wed Dec  5 16:27:45 UTC 2018 - Stasiek Michalski <hellcp@mailbox.org>
 
 - Ship only primary icons with module to avoid conflicts (boo#1118521)
