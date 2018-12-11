@@ -439,18 +439,7 @@ module Yast
       dir = addon_control_dir(src, cleanup: true)
       fetch_package(src, package, dir)
 
-      # lets first try FHS compliant path (bsc#1114573)
-      # sadly no glob escaping - https://bugs.ruby-lang.org/issues/8258
-      # but as we generate directory, it should be ok
-      files = Dir.glob("#{dir}/usr/share/system-roles/*.xml")
-      if files.size == 1
-        path = files.first
-      elsif files.size > 1
-        log.error "more then one file in system role #{files.inspect}"
-        path = files.first
-      else
-        path = File.join(dir, "installation.xml")
-      end
+      path = control_file_at_dir(dir)
       return nil unless File.exist?(path)
 
       log.info("installation.xml path: #{path}")
@@ -476,6 +465,46 @@ module Yast
       ::FileUtils.remove_entry(dir) if cleanup && Dir.exist?(dir)
       ::FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
       dir
+    end
+
+    # Path of the control file contained in the package that has been previously
+    # extracted to the given directory
+    #
+    # @see #control_file
+    #
+    # @param dir [String] directory where the package has been extracted to
+    # @return [String] name of the control file
+    def control_file_at_dir(dir)
+      # Lets first try FHS compliant path for a product package (fate#325482)
+      path = ctrl_file_at("#{dir}/usr/share/installation-products")
+
+      # If nothing there, try FHS compliant path for a role package (bsc#1114573)
+      path ||= ctrl_file_at("#{dir}/usr/share/system-roles")
+
+      # As last resort, use the default location at /installation.xml
+      path ||= File.join(dir, "installation.xml")
+
+      path
+    end
+
+    # Full name of the control file located directly in the given directory
+    #
+    # The content of the file is not verified to be compliant with the structure
+    # of a control file, this method simply finds the (hopefully only) XML file
+    # in the directory.
+    #
+    # @param dir [String] directory where the control file is expected to be
+    # @return [String, nil] nil if there is no control file
+    def ctrl_file_at(dir)
+      # sadly no glob escaping - https://bugs.ruby-lang.org/issues/8258
+      # but as we generate directory, it should be ok
+      files = Dir.glob("#{dir}/*.xml")
+      if files.size == 1
+        files.first
+      elsif files.size > 1
+        log.error "more than one file in #{dir}: #{files.inspect}"
+        files.first
+      end
     end
 
     # Returns requested control filename. Parameter 'name' is ignored
