@@ -501,7 +501,7 @@ module Yast
       files = Dir.glob("#{dir}/*.xml")
 
       if files.size > 1
-        log.error "more than one file in #{dir}: #{files.inspect}"
+        log.error "More than one XML file in #{dir}: #{files.inspect}"
       end
 
       files.first
