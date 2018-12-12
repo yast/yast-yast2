@@ -398,45 +398,108 @@ describe Yast::WorkflowManager do
         allow(File).to receive(:exist?).with(/installation\.xml\z/).and_return installation_xml
       end
 
-      context "if the package contains a control file in the system-roles dir" do
-        let(:product_files) { [] }
-        let(:role_files) { ["/tmp/usr/share/system-roles/superyast.xml"] }
-        let(:installation_xml) { false }
-
-        it "returns the path of the control file" do
-          expect(subject.control_file(repo_id)).to eq "/tmp/usr/share/system-roles/superyast.xml"
-        end
-      end
-
-      context "if the package contains a control file in the installation-products dir" do
+      context "and the package contains a control file in the installation-products dir" do
         let(:product_files) { ["/tmp/usr/share/installation-products/big_deal.xml"] }
-        let(:role_files) { [] }
-        let(:installation_xml) { false }
 
-        it "returns the path of the control file" do
-          expect(subject.control_file(repo_id))
-            .to eq "/tmp/usr/share/installation-products/big_deal.xml"
+        context "and contains no control file in other locations" do
+          let(:role_files) { [] }
+          let(:installation_xml) { false }
+
+          it "returns the path of the installation-products control file" do
+            expect(subject.control_file(repo_id))
+              .to eq "/tmp/usr/share/installation-products/big_deal.xml"
+          end
+        end
+
+        context "and also contains files in the system-roles dir" do
+          let(:role_files) { ["/tmp/usr/share/system-roles/superyast.xml"] }
+          let(:installation_xml) { false }
+
+          it "returns the path of the installation-products control file" do
+            expect(subject.control_file(repo_id))
+              .to eq "/tmp/usr/share/installation-products/big_deal.xml"
+          end
+        end
+
+        context "and also contains /installation.xml" do
+          let(:role_files) { [] }
+          let(:installation_xml) { true }
+
+          it "returns the path of the installation-products control file" do
+            expect(subject.control_file(repo_id))
+              .to eq "/tmp/usr/share/installation-products/big_deal.xml"
+          end
         end
       end
 
-      context "if the package contains an installation.xml control file" do
-        let(:product_files) { [] }
+      context "and the package contains several control files in the installation-products dir" do
+        let(:product_files) do
+          [
+            "/tmp/usr/share/installation-products/big_deal.xml",
+            "/tmp/usr/share/installation-products/smaller_deal.xml"
+          ]
+        end
         let(:role_files) { [] }
         let(:installation_xml) { true }
 
-        it "returns the path of the control file" do
-          # the returned path contains "/installation.xml" at the end
-          expect(subject.control_file(repo_id)).to end_with("/installation.xml")
+        it "returns the path of one of the installation-products control files" do
+          expect(product_files).to include(subject.control_file(repo_id))
         end
       end
 
-      context "if the package contains no control file in any of the expected locations" do
+      context "and the package contains no control file in the installation-products dir" do
         let(:product_files) { [] }
-        let(:role_files) { [] }
-        let(:installation_xml) { false }
 
-        it "returns nil" do
-          expect(subject.control_file(repo_id)).to be nil
+        context "and it contains a control file in the system-roles dir" do
+          let(:role_files) { ["/tmp/usr/share/system-roles/superyast.xml"] }
+
+          context "and also contains /installation.xml" do
+            let(:installation_xml) { true }
+
+            it "returns the path of the system-roles control file" do
+              expect(subject.control_file(repo_id)).to eq "/tmp/usr/share/system-roles/superyast.xml"
+            end
+          end
+
+          context "and contains no /installation.xml" do
+            let(:installation_xml) { false }
+
+            it "returns the path of the system-roles control file" do
+              expect(subject.control_file(repo_id)).to eq "/tmp/usr/share/system-roles/superyast.xml"
+            end
+          end
+        end
+
+        context "and it contains several control files in the system-roles dir" do
+          let(:role_files) do
+            ["/tmp/usr/share/system-roles/role1.xml", "/tmp/usr/share/system-roles/role2.xml"]
+          end
+          let(:installation_xml) { true }
+
+          it "returns the path of one of the system-roles control files" do
+            expect(role_files).to include(subject.control_file(repo_id))
+          end
+        end
+
+        context "and it contains no control file in the system-roles dir either" do
+          let(:role_files) { [] }
+
+          context "but it contains an installation.xml control file" do
+            let(:installation_xml) { true }
+
+            it "returns the path of the control file" do
+              # the returned path contains "/installation.xml" at the end
+              expect(subject.control_file(repo_id)).to end_with("/installation.xml")
+            end
+          end
+
+          context "and it contains no /installation.xml" do
+            let(:installation_xml) { false }
+
+            it "returns nil" do
+              expect(subject.control_file(repo_id)).to be nil
+            end
+          end
         end
       end
     end
