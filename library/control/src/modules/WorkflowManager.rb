@@ -476,10 +476,10 @@ module Yast
     # @return [String] name of the control file
     def control_file_at_dir(dir)
       # Lets first try FHS compliant path for a product package (fate#325482)
-      path = ctrl_file_at("#{dir}/usr/share/installation-products")
+      path = find_control_file("#{dir}/usr/share/installation-products")
 
       # If nothing there, try FHS compliant path for a role package (bsc#1114573)
-      path ||= ctrl_file_at("#{dir}/usr/share/system-roles")
+      path ||= find_control_file("#{dir}/usr/share/system-roles")
 
       # As last resort, use the default location at /installation.xml
       path ||= File.join(dir, "installation.xml")
@@ -495,16 +495,16 @@ module Yast
     #
     # @param dir [String] directory where the control file is expected to be
     # @return [String, nil] nil if there is no control file
-    def ctrl_file_at(dir)
+    def find_control_file(dir)
       # sadly no glob escaping - https://bugs.ruby-lang.org/issues/8258
       # but as we generate directory, it should be ok
       files = Dir.glob("#{dir}/*.xml")
-      if files.size == 1
-        files.first
-      elsif files.size > 1
+
+      if files.size > 1
         log.error "more than one file in #{dir}: #{files.inspect}"
-        files.first
       end
+
+      files.first
     end
 
     # Returns requested control filename. Parameter 'name' is ignored
