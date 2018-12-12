@@ -35,6 +35,7 @@
 #
 # $Id$
 require "yast"
+require "shellwords"
 
 module Yast
   class ModulesConfClass < Module
@@ -81,17 +82,8 @@ module Yast
       if Ops.greater_than(Builtins.size(kernel_version), 0)
         SCR.Execute(
           path(".target.bash"),
-          Ops.add(
-            Ops.add(
-              Ops.add(
-                "unset MODPATH; /sbin/depmod " + (force ? "-a" : "-A") +
-                  " -F /boot/System.map-",
-                kernel_version
-              ),
-              " "
-            ),
-            kernel_version
-          )
+          "unset MODPATH; /sbin/depmod " + (force ? "-a" : "-A") +
+            " -F /boot/System.map-#{kernel_version.shellescape} #{kernel_version.shellescape}"
         )
       else
         SCR.Execute(

@@ -29,6 +29,7 @@
 # $Id$
 #
 require "yast"
+require "shellwords"
 
 module Yast
   class CWMTsigKeysClass < Module
@@ -199,7 +200,7 @@ module Yast
       Builtins.foreach(keys) do |k|
         SCR.Execute(
           path(".target.bash"),
-          Builtins.sformat("rm -rf /etc/named.d/K%1\\.* ", Builtins.tolower(k))
+          Builtins.sformat("/usr/bin/rm -rf /etc/named.d/K%1\\.* ", Builtins.tolower(k).shellescape)
         )
       end
       SCR.Execute(path(".target.remove"), main)
@@ -384,8 +385,8 @@ module Yast
             SCR.Execute(
               path(".target.bash"),
               Builtins.sformat(
-                "ls /etc/named.d/K%1\\.*",
-                Builtins.tolower(key2)
+                "/usr/bin/ls /etc/named.d/K%1\\.*",
+                Builtins.tolower(key2).shellescape
               )
             )
           # yes-no popup
@@ -397,8 +398,8 @@ module Yast
             SCR.Execute(
               path(".target.bash"),
               Builtins.sformat(
-                "rm -rf `ls /etc/named.d/K%1\\.*`",
-                Builtins.tolower(key2)
+                "/usr/bin/rm -rf `/usr/bin/ls /etc/named.d/K%1\\.*`",
+                Builtins.tolower(key2).shellescape
               )
             )
             files = Convert.convert(
@@ -418,7 +419,7 @@ module Yast
         return nil if !Popup.YesNo(_("The key will be created now. Continue?"))
         SCR.Execute(
           path(".target.bash"),
-          "test -d /etc/named.d || mkdir /etc/named.d"
+          "/usr/bin/mkdir -p /etc/named.d"
         )
         gen_command = Builtins.sformat(
           "/usr/bin/genDDNSkey --force  -f '%1' -n '%2' -d /etc/named.d",

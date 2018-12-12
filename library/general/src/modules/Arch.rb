@@ -215,14 +215,14 @@ module Yast
           device_type = Convert.to_map(
             SCR.Execute(
               path(".target.bash_output"),
-              "echo -n `cat /proc/device-tree/device_type`",
+              "/usr/bin/echo -n `/usr/bin/cat /proc/device-tree/device_type`",
               {}
             )
           )
           model = Convert.to_map(
             SCR.Execute(
               path(".target.bash_output"),
-              "echo -n `cat /proc/device-tree/model`",
+              "/usr/bin/echo -n `/usr/bin/cat /proc/device-tree/model`",
               {}
             )
           )
@@ -382,7 +382,7 @@ module Yast
           # check also the running kernel
           # a FV machine has also /proc/xen, but the kernel is kernel-default
           out = Convert.to_map(
-            SCR.Execute(path(".target.bash_output"), "uname -r", {})
+            SCR.Execute(path(".target.bash_output"), "/usr/bin/uname -r", {})
           )
 
           kernel_ver = Ops.get_string(out, "stdout", "")
@@ -458,7 +458,7 @@ module Yast
     def is_zkvm
       if @_is_zkvm.nil?
         # using different check than on x86 as recommended by IBM
-        @_is_zkvm = s390 && Yast::WFM.Execute(path(".local.bash"), "egrep 'Control Program: KVM' /proc/sysinfo") == 0
+        @_is_zkvm = s390 && Yast::WFM.Execute(path(".local.bash"), "/usr/bin/egrep 'Control Program: KVM' /proc/sysinfo") == 0
       end
 
       @_is_zkvm

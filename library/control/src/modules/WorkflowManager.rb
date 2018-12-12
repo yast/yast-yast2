@@ -376,9 +376,9 @@ module Yast
           path(".target.bash_output"),
           Builtins.sformat(
             "\n" \
-              "test -d '%1' || /bin/mkdir -p '%1';\n" \
+              "/bin/mkdir -p '%1';\n" \
               "/bin/cp -v '%2' '%3';\n",
-            GetWorkflowDirectory(),
+            String.Quote(GetWorkflowDirectory()),
             String.Quote(file_from),
             String.Quote(file_to)
           )
@@ -632,8 +632,8 @@ module Yast
             path(".target.bash_ouptut"),
             "\n" \
               "cd '%1';\n" \
-              "test -x /bin/tar && /bin/tar -zcf workflows_backup.tgz *.xml *.ycp *.rb;\n" \
-              "rm -rf *.xml *.ycp *.rb",
+              "/usr/bin/test -x /usr/bin/tar && /usr/bin/tar -zcf workflows_backup.tgz *.xml *.ycp *.rb;\n" \
+              "/usr/bin/rm -rf *.xml *.ycp *.rb",
             String.Quote(directory)
           )
         )

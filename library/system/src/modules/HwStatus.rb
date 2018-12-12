@@ -83,7 +83,7 @@ module Yast
       SCR.Read(path(".probe.isapnp"))
 
       # build relation between old keys and new UDIs (bug #104676)
-      command = "hwinfo --pci --block --mouse --save-config=all"
+      command = "/usr/sbin/hwinfo --pci --block --mouse --save-config=all"
       Builtins.y2milestone("Running %1", command)
       cmdret = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
       exit = Ops.get_integer(cmdret, "exit", -1)

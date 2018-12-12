@@ -7,6 +7,7 @@
 #
 # $Id$
 require "yast"
+require "shellwords"
 
 module Yast
   class ProductProfileClass < Module
@@ -53,7 +54,7 @@ module Yast
       out = Convert.to_map(
         SCR.Execute(
           path(".target.bash_output"),
-          Builtins.sformat("grep 'gpg-pubkey' %1 2>/dev/null", dir_file)
+          Builtins.sformat("/usr/bin/grep 'gpg-pubkey' %1 2>/dev/null", dir_file.shellescape)
         )
       )
       keys = []
@@ -99,7 +100,7 @@ module Yast
           tmp_path = Ops.add(Ops.add(@profiles_dir, name), ".profile")
           SCR.Execute(
             path(".target.bash"),
-            Builtins.sformat("/bin/cp -a '%1' '%2'", profile, tmp_path)
+            Builtins.sformat("/bin/cp -a %1 %2", profile.shellescape, tmp_path.shellescape)
           )
           @all_profiles = Builtins.add(@all_profiles, tmp_path)
           Ops.set(@productid2name, src_id, name)
@@ -220,7 +221,7 @@ module Yast
         name = Ops.get(@productid2name, productId, "")
         tmp_path = Ops.add(Ops.add(@profiles_dir, name), ".profile")
         Builtins.y2milestone("deleting %1", tmp_path)
-        SCR.Execute(path(".target.bash"), Ops.add("/bin/rm ", tmp_path))
+        SCR.Execute(path(".target.bash"), "/bin/rm #{tmp_path.shellescape}")
         @all_profiles = Builtins.filter(@all_profiles) { |p| p != tmp_path }
       end
       ret

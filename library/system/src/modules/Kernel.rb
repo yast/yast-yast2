@@ -260,7 +260,7 @@ module Yast
           Builtins.y2error("Cannot read cpuflags")
           Builtins.y2milestone(
             "Mounted: %1",
-            SCR.Execute(path(".target.bash_output"), "mount -l")
+            SCR.Execute(path(".target.bash_output"), "/usr/bin/mount -l")
           )
         end
 

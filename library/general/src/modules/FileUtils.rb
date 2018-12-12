@@ -31,6 +31,7 @@
 #
 # $Id$
 require "yast"
+require "shellwords"
 
 module Yast
   class FileUtilsClass < Module
@@ -353,7 +354,7 @@ module Yast
         return nil
       end
 
-      cmd = Builtins.sformat("md5sum '%1'", String.Quote(target))
+      cmd = Builtins.sformat("/usr/bin/md5sum '%1'", String.Quote(target))
       cmd_out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
 
       if Ops.get_integer(cmd_out, "exit", -1) != 0
@@ -392,10 +393,10 @@ module Yast
       )
 
       cmd = Builtins.sformat(
-        "chown %1 %2 %3",
-        usergroup,
+        "/usr/bin/chown %1 %2 %3",
+        usergroup.shellescape,
         recursive ? "-R" : "",
-        file
+        file.shellescape
       )
 
       retval = Convert.to_integer(SCR.Execute(path(".target.bash"), cmd))
@@ -424,10 +425,10 @@ module Yast
       )
 
       cmd = Builtins.sformat(
-        "chmod %1 %2 %3",
-        modes,
+        "/usr/bin/chmod %1 %2 %3",
+        modes.shellescape,
         recursive ? "-R" : "",
-        file
+        file.shellescape
       )
 
       retval = Convert.to_integer(SCR.Execute(path(".target.bash"), cmd))
@@ -441,7 +442,7 @@ module Yast
       mktemp = Builtins.sformat(
         "/bin/mktemp %1 %2",
         directory ? "-d" : "",
-        template
+        template.shellescape
       )
 
       cmd_out = Convert.to_map(SCR.Execute(path(".target.bash_output"), mktemp))
@@ -502,7 +503,7 @@ module Yast
         Builtins.y2milestone("Removing %1", one_file)
         SCR.Execute(
           path(".target.bash"),
-          Builtins.sformat("/bin/rm -rf '%1'", one_file)
+          Builtins.sformat("/bin/rm -rf %1", one_file.shellescape)
         )
       end
 

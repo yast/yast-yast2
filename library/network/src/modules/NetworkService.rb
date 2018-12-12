@@ -43,6 +43,7 @@
 # /etc/sysconfig/network/config:NETWORKMANAGER (until openSUSE-12.2).
 require "yast"
 require "yast2/systemd/service"
+require "shellwords"
 
 module Yast
   class NetworkServiceClass < Module
@@ -64,10 +65,6 @@ module Yast
       network_manager: "NetworkManager",
       wicked:          "wicked"
     }.freeze
-
-    SYSTEMCTL = "/bin/systemctl".freeze
-
-    WICKED = "/usr/sbin/wicked".freeze
 
     DEFAULT_BACKEND = :wicked
 
@@ -93,18 +90,14 @@ module Yast
     # Helper to run systemctl actions
     # @return exit code
     def RunSystemCtl(service, action)
-      cmd = Builtins.sformat("%1 %2 %3.service", SYSTEMCTL, action, service)
-      ret = Convert.convert(
-        SCR.Execute(path(".target.bash_output"), cmd, "TERM" => "raw"),
-        from: "any",
-        to:   "map <string, any>"
-      )
+      cmd = "/usr/bin/systemctl #{action.shellescape} #{service.shellescape}.service"
+      ret = SCR.Execute(path(".target.bash_output"), cmd, "TERM" => "raw")
       Builtins.y2debug("RunSystemCtl: Command '%1' returned '%2'", cmd, ret)
       Ops.get_integer(ret, "exit", -1)
     end
 
     def run_wicked(*params)
-      cmd = "#{WICKED} #{params.join(" ")}"
+      cmd = "/usr/sbin/wicked #{params.map(&:shellescape).join(" ")}"
       ret = SCR.Execute(
         path(".target.bash"),
         cmd
@@ -290,11 +283,9 @@ module Yast
 
     # test for IPv4
     def isNetworkv4Running
-      net = Convert.to_integer(
-        SCR.Execute(
-          path(".target.bash"),
-          "ip addr|grep -v '127.0.0\\|inet6'|grep -c inet"
-        )
+      net = SCR.Execute(
+        path(".target.bash"),
+        "/bin/ip addr | /usr/bin/grep -v '127.0.0\\|inet6' | /usr/bin/grep -c inet"
       )
       if net == 0
         Builtins.y2milestone("IPv4 network is running ...")
@@ -307,12 +298,11 @@ module Yast
 
     # test for IPv6
     def isNetworkv6Running
-      net = Convert.to_integer(
-        SCR.Execute(
-          path(".target.bash"),
-          "ip addr|grep -v 'inet6 ::1\\|inet6 fe80'|grep -c inet6"
-        )
+      net = SCR.Execute(
+        path(".target.bash"),
+        "/bin/ip addr | /usr/bin/grep -v 'inet6 ::1\\|inet6 fe80' | /usr/bin/grep -c inet6"
       )
+
       if net == 0
         Builtins.y2milestone("IPv6 network is running ...")
         return true

@@ -33,6 +33,7 @@
 # The documentation is maintained at
 # <a href="../index.html">.../docs/index.html</a>.
 require "yast"
+require "shellwords"
 
 module Yast
   class PackageSystemClass < Module
@@ -66,7 +67,7 @@ module Yast
       Yast.include self, "packages/common.rb"
 
       @_rpm_query_binary_initialized = false
-      @_rpm_query_binary = "rpm"
+      @_rpm_query_binary = "/usr/bin/rpm"
     end
 
     # Ensure that Pkg:: calls work.
@@ -320,15 +321,13 @@ module Yast
       return if @_rpm_query_binary_initialized
 
       # rpmqpack is a way faster
-      if Ops.greater_than(
-        SCR.Read(path(".target.size"), "/usr/bin/rpmqpack"),
-        -1
-      )
+      if SCR.Read(path(".target.size"), "/usr/bin/rpmqpack") > -1
         @_rpm_query_binary = "/usr/bin/rpmqpack "
-        # than rpm itself
-      elsif Ops.greater_than(SCR.Read(path(".target.size"), "/bin/rpm"), -1)
-        @_rpm_query_binary = "/bin/rpm -q "
+      # than rpm itself
+      elsif SCR.Read(path(".target.size"), "/usr/bin/rpm") > -1
+        @_rpm_query_binary = "/usr/bin/rpm -q "
       end
+      # FIXME: else branch if none is installed? critical failure without rpm?
 
       @_rpm_query_binary_initialized = true
 
@@ -348,7 +347,7 @@ module Yast
         Convert.to_integer(
           SCR.Execute(
             path(".target.bash"),
-            Ops.add("rpm -q --whatprovides ", package)
+            Ops.add("/usr/bin/rpm -q --whatprovides ", package.shellescape)
           )
         )
       # return Pkg::IsProvided (package);
@@ -366,7 +365,7 @@ module Yast
         Convert.to_integer(
           SCR.Execute(
             path(".target.bash"),
-            Ops.add(@_rpm_query_binary, package)
+            "#{@_rpm_query_binary} #{package.shellescape}"
           )
         )
     end
@@ -451,7 +450,7 @@ module Yast
 
       # check whether tag "kernel" is provided
       # do not initialize the package manager if it's not necessary
-      rpm_command = "/bin/rpm -q --whatprovides kernel"
+      rpm_command = "/usr/bin/rpm -q --whatprovides kernel"
       Builtins.y2milestone("Starting RPM query: %1", rpm_command)
       output = Convert.to_map(
         SCR.Execute(path(".target.bash_output"), rpm_command)

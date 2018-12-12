@@ -29,6 +29,7 @@
 #
 # $Id: LogViewCore.ycp 45503 2008-03-17 09:46:23Z aschnell $
 require "yast"
+require "shellwords"
 
 module Yast
   class LogViewCoreClass < Module
@@ -120,19 +121,20 @@ module Yast
 
       if command == ""
         if grep == ""
-          command = Builtins.sformat("tail -n %1 -f '%2'", max_lines, file)
+          command = Builtins.sformat("/usr/bin/tail -n %1 -f %2",
+            max_lines.to_s.shellescape, file.shellescape)
         else
           command = Builtins.sformat(
-            "tail -n +0 -f '%1' | grep --line-buffered '%2'",
-            file,
-            grep
+            "tail -n +0 -f %1 | grep --line-buffered %2",
+            file.shellescape,
+            grep.shellescape
           )
 
           if max_lines != 0
             lc_command = Builtins.sformat(
-              "cat '%1' | grep '%2' | wc -l",
-              file,
-              grep
+              "/usr/bin/grep -c %2 %1",
+              file.shellescape,
+              grep.shellescape
             )
             bash_output = Convert.to_map(
               SCR.Execute(path(".target.bash_output"), lc_command)
@@ -153,10 +155,7 @@ module Yast
               lines_count = 0 if Ops.less_than(lines_count, 0)
 
               if Ops.greater_than(lines_count, 0)
-                command = Ops.add(
-                  command,
-                  Builtins.sformat(" | tail -n +%1", lines_count)
-                )
+                command << Builtins.sformat(" | tail -n +%1", lines_count.to_s.shellescape)
               end
             end
           end

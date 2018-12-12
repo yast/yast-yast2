@@ -69,7 +69,7 @@ module Yast
       @console = "" if @console.nil?
 
       m = Convert.to_map(
-        SCR.Execute(path(".target.bash_output"), "locale -k charmap")
+        SCR.Execute(path(".target.bash_output"), "/usr/bin/locale -k charmap")
       )
       m = {} if m.nil?
 

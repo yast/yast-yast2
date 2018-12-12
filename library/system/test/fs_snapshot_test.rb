@@ -8,8 +8,8 @@ describe Yast2::FsSnapshot do
     described_class.log
   end
 
-  FIND_CONFIG = "/usr/bin/snapper --no-dbus --root=/ list-configs | grep \"^root \" >/dev/null".freeze
-  FIND_IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | grep \"^root \" >/dev/null".freeze
+  FIND_CONFIG = "/usr/bin/snapper --no-dbus --root=/ list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
+  FIND_IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
   LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list --disable-used-space".freeze
 
   let(:dummy_snapshot) { double("snapshot") }
@@ -146,8 +146,8 @@ describe Yast2::FsSnapshot do
 
   describe ".create_single" do
     CREATE_SINGLE_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--root-prefix=/ --snapshot-type single --description \"some-description\"".freeze
-    OPTION_CLEANUP_NUMBER = " --cleanup \"number\"".freeze
+      "--root-prefix=/ --snapshot-type single --description some-description".freeze
+    OPTION_CLEANUP_NUMBER = " --cleanup number".freeze
     OPTION_IMPORTANT = " --userdata \"important=yes\"".freeze
 
     before do
@@ -246,7 +246,7 @@ describe Yast2::FsSnapshot do
 
   describe ".create_pre" do
     CREATE_PRE_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--root-prefix=/ --snapshot-type pre --description \"some-description\"".freeze
+      "--root-prefix=/ --snapshot-type pre --description some-description".freeze
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
@@ -344,7 +344,7 @@ describe Yast2::FsSnapshot do
 
   describe ".create_post" do
     CREATE_POST_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--root-prefix=/ --snapshot-type post --description \"some-description\" "\
+      "--root-prefix=/ --snapshot-type post --description some-description "\
       "--pre-num 2".freeze
 
     before do

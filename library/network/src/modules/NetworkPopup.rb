@@ -195,7 +195,7 @@ module Yast
         UI.OpenDialog(Label(_("Scanning for hosts on this LAN...")))
         # #71064
         # this works also if ICMP broadcasts are ignored
-        cmd = "/usr/sbin/rpcinfo -b mountd 1 | cut -d ' ' -f 2 | sort -u"
+        cmd = "/usr/sbin/rpcinfo -b mountd 1 | /usr/bin/cut -d ' ' -f 2 | /usr/bin/sort -u"
         out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
         @found_nfs_servers = Builtins.filter(
           Builtins.splitstring(Ops.get_string(out, "stdout", ""), "\n")

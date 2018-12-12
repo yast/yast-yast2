@@ -30,6 +30,7 @@
 #
 # Functions for setting systemd options
 require "yast"
+require "shellwords"
 
 module Yast
   class SystemdClass < Module
@@ -57,7 +58,7 @@ module Yast
     end
 
     # Set default runlevel for systemd (assumes systemd is installed)
-    # @param runlevel the default runlevel to set (integer in range 0..6)
+    # @param [Integer] runlevel the default runlevel to set (integer in range 0..6)
     # @return [Boolean] true on success
     def SetDefaultRunlevel(selected_runlevel)
       if selected_runlevel.nil? || Ops.less_than(selected_runlevel, 0) ||
@@ -77,9 +78,9 @@ module Yast
       # create symbolic link, -f to rewrite the current link (if exists)
       command = Builtins.sformat(
         "/bin/ln -s -f %1/runlevel%2.target %3",
-        @systemd_targets_dir,
-        selected_runlevel,
-        @default_target_symlink
+        @systemd_targets_dir.shellescape,
+        selected_runlevel.to_s.shellescape,
+        @default_target_symlink.shellescape
       )
       Builtins.y2milestone("Executing: %1", command)
 
