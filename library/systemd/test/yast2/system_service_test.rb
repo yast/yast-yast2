@@ -121,7 +121,7 @@ describe Yast2::SystemService do
 
     context "services can be found on the system" do
       before do
-        allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
+        allow(Yast2::Systemd::Service).to receive(:find_many).with(["apparmor", "cups"])
           .and_return([apparmor, cups])
       end
 
@@ -134,7 +134,7 @@ describe Yast2::SystemService do
 
     context "no service can be found on the system" do
       before do
-        allow(Yast::SystemdService).to receive(:find_many).with(["apparmor", "cups"])
+        allow(Yast2::Systemd::Service).to receive(:find_many).with(["apparmor", "cups"])
           .and_return([nil, nil])
       end
 
