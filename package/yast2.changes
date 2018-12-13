@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 12 15:36:34 UTC 2018 - schubi@suse.de
+
+- Added more testcases if e.g. system is running in chroot
+  environment and systemd does not work properly (bsc#1113732)
+
+-------------------------------------------------------------------
 Wed Dec 12 14:17:02 UTC 2018 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Removed dead code (bsc#1118291)
