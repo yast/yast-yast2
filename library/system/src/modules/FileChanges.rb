@@ -45,6 +45,7 @@
 #   checksum. YaST will use this checksum next time checking.
 #
 require "yast"
+require "shellwords"
 
 module Yast
   class FileChangesClass < Module
@@ -95,7 +96,7 @@ module Yast
     # @return [String] the checksum
     def ComputeFileChecksum(file)
       # See also FileUtils::MD5sum()
-      cmd = Builtins.sformat("/usr/bin/md5sum %1", file)
+      cmd = Builtins.sformat("/usr/bin/md5sum %1", file.shellescape)
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
       # note: it also contains file name, but since it is only to be compared
       # it does not matter
@@ -110,14 +111,14 @@ module Yast
     def FileChangedFromPackage(file)
       # queryformat: no trailing newline!
       cmd = Builtins.sformat(
-        "/bin/rpm -qf %1 --qf %%{NAME}-%%{VERSION}-%%{RELEASE}",
-        file
+        "/usr/bin/rpm -qf %1 --qf %%{NAME}-%%{VERSION}-%%{RELEASE}",
+        file.shellescape
       )
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
       package = Ops.get_string(out, "stdout", "")
       Builtins.y2milestone("Package owning %1: %2", file, package)
       return false if package == "" || Ops.get_integer(out, "exit", -1) != 0
-      cmd = Builtins.sformat("rpm -V %1 |grep ' %2$'", package, file)
+      cmd = Builtins.sformat("/usr/bin/rpm -V %1 |grep %2", package.shellescape, " #{file}$".shellescape)
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
       changes = Ops.get_string(out, "stdout", "")
       Builtins.y2milestone("File possibly changed: %1", changes)

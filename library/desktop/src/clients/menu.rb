@@ -30,6 +30,9 @@
 #
 # Provides a list of available yast2 modules. This module is inteded for use
 # with ncurses, for X the yast2 control center should be used.
+
+require "shellwords"
+
 module Yast
   class MenuClient < Client
     def main
@@ -294,10 +297,10 @@ module Yast
 
         # Use UI::RunInTerminal in text-mode only (#237332)
         if textmode
-          cmd = Builtins.sformat("/sbin/yast %1 %2 >&2", function, argument)
+          cmd = Builtins.sformat("/sbin/yast %1 %2 >&2", function.shellescape, argument.shellescape)
           ret = UI.RunInTerminal(cmd)
         else
-          cmd = Builtins.sformat("/sbin/yast2 %1 %2 >&2", function, argument)
+          cmd = Builtins.sformat("/sbin/yast2 %1 %2 >&2", function.shellescape, argument.shellescape)
           ret = SCR.Execute(path(".target.bash"), cmd)
         end
         Builtins.y2milestone("Got %1 from %2", ret, cmd)
@@ -307,7 +310,7 @@ module Yast
           Builtins.y2milestone("yast needs to be restarted - exiting...")
           SCR.Execute(
             path(".target.bash"),
-            Builtins.sformat("touch %1", @restart_file)
+            Builtins.sformat("/usr/bin/touch %1", @restart_file.shellescape)
           )
           return true
         end

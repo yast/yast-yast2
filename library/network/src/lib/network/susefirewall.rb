@@ -772,7 +772,7 @@ module Yast
       any_firewall_running = true
 
       # grep must return at least blank lines, else it returns 'exit 1' instead of 'exit 0'
-      command = "LANG=C iptables -L -n | grep -v \"^\\(Chain\\|target\\)\""
+      command = "LANG=C /usr/sbin/iptables -L -n | /usr/bin/grep -v \"^\\(Chain\\|target\\)\""
 
       iptables = Convert.to_map(
         SCR.Execute(path(".target.bash_output"), command)

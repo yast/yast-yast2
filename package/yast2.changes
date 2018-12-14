@@ -1,8 +1,27 @@
 -------------------------------------------------------------------
-Tue Dec 11 17:23:47 UTC 2018 - Ancor Gonzalez Sosa <ancor@suse.com>
+Fri Dec 14 16:23:47 UTC 2018 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - WorkflowManager: find product definitions located at
   /usr/share/installation-products/ (part of fate#325482)
+- 4.1.42
+
+-------------------------------------------------------------------
+Wed Dec 12 15:36:34 UTC 2018 - schubi@suse.de
+
+- Added more testcases if e.g. system is running in chroot
+  environment and systemd does not work properly (bsc#1113732)
+
+-------------------------------------------------------------------
+Wed Dec 12 14:17:02 UTC 2018 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Removed dead code (bsc#1118291)
+- 4.1.40
+
+-------------------------------------------------------------------
+Thu Dec  6 12:54:59 UTC 2018 - Josef Reidinger <jreidinger@suse.com>
+
+- always use absolute path to binaries (bsc#1118291)
+- properly escape shell arguments (bsc#1118291)
 - 4.1.39
 
 -------------------------------------------------------------------

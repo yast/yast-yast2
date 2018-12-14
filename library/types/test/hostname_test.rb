@@ -17,7 +17,7 @@ describe "Hostname#CurrentFQ" do
 
     allow(Yast::SCR)
       .to receive(:Execute)
-      .with(path(".target.bash_output"), "hostname --fqdn")
+      .with(path(".target.bash_output"), "/usr/bin/hostname --fqdn")
       .and_return(ret)
   end
 

@@ -28,6 +28,7 @@
 #
 
 require "yast"
+require "shellwords"
 
 module Firewalld
   # exception when firewall-cmd fails
@@ -40,7 +41,7 @@ module Firewalld
 
     BASH_SCR_PATH = Yast::Path.new(".target.bash_output")
     # Base firewall-cmd command
-    COMMAND = "LANG=C firewall-cmd".freeze
+    COMMAND = "LANG=C /usr/bin/firewall-cmd".freeze
 
     attr_reader :option_str
 
@@ -140,31 +141,31 @@ module Firewalld
     # @param zone [String] The firewall zone
     # @return [Array<String>] list of zone's interfaces
     def list_interfaces(zone)
-      fwd_result("--permanent --zone=#{zone} --list-interfaces").split(" ")
+      fwd_result("--permanent --zone=#{zone.shellescape} --list-interfaces").split(" ")
     end
 
     # @param zone [String] The firewall zone
     # @return [Arrray<String>] list of zone's services
     def list_services(zone)
-      fwd_result("--permanent --zone=#{zone} --list-services").split(" ")
+      fwd_result("--permanent --zone=#{zone.shellescape} --list-services").split(" ")
     end
 
     # @param zone [String] The firewall zone
     # @return [Array<String>] list of zone's ports
     def list_ports(zone)
-      fwd_result("--permanent --zone=#{zone} --list-ports").split(" ")
+      fwd_result("--permanent --zone=#{zone.shellescape} --list-ports").split(" ")
     end
 
     # @param zone [String] The firewall zone
     # @return [Array<String>] list of zone's protocols
     def list_protocols(zone)
-      fwd_result("--permanent --zone=#{zone} --list-protocols").split(" ")
+      fwd_result("--permanent --zone=#{zone.shellescape} --list-protocols").split(" ")
     end
 
     # @param zone [String] The firewall zone
     # @return [Array<String>] list of all information for given zone
     def list_all(zone)
-      fwd_result("--permanent --zone=#{zone} --list-all").split(" ")
+      fwd_result("--permanent --zone=#{zone.shellescape} --list-all").split(" ")
     end
 
     # @return [Array<String>] list of all information for all firewall zones
@@ -178,21 +179,21 @@ module Firewalld
     # @param interface [String] The network interface
     # @return [Boolean] True if interface is assigned to zone
     def interface_enabled?(zone, interface)
-      fwd_quiet_result("--permanent --zone=#{zone} --query-interface=#{interface}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --query-interface=#{interface.shellescape}")
     end
 
     # @param zone [String] The firewall zone
     # @param interface [String] The network interface
     # @return [Boolean] True if interface was added to zone
     def add_interface(zone, interface)
-      fwd_quiet_result("--permanent --zone=#{zone} --add-interface=#{interface}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --add-interface=#{interface.shellescape}")
     end
 
     # @param zone [String] The firewall zone
     # @param interface [String] The network interface
     # @return [Boolean] True if interface was removed from zone
     def remove_interface(zone, interface)
-      fwd_quiet_result("--permanent --zone=#{zone} --remove-interface=#{interface}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --remove-interface=#{interface.shellescape}")
     end
 
     ### Services ###
@@ -205,20 +206,20 @@ module Firewalld
     # @param service [String] The firewall service
     # @return [Array<String>] list of all information for the given service
     def info_service(service)
-      fwd_result("--permanent --info-service #{service}").split("\n")
+      fwd_result("--permanent --info-service #{service.shellescape}").split("\n")
     end
 
     # @param service [String] The firewall service
     # @return [String] Short description for service
     def service_short(service)
       # these may not exist on early firewalld releases
-      fwd_result("--permanent --service=#{service} --get-short").rstrip
+      fwd_result("--permanent --service=#{service.shellescape} --get-short").rstrip
     end
 
     # @param service [String] the firewall service
     # @return [String] Description for service
     def service_description(service)
-      fwd_result("--permanent --service=#{service} --get-description").rstrip
+      fwd_result("--permanent --service=#{service.shellescape} --get-description").rstrip
     end
 
     # @param service [String] The firewall service
@@ -231,101 +232,101 @@ module Firewalld
     # @param service [String] The firewall service
     # @return [Boolean] True if service is enabled in zone
     def service_enabled?(zone, service)
-      fwd_quiet_result("--permanent --zone=#{zone} --query-service=#{service}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --query-service=#{service.shellescape}")
     end
 
     # @param service [String] The firewall service
     # @return [Array<String>] The firewall service ports
     def service_ports(service)
-      fwd_result("--permanent --service=#{service} --get-ports").strip
+      fwd_result("--permanent --service=#{service.shellescape} --get-ports").strip
     end
 
     # @param service [String] The firewall service
     # @return [Array<String>] The firewall service protocols
     def service_protocols(service)
-      fwd_result("--permanent --service=#{service} --get-protocols").strip
+      fwd_result("--permanent --service=#{service.shellescape} --get-protocols").strip
     end
 
     # @param service [String] The firewall service
     # @return [Array<String>] The firewall service modules
     def service_modules(service)
-      fwd_result("--permanent --service=#{service} --get-modules").strip
+      fwd_result("--permanent --service=#{service.shellescape} --get-modules").strip
     end
 
     # @param zone [String] The firewall zone
     # @param port [String] The firewall port
     # @return [Boolean] True if port is enabled in zone
     def port_enabled?(zone, port)
-      fwd_quiet_result("--permanent --zone=#{zone} --query-port=#{port}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --query-port=#{port}")
     end
 
     # @param zone [String] The firewall zone
     # @param protocol [String] The zone protocol
     # @return [Boolean] True if protocol is enabled in zone
     def protocol_enabled?(zone, protocol)
-      fwd_quiet_result("--permanent --zone=#{zone} --query-protocol=#{protocol}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --query-protocol=#{protocol}")
     end
 
     # @param zone [String] The firewall zone
     # @param service [String] The firewall service
     # @return [Boolean] True if service was added to zone
     def add_service(zone, service)
-      fwd_quiet_result("--permanent --zone=#{zone} --add-service=#{service}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --add-service=#{service.shellescape}")
     end
 
     # @param zone [String] The firewall zone
     # @param port [String] The firewall port
     # @return [Boolean] True if port was added to zone
     def add_port(zone, port)
-      fwd_quiet_result("--permanent --zone=#{zone} --add-port=#{port}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --add-port=#{port.shellescape}")
     end
 
     # @param zone [String] The firewall zone
     # @param protocol [String] The firewall protocol
     # @return [Boolean] True if protocol was added to zone
     def add_protocol(zone, protocol)
-      fwd_quiet_result("--permanent --zone=#{zone} --add-protocol=#{protocol}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --add-protocol=#{protocol.shellescape}")
     end
 
     # @param zone [String] The firewall zone
     # @param service [String] The firewall service
     # @return [Boolean] True if service was removed from zone
     def remove_service(zone, service)
-      fwd_quiet_result("--permanent --zone=#{zone} --remove-service=#{service}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --remove-service=#{service.shellescape}")
     end
 
     # @param zone [String] The firewall zone
     # @param port [String] The firewall port
     # @return [Boolean] True if port was removed from zone
     def remove_port(zone, port)
-      fwd_quiet_result("--permanent --zone=#{zone} --remove-port=#{port}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --remove-port=#{port.shellescape}")
     end
 
     # @param zone [String] The firewall zone
     # @param protocol [String] The firewall protocol
     # @return [Boolean] True if protocol was removed from zone
     def remove_protocol(zone, protocol)
-      fwd_quiet_result("--permanent --zone=#{zone} --remove-protocol=#{protocol}")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --remove-protocol=#{protocol.shellescape}")
     end
 
     # @param zone [String] The firewall zone
     # @return [Boolean] True if masquerade is enabled in zone
     def masquerade_enabled?(zone)
-      fwd_quiet_result("--permanent --zone=#{zone} --query-masquerade")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --query-masquerade")
     end
 
     # @param zone [String] The firewall zone
     # @return [Boolean] True if masquerade was enabled in zone
     def add_masquerade(zone)
       return true if masquerade_enabled?(zone)
-      fwd_quiet_result("--permanent --zone=#{zone} --add-masquerade")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --add-masquerade")
     end
 
     # @param zone [String] The firewall zone
     # @return [Boolean] True if masquerade was removed in zone
     def remove_masquerade(zone)
       return true if !masquerade_enabled?(zone)
-      fwd_quiet_result("--permanent --zone=#{zone} --remove-masquerade")
+      fwd_quiet_result("--permanent --zone=#{zone.shellescape} --remove-masquerade")
     end
 
     ### Logging ###
@@ -342,7 +343,7 @@ module Firewalld
     # @return [Boolean] True if desired packet type was set to being logged
     # when denied
     def log_denied_packets=(kind)
-      fwd_quiet_result("--set-log-denied=#{kind}")
+      fwd_quiet_result("--set-log-denied=#{kind.to_s.shellescape}")
     end
 
     # @return [String] packet type which is being logged when denied

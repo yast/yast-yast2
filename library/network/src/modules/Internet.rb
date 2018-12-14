@@ -29,6 +29,7 @@
 #
 # $Id$
 require "yast"
+require "shellwords"
 
 module Yast
   class InternetClass < Module
@@ -87,7 +88,7 @@ module Yast
     # @return eg. ["eth0", "eth1"]
     def GetDevices
       if @devices.nil?
-        command = "ip -oneline link list | sed -e 's/^[0-9]*: \\([^:]*\\).*/\\1/' | grep -v 'lo\\|sit0'"
+        command = "/bin/ip -oneline link list | /usr/bin/sed -e 's/^[0-9]*: \\([^:]*\\).*/\\1/' | /usr/bin/grep -v 'lo\\|sit0'"
         out = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
         @devices = Builtins.filter(
           Builtins.splitstring(Ops.get_string(out, "stdout", ""), "\n")
@@ -118,10 +119,10 @@ module Yast
         s_nm = "/org/freedesktop/NetworkManager"
         # dbus-send [options] object interface.method arguments...
         cmd = Builtins.sformat(
-          "dbus-send --system --dest=%1 %2 %1.setActiveDevice objpath:'%2/Devices/%3'",
-          d_nm,
-          s_nm,
-          @device
+          "dbus-send --system --dest=%1 %2 %1.setActiveDevice objpath:%2/Devices/%3",
+          d_nm.shellescape,
+          s_nm.shellescape,
+          @device.shellescape
         )
       end
 
@@ -143,7 +144,7 @@ module Yast
       if @type == "isdn" && !@capi_isdn
         if SCR.Execute(
           path(".target.bash"),
-          Ops.add("/sbin/isdnctrl dial ", @device)
+          "/sbin/isdnctrl dial #{@device.shellescape}"
         ) != 0
           Builtins.y2error("isdnctrl failed")
           return false
@@ -158,10 +159,10 @@ module Yast
     # @return true if successful stopped
     def Stop(log)
       # should also work for NM
-      cmd = Ops.add("/sbin/ifdown ", @device)
-      cmd = Ops.add(Ops.add(Ops.add(cmd, "> "), log), " 2>&1") if log != ""
-      ret = Convert.to_integer(SCR.Execute(path(".target.bash"), cmd))
-      ret == 0
+      cmd = "/sbin/ifdown #{@device.shellescape}"
+      cmd << "> #{log.shellescape} 2>&1" if log != ""
+
+      SCR.Execute(path(".target.bash"), cmd) == 0
     end
 
     # Status of the fastest interface
@@ -173,12 +174,10 @@ module Yast
           "Skipping interface status test because of NetworkManager"
         )
         # only check if NM has not crashed
-        return SCR.Execute(path(".target.bash"), "pgrep NetworkManager") == 0
+        return SCR.Execute(path(".target.bash"), "/usr/bin/pgrep NetworkManager") == 0
       end
 
-      ret = Convert.to_integer(
-        SCR.Execute(path(".target.bash"), Ops.add("/sbin/ifstatus ", @device))
-      )
+      ret = SCR.Execute(path(".target.bash"), "/sbin/ifstatus #{@device.shellescape}")
       Builtins.y2milestone("ifstatus %1: %2", @device, ret)
       ret == 0 || ret == 10
     end
@@ -209,7 +208,7 @@ module Yast
       # - grep ip addr list $device
       SCR.Execute(
         path(".target.bash"),
-        "ip -oneline addr list | grep 'scope global' >&2"
+        "/bin/ip -oneline addr list | /usr/bin/grep 'scope global' >&2"
       ) == 0
     end
 
@@ -262,8 +261,8 @@ module Yast
         WFM.Execute(
           path(".local.bash"),
           Builtins.sformat(
-            "(kill -1 %1 && sleep 1); kill -9 %1 2>/dev/null;",
-            process_ID
+            "(/usr/bin/kill -1 %1 && /usr/bin/sleep 1); /usr/bin/kill -9 %1 2>/dev/null;",
+            process_ID.to_s.shellescape
           )
         )
       end

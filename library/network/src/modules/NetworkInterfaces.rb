@@ -23,6 +23,7 @@
 # ***************************************************************************
 
 require "yast"
+require "shellwords"
 
 module Yast
   # Reads and writes the ifcfg files (/etc/sysconfig/network/ifcfg-*).
@@ -450,7 +451,7 @@ module Yast
       # Assume all devices are connected in testsuite mode
       return true if Mode.testsuite
 
-      cmd = "cat /sys/class/net/#{dev}/carrier"
+      cmd = "/usr/bin/cat /sys/class/net/#{dev.shellescape}/carrier"
 
       ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
       Builtins.y2milestone("Sysfs returned %1", ret)

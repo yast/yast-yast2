@@ -155,7 +155,7 @@ module Yast
     # (uses hostname --fqdn)
     # @return FQ hostname
     def CurrentFQ
-      hostname_data = SCR.Execute(path(".target.bash_output"), "hostname --fqdn")
+      hostname_data = SCR.Execute(path(".target.bash_output"), "/usr/bin/hostname --fqdn")
 
       if hostname_data["exit"] != 0
         Builtins.y2warning("Using fallback hostname")

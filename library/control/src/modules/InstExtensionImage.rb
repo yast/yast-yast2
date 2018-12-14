@@ -382,7 +382,7 @@ module Yast
       Popup.ShowFeedback("", message) if message != "" && !message.nil?
 
       # See BNC #376870
-      cmd = Builtins.sformat("extend '%1'", String.Quote(package))
+      cmd = Builtins.sformat("/bin/extend '%1'", String.Quote(package))
       Builtins.y2milestone("Calling: %1", cmd)
       cmd_out = Convert.to_map(WFM.Execute(path(".local.bash_output"), cmd))
       Builtins.y2milestone("Returned: %1", cmd_out)
@@ -421,7 +421,7 @@ module Yast
 
       Popup.ShowFeedback("", message) if message != "" && !message.nil?
 
-      cmd = Builtins.sformat("extend -r '%1'", String.Quote(package))
+      cmd = Builtins.sformat("/bin/extend -r '%1'", String.Quote(package))
       Builtins.y2milestone("Calling: %1", cmd)
       cmd_out = Convert.to_map(WFM.Execute(path(".local.bash_output"), cmd))
       Builtins.y2milestone("Returned: %1", cmd_out)

@@ -33,7 +33,7 @@ describe Yast::InstExtensionImage do
 
     it "calls extend CLI with given package" do
       expect(Yast::WFM).to receive(:Execute)
-        .with(path(".local.bash_output"), "extend 'snapper'")
+        .with(path(".local.bash_output"), "/bin/extend 'snapper'")
         .and_return("exit" => 0)
 
       subject.LoadExtension("snapper", "msg")
@@ -41,7 +41,7 @@ describe Yast::InstExtensionImage do
 
     it "returns false if extend CLI failed" do
       expect(Yast::WFM).to receive(:Execute)
-        .with(path(".local.bash_output"), "extend 'snapper'")
+        .with(path(".local.bash_output"), "/bin/extend 'snapper'")
         .and_return("exit" => 1)
 
       expect(subject.LoadExtension("snapper", "msg")).to eq false
@@ -74,7 +74,7 @@ describe Yast::InstExtensionImage do
 
     it "calls extend CLI with given package" do
       expect(Yast::WFM).to receive(:Execute)
-        .with(path(".local.bash_output"), "extend -r 'snapper'")
+        .with(path(".local.bash_output"), "/bin/extend -r 'snapper'")
         .and_return("exit" => 0)
 
       subject.UnLoadExtension("snapper", "msg")
@@ -82,7 +82,7 @@ describe Yast::InstExtensionImage do
 
     it "returns false if extend CLI failed" do
       expect(Yast::WFM).to receive(:Execute)
-        .with(path(".local.bash_output"), "extend -r 'snapper'")
+        .with(path(".local.bash_output"), "/bin/extend -r 'snapper'")
         .and_return("exit" => 1)
 
       expect(subject.UnLoadExtension("snapper", "msg")).to eq false
@@ -97,10 +97,10 @@ describe Yast::InstExtensionImage do
 
     it "loads package, executes block and unload package" do
       expect(Yast::WFM).to receive(:Execute)
-        .with(path(".local.bash_output"), "extend 'snapper'")
+        .with(path(".local.bash_output"), "/bin/extend 'snapper'")
         .and_return("exit" => 0)
       expect(Yast::WFM).to receive(:Execute)
-        .with(path(".local.bash_output"), "extend -r 'snapper'")
+        .with(path(".local.bash_output"), "/bin/extend -r 'snapper'")
         .and_return("exit" => 0)
 
       res = nil
@@ -113,7 +113,7 @@ describe Yast::InstExtensionImage do
 
     it "raises exception if package loading fails" do
       expect(Yast::WFM).to receive(:Execute)
-        .with(path(".local.bash_output"), "extend 'snapper'")
+        .with(path(".local.bash_output"), "/bin/extend 'snapper'")
         .and_return("exit" => 1)
 
       expect { subject.with_extension("snapper") {} }.to raise_error
@@ -121,10 +121,10 @@ describe Yast::InstExtensionImage do
 
     it "unloads extension even if block raises exception" do
       expect(Yast::WFM).to receive(:Execute)
-        .with(path(".local.bash_output"), "extend 'snapper'")
+        .with(path(".local.bash_output"), "/bin/extend 'snapper'")
         .and_return("exit" => 0)
       expect(Yast::WFM).to receive(:Execute)
-        .with(path(".local.bash_output"), "extend -r 'snapper'")
+        .with(path(".local.bash_output"), "/bin/extend -r 'snapper'")
         .and_return("exit" => 0)
 
       expect { subject.with_extension("snapper") { raise "expected" } }.to raise_error

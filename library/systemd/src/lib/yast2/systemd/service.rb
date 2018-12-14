@@ -3,6 +3,8 @@ require "yast2/systemd/unit"
 require "yast2/systemd/unit_prop_map"
 require "yast2/systemd/socket"
 
+require "shellwords"
+
 module Yast2
   module Systemd
     # Represent a missing service
@@ -168,12 +170,12 @@ module Yast2
       end
 
       def start
-        command = "#{START_SERVICE_INSTSYS_COMMAND} #{unit_name}"
+        command = "#{START_SERVICE_INSTSYS_COMMAND} #{unit_name.shellescape}"
         installation_system? ? run_instsys_command(command) : super
       end
 
       def stop
-        command = "#{START_SERVICE_INSTSYS_COMMAND} --stop #{unit_name}"
+        command = "#{START_SERVICE_INSTSYS_COMMAND} --stop #{unit_name.shellescape}"
         installation_system? ? run_instsys_command(command) : super
       end
 

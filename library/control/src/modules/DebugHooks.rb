@@ -28,6 +28,7 @@
 #
 # $Id$
 require "yast"
+require "shellwords"
 
 module Yast
   class DebugHooksClass < Module
@@ -77,17 +78,17 @@ module Yast
       if type == "shell"
         executionString = Builtins.sformat(
           "/bin/sh -x %1 2&> %2/%3.log",
-          scriptPath,
-          @log_dir,
-          script
+          scriptPath.shellescape,
+          @log_dir.shellescape,
+          script.shellescape
         )
         WFM.Execute(path(".local.bash"), executionString)
       elsif type == "perl"
         executionString = Builtins.sformat(
           "/usr/bin/perl %1 2&> %2/%3.log",
-          scriptPath,
-          @log_dir,
-          script
+          scriptPath.shellescape,
+          @log_dir.shellescape,
+          script.shellescape
         )
         WFM.Execute(path(".local.bash"), executionString)
       else
