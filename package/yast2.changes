@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Dec 17 08:09:10 UTC 2018 - jlopez@suse.com
+
+- Extend Yast::Execute API (needed for bsc#1118291)
+- Add method Yast::Execute.stdout
+- Allow to chain methods
+- 4.1.42
+
+-------------------------------------------------------------------
 Mon Dec 17 07:23:47 UTC 2018 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - WorkflowManager: find product definitions located at
