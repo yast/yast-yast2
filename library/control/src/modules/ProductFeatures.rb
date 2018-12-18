@@ -49,7 +49,7 @@ module Yast
       # Default values for features
       # two-level map, section_name -> [ feature -> value ]
       @defaults = {
-        "globals"      => {
+        "globals"                  => {
           "incomplete_translation_treshold" => "95",
           "ui_mode"                         => "expert",
           "enable_autologin"                => true,
@@ -76,12 +76,12 @@ module Yast
           "full_system_download_url"        => "",
           "save_y2logs"                     => true
         },
-        "partitioning" => {
+        "partitioning"             => {
           "use_flexible_partitioning"    => false,
           "flexible_partitioning"        => {},
           "vm_keep_unpartitioned_region" => false
         },
-        "software"     => {
+        "software"                 => {
           "software_proposal"                    => "selection",
           "selection_type"                       => :auto,
           "delete_old_packages"                  => true,
@@ -93,7 +93,10 @@ module Yast
           "addon_selections"                     => [],
           "inform_about_suboptimal_distribution" => false
         },
-        "network"      => { "force_static_ip" => false }
+        "network"                  => { "force_static_ip" => false },
+        # Defaults are defined in the ConfigurationManagement::Configurations classes:
+        # https://github.com/yast/yast-configuration-management/blob/27c93ba9d592271a299706aca323d9d371d44058/src/lib/configuration_management/configurations/base.rb#L13
+        "configuration_management" => {}
       }
     end
 
