@@ -83,14 +83,14 @@ module Yast2
 
       def list_unit_files(type: nil)
         command = " list-unit-files "
-        command << " --type=#{type.shellescape} " if type
+        command << " --type=#{type.to_s.shellescape} " if type
         execute(command).stdout
       end
 
       def list_units(type: nil, all: true)
         command = " list-units "
         command << " --all " if all
-        command << " --type=#{type.shellescape} " if type
+        command << " --type=#{type.to_s.shellescape} " if type
         execute(command).stdout
       end
 
