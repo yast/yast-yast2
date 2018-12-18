@@ -94,6 +94,8 @@ module Yast
           "inform_about_suboptimal_distribution" => false
         },
         "network"                  => { "force_static_ip" => false },
+        # Defaults are defined in the ConfigurationManagement::Configurations classes:
+        # https://github.com/yast/yast-configuration-management/blob/27c93ba9d592271a299706aca323d9d371d44058/src/lib/configuration_management/configurations/base.rb#L13
         "configuration_management" => {}
       }
     end
