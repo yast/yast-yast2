@@ -305,7 +305,7 @@ module Yast
       @system_roles = @productControl.fetch(SYSTEM_ROLES_KEY, [])
 
       Builtins.foreach(
-        ["software", "globals", "network", "partitioning", "texts"]
+        ["software", "globals", "network", "partitioning", "texts", "configuration_management"]
       ) do |section|
         if Builtins.haskey(@productControl, section)
           ProductFeatures.SetSection(
