@@ -88,9 +88,15 @@ module Yast
     end
 
     # Helper to run systemctl actions
+    # @param service [String] name of service
+    # @param action [String] action what to do with service
+    # @param force [Boolean] if action should be forced
     # @return exit code
-    def RunSystemCtl(service, action)
-      cmd = "/usr/bin/systemctl #{action.shellescape} #{service.shellescape}.service"
+    def RunSystemCtl(service, action, force: false)
+      cmd = "/usr/bin/systemctl "\
+        "#{force ? "--force" : ""} " \
+        "#{action.shellescape} " \
+        "#{service.shellescape}.service"
       ret = SCR.Execute(path(".target.bash_output"), cmd, "TERM" => "raw")
       Builtins.y2debug("RunSystemCtl: Command '%1' returned '%2'", cmd, ret)
       Ops.get_integer(ret, "exit", -1)
@@ -205,7 +211,7 @@ module Yast
       stop_service(@current_name)
       disable_service(@current_name)
 
-      RunSystemCtl(BACKENDS[@cached_name], "--force enable")
+      RunSystemCtl(BACKENDS[@cached_name], "enable", force: true)
 
       @initialized = false
       Read()
