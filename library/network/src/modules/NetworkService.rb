@@ -94,7 +94,7 @@ module Yast
     # @return exit code
     def RunSystemCtl(service, action, force: false)
       cmd = "/usr/bin/systemctl "\
-        "#{ force ? "--force" : ""} " \
+        "#{force ? "--force" : ""} " \
         "#{action.shellescape} " \
         "#{service.shellescape}.service"
       ret = SCR.Execute(path(".target.bash_output"), cmd, "TERM" => "raw")

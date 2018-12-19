@@ -29,15 +29,13 @@ describe Yast::NetworkService do
     it "shellescape properly all arguments" do
       expect(Yast::SCR).to receive(:Execute).with(path(".target.bash_output"),
         "/usr/bin/systemctl --force enable wicked.service",
-        "TERM" => "raw"
-      )
+        "TERM" => "raw")
 
       subject.RunSystemCtl("wicked", "enable", force: true)
 
       expect(Yast::SCR).to receive(:Execute).with(path(".target.bash_output"),
         "/usr/bin/systemctl  disable\\ \\|\\ evil wicked.service",
-        "TERM" => "raw"
-      )
+        "TERM" => "raw")
 
       subject.RunSystemCtl("wicked", "disable | evil")
     end
