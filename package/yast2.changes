@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Dec 19 12:15:33 UTC 2018 - jreidinger@suse.com
+
+- NetworkService: fix invoking forced enable (bsc#1119657)
+- 4.1.45
+
+-------------------------------------------------------------------
 Tue Dec 18 11:21:31 UTC 2018 - igonzalezsosa@suse.com
 
 - Add a <configuration_management/> section to the control file
