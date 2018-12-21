@@ -35,6 +35,7 @@ module_DATA = \
   modules/Hooks.rb
 
 scrconf_DATA = \
+  scrconf/cfg_mail.scr \
   scrconf/cfg_hotplug.scr \
   scrconf/proc_meminfo.scr \
   scrconf/etc_sysctl_conf.scr \
