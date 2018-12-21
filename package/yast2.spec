@@ -60,8 +60,6 @@ BuildRequires:  rpm
 Requires:       coreutils
 # for GPG.ycp
 Requires:       gpg2
-# For Cron Agent, Module
-Requires:       perl-Config-Crontab
 # for ag_anyxml
 Requires:       perl-XML-Simple
 # for defining abstract methods in libraries
