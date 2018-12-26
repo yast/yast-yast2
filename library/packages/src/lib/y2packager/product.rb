@@ -201,7 +201,7 @@ module Y2Packager
     # @param lang [String] Language
     # @return [ProductLicense,nil] Product's license; nil if the license was not found.
     def license
-      @license ||= ProductLicense.find(name, source: :libzypp)
+      @license ||= ProductLicense.find(name)
     end
 
     # Return the license text to be confirmed
@@ -225,6 +225,7 @@ module Y2Packager
     #
     # @return [Boolean] true if the license acceptance is required
     def license_confirmation_required?
+      return false unless license?
       license.confirmation_required?
     end
 

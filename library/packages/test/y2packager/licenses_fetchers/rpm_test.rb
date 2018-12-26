@@ -12,6 +12,7 @@
 # ------------------------------------------------------------------------------
 
 require_relative "../../test_helper"
+require_relative "./shared_examples"
 
 require "y2packager/licenses_fetchers/rpm"
 require "y2packager/package"
@@ -35,6 +36,8 @@ describe Y2Packager::LicensesFetchers::Rpm do
       .with(package_name)
       .and_return([package])
   end
+
+  it_behaves_like "a fetcher"
 
   describe "#content" do
     context "when a selected package is found" do

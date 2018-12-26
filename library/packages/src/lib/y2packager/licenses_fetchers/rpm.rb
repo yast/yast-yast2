@@ -23,6 +23,8 @@ module Y2Packager
       #
       # @return [String, nil] Product's license; nil if the product or the license were not found
       def content(lang)
+        super
+
         if package.nil?
           log.info("No package found for #{product_name}")
 
