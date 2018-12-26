@@ -12,6 +12,7 @@
 
 require "yast"
 require "y2packager/licenses_fetchers/libzypp"
+require "y2packager/licenses_fetchers/rpm"
 
 module Y2Packager
   # This module contains licenses fetchers

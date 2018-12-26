@@ -54,7 +54,8 @@ y2rns_fetchers_DATA = \
 y2licenses_fetchersdir = "${yast2dir}/lib/y2packager/licenses_fetchers"
 y2licenses_fetchers_DATA = \
 	lib/y2packager/licenses_fetchers/base.rb \
-	lib/y2packager/licenses_fetchers/libzypp.rb
+	lib/y2packager/licenses_fetchers/libzypp.rb \
+	lib/y2packager/licenses_fetchers/rpm.rb
 
 y2licenses_handlersdir = "${yast2dir}/lib/y2packager/licenses_handlers"
 y2licenses_handlers_DATA = \

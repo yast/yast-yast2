@@ -13,6 +13,7 @@ TESTS = \
   y2packager/package_test.rb \
   y2packager/product_reader_test.rb \
   y2packager/product_sorter_test.rb \
+  y2packager/licenses_fetchers/rpm_test.rb \
   y2packager/release_notes_content_prefs_test.rb \
   y2packager/release_notes_fetchers/base_test.rb \
   y2packager/release_notes_fetchers/rpm_test.rb \
