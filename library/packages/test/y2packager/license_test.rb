@@ -22,9 +22,13 @@ describe Y2Packager::License do
   let(:fetcher) do
     instance_double(Y2Packager::LicensesFetchers::Libzypp, content: "license", found?: true)
   end
+  let(:handler) do
+    instance_double(Y2Packager::LicensesHandlers::Libzypp)
+  end
 
   before do
     described_class.clear_cache
+    allow(Y2Packager::LicensesHandlers).to receive(:for).and_return(handler)
     allow(Y2Packager::LicensesFetchers::Libzypp).to receive(:new).and_return(fetcher)
   end
 
@@ -32,7 +36,7 @@ describe Y2Packager::License do
     context "when some content is given" do
       before do
         allow(Y2Packager::License).to receive(:new)
-          .with(product_name: "SLES", fetcher: fetcher, content: content)
+          .with(product_name: "SLES", fetcher: fetcher, handler: handler, content: content)
           .and_return(license)
       end
 

@@ -13,6 +13,7 @@
 require "yast"
 require "digest"
 require "y2packager/licenses_fetchers"
+require "y2packager/licenses_handlers"
 
 module Y2Packager
   # Represent a License which could be the same for multiple products.
@@ -30,8 +31,11 @@ module Y2Packager
     # @return [Hash<String, String>] language -> content
     attr_reader :translations
 
-    # @return [Yast::LicenseFetcher]
+    # @return [Yast::LicensesFetchers::Base]
     attr_reader :fetcher
+
+    # @return [Yast::LicensesHandlers::Base]
+    attr_reader :handler
 
     alias_method :accepted?, :accepted
 
@@ -51,8 +55,10 @@ module Y2Packager
         return cache[product_name] if cache[product_name]
 
         fetcher = LicensesFetchers.for(product_name)
+        handler = LicensesHandlers.for(fetcher, product_name) if fetcher
 
-        license = License.new(product_name: product_name, fetcher: fetcher, content: content)
+        license = License.new(product_name: product_name, fetcher: fetcher,
+                              handler: handler, content: content)
         return unless license.id
 
         cached_license = cache.values.find { |l| l.id == license.id }
@@ -92,12 +98,14 @@ module Y2Packager
     # @param product_name [String] Product name to retrieve license information
     # @param content      [String] License content. If this argument is given, this
     #   string is used as the license's content (and `product_name` is ignored).
-    # @param fetcher      [LicensesFetcher] The license fetcher
-    def initialize(product_name: nil, content: nil, fetcher: nil)
+    # @param fetcher      [LicensesFetchers::Base] The license's fetcher
+    # @param handler      [LicensesHandlers::Base] The license's handler
+    def initialize(product_name: nil, content: nil, fetcher: nil, handler: nil)
       @accepted = false
       @translations = {}
       @product_name = product_name
       @fetcher = fetcher
+      @handler = handler
 
       add_content_for(DEFAULT_LANG, content) if content
     end
@@ -117,7 +125,8 @@ module Y2Packager
     # Return the license translated content for the given language
     #
     # @param lang [String] Contents' language
-    # @return [String,nil] the license translated content or nil if not found
+    #
+    # @return [String, nil] the license translated content or nil if not found
     def content_for(lang = DEFAULT_LANG)
       return @translations[lang] if @translations[lang]
       return unless fetcher
@@ -138,6 +147,7 @@ module Y2Packager
     #
     # @param lang    [String] Language to add the translation to
     # @param content [String] Content to add
+    #
     # @return [String] the license translated content
     def add_content_for(lang, content)
       @translations[lang] = content
@@ -152,8 +162,6 @@ module Y2Packager
     def reject!
       @accepted = false
     end
-
-    attr_accessor :fetcher
 
   private
 

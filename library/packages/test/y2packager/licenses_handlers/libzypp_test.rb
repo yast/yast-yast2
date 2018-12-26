@@ -13,7 +13,7 @@
 
 require_relative "../../test_helper"
 
-require "y2packager/product_license"
+require "y2packager/licenses_handlers/libzypp"
 
 describe Y2Packager::LicensesHandlers::Libzypp do
   subject(:handler) { described_class.new(product_name) }

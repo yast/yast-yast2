@@ -43,13 +43,6 @@ module Y2Packager
         locales[empty_idx] = DEFAULT_LANG if empty_idx
         locales
       end
-
-      # Determine whether the license should be accepted or not
-      #
-      # @return [Boolean] true if the license acceptance is required
-      def confirmation_required?
-        Yast::Pkg.PrdNeedToAcceptLicense(product_name)
-      end
     end
   end
 end

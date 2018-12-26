@@ -13,7 +13,6 @@
 require "yast"
 require "forwardable"
 require "y2packager/license"
-require "y2packager/licenses_handlers"
 
 module Y2Packager
   # This class holds the license stuff for a given product
@@ -76,7 +75,7 @@ module Y2Packager
     def initialize(product_name, license)
       @product_name = product_name
       @license = license
-      @handler = Y2Packager::LicensesHandlers.for(source, product_name) if source
+      @handler = license.handler
     end
 
     # Determine whether the license have been accepted or not
