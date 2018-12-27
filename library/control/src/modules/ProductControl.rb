@@ -52,7 +52,6 @@ module Yast
       Yast.import "Label"
       Yast.import "Wizard"
       Yast.import "Report"
-      Yast.import "DebugHooks"
       Yast.import "Popup"
       Yast.import "FileUtils"
       Yast.import "Installation"
@@ -120,8 +119,6 @@ module Yast
       @restarting_step = nil
 
       @_client_prefix = "inst_"
-
-      @stack = []
 
       @first_id = ""
 
@@ -1220,15 +1217,6 @@ module Yast
       nil
     end
 
-    def addToStack(name)
-      @stack = Builtins.add(@stack, name)
-      nil
-    end
-
-    def wasRun(name)
-      Builtins.contains(@stack, name)
-    end
-
     def RunFrom(from, allow_back)
       former_result = :next
       final_result = nil
@@ -1320,14 +1308,7 @@ module Yast
         argterm = getClientTerm(step, defaults, former_result)
         Builtins.y2milestone("Running module: %1 (%2)", argterm, @current_step)
 
-        module_name = Builtins.symbolof(argterm)
-
         Builtins.y2milestone("Calling %1", argterm)
-
-        if !wasRun(step_name)
-          DebugHooks.Checkpoint(Builtins.sformat("%1", module_name), true)
-          DebugHooks.Run(step_name, true)
-        end
 
         args = []
         i = 0
@@ -1383,21 +1364,6 @@ module Yast
             Builtins.y2error("Error removing step identifier")
           end
         end
-
-        # Dont call debug hook scripts after installation is done. (#36831)
-        if Ops.less_than(@current_step, Ops.subtract(Builtins.size(modules), 1)) &&
-            !wasRun(step_name)
-          DebugHooks.Run(step_name, false)
-        else
-          Builtins.y2milestone(
-            "Not running debug hooks at the end of the installation"
-          )
-        end
-
-        # This should be safe (#36831)
-        DebugHooks.Checkpoint(step_name, false) # exit hook
-
-        addToStack(step_name)
 
         if retranslate
           Builtins.y2milestone("retranslate")
@@ -1665,7 +1631,6 @@ module Yast
     publish function: :getProposalProperties, type: "map (string, string, string)"
     publish function: :GetTranslatedText, type: "string (string)"
     publish function: :Init, type: "boolean ()"
-    publish function: :wasRun, type: "boolean (string)"
     publish function: :RunFrom, type: "symbol (integer, boolean)"
     publish function: :Run, type: "symbol ()"
     publish function: :SkippedSteps, type: "list <map> ()"
