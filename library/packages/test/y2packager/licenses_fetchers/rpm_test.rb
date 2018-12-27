@@ -117,22 +117,22 @@ describe Y2Packager::LicensesFetchers::Rpm do
     context "when license translation files are not found" do
       let(:available_license_files) { ["/fake/path/to/LICENSE.TXT"] }
 
-      it "returns an empty list" do
-        expect(fetcher.locales).to eq([])
+      it "returns a list with the default language" do
+        expect(fetcher.locales).to eq([described_class::DEFAULT_LANG])
       end
     end
 
     context "when license translation files are found" do
       let(:available_license_files) do
         [
-          "/fake/path/to/LICENSE.en_US.TXT",
+          "/fake/path/to/LICENSE.cz_CZ.TXT",
           "/fake/path/to/LICENSE.es_ES.TXT",
           "/fake/path/to/LICENSE.TXT"
         ]
       end
 
-      it "returns the available locales" do
-        expect(fetcher.locales).to eq(["en_US", "es_ES"])
+      it "returns a list with available locales and the default lang" do
+        expect(fetcher.locales).to eq(["cz_CZ", "es_ES", described_class::DEFAULT_LANG])
       end
     end
   end

@@ -50,7 +50,9 @@ module Y2Packager
             package.extract_to(tmpdir)
             # TODO: Use rpm -qpl file.rpm instead?
             license_files = Dir.glob(File.join(tmpdir, "**", "LICENSE.*.TXT"), File::FNM_CASEFOLD)
-            license_files.map { |path| path[/LICENSE.(\w*).TXT/i, 1] }.compact
+            languages = license_files.map { |path| path[/LICENSE.(\w*).TXT/i, 1] }
+            languages << DEFAULT_LANG
+            languages.compact.uniq
           end
       end
 
