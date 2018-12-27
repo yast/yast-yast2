@@ -130,11 +130,11 @@ module Y2Packager
 
         @package ||=
           Y2Packager::Package
-            .find(package_name)
-            .compact
-            .select { |i| AVAILABLE_STATUSES.include?(i.status) }
-            .sort { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
-            .last
+          .find(package_name)
+          .compact
+          .select { |i| AVAILABLE_STATUSES.include?(i.status) }
+          .sort { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
+          .last
       end
 
       # Find the package name
