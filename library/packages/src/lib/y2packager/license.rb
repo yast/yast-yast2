@@ -127,7 +127,7 @@ module Y2Packager
 
     # Return license's available locales
     #
-    # @return [Array<String>] List of available locales
+    # @return [Array<String>] List of available language codes ("de_DE", "en_US", etc.)
     def locales
       return [DEFAULT_LANG] unless fetcher
       fetcher.locales

@@ -40,7 +40,7 @@ module Y2Packager
         end
 
         empty_idx = locales.index("")
-        locales[empty_idx] = License::DEFAULT_LANG if empty_idx
+        locales[empty_idx] = DEFAULT_LANG if empty_idx
         locales
       end
 

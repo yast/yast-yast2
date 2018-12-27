@@ -47,4 +47,34 @@ describe Y2Packager::LicensesFetchers::Libzypp do
       end
     end
   end
+
+  describe "#locales" do
+    before do
+      allow(Yast::Pkg).to receive(:PrdLicenseLocales).and_return(locales)
+    end
+
+    context "when license locales are found" do
+      let(:locales) { ["en_US", "cz_CZ"] }
+
+      it "returns list of available translations" do
+        expect(fetcher.locales).to eq(["en_US", "cz_CZ"])
+      end
+
+      context "and there is an empty element in available translations" do
+        let(:locales) { ["es_ES", "", "cz_CZ"] }
+
+        it "replaces it by the default" do
+          expect(fetcher.locales).to eq(["es_ES", described_class::DEFAULT_LANG, "cz_CZ"])
+        end
+      end
+    end
+
+    context "when locales are not found" do
+      let(:locales) { nil }
+
+      it "returns an empty list" do
+        expect(fetcher.locales).to eq([])
+      end
+    end
+  end
 end
