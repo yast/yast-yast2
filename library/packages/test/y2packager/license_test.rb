@@ -140,17 +140,21 @@ describe Y2Packager::License do
   end
 
   describe "#locales" do
-    context "when license locales are found" do
+    context "when there is a fetcher" do
       before do
-        allow(Yast::Pkg).to receive(:PrdLicenseLocales).and_return(["en_US", "cz_CZ"])
+        allow(fetcher).to receive(:locales).and_return(["en_US", "cz_CZ"])
       end
 
-      it "returns list of available translations" do
+      it "returns the languages codes given by the fetcher" do
         expect(license.locales).to eq(["en_US", "cz_CZ"])
       end
     end
 
-    context "when locales are not found" do
+    context "when the fetcher is missing" do
+      before do
+        allow(license).to receive(:fetcher).and_return(nil)
+      end
+
       it "returns a list containing the default language" do
         expect(license.locales).to eq([described_class::DEFAULT_LANG])
       end
