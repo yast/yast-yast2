@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Dec 28 15:43:49 UTC 2018 - dgonzalez@suse.com
+
+- Add missing help for the service configuration
+
+-------------------------------------------------------------------
 Wed Dec 19 12:15:33 UTC 2018 - jreidinger@suse.com
 
 - NetworkService: fix invoking forced enable (bsc#1119657)

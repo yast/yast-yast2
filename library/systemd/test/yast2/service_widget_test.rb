@@ -181,4 +181,18 @@ describe Yast2::ServiceWidget do
       subject.store
     end
   end
+
+  describe "#help" do
+    it "returns help for the current status" do
+      expect(subject.help).to match(/Current status/)
+    end
+
+    it "returns help for actions after write settings" do
+      expect(subject.help).to include("After writing configuration", "Keep current state")
+    end
+
+    it "returns help for action on reboot" do
+      expect(subject.help).to include("After reboot", "on demand")
+    end
+  end
 end

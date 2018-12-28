@@ -56,5 +56,9 @@ module CWM
     def init
       refresh
     end
+
+    def help
+      @service_widget.help
+    end
   end
 end
