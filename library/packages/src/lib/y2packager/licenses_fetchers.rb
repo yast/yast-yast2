@@ -24,9 +24,11 @@ module Y2Packager
 
     KNOWN_SOURCES = [:libzypp, :rpm].freeze
 
-    # Return the licenses proper fetcher for a given source
+    # Return the proper license fetcher
     #
     # @param product_name [String] Product's name
+    #
+    # @return [Object, nil] The first valid fetcher found or nil
     def self.for(product_name)
       KNOWN_SOURCES.each do |source|
         log.info "Looking a license source for #{product_name} from #{source}"

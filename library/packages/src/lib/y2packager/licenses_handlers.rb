@@ -20,10 +20,11 @@ module Y2Packager
   # classes defined in this module are able to interact with these sources in
   # order to find out, for instance, whether a license must be accepted.
   module LicensesHandlers
-    # Return the licenses proper fetcher for a given source
+    # Return the proper license handler based on given fetcher
     #
-    # @param source       [:libzypp,nil] Source to fetch license from (only :libzypp is supported)
-    # @param product_name [String]       Product's name
+    # @param fetcher      [LicensesFetchers::Base] Fetcher used as source to fetch license
+    # @param product_name [String]                 Product's name
+    #
     # @return [Object]
     def self.for(fetcher, product_name)
       type = fetcher.class.name.split("::").last
