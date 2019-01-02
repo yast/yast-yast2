@@ -11,7 +11,6 @@ module_DATA = \
   modules/CWMFirewallInterfaces.rb \
   modules/NetworkPopup.rb \
   modules/NetworkService.rb \
-  modules/SuSEFirewallExpertRules.rb \
   modules/SuSEFirewallServices.rb \
   modules/SLPAPI.pm \
   modules/DnsServerAPI.pm \

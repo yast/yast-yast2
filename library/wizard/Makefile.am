@@ -2,4 +2,4 @@
 # Makefile.am for yast2/wizard
 #
 
-SUBDIRS = src testsuite
+SUBDIRS = src test
