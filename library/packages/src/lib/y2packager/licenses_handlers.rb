@@ -25,7 +25,7 @@ module Y2Packager
     # @param fetcher      [LicensesFetchers::Base] Fetcher used as source to fetch license
     # @param product_name [String]                 Product's name
     #
-    # @return [Object]
+    # @return [LicenseHandlers::Base]
     def self.for(fetcher, product_name)
       type = fetcher.class.name.split("::").last
       klass = const_get(type.to_s.capitalize)

@@ -26,6 +26,7 @@ describe Y2Packager::LicensesFetchers::Rpm do
   let(:package_properties) { [{ "product_package" => package_name }] }
   let(:package_status) { :selected }
   let(:package) { instance_double(Y2Packager::Package, status: package_status, extract_to: nil) }
+  let(:found_packages) { [package] }
 
   before do
     allow(Yast::Pkg).to receive(:ResolvableProperties)
@@ -34,7 +35,7 @@ describe Y2Packager::LicensesFetchers::Rpm do
 
     allow(Y2Packager::Package).to receive(:find)
       .with(package_name)
-      .and_return([package])
+      .and_return(found_packages)
   end
 
   it_behaves_like "a fetcher"
@@ -106,7 +107,7 @@ describe Y2Packager::LicensesFetchers::Rpm do
     end
 
     context "when package is not found" do
-      let(:package) { nil }
+      let(:found_packages) { nil }
       let(:available_license_files) { [] }
 
       it "returns an empty list" do

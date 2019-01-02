@@ -23,7 +23,7 @@ module Y2Packager
       #
       # @return [String, nil] Product's license; nil if the product or the license were not found.
       def content(lang)
-        super
+        return @default_content if default_lang?(lang) && @default_content
 
         Yast::Pkg.PrdGetLicenseToConfirm(product_name, lang)
       end

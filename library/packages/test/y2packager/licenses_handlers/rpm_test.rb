@@ -28,7 +28,7 @@ describe Y2Packager::LicensesHandlers::Rpm do
       allow(Dir).to receive(:glob).and_return(found_paths)
       allow(File).to receive(:join)
       allow(FileUtils).to receive(:remove_entry_secure)
-      allow(subject).to receive(:find_package).and_return(package)
+      allow(subject).to receive(:package).and_return(package)
     end
 
     context "when 'no-acceptance-neeed' file is present" do

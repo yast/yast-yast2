@@ -25,11 +25,16 @@ module Y2Packager
       #
       # @return [Boolean] true if the license acceptance is required
       def confirmation_required?
-        @package ||= find_package
+        return false unless package
 
-        return false unless @package
+        begin
+          tmpdir = Dir.mktmpdir
+          package.extract_to(tmpdir)
 
-        !ignore_acceptance?
+          Dir.glob(File.join(tmpdir, "**", NO_ACCEPTANCE_FILE), File::FNM_CASEFOLD).empty?
+        ensure
+          FileUtils.remove_entry_secure(tmpdir)
+        end
       end
 
       # Set the license confirmation for the product
@@ -45,34 +50,23 @@ module Y2Packager
 
     private
 
-      attr_reader :package
-
-      def ignore_acceptance?
-        tmpdir = Dir.mktmpdir
-
-        begin
-          package.extract_to(tmpdir)
-
-          Dir.glob(File.join(tmpdir, "**", NO_ACCEPTANCE_FILE), File::FNM_CASEFOLD).any?
-        ensure
-          FileUtils.remove_entry_secure(tmpdir)
-        end
-      end
-
       # Valid statuses for packages containing licenses
       AVAILABLE_STATUSES = [:available, :selected].freeze
 
-      # Find the latest available/selected product package
+      # Find the highest version of available/selected product package
       #
       # @return [Y2Packager::Package, nil] Package containing licenses; nil if not found
-      def find_package
+      def package
         return nil if package_name.nil?
 
-        Y2Packager::Package
-          .find(package_name)
-          .select { |i| AVAILABLE_STATUSES.include?(i.status) }
-          .sort { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
-          .last
+        @package ||= begin
+          found_packages = Y2Packager::Package.find(package_name)
+          return unless found_packages
+
+          found_packages.select { |i| AVAILABLE_STATUSES.include?(i.status) }
+                        .sort { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
+                        .last
+        end
       end
 
       # Find the package name
@@ -81,7 +75,9 @@ module Y2Packager
       def package_name
         return @package_name if @package_name
 
-        package_properties = Yast::Pkg.ResolvableProperties(product_name, :product, "").first || {}
+        package_properties = Yast::Pkg.ResolvableProperties(product_name, :product, "")
+        package_properties = package_properties.find { |props| props.key?("product_package") }
+        package_properties ||= {}
 
         @package_name = package_properties.fetch("product_package", nil)
       end

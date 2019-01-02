@@ -96,8 +96,8 @@ module Y2Packager
     # Bear in mind that `fetcher` will be ignored if `content` is specified.
     #
     # @param product_name [String] Product name to retrieve license information
-    # @param content      [String] License content. If this argument is given, this
-    #   string is used as the license's content (and `product_name` is ignored).
+    # @param content      [String] License content. When given, this string is used as the license's
+    #   content, ignoring the `product_name`
     # @param fetcher      [LicensesFetchers::Base] The license's fetcher
     # @param handler      [LicensesHandlers::Base] The license's handler
     def initialize(product_name: nil, content: nil, fetcher: nil, handler: nil)

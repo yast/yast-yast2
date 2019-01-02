@@ -40,10 +40,6 @@ module Y2Packager
         !default_content.empty?
       end
 
-      def content(lang)
-        return @default_content if default_lang?(lang) && @default_content
-      end
-
     private
 
       # Return (and caches) the content found for the default language

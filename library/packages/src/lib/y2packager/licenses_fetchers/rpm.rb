@@ -23,7 +23,7 @@ module Y2Packager
       #
       # @return [String, nil] Product's license; nil if the product or the license were not found
       def content(lang)
-        super
+        return @default_content if default_lang?(lang) && @default_content
 
         if package.nil?
           log.info("No package found for #{product_name}")
@@ -50,9 +50,13 @@ module Y2Packager
             package.extract_to(tmpdir)
             # TODO: Use rpm -qpl file.rpm instead?
             license_files = Dir.glob(File.join(tmpdir, "**", "LICENSE.*.TXT"), File::FNM_CASEFOLD)
+            # NOTE: despite the use of the case-insensitive flag, the captured group will be
+            # returned as it is.
             languages = license_files.map { |path| path[/LICENSE.(\w*).TXT/i, 1] }
             languages << DEFAULT_LANG
             languages.compact.uniq
+          ensure
+            FileUtils.remove_entry_secure(tmpdir)
           end
       end
 
@@ -71,31 +75,28 @@ module Y2Packager
       # @return [Array<String, String>, nil] Array containing content and language code
       def license_content_for(lang)
         tmpdir = Dir.mktmpdir
+        package.extract_to(tmpdir)
+        license_file = license_path(tmpdir, lang) || fallback_path(tmpdir)
 
-        begin
-          package.extract_to(tmpdir)
-          license_file = license_path(tmpdir, lang) || fallback_path(tmpdir)
+        if license_file.nil?
+          log.error("#{lang} license file not found for #{product_name}")
 
-          if license_file.nil?
-            log.error("License file not found")
-
-            return
-          end
-
-          File.read(license_file)
-        ensure
-          FileUtils.remove_entry_secure(tmpdir)
+          return
         end
+
+        File.read(license_file)
+      ensure
+        FileUtils.remove_entry_secure(tmpdir)
       end
 
-      # Return license file path for a given package and language
+      # Return license file path for the given languages
       #
       # When a license for a language "xx_XX" is not found, it will fallback to "xx".
       #
       # @param directory [String] Directory where licenses were uncompressed
-      # @param lang      [String] Searched language
+      # @param lang      [String] Searched translation
       #
-      # @return [Array<String, String>] Array containing the path and language code
+      # @return [String, lang] The first licence path for given languages or nil
       def license_path(directory, lang)
         candidate_langs = [lang]
         candidate_langs << lang.split("_", 2).first if lang
@@ -103,40 +104,52 @@ module Y2Packager
 
         log.info("Searching for a #{candidate_langs.join(",")} license translations in #{directory}")
 
-        Dir.glob(
-          File.join(directory, "**", "LICENSE.{#{candidate_langs.join(",")}}.TXT"),
-          File::FNM_CASEFOLD
-        ).first
+        find_path_for(directory, "LICENSE.{#{candidate_langs.join(",")}}.TXT")
       end
 
       # Fallback license file
       FALLBACK_LICENSE_FILE = "LICENSE.TXT".freeze
 
+      # Return the fallback license file path
+      #
+      # Looking for a license file without language code
+      #
+      # @param directory [String] Directory where licenses were uncompressed
+      #
+      # @return [String, nil] The fallback license path
       def fallback_path(directory)
         log.info("Searching for a fallback #{FALLBACK_LICENSE_FILE} file in #{directory}")
 
-        Dir.glob(
-          File.join(directory, "**", FALLBACK_LICENSE_FILE),
-          File::FNM_CASEFOLD
-        ).first
+        find_path_for(directory, FALLBACK_LICENSE_FILE)
+      end
+
+      # Return the path for the given file in specified directory
+      #
+      # @param directory [String] Directory where licenses were uncompressed
+      # @param file      [String] Searched file
+      #
+      # @return [String, nil] The file path; nil if was not found
+      def find_path_for(directory, file)
+        Dir.glob(File.join(directory, "**", file), File::FNM_CASEFOLD).first
       end
 
       # Valid statuses for packages containing licenses
       AVAILABLE_STATUSES = [:available, :selected].freeze
 
-      # Find the latest available/selected product package
+      # Find the highest version of available/selected product package
       #
       # @return [Y2Packager::Package, nil] Package containing licenses; nil if not found
       def package
         return nil if package_name.nil?
 
-        @package ||=
-          Y2Packager::Package
-          .find(package_name)
-          .compact
-          .select { |i| AVAILABLE_STATUSES.include?(i.status) }
-          .sort { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
-          .last
+        @package ||= begin
+          found_packages = Y2Packager::Package.find(package_name)
+          return unless found_packages
+
+          found_packages.select { |i| AVAILABLE_STATUSES.include?(i.status) }
+                        .sort { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
+                        .last
+        end
       end
 
       # Find the package name
@@ -145,7 +158,9 @@ module Y2Packager
       def package_name
         return @package_name if @package_name
 
-        package_properties = Yast::Pkg.ResolvableProperties(product_name, :product, "").first || {}
+        package_properties = Yast::Pkg.ResolvableProperties(product_name, :product, "")
+        package_properties = package_properties.find { |props| props.key?("product_package") }
+        package_properties ||= {}
 
         @package_name = package_properties.fetch("product_package", nil)
       end

@@ -22,6 +22,8 @@ module Y2Packager
   module LicensesFetchers
     include Yast::Logger
 
+    # Candidate sources to retrieve the license content. Note that order matters because it will be
+    # chosen the first source able to fetch the content.
     KNOWN_SOURCES = [:libzypp, :rpm].freeze
 
     # Return the proper license fetcher
