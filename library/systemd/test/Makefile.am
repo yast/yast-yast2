@@ -1,4 +1,6 @@
 TESTS = \
+	services_proposal_test.rb \
+	service_test.rb \
 	yast2/compound_service_test.rb \
 	yast2/service_widget_test.rb \
 	yast2/systemctl_test.rb \

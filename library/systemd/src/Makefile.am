@@ -17,6 +17,11 @@ systemd_DATA = \
   lib/yast2/systemd/target.rb \
   lib/yast2/systemd/socket_finder.rb
 
-EXTRA_DIST = $(ylib_DATA) $(systemd_DATA)
+module_DATA = \
+  modules/Service.rb \
+  modules/ServicesProposal.rb \
+  modules/Systemd.rb
+
+EXTRA_DIST = $(ylib_DATA) $(systemd_DATA) $(module_DATA)
 
 include $(top_srcdir)/Makefile.am.common
