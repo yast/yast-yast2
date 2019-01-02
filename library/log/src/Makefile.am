@@ -1,7 +1,6 @@
 # Sources for yast2
 
 module_DATA = \
-  modules/ALog.rb \
   modules/LogView.rb \
   modules/LogViewCore.rb
 
