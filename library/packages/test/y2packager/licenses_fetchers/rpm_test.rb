@@ -17,18 +17,31 @@ require_relative "./shared_examples"
 require "y2packager/licenses_fetchers/rpm"
 require "y2packager/package"
 
+require "fileutils"
+
 describe Y2Packager::LicensesFetchers::Rpm do
   subject(:fetcher) { described_class.new(product_name) }
 
-  let(:lang) { "en_US" }
+  def rpm_path_for(package)
+    File.expand_path("../../../data/rpm/#{package}", __FILE__)
+  end
+
+  let(:lang) { "cz_CZ" }
   let(:product_name) { "SLES" }
+  let(:tmpdir) { "/tmp/licenses_fetcher_rpm_tests" }
   let(:package_name) { "sles-release" }
   let(:package_properties) { [{ "product_package" => package_name }] }
   let(:package_status) { :selected }
+  let(:package_path) { rpm_path_for("licenses_test_package-0.1-0.noarch.rpm") }
   let(:package) { instance_double(Y2Packager::Package, status: package_status, extract_to: nil) }
   let(:found_packages) { [package] }
 
   before do
+    Dir.mkdir(tmpdir)
+    Packages::PackageExtractor.new(package_path).extract(tmpdir)
+
+    allow(Dir).to receive(:mktmpdir).and_return(tmpdir)
+
     allow(Yast::Pkg).to receive(:ResolvableProperties)
       .with(product_name, :product, "")
       .and_return(package_properties)
@@ -38,42 +51,30 @@ describe Y2Packager::LicensesFetchers::Rpm do
       .and_return(found_packages)
   end
 
+  after do
+    FileUtils.rm_r(tmpdir, force: true)
+  end
+
   it_behaves_like "a fetcher"
 
   describe "#content" do
     context "when a selected package is found" do
-      let(:license_path) { "/fake/path/to/#{lang}/LICENSE" }
-      let(:default_license_path) { "/fake/path/to/default/txt/license" }
-      let(:license_file_content) { "" }
-
-      before do
-        allow(Dir).to receive(:glob).and_call_original
-        allow(Dir).to receive(:glob).with(/#{lang}/, anything).and_return([license_path])
-        allow(Dir).to receive(:glob).with(/LICENSE.TXT/, anything).and_return([default_license_path])
-        allow(File).to receive(:read).with(license_path).and_return(license_file_content)
-        allow(File).to receive(:read).with(default_license_path).and_return(license_file_content)
-      end
-
       context "and there are license files available" do
-        let(:license_file_content) { "Dummy content license for #{lang} language" }
-
-        it "returns the license file content" do
-          expect(fetcher.content(lang)).to match(/license for #{lang} language/)
+        it "returns the requested license file content" do
+          expect(fetcher.content(lang)).to match(/Dummy obsah/)
         end
       end
 
       context "and there is only the fallback license file available" do
-        let(:license_path) { nil }
-        let(:license_file_content) { "Dummy default license content" }
+        let(:package_path) { rpm_path_for("fallback_licenses_test_package-0.1-0.noarch.rpm") }
 
         it "returns the default license file content" do
-          expect(fetcher.content(lang)).to eq("Dummy default license content")
+          expect(fetcher.content(lang)).to match(/Dummy content for the fallback license file/)
         end
       end
 
       context "and there are none license files available" do
-        let(:license_path) { nil }
-        let(:default_license_path) { nil }
+        let(:package_path) { rpm_path_for("dummy_package-0.1-0.noarch.rpm") }
 
         it "returns nil" do
           expect(fetcher.content(lang)).to be_nil
@@ -99,41 +100,25 @@ describe Y2Packager::LicensesFetchers::Rpm do
   end
 
   describe "#locales" do
-    before do
-      allow(Dir).to receive(:glob).and_call_original
-      allow(Dir).to receive(:glob)
-        .with(/LICENSE.*.TXT/, anything)
-        .and_return(available_license_files)
-    end
-
     context "when package is not found" do
       let(:found_packages) { nil }
-      let(:available_license_files) { [] }
 
       it "returns an empty list" do
         expect(fetcher.locales).to eq([])
       end
     end
 
-    context "when license translation files are not found" do
-      let(:available_license_files) { ["/fake/path/to/LICENSE.TXT"] }
-
-      it "returns a list with the default language" do
-        expect(fetcher.locales).to eq([described_class::DEFAULT_LANG])
+    context "when license translation files are found" do
+      it "returns a list with available locales" do
+        expect(fetcher.locales).to eq(["cz_CZ", "en_US", "es_ES"])
       end
     end
 
-    context "when license translation files are found" do
-      let(:available_license_files) do
-        [
-          "/fake/path/to/LICENSE.cz_CZ.TXT",
-          "/fake/path/to/LICENSE.es_ES.TXT",
-          "/fake/path/to/LICENSE.TXT"
-        ]
-      end
+    context "when license translation files are not found" do
+      let(:package_path) { rpm_path_for("dummy_package-0.1-0.noarch.rpm") }
 
-      it "returns a list with available locales and the default lang" do
-        expect(fetcher.locales).to eq(["cz_CZ", "es_ES", described_class::DEFAULT_LANG])
+      it "returns a list with the default language" do
+        expect(fetcher.locales).to eq([described_class::DEFAULT_LANG])
       end
     end
   end
