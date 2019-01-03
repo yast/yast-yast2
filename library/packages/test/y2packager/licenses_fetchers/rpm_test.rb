@@ -110,7 +110,7 @@ describe Y2Packager::LicensesFetchers::Rpm do
 
     context "when license translation files are found" do
       it "returns a list with available locales" do
-        expect(fetcher.locales).to eq(["cz_CZ", "en_US", "es_ES"])
+        expect(fetcher.locales).to match_array(["cz_CZ", "en_US", "es_ES"])
       end
     end
 
