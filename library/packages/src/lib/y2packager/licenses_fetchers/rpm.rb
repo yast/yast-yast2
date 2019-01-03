@@ -133,23 +133,13 @@ module Y2Packager
         Dir.glob(File.join(directory, "**", file), File::FNM_CASEFOLD).first
       end
 
-      # Valid statuses for packages containing licenses
-      AVAILABLE_STATUSES = [:available, :selected].freeze
-
       # Find the highest version of available/selected product package
       #
       # @return [Y2Packager::Package, nil] Package containing licenses; nil if not found
       def package
         return nil if package_name.nil?
 
-        @package ||= begin
-          found_packages = Y2Packager::Package.find(package_name)
-          return unless found_packages
-
-          found_packages.select { |i| AVAILABLE_STATUSES.include?(i.status) }
-                        .sort { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
-                        .last
-        end
+        @package ||= Y2Packager::Package.last_version(package_name)
       end
 
       # Find the package name

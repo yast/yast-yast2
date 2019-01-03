@@ -43,6 +43,23 @@ module Y2Packager
         return nil if props.nil?
         props.map { |i| new(i["name"], i["source"], i["version"]) }
       end
+
+      # Find the highest version of requested package with given statuses
+      #
+      # @param name [String] name of searched package
+      # @param statuses [Array<Symbol>] allowed package statuses
+      #
+      # @return [Y2Packager::Package, nil] Highest found version of package; nil if not found
+      def last_version(name, statuses: [:available, :selected])
+        packages = find(name)
+
+        return nil unless packages
+
+        packages
+          .select { |i| statuses.include?(i.status) }
+          .sort { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
+          .last
+      end
     end
 
     # Constructor

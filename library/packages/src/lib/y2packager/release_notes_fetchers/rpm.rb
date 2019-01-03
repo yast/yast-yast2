@@ -103,18 +103,11 @@ module Y2Packager
         @release_notes_package = find_package(package_name)
       end
 
-      # Valid statuses for packages containing release notes
-      AVAILABLE_STATUSES = [:available, :selected].freeze
-
       # Find the latest available/selected package containing release notes
       #
       # @return [Package,nil] Package containing release notes; nil if not found
       def find_package(name)
-        Y2Packager::Package
-          .find(name)
-          .select { |i| AVAILABLE_STATUSES.include?(i.status) }
-          .sort { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
-          .last
+        Y2Packager::Package.last_version(name)
       end
 
       # Return release notes instance
