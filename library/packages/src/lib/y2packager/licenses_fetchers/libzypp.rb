@@ -20,8 +20,11 @@ module Y2Packager
       # Return the license text to be confirmed
       #
       # @param lang [String] Language
-      # @return [String,nil] Product's license; nil if the product or the license were not found.
+      #
+      # @return [String, nil] Product's license; nil if the product or the license were not found.
       def content(lang)
+        return @default_content if default_lang?(lang) && @default_content
+
         Yast::Pkg.PrdGetLicenseToConfirm(product_name, lang)
       end
 
@@ -30,21 +33,15 @@ module Y2Packager
       # @return [Array<String>] Language codes ("de_DE", "en_US", etc.)
       def locales
         locales = Yast::Pkg.PrdLicenseLocales(product_name)
+
         if locales.nil?
           log.error "Error getting the list of available license translations for '#{product_name}'"
           return []
         end
 
         empty_idx = locales.index("")
-        locales[empty_idx] = License::DEFAULT_LANG if empty_idx
+        locales[empty_idx] = DEFAULT_LANG if empty_idx
         locales
-      end
-
-      # Determine whether the license should be accepted or not
-      #
-      # @return [Boolean] true if the license acceptance is required
-      def confirmation_required?
-        Yast::Pkg.PrdNeedToAcceptLicense(product_name)
       end
     end
   end

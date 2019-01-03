@@ -17,17 +17,17 @@ require "y2packager/product_license"
 
 describe Y2Packager::ProductLicense do
   subject(:product_license) do
-    Y2Packager::ProductLicense.new(product_name, license, source: :libzypp)
+    Y2Packager::ProductLicense.new(product_name, license)
   end
 
-  let(:license) { instance_double(Y2Packager::License, accept!: true, reject!: false) }
   let(:product_name) { "SLES" }
   let(:handler) { instance_double(Y2Packager::LicensesHandlers::Libzypp, :confirmation= => nil) }
+  let(:license) do
+    instance_double(Y2Packager::License, accept!: true, reject!: false, handler: handler)
+  end
 
   before do
     described_class.clear_cache
-    allow(Y2Packager::LicensesHandlers).to receive(:for)
-      .with(:libzypp, product_name).and_return(handler)
   end
 
   describe ".find" do
@@ -36,17 +36,17 @@ describe Y2Packager::ProductLicense do
     end
 
     it "returns a product license for the given product" do
-      expect(Y2Packager::License).to receive(:find).with("SLES", source: :libzypp, content: nil)
+      expect(Y2Packager::License).to receive(:find).with("SLES", content: nil)
         .and_return(license)
-      product_license = described_class.find("SLES", source: :libzypp)
+      product_license = described_class.find("SLES")
       expect(product_license).to be_a(Y2Packager::ProductLicense)
       expect(product_license.license).to eq(license)
     end
 
     context "when the product license was already found" do
       it "returns the already found instance" do
-        cached_product_license = described_class.find("SLES", source: :libzypp)
-        product_license = described_class.find("SLES", source: :libzypp)
+        cached_product_license = described_class.find("SLES")
+        product_license = described_class.find("SLES")
         expect(product_license).to be(cached_product_license)
       end
     end
@@ -57,7 +57,7 @@ describe Y2Packager::ProductLicense do
       end
 
       it "returns nil" do
-        expect(described_class.find("SLES", source: :libzypp)).to be_nil
+        expect(described_class.find("SLES")).to be_nil
       end
     end
 
@@ -86,18 +86,22 @@ describe Y2Packager::ProductLicense do
 
   describe "#accept!" do
     subject(:product_license) do
-      Y2Packager::ProductLicense.new(product_name, license, source: :libzypp)
+      Y2Packager::ProductLicense.new(product_name, license)
     end
 
     let(:license) { Y2Packager::License.new(content: "Some content") }
+
+    before do
+      allow(license).to receive(:handler).and_return(handler)
+    end
 
     it "delegates to License#accept!" do
       expect(license).to receive(:accept!).and_call_original
       product_license.accept!
     end
 
-    context "when a handler for the source is given" do
-      it "synchronizes the source" do
+    context "when a handler for the handler is given" do
+      it "synchronizes the handler" do
         expect(handler).to receive(:confirmation=).with(true)
         product_license.accept!
       end
@@ -114,15 +118,23 @@ describe Y2Packager::ProductLicense do
   end
 
   describe "#reject!" do
+    subject(:product_license) do
+      Y2Packager::ProductLicense.new(product_name, license)
+    end
+
     let(:license) { Y2Packager::License.new(content: "Some content") }
+
+    before do
+      allow(license).to receive(:handler).and_return(handler)
+    end
 
     it "delegates to License#reject!" do
       expect(license).to receive(:reject!)
       product_license.reject!
     end
 
-    context "when a handler for the source is given" do
-      it "synchronizes the source" do
+    context "when a handler for the handler is given" do
+      it "synchronizes the handler" do
         expect(handler).to receive(:confirmation=).with(false)
         product_license.reject!
       end
@@ -150,7 +162,7 @@ describe Y2Packager::ProductLicense do
         expect(product_license).to be_accepted
       end
 
-      it "synchronizes the source" do
+      it "synchronizes the handler" do
         expect(handler).to receive(:confirmation=).with(true)
         product_license.reject!
       end
@@ -163,7 +175,7 @@ describe Y2Packager::ProductLicense do
         expect(product_license).to_not be_accepted
       end
 
-      it "synchronizes the source" do
+      it "synchronizes the handler" do
         expect(handler).to receive(:confirmation=).with(false)
         product_license.reject!
       end

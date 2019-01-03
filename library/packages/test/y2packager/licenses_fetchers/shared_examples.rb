@@ -13,32 +13,33 @@
 
 require_relative "../../test_helper"
 
-require "y2packager/licenses_handlers/libzypp"
-
-describe Y2Packager::LicensesHandlers::Libzypp do
-  subject(:handler) { described_class.new(product_name) }
-
-  let(:product_name) { "SLES" }
-
-  describe "#license_confirmation_required?" do
+RSpec.shared_examples "a fetcher" do
+  describe "#found?" do
     before do
-      allow(Yast::Pkg).to receive(:PrdNeedToAcceptLicense)
-        .with(product_name).and_return(needed)
+      allow(subject).to receive(:content).with(anything).and_return(license_content)
     end
 
-    context "when according to libzypp the license is required to be confirmed" do
-      let(:needed) { true }
+    context "when there is a default license content" do
+      let(:license_content) { "Valid license content" }
 
       it "returns true" do
-        expect(handler.confirmation_required?).to eq(true)
+        expect(subject.found?).to eq(true)
       end
     end
 
-    context "when according to libzypp the license is not required to be confirmed" do
-      let(:needed) { false }
+    context "when there is not a default license content" do
+      let(:license_content) { nil }
 
       it "returns false" do
-        expect(handler.confirmation_required?).to eq(false)
+        expect(subject.found?).to eq(false)
+      end
+    end
+
+    context "when the default license content is empty" do
+      let(:license_content) { "" }
+
+      it "returns false" do
+        expect(subject.found?).to eq(false)
       end
     end
   end

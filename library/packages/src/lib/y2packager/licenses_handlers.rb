@@ -11,6 +11,7 @@
 # ------------------------------------------------------------------------------
 
 require "y2packager/licenses_handlers/libzypp"
+require "y2packager/licenses_handlers/rpm"
 
 module Y2Packager
   # This module contains licenses handlers
@@ -19,13 +20,16 @@ module Y2Packager
   # classes defined in this module are able to interact with these sources in
   # order to find out, for instance, whether a license must be accepted.
   module LicensesHandlers
-    # Return the licenses proper fetcher for a given source
+    # Return the proper license handler based on given fetcher
     #
-    # @param source       [:libzypp,nil] Source to fetch license from (only :libzypp is supported)
-    # @param product_name [String]       Product's name
-    # @return [Object]
-    def self.for(source, product_name)
-      klass = const_get(source.to_s.capitalize)
+    # @param fetcher      [LicensesFetchers::Base] Fetcher used as source to fetch license
+    # @param product_name [String]                 Product's name
+    #
+    # @return [LicenseHandlers::Base]
+    def self.for(fetcher, product_name)
+      type = fetcher.class.name.split("::").last
+      klass = const_get(type.to_s.capitalize)
+
       klass.new(product_name)
     end
   end

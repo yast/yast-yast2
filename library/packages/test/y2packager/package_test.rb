@@ -22,6 +22,33 @@ describe Y2Packager::Package do
     end
   end
 
+  describe ".last_version" do
+    let(:name) { "yast2" }
+    let(:unknown_status) { { "status" => :unknown } }
+    let(:available_status) { { "status" => :available } }
+    let(:selected_status) { { "status" => :selected } }
+
+    before do
+      allow(Yast::Pkg).to receive(:PkgProperties).with(name)
+        .and_return(unknown_status, available_status, selected_status)
+
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with(name, :package, "")
+        .and_return(
+          [
+            { "name" => "yast2", "source" => 0, "version" => "15.0" },
+            { "name" => "yast2", "source" => 1, "version" => "12.3" },
+            { "name" => "yast2", "source" => 2, "version" => "12.0" }
+          ]
+        )
+    end
+
+    it "returns the highest available or selected version of requested package" do
+      package = described_class.last_version(name)
+
+      expect(package.version).to eq("12.3")
+    end
+  end
+
   describe "#download_to" do
     it "downloads the package" do
       expect(Packages::PackageDownloader).to receive(:new)

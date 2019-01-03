@@ -13,7 +13,6 @@
 require "yast"
 require "forwardable"
 require "y2packager/license"
-require "y2packager/licenses_handlers"
 
 module Y2Packager
   # This class holds the license stuff for a given product
@@ -49,15 +48,14 @@ module Y2Packager
       #
       # This method uses a cache to return an already fetched product license.
       #
-      # @param product_name [String]       Product's name
-      # @param source       [:libzypp,nil] Source to get the license from. For the time being,
-      #   only :libzypp is really supported.
+      # @param product_name [String] Product's name
+      #
       # @return [ProductLicense]
-      def find(product_name, source: nil, content: nil)
+      def find(product_name, content: nil)
         return cache[product_name] if cache[product_name]
-        license = License.find(product_name, source: source, content: content)
+        license = License.find(product_name, content: content)
         return nil unless license
-        cache[product_name] = ProductLicense.new(product_name, license, source: source)
+        cache[product_name] = ProductLicense.new(product_name, license)
       end
 
       # Clear product licenses cache
@@ -72,13 +70,12 @@ module Y2Packager
 
     # Constructor
     #
-    # @param product_name [String] Product name to get licenses for
-    # @param source       [Symbol] Backend to use when syncing the licenses acceptance status
-    #   (only :libzypp is supported)
-    def initialize(product_name, license, source: nil)
+    # @param product_name [String]
+    # @param license [Yast::License]
+    def initialize(product_name, license)
       @product_name = product_name
       @license = license
-      @handler = Y2Packager::LicensesHandlers.for(source, product_name) if source
+      @handler = license.handler
     end
 
     # Determine whether the license have been accepted or not
@@ -91,7 +88,7 @@ module Y2Packager
 
     # Accept the license
     #
-    # As a side effect, it will update the source acceptance
+    # As a side effect, it will update the license acceptance
     def accept!
       license.accept!
       sync_acceptance
