@@ -89,15 +89,26 @@ module Y2Packager
       # @return [Package,nil] Package containing the release notes; nil if not found
       def release_notes_package
         return @release_notes_package if @release_notes_package
+
+        log.info "Searching release notes for product #{product.name}..."
         provides = Yast::Pkg.PkgQueryProvides("release-notes()")
         release_notes_packages = provides.map(&:first).uniq
         package_name = release_notes_packages.sort.find do |name|
-          dependencies = Yast::Pkg.ResolvableDependencies(name, :package, "").first["deps"]
+          package_list = Yast::Pkg.ResolvableDependencies(name, :package, "")
+
+          log.debug "Evaluating #{name} provides: #{package_list}"
+          package = package_list.find { |p| p["status"] == :selected } || package_list.find { |p| p["status"] == :available }
+          log.debug "Checking package #{package}"
+          next false unless package
+
+          dependencies = package["deps"]
           dependencies.any? do |dep|
             # mind $ at the end of the regexp, otherwise for SLES you may get RNs of any SLES.* product
-            dep["provides"].to_s.match(/release-notes\(\)\s*=\s*#{product.name}\s*$/)
+            dep["provides"].to_s.match(/^\s*release-notes\(\)\s*=\s*#{Regexp.escape(product.name)}\s*$/)
           end
         end
+
+        log.info "Found release package: #{package_name}"
         return nil if package_name.nil?
 
         @release_notes_package = find_package(package_name)

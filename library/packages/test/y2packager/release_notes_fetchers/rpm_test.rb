@@ -11,7 +11,10 @@ describe Y2Packager::ReleaseNotesFetchers::Rpm do
   let(:package) { Y2Packager::Package.new("release-notes-dummy", 2, "15.1") }
   let(:dependencies) do
     [
-      { "deps" => [{ "provides" => "release-notes() = dummy" }] }
+      {
+        "status" => :selected,
+        "deps"   => [{ "provides" => "release-notes() = dummy" }]
+      }
     ]
   end
 
