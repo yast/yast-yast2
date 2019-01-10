@@ -295,12 +295,16 @@ module Yast
         cmd = ""
         ret = nil
 
+        # prevent shell injection when passing argument. But on other hand do
+        # not pass empty argument which makes module think it is CLI (bsc#1121425)
+        argument = argument.empty? ? "" : argument.shellescape
+
         # Use UI::RunInTerminal in text-mode only (#237332)
         if textmode
-          cmd = Builtins.sformat("/sbin/yast %1 %2 >&2", function.shellescape, argument.shellescape)
+          cmd = Builtins.sformat("/sbin/yast %1 %2 >&2", function.shellescape, argument)
           ret = UI.RunInTerminal(cmd)
         else
-          cmd = Builtins.sformat("/sbin/yast2 %1 %2 >&2", function.shellescape, argument.shellescape)
+          cmd = Builtins.sformat("/sbin/yast2 %1 %2 >&2", function.shellescape, argument)
           ret = SCR.Execute(path(".target.bash"), cmd)
         end
         Builtins.y2milestone("Got %1 from %2", ret, cmd)
