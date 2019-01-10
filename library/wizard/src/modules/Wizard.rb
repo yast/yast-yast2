@@ -92,6 +92,42 @@ module Yast
       @have_fancy_ui_cache
     end
 
+    # Returns a button box with buttons "Back", "Cancel", "Next"
+    #
+    # @return [Yast::Term] a widget tree representing the buttons
+    def BackCancelNextButtonBox
+      HBox(
+        HWeight(
+          1,
+          ReplacePoint(
+            Id(:rep_help),
+            PushButton(Id(:help), Opt(:key_F1, :helpButton), Label.HelpButton)
+          )
+        ),
+        HStretch(),
+        HWeight(
+          1,
+          ReplacePoint(
+            Id(:rep_back),
+            PushButton(Id(:back), Opt(:key_F8), Label.BackButton)
+          )
+        ),
+        HStretch(),
+        HWeight(
+          1,
+          PushButton(Id(:cancel), Opt(:key_F9, :cancelButton), Label.CancelButton)
+        ),
+        HStretch(),
+        HWeight(
+          1,
+          ReplacePoint(
+            Id(:rep_next),
+            PushButton(Id(:next), Opt(:key_F10, :default), Label.NextButton)
+          )
+        )
+      )
+    end
+
     # Returns a button box with buttons "Back", "Abort", "Next"
     # @return a widget tree
     #
@@ -393,6 +429,15 @@ module Yast
       GenericDialog(BackAbortNextButtonBox())
     end
 
+    # Returns a standard wizard dialog with buttons "Next", "Back", "Cancel".
+    #
+    # @note This is a stable API function
+    #
+    # @return [Yast::Term] describing the dialog.
+    def NextBackCancelDialog
+      GenericDialog(BackCancelNextButtonBox())
+    end
+
     # Returns a standard wizard dialog with buttons "Cancel", "Accept"
     #
     # @note This is a stable API function
@@ -446,6 +491,26 @@ module Yast
         )
       else
         OpenDialog(NextBackDialog())
+        UI.SetFocus(Id(:next))
+      end
+
+      nil
+    end
+
+    # Open a dialog with buttons "Next", "Back", "Cancel"
+    # and set the keyboard focus to "Next".
+    def OpenNextBackCancelDialog
+      if haveFancyUI
+        open_wizard_dialog(
+          :back,
+          Label.BackButton,
+          :cancel,
+          Label.CancelButton,
+          :next,
+          Label.NextButton
+        )
+      else
+        OpenDialog(NextBackCancelDialog())
         UI.SetFocus(Id(:next))
       end
 
