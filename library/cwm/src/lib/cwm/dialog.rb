@@ -1,5 +1,6 @@
 require "yast"
 require "abstract_method"
+require "cwm/common_widgets"
 
 Yast.import "CWM"
 Yast.import "Wizard"
@@ -103,7 +104,27 @@ module CWM
       true
     end
 
+    def help
+      ""
+    end
+
   private
+
+    # Empty widget which is first on the page and contain help for whole dialog
+    class FakeHelp < Empty
+      def initialize(text)
+        @text = text
+      end
+
+      def init
+        Yast::CWM.ReplaceWidgetHelp # needed for popup to properly set help text outside wizard
+        log.info "calling init on fake help"
+      end
+
+      def help
+        @text
+      end
+    end
 
     # Create a wizard dialog, run the *block*, ensure the dialog is closed.
     # @param block
@@ -118,7 +139,7 @@ module CWM
     # @return [Symbol] wizard sequencer symbol
     def cwm_show
       Yast::CWM.show(
-        contents,
+        Yast::Term.new(:HBox, FakeHelp.new(help), contents),
         caption:         title,
         back_button:     back_button,
         abort_button:    abort_button,

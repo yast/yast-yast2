@@ -20,6 +20,8 @@
 # find current contact information at www.suse.com.
 require "cwm/dialog"
 
+Yast.import "Popup"
+
 module CWM
   # CWM pop-up dialog
   #
@@ -52,6 +54,7 @@ module CWM
     # @return [Yast::Term]
     def layout
       VBox(
+        Id(:WizardDialog),
         HSpacing(50),
         Left(Heading(Id(:title), title)),
         VStretch(),
