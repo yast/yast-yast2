@@ -5,6 +5,8 @@ require_relative "test_helper"
 require "cwm/abstract_widget"
 require "cwm/rspec"
 
+Yast.import "UI"
+
 describe CWM::AbstractWidget do
   include_examples "CWM::AbstractWidget"
 
@@ -188,6 +190,23 @@ describe CWM::AbstractWidget do
 
     it "returns hash with key cleanup when cleanup method defined" do
       expect(TCleanup.new.cwm_definition).to be_key("cleanup")
+    end
+  end
+
+  describe "#focus" do
+    class TFocus < CWM::AbstractWidget
+      self.widget_type = :empty
+
+      def initialize
+        self.widget_id = "test"
+      end
+    end
+
+
+    it "sets focus on given widget" do
+      expect(Yast::UI).to receive(:SetFocus).with(Id("test"))
+
+      TFocus.new.focus
     end
   end
 end
