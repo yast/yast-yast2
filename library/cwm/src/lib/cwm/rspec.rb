@@ -89,6 +89,16 @@ RSpec.shared_examples "CWM::ComboBox" do
   include_examples "CWM::ItemsSelection"
 end
 
+RSpec.shared_examples "CWM::SelectionBox" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ItemsSelection"
+end
+
+RSpec.shared_examples "CWM::MultiSelectionBox" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ItemsSelection"
+end
+
 RSpec.shared_examples "CWM::PushButton" do
   include_examples "CWM::AbstractWidget"
 end
@@ -124,6 +134,21 @@ RSpec.shared_examples "CWM::CheckBox" do
 end
 
 RSpec.shared_examples "CWM::RichText" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ValueBasedWidget"
+end
+
+RSpec.shared_examples "CWM::InputField" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ValueBasedWidget"
+end
+
+RSpec.shared_examples "CWM::Password" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ValueBasedWidget"
+end
+
+RSpec.shared_examples "CWM::IntField" do
   include_examples "CWM::AbstractWidget"
   include_examples "CWM::ValueBasedWidget"
 end
