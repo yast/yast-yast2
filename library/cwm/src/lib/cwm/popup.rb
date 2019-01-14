@@ -36,6 +36,12 @@ module CWM
       true
     end
 
+    # Popup does not allow nil, so overwrite Dialog default value.
+    # @return [String,nil] The dialog title.
+    def title
+      ""
+    end
+
   private
 
     # Redefines the mechanism to open the dialog to use the adapted layout
