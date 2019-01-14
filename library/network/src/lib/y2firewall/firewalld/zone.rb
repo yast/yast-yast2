@@ -146,14 +146,6 @@ module Y2Firewall
         api.change_interface(name, interface)
       end
 
-      # Override relation method to be more defensive. A source can only belong
-      # to one zone and the change method remove it before add.
-      #
-      # @param source [String] source address
-      def add_source!(source)
-        api.change_source(name, source)
-      end
-
     private
 
       # Convenience method which return an instance of Y2Firewall::Firewalld

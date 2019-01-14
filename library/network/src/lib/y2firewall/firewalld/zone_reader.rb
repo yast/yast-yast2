@@ -39,7 +39,6 @@ module Y2Firewall
       attr_accessor :zones_definition
 
       BOOLEAN_ATTRIBUTES = ["icmp-block-inversion", "masquerade"].freeze
-      MULTIPLE_ENTRIES = ["rich_rules", "forward_ports"].freeze
 
       # Constructor
       #
@@ -96,7 +95,7 @@ module Y2Firewall
         zone_names.include?(attribute) ? attribute : nil
       end
 
-      ATTRIBUTE_MAPPING = { "summary" => "short", "rich rules" => "rich_rules" }.freeze
+      ATTRIBUTE_MAPPING = { "summary" => "short" }.freeze
       # Iterates over the zone entries instantiating a zone object per each of
       # the entries and returning an array with all of them.
       #
@@ -111,12 +110,10 @@ module Y2Firewall
             attribute = ATTRIBUTE_MAPPING[attribute] if ATTRIBUTE_MAPPING[attribute]
             next unless zone.respond_to?("#{attribute}=")
 
-            value = MULTIPLE_ENTRIES.include?(attribute) ? entries.reject(&:empty?) : entries.first.to_s
+            value = entries.first.to_s
 
             if BOOLEAN_ATTRIBUTES.include?(attribute)
               zone.public_send("#{attribute}=", value == "yes" ? true : false)
-            elsif MULTIPLE_ENTRIES.include?(attribute)
-              zone.public_send("#{attribute}=", value)
             elsif zone.attributes.include?(attribute.to_sym)
               zone.public_send("#{attribute}=", value)
             else
