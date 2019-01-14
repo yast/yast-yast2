@@ -26,6 +26,7 @@ module CWM
   # CWM pop-up dialog
   #
   # This class offers a CWM dialog which behaves as a pop-up.
+  # @see {CWM::Dialog} for remaining configuration options.
   class Popup < Dialog
     # Determines that a dialog should always be open
     #
@@ -37,7 +38,7 @@ module CWM
     end
 
     # Popup does not allow nil, so overwrite Dialog default value.
-    # @return [String,nil] The dialog title.
+    # @return [String] The dialog title.
     def title
       ""
     end

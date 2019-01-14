@@ -9,6 +9,7 @@ module CWM
   # An OOP API and the pieces missing from {Yast::CWMClass#show Yast::CWM.show}:
   # - creating and closing a wizard dialog
   # - Back/Abort/Next buttons
+  # - Help introduction for dialog
   #
   # @see UI::Dialog
   # @see CWM::AbstractWidget
@@ -104,6 +105,11 @@ module CWM
       true
     end
 
+    # Introduction for help. This help text will be displayed before widget specific help.
+    # Default implementation is empty. If dialog want its help it need to
+    # overwrite the method with own text.
+    # @note text should be marked for translation
+    # @return [String] help text with rich text formatting
     def help
       ""
     end
