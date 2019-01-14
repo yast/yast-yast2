@@ -48,8 +48,9 @@ module Y2Firewall
       }.freeze
 
       # @see Y2Firewall::Firewalld::Relations
-      has_many :services, :interfaces, :protocols, :rich_rules, :sources,
-        :ports, :source_ports, :forward_ports, cache: true
+      # @note relations are experted to autoyast, so do not forget when modify to adapt
+      #   schema and also autoyast importer
+      has_many :services, :interfaces, :protocols, :ports, cache: true
 
       # @see Y2Firewall::Firewalld::Relations
       has_attributes :name, :masquerade, :short, :description, :target, cache: true
