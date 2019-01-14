@@ -20,10 +20,13 @@
 # find current contact information at www.suse.com.
 require "cwm/dialog"
 
+Yast.import "Popup"
+
 module CWM
   # CWM pop-up dialog
   #
   # This class offers a CWM dialog which behaves as a pop-up.
+  # @see {CWM::Dialog} for remaining configuration options.
   class Popup < Dialog
     # Determines that a dialog should always be open
     #
@@ -32,6 +35,12 @@ module CWM
     # @see CWM::Dialog#wizard_create_dialog
     def should_open_dialog?
       true
+    end
+
+    # Popup does not allow nil, so overwrite Dialog default value.
+    # @return [String] The dialog title.
+    def title
+      ""
     end
 
   private
@@ -52,6 +61,7 @@ module CWM
     # @return [Yast::Term]
     def layout
       VBox(
+        Id(:WizardDialog),
         HSpacing(50),
         Left(Heading(Id(:title), title)),
         VStretch(),

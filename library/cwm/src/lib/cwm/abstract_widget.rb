@@ -1,6 +1,8 @@
 require "abstract_method"
 require "yast"
 
+Yast.import "UI"
+
 module CWM
   # A Yast::Term that can be passed as is to Yast::UI methods
   # (OpenDialog, ReplaceWidget)
@@ -181,6 +183,11 @@ module CWM
     # @return [void]
     def disable
       Yast::UI.ChangeWidget(Id(widget_id), :Enabled, false)
+    end
+
+    # Focus the widget. Useful when validation failed to highlight it.
+    def focus
+      Yast::UI.SetFocus(Id(widget_id))
     end
 
   protected
