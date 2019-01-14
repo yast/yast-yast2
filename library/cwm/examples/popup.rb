@@ -67,8 +67,7 @@ class Ferryman < ::CWM::Popup
   end
 
   def title
-    ""
-#_("Ferryman")
+    _("Ferryman")
   end
 end
 

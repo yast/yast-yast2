@@ -202,7 +202,6 @@ describe CWM::AbstractWidget do
       end
     end
 
-
     it "sets focus on given widget" do
       expect(Yast::UI).to receive(:SetFocus).with(Id("test"))
 
