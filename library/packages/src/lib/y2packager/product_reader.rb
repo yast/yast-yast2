@@ -66,10 +66,10 @@ module Y2Packager
     #
     # @return [Array<Product>] Available products
     def all_products
-      if Yast::Linuxrc.InstallInf("specialproduct")
-        linuxrc_special_products = Yast::Linuxrc.InstallInf("specialproduct").split(",")
+      linuxrc_special_products = if Yast::Linuxrc.InstallInf("specialproduct")
+        Yast::Linuxrc.InstallInf("specialproduct").split(",")
       else
-        linuxrc_special_products = []
+        []
       end
 
       @all_products ||= available_products.map do |prod|
