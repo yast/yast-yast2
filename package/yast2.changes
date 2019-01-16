@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 16 16:52:19 CET 2019 - schubi@suse.de
+
+- Support special products which will be enabled via linuxrc
+  (flag "specialproduct") (fate#327099)
+- 4.1.51
+
+-------------------------------------------------------------------
 Mon Jan 14 10:55:20 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
 
 - CWM: Add method focus to object CWM widgets (FATE#324662)
