@@ -93,29 +93,6 @@ describe Y2Firewall::Firewalld::Zone do
     end
   end
 
-  describe "#export" do
-    subject { described_class.new(name: "test") }
-
-    before do
-      allow(subject).to receive(:interfaces).and_return(["eth0", "eth1"])
-      allow(subject).to receive(:services).and_return(["ssh", "samba"])
-      allow(subject).to receive(:ports).and_return(["80/tcp", "443/tcp"])
-      allow(subject).to receive(:protocols).and_return(["esp"])
-      allow(subject).to receive(:masquerade).and_return(true)
-    end
-
-    it "dumps a hash with the zone configuration" do
-      config = subject.export
-
-      expect(config).to be_a(Hash)
-      expect(config["interfaces"]).to eql(["eth0", "eth1"])
-      expect(config["services"]).to eql(["ssh", "samba"])
-      expect(config["ports"]).to eql(["80/tcp", "443/tcp"])
-      expect(config["protocols"]).to eql(["esp"])
-      expect(config["masquerade"]).to eql(true)
-    end
-  end
-
   describe "#untouched!" do
     subject { described_class.new(name: "test") }
 

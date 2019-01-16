@@ -128,16 +128,6 @@ module Y2Firewall
         services.include?(service)
       end
 
-      # Dump a hash with the zone configuration
-      #
-      # @return [Hash] zone configuration
-      def export
-        (attributes + relations)
-          .each_with_object({}) do |field, profile|
-            profile[field.to_s] = public_send(field) unless public_send(field).nil?
-          end
-      end
-
       # Override relation method to be more defensive. An interface can only
       # belong to one zone and the change method remove it before add.
       #
