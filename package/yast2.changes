@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 16 13:03:59 UTC 2019 - jreidinger@suse.com
+
+- Firewall: drop not needed relations and its related methods
+- Firewall: move export method to yast2-firewall (fate#324662)
+- 4.1.51
+
+-------------------------------------------------------------------
 Mon Jan 14 10:55:20 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
 
 - CWM: Add method focus to object CWM widgets (FATE#324662)

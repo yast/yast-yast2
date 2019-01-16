@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.1.50
+Version:        4.1.51
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0-only
@@ -95,6 +95,8 @@ Recommends:     xdg-utils
 Conflicts:      yast2-dns-server < 3.1.17
 # InstError
 Conflicts:      yast2-installation < 2.18.5
+# moved export method
+Conflicts:      yast2-installation < 4.1.8
 # moved cfg_mail.scr
 Conflicts:      yast2-mail < 3.1.7
 # Older packager use removed API
