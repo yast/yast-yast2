@@ -93,31 +93,6 @@ describe Y2Firewall::Firewalld::Zone do
     end
   end
 
-  describe "#export" do
-    subject { described_class.new(name: "test") }
-
-    before do
-      allow(subject).to receive(:interfaces).and_return(["eth0", "eth1"])
-      allow(subject).to receive(:services).and_return(["ssh", "samba"])
-      allow(subject).to receive(:ports).and_return(["80/tcp", "443/tcp"])
-      allow(subject).to receive(:protocols).and_return(["esp"])
-      allow(subject).to receive(:sources).and_return([])
-      allow(subject).to receive(:masquerade).and_return(true)
-    end
-
-    it "dumps a hash with the zone configuration" do
-      config = subject.export
-
-      expect(config).to be_a(Hash)
-      expect(config["interfaces"]).to eql(["eth0", "eth1"])
-      expect(config["services"]).to eql(["ssh", "samba"])
-      expect(config["ports"]).to eql(["80/tcp", "443/tcp"])
-      expect(config["protocols"]).to eql(["esp"])
-      expect(config["sources"]).to eql([])
-      expect(config["masquerade"]).to eql(true)
-    end
-  end
-
   describe "#untouched!" do
     subject { described_class.new(name: "test") }
 
@@ -137,16 +112,6 @@ describe Y2Firewall::Firewalld::Zone do
       expect(api).to receive(:change_interface).with("test", "eth0")
 
       subject.add_interface!("eth0")
-    end
-  end
-
-  describe "#add_source!" do
-    subject { described_class.new(name: "test") }
-
-    it "calls the API changing the specified source to this zone" do
-      expect(api).to receive(:change_source).with("test", "192.168.1.0/24")
-
-      subject.add_source!("192.168.1.0/24")
     end
   end
 

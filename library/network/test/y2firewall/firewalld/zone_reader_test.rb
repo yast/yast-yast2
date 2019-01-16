@@ -95,13 +95,6 @@ describe Y2Firewall::Firewalld::ZoneReader do
         expect(public_zone.interfaces).to eq(["eth0", "ens3"])
         expect(public_zone.ports).to include("123/udp", "530/udp")
         expect(public_zone.masquerade).to eq(true)
-        expect(public_zone.sources).to eq(["192.168.0.0/24", "192.168.1.0/24", "192.168.2.0/24"])
-        expect(public_zone.rich_rules)
-          .to eq([
-                   "rule service name=\"http\" accept",
-                   "rule service name=\"https\" accept",
-                   "rule service name=\"ssh\" accept"
-                 ])
 
         dmz_zone = zones.find { |z| z.name == "dmz" }
         expect(dmz_zone.masquerade).to eq(false)

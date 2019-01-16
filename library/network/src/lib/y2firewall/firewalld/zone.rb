@@ -48,8 +48,9 @@ module Y2Firewall
       }.freeze
 
       # @see Y2Firewall::Firewalld::Relations
-      has_many :services, :interfaces, :protocols, :rich_rules, :sources,
-        :ports, :source_ports, :forward_ports, cache: true
+      # @note relations are experted to autoyast, so do not forget when modify to adapt
+      #   schema and also autoyast importer
+      has_many :services, :interfaces, :protocols, :ports, cache: true
 
       # @see Y2Firewall::Firewalld::Relations
       has_attributes :name, :masquerade, :short, :description, :target, cache: true
@@ -127,30 +128,12 @@ module Y2Firewall
         services.include?(service)
       end
 
-      # Dump a hash with the zone configuration
-      #
-      # @return [Hash] zone configuration
-      def export
-        (attributes + relations)
-          .each_with_object({}) do |field, profile|
-            profile[field.to_s] = public_send(field) unless public_send(field).nil?
-          end
-      end
-
       # Override relation method to be more defensive. An interface can only
       # belong to one zone and the change method remove it before add.
       #
       # @param interface [String] interface name
       def add_interface!(interface)
         api.change_interface(name, interface)
-      end
-
-      # Override relation method to be more defensive. A source can only belong
-      # to one zone and the change method remove it before add.
-      #
-      # @param source [String] source address
-      def add_source!(source)
-        api.change_source(name, source)
       end
 
     private
