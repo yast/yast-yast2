@@ -156,34 +156,6 @@ describe Y2Firewall::Firewalld::Api::Zones do
     end
   end
 
-  describe "#list_sources" do
-    it "returns the list of sources binded to the zone" do
-      allow(api).to receive(:string_command)
-        .with("--zone=test", "--list-sources", permanent: api.permanent?)
-        .and_return("192.168.5.0/24")
-
-      expect(api.list_sources("test")).to eql(["192.168.5.0/24"])
-    end
-  end
-
-  describe "#add_source" do
-    it "binds the given source with the zone" do
-      expect(api).to receive(:modify_command)
-        .with("--zone=test", "--add-source=192.168.4.0/24", permanent: api.permanent?)
-
-      api.add_source("test", "192.168.4.0/24")
-    end
-  end
-
-  describe "#remove_source" do
-    it "unbinds the given source from the zone" do
-      expect(api).to receive(:modify_command)
-        .with("--zone=test", "--remove-source=192.168.4.0/24", permanent: api.permanent?)
-
-      api.remove_source("test", "192.168.4.0/24")
-    end
-  end
-
   describe "#add_service" do
     it "adds the given service to the specified zone" do
       expect(api).to receive(:modify_command)
@@ -204,22 +176,6 @@ describe Y2Firewall::Firewalld::Api::Zones do
       expect(api_running).to receive(:modify_command)
         .with("--zone=public", "--remove-service=vnc", permanent: api_running.permanent?)
       api_running.remove_service("public", "vnc")
-    end
-  end
-
-  describe "#source_enabled?" do
-    it "returns false if the source is not binded to the zone" do
-      allow(api).to receive(:query_command)
-        .with("--zone=public", "--query-source=192.168.4.0/24", permanent: api.permanent?)
-        .and_return(false)
-      expect(subject.source_enabled?("public", "192.168.4.0/24")).to eql(false)
-    end
-
-    it "returns true if the souce is binded by the zone" do
-      allow(api).to receive(:query_command)
-        .with("--zone=public", "--query-source=192.168.4.0/24", permanent: api.permanent?)
-        .and_return(true)
-      expect(subject.source_enabled?("public", "192.168.4.0/24")).to eql(true)
     end
   end
 
