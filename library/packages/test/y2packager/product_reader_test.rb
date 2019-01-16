@@ -124,8 +124,8 @@ describe Y2Packager::ProductReader do
       allow(subject).to receive(:product_package).with("sles-release")
         .and_return(nil)
       allow(subject).to receive(:product_package).with("SLES_BCL-release")
-        .and_return({"deps" =>[{"conflicts"=>"kernel < 4.4"},
-        {"provides"=>"specialproduct(SLES_BCL)"}]})
+        .and_return("deps" => [{ "conflicts"=>"kernel < 4.4" },
+                               { "provides"=>"specialproduct(SLES_BCL)" }])
     end
 
     it "returns available products without special products" do

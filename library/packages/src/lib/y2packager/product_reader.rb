@@ -73,11 +73,11 @@ module Y2Packager
         prod_pkg = product_package(prod["product_package"])
 
         if prod_pkg
-          #remove special products if they have not been defined in linuxrc
+          # remove special products if they have not been defined in linuxrc
           prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Aspecialproduct\(\s*(.*?)\s*\)\z/ }
           special_product_tag = Regexp.last_match[1] if Regexp.last_match
           if special_product_tag && !linuxrc_special_products.include?(special_product_tag)
-            log.info ("Special product #{prod["name"]} has not been defined via linuxrc. --> do not offer it")
+            log.info "Special product #{prod["name"]} has not been defined via linuxrc. --> do not offer it"
             next
           end
 
