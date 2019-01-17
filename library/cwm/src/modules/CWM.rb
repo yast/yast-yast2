@@ -616,6 +616,10 @@ module Yast
           Ops.set(w, "widget", MultiLineEdit(id_term, opt_term, label))
         elsif widget == :richtext
           Ops.set(w, "widget", RichText(id_term, opt_term, ""))
+        elsif widget == :date_field
+          Ops.set(w, "widget", DateField(id_term, opt_term, label))
+        elsif widget == :time_field
+          Ops.set(w, "widget", TimeField(id_term, opt_term, label))
         end
       end
       Ops.set(w, "custom_widget", nil) # not needed any more
