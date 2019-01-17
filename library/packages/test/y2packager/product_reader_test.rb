@@ -104,16 +104,38 @@ describe Y2Packager::ProductReader do
     end
   end
 
-  describe "#products" do
-    before do
-      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
-        .and_return(products)
-      allow(Yast::Pkg).to receive(:PkgQueryProvides).with("system-installation()")
-        .and_return([])
+  describe "#all_products" do
+    let(:special_prod) do
+      # reuse the available SLES15 product, just change some attributes
+      special = products.first.dup
+      special["name"] = "SLES_BCL"
+      special["status"] = :available
+      special["product_package"] = "SLES_BCL-release"
+      special["display_name"] = "SUSE Linux Enterprise Server 15 Business Critical Linux"
+      special["short_name"] = "SLE-15-BCL"
+      special
     end
 
-    it "returns available products" do
+    before do
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+        .and_return(products + [special_prod])
+      allow(Yast::Pkg).to receive(:PkgQueryProvides).with("system-installation()")
+        .and_return([])
+      allow(subject).to receive(:product_package).with("sles-release")
+        .and_return(nil)
+      allow(subject).to receive(:product_package).with("SLES_BCL-release")
+        .and_return("deps" => [{ "conflicts"=>"kernel < 4.4" },
+                               { "provides"=>"specialproduct(SLES_BCL)" }])
+    end
+
+    it "returns available products without special products" do
+      allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return(nil)
       expect(subject.all_products.size).to eq(1)
+    end
+
+    it "returns available products with special product" do
+      allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return("SLES_BCL")
+      expect(subject.all_products.size).to eq(2)
     end
   end
 end
