@@ -1,9 +1,15 @@
 -------------------------------------------------------------------
+Thu Jan 17 00:55:03 UTC 2019 - knut.anderssen@suse.com
+
+- CWM: Added date field and time field widgets (fate#322722)
+- 4.1.53
+
+-------------------------------------------------------------------
 Wed Jan 16 16:52:19 CET 2019 - schubi@suse.de
 
 - Support special products which will be enabled via linuxrc
   (flag "specialproduct") (fate#327099)
-- 4.1.52  
+- 4.1.52
 
 -------------------------------------------------------------------
 Wed Jan 16 13:03:59 UTC 2019 - jreidinger@suse.com
