@@ -72,7 +72,7 @@ module Y2Packager
         []
       end
 
-      @all_products ||= available_products.map do |prod|
+      @all_products ||= available_products.each_with_object([]) do |prod, all_products|
         prod_pkg = product_package(prod["product_package"])
 
         if prod_pkg
@@ -89,14 +89,13 @@ module Y2Packager
           displayorder = Regexp.last_match[1].to_i if Regexp.last_match
         end
 
-        Y2Packager::Product.new(
+        all_products << Y2Packager::Product.new(
           name: prod["name"], short_name: prod["short_name"], display_name: prod["display_name"],
           version: prod["version"], arch: prod["arch"], category: prod["category"],
           vendor: prod["vendor"], order: displayorder,
           installation_package: installation_package_mapping[prod["name"]]
         )
       end
-      @all_products.compact
     end
 
     # In installation Read the available libzypp base products for installation
