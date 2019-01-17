@@ -153,6 +153,16 @@ RSpec.shared_examples "CWM::IntField" do
   include_examples "CWM::ValueBasedWidget"
 end
 
+RSpec.shared_examples "CWM::DateField" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ValueBasedWidget"
+end
+
+RSpec.shared_examples "CWM::TimeField" do
+  include_examples "CWM::AbstractWidget"
+  include_examples "CWM::ValueBasedWidget"
+end
+
 RSpec.shared_examples "CWM::Table" do
   include_examples "CWM::AbstractWidget"
 
