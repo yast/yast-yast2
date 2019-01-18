@@ -295,8 +295,10 @@ if [ -n "$CMDLINE_HELP" ]; then
 fi
 ARGS=( )
 for i in "$@"; do
-  ARGS+=( "--arg" )
-  ARGS+=( "$i" )
+  if [ -n "$i" ] ; then
+    ARGS+=( "--arg" )
+    ARGS+=( "$i" )
+  fi
 done
 set -- "${ARGS[@]}"
 
