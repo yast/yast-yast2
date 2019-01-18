@@ -366,4 +366,22 @@ module CWM
 
     include ValueBasedWidget
   end
+
+  # Time field widget
+  # The {#label} method is mandatory.
+  class TimeField < AbstractWidget
+    self.widget_type = :time_field
+
+    include ValueBasedWidget
+    abstract_method :label
+  end
+
+  # Date field widget
+  # The {#label} method is mandatory.
+  class DateField < AbstractWidget
+    self.widget_type = :date_field
+
+    include ValueBasedWidget
+    abstract_method :label
+  end
 end
