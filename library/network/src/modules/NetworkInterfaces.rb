@@ -865,7 +865,6 @@ module Yast
               # TODO : delete PREFIXLEN from config file
             end
           end
-          devmap["ZONE"] = nil if devmap["ZONE"] && devmap["ZONE"].empty?
           # write all keys to config
           Builtins.maplist(
             Convert.convert(
