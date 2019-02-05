@@ -136,6 +136,15 @@ module Y2Firewall
         api.change_interface(name, interface)
       end
 
+      # Assign the interface to the zone removing it previously from any other
+      # zone that was including it.
+      #
+      # @param interface [String] interface name
+      def change_interface(interface)
+        firewalld.zones.each { |z| z.remove_interface(interface) }
+        add_interface(interface)
+      end
+
     private
 
       # Convenience method which return an instance of Y2Firewall::Firewalld
