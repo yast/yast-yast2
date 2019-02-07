@@ -100,7 +100,7 @@ module Y2Firewall
       #
       # @param zone_name [String] the name of the zone to be assigned to
       def zone=(zone_name)
-        fw.zones.map { |z| z.remove_interface(name) if z.interfaces.include?(name) }
+        fw.zones.each { |z| z.remove_interface(name) if z.interfaces.include?(name) }
         z = fw.find_zone(zone_name)
         z && z.add_interface(name)
       end
