@@ -178,4 +178,26 @@ describe Y2Firewall::Firewalld::Zone do
       end
     end
   end
+
+  describe "#change_interface" do
+    subject { described_class.new(name: "test") }
+    let(:public_zone) { Y2Firewall::Firewalld::Zone.new(name: "public") }
+    let(:dmz_zone) { Y2Firewall::Firewalld::Zone.new(name: "dmz") }
+
+    before do
+      allow(firewalld).to receive(:zones).and_return([public_zone, dmz_zone, subject])
+      public_zone.interfaces = ["eth1 bond0"]
+      dmz_zone.interfaces = ["eth0"]
+    end
+
+    it "removes the given interface from other zones" do
+      subject.change_interface("eth0")
+      expect(dmz_zone.interfaces).to be_empty
+    end
+
+    it "adds the given interface to this zone" do
+      subject.change_interface("eth0")
+      expect(subject.interfaces).to include("eth0")
+    end
+  end
 end

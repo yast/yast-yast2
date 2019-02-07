@@ -123,4 +123,27 @@ describe Y2Firewall::Firewalld::Interface do
       end
     end
   end
+
+  describe "#zone=" do
+    let(:public_zone) { Y2Firewall::Firewalld::Zone.new(name: "public") }
+    let(:dmz_zone) { Y2Firewall::Firewalld::Zone.new(name: "dmz") }
+
+    before do
+      allow(Y2Firewall::Firewalld.instance).to receive(:zones)
+        .and_return([public_zone, dmz_zone])
+      public_zone.interfaces = ["eth1"]
+      dmz_zone.interfaces = ["eth0"]
+    end
+
+    it "removes the interface from the zones that include the interface" do
+      iface.zone = "public"
+      expect(dmz_zone.interfaces).to be_empty
+    end
+
+    it "adds the interface to the given zone" do
+      expect(public_zone.interfaces).to_not include("eth0")
+      iface.zone = "public"
+      expect(public_zone.interfaces).to include("eth0")
+    end
+  end
 end

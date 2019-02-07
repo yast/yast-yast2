@@ -96,6 +96,15 @@ module Y2Firewall
         fw.zones.find { |z| z.interfaces.include?(name) }
       end
 
+      # Assign the interface to the given zone
+      #
+      # @param zone_name [String] the name of the zone to be assigned to
+      def zone=(zone_name)
+        fw.zones.each { |z| z.remove_interface(name) if z.interfaces.include?(name) }
+        z = fw.find_zone(zone_name)
+        z && z.add_interface(name)
+      end
+
     private
 
       # Return an instance of Y2Firewall::Firewalld
