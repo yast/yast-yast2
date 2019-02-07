@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Feb  7 10:01:59 UTC 2019 - knut.anderssen@suse.com
+
+- Firewall: added some help methods for moving interfaces between
+  zones in a safe way (fate#324662).
+- 4.1.54
+
+-------------------------------------------------------------------
 Thu Jan 17 00:55:03 UTC 2019 - knut.anderssen@suse.com
 
 - CWM: Added date field and time field widgets (fate#322722)
