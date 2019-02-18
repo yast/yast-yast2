@@ -2,7 +2,7 @@
 Mon Feb 18 07:47:37 UTC 2019 - lslezak@suse.cz
 
 - Fixed license file ordering issue causing a random test failure
-  (gh#yast-yast2#895)
+  (bsc#1125722)
 - 4.1.55
 
 -------------------------------------------------------------------

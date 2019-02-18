@@ -175,12 +175,12 @@ module Y2Packager
         langs << prefs.fallback_lang
 
         path = nil
-        langs.any? do |lang|
+        langs.each do |lang|
           path = Dir.glob(
             File.join(directory, "**", "RELEASE-NOTES.#{lang}.#{prefs.format}")
           ).first
 
-          !path.nil?
+          break unless path.nil?
         end
 
         return nil if path.nil?
