@@ -15,6 +15,10 @@ describe Yast::CommandLine do
     Yast::Mode.SetUI(orig_ui)
   end
 
+  before do
+    allow(Yast::Debugger).to receive(:installed?).and_return(false)
+  end
+
   it "invokes initialize, handler and finish" do
     expect(STDOUT).to receive(:puts).with("Initialize called").ordered
     expect(STDOUT).to receive(:puts).with("something").ordered

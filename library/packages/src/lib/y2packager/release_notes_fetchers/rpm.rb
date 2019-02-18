@@ -174,9 +174,15 @@ module Y2Packager
         langs << prefs.user_lang.split("_", 2).first if prefs.user_lang.include?("_")
         langs << prefs.fallback_lang
 
-        path = Dir.glob(
-          File.join(directory, "**", "RELEASE-NOTES.{#{langs.join(",")}}.#{prefs.format}")
-        ).first
+        path = nil
+        langs.each do |lang|
+          path = Dir.glob(
+            File.join(directory, "**", "RELEASE-NOTES.#{lang}.#{prefs.format}")
+          ).first
+
+          break unless path.nil?
+        end
+
         return nil if path.nil?
         [path, path[/RELEASE-NOTES\.(.+)\.#{prefs.format}\z/, 1]] if path
       end
