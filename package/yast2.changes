@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 18 07:47:37 UTC 2019 - lslezak@suse.cz
+
+- Fixed license file ordering issue causing a random test failure
+  (gh#yast-yast2#895)
+- 4.1.55
+
+-------------------------------------------------------------------
 Thu Feb  7 10:01:59 UTC 2019 - knut.anderssen@suse.com
 
 - Firewall: added some help methods for moving interfaces between
