@@ -219,6 +219,8 @@ Group:          System/YaST
 
 Provides:       yast2:/usr/sbin/save_y2logs
 
+Requires:       tar
+
 %description logs
 This package contains scripts for handling YAST logs.
 
