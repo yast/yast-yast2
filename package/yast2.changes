@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 19 09:02:12 UTC 2019 - David Díaz <dgonzalez@suse.com>
+
+- Require tar as a dependency for yast2-logs
+- 4.1.66
+
+-------------------------------------------------------------------
 Thu Mar 14 15:36:31 UTC 2019 - Ladislav Slezak <lslezak@suse.cz>
 
 - Fixed evaluating the base product, the same products with
