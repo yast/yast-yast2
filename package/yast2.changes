@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Feb 27 12:10:49 UTC 2019 - mvidner@suse.com
+
+- Use /sbin/rpcinfo only, /usr/sbin/rpcinfo is gone (bsc#1127138).
+- Use the correct path for /usr/bin/ifconfig (bsc#1127138).
+- 4.1.56
+
+-------------------------------------------------------------------
 Mon Feb 18 07:47:37 UTC 2019 - lslezak@suse.cz
 
 - Fixed license file ordering issue causing a random test failure
