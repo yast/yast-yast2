@@ -595,14 +595,14 @@ module Yast
     # Store new error text, the text is displayed in a richtext widget - long lines are automatically wrapped
     # @param [String] error_string error text  (it can contain rich text tags)
     # @return [void]
-    def LongError(error_string)
+    def LongError(error_string, width: 60, height: 10)
       Builtins.y2error(1, "%1", error_string) if @log_errors
 
       if @display_errors
         if Ops.greater_than(@timeout_errors, 0)
-          Popup.TimedLongError(error_string, @timeout_errors)
+          Popup.TimedLongErrorGeometry(error_string, @timeout_errors, width, height)
         else
-          Popup.LongError(error_string)
+          Popup.LongErrorGeometry(error_string, width, height)
         end
       end
 
