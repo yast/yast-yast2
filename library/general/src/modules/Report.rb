@@ -493,14 +493,14 @@ module Yast
     # Store new message text, the text is displayed in a richtext widget - long lines are automatically wrapped
     # @param [String] message_string message text (it can contain rich text tags)
     # @return [void]
-    def LongMessage(message_string)
+    def LongMessage(message_string, width: 60, height: 10)
       Builtins.y2milestone(1, "%1", message_string) if @log_messages
 
       if @display_messages
         if Ops.greater_than(@timeout_messages, 0)
-          Popup.TimedLongMessage(message_string, @timeout_messages)
+          Popup.TimedLongMessageGeometry(message_string, @timeout_messages, width, height)
         else
-          Popup.LongMessage(message_string)
+          Popup.LongMessageGeometry(message_string, width, height)
         end
       end
 
@@ -553,14 +553,14 @@ module Yast
     # Store new warning text, the text is displayed in a richtext widget - long lines are automatically wrapped
     # @param [String] warning_string warning text (it can contain rich text tags)
     # @return [void]
-    def LongWarning(warning_string)
+    def LongWarning(warning_string, width: 60, height: 10)
       Builtins.y2warning(1, "%1", warning_string) if @log_warnings
 
       if @display_warnings
         if Ops.greater_than(@timeout_warnings, 0)
-          Popup.TimedLongWarning(warning_string, @timeout_warnings)
+          Popup.TimedLongWarningGeometry(warning_string, @timeout_warnings, width, height)
         else
-          Popup.LongWarning(warning_string)
+          Popup.LongWarningGeometry(warning_string, width, height)
         end
       end
 
