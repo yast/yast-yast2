@@ -44,15 +44,15 @@ describe Yast::Report do
       let(:show) { false }
 
       it "does not show a popup" do
-        expect(Yast::Popup).to_not receive(meth)
+        expect(Yast::Popup).to_not receive("#{meth}Geometry")
         subject.send(meth, "Message")
       end
     end
 
     context "when display of messages is enabled" do
       it "shows a popup" do
-        expect(Yast::Popup).to receive(meth)
-          .with("Message")
+        expect(Yast::Popup).to receive("#{meth}Geometry")
+          .with("Message", instance_of(Integer), instance_of(Integer))
         subject.send(meth, "Message")
       end
     end
@@ -62,8 +62,8 @@ describe Yast::Report do
         let(:timeout) { 1 }
 
         it "shows a timed popup" do
-          expect(Yast::Popup).to receive("Timed#{meth}")
-            .with("Message", 1)
+          expect(Yast::Popup).to receive("Timed#{meth}Geometry")
+            .with("Message", 1, instance_of(Integer), instance_of(Integer))
           subject.send(meth, "Message")
         end
       end
