@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar  4 09:02:22 UTC 2019 - Michal Filka <mfilka@suse.com>
+
+- bnc#1127685 
+  - made Report module long message reporting popups adjustable
+- 4.1.57
+
+-------------------------------------------------------------------
 Wed Feb 27 12:10:49 UTC 2019 - mvidner@suse.com
 
 - Use /sbin/rpcinfo only, /usr/sbin/rpcinfo is gone (bsc#1127138).
