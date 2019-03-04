@@ -492,6 +492,8 @@ module Yast
 
     # Store new message text, the text is displayed in a richtext widget - long lines are automatically wrapped
     # @param [String] message_string message text (it can contain rich text tags)
+    # @param width [Integer] width of popup (@see Popup#LongMessageGeometry)
+    # @param height [Integer] height of popup (@see Popup#LongMessageGeometry)
     # @return [void]
     def LongMessage(message_string, width: 60, height: 10)
       Builtins.y2milestone(1, "%1", message_string) if @log_messages
@@ -552,6 +554,8 @@ module Yast
 
     # Store new warning text, the text is displayed in a richtext widget - long lines are automatically wrapped
     # @param [String] warning_string warning text (it can contain rich text tags)
+    # @param width [Integer] width of popup (@see Popup#LongWarningGeometry)
+    # @param height [Integer] height of popup (@see Popup#LongWarningGeometry)
     # @return [void]
     def LongWarning(warning_string, width: 60, height: 10)
       Builtins.y2warning(1, "%1", warning_string) if @log_warnings
@@ -594,6 +598,8 @@ module Yast
 
     # Store new error text, the text is displayed in a richtext widget - long lines are automatically wrapped
     # @param [String] error_string error text  (it can contain rich text tags)
+    # @param width [Integer] width of popup (@see Popup#LongErrorGeometry)
+    # @param height [Integer] height of popup (@see Popup#LongErrorGeometry)
     # @return [void]
     def LongError(error_string, width: 60, height: 10)
       Builtins.y2error(1, "%1", error_string) if @log_errors
