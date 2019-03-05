@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Mar  5 08:00:03 UTC 2019 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed a failing testsuite, the Report.LongError used in the
+  global exception handler did not support the command line mode
+  (related to bnc#1127685)
+- 4.1.58
+
+-------------------------------------------------------------------
 Mon Mar  4 09:02:22 UTC 2019 - Michal Filka <mfilka@suse.com>
 
 - bnc#1127685 

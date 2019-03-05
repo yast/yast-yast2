@@ -605,7 +605,9 @@ module Yast
       Builtins.y2error(1, "%1", error_string) if @log_errors
 
       if @display_errors
-        if Ops.greater_than(@timeout_errors, 0)
+        if Mode.commandline
+          CommandLine.Print "Error: #{error_string}"
+        elsif Ops.greater_than(@timeout_errors, 0)
           Popup.TimedLongErrorGeometry(error_string, @timeout_errors, width, height)
         else
           Popup.LongErrorGeometry(error_string, width, height)
