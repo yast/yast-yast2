@@ -206,8 +206,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %{_fillupdir}/sysconfig.yast2
 
 %{_datadir}/bash-completion/completions/yast2*.sh
-# configuration files
-%config %{_sysconfdir}/YaST2/XVersion
 
 # documentation (not included in devel subpackage)
 %doc %dir %{yast_docdir}
