@@ -478,7 +478,9 @@ module Yast
       Builtins.y2milestone(1, "%1", message_string) if @log_messages
 
       if @display_messages
-        if Ops.greater_than(@timeout_messages, 0)
+        if Mode.commandline
+          CommandLine.Print(message_string)
+        elsif Ops.greater_than(@timeout_messages, 0)
           Popup.TimedMessage(message_string, @timeout_messages)
         else
           Popup.Message(message_string)
@@ -499,7 +501,9 @@ module Yast
       Builtins.y2milestone(1, "%1", message_string) if @log_messages
 
       if @display_messages
-        if Ops.greater_than(@timeout_messages, 0)
+        if Mode.commandline
+          CommandLine.Print(message_string)
+        elsif Ops.greater_than(@timeout_messages, 0)
           Popup.TimedLongMessageGeometry(message_string, @timeout_messages, width, height)
         else
           Popup.LongMessageGeometry(message_string, width, height)
@@ -519,7 +523,11 @@ module Yast
       Builtins.y2milestone(1, "%1", message_string) if @log_errors
 
       if @display_errors
-        if Ops.greater_than(@timeout_errors, 0)
+        if Mode.commandline
+          CommandLine.Print(headline_string)
+          CommandLine.Print("\n\n")
+          CommandLine.Print(message_string)
+        elsif Ops.greater_than(@timeout_errors, 0)
           Popup.ShowTextTimed(headline_string, message_string, @timeout_errors)
         else
           Popup.ShowText(headline_string, message_string)
@@ -561,7 +569,9 @@ module Yast
       Builtins.y2warning(1, "%1", warning_string) if @log_warnings
 
       if @display_warnings
-        if Ops.greater_than(@timeout_warnings, 0)
+        if Mode.commandline
+          CommandLine.Print("Warning: #{error_string}")
+        elsif Ops.greater_than(@timeout_warnings, 0)
           Popup.TimedLongWarningGeometry(warning_string, @timeout_warnings, width, height)
         else
           Popup.LongWarningGeometry(warning_string, width, height)
