@@ -128,15 +128,16 @@ module Yast2
     #
     # @return [String]
     def help
-      helptext = "<h2>Service configuration</h2>"
+      # TRANSLATORS: helptext for the service current status, the header
+      helptext = _("<h2>Service configuration</h2>")
       # TRANSLATORS: helptext for the service current status
-      helptext << _(
+      helptext += _(
         "<h3>Current status</h3>" \
         "Displays the curren status of the service."
       )
 
       # TRANSLATORS: helptext for the "After writting configuration" service widget option
-      helptext << _(
+      helptext += _(
         "<h3>After writing configuration</h3>" \
         "Allow to change the service status immediately after accepting the changes. Available
         options depend on the current state. The <b>Keep current state</b> special action leaves the
@@ -144,7 +145,7 @@ module Yast2
       )
 
       # TRANSLATORS: helptext for the "After reboot" service widget option
-      helptext << _(
+      helptext + _(
         "<h3>After reboot</h3>" \
         "Let choose if service should be started automatically on boot. Some services could be
         configured <b>on demand</b>, which means that the associated socket will be running and
