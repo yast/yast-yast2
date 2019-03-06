@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 06 12:09:35 CET 2019 - aschnell@suse.com
+
+- added "Modify" button label (related to gh#yast/yast-yast2#713)
+- 4.1.60
+
+-------------------------------------------------------------------
 Tue Mar  5 09:41:23 UTC 2019 - Ladislav Slezák <lslezak@suse.cz>
 
 - Added command line support also for the other Report module

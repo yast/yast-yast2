@@ -184,6 +184,12 @@ module Yast
       _("Remo&ve")
     end
 
+    # Modify Button
+    def ModifyButton
+      # Button label
+      _("&Modify")
+    end
+
     # Refresh Button
     def RefreshButton
       # Button label
