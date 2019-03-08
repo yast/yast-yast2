@@ -49,6 +49,7 @@ module Yast
   class NetworkServiceClass < Module
     # @current_name - current network backend identification, nil is valid value for "no service selected / running"
     # @cached_name  - the new network backend identification, nil is valid value for "no service selected / running"
+    attr_accessor :current_name, :cached_name
 
     # network backend identification to service name mapping
     BACKENDS = {
@@ -209,12 +210,12 @@ module Yast
     def EnableDisableNow
       return if !Modified()
 
-      if @current_name
-        stop_service(@current_name)
-        disable_service(@current_name)
+      if current_name
+        stop_service(current_name)
+        disable_service(current_name)
       end
 
-      RunSystemCtl(BACKENDS[@cached_name], "enable", force: true) if @cached_name
+      RunSystemCtl(BACKENDS[cached_name], "enable", force: true) if cached_name
 
       @initialized = false
       Read()
