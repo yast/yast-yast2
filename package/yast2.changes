@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri Mar  8 08:15:47 UTC 2019 - Michal Filka <mfilka@suse.com>
 
-- bnc#112788
+- bnc#1127798
   - do not crash with internal error when enabling a network
     network service when no network service is active.
 - 4.1.61 
