@@ -47,9 +47,10 @@ require "shellwords"
 
 module Yast
   class NetworkServiceClass < Module
-    # @current_name - current network backend identification, nil is valid value for "no service selected / running"
-    # @cached_name  - the new network backend identification, nil is valid value for "no service selected / running"
-    attr_accessor :current_name, :cached_name
+    # return [String, nil] current network backend identification, nil is valid value for "no service selected / running"
+    attr_accessor :current_name
+    # return [String, nil] new network backend identification, nil is valid value for "no service selected / running"
+    attr_accessor :cached_name
 
     # network backend identification to service name mapping
     BACKENDS = {
