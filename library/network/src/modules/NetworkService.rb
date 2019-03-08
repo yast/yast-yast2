@@ -47,8 +47,8 @@ require "shellwords"
 
 module Yast
   class NetworkServiceClass < Module
-    # @current_name - current network backend identification
-    # @cached_name  - the new network backend identification
+    # @current_name - current network backend identification, nil is valid value for "no service selected / running"
+    # @cached_name  - the new network backend identification, nil is valid value for "no service selected / running"
 
     # network backend identification to service name mapping
     BACKENDS = {
@@ -209,10 +209,12 @@ module Yast
     def EnableDisableNow
       return if !Modified()
 
-      stop_service(@current_name)
-      disable_service(@current_name)
+      if @current_name
+        stop_service(@current_name)
+        disable_service(@current_name)
+      end
 
-      RunSystemCtl(BACKENDS[@cached_name], "enable", force: true)
+      RunSystemCtl(BACKENDS[@cached_name], "enable", force: true) if @cached_name
 
       @initialized = false
       Read()
