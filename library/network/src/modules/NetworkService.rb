@@ -93,6 +93,7 @@ module Yast
     # @param force [Boolean] if action should be forced
     # @return exit code
     def RunSystemCtl(service, action, force: false)
+      raise ArgumentError, "No network service defined." if service.nil?
       cmd = "/usr/bin/systemctl "\
         "#{force ? "--force" : ""} " \
         "#{action.shellescape} " \
