@@ -46,5 +46,9 @@ describe Yast::NetworkService do
 
       subject.RunSystemCtl("wicked", "disable | evil")
     end
+
+    it "raises an exception when no service name is provided" do
+      expect { Yast::NetworkService.RunSystemCtl(nil, "enable") }.to raise_error
+    end
   end
 end
