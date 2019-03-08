@@ -47,8 +47,10 @@ require "shellwords"
 
 module Yast
   class NetworkServiceClass < Module
-    # @current_name - current network backend identification
-    # @cached_name  - the new network backend identification
+    # return [String, nil] current network backend identification, nil is valid value for "no service selected / running"
+    attr_accessor :current_name
+    # return [String, nil] new network backend identification, nil is valid value for "no service selected / running"
+    attr_accessor :cached_name
 
     # network backend identification to service name mapping
     BACKENDS = {
@@ -93,6 +95,7 @@ module Yast
     # @param force [Boolean] if action should be forced
     # @return exit code
     def RunSystemCtl(service, action, force: false)
+      raise ArgumentError, "No network service defined." if service.nil?
       cmd = "/usr/bin/systemctl "\
         "#{force ? "--force" : ""} " \
         "#{action.shellescape} " \
@@ -208,10 +211,12 @@ module Yast
     def EnableDisableNow
       return if !Modified()
 
-      stop_service(@current_name)
-      disable_service(@current_name)
+      if current_name
+        stop_service(current_name)
+        disable_service(current_name)
+      end
 
-      RunSystemCtl(BACKENDS[@cached_name], "enable", force: true)
+      RunSystemCtl(BACKENDS[cached_name], "enable", force: true) if cached_name
 
       @initialized = false
       Read()
