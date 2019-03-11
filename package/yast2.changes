@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Mar 12 08:38:32 UTC 2019 - lslezak@suse.cz
+
+- Fixed product filtering in product_reader.rb, fixes problem
+  when upgrading SLE15-SP1 to SLE15-SP1 (usually used to fix
+  a broken system) (bsc#1128459)
+- 4.1.62
+
+-------------------------------------------------------------------
 Fri Mar  8 08:15:47 UTC 2019 - Michal Filka <mfilka@suse.com>
 
 - bnc#1127798
