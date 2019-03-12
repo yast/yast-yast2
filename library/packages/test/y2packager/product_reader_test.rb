@@ -126,16 +126,29 @@ describe Y2Packager::ProductReader do
       allow(subject).to receive(:product_package).with("SLES_BCL-release")
         .and_return("deps" => [{ "conflicts"=>"kernel < 4.4" },
                                { "provides"=>"specialproduct(SLES_BCL)" }])
+      allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return(nil)
     end
 
     it "returns available products without special products" do
-      allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return(nil)
       expect(subject.all_products.size).to eq(1)
     end
 
     it "returns available products with special product" do
       allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return("SLES_BCL")
       expect(subject.all_products.size).to eq(2)
+    end
+
+    it "returns the available product also when an installed product is found" do
+      installed = products.first.dup
+      installed["status"] = :installed
+      available = products.first.dup
+      available["status"] = :available
+
+      # return the installed product first to ensure the following available duplicate is not lost
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+        .and_return([installed, available])
+
+      expect(subject.all_products).to_not be_empty
     end
   end
 end
