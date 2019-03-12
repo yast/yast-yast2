@@ -168,7 +168,8 @@ module Yast
     # Restore product features in running system
     # @note This is a stable API function
     def Restore
-      InitFeatures(true)
+      InitFeatures(false)
+
       groups = SCR.Dir(path(".product.features.section"))
       Builtins.foreach(groups) do |group|
         Ops.set(@features, group, Ops.get(@features, group, {}))
@@ -191,7 +192,6 @@ module Yast
     # @note This is a stable API function
     # Either read from /etc/YaST2/ProductFeatures or set default values
     def InitIfNeeded
-      return if !@features.nil?
       if Stage.normal || Stage.firstboot
         Restore()
       else
