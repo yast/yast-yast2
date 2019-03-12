@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Mar 13 09:02:12 UTC 2019 - David Díaz <dgonzalez@suse.com>
+
+- Fix how a product features is read in a running system.
+- Update default path for base product licenses
+  (fate#324053, jsc#SLE-4173).
+- 4.1.63
+
+-------------------------------------------------------------------
 Tue Mar 12 08:38:32 UTC 2019 - lslezak@suse.cz
 
 - Fixed product filtering in product_reader.rb, fixes problem
