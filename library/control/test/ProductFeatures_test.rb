@@ -173,41 +173,29 @@ describe Yast::ProductFeatures do
       change_scr_root(scr_root_dir, &example)
     end
 
-    context "when features are not initialized yet" do
-      it "initializes them" do
-        expect(subject.GetFeature("globals", "base_product_license_directory")).to_not be_nil
+    it "initializes feature if needed" do
+      expect(subject).to receive(:InitIfNeeded)
+
+      subject.GetFeature("globals", "base_product_license_directory")
+    end
+
+    context "in normal stage" do
+      let(:normal_stage) { true }
+
+      it "reads the value from the running system" do
+        # value read from data/etc/YaST2/ProductFeatures file
+        expect(subject.GetFeature("globals", "base_product_license_directory"))
+          .to eq("/path/to/licenses/product/base")
       end
     end
 
-    context "when features are already initialized" do
-      before do
-        subject.InitFeatures(true)
-      end
+    context "in firstboot stage" do
+      let(:firstboot_stage) { true }
 
-      it "does not force to initialize them again" do
-        expect(subject).to receive(:InitFeatures).with(false)
-
-        subject.GetFeature("globals", "base_product_license_directory")
-      end
-
-      context "in normal stage" do
-        let(:normal_stage) { true }
-
-        it "reads the value from the running system" do
-          # value readed from data/etc/YaST2/ProductFeatures file
-          expect(subject.GetFeature("globals", "base_product_license_directory"))
-            .to eq("/path/to/licenses/product/base")
-        end
-      end
-
-      context "in firstboot stage" do
-        let(:firstboot_stage) { true }
-
-        it "reads the value from the running system" do
-          # value readed from data/etc/YaST2/ProductFeatures file
-          expect(subject.GetFeature("globals", "base_product_license_directory"))
-            .to eq("/path/to/licenses/product/base")
-        end
+      it "reads the value from the running system" do
+        # value read from data/etc/YaST2/ProductFeatures file
+        expect(subject.GetFeature("globals", "base_product_license_directory"))
+          .to eq("/path/to/licenses/product/base")
       end
     end
   end
@@ -221,31 +209,29 @@ describe Yast::ProductFeatures do
       allow(Yast::Stage).to receive(:firstboot).and_return(firstboot_stage)
     end
 
-    context "when features are not initialized yet" do
-      it "initializes the features" do
-        expect(subject).to receive(:InitFeatures).with(false)
+    it "ensures that features are initialized" do
+      expect(subject).to receive(:InitFeatures).with(false)
+
+      subject.InitIfNeeded
+    end
+
+    context "in normal stage" do
+      let(:normal_stage) { true }
+
+      it "restores the available values in the running system" do
+        expect(subject).to receive(:Restore)
 
         subject.InitIfNeeded
       end
+    end
 
-      context "in normal stage" do
-        let(:normal_stage) { true }
+    context "in firstboot stage" do
+      let(:firstboot_stage) { true }
 
-        it "restores the available values in the running system" do
-          expect(subject).to receive(:Restore)
+      it "restores the available values in the running system" do
+        expect(subject).to receive(:Restore)
 
-          subject.InitIfNeeded
-        end
-      end
-
-      context "in firstboot stage" do
-        let(:firstboot_stage) { true }
-
-        it "restores the available values in the running system" do
-          expect(subject).to receive(:Restore)
-
-          subject.InitIfNeeded
-        end
+        subject.InitIfNeeded
       end
     end
   end
