@@ -71,7 +71,7 @@ module Yast
           "disable_os_prober"               => false,
           "enable_local_users"              => true,
           # FATE #304865
-          "base_product_license_directory"  => "/etc/YaST2/licenses/base/",
+          "base_product_license_directory"  => "/usr/share/licenses/product/base/",
           "full_system_media_name"          => "",
           "full_system_download_url"        => "",
           "save_y2logs"                     => true
