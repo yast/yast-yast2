@@ -71,7 +71,7 @@ module Yast
           "disable_os_prober"               => false,
           "enable_local_users"              => true,
           # FATE #304865
-          "base_product_license_directory"  => "/etc/YaST2/licenses/base/",
+          "base_product_license_directory"  => "/usr/share/licenses/product/base/",
           "full_system_media_name"          => "",
           "full_system_download_url"        => "",
           "save_y2logs"                     => true
@@ -168,7 +168,8 @@ module Yast
     # Restore product features in running system
     # @note This is a stable API function
     def Restore
-      InitFeatures(true)
+      InitFeatures(false)
+
       groups = SCR.Dir(path(".product.features.section"))
       Builtins.foreach(groups) do |group|
         Ops.set(@features, group, Ops.get(@features, group, {}))
@@ -191,7 +192,6 @@ module Yast
     # @note This is a stable API function
     # Either read from /etc/YaST2/ProductFeatures or set default values
     def InitIfNeeded
-      return if !@features.nil?
       if Stage.normal || Stage.firstboot
         Restore()
       else

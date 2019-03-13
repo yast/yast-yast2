@@ -158,4 +158,81 @@ describe Yast::ProductFeatures do
       end
     end
   end
+
+  describe "#GetFeature" do
+    let(:scr_root_dir) { File.join(File.dirname(__FILE__), "data") }
+    let(:normal_stage) { false }
+    let(:firstboot_stage) { false }
+
+    before do
+      allow(Yast::Stage).to receive(:normal).and_return(normal_stage)
+      allow(Yast::Stage).to receive(:firstboot).and_return(firstboot_stage)
+    end
+
+    around do |example|
+      change_scr_root(scr_root_dir, &example)
+    end
+
+    it "initializes feature if needed" do
+      expect(subject).to receive(:InitIfNeeded)
+
+      subject.GetFeature("globals", "base_product_license_directory")
+    end
+
+    context "in normal stage" do
+      let(:normal_stage) { true }
+
+      it "reads the value from the running system" do
+        # value read from data/etc/YaST2/ProductFeatures file
+        expect(subject.GetFeature("globals", "base_product_license_directory"))
+          .to eq("/path/to/licenses/product/base")
+      end
+    end
+
+    context "in firstboot stage" do
+      let(:firstboot_stage) { true }
+
+      it "reads the value from the running system" do
+        # value read from data/etc/YaST2/ProductFeatures file
+        expect(subject.GetFeature("globals", "base_product_license_directory"))
+          .to eq("/path/to/licenses/product/base")
+      end
+    end
+  end
+
+  describe "#InitIfNeeded" do
+    let(:normal_stage) { false }
+    let(:firstboot_stage) { false }
+
+    before do
+      allow(Yast::Stage).to receive(:normal).and_return(normal_stage)
+      allow(Yast::Stage).to receive(:firstboot).and_return(firstboot_stage)
+    end
+
+    it "ensures that features are initialized" do
+      expect(subject).to receive(:InitFeatures).with(false)
+
+      subject.InitIfNeeded
+    end
+
+    context "in normal stage" do
+      let(:normal_stage) { true }
+
+      it "restores the available values in the running system" do
+        expect(subject).to receive(:Restore)
+
+        subject.InitIfNeeded
+      end
+    end
+
+    context "in firstboot stage" do
+      let(:firstboot_stage) { true }
+
+      it "restores the available values in the running system" do
+        expect(subject).to receive(:Restore)
+
+        subject.InitIfNeeded
+      end
+    end
+  end
 end
