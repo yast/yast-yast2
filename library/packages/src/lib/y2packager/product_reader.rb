@@ -67,7 +67,7 @@ module Y2Packager
     # @return [Array<Product>] Available products
     def all_products
       linuxrc_special_products = if Yast::Linuxrc.InstallInf("specialproduct")
-        Yast::Linuxrc.InstallInf("specialproduct").split(",")
+        linuxrc_string(Yast::Linuxrc.InstallInf("specialproduct")).split(",")
       else
         []
       end
@@ -78,7 +78,7 @@ module Y2Packager
         if prod_pkg
           # remove special products if they have not been defined in linuxrc
           prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Aspecialproduct\(\s*(.*?)\s*\)\z/ }
-          special_product_tag = Regexp.last_match[1] if Regexp.last_match
+          special_product_tag = linuxrc_string(Regexp.last_match[1]) if Regexp.last_match
           if special_product_tag && !linuxrc_special_products.include?(special_product_tag)
             log.info "Special product #{prod["name"]} has not been defined via linuxrc. --> do not offer it"
             next
@@ -186,6 +186,20 @@ module Y2Packager
 
     def installation_package_mapping
       @installation_package_mapping ||= self.class.installation_package_mapping
+    end
+
+    # Process the string in a linuxrc way: remove the "-", "_", "." characters,
+    # convert it to downcase for case insensitive comparison.
+    #
+    # @param input [String] the input string
+    #
+    # @return [String] the processed string
+    #
+    def linuxrc_string(input)
+      return nil if input.nil?
+
+      ret = input.gsub(/[-_.]/, "")
+      ret.downcase
     end
   end
 end
