@@ -138,6 +138,31 @@ describe Y2Packager::ProductReader do
       expect(subject.all_products.size).to eq(2)
     end
 
+    it "ignores case of the linuxrc specialproduct parameter" do
+      allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return("sles_bcl")
+      expect(subject.all_products.size).to eq(2)
+    end
+
+    it "ignores underscores in the linuxrc specialproduct parameter" do
+      allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return("sles_b_c_l")
+      expect(subject.all_products.size).to eq(2)
+    end
+
+    it "ignores underscores in the product name" do
+      allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return("SLESBCL")
+      expect(subject.all_products.size).to eq(2)
+    end
+
+    it "ignores dashes in the linuxrc specialproduct parameter" do
+      allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return("sles-b-c-l")
+      expect(subject.all_products.size).to eq(2)
+    end
+
+    it "ignores dots in the linuxrc specialproduct parameter" do
+      allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return("sles.b.c.l")
+      expect(subject.all_products.size).to eq(2)
+    end
+
     it "returns the available product also when an installed product is found" do
       installed = products.first.dup
       installed["status"] = :installed
