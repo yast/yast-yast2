@@ -146,11 +146,11 @@ module Y2Packager
     def zypp_products
       products = Yast::Pkg.ResolvableProperties("", :product, "")
 
-      # remove duplicates, there migth be different flavors ("DVD"/"POOL")
+      # remove duplicates, there might be different flavors ("DVD"/"POOL")
       # or archs (x86_64/i586), when selecting the product to install later
       # libzypp will select the correct arch automatically,
-      # keep products with different state, they are filtered out later
-      products.uniq! { |p| "#{p["name"]}__#{p["version"]}__#{p["status"]}" }
+      # keep products with different location, they are filtered out later
+      products.uniq! { |p| "#{p["name"]}__#{p["version"]}__#{resolvable_location(p)}" }
       log.info "Found products: #{products.map { |p| p["name"] }}"
 
       products
@@ -175,7 +175,7 @@ module Y2Packager
     def base_product
       # The base product is identified by the /etc/products.d/baseproduct symlink
       # and because a symlink can point only to one file there can be only one base product.
-      # The "installed" conditition is actually not required because that symlink is created
+      # The "installed" condition is actually not required because that symlink is created
       # only for installed products. (Just make sure it still works in case the libzypp
       # internal implementation is changed.)
       base = installed_products.find { |p| p["type"] == "base" }
@@ -200,6 +200,25 @@ module Y2Packager
 
       ret = input.gsub(/[-_.]/, "")
       ret.downcase
+    end
+
+    #
+    # Evaluate the resolvable location (on system or on media).
+    #
+    # @param res [Hash] the resolvable hash obtained from pkg-bindings
+    #
+    # @return [Symbol] `:on_medium` or `:on_system`
+    #
+    def resolvable_location(res)
+      case res["status"]
+      when :available, :selected
+        :on_medium
+      when :installed, :removed
+        :on_system
+      else
+        # just in case pkg-bindings add some new status...
+        raise "Unexpected resolvable status: #{res["status"]}"
+      end
     end
   end
 end

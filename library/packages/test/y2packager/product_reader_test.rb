@@ -175,5 +175,18 @@ describe Y2Packager::ProductReader do
 
       expect(subject.all_products).to_not be_empty
     end
+
+    it "treats the selected and available products as duplicates even with different arch" do
+      selected = products.first.dup
+      selected["status"] = :selected
+      available = products.first.dup
+      available["status"] = :available
+      available["arch"] = "i586"
+
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+        .and_return([selected, available])
+
+      expect(subject.all_products.size).to eq(1)
+    end
   end
 end
