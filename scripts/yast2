@@ -412,6 +412,12 @@ else
     echo >&2 "Internal error, unhandled '$SELECTED_GUI'"
 fi
 
+# Used for intergation tests, using libyui YUILoader::loadUI logic instead
+# of direct loadPlugin plugin call. When using UI, dummy UI will be created
+if [ -n "$Y2TEST" ]; then
+  SELECTED_GUI="ui"
+  echo "Integration UI tests"
+fi
 
 # do it!
 # $@ are args for ycp

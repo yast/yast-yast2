@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar 18 14:43:24 UTC 2019 - Rodion Iafarov <riafarov@suse.com>
+
+- Allow not prescribing UI in yast2, to use YUILoader::loadUI.
+  Required to load integration tests framework (poo#36712)
+- 4.1.65
+
+-------------------------------------------------------------------
 Thu Mar 14 15:36:31 UTC 2019 - Ladislav Slezak <lslezak@suse.cz>
 
 - Fixed evaluating the base product, the same products with
@@ -35,7 +42,7 @@ Fri Mar  8 08:15:47 UTC 2019 - Michal Filka <mfilka@suse.com>
 - bnc#1127798
   - do not crash with internal error when enabling a network
     network service when no network service is active.
-- 4.1.61 
+- 4.1.61
 
 -------------------------------------------------------------------
 Wed Mar 06 12:09:35 CET 2019 - aschnell@suse.com
@@ -62,7 +69,7 @@ Tue Mar  5 08:00:03 UTC 2019 - Ladislav Slezák <lslezak@suse.cz>
 -------------------------------------------------------------------
 Mon Mar  4 09:02:22 UTC 2019 - Michal Filka <mfilka@suse.com>
 
-- bnc#1127685 
+- bnc#1127685
   - made Report module long message reporting popups adjustable
 - 4.1.57
 
@@ -228,7 +235,7 @@ Wed Dec  5 16:27:45 UTC 2018 - Stasiek Michalski <hellcp@mailbox.org>
 -------------------------------------------------------------------
 Fri Nov 30 14:22:29 UTC 2018 - jreidinger@suse.com
 
-- firewalld: add ability to add/edit/remove zones (fate#324662) 
+- firewalld: add ability to add/edit/remove zones (fate#324662)
 - 4.1.37
 
 -------------------------------------------------------------------
@@ -365,7 +372,7 @@ Tue Oct  2 11:11:26 UTC 2018 - lslezak@suse.cz
 Mon Oct  1 17:29:17 UTC 2018 - mfilka@suse.com
 
 - bnc#964856
-  - fixed internal error - do not crash when updating device config 
+  - fixed internal error - do not crash when updating device config
 - 4.1.19
 
 -------------------------------------------------------------------
