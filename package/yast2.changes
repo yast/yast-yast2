@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Tue Mar 19 09:02:12 UTC 2019 - David Díaz <dgonzalez@suse.com>
 
-- Require tar as a dependency for yast2-logs
+- Require tar as a dependency for yast2-logs (bsc#1125142).
 - 4.1.66
 
 -------------------------------------------------------------------
