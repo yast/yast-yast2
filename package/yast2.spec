@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.1.65
+Version:        4.1.66
 Release:        0
 Summary:        YaST2 - Main Package
 License:        GPL-2.0-only
@@ -218,6 +218,8 @@ Summary:        Collecting YAST information
 Group:          System/YaST
 
 Provides:       yast2:/usr/sbin/save_y2logs
+
+Requires:       tar
 
 %description logs
 This package contains scripts for handling YAST logs.
