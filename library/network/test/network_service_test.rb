@@ -23,13 +23,6 @@ describe Yast::NetworkService do
         expect { Yast::NetworkService.is_netconfig }.not_to raise_error
       end
     end
-
-    describe "#EnableDisableNow" do
-      it "does not crash when current / cached service is nil" do
-        allow(Yast::NetworkService).to receive(:Modified).and_return(true)
-        expect { Yast::NetworkService.EnableDisableNow }.not_to raise_error ArgumentError
-      end
-    end
   end
 
   describe "#RunSystemCtl" do

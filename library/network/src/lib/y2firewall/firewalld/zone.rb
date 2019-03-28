@@ -53,7 +53,10 @@ module Y2Firewall
       has_many :services, :interfaces, :protocols, :ports, cache: true
 
       # @see Y2Firewall::Firewalld::Relations
-      has_attributes :name, :masquerade, :short, :description, :target, cache: true
+      has_attributes :masquerade, :short, :description, :target, cache: true
+
+      # @return [String] Zone name
+      attr_accessor :name
 
       alias_method :masquerade?, :masquerade
 
