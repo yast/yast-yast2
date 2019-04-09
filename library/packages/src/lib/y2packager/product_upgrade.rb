@@ -26,6 +26,7 @@ module Y2Packager
       # SLES12 + HPC module => SLESHPC15
       # (a bit tricky, the module became a new base product!)
       ["SLES", "sle-module-hpc"] => "SLE_HPC",
+      ["SLES", "SUSE-Manager-Proxy"] => "SUSE-Manager-Proxy",
       # this is an internal product so far...
       ["SLE-HPC"]                => "SLE_HPC",
       # SLES11 => SLES15
@@ -84,6 +85,19 @@ module Y2Packager
 
         # just 1:1 product upgrade?
         find_by_name(available)
+      end
+
+      # Returns the product name which obsoletes the given product.
+      # @param old_product_name <String> Product name which will be obsoleted
+      # @return [<String>] Product names which obsoletes this product.
+      def will_be_obsolated_by(old_product_name)
+        installed = Y2Packager::Product.installed_products.map { |p| p.name }
+        MAPPING.each_with_object([]) do |(products,obsolated_by),a|
+          if products.include?(old_product_name) &&
+            (installed & products) == products # All products are installed
+            a << obsolated_by
+          end
+        end
       end
 
     private
