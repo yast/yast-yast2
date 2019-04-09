@@ -25,21 +25,21 @@ module Y2Packager
     MAPPING = {
       # SLES12 + HPC module => SLESHPC15
       # (a bit tricky, the module became a new base product!)
-      ["SLES", "sle-module-hpc"] => "SLE_HPC",
+      ["SLES", "sle-module-hpc"]     => "SLE_HPC",
       ["SLES", "SUSE-Manager-Proxy"] => "SUSE-Manager-Proxy",
       # this is an internal product so far...
-      ["SLE-HPC"]                => "SLE_HPC",
+      ["SLE-HPC"]                    => "SLE_HPC",
       # SLES11 => SLES15
-      ["SUSE_SLES"]              => "SLES",
+      ["SUSE_SLES"]                  => "SLES",
       # SLED11 => SLED15
-      ["SUSE_SLED"]              => "SLED",
+      ["SUSE_SLED"]                  => "SLED",
       # SLES4SAP11 => SLES4SAP15
-      ["SUSE_SLES_SAP"]          => "SLES_SAP",
+      ["SUSE_SLES_SAP"]              => "SLES_SAP",
       # (installed) openSUSE => (available) SLES,
       # this one is used when openSUSE is not available, e.g. booting SLE medium
       # (moreover the openSUSE medium should contain only one product so that
       # product should be used unconditionally)
-      ["openSUSE"]               => "SLES"
+      ["openSUSE"]                   => "SLES"
     }.freeze
 
     class << self
@@ -91,10 +91,10 @@ module Y2Packager
       # @param old_product_name <String> Product name which will be obsoleted
       # @return [<String>] Product names which obsoletes this product.
       def will_be_obsolated_by(old_product_name)
-        installed = Y2Packager::Product.installed_products.map { |p| p.name }
-        MAPPING.each_with_object([]) do |(products,obsolated_by),a|
+        installed = Y2Packager::Product.installed_products.map(&:name)
+        MAPPING.each_with_object([]) do |(products, obsolated_by), a|
           if products.include?(old_product_name) &&
-            (installed & products) == products # All products are installed
+              (installed & products) == products # All products are installed
             a << obsolated_by
           end
         end
