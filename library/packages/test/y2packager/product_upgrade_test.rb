@@ -71,12 +71,12 @@ describe Y2Packager::ProductUpgrade do
     end
   end
 
-  describe ".will_be_obsolated_by" do
+  describe ".will_be_obsoleted_by" do
     context "given product is not installed" do
       it "returns an empty array" do
         expect(Y2Packager::Product).to receive(:installed_products)
           .and_return([sles, hpc_module])
-        expect(described_class.will_be_obsolated_by("not_there")).to be_empty
+        expect(described_class.will_be_obsoleted_by("not_there")).to be_empty
       end
     end
 
@@ -84,7 +84,7 @@ describe Y2Packager::ProductUpgrade do
       it "returns an empty array" do
         expect(Y2Packager::Product).to receive(:installed_products)
           .and_return([sles, sles_hpc])
-        expect(described_class.will_be_obsolated_by("SLES")).to be_empty
+        expect(described_class.will_be_obsoleted_by("SLES")).to be_empty
       end
     end
 
@@ -92,7 +92,7 @@ describe Y2Packager::ProductUpgrade do
       it "returns the product which obsoletes the old one" do
         expect(Y2Packager::Product).to receive(:installed_products)
           .and_return([sles, hpc_module])
-        expect(described_class.will_be_obsolated_by("SLES")).to contain_exactly("SLE_HPC")
+        expect(described_class.will_be_obsoleted_by("SLES")).to contain_exactly("SLE_HPC")
       end
     end
   end

@@ -92,12 +92,12 @@ module Y2Packager
       # Returns the product name which obsoletes the given product.
       # @param old_product_name <String> Product name which will be obsoleted
       # @return [<String>] Product names which obsoletes this product.
-      def will_be_obsolated_by(old_product_name)
+      def will_be_obsoleted_by(old_product_name)
         installed = Y2Packager::Product.installed_products.map(&:name)
-        MAPPING.each_with_object([]) do |(products, obsolated_by), a|
+        MAPPING.each_with_object([]) do |(products, obsoleted_by), a|
           if products.include?(old_product_name) &&
               (installed & products) == products # All products are installed
-            a << obsolated_by
+            a << obsoleted_by
           end
         end
       end
