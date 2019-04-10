@@ -27,6 +27,8 @@ module Y2Packager
       # (a bit tricky, the module became a new base product!)
       ["SLES", "sle-module-hpc"]     => "SLE_HPC",
       ["SLES", "SUSE-Manager-Proxy"] => "SUSE-Manager-Proxy",
+      ["SLES", "SUSE-Manager-Server"] => "SUSE-Manager-Server",
+      ["SLES", "SUSE-Manager-Proxy", "SUSE-Manager-Retail-Branch-Server"] => "SUSE-Manager-Retail-Branch-Server",
       # this is an internal product so far...
       ["SLE-HPC"]                    => "SLE_HPC",
       # SLES11 => SLES15
