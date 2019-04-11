@@ -9,6 +9,10 @@ describe Y2Packager::ProductUpgrade do
   let(:product1) { Y2Packager::Product.new(name: "testing_product1") }
   let(:product2) { Y2Packager::Product.new(name: "testing_product2") }
   let(:product3) { Y2Packager::Product.new(name: "testing_product3") }
+  let(:sles) { Y2Packager::Product.new(name: "SLES") }
+  let(:sles_hpc) { Y2Packager::Product.new(name: "SLE_HPC") }
+  let(:hpc_module) { Y2Packager::Product.new(name: "sle-module-hpc") }
+  let(:sles11) { Y2Packager::Product.new(name: "SUSE_SLES") }
 
   describe ".new_base_product" do
     context "no base product is available" do
@@ -33,11 +37,6 @@ describe Y2Packager::ProductUpgrade do
     end
 
     context "several base products are available" do
-      let(:sles) { Y2Packager::Product.new(name: "SLES") }
-      let(:sles_hpc) { Y2Packager::Product.new(name: "SLE_HPC") }
-      let(:hpc_module) { Y2Packager::Product.new(name: "sle-module-hpc") }
-      let(:sles11) { Y2Packager::Product.new(name: "SUSE_SLES") }
-
       before do
         expect(Y2Packager::Product).to receive(:available_base_products)
           .and_return([product1, product2, sles, sles_hpc]).at_least(:once)
@@ -68,6 +67,32 @@ describe Y2Packager::ProductUpgrade do
         expect(Y2Packager::Product).to receive(:installed_base_product)
           .and_return(product3)
         expect(described_class.new_base_product).to be_nil
+      end
+    end
+  end
+
+  describe ".will_be_obsoleted_by" do
+    context "given product is not installed" do
+      it "returns an empty array" do
+        expect(Y2Packager::Product).to receive(:installed_products)
+          .and_return([sles, hpc_module])
+        expect(described_class.will_be_obsoleted_by("not_there")).to be_empty
+      end
+    end
+
+    context "given product is installed but not required module" do
+      it "returns an empty array" do
+        expect(Y2Packager::Product).to receive(:installed_products)
+          .and_return([sles, sles_hpc])
+        expect(described_class.will_be_obsoleted_by("SLES")).to be_empty
+      end
+    end
+
+    context "given product and the required module is installed" do
+      it "returns the product which obsoletes the old one" do
+        expect(Y2Packager::Product).to receive(:installed_products)
+          .and_return([sles, hpc_module])
+        expect(described_class.will_be_obsoleted_by("SLES")).to contain_exactly("SLE_HPC")
       end
     end
   end
