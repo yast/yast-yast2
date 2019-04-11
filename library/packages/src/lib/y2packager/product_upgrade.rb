@@ -95,8 +95,7 @@ module Y2Packager
       def will_be_obsoleted_by(old_product_name)
         installed = Y2Packager::Product.installed_products.map(&:name)
         MAPPING.each_with_object([]) do |(products, obsoleted_by), a|
-          if products.include?(old_product_name) &&
-              (installed & products) == products # All products are installed
+          if products.include?(old_product_name) && (products - installed).empty?
             a << obsoleted_by
           end
         end
