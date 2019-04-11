@@ -3,6 +3,8 @@ Tue Apr  9 09:50:45 CEST 2019 - schubi@suse.de
 
 - Upgrade: Evaluating product obsoletes in order to show it in
   the proposal overview. (bsc#1131503)
+- Updated map for evaluating upgraded products
+  (e.g. for SUSE-Manager).  
 - 4.1.68
 
 -------------------------------------------------------------------
