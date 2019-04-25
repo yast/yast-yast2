@@ -44,6 +44,17 @@ module Y2Packager
       ["openSUSE"]                                                        => "SLES"
     }.freeze
 
+    # This maps the installed products to removed products.
+    # It is used in special cases when the removed product is still available on the medium
+    # and it is selected to upgrade automatically by the solver (not by YaST or the user).
+    # However, the required behavior is to *uninstall* the product.
+    UPGRADE_REMOVAL_MAPPING = {
+      # the SLES + SUMA Proxy + SUMA Branch Server is upgraded to SUMA Branch Server
+      # (see the definition above), but we need to explicitly remove the old SUMA Proxy
+      # and the SLES product to avoid automatic upgrade by the solver
+      ["SLES", "SUSE-Manager-Proxy", "SUSE-Manager-Retail-Branch-Server"] => ["SLES", "SUSE-Manager-Proxy"]
+    }.freeze
+
     class << self
       # Find a new available base product which upgrades the installed base product.
       #
@@ -94,11 +105,41 @@ module Y2Packager
       # @return [<String>] Product names which obsoletes this product.
       def will_be_obsoleted_by(old_product_name)
         installed = Y2Packager::Product.installed_products.map(&:name)
-        MAPPING.each_with_object([]) do |(products, obsoleted_by), a|
-          if products.include?(old_product_name) && (products - installed).empty?
-            a << obsoleted_by
+        selected_products = Y2Packager::Product.with_status(:selected).map(&:name)
+
+        old_products = MAPPING.keys.sort_by(&:size).reverse.find do |products|
+          products.include?(old_product_name) && (products - installed).empty? &&
+            selected_products.include?(MAPPING[products])
+        end
+
+        return [] unless old_products
+
+        [MAPPING[old_products]]
+      end
+
+      # Returns the products which are upgraded by the solver but should be actually
+      # removed from the system during upgrade. It uses an internal hardcoded
+      # product mapping.
+      # @return [<String>] Product names which should be uninstalled from the system
+      def obsolete_upgrades
+        installed = Y2Packager::Product.installed_products.map(&:name)
+        UPGRADE_REMOVAL_MAPPING.each_with_object([]) do |(products, obsolete), a|
+          # all products from the mapping are installed and the obsolete one
+          # is removed by the solver (i.e. not removed by YaST or user)
+          if (products - installed).empty? && obsolete.all? { |p| removed_by_solver?(p) }
+            a.concat(obsolete)
           end
         end
+      end
+
+      # Removes (uninstalls) the obsolete products. It uses an internal hardcoded
+      # product mapping.
+      # @see .obsolete_upgrades
+      def remove_obsolete_upgrades
+        # deselect the upgraded obsolete products (bsc#1133215)
+        obsolete_products = Y2Packager::ProductUpgrade.obsolete_upgrades
+        log.info "Found obsolete products to uninstall: #{obsolete_products.inspect}"
+        obsolete_products.each { |p| Yast::Pkg.ResolvableRemove(p, :product) }
       end
 
     private
@@ -124,7 +165,7 @@ module Y2Packager
         # to find the most specific upgrade, prefer the
         # SLES + sle-module-hpc => SLE_HPC upgrade to plain SLES => SLES upgrade
         # (if that would be in the list)
-        upgrade = MAPPING.keys.sort_by(&:size).find do |keys|
+        upgrade = MAPPING.keys.sort_by(&:size).reverse.find do |keys|
           keys.all? { |name| installed.any? { |p| p.name == name } }
         end
 
@@ -155,6 +196,12 @@ module Y2Packager
         log.debug("All products: #{products.inspect}")
         names = products.select { |p| p["status"] == :selected }.map { |p| p["name"] }
         log.info("Selected products: #{names.inspect}")
+      end
+
+      def removed_by_solver?(product_name)
+        products = Yast::Pkg.ResolvableProperties(product_name, :product, "")
+        # any item removed by the solver?
+        products.any? { |p| p["status"] == :removed && p["transact_by"] == :solver }
       end
     end
   end
