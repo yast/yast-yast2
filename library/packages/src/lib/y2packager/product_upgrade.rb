@@ -44,7 +44,8 @@ module Y2Packager
       ["openSUSE"]                                                        => "SLES"
     }.freeze
 
-    # This maps the installed products to removed products.
+    # This maps uses a list of installed products as the key and the removed products as a value.
+    # All products in key have to be installed.
     # It is used in special cases when the removed product is still available on the medium
     # and it is selected to upgrade automatically by the solver (not by YaST or the user).
     # However, the required behavior is to *uninstall* the product.
@@ -107,7 +108,11 @@ module Y2Packager
         installed = Y2Packager::Product.installed_products.map(&:name)
         selected_products = Y2Packager::Product.with_status(:selected).map(&:name)
 
+        # the "sort_by(&:size).reverse" part ensures we try first the longer
+        # mappings (more installed products) to find more specific matches
         old_products = MAPPING.keys.sort_by(&:size).reverse.find do |products|
+          # the product is included in the mapping key and all product mapping key
+          # products are installed and the replacement products are selected
           products.include?(old_product_name) && (products - installed).empty? &&
             selected_products.include?(MAPPING[products])
         end
@@ -122,12 +127,14 @@ module Y2Packager
       # product mapping.
       # @return [<String>] Product names which should be uninstalled from the system
       def obsolete_upgrades
-        installed = Y2Packager::Product.installed_products.map(&:name)
-        UPGRADE_REMOVAL_MAPPING.each_with_object([]) do |(products, obsolete), a|
+        system_installed = Y2Packager::Product.installed_products.map(&:name)
+        UPGRADE_REMOVAL_MAPPING.each_with_object([]) do |(installed_products, obsolete_products), a|
           # all products from the mapping are installed and the obsolete one
           # is removed by the solver (i.e. not removed by YaST or user)
-          if (products - installed).empty? && obsolete.all? { |p| removed_by_solver?(p) }
-            a.concat(obsolete)
+          if (installed_products - system_installed).empty? &&
+            obsolete_products.all? { |p| removed_by_solver?(p) }
+
+            a.concat(obsolete_products)
           end
         end
       end

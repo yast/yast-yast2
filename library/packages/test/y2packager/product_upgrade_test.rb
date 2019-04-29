@@ -14,6 +14,8 @@ describe Y2Packager::ProductUpgrade do
   let(:sles_hpc) { Y2Packager::Product.new(name: "SLE_HPC") }
   let(:hpc_module) { Y2Packager::Product.new(name: "sle-module-hpc") }
   let(:sles11) { Y2Packager::Product.new(name: "SUSE_SLES") }
+  let(:suma_proxy) { Y2Packager::Product.new(name: "SUSE-Manager-Proxy") }
+  let(:suma_branch_server) { Y2Packager::Product.new(name: "SUSE-Manager-Retail-Branch-Server") }
 
   describe ".new_base_product" do
     context "no base product is available" do
@@ -70,6 +72,19 @@ describe Y2Packager::ProductUpgrade do
         expect(described_class.new_base_product).to be_nil
       end
     end
+
+    context "SUSE Manager Retail Branch Server upgrade" do
+      # there are "SLES + SUMA Proxy" and "SLES + SUMA Proxy + SUMA Branch Server"
+      # mappings, make sure the longer one is preferred
+      it "returns more matching installed products" do
+        expect(Y2Packager::Product).to receive(:installed_products)
+          .and_return([sles, suma_proxy, suma_branch_server])
+        expect(Y2Packager::Product).to receive(:available_base_products)
+          .and_return([sles, sles_hpc, suma_proxy, suma_branch_server])
+
+        expect(described_class.new_base_product).to be(suma_branch_server)
+      end
+    end
   end
 
   describe ".will_be_obsoleted_by" do
@@ -104,15 +119,15 @@ describe Y2Packager::ProductUpgrade do
   end
 
   describe ".obsolete_upgrades" do
+    before do
+      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+        .and_return(suma_products)
+    end
+
     # upgrade from SLE12-SP3 + SUMA Proxy 3.2 + SUMA Branch Server 3.2
     # to SLE15-SP1 (actually to SUMA Branch Server 4.0)
-    context "SUSE Manager 3.2 upgrade" do
-      let(:suma_products) { YAML.load_file(File.join(__dir__, "../data/zypp/products_update_suma.yml")) }
-
-      before do
-        allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
-          .and_return(suma_products)
-      end
+    context "SUSE Manager Branch Retail Server 3.2 upgrade" do
+      let(:suma_products) { YAML.load_file(File.join(__dir__, "../data/zypp/products_update_suma_branch_server.yml")) }
 
       it "returns obsoleted SLES + SUMA Proxy product" do
         allow(Yast::Pkg).to receive(:ResolvableProperties).with("SUSE-Manager-Proxy", :product, "")
@@ -128,6 +143,18 @@ describe Y2Packager::ProductUpgrade do
         proxy_products.find { |p| p["status"] == :removed }["transact_by"] = :user
         allow(Yast::Pkg).to receive(:ResolvableProperties).with("SUSE-Manager-Proxy", :product, "")
           .and_return(proxy_products)
+        allow(Yast::Pkg).to receive(:ResolvableProperties).with("SLES", :product, "")
+          .and_return(suma_products.select { |p| p["name"] == "SLES" })
+        expect(described_class.obsolete_upgrades).to eq([])
+      end
+    end
+
+    context "SUSE Manager Proxy 3.2 upgrade" do
+      let(:suma_products) { YAML.load_file(File.join(__dir__, "../data/zypp/products_update_suma_proxy.yml")) }
+
+      it "returns empty list" do
+        allow(Yast::Pkg).to receive(:ResolvableProperties).with("SUSE-Manager-Proxy", :product, "")
+          .and_return(suma_products.select { |p| p["name"] == "SUSE-Manager-Proxy" })
         allow(Yast::Pkg).to receive(:ResolvableProperties).with("SLES", :product, "")
           .and_return(suma_products.select { |p| p["name"] == "SLES" })
         expect(described_class.obsolete_upgrades).to eq([])
