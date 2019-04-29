@@ -55,7 +55,7 @@ fi
 mount_ok=1
 check_mount_ok()
 {
-    if test -z `ls $1 | head -n1`; then
+    if test -z `ls $1 2>/dev/null | head -n1`; then
         echo "The $1 filesystem is not mounted."
         mount_ok=0
     fi
