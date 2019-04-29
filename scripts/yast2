@@ -52,7 +52,7 @@ fi
 
 
 # check that system directories are non-empty - bnc #450643
-mount_ok=1;
+mount_ok=1
 check_mount_ok()
 {
     if test -z `ls $1 | head -n1`; then
@@ -64,8 +64,8 @@ check_mount_ok /proc
 check_mount_ok /sys
 check_mount_ok /dev
 if test $mount_ok -eq 0 ; then
-    echo "If you are running in a chroot environment, bind-mount missing filesystems.";
-    exit 1;
+    echo "If you are running in a chroot environment, bind-mount missing filesystems."
+    exit 1
 fi
 
 exit_code=0
