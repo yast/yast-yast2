@@ -10,14 +10,16 @@ TESTS = \
   signature_check_callbacks_test.rb \
   slide_show_test.rb \
   update_messages_view_test.rb \
+  y2packager/licenses_fetchers/libzypp_test.rb \
+  y2packager/licenses_fetchers/rpm_test.rb \
+  y2packager/licenses_fetchers/shared_examples.rb \
+  y2packager/licenses_handlers/libzypp_test.rb \
+  y2packager/licenses_handlers/rpm_test.rb \
   y2packager/package_test.rb \
   y2packager/product_reader_test.rb \
   y2packager/product_sorter_test.rb \
-  y2packager/licenses_fetchers/rpm_test.rb \
-  y2packager/licenses_fetchers/libzypp_test.rb \
-  y2packager/licenses_fetchers/shared_examples.rb \
-  y2packager/licenses_handlers/rpm_test.rb \
-  y2packager/licenses_handlers/libzypp_test.rb \
+  y2packager/product_test.rb \
+  y2packager/product_upgrade_test.rb \
   y2packager/release_notes_content_prefs_test.rb \
   y2packager/release_notes_fetchers/base_test.rb \
   y2packager/release_notes_fetchers/rpm_test.rb \
