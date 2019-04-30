@@ -131,11 +131,10 @@ module Y2Packager
         UPGRADE_REMOVAL_MAPPING.each_with_object([]) do |(installed_products, obsolete_products), a|
           # all products from the mapping are installed and the obsolete one
           # is removed by the solver (i.e. not removed by YaST or user)
-          if (installed_products - system_installed).empty? &&
-            obsolete_products.all? { |p| removed_by_solver?(p) }
+          next unless (installed_products - system_installed).empty? &&
+              obsolete_products.all? { |p| removed_by_solver?(p) }
 
-            a.concat(obsolete_products)
-          end
+          a.concat(obsolete_products)
         end
       end
 
