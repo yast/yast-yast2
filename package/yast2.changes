@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr 30 08:52:35 UTC 2019 - mvidner@suse.com
+
+- Stop "ls: write error: Broken pipe" messages (bsc#1128032)
+- 3.1.221
+
+-------------------------------------------------------------------
 Mon Mar 12 16:20:02 UTC 2018 - jreidinger@suse.com
 
 - Do not truncate kernel parameter when it contains '='
