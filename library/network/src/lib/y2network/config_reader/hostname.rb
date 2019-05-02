@@ -27,13 +27,15 @@ Yast.import "String"
 
 module Y2Network
   module ConfigReader
+    # This class is reponsible of reading the current Hostname or the one
+    # proposed / configured through linuxrc in case of an installation.
     class Hostname
       include Yast::Logger
 
       def self.from_system
         # In installation (standard, or AutoYaST one), prefer /etc/install.inf
         # (because HOSTNAME comes with netcfg.rpm already, #144687)
-        if (Yast::Mode.installation || Yast::Mode.autoinst) && File.exists?("/etc/install.inf")
+        if (Yast::Mode.installation || Yast::Mode.autoinst) && File.exist?("/etc/install.inf")
           fqhostname = read_hostname_from_install_inf
         end
 
@@ -53,7 +55,7 @@ module Y2Network
 
         # if the name is actually IP, try to resolve it (bnc#556613, bnc#435649)
         if Yast::IP.Check(install_inf_hostname)
-          fqhostname = ResolveIP(install_inf_hostname)
+          fqhostname = hosts_hostname_for(install_inf_hostname)
           log.info("Got #{fqhostname} after resolving IP from install.inf")
         else
           fqhostname = install_inf_hostname
@@ -62,11 +64,11 @@ module Y2Network
         fqhostname
       end
 
-      # Resolve IP to canonical hostname
+      # Get the canonical hostname from hosts for a given IP address
       #
       # @param [String] ip given IP address
       # @return resolved canonical hostname (FQDN) for given IP or empty string in case of failure.
-      def ResolveIP(ip)
+      def hosts_hostname_for(ip)
         getent = Yast::SCR.Execute(path(".target.bash_output"), "/usr/bin/getent hosts #{ip.shellescape}")
         exit_code = getent.fetch("exit", -1)
 
@@ -76,7 +78,7 @@ module Y2Network
           return ""
         end
 
-        GetHostnameFromGetent(getent.fetch("stdout", ""))
+        hostname_from_getent(getent.fetch("stdout", ""))
       end
 
       # Handles input as one line of getent output. Returns first hostname found
@@ -84,7 +86,7 @@ module Y2Network
       #
       # @param [String] line in /etc/hosts format
       # @return canonical hostname from given line
-      def GetHostnameFromGetent(line)
+      def hostname_from_getent(line)
         #  line is expected same format as is used in /etc/hosts without additional
         #  comments (getent removes comments from the end).
         #

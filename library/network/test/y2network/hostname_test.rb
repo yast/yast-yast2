@@ -22,7 +22,7 @@ require_relative "../test_helper"
 require "y2network/hostname"
 
 describe Y2Network::Hostname do
-  let(:hostname) { described_class.new(fqdn: "server.example.org")}
+  let(:hostname) { described_class.new(fqdn: "server.example.org") }
 
   describe "#short" do
     it "returns the short part of the hostname" do
@@ -42,4 +42,3 @@ describe Y2Network::Hostname do
     end
   end
 end
-
