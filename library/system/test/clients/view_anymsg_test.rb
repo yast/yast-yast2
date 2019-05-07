@@ -24,8 +24,6 @@ describe Yast::ViewAnymsgClient do
       # WFM mock
       allow(Yast::WFM).to receive(:Args).and_return([])
       allow(Yast::WFM).to receive(:CallFunction)
-
-      allow(Yast::FileUtils).to receive(:GetSize).and_return(1)
     end
 
     it "returns true" do
@@ -178,15 +176,15 @@ describe Yast::ViewAnymsgClient do
       end
     end
 
-    context "log file does not exist or is empty" do
+    context "log file does not exist" do
       before do
-        allow(Yast::FileUtils).to receive(:GetSize).and_return(-1)
         allow(Yast::Package).to receive(:Install).and_return(true)
         allow(Yast2::Popup).to receive(:show).and_return(:yes)
+        allow_any_instance_of(Yast::ViewAnymsgClient).to receive(:file_state).and_return(:missing)
       end
 
-      it "ask if open journal instead" do
-        expect(Yast2::Popup).to receive(:show).and_return(:no)
+      it "ask to open journal instead" do
+        expect(Yast2::Popup).to receive(:show).with(/does not exist/, any_args)
 
         subject.main
       end
@@ -197,8 +195,47 @@ describe Yast::ViewAnymsgClient do
         subject.main
       end
 
-      it "switches to yast2-journal module if user want and all goes well" do
+      it "switches to yast2-journal module if user wants it and all goes well" do
         expect(Yast::WFM).to receive(:CallFunction).with("journal")
+
+        subject.main
+      end
+    end
+
+    context "log file is empty" do
+      before do
+        allow(Yast2::Popup).to receive(:show).and_return(:yes)
+        allow_any_instance_of(Yast::ViewAnymsgClient).to receive(:file_state).and_return(:empty)
+      end
+
+      it "inform that log is empty" do
+        expect(Yast2::Popup).to receive(:show).with(/empty/)
+
+        subject.main
+      end
+    end
+
+    context "log file is not a regular file" do
+      before do
+        allow(Yast2::Popup).to receive(:show).and_return(:yes)
+        allow_any_instance_of(Yast::ViewAnymsgClient).to receive(:file_state).and_return(:no_file)
+      end
+
+      it "inform that log is not a file" do
+        expect(Yast2::Popup).to receive(:show).with(/not a file/)
+
+        subject.main
+      end
+    end
+
+    context "no permissions for log file" do
+      before do
+        allow(Yast2::Popup).to receive(:show).and_return(:yes)
+        allow_any_instance_of(Yast::ViewAnymsgClient).to receive(:file_state).and_return(:no_access)
+      end
+
+      it "inform that log is not readable" do
+        expect(Yast2::Popup).to receive(:show).with(/not have permission/)
 
         subject.main
       end
