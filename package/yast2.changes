@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May  7 13:10:46 UTC 2019 - Steffen Winterfeldt <snwint@suse.com>
+
+- give more verbose feedback in 'view_anymsg' client (bsc#1132658)
+- 4.2.2
+
+-------------------------------------------------------------------
 Fri Apr 26 08:38:39 UTC 2019 - Ladislav Slezák <lslezak@suse.cz>
 
 - Uninstall the "SUSE-Manager-Proxy" product when upgrading from
