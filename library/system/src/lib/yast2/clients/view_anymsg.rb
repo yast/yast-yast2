@@ -111,22 +111,63 @@ module Yast
 
   private
 
+    # Helper method to assess file status.
+    #
+    # Return one of :ok, :empty, :missing, :no_file, :no_access.
+    #
+    def file_state(file)
+      begin
+        File.stat(file)
+      rescue Errno::EACCES
+        return :no_access
+      rescue Errno::ENOENT
+        return :missing
+      rescue
+        nil
+      end
+      return :no_access if !File.readable?(file)
+      return :no_file if !File.file?(file)
+      return :empty if !File.size?(file)
+      :ok
+    end
+
+    # Decide whether to read the log file or to start the 'journal' module instead.
+    #
+    # If the log can't be read, show some popups indicating the cause.
+    #
+    # Return true if the 'journal' module should be started.
+    #
     def start_journal?
-      return false unless [nil, 0, -1].include?(FileUtils.GetSize(selected_filename))
+      case file_state(selected_filename)
+      when :ok then
+        false
+      when :empty then
+        Yast2::Popup.show(_("The selected log file is empty."))
+        false
+      when :no_file then
+        Yast2::Popup.show(_("The selected item is not a file."))
+        false
+      when :no_access then
+        Yast2::Popup.show(
+          _(
+            "You do not have permission to read the selected log file.\n\n" \
+            "Run this YaST module as user 'root'."
+          )
+        )
+        false
+      when :missing then
+        res = Yast2::Popup.show(
+          _(
+            "The selected log file does not exist.\n\n" \
+            "Many system components log into the systemd journal.\n" \
+            "Do you want to start the YaST module for reading the systemd journal?"
+          ),
+          buttons: :yes_no,
+          focus:   :no
+        ) == :yes
 
-      res = Yast2::Popup.show(
-        _(
-          "Selected log file does not exist or is empty.\n" \
-          "Many system components now log into systemd journal.\n" \
-          "Do you want to start YaST module for systemd journal?"
-        ),
-        buttons: :yes_no,
-        focus:   :no
-      ) == :yes
-
-      return false unless res
-
-      Package.Install("yast2-journal")
+        res && Package.Install("yast2-journal")
+      end
     end
 
     def dialog_content
