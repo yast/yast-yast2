@@ -279,22 +279,25 @@ module Yast
       VBox(
         Id(:WizardDialog),
         ReplacePoint(Id(:topmenu), Empty()),
-        HBox(
-          HSpacing(1),
-          VBox(
-            VSpacing(0.2),
-            HBox(
-              # translators: dialog title to appear before any content is initialized
-              Heading(Id(:title), Opt(:hstretch), _("Initializing ...")),
-              HStretch(),
-              ReplacePoint(Id(:relnotes_rp), Empty())
+        VWeight(
+          1, # Layout trick: Lower layout priority with weight
+          HBox(
+            HSpacing(1),
+            VBox(
+              VSpacing(0.2),
+              HBox(
+                # translators: dialog title to appear before any content is initialized
+                Heading(Id(:title), Opt(:hstretch), _("Initializing ...")),
+                HStretch(),
+                ReplacePoint(Id(:relnotes_rp), Empty())
+              ),
+              VWeight(
+                1, # Layout trick: Lower layout priority with weight
+                HVCenter(Opt(:hvstretch), ReplacePoint(Id(:contents), Empty()))
+              )
             ),
-            VWeight(
-              1, # Layout trick: Lower layout priority with weight
-              HVCenter(Opt(:hvstretch), ReplacePoint(Id(:contents), Empty()))
-            )
-          ),
-          HSpacing(1)
+            HSpacing(1)
+          )
         ),
         ReplacePoint(Id(:rep_button_box), button_box),
         VSpacing(0.2)
