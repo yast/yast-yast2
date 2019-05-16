@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu May 16 09:01:59 UTC 2019 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Make sure the wizard buttons always remain visible in NCurses
+  (bsc#1133367)
+- 4.2.3
+
+-------------------------------------------------------------------
 Tue May  7 13:10:46 UTC 2019 - Steffen Winterfeldt <snwint@suse.com>
 
 - give more verbose feedback in 'view_anymsg' client (bsc#1132658)
