@@ -30,6 +30,7 @@
 #		Lukas Ocilka <locilka@suse.cz>
 #
 require "yast"
+require "yast2/control_log_dir_rotator"
 
 module Yast
   class ProductControlClass < Module
@@ -294,6 +295,15 @@ module Yast
       @productControl = XML.XMLToYCPFile(controlfile)
 
       return false if @productControl.nil?
+
+      # log the read control.xml
+
+      control_log_dir_rotator = Yast2::ControlLogDirRotator.new
+      control_log_dir_rotator.prepare
+      control_log_dir_rotator.copy(controlfile, "control.xml")
+
+      control_log_dir_rotator.write("README", "The first number in the filename is the merge "\
+                                              "counter, the second number\nis the add-on counter.\n")
 
       @workflows = Ops.get_list(@productControl, "workflows", [])
       @proposals = Ops.get_list(@productControl, "proposals", [])

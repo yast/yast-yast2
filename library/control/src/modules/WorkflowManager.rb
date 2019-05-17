@@ -35,6 +35,7 @@
 # Module unifies Add-Ons and Patterns modifying the workflow.
 #
 require "yast"
+require "yast2/control_log_dir_rotator"
 
 require "packages/package_downloader"
 require "packages/package_extractor"
@@ -116,6 +117,9 @@ module Yast
       @system_workflows_prepared = false
 
       @control_files_dir = "additional-control-files"
+
+      # Merge counter used for logging
+      @merge_counter = 0
 
       # base product that got its workflow merged
       # @see #merge_product_workflow
@@ -1428,6 +1432,9 @@ module Yast
 
       already_merged_workflows = []
 
+      @merge_counter += 1
+      add_on_counter = 1
+
       Builtins.foreach(@used_workflows) do |one_workflow|
         # make sure that every workflow is merged only once
         # bugzilla #332436
@@ -1446,6 +1453,13 @@ module Yast
         else
           Builtins.y2error("Workflow ident is: %1", workflow_ident)
         end
+
+        # log the installation.xml being merged
+
+        control_log_dir_rotator = Yast2::ControlLogDirRotator.new
+        control_log_dir_rotator.copy(one_workflow, "/#{format("%02d", @merge_counter)}-#{format("%02d", add_on_counter)}-installation.xml")
+        add_on_counter += 1
+
         IncorporateControlFileOptions(one_workflow)
         if !IntegrateWorkflow(one_workflow)
           Builtins.y2error("Merging '%1' failed!", one_workflow)

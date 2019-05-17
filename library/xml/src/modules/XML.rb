@@ -102,7 +102,7 @@ module Yast
     def YCPToXMLFile(docType, contents, outputPath)
       contents = deep_copy(contents)
       if !Builtins.haskey(@docs, docType)
-        Builtins.y2error("doc type %1 undecalred...", docType)
+        Builtins.y2error("doc type %1 undeclared...", docType)
         return false
       end
       docSettings = Ops.get_map(@docs, docType, {})
