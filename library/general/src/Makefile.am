@@ -95,7 +95,9 @@ ylibyast2dir = "${yast2dir}/lib/yast2"
 ylibyast2_DATA = \
   lib/yast2/feedback.rb \
   lib/yast2/popup.rb \
-  lib/yast2/popup_rspec.rb
+  lib/yast2/popup_rspec.rb \
+  lib/yast2/control_log_dir_rotator.rb \
+  lib/yast2/log_dir_rotator.rb
 
 EXTRA_DIST = $(module_DATA) $(client_DATA) $(scrconf_DATA) $(agent_SCRIPTS) $(ydata_DATA) $(fillup_DATA) $(ylibinstallation_DATA) $(ylibui_DATA) $(ylibyast2_DATA)
 
