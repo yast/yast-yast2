@@ -40,6 +40,9 @@ module Yast2
   #
   # System error are logged and no exception is raised by the functions.
   #
+  # In case Mode.test is set the fuction do not perform any
+  # work. Otherwise legacy testsuites may fail.
+  #
   # TODO This class is based on dump_manager.rb and could be used there.
   class LogDirRotator
     include Yast::Logger
