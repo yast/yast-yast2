@@ -91,8 +91,8 @@ module Yast2
       end
     end
 
-    # Return a suitable name for the devicegraph log directory
-    # depending on the YaST mode (installation / installed system).
+    # Return a suitable name for the log directory depending on the
+    # YaST mode (installation / installed system).
     #
     # @return [String] directory name with full path
     def log_dir
@@ -146,8 +146,9 @@ module Yast2
       end
     end
 
-    # Return the old devicegraph log directories for the installed system
-    # currently found in base_dir: ["#{NAME}", "#{NAME}-01", "#{NAME}-02", ...]
+    # Return the old log directories for the installed system
+    # currently found in base_dir: ["#{NAME}", "#{NAME}-01",
+    # "#{NAME}-02", ...]
     #
     # @return [Array<String>] directory names without path
     def old_log_dirs
