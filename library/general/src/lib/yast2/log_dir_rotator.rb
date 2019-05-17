@@ -85,7 +85,7 @@ module Yast2
     def write(dest, content)
       return if Yast::Mode.test
       begin
-        File.open(log_dir + "/" + dest, "w") { |file| file.write(content) }
+        File.write(log_dir + "/" + dest, content)
       rescue SystemCallError => e
         log.error e.to_s
       end
