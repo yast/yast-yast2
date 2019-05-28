@@ -52,13 +52,20 @@ fi
 
 
 # check that system directories are non-empty - bnc #450643
-mount_ok=1;
-test -z `ls /proc |head -n1` && echo "The /proc filesystem is not mounted." && mount_ok=0;
-test -z `ls /sys |head -n1` && echo "The /sys filesystem is not mounted." && mount_ok=0;
-test -z `ls /dev |head -n1` && echo "The /dev filesystem is not mounted." && mount_ok=0;
-if test $mount_ok -eq 0 -a -z "$TESTING_YAST2" ; then
-    echo "If you are running in a chroot environment, bind-mount missing filesystems.";
-    exit 1;
+mount_ok=1
+check_mount_ok()
+{
+    if test -z `ls $1 2>/dev/null | head -n1`; then
+        echo "The $1 filesystem is not mounted."
+        mount_ok=0
+    fi
+}
+check_mount_ok /proc
+check_mount_ok /sys
+check_mount_ok /dev
+if test $mount_ok -eq 0 -a -z "$TESTING_YAST2"; then
+    echo "If you are running in a chroot environment, bind-mount missing filesystems."
+    exit 1
 fi
 
 exit_code=0
