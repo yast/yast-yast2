@@ -55,12 +55,13 @@ describe Yast::FirewalldWrapper do
   describe "#add_port" do
     before do
       allow(external).to receive(:add_port).and_return(true)
+      allow(subject).to receive(:valid_port?).and_return(true)
     end
 
     it "returns false if the port is not a port, a valid range or an alias" do
+      allow(subject).to receive(:valid_port?).and_return(false)
       expect(subject.add_port("asdasd", "TCP", "eth0")).to eq(false)
       expect(subject.add_port("8080:8070", "TCP", "eth0")).to eq(false)
-      expect(subject.add_port("ssh", "TCP", "eth0")).to eq(true)
     end
 
     it "returns false if the protocol is not supported" do
@@ -88,12 +89,13 @@ describe Yast::FirewalldWrapper do
   describe "#remove_port" do
     before do
       allow(external).to receive(:remove_port).and_return(true)
+      allow(subject).to receive(:valid_port?).and_return(true)
     end
 
     it "returns false if the port is not a port, a valid range or an alias" do
+      allow(subject).to receive(:valid_port?).and_return(false)
       expect(subject.remove_port("asdasd", "TCP", "eth0")).to eq(false)
       expect(subject.remove_port("8080:8070", "TCP", "eth0")).to eq(false)
-      expect(subject.remove_port("ssh", "TCP", "eth0")).to eq(true)
     end
 
     it "returns false if the protocol is not supported" do
