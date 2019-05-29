@@ -23,7 +23,10 @@ def mock_ppp
     .and_return "512\n"
 end
 
-# FIXME: does not work in osc:chroot
+# FIXME: find why it does not work. It looks like some problem with SCR agent
+# registration as .network.section is empty
+# Y2DEBUG mention "Agent registration: /home/abuild/rpmbuild/BUILD/yast2-4.2.4/library/network/src/scrconf last changed at Thu Jan  1 00:00:00 1970"
+# so maybe related with tar without dates
 xdescribe Yast::NetworkInterfaces do
 
   subject { Yast::NetworkInterfaces }
