@@ -21,23 +21,19 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-#
-# Package:	Firewall Services, Ports Aliases.
-# Summary:	Definition of Supported Firewall Services and Port Aliases.
-# Authors:	Markos Chandras <mchandras@suse.de>
-#
-# Global Definition of Firewall Services
-# Manages services for SuSEFirewall2 and FirewallD
 
 require "yast"
 
 module Yast
+  # Service not found exception
   class SuSEFirewalServiceNotFound < StandardError
     def initialize(message)
       super message
     end
   end
 
+  # Global Definition of Firewall Services
+  # Manages services for SuSEFirewall2 and FirewallD
   class SuSEFirewallServicesClass < Module
     include Yast::Logger
 

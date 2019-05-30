@@ -147,8 +147,6 @@ rake install DESTDIR="%{buildroot}"
 # symlink the yardoc duplicates, saves over 2MB in installed system
 # (the RPM package size is decreased just by few kilobytes
 # because of the compression)
-# remove local .rubocop
-rm %{buildroot}/usr/share/YaST2/lib/network/.rubocop.yml
 %fdupes -s %{buildroot}/%{_docdir}/yast2
 
 %post
