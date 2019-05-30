@@ -1,9 +1,8 @@
 // @configure_input@
 /**
  * File:	network.scr
- * Summary:	Agent for @IFCFG_DIR@/ifcfg-*
+ * Summary:	Agent for /etc/sysconfig/network/ifcfg-*
  * Author:	Michal Svec <msvec@suse.cz>
- * Modified:    Wenji Huang <wenji.huang@oracle.com>
  * Access:	read / write
  * See:		sysconfig.rpm
  *
@@ -15,13 +14,13 @@
  *
  * $Id$
  *
- * <p>Reads/writes <tt>@IFCFG_DIR@/ifcfg-*</tt>. For more details
+ * <p>Reads/writes <tt>/etc/sysconfig/network/ifcfg-*</tt>. For more details
  * see its own documentation.</p>
  */
 .network
 
 `ag_ini(
-    `IniAgent( [ "@IFCFG_DIR@/ifcfg-*" ],
+    `IniAgent( [ "/etc/sysconfig/network/ifcfg-*" ],
 	$[
 	    /* values at the top level, allow comments after value */
 	    "options"	: [ "global_values", "comments_last", "shell_quoted_value" ],
@@ -33,7 +32,7 @@
 	    ],
 	    /* matching rules */
 	    "rewrite"	: [
-		[ "@IFCFG_DIR@/ifcfg-(.*)", "@IFCFG_DIR@/ifcfg-%s" ],
+		[ "/etc/sysconfig/network/ifcfg-(.*)", "/etc/sysconfig/network/ifcfg-%s" ],
 	    ],
 	]
 ))
