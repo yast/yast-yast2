@@ -1,6 +1,0 @@
-Dump	----------------------------------------
-Return	nil
-Return	
-Return	ABC=213 DEF=324
-Return	 ABC=213  DEF=324 
-Return	ABC=213 DEF=324 FTPPASSWORD=********

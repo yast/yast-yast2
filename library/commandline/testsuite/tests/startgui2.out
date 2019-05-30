@@ -1,4 +1,0 @@
-Write	.dev.tty.prompt "YaST2 lan> " true
-Return	true
-Return	false
-Return	false

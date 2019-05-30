@@ -29,6 +29,8 @@ Source1:        yast2-rpmlintrc
 BuildRequires:  fdupes
 # Needed for tests
 BuildRequires:  grep
+# for some system directories
+BuildRequires:  filesystem
 BuildRequires:  perl-XML-Writer
 # for defining abstract methods in libraries
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:abstract_method)
@@ -45,6 +47,7 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:simpleidn)
 BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  yast2-pkg-bindings >= 2.20.3
+BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
 # To have Yast::WFM.scr_root
 BuildRequires:  yast2-ruby-bindings >= 3.2.8
 BuildRequires:  yast2-testsuite
@@ -115,14 +118,14 @@ installation with YaST2
 %prep
 %setup -q
 
+%check
+rake test:unit
+
 %build
-%yast_build
 
 # removed explicit adding of translations to group desktop files, since it is covered by the general call (they are in a subdirectory) and it caused build fail
 
 %install
-%yast_install
-
 mkdir -p %{buildroot}%{yast_clientdir}
 mkdir -p %{buildroot}%{yast_desktopdir}
 mkdir -p %{buildroot}%{yast_imagedir}
@@ -138,6 +141,8 @@ mkdir -p %{buildroot}%{yast_vardir}/hooks
 mkdir -p %{buildroot}%{yast_schemadir}/control/rnc
 mkdir -p %{buildroot}%{yast_schemadir}/autoyast/rnc
 mkdir -p %{buildroot}%{_sysconfdir}/YaST2
+
+rake install DESTDIR="%{buildroot}"
 
 # symlink the yardoc duplicates, saves over 2MB in installed system
 # (the RPM package size is decreased just by few kilobytes
@@ -190,6 +195,9 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 # documentation (not included in devel subpackage)
 %doc %dir %{yast_docdir}
 %license %{yast_docdir}/COPYING
+%doc %{yast_docdir}/CONTRIBUTING.md
+%doc %{yast_docdir}/README.md
+
 %{_mandir}/*/*
 %doc %{yast_vardir}/hooks/README.md
 

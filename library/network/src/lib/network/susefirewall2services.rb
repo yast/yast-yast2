@@ -21,19 +21,14 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-#
-# Package:	Firewall Services, Ports Aliases.
-# Summary:	Definition of Supported Firewall Services and Port Aliases.
-# Authors:	Lukas Ocilka <locilka@suse.cz>
-#
-# Global Definition of Firewall Services
-# Defined using TCP, UDP and RPC ports and IP protocols and Broadcast UDP
-# ports. Results are cached, so repeating requests are answered faster.
 
 require "yast"
 require "network/susefirewallservices"
 
 module Yast
+  # Global Definition of Firewall Services
+  # Defined using TCP, UDP and RPC ports and IP protocols and Broadcast UDP
+  # ports. Results are cached, so repeating requests are answered faster.
   class SuSEFirewall2ServicesClass < SuSEFirewallServicesClass
     include Yast::Logger
 

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu May 30 12:52:13 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
+
+- Drop old testsuite
+- Convert from autotools to rake based installation
+
+-------------------------------------------------------------------
 Fri May 17 11:17:17 CEST 2019 - aschnell@suse.com
 
 - create log directory with control.xml and merged installation.xml

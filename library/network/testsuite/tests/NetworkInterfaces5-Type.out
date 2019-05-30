@@ -1,6 +1,0 @@
-Read	.target.tmpdir nil
-Log	Failed to set temporary directory: nil
-Dump	NetworkInterfaces::GetTypeFromIfcfg
-Return	true
-Return	true
-Return	true

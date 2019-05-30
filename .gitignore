@@ -37,12 +37,8 @@ library/*/test/**/*.trs
 /test-driver
 coverage
 
-doc/yast.8
-
-
 # Generated
 /library/general/src/modules/Version.rb
-library/network/src/scrconf/network.scr
 missing
 library/packages/src/packages
 /.yardoc
@@ -58,4 +54,3 @@ home:*:*
 YaST:Head
 *.sw?
 library/modules/Version.ycp
-library/network/agents/network.scr
