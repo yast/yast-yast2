@@ -144,14 +144,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 
 rake install DESTDIR="%{buildroot}"
 
-# symlink to call yast in ncurses
-mkdir -p %{buildroot}%{_sbindir}
-ln -snf yast2 %{buildroot}%{_sbindir}/yast
-# backward compatibility
-mkdir -p %{buildroot}/sbin
-ln -snf yast2 %{buildroot}/sbin/yast2
-ln -snf yast2 %{buildroot}/sbin/yast
-ln -snf yast2.8 %{buildroot}/usr/share/man/man8/yast.8
 # symlink the yardoc duplicates, saves over 2MB in installed system
 # (the RPM package size is decreased just by few kilobytes
 # because of the compression)
