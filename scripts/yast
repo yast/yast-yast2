@@ -1,1 +1,1 @@
-exec -a yast /usr/sbin/yast2
+yast2
