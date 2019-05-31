@@ -2439,7 +2439,6 @@ module Yast
         if !Progress.IsRunning
           Builtins.y2milestone("Opening Wizard window...")
           Wizard.CreateDialog
-          Wizard.SetDesktopIcon("sw_single")
 
           opened = true
         end

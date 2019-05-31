@@ -86,10 +86,6 @@ module Yast
       # Directory for desktop files
       @desktopdir = "/usr/share/applications/YaST2"
 
-      # Base directory for icons
-      #
-      @icondir = Ops.add(@themedir, "/current/icons/")
-
       # Directory for temporary files
       # Must be updated with ResetTmpDir() call after the SCR change!
       @tmpdir = "/tmp"
@@ -147,7 +143,6 @@ module Yast
     publish variable: :moduledir, type: "string"
     publish variable: :scrconfdir, type: "string"
     publish variable: :desktopdir, type: "string"
-    publish variable: :icondir, type: "string"
     publish variable: :tmpdir, type: "string"
     publish variable: :custom_workflow_dir, type: "string"
     publish function: :ResetTmpDir, type: "void ()"

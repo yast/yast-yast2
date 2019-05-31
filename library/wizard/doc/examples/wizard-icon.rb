@@ -45,8 +45,6 @@ module Yast
         true
       ) # have next button
 
-      Wizard.SetTitleIcon("button_active.png")
-
       Wizard.UserInput
 
       nil
