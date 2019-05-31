@@ -389,7 +389,7 @@ module Yast
           path(".yast2.desktop1.v.\"Desktop Entry\""),
           "GenericName"
         ),
-        "Comment" => ReadLocalizedKey(
+        "Comment"     => ReadLocalizedKey(
           Ops.add(file, ".desktop"),
           path(".yast2.desktop1.v.\"Desktop Entry\""),
           "Comment"
