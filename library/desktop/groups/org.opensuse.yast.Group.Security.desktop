@@ -12,9 +12,6 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-security-group
 
 Name=Security and Users
-<<<<<<< HEAD
 GenericName=Security and Users
-=======
->>>>>>> Change desktop name
 
 Exec=/sbin/yast2
