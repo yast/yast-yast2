@@ -12,5 +12,6 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-hardware-group
 
 Name=Hardware
+GenericName=Hardware
 
 Exec=/sbin/yast2

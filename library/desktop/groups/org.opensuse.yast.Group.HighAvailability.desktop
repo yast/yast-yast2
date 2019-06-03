@@ -12,5 +12,6 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-high_availability-group
 
 Name=High Availability
+GenericName=High Availability
 
 Exec=/sbin/yast2

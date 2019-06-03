@@ -12,5 +12,6 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-network-group
 
 Name=Network Services
+GenericName=Network Services
 
 Exec=/sbin/yast2

@@ -12,5 +12,6 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-security-group
 
 Name=Security and Users
+GenericName=Security and Users
 
 Exec=/sbin/yast2

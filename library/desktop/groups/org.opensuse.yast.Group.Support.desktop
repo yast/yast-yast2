@@ -12,5 +12,6 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-support-group
 
 Name=Support
+GenericName=Support
 
 Exec=/sbin/yast2

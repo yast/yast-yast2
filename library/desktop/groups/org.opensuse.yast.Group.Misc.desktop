@@ -12,5 +12,6 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-misc-group
 
 Name=Miscellaneous
+GenericName=Miscellaneous
 
 Exec=/sbin/yast2
