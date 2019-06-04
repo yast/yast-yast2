@@ -147,6 +147,8 @@ module Yast
     publish variable: :moduledir, type: "string"
     publish variable: :scrconfdir, type: "string"
     publish variable: :desktopdir, type: "string"
+    # @deprecated Use just a plain icon name without suffix,
+    # the UI will automatically find the best suitable icon.
     publish variable: :icondir, type: "string"
     publish variable: :tmpdir, type: "string"
     publish variable: :custom_workflow_dir, type: "string"
