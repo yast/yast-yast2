@@ -759,7 +759,6 @@ module Yast
       ) # has_back, has_next
 
       RebuildDialog()
-      Wizard.SetTitleIcon("yast-sw_single")
 
       # reset abort status
       SetUserAbort(false)

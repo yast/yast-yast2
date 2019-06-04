@@ -12,19 +12,21 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
 
 Name:           yast2
-Version:        4.2.4
+Version:        4.2.5
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
 Group:          System/YaST
 Url:            https://github.com/yast/yast-yast2
+
 Source0:        %{name}-%{version}.tar.bz2
 Source1:        yast2-rpmlintrc
+
 # for symlinking yardoc duplicates
 BuildRequires:  fdupes
 # Needed for tests
@@ -90,10 +92,16 @@ Requires:       yast2-ycp-ui-bindings >= 3.2.0
 Requires:       yui_backend
 # scripts for collecting YAST logs
 Requires:       yast2-logs
+# for the PackageExtractor class, just make sure they are present,
+# these should be present even in a very minimal installation
+Requires:       cpio
+Requires:       rpm
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq
+
 # xdg-su in .desktops
 Recommends:     xdg-utils
+
 # SrvStatusComponent moved to yast2.rpm
 Conflicts:      yast2-dns-server < 3.1.17
 # InstError
@@ -104,22 +112,29 @@ Conflicts:      yast2-installation < 4.1.8
 Conflicts:      yast2-mail < 3.1.7
 # Older packager use removed API
 Conflicts:      yast2-packager < 4.0.33
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
+
 Obsoletes:      yast2-devel-doc
-# for the PackageExtractor class, just make sure they are present,
-# these should be present even in a very minimal installation
-Requires:       cpio
-Requires:       rpm
 
 %description
 This package contains scripts and data needed for SUSE Linux
 installation with YaST2
 
+%package logs
+Summary:        Scripts for handling YAST logs
+Group:          System/YaST
+
+Provides:       yast2:/usr/sbin/save_y2logs
+
+Requires:       tar
+
+%description logs
+This package contains scripts for handling YAST logs.
+
 %prep
 %setup -q
 
 %check
-rake test:unit
+%yast_check
 
 %build
 
@@ -142,7 +157,7 @@ mkdir -p %{buildroot}%{yast_schemadir}/control/rnc
 mkdir -p %{buildroot}%{yast_schemadir}/autoyast/rnc
 mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 
-rake install DESTDIR="%{buildroot}"
+%yast_install
 
 # symlink the yardoc duplicates, saves over 2MB in installed system
 # (the RPM package size is decreased just by few kilobytes
@@ -153,7 +168,6 @@ rake install DESTDIR="%{buildroot}"
 %{fillup_only -n yast2}
 
 %files
-%defattr(-,root,root)
 
 # basic directory structure
 
@@ -220,19 +234,7 @@ rake install DESTDIR="%{buildroot}"
 # icons
 %{yast_icondir}
 
-%package logs
-Summary:        Scripts for handling YAST logs
-Group:          System/YaST
-
-Provides:       yast2:/usr/sbin/save_y2logs
-
-Requires:       tar
-
-%description logs
-This package contains scripts for handling YAST logs.
-
 %files logs
-%defattr(-,root,root)
 /usr/sbin/save_y2logs
 
 %changelog

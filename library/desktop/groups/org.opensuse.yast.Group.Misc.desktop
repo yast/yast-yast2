@@ -5,12 +5,13 @@ Categories=Qt;X-SuSE-YaST;
 X-KDE-ModuleType=Library
 X-KDE-HasReadOnlyMode=true
 
-X-SuSE-YaST-Group=Hardware
-X-SuSE-YaST-SortKey=20
+X-SuSE-YaST-Group=Misc
+X-SuSE-YaST-SortKey=99
 
 OnlyShowIn=X-SuSE-YaST;
-Icon=yast-hardware-group
+Icon=yast-misc-group
 
-Name=Hardware
+Name=Miscellaneous
+GenericName=Miscellaneous
 
 Exec=/sbin/yast2

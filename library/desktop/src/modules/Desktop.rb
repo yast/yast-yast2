@@ -65,7 +65,7 @@ module Yast
     end
 
     def ReadLocalizedKey(fname, keypath, key)
-      if key != "Name" && key != "GenericName"
+      if key != "Name" && key != "GenericName" && key != "Comment"
         return Convert.to_string(SCR.Read(Builtins.add(keypath, key)))
       end
 
@@ -160,6 +160,7 @@ module Yast
         )
         Ops.set(filemap, "Hidden", SCR.Read(Ops.add(filepath, "Hidden")))
         Ops.set(filemap, "Name", ReadLocalizedKey(filename, filepath, "Name"))
+        Ops.set(filemap, "GenericName", ReadLocalizedKey(filename, filepath, "GenericName"))
         Ops.set(filemap, "modules", [])
         Ops.set(
           filemap,
@@ -254,12 +255,12 @@ module Yast
           Ops.get_string(
             @Modules,
             [x, "X-SuSE-YaST-SortKey"],
-            Ops.get_string(@Modules, [x, "Name"], "")
+            Ops.get_string(@Modules, [x, "GenericName"], "")
           ),
           Ops.get_string(
             @Modules,
             [y, "X-SuSE-YaST-SortKey"],
-            Ops.get_string(@Modules, [y, "Name"], "")
+            Ops.get_string(@Modules, [y, "GenericName"], "")
           )
         )
       end
@@ -269,7 +270,7 @@ module Yast
             Ops.get_string(@Modules, [m, "Hidden"], "false") != "true"
           l = Builtins.add(
             l,
-            Item(Id(m), Ops.get_string(@Modules, [m, "Name"], "???"))
+            Item(Id(m), Ops.get_string(@Modules, [m, "GenericName"], "???"))
           )
         end
       end
@@ -387,6 +388,11 @@ module Yast
           Ops.add(file, ".desktop"),
           path(".yast2.desktop1.v.\"Desktop Entry\""),
           "GenericName"
+        ),
+        "Comment"     => ReadLocalizedKey(
+          Ops.add(file, ".desktop"),
+          path(".yast2.desktop1.v.\"Desktop Entry\""),
+          "Comment"
         )
       }
 

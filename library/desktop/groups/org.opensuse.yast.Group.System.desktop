@@ -12,5 +12,6 @@ OnlyShowIn=X-SuSE-YaST;
 Icon=yast-system-group
 
 Name=System
+GenericName=System
 
 Exec=/sbin/yast2

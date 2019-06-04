@@ -393,8 +393,6 @@ module Yast
         true
       ) # has_next
 
-      Wizard.SetDesktopIcon("sw_single")
-
       result = nil
       loop do
         result = Convert.to_symbol(UI.RunPkgSelection(Id(:patterns)))

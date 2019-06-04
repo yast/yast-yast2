@@ -57,8 +57,8 @@ module Yast
       DisplaySplash()
 
       @Values = [
-        "Name",
-        # not required: "GenericName",
+        "GenericName",
+        # not required: "Comment",
         "X-SuSE-YaST-Argument",
         "X-SuSE-YaST-Call",
         "X-SuSE-YaST-Group",

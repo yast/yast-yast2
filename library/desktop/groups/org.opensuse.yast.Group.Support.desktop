@@ -5,12 +5,13 @@ Categories=Qt;X-SuSE-YaST;
 X-KDE-ModuleType=Library
 X-KDE-HasReadOnlyMode=true
 
-X-SuSE-YaST-Group=Software
-X-SuSE-YaST-SortKey=10
+X-SuSE-YaST-Group=Support
+X-SuSE-YaST-SortKey=90
 
 OnlyShowIn=X-SuSE-YaST;
-Icon=yast-software-group
+Icon=yast-support-group
 
-Name=Software
+Name=Support
+GenericName=Support
 
 Exec=/sbin/yast2

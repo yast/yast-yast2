@@ -10,12 +10,16 @@ YaST control center require especially these keys:
 
 * *Type* Yast use only `application`. It is a mandatory key.
 
-* *Name* Module name like `Firewall`. Localized form is supported like
+* *Name* Used by the desktop environments, module name prefixed with YaST like
+  `YaST Firewall`. Localized form is supported like
+  `Name[pl_PL]=YaST Zapora Ogniowa`.
+
+* *GenericName* Module name like `Firewall`. Localized form is supported like
   `Name[cs_CZ]=Pekelna brana`.
 
-* *GenericName* In YaST used as description of the application purpose,
+* *Comment* In YaST used as description of the application purpose,
   e.g. Configure a firewall.  Localized form is supported like
-  `GenericName[cs_CZ]=Upravit pocet byrokratu u pekelne brany`.
+  `Comment[cs_CZ]=Upravit pocet byrokratu u pekelne brany`.
 
 * *Categories* A semicolon-separated list of categories in which the entry will
   be shown in a menu, e.g. `Qt;X-SuSE-YaST;X-SuSE-YaST-Security;` means that it

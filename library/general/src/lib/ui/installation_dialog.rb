@@ -130,7 +130,6 @@ module UI
         Yast::Wizard.CreateDialog
       end
 
-      Yast::Wizard.SetTitleIcon(title_icon) if title_icon
       Yast::Wizard.SetContents(
         dialog_title,
         dialog_content,

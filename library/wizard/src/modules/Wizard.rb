@@ -33,7 +33,6 @@ require "yast"
 module Yast
   class WizardClass < Module
     DEFAULT_ICON_NAME = "yast".freeze
-    FALLBACK_ICON_DIR = "/usr/share/icon/hicolor".freeze
 
     def main
       Yast.import "UI"
