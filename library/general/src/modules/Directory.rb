@@ -86,6 +86,10 @@ module Yast
       # Directory for desktop files
       @desktopdir = "/usr/share/applications/YaST2"
 
+      # Base directory for icons
+      #
+      @icondir = Ops.add(@themedir, "/current/icons/")
+
       # Directory for temporary files
       # Must be updated with ResetTmpDir() call after the SCR change!
       @tmpdir = "/tmp"
