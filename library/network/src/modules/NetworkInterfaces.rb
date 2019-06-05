@@ -1030,8 +1030,6 @@ module Yast
         "ib"
       ]
 
-      # ia64 specific device types
-      ia64_dev_types = ["xp"]
 
       dev_types = deep_copy(common_dev_types)
 
@@ -1042,14 +1040,6 @@ module Yast
           to:   "list <string>"
         )
       else
-        if Arch.ia64
-          dev_types = Convert.convert(
-            Builtins.merge(dev_types, ia64_dev_types),
-            from: "list",
-            to:   "list <string>"
-          )
-        end
-
         dev_types = Convert.convert(
           Builtins.merge(dev_types, s390_unknown_dev_types),
           from: "list",

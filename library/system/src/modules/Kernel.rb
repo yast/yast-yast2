@@ -325,8 +325,6 @@ module Yast
         else
           ["kernel-ppc64"]
         end
-      elsif Arch.ia64
-        @kernel_packages = ["kernel-default"]
       elsif Arch.s390
         @kernel_packages = ["kernel-default"]
         @binary = "image"
