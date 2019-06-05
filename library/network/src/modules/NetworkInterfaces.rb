@@ -151,7 +151,8 @@ module Yast
       @TypeByKeyExistence = [
         ["ETHERDEVICE", "vlan"],
         ["WIRELESS_MODE", "wlan"],
-        ["MODEM_DEVICE", "ppp"]
+        ["MODEM_DEVICE", "ppp"],
+        ["IPOIB_MODE", "ib"]
       ]
       @TypeByValueMatch = [
         ["BONDING_MASTER", "yes", "bond"],
