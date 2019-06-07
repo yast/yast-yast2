@@ -1,3 +1,4 @@
+# typed: false
 require "yast"
 require "ui/event_dispatcher"
 

@@ -1,4 +1,5 @@
 #!/usr/bin/env rspec
+# typed: false
 
 require_relative "test_helper"
 require_relative "../src/lib/yast2/system_time"

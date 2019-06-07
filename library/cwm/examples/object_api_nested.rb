@@ -1,3 +1,4 @@
+# typed: false
 # Simple example to demonstrate object API for CWM
 
 require_relative "example_helper"

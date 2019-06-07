@@ -1,3 +1,4 @@
+# typed: ignore
 # rubocop:disable all
 require "yast"
 

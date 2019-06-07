@@ -1,3 +1,4 @@
+# typed: true
 require "yast2/systemd/unit"
 require "yast2/systemd/socket_finder"
 

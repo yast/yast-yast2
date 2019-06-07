@@ -1,3 +1,4 @@
+# typed: false
 require "yast"
 require "yast2/systemd/unit"
 require "yast2/systemd/unit_prop_map"

@@ -1,3 +1,4 @@
+# typed: false
 # Simple example to demonstrate object oriented replace_point widget
 
 require_relative "example_helper"

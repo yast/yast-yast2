@@ -1,3 +1,4 @@
+# typed: false
 # This example is here to demonstrate how can be widgets easily enabled/disabled from other widgets
 
 require_relative "example_helper"

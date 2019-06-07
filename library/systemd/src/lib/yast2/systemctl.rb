@@ -1,3 +1,4 @@
+# typed: false
 require "ostruct"
 require "timeout"
 require "shellwords"

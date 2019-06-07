@@ -1,3 +1,4 @@
+# typed: false
 root_location = File.expand_path("../../../..", __FILE__)
 inc_dirs = Dir.glob("#{root_location}/library/*/src")
 

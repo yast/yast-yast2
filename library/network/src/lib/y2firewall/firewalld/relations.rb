@@ -1,3 +1,4 @@
+# typed: false
 module  Y2Firewall
   class Firewalld
     # Extends the base class with metaprogramming methods which defines some

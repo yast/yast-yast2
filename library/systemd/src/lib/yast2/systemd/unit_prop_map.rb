@@ -1,3 +1,4 @@
+# typed: false
 module Yast2
   module Systemd
     # A Unit Property Map is a plain Hash(Symbol => String).

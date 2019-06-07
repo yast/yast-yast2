@@ -1,3 +1,4 @@
+# typed: false
 require "yast"
 
 args = Yast::WFM.Args

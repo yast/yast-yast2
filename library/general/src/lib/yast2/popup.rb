@@ -1,3 +1,4 @@
+# typed: false
 require "yast"
 
 require "erb"

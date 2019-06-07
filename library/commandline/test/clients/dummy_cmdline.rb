@@ -1,3 +1,4 @@
+# typed: false
 module Yast
   class DummyCmdlineClient < Client
     def main

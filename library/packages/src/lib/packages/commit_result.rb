@@ -1,3 +1,4 @@
+# typed: true
 require "packages/update_message"
 
 module Packages

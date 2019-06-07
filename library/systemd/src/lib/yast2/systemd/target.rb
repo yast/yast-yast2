@@ -1,3 +1,4 @@
+# typed: ignore
 require "yast"
 require "yast2/systemd/unit"
 

@@ -1,3 +1,4 @@
+# typed: false
 require "yast"
 
 Yast.import "UI"

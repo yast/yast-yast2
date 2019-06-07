@@ -1,3 +1,4 @@
+# typed: true
 # YaST packages module
 module Packages
   # Represents an update message from libzypp.

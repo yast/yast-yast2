@@ -1,3 +1,4 @@
+# typed: false
 # in your specs:
 #   require "cwm/rspec"
 

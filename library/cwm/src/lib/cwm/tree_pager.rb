@@ -1,3 +1,4 @@
+# typed: false
 require "cwm/page"
 require "cwm/pager"
 require "cwm/tree"

@@ -1,3 +1,4 @@
+# typed: strong
 require "yast2/systemd/unit"
 require "yast2/systemd/unit_prop_map"
 require "yast2/systemd/unit_properties"
