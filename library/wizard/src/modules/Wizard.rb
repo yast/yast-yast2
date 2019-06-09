@@ -32,7 +32,6 @@ require "yast"
 
 module Yast
   class WizardClass < Module
-
     def main
       Yast.import "UI"
       textdomain "base"
@@ -64,7 +63,6 @@ module Yast
       # Cannot be handled by libyui for NCurses
       @relnotes_button_label = ""
       @relnotes_button_id = ""
-
     end
 
     def haveFancyUI
@@ -631,7 +629,6 @@ module Yast
 
 
       UI.OpenDialog(Opt(:wizardDialog), GenericDialog(button_box))
-
       if !help_space_contents.nil?
         UI.ReplaceWidget(Id(:helpSpace), help_space_contents)
       end
