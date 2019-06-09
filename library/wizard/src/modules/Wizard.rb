@@ -627,7 +627,6 @@ module Yast
       button_box = deep_copy(button_box)
       button_box = BackAbortNextButtonBox() if button_box.nil?
 
-
       UI.OpenDialog(Opt(:wizardDialog), GenericDialog(button_box))
       if !help_space_contents.nil?
         UI.ReplaceWidget(Id(:helpSpace), help_space_contents)
