@@ -158,6 +158,7 @@ mkdir -p %{buildroot}%{yast_schemadir}/autoyast/rnc
 mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 
 %yast_install
+%yast_metainfo
 
 # symlink the yardoc duplicates, saves over 2MB in installed system
 # (the RPM package size is decreased just by few kilobytes
@@ -173,7 +174,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 
 %dir %{yast_clientdir}
 %dir %{yast_desktopdir}
-%{yast_desktopdir}/groups
 %dir %{yast_imagedir}
 %dir %{yast_localedir}
 %dir %{yast_moduledir}
@@ -201,6 +201,10 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %{yast_ybindir}/*
 %{yast_agentdir}/ag_*
 %{_fillupdir}/sysconfig.yast2
+%{yast_desktopdir}/*
+%{_datadir}/desktop-directories/
+%{_sysconfdir}/xdg/menus
+%{yast_metainfodir}
 
 %{_datadir}/bash-completion/completions/yast2*.sh
 # configuration files
