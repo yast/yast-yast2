@@ -1158,7 +1158,7 @@ module Yast
     #	// Reads "Icon" entry from there
     #	// Sets the icon.
     #	SetDesktopIcon ("lan")
-    def SetDesktopIcon(file)
+    def SetDesktopIcon(_file)
       nil
     end
 
