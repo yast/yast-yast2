@@ -32,7 +32,6 @@ require "yast"
 
 module Yast
   class WizardClass < Module
-    DEFAULT_ICON_NAME = "yast".freeze
 
     def main
       Yast.import "UI"
@@ -66,8 +65,6 @@ module Yast
       @relnotes_button_label = ""
       @relnotes_button_id = ""
 
-      # Current icon name to set.
-      @icon_name = DEFAULT_ICON_NAME
     end
 
     def haveFancyUI
@@ -424,7 +421,6 @@ module Yast
     def OpenDialog(dialog)
       dialog = deep_copy(dialog)
 
-      set_icon
       UI.OpenDialog(Opt(:wizardDialog), dialog)
       if !@relnotes_button_id.empty?
         ShowReleaseNotesButton(@relnotes_button_label, @relnotes_button_id)
@@ -633,7 +629,7 @@ module Yast
       button_box = deep_copy(button_box)
       button_box = BackAbortNextButtonBox() if button_box.nil?
 
-      set_icon
+
       UI.OpenDialog(Opt(:wizardDialog), GenericDialog(button_box))
 
       if !help_space_contents.nil?
@@ -1152,6 +1148,8 @@ module Yast
     # Parameter file is realative to that directory without ".desktop" suffix.
     # Warning: There are no desktop files in inst-sys. Use "SetTitleIcon" instead.
     #
+    # @note Deprecated. Do nothing.
+    #
     # @param [String] file Icon name
     # @return [Boolean] true on success
     #
@@ -1161,14 +1159,7 @@ module Yast
     #	// Sets the icon.
     #	SetDesktopIcon ("lan")
     def SetDesktopIcon(file)
-      description = Desktop.ParseSingleDesktopFile(file)
-      return false unless description
-
-      icon = description["Icon"].to_s
-      return false if icon.empty?
-
-      @icon_name = icon
-      set_icon
+      nil
     end
 
     # Convenience function to avoid 2 calls if application needs to set
@@ -1176,6 +1167,8 @@ module Yast
     # Desktop file is placed in a special directory (/usr/share/applications/YaST2).
     # Parameter file is realative to that directory without ".desktop" suffix.
     # Warning: There are no desktop files in inst-sys.
+    #
+    # @note Deprecated. Only sets title, use SetDesktopTitle instead
     #
     # @param [String] file desktop file name
     # @return [Boolean] true on success
@@ -1193,7 +1186,6 @@ module Yast
 
       Builtins.y2debug("Set dialog title: %1", name)
       SetDialogTitle(name)
-      SetDesktopIcon(file)
 
       Builtins.haskey(description, "Name")
     end
@@ -1816,10 +1808,14 @@ module Yast
     publish function: :RestoreAbortButton, type: "void ()"
     publish function: :SetContentsButtons, type: "void (string, term, string, string, string)"
     publish function: :SetDialogTitle, type: "void (string)"
+    # @deprecated, setting icons in UI is no longer needed
     publish function: :SetTitleIcon, type: "void (string)"
+    # @deprecated, setting icons in UI is no longer needed
     publish function: :ClearTitleIcon, type: "void ()"
     publish function: :SetDesktopTitle, type: "boolean (string)"
+    # @deprecated, setting icons in UI is no longer needed
     publish function: :SetDesktopIcon, type: "boolean (string)"
+    # @deprecated, only sets title, setting icons in UI is no longer needed
     publish function: :SetDesktopTitleAndIcon, type: "boolean (string)"
     publish function: :EnableAbortButton, type: "void ()"
     publish function: :DisableAbortButton, type: "void ()"
@@ -1855,22 +1851,10 @@ module Yast
     # Sets the icon and opens a wizard dialog with the content specified as
     # arguments
     def open_wizard_dialog(*args)
-      set_icon
       UI.OpenDialog(
         Opt(:wizardDialog),
         Wizard(*args)
       )
-    end
-
-    # Sets the application icon according to the value of @icon_name
-    #
-    # This should be called only immediately before opening a dialog; premature
-    # UI calls can interfere with the CommandLine mode.
-    #
-    # @return [Boolean] true if the application icon was set; false otherwise
-    def set_icon
-      UI.SetApplicationIcon(@icon_name)
-      true
     end
   end
 

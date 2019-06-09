@@ -16,10 +16,10 @@
 .yast2.groups
 
 `ag_ini(
-    `IniAgent( [ "/usr/share/applications/YaST2/groups/*.desktop" ],
+    `IniAgent( [ "/usr/share/desktop-directories/X-SuSE-YaST-*.directory" ],
 	$[
 	    "options"	: [ ],
-	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "comments"	: [ "^[ \t]*#.*", "\\{[^}]*\\}", "^[ \t]*$" ],
 	    "sections"	: [
 		$[ "begin" : [
 		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
@@ -33,7 +33,7 @@
 		]],
 	    ],
 //	    "rewrite" : [
-//		[ "/usr/share/applications/YaST2/(.*)\.desktop", "/usr/share/applications/YaST2/%s.desktop" ],
+//		[ "/usr/share/desktop-directories/X-SuSE-YaST-(.*)\.directory", "/usr/share/desktop-directories/X-SuSE-YaST-%s.directory" ],
 //	    ],
 	]
     )

@@ -61,7 +61,7 @@ module Yast
         # not required: "Comment",
         "X-SuSE-YaST-Argument",
         "X-SuSE-YaST-Call",
-        "X-SuSE-YaST-Group",
+        "Categories",
         "X-SuSE-YaST-SortKey",
         "X-SuSE-YaST-RootOnly",
         "Hidden"

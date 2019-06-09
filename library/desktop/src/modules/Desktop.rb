@@ -122,88 +122,52 @@ module Yast
     # @param [Array<String>] Values list of values to be parsed (empty to read all)
     def Read(values_to_parse)
       values_to_parse = deep_copy(values_to_parse)
-      extract_desktop_filename = lambda do |fullpath|
-        path_components = Builtins.splitstring(fullpath, "/")
-        filename = Ops.get(
-          path_components,
-          Ops.subtract(Builtins.size(path_components), 1),
-          ""
-        )
-
-        filename
-      end
-
-      # read modules
-      filemap = {}
-      filepath = nil
 
       ReadLanguage()
 
-      ps = Builtins.add(@AgentPath, "s")
-      files = SCR.Dir(ps)
-
       # read groups
-      groups = SCR.Dir(path(".yast2.groups.s"))
-      Builtins.y2debug("groups=%1", groups)
-      Builtins.foreach(groups) do |group|
+      menus = SCR.Read(path(".anyxml"), "/etc/xdg/menus/yast-settings.menu")
+      menus["Menu"][0]["Menu"].each_with_index do |menu, index|
+        filename = menu["Directory"][0]["content"]
+        file = "#{Directory.directoriesdir}/#{filename}"
+        # Only one category supported, for the sake of clarity
+        category = menu["Include"][0]["Category"][0]["content"]
+        filepath = path(".yast2.groups.v") + file + path(".\"Desktop Entry\"")
         filemap = {}
-        filepath = Ops.add(
-          Ops.add(path(".yast2.groups.v"), group),
-          "Desktop Entry"
-        )
-        filename = extract_desktop_filename.call(group)
-        Ops.set(filemap, "Icon", SCR.Read(Ops.add(filepath, "Icon")))
-        Ops.set(
-          filemap,
-          "SortKey",
-          SCR.Read(Ops.add(filepath, "X-SuSE-YaST-SortKey"))
-        )
-        Ops.set(filemap, "Hidden", SCR.Read(Ops.add(filepath, "Hidden")))
-        Ops.set(filemap, "Name", ReadLocalizedKey(filename, filepath, "Name"))
-        Ops.set(filemap, "GenericName", ReadLocalizedKey(filename, filepath, "GenericName"))
-        Ops.set(filemap, "modules", [])
-        Ops.set(
-          filemap,
-          "X-SuSE-DocTeamID",
-          SCR.Read(Ops.add(filepath, "X-SuSE-DocTeamID"))
-        )
-        name2 = Convert.to_string(
-          SCR.Read(Ops.add(filepath, "X-SuSE-YaST-Group"))
-        )
-        Ops.set(@Groups, name2, filemap)
+        filemap["Icon"] = SCR.Read(filepath + "Icon")
+        filemap["Hidden"] = SCR.Read(filepath + "Hidden")
+        filemap["Name"] = ReadLocalizedKey(filename, filepath, "Name")
+        # Now SortKey isn't needed in directory file, because xml defines order already
+        filemap["SortKey"] = index.to_s
+        filemap["modules"] = []
+        @Groups[category] = filemap
       end
       Builtins.y2debug("Groups=%1", @Groups)
 
       # read modules
-      Builtins.foreach(files) do |file|
-        filemap = {}
-        filepath = Ops.add(
-          Ops.add(Ops.add(@AgentPath, path(".v")), file),
-          path(".\"Desktop Entry\"")
-        )
+      ps = Builtins.add(@AgentPath, "s")
+      files = SCR.Dir(ps)
+      files.each do |file|
+        filepath = @AgentPath + path(".v") + file + path(".\"Desktop Entry\"")
+        #Very quick sanity check if the file contains the needed categories
+        next unless SCR.Read(filepath + "Categories")&.include? "X-SuSE-YaST-"
+
+        filename = File.basename(file, ".desktop")
         values = SCR.Dir(filepath)
-        filename = extract_desktop_filename.call(file)
-        values = deep_copy(values_to_parse) if !values_to_parse.nil? && values_to_parse != []
-        Builtins.foreach(values) do |value|
+        values = deep_copy(values_to_parse) unless values_to_parse&.empty?
+
+        filemap = {}
+        values.each do |value|
           ret = ReadLocalizedKey(filename, filepath, value)
-          Ops.set(filemap, value, ret) if !ret.nil? && ret != ""
+          filemap[value] = ret unless ret&.empty?
         end
-        name2 = Builtins.regexpsub(file, "^.*/(.*).desktop", "\\1")
-        if name2 != "" && !name2.nil?
-          Ops.set(@Modules, name2, filemap)
-          group = Ops.get_string(filemap, "X-SuSE-YaST-Group", "")
-          if group != ""
-            Ops.set(
-              @Groups,
-              [
-                group,
-                "modules",
-                Builtins.size(Ops.get_list(@Groups, [group, "modules"], []))
-              ],
-              name2
-            )
-          end
+        group = ""
+        filemap["Categories"].split(";").each do |cat|
+            group = cat if @Groups[cat]
         end
+
+        @Modules[filename] = filemap
+        @Groups[group]["modules"] << filename unless group&.empty?
       end
       Builtins.y2debug("Groups=%1", @Groups)
       Builtins.y2debug("Modules=%1", @Modules)
@@ -343,7 +307,7 @@ module Yast
             filename,
 
             "options"  => ["read_only"], # rw works but not needed
-            "comments" => ["^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$"],
+            "comments" => ["^[ \t]*#.*", "\\{[^}]*\\}", "^[ \t]*$"],
             "sections" => [
               {
                 "begin" => [
