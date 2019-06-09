@@ -149,7 +149,7 @@ module Yast
       files = SCR.Dir(ps)
       files.each do |file|
         filepath = @AgentPath + path(".v") + file + path(".\"Desktop Entry\"")
-        #Very quick sanity check if the file contains the needed categories
+        # Very quick sanity check if the file contains the needed categories
         next unless SCR.Read(filepath + "Categories").to_s.include? "X-SuSE-YaST-"
 
         filename = File.basename(file, ".desktop")
@@ -163,7 +163,7 @@ module Yast
         end
         group = ""
         filemap["Categories"].split(";").each do |cat|
-            group = cat if @Groups[cat]
+          group = cat if @Groups[cat]
         end
 
         @Modules[filename] = filemap
