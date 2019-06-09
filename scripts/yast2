@@ -13,6 +13,14 @@
 # wise ncurses. It starts then the module 'menu' which implements
 # the configuration and administration menu.
 
+#First check if started from the desktop file
+if [ -n "$GIO_LAUNCHED_DESKTOP_FILE" ]; then
+  DESKTOP_NAME=${GIO_LAUNCHED_DESKTOP_FILE##*/}
+  export DESKTOP_NAME=${DESKTOP_NAME%.desktop}
+else
+  export DESKTOP_NAME="org.opensuse.YaST"
+fi
+
 # FATE#317637, bsc#877447: In installation system, we call the installer
 # script directly and then exit
 if [ -f /.instsys.config ]; then
@@ -68,7 +76,7 @@ exit_code=0
 # --noborder
 # well also for gtk and ncurses
 # add hints for ui about app name and icon
-Y2UI_ARGS="-name YaST2 -icon yast"
+Y2UI_ARGS="-name $DESKTOP_NAME"
 GNOME_SHELL="$ybindir/y2controlcenter-gnome"
 KDE_SHELL="$ybindir/y2controlcenter"
 
@@ -137,7 +145,7 @@ select_control_center()
     case "$WANTED_SHELL" in
 	gtk)
             # gnome control center use different format of arguments (bsc#1058376)
-            Y2UI_ARGS="--gtk-name=YaST2 --class=yast"
+            Y2UI_ARGS="--gtk-name=YaST2 --class=org.opensuse.YaST"
 	    y2ccbin="$GNOME_SHELL"
 	    ;;
 	*)

@@ -16,10 +16,10 @@
 .yast2.desktop
 
 `ag_ini(
-    `IniAgent( [ "/usr/share/applications/YaST2/*.desktop" ],
+    `IniAgent( [ "/usr/share/applications/*.desktop" ],
 	$[
 	    "options"	: [ ],
-	    "comments"	: [ "^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$" ],
+	    "comments"	: [ "^[ \t]*#.*", "\\{[^}]*\\}", "^[ \t]*$" ],
 	    "sections"	: [
 		$[ "begin" : [
 		    "^[ \t]*\\[[ \t]*(.*[^ \t])[ \t]*\\][ \t]*",
@@ -33,7 +33,7 @@
 		]],
 	    ],
 //	    "rewrite" : [
-//		[ "/usr/share/applications/YaST2/(.*)\.desktop", "/usr/share/applications/YaST2/%s.desktop" ],
+//		[ "/usr/share/applications/(.*)\.desktop", "/usr/share/applications/%s.desktop" ],
 //	    ],
 	]
     )

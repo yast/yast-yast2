@@ -84,7 +84,10 @@ module Yast
       @scrconfdir = Ops.add(@yast2dir, "/scrconf")
 
       # Directory for desktop files
-      @desktopdir = "/usr/share/applications/YaST2"
+      @desktopdir = "/usr/share/applications"
+
+      # Directory for directories (groups of modules)
+      @directoriesdir = "/usr/share/desktop-directories"
 
       # Base directory for icons
       #
@@ -147,6 +150,7 @@ module Yast
     publish variable: :moduledir, type: "string"
     publish variable: :scrconfdir, type: "string"
     publish variable: :desktopdir, type: "string"
+    publish variable: :directoriesdir, type: "string"
     # @deprecated Use just a plain icon name without suffix,
     # the UI will automatically find the best suitable icon.
     publish variable: :icondir, type: "string"
