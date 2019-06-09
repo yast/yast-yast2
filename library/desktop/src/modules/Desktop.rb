@@ -150,16 +150,16 @@ module Yast
       files.each do |file|
         filepath = @AgentPath + path(".v") + file + path(".\"Desktop Entry\"")
         #Very quick sanity check if the file contains the needed categories
-        next unless SCR.Read(filepath + "Categories")&.include? "X-SuSE-YaST-"
+        next unless SCR.Read(filepath + "Categories").to_s.include? "X-SuSE-YaST-"
 
         filename = File.basename(file, ".desktop")
         values = SCR.Dir(filepath)
-        values = deep_copy(values_to_parse) unless values_to_parse&.empty?
+        values = deep_copy(values_to_parse) unless values_to_parse.to_s.empty?
 
         filemap = {}
         values.each do |value|
           ret = ReadLocalizedKey(filename, filepath, value)
-          filemap[value] = ret unless ret&.empty?
+          filemap[value] = ret unless ret.to_s.empty?
         end
         group = ""
         filemap["Categories"].split(";").each do |cat|
@@ -167,7 +167,7 @@ module Yast
         end
 
         @Modules[filename] = filemap
-        @Groups[group]["modules"] << filename unless group&.empty?
+        @Groups[group]["modules"] << filename unless group.to_s.empty?
       end
       Builtins.y2debug("Groups=%1", @Groups)
       Builtins.y2debug("Modules=%1", @Modules)
