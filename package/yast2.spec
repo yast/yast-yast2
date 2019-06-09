@@ -233,7 +233,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 # system
 %dir %{yast_yncludedir}/hwinfo
 %{yast_yncludedir}/hwinfo/*.rb
-%{yast_desktopdir}/messages.desktop
 
 # icons
 %{yast_icondir}
