@@ -8,6 +8,38 @@ Yast.import "PackagesUI"
 describe "Yast::PackageSystem" do
   subject(:system) { Yast::PackageSystem }
 
+  describe "#Install" do
+    let(:package) { "ruby" }
+    let(:package_installed) { "ruby-2.5-lp150.1.5.x86_64" }
+    let(:bash_output) do
+      { "exit" => 1, "stderr" => "", "stdout" => "no package prodives #{package}\n" }
+    end
+    let(:installed) do
+    end
+
+    before do
+      allow(Yast::SCR).to receive(:Execute)
+        .with(Yast::Path.new(".target.bash_output"), /rpm -q --whatprovides #{package}/)
+        .and_return(bash_output)
+    end
+
+    context "when some package provides the given package" do
+      let(:bash_output) do
+        { "exit" => 0, "stderr" => "", "stdout" => "#{package_installed}\n" }
+      end
+
+      it "returns true" do
+        expect(system.Installed("ruby")).to be(true)
+      end
+    end
+
+    context "when no package provides the given package" do
+      it "returns false" do
+        expect(system.Installed("ruby")).to be(false)
+      end
+    end
+  end
+
   describe "DoInstallAndRemove" do
     let(:lock_free) { true }
     let(:result) { [1, [], [], [], []] }

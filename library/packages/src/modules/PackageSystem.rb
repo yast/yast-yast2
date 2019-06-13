@@ -348,9 +348,8 @@ module Yast
       # so we must avoid it.
       # added --whatprovides due to bug #76181
       rpm_command = "/usr/bin/rpm -q --whatprovides #{package.shellescape}"
-      log.debug("Starting RPM query: #{rpm_command}")
       output = SCR.Execute(path(".target.bash_output"), rpm_command)
-      log.debug("result of the query: #{output}")
+      log.info "Query installed package with '#{rpm_command}' and result #{output.inspect}"
 
       # return Pkg::IsProvided (package);
       output["exit"] == 0
