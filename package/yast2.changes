@@ -1,8 +1,22 @@
 -------------------------------------------------------------------
 Tue Jun 18 09:06:13 CEST 2019 - schubi@suse.de
 
-- Slideshow: Flag for switchin on/off release notes tab.
+- Slideshow: Flag for switching on/off release notes tab.
   (bsc#1136708)
+- 4.1.71
+
+-------------------------------------------------------------------
+Thu May 16 09:01:59 UTC 2019 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Make sure the wizard buttons always remain visible in NCurses
+  (bsc#1133367)
+- 4.1.70
+
+-------------------------------------------------------------------
+Fri Apr 26 08:38:39 UTC 2019 - Ladislav Slezák <lslezak@suse.cz>
+
+- Uninstall the "SUSE-Manager-Proxy" product when upgrading from
+  SLES12 + SUMA Proxy + SUMA Branch Server (bsc#1133215)
 - 4.1.69
 
 -------------------------------------------------------------------
