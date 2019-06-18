@@ -665,7 +665,7 @@ module Yast
     # Rebuild the dialog. Useful if slides become available post-creating the dialog.
     #
     # @param [Boolean] show_release_notes release notes tab will be shown.
-    def RebuildDialog( show_release_notes = false )
+    def RebuildDialog(show_release_notes = false)
       contents = Empty()
 
       show_slides = Slides.HaveSlideSupport && Slides.HaveSlides
