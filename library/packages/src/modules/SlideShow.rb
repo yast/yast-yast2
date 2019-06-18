@@ -663,7 +663,9 @@ module Yast
     end
 
     # Rebuild the dialog. Useful if slides become available post-creating the dialog.
-    def RebuildDialog
+    #
+    # @param [Boolean] show_release_notes release notes tab will be shown.
+    def RebuildDialog( show_release_notes = false )
       contents = Empty()
 
       show_slides = Slides.HaveSlideSupport && Slides.HaveSlides
@@ -677,13 +679,15 @@ module Yast
           tabs.unshift(Item(Id(:showSlide), _("Slide Sho&w")))
         end
 
-        @_rn_tabs = {}
-        if @_relnotes.key?(@_base_product)
-          add_relnotes_for_product @_base_product, @_relnotes[@_base_product], tabs
-        end
-        @_relnotes.each do |product, relnotes|
-          if @_base_product != product
-            add_relnotes_for_product product, relnotes, tabs
+        if show_release_notes
+          @_rn_tabs = {}
+          if @_relnotes.key?(@_base_product)
+            add_relnotes_for_product @_base_product, @_relnotes[@_base_product], tabs
+          end
+          @_relnotes.each do |product, relnotes|
+            if @_base_product != product
+              add_relnotes_for_product product, relnotes, tabs
+            end
           end
         end
 

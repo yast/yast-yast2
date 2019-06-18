@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun 18 09:06:13 CEST 2019 - schubi@suse.de
+
+- Slideshow: Flag for switchin on/off release notes tab.
+  (bsc#1136708)
+- 4.1.69
+
+-------------------------------------------------------------------
 Tue Apr  9 09:50:45 CEST 2019 - schubi@suse.de
 - Updated map for evaluating upgraded products
   (e.g. for SUSE-Manager). (bsc#1131503)
