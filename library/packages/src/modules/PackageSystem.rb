@@ -33,6 +33,7 @@
 # The documentation is maintained at
 # <a href="../index.html">.../docs/index.html</a>.
 require "yast"
+require "yast2/execute"
 require "shellwords"
 
 module Yast
@@ -348,11 +349,11 @@ module Yast
       # so we must avoid it.
       # added --whatprovides due to bug #76181
       rpm_command = "/usr/bin/rpm -q --whatprovides #{package.shellescape}"
-      output = SCR.Execute(path(".target.bash_output"), rpm_command)
+      output = Yast::Execute.on_target.stdout(rpm_command.split(" "))
       log.info "Query installed package with '#{rpm_command}' and result #{output.inspect}"
 
       # return Pkg::IsProvided (package);
-      output["exit"] == 0
+      !!output
     end
 
     # Is a package installed? Checks only the package name in contrast to Installed() function.
