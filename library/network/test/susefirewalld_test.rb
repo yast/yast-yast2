@@ -2,6 +2,7 @@
 
 require_relative "test_helper"
 require "network/firewalld"
+require "network/firewall_chooser"
 
 Yast.import "Mode"
 Yast.import "PackageSystem"
@@ -23,8 +24,7 @@ end
 # advantage of being able to run this testsuite even when SF2 is running!
 need_API_mock = true
 
-# Re-instansiate our objects
-FakeFirewallD = Yast::SuSEFirewalldClass.new
+FakeFirewallD = Yast::FirewallChooser.new(:fwd).choose
 
 describe FakeFirewallD do
 

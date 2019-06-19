@@ -27,6 +27,7 @@ agent_SCRIPTS = \
 
 ylibdir = @ylibdir@/network
 ylib_DATA = \
+  lib/network/firewall_chooser.rb \
   lib/network/firewalld.rb \
   lib/network/susefirewall.rb \
   lib/network/susefirewall2.rb \
