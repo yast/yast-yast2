@@ -348,12 +348,15 @@ module Yast
       # Unfortunately, initializing Pkg reads the RPM database...
       # so we must avoid it.
       # added --whatprovides due to bug #76181
-      rpm_command = "/usr/bin/rpm -q --whatprovides #{package.shellescape}"
-      output = Yast::Execute.on_target.stdout(rpm_command.split(" "))
-      log.info "Query installed package with '#{rpm_command}' and result #{output.inspect}"
+      # Use Yast::Execute to prevent false positives (boo#1137992)
+      rpm_command = ["/usr/bin/rpm", "-q", "--whatprovides", package.shellescape]
+      # We are not raising exceptions in case of return codes different than
+      # 0 or 1. So do not plan to modify the current behavior.
+      output, return_code = Yast::Execute.stdout.on_target!(rpm_command, allow_exitstatus: 0..1)
+      log.info "Query installed package with '#{rpm_command.join(" ")}' and result #{output}"
 
       # return Pkg::IsProvided (package);
-      !!output
+      return_code == 0
     end
 
     # Is a package installed? Checks only the package name in contrast to Installed() function.

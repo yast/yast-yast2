@@ -11,11 +11,11 @@ describe "Yast::PackageSystem" do
   describe "#Install" do
     let(:package) { "ruby" }
     let(:package_installed) { "ruby-2.5-lp150.1.5.x86_64" }
-    let(:output) { package_installed }
-    let(:execute) { instance_double(Yast::Execute, stdout: output) }
+    let(:output) { [package_installed, 0] }
+    let(:execute) { instance_double(Yast::Execute, on_target!: output) }
 
     before do
-      allow(Yast::Execute).to receive(:on_target).and_return(execute)
+      allow(Yast::Execute).to receive(:stdout).and_return(execute)
     end
 
     context "when some package provides the given package" do
@@ -25,7 +25,7 @@ describe "Yast::PackageSystem" do
     end
 
     context "when no package provides the given package" do
-      let(:output) { nil }
+      let(:output) { ["no package provides ruby\n", 1] }
 
       it "returns false" do
         expect(system.Installed("ruby")).to be(false)
