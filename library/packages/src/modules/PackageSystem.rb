@@ -352,7 +352,7 @@ module Yast
       rpm_command = ["/usr/bin/rpm", "-q", "--whatprovides", package]
       # We are not raising exceptions in case of return codes different than
       # 0 or 1. So do not plan to modify the current behavior.
-      output, return_code = Yast::Execute.stdout.on_target!(rpm_command, allow_exitstatus: 0..1)
+      output, return_code = Yast::Execute.stdout.on_target!(rpm_command, allowed_exitstatus: 0..1)
       log.info "Query installed package with '#{rpm_command.join(" ")}' and result #{output}"
 
       # return Pkg::IsProvided (package);
