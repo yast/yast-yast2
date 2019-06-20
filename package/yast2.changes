@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Jun 19 12:52:35 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
+
+- Stop "ls: write error: Broken pipe" messages (bsc#1128032)
+- Network:
+  - When only one firewall is installed but not running, choose it
+    instead of the default SuSEfirewall2 (bsc#1093052).
+  - Moved the logic of firewall detection to its specific class.
+- 4.0.104
+
+-------------------------------------------------------------------
 Wed Dec  5 15:36:34 CET 2018 - schubi@suse.de
 
 - Added more testcases if e.g. system is running in chroot
