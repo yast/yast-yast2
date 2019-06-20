@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jun 20 12:08:35 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
+
+- bsc#1137992
+  - PackageSystem.Installed: Fixed typo when passing the allowed
+    return codes to Execute.
+- 4.2.10
+
+-------------------------------------------------------------------
 Wed Jun 19 08:30:04 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
 
 - bsc#1137992
