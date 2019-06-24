@@ -109,22 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 20
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: compact, expanded
-Style/EmptyMethod:
-  Exclude:
-    - 'library/cwm/test/abstract_widget_test.rb'
-    - 'library/cwm/test/pager_test.rb'
-    - 'library/cwm/test/replace_point_test.rb'
-    - 'library/general/src/lib/ui/dialog.rb'
-    - 'library/general/src/lib/ui/installation_dialog.rb'
-    - 'library/general/src/modules/Call.rb'
-    - 'library/general/src/modules/CustomDialogs.rb'
-    - 'library/packages/src/modules/PackageKit.rb'
-    - 'library/sequencer/test/sequence_test.rb'
-
 # Offense count: 189
 # Cop supports --auto-correct.
 Style/Encoding:

@@ -33,8 +33,7 @@ require "yast"
 
 module Yast
   class PackageKitClass < Module
-    def main
-    end
+    def main; end
 
     # Check whether PackageKit daemon is running
     # @return [Boolean] return true if PackageKit is currently running

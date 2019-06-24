@@ -35,8 +35,7 @@ describe CWM::Pager do
       VBox(*@pages)
     end
 
-    def mark_page(_page)
-    end
+    def mark_page(_page); end
   end
   subject do
     MyPager.new

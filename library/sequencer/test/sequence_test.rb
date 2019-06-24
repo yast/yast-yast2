@@ -38,15 +38,12 @@ describe UI::Sequence do
 
   describe "#from_methods" do
     class TestSequence < UI::Sequence
-      def skipped
-      end
+      def skipped; end
       skip_stack :skipped
 
-      def first
-      end
+      def first; end
 
-      def second
-      end
+      def second; end
     end
     subject { TestSequence.new }
 
@@ -68,14 +65,12 @@ describe UI::Sequence do
 
     it "does not confuse skip_stack across classes" do
       class TestSequenceA < UI::Sequence
-        def doit
-        end
+        def doit; end
         skip_stack :doit
       end
 
       class TestSequenceB < UI::Sequence
-        def doit
-        end
+        def doit; end
       end
 
       seq = {

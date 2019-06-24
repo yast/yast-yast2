@@ -144,8 +144,7 @@ describe CWM::AbstractWidget do
 
     class TInit < CWM::AbstractWidget
       self.widget_type = :empty
-      def init
-      end
+      def init; end
     end
 
     it "returns hash with key init when init method defined" do
@@ -154,8 +153,7 @@ describe CWM::AbstractWidget do
 
     class THandle1 < CWM::AbstractWidget
       self.widget_type = :empty
-      def handle
-      end
+      def handle; end
     end
 
     it "returns hash with key handle when handle without parameter defined" do
@@ -164,8 +162,7 @@ describe CWM::AbstractWidget do
 
     class THandle2 < CWM::AbstractWidget
       self.widget_type = :empty
-      def handle(_event)
-      end
+      def handle(_event); end
     end
 
     it "returns hash with key handle when handle with parameter defined" do
@@ -174,8 +171,7 @@ describe CWM::AbstractWidget do
 
     class TStore < CWM::AbstractWidget
       self.widget_type = :empty
-      def store
-      end
+      def store; end
     end
 
     it "returns hash with key store when store method defined" do
@@ -184,8 +180,7 @@ describe CWM::AbstractWidget do
 
     class TCleanup < CWM::AbstractWidget
       self.widget_type = :empty
-      def cleanup
-      end
+      def cleanup; end
     end
 
     it "returns hash with key cleanup when cleanup method defined" do
