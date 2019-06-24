@@ -133,16 +133,6 @@ Style/IdenticalConditionalBranches:
   Exclude:
     - 'library/packages/src/modules/PackageCallbacks.rb'
 
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: InverseMethods, InverseBlocks.
-Style/InverseMethods:
-  Exclude:
-    - 'library/desktop/src/clients/menu.rb'
-    - 'library/network/src/modules/CWMFirewallInterfaces.rb'
-    - 'library/network/src/modules/NetworkInterfaces.rb'
-    - 'library/system/src/modules/FileChanges.rb'
-
 # Offense count: 1
 Style/MethodMissingSuper:
   Exclude:

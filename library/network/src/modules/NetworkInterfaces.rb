@@ -777,7 +777,7 @@ module Yast
       regex = "^(#{@DeviceRegex[devregex] || devregex})[0-9]*$"
 
       log.debug("regex=#{regex}")
-      devices.select! { |f, _d| f !~ /#{regex}/ }
+      devices.reject! { |f, _d| f =~ /#{regex}/ }
 
       log.debug("devices=#{devices}")
       devices
@@ -1561,7 +1561,7 @@ module Yast
     def get_devices(devregex)
       devices = SCR.Dir(path(".network.section")) || []
 
-      devices.select! { |file| file !~ devregex } unless devregex.nil?
+      devices.reject! { |file| file =~ devregex } unless devregex.nil?
       devices.delete_if(&:empty?)
 
       log.debug "devices=#{devices}"

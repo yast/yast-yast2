@@ -77,7 +77,7 @@ module Yast
       Builtins.foreach(
         Convert.convert(@Modules, from: "map", to: "map <string, map>")
       ) do |name, params|
-        @non_root_modules = Builtins.add(@non_root_modules, name) if !(Ops.get_string(params, "X-SuSE-YaST-RootOnly", "false") == "true")
+        @non_root_modules = Builtins.add(@non_root_modules, name) if Ops.get_string(params, "X-SuSE-YaST-RootOnly", "false") != "true"
       end
       Builtins.y2debug("non-root modules: %1", @non_root_modules)
 

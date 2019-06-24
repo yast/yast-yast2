@@ -143,7 +143,7 @@ module Yast
       if Builtins.haskey(@file_checksums, file)
         Builtins.y2milestone("Comparing file %1 to stored checksum", file)
         sum = ComputeFileChecksum(file)
-        ret = !(sum == Ops.get(@file_checksums, file, ""))
+        ret = sum != Ops.get(@file_checksums, file, "")
       else
         Builtins.y2milestone("Comparing file %1 to RPM database", file)
         ret = FileChangedFromPackage(file)

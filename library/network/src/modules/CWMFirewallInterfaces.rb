@@ -399,9 +399,9 @@ module Yast
 
       firewall_ifaces = Selected2Opened(ifaces, false)
       log.info("firewall_ifaces: #{firewall_ifaces}")
-      added_ifaces = firewall_ifaces.select { |i| !ifaces.include?(i) }
+      added_ifaces = firewall_ifaces.reject { |i| ifaces.include?(i) }
       log.info("added_ifaces: #{added_ifaces}")
-      removed_ifaces = ifaces.select { |i| !firewall_ifaces.include?(i) }
+      removed_ifaces = ifaces.reject { |i| firewall_ifaces.include?(i) }
       log.info("removed_ifaces: #{removed_ifaces}")
 
       # to hide that special string
