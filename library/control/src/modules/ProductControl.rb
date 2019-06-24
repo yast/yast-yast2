@@ -1181,7 +1181,7 @@ module Yast
       control_file_candidates = [
         @y2update_control_file,     # /y2update/control.xml
         @installation_control_file, # /control.xml
-        @saved_control_file,        # /etc/YaST2/control.xml
+        @saved_control_file # /etc/YaST2/control.xml
       ]
 
       if @custom_control_file.nil?

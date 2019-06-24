@@ -83,7 +83,7 @@ describe Yast::IP do
       "g:FF:b:c:d:d:e:e",
       "127.0.0.1",
       "1:2:3:4:5:6:7:127.0.0.1",
-      "1:2:3::6:7:8:127.0.0.1",
+      "1:2:3::6:7:8:127.0.0.1"
       # FIXME: deprecated syntax, so we should handle it like invalid "::127.0.0.1",
       # FIXME: deprecated syntax, so we should handle it invalid "::FFFF:127.0.0.1",
       # FIXME: insufficient regex for ipv4 included in ipv6 "1:2:3:4:5:6:127.0.0.256"
