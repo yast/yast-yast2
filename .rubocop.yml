@@ -128,11 +128,6 @@ Style/FormatStringToken:
     - 'library/system/src/lib/yast2/fs_snapshot.rb'
     - 'library/system/src/modules/FileChanges.rb'
 
-# Offense count: 2
-Style/IdenticalConditionalBranches:
-  Exclude:
-    - 'library/packages/src/modules/PackageCallbacks.rb'
-
 # Offense count: 22
 Style/MultipleComparison:
   Exclude:

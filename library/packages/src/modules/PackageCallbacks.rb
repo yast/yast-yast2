@@ -3112,15 +3112,14 @@ module Yast
     end
 
     def show_log_info(message, buttonbox)
+      UI.CloseDialog
       if UI.QueryWidget(Id(:show), :Value)
-        UI.CloseDialog
         UI.OpenDialog(
           Opt(:decorated),
           layout_popup(message, buttonbox, true)
         )
         true
       else
-        UI.CloseDialog
         UI.OpenDialog(
           Opt(:decorated),
           layout_popup(message, buttonbox, false)
