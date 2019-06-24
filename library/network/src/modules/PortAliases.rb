@@ -116,16 +116,16 @@ module Yast
     def IsAllowedPortName(port_name)
       if port_name.nil?
         Builtins.y2error("Invalid port name: %1", port_name)
-        return false
+        false
         # port is number
       elsif Builtins.regexpmatch(port_name, "^[0123456789]+$")
         port_number = Builtins.tointeger(port_name)
         # checking range
-        return Ops.greater_or_equal(port_number, 0) &&
-            Ops.less_or_equal(port_number, 65_535)
+        Ops.greater_or_equal(port_number, 0) &&
+          Ops.less_or_equal(port_number, 65_535)
         # port is name
       else
-        return Builtins.regexpmatch(port_name, @allowed_service_regexp)
+        Builtins.regexpmatch(port_name, @allowed_service_regexp)
       end
     end
 

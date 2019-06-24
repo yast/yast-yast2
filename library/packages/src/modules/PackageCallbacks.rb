@@ -3118,7 +3118,7 @@ module Yast
           Opt(:decorated),
           layout_popup(message, buttonbox, true)
         )
-        return true
+        true
       else
         UI.CloseDialog
         UI.OpenDialog(
@@ -3126,7 +3126,7 @@ module Yast
           layout_popup(message, buttonbox, false)
         )
         UI.ReplaceWidget(Id(:info), Empty())
-        return false
+        false
       end
     end
 

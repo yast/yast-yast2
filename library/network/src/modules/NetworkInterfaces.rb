@@ -365,24 +365,24 @@ module Yast
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "modem", ""))
       )
-        return _("Modem")
+        _("Modem")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "netcard", ""))
       )
-        return _("Network Card")
+        _("Network Card")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "isdn", ""))
       )
-        return _("ISDN")
+        _("ISDN")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "dsl", ""))
       )
-        return _("DSL")
+        _("DSL")
       else
-        return _("Unknown")
+        _("Unknown")
       end
     end
 

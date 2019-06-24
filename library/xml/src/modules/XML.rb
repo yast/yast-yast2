@@ -137,14 +137,14 @@ module Yast
           to:   "map <string, any>"
         )
         Builtins.y2debug("XML Agent output: %1", out)
-        return deep_copy(out)
+        deep_copy(out)
       else
         Builtins.y2warning(
           "XML file %1 (%2) not found",
           xml_file,
           SCR.Read(path(".target.size"), xml_file)
         )
-        return {}
+        {}
       end
     end
 
@@ -159,10 +159,10 @@ module Yast
           to:   "map <string, any>"
         )
         Builtins.y2debug("XML Agent output: %1", out)
-        return deep_copy(out)
+        deep_copy(out)
       else
         Builtins.y2warning("can't convert empty XML string")
-        return {}
+        {}
       end
     end
 
