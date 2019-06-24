@@ -4,7 +4,7 @@ require_relative "test_helper"
 
 Yast.import "PortAliases"
 
-FILE_CONTENT = <<~EOS.freeze
+FILE_CONTENT = <<~CONTENT.freeze
   blocks             10288/tcp    # Blocks  [Carl_Malamud]
   blocks             10288/udp    # Blocks  [Carl_Malamud]
   cosir              10321/tcp    # Computer Op System Information Report  [Kevin_C_Barber]
@@ -17,7 +17,7 @@ FILE_CONTENT = <<~EOS.freeze
   MOS-lower          10540/udp    # MOS Media Object Metadata Port  [Eric_Thorniley]
   MOS-upper          10541/tcp    # MOS Running Order Port  [Eric_Thorniley]
   MOS-upper          10541/udp    # MOS Running Order Port  [Eric_Thorniley]
-EOS
+CONTENT
 
 describe Yast::PortAliases do
   describe ".LoadAndReturnNameToPort" do
