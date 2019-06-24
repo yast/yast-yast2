@@ -409,12 +409,7 @@ module Yast
                 "\"" => "\\\""
               }
 
-              character = if backslash_seq[nextcharacter]
-                backslash_seq[nextcharacter]
-              else
-                # ignore backslash in invalid backslash sequence
-                nextcharacter
-              end
+              character = backslash_seq[nextcharacter] || nextcharacter
 
               log.debug "backslash sequence: '#{character}'"
             else

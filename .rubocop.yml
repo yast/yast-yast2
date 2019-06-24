@@ -259,10 +259,3 @@ Style/TrailingCommaInArrayLiteral:
   Exclude:
     - 'library/control/src/modules/ProductControl.rb'
     - 'library/types/test/ip_test.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-Style/UnneededCondition:
-  Exclude:
-    - 'library/systemd/src/lib/yast2/systemd/target.rb'
-    - 'library/types/src/modules/String.rb'

@@ -111,7 +111,7 @@ module Yast2
         end
 
         # Constructing a fallback target ID if we can't get it from systemctl
-        target_name = id ? id : "#{name}.target"
+        target_name = id || "#{name}.target"
 
         result = Systemctl.execute("set-default --force #{target_name}")
         result.exit.zero?
