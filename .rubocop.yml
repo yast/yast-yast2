@@ -109,12 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Layout/LeadingBlankLines:
-  Exclude:
-    - 'library/packages/src/lib/packages/file_conflict_callbacks.rb'
-
 # Offense count: 75
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
