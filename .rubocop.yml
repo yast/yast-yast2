@@ -109,23 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 12
-# Cop supports --auto-correct.
-Lint/ScriptPermission:
-  Exclude:
-    - 'library/general/test/control_log_dir_rotator_test.rb'
-    - 'library/general/test/text_helpers_test.rb'
-    - 'library/general/test/yast2/feedback_test.rb'
-    - 'library/network/test/port_aliases_test.rb'
-    - 'library/network/test/y2firewall/relations_test.rb'
-    - 'library/packages/test/y2packager/licenses_fetchers/libzypp_test.rb'
-    - 'library/packages/test/y2packager/licenses_fetchers/rpm_test.rb'
-    - 'library/packages/test/y2packager/licenses_fetchers/shared_examples.rb'
-    - 'library/packages/test/y2packager/licenses_handlers/libzypp_test.rb'
-    - 'library/packages/test/y2packager/licenses_handlers/rpm_test.rb'
-    - 'library/packages/test/y2packager/product_license_test.rb'
-    - 'library/packages/test/y2packager/product_upgrade_test.rb'
-
 # Offense count: 2
 # Configuration parameters: Blacklist.
 # Blacklist: (?-mix:(^|\s)(EO[A-Z]{1}|END)(\s|$))
