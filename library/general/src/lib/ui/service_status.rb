@@ -127,22 +127,22 @@ module UI
     # Content for the help
     def help
       # TRANSLATORS: do not modify %{reload_label}
-      _(
-        "<p><b><big>Current status</big></b><br>\n"\
-        "Displays the current status of the service. The status will remain "\
-        "the same after saving the settings, independently of the value of "\
-        "'start service during boot'.</p>\n"\
-        "<p><b><big>%{reload_label}</big></b><br>\n"\
-        "Only applicable if the service is currently running. "\
-        "Ensures the running service reloads the new configuration after "\
-        "saving it (either finishing the dialog or pressing the apply "\
-        "button).</p>\n"\
-        "<p><b><big>Start During System Boot</big></b><br>\n"\
-        "Check this field to enable the service at system boot. "\
-        "Un-check it to disable the service. "\
-        "This does not affect the current status of the service in the already "\
-        "running system.</p>\n"
-      ) % { reload_label: @reload_label }
+      format(_(
+               "<p><b><big>Current status</big></b><br>\n"\
+               "Displays the current status of the service. The status will remain "\
+               "the same after saving the settings, independently of the value of "\
+               "'start service during boot'.</p>\n"\
+               "<p><b><big>%{reload_label}</big></b><br>\n"\
+               "Only applicable if the service is currently running. "\
+               "Ensures the running service reloads the new configuration after "\
+               "saving it (either finishing the dialog or pressing the apply "\
+               "button).</p>\n"\
+               "<p><b><big>Start During System Boot</big></b><br>\n"\
+               "Check this field to enable the service at system boot. "\
+               "Un-check it to disable the service. "\
+               "This does not affect the current status of the service in the already "\
+               "running system.</p>\n"
+             ), reload_label: @reload_label)
     end
 
   protected

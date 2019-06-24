@@ -867,7 +867,7 @@ module Yast
 
       firewall_settings = VBox(
         Frame(
-          _("Firewall Settings for %{firewall}") % { firewall: Y2Firewall::Firewalld::SERVICE },
+          format(_("Firewall Settings for %{firewall}"), firewall: Y2Firewall::Firewalld::SERVICE),
           VBox(
             Left(firewall_settings),
             Left(
@@ -1062,11 +1062,11 @@ module Yast
           if !firewalld.current_service_names.include?(service)
             # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
             # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
-            HBox(HSpacing(2), Left(Label(_("- %{service} (Not available)") % { service: service })))
+            HBox(HSpacing(2), Left(Label(format(_("- %{service} (Not available)"), service: service))))
           else
             # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
             # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
-            HBox(HSpacing(2), Left(Label(_("- %{service}") % { service: service })))
+            HBox(HSpacing(2), Left(Label(format(_("- %{service}"), service: service))))
           end
         end
 

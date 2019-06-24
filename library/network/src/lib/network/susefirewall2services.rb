@@ -256,7 +256,7 @@ module Yast
 
         raise(
           SuSEFirewalServiceNotFound,
-          _("Service with name '%{service_name}' does not exist") % { service_name: service_name }
+          format(_("Service with name '%{service_name}' does not exist"), service_name: service_name)
         )
       end
 
@@ -327,7 +327,7 @@ module Yast
         SCR.UnregisterAgent(path(".firewall_service_definition"))
 
         # Fallback for presented service
-        @services[service_name]["name"] = _("Service: %{filename}") % { filename: filename }
+        @services[service_name]["name"] = format(_("Service: %{filename}"), filename: filename)
         @services[service_name]["description"] = ""
 
         # Registering sysconfig agent for this file (to get metadata)
@@ -414,7 +414,7 @@ module Yast
         log.error "Service #{service} is unknown"
         raise(
           SuSEFirewalServiceNotFound,
-          _("Service with name '%{service_name}' does not exist") % { service_name: service }
+          format(_("Service with name '%{service_name}' does not exist"), service_name: service)
         )
       end
 

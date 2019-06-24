@@ -109,19 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 11
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: format, sprintf, percent
-Style/FormatString:
-  Exclude:
-    - 'library/general/src/lib/ui/service_status.rb'
-    - 'library/general/src/modules/OSRelease.rb'
-    - 'library/network/src/lib/network/susefirewall2services.rb'
-    - 'library/network/src/lib/network/susefirewalldservices.rb'
-    - 'library/network/src/modules/CWMFirewallInterfaces.rb'
-    - 'library/system/src/lib/yast2/execute.rb'
-
 # Offense count: 29
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: annotated, template, unannotated

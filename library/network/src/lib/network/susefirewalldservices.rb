@@ -119,7 +119,7 @@ module Yast
 
         raise(
           SuSEFirewalServiceNotFound,
-          _("Service with name '%{service_name}' does not exist") % { service_name: service_name }
+          format(_("Service with name '%{service_name}' does not exist"), service_name: service_name)
         )
       end
 
@@ -141,7 +141,7 @@ module Yast
     # @param service_name [String] The service name
     # @return [String] Default description for service
     def default_service_description(service_name)
-      _("The %{service_name} Service") % { service_name: service_name.upcase }
+      format(_("The %{service_name} Service"), service_name: service_name.upcase)
     end
 
     # Populate service's internal data structures.
