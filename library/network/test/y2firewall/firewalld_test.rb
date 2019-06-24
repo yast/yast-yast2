@@ -27,8 +27,8 @@ Yast.import "Service"
 
 describe Y2Firewall::Firewalld do
   let(:firewalld) { described_class.clone.instance }
-  let(:known_zones) { %w(dmz drop external home internal public trusted work) }
-  let(:known_services) { %w(http https samba ssh) }
+  let(:known_zones) { %w[dmz drop external home internal public trusted work] }
+  let(:known_services) { %w[http https samba ssh] }
   let(:empty_zones) { known_zones.map { |z| Y2Firewall::Firewalld::Zone.new(name: z) } }
   let(:installed?) { true }
   before do

@@ -6,7 +6,7 @@ describe "SCR" do
   describe ".proc.cmdline" do
     describe "Read" do
       let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
-      let(:expected_list) { %w(biosdevname=1 initrd=initrd install=hd:/// splash=silent) }
+      let(:expected_list) { %w[biosdevname=1 initrd=initrd install=hd:/// splash=silent] }
       let(:read_list) { Yast::SCR.Read(path(".proc.cmdline")).sort }
 
       around do |example|

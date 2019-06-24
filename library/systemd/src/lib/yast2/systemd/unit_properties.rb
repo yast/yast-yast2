@@ -6,7 +6,7 @@ module Yast2
     class UnitProperties < OpenStruct
       include Yast::Logger
 
-      SUPPORTED_STATES = %w(enabled disabled).freeze
+      SUPPORTED_STATES = %w[enabled disabled].freeze
 
       # Values of `#active_state` fow which we consider a unit "active".
       #

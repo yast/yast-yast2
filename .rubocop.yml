@@ -178,13 +178,3 @@ Style/MutableConstant:
 Style/NegatedUnless:
   Exclude:
     - 'library/network/src/lib/network/susefirewalld.rb'
-
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: PreferredDelimiters.
-Style/PercentLiteralDelimiters:
-  Exclude:
-    - 'library/network/test/y2firewall/firewalld_test.rb'
-    - 'library/system/test/proc_cmdline_test.rb'
-    - 'library/systemd/src/lib/yast2/systemd/unit.rb'
-    - 'library/systemd/src/lib/yast2/systemd/unit_properties.rb'
