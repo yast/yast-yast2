@@ -109,17 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: aligned, indented
-Layout/MultilineOperationIndentation:
-  Exclude:
-    - 'library/network/src/lib/network/susefirewalld.rb'
-    - 'library/network/src/lib/network/susefirewalldservices.rb'
-    - 'library/packages/src/lib/y2packager/product_upgrade.rb'
-
 # Offense count: 949
 # Cop supports --auto-correct.
 # Configuration parameters: IndentationWidth.

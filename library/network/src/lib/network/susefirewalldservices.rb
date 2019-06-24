@@ -114,7 +114,7 @@ module Yast
       # If service description is the default one then we know that we haven't read the service
       # information just yet. Lets do it now
       populate_service(service_name) if all_services.fetch(service_name, {})["description"] ==
-          default_service_description(service_name)
+        default_service_description(service_name)
       if service.nil? && !silent
         log.error "Uknown service '#{service_name}'"
         log.info "Known services: #{all_services.keys}"

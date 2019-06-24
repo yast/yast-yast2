@@ -1034,8 +1034,8 @@ module Yast
     def set_zone_modified(zone, zone_params)
       # Do nothing if the parameters are not valid
       return nil if zone_params.nil? || \
-          !@known_firewall_zones.include?(zone) || \
-          !zone_params.is_a?(Array)
+        !@known_firewall_zones.include?(zone) || \
+        !zone_params.is_a?(Array)
 
       @SETTINGS[zone][:modified] = zone_params.to_set
     end
@@ -1043,7 +1043,7 @@ module Yast
     def add_zone_modified(zone, zone_param)
       # Do nothing if the parameters are not valid
       return nil if zone_param.nil? || \
-          !@known_firewall_zones.include?(zone)
+        !@known_firewall_zones.include?(zone)
 
       @SETTINGS[zone][:modified] << zone_param
     end
@@ -1051,7 +1051,7 @@ module Yast
     def del_zone_modified(zone, zone_param)
       # Do nothing if the parameters are not valid
       return nil if zone_param.nil? || \
-          !@known_firewall_zones.include?(zone)
+        !@known_firewall_zones.include?(zone)
 
       @SETTINGS[zone][:modified].delete(zone_param)
     end

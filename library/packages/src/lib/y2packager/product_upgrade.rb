@@ -132,7 +132,7 @@ module Y2Packager
           # all products from the mapping are installed and the obsolete one
           # is removed by the solver (i.e. not removed by YaST or user)
           next unless (installed_products - system_installed).empty? &&
-              obsolete_products.all? { |p| removed_by_solver?(p) }
+            obsolete_products.all? { |p| removed_by_solver?(p) }
 
           a.concat(obsolete_products)
         end
