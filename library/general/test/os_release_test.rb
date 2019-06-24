@@ -6,7 +6,7 @@ Yast.import "OSRelease"
 Yast.import "FileUtils"
 Yast.import "Misc"
 
-DATA_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "data")
+DATA_DIR = File.join(__dir__, "data")
 
 describe Yast::OSRelease do
   describe "#ReleaseInformation" do

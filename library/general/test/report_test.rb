@@ -131,7 +131,7 @@ describe Yast::Report do
   end
 
   describe ".Settings" do
-    DATA_DIR = File.join(File.expand_path(File.dirname(__FILE__)), "data")
+    DATA_DIR = File.join(__dir__, "data")
     let(:ay_profile) { YAML.load_file(File.join(DATA_DIR, "ay_profile.yml")) }
     let(:default_normal) { YAML.load_file(File.join(DATA_DIR, "default_normal_installation.yml")) }
     let(:default_ay) { YAML.load_file(File.join(DATA_DIR, "default_ay_installation.yml")) }

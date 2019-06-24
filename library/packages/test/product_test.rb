@@ -19,7 +19,7 @@ Yast.import "Stage"
 include Yast::Logger
 
 # Path to a test data - service file - mocking the default data path
-DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data")
+DATA_PATH = File.join(__dir__, "data")
 
 def load_zypp(file_name)
   file_name = File.join(DATA_PATH, "zypp", file_name)

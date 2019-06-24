@@ -287,15 +287,6 @@ Style/ConditionalAssignment:
     - 'library/general/src/modules/Popup.rb'
     - 'library/wizard/src/modules/Progress.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/Dir:
-  Exclude:
-    - 'library/general/test/os_release_test.rb'
-    - 'library/general/test/report_test.rb'
-    - 'library/network/test/test_helper.rb'
-    - 'library/packages/test/product_test.rb'
-
 # Offense count: 8
 # Cop supports --auto-correct.
 Style/EmptyLambdaParameter:
