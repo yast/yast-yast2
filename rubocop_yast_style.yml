@@ -246,3 +246,7 @@ Style/NumericPredicate:
 # no strong preference if 5 == a or a == 5 should be enforced
 Style/YodaCondition:
   Enabled: false
+
+# Do not enforce neither style of access modifiers as both are useful
+Style/AccessModifierDeclarations:
+  Enabled: false
