@@ -109,12 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 1
-# Configuration parameters: MaximumRangeSize.
-Lint/MissingCopEnableDirective:
-  Exclude:
-    - 'library/general/src/lib/ui/greasemonkey.rb'
-
 # Offense count: 12
 # Cop supports --auto-correct.
 Lint/ScriptPermission:
