@@ -88,7 +88,7 @@ Style/NumericLiterals:
 # no extra indentation for multiline function calls.
 # Reason is that some legacy ruby API call have a lot of parameters and it makes
 # looking it ugly. Especially UI constructions with helpers cannot fit into line
-# lenght.
+# lenght. Same applies to method calls separated by dot.
 # required style ( and by default forbidden by rubocop ):
 #
 # SmartClass.smart_method(boring_parameter1, boring_parameter2,
@@ -103,6 +103,8 @@ Layout/AlignParameters:
   EnforcedStyle: with_fixed_indentation
 Layout/AlignArguments:
   EnforcedStyle: with_fixed_indentation
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
 
 # no extra indentation for case.
 # We prefer style
