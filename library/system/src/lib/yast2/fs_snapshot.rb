@@ -73,7 +73,7 @@ module Yast2
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
     CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description %{description}".freeze
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list --disable-used-space".freeze
-    VALID_LINE_REGEX = /\A\s*\d+[-+*]?\s*\|\s*\w+/
+    VALID_LINE_REGEX = /\A\s*\d+[-+*]?\s*\|\s*\w+/.freeze
 
     # Predefined snapshot cleanup strategies (the user can define custom ones, too)
     CLEANUP_STRATEGY = { number: "number", timeline: "timeline" }.freeze

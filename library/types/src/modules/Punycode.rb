@@ -33,7 +33,7 @@ require "simpleidn"
 module Yast
   class PunycodeClass < Module
     # string, matching this regexp, is not cached
-    NOT_CACHED_REGEXP = /^[0123456789.]*$/
+    NOT_CACHED_REGEXP = /^[0123456789.]*$/.freeze
 
     def main
       textdomain "base"
