@@ -61,7 +61,7 @@ module Yast
     # @return true if correct
     def Check4(ip)
       IPAddr.new(ip).ipv4?
-    rescue
+    rescue StandardError
       false
     end
 
@@ -81,7 +81,7 @@ module Yast
     # @return true if correct
     def Check6(ip)
       IPAddr.new(ip).ipv6?
-    rescue
+    rescue StandardError
       false
     end
 

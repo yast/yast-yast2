@@ -61,7 +61,7 @@ describe UI::Dialog do
 
       begin
         subject.run
-      rescue
+      rescue StandardError
         "expected"
       end
     end

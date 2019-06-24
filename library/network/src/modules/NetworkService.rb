@@ -371,7 +371,7 @@ module Yast
     # Checks if currently cached service is the given one
     def cached_service?(service)
       cached_name == service
-    rescue
+    rescue StandardError
       Builtins.y2error("NetworkService: error when checking cached network service")
       false
     end

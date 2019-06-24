@@ -120,7 +120,7 @@ module Yast
         return :no_access
       rescue Errno::ENOENT
         return :missing
-      rescue
+      rescue StandardError
         nil
       end
       return :no_access if !File.readable?(file)
