@@ -266,9 +266,3 @@ Style/UnneededCondition:
   Exclude:
     - 'library/systemd/src/lib/yast2/systemd/target.rb'
     - 'library/types/src/modules/String.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/UnneededSort:
-  Exclude:
-    - 'library/packages/src/lib/y2packager/package.rb'

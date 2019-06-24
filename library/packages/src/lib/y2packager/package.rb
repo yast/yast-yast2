@@ -58,8 +58,7 @@ module Y2Packager
 
         packages
           .select { |i| statuses.include?(i.status) }
-          .sort { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
-          .last
+          .max { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
       end
     end
 
