@@ -109,11 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 189
-# Cop supports --auto-correct.
-Style/Encoding:
-  Enabled: false
-
 # Offense count: 11
 # Cop supports --auto-correct.
 Style/ExpandPathArguments:

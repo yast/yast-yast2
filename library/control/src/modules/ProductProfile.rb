@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # File:  modules/ProductProfile.ycp
 # Package:  yast2
 # Summary:  Functions for handling Product Profiles
