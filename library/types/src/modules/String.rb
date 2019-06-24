@@ -76,24 +76,24 @@ module Yast
 
     # Optional parenthesized text
     # @return " (Foo)" if Foo is neither empty or nil, else ""
-    def OptParens(s)
-      opt_format(" (%1)", s)
+    def OptParens(input)
+      opt_format(" (%1)", input)
     end
 
-    # @param [Array<String>] l a list of strings
+    # @param [Array<String>] list of strings
     # @return only non-"" items
-    def NonEmpty(l)
-      return nil unless l
+    def NonEmpty(list)
+      return nil unless list
 
-      l.reject { |i| i == "" }
+      list.reject { |i| i == "" }
     end
 
-    # @param [String] s \n-terminated items
+    # @param [String] string \n-terminated items
     # @return the items as a list, with empty lines removed
-    def NewlineItems(s)
-      return nil unless s
+    def NewlineItems(string)
+      return nil unless string
 
-      NonEmpty(s.split("\n"))
+      NonEmpty(string.split("\n"))
     end
 
     # @param [Boolean] value boolean
@@ -216,12 +216,12 @@ module Yast
 
     # Format an integer number as (at least) two digits; use leading zeroes if
     # necessary.
-    # @param [Fixnum] x input
+    # @param [Fixnum] input
     # @return [String] number as two-digit string
     #
-    def FormatTwoDigits(x)
-      msg = (0..9).member?(x) ? "0%1" : "%1"
-      Builtins.sformat(msg, x)
+    def FormatTwoDigits(input)
+      msg = (0..9).member?(input) ? "0%1" : "%1"
+      Builtins.sformat(msg, input)
     end
 
     # Format an integer seconds value with min:sec or hours:min:sec
@@ -549,13 +549,13 @@ module Yast
 
     # Shorthand for select (splitstring (s, separators), 0, "")
     # Useful now that the above produces a deprecation warning.
-    # @param [String] s string to be split
+    # @param [String] string to be split
     # @param [String] separators characters which delimit components
     # @return first component or ""
-    def FirstChunk(s, separators)
-      return "" if !s || !separators
+    def FirstChunk(string, separators)
+      return "" if !string || !separators
 
-      s[/\A[^#{separators}]*/]
+      string[/\A[^#{separators}]*/]
     end
 
     # The 26 lowercase ASCII letters
@@ -654,21 +654,21 @@ module Yast
     end
 
     # Replace substring in a string. All substrings source are replaced by string target.
-    # @param [String] s input string
+    # @param [String] input string
     # @param [String] source the string which will be replaced
     # @param [String] target the new string which is used instead of source
     # @return [String] result
-    def Replace(s, source, target)
-      return nil if s.nil?
+    def Replace(input, source, target)
+      return nil if input.nil?
 
       if source.nil? || source == ""
         Builtins.y2warning("invalid parameter source: %1", source)
-        return s
+        return input
       end
 
       if target.nil?
         Builtins.y2warning("invalid parameter target: %1", target)
-        return s
+        return input
       end
 
       # avoid infinite loop even if it break backward compatibility
@@ -676,17 +676,17 @@ module Yast
         raise "Target #{target} include #{source} which will lead to infinite loop"
       end
 
-      pos = s.index(source)
+      pos = input.index(source)
       while pos
-        tmp = s[0, pos] + target
-        tmp << s[(pos + source.size)..-1] if s.size > (pos + source.size)
+        tmp = input[0, pos] + target
+        tmp << input[(pos + source.size)..-1] if input.size > (pos + source.size)
 
-        s = tmp
+        input = tmp
 
-        pos = s.index(source)
+        pos = input.index(source)
       end
 
-      s
+      input
     end
 
     # Make a random base-36 number.
@@ -832,8 +832,8 @@ module Yast
 
     # Optional formatted text
     # @return sformat (f, s) if s is neither empty or nil, else ""
-    def opt_format(f, s)
-      s == "" || s.nil? ? "" : Builtins.sformat(f, s)
+    def opt_format(format, string)
+      string == "" || string.nil? ? "" : Builtins.sformat(format, string)
     end
 
     # Return a pretty description of a download rate

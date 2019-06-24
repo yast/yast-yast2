@@ -36,12 +36,11 @@ module Yast
 
     # Workaround function for WFM::CallFunction scope problems (#22486).
     # Same use as WFM::CallFunction.
-    # @param [String] f function client to be called
-    # @param [Array] a function params
+    # @param [String] function client to be called
+    # @param [Array] params
     # @return function result
-    def Function(f, a)
-      a = deep_copy(a)
-      WFM.CallFunction(f, a)
+    def Function(function, params)
+      WFM.CallFunction(function, params)
     end
 
     publish function: :Function, type: "any (string, list)"

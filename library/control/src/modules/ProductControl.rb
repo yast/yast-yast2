@@ -515,19 +515,19 @@ module Yast
     end
 
     # Prepare Workflow Scripts
-    # @param [Hash] m Workflow module map
+    # @param [Hash] workflow Workflow module map
     # @return [void]
-    def PrepareScripts(m)
-      m = deep_copy(m)
+    def PrepareScripts(workflow)
+      workflow = deep_copy(workflow)
       tmp_dir = Convert.to_string(WFM.Read(path(".local.tmpdir"), []))
-      if Builtins.haskey(m, "prescript")
-        interpreter = Ops.get_string(m, ["prescript", "interpreter"], "shell")
-        source = Ops.get_string(m, ["prescript", "source"], "")
+      if Builtins.haskey(workflow, "prescript")
+        interpreter = Ops.get_string(workflow, ["prescript", "interpreter"], "shell")
+        source = Ops.get_string(workflow, ["prescript", "source"], "")
         type = interpreter == "shell" ? "sh" : "pl"
         f = Builtins.sformat(
           "%1/%2_pre.%3",
           tmp_dir,
-          Ops.get_string(m, "name", ""),
+          Ops.get_string(workflow, "name", ""),
           type
         )
         WFM.Write(path(".local.string"), f, source)
@@ -535,18 +535,18 @@ module Yast
           @logfiles,
           Builtins.sformat(
             "%1.log",
-            Builtins.sformat("%1_pre.%2", Ops.get_string(m, "name", ""), type)
+            Builtins.sformat("%1_pre.%2", Ops.get_string(workflow, "name", ""), type)
           )
         )
       end
-      if Builtins.haskey(m, "postscript")
-        interpreter = Ops.get_string(m, ["postscript", "interpreter"], "shell")
-        source = Ops.get_string(m, ["postscript", "source"], "")
+      if Builtins.haskey(workflow, "postscript")
+        interpreter = Ops.get_string(workflow, ["postscript", "interpreter"], "shell")
+        source = Ops.get_string(workflow, ["postscript", "source"], "")
         type = interpreter == "shell" ? "sh" : "pl"
         f = Builtins.sformat(
           "%1/%2_post.%3",
           tmp_dir,
-          Ops.get_string(m, "name", ""),
+          Ops.get_string(workflow, "name", ""),
           type
         )
         WFM.Write(path(".local.string"), f, source)
@@ -554,7 +554,7 @@ module Yast
           @logfiles,
           Builtins.sformat(
             "%1.log",
-            Builtins.sformat("%1_post.%2", Ops.get_string(m, "name", ""), type)
+            Builtins.sformat("%1_post.%2", Ops.get_string(workflow, "name", ""), type)
           )
         )
       end

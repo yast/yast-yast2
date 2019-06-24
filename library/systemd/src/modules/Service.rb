@@ -336,15 +336,15 @@ module Yast
     # enabled, otherwise disabled.
     #
     # @param [String] name name of service to adjust
-    # @param [Array] rl list of runlevels in which service should start
+    # @param [Array] list list of runlevels in which service should start
     # @return success state
-    def Finetune(name, rl)
+    def Finetune(name, list)
       deprecate("use `enable` or `disable` instead")
 
       service = Yast2::Systemd::Service.find(name)
       return failure(:not_found, name) unless service
 
-      if rl.empty?
+      if list.empty?
         service.disable
       else
         log.warn "Cannot enable service '#{name}' in selected runlevels, enabling for all"

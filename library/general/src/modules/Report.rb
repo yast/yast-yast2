@@ -723,15 +723,15 @@ module Yast
     #
     # Every new line character "\n" is replaced by string "[BR]".
     #
-    # @param [Boolean] w include warnings in returned string
-    # @param [Boolean] e include errors in returned string
-    # @param [Boolean] m include messages in returned string
-    # @param [Boolean] ynm include Yes/No messages in returned string
+    # @param [Boolean] warning include warnings in returned string
+    # @param [Boolean] errors include errors in returned string
+    # @param [Boolean] messages include messages in returned string
+    # @param [Boolean] yes_no include Yes/No messages in returned string
     # @return [String] rich text string
-    def GetMessages(w, e, m, ynm)
+    def GetMessages(warnings, errors, messages, yes_no)
       richtext = ""
 
-      if w
+      if warnings
         # translators: warnings summary header
         richtext = Ops.add(
           Ops.add(Ops.add(richtext, "<P><B>"), _("Warning:")),
@@ -748,7 +748,7 @@ module Yast
         richtext = Ops.add(richtext, "</P>")
       end
 
-      if e
+      if errors
         # translators: errors summary header
         richtext = Ops.add(
           Ops.add(Ops.add(richtext, "<P><B>"), _("Error:")),
@@ -765,7 +765,7 @@ module Yast
         richtext = Ops.add(richtext, "</P>")
       end
 
-      if m
+      if messages
         # translators: message summary header
         richtext = Ops.add(
           Ops.add(Ops.add(richtext, "<P><B>"), _("Message:")),
@@ -782,7 +782,7 @@ module Yast
         richtext = Ops.add(richtext, "</P>")
       end
 
-      if ynm
+      if yes_no
         # translators: message summary header
         richtext = Ops.add(
           Ops.add(Ops.add(richtext, "<P><B>"), _("Message:")),

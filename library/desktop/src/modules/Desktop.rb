@@ -220,24 +220,24 @@ module Yast
       key
     end
 
-    def CreateList(m)
-      m = deep_copy(m)
-      keys = Map.Keys(m)
+    def CreateList(entry)
+      entry = deep_copy(entry)
+      keys = Map.Keys(entry)
       keys = Builtins.sort(keys) do |x, y|
         Ops.less_than(
-          Ops.get_string(m, [x, "SortKey"], ""),
-          Ops.get_string(m, [y, "SortKey"], "")
+          Ops.get_string(entry, [x, "SortKey"], ""),
+          Ops.get_string(entry, [y, "SortKey"], "")
         )
       end
 
       keys = Builtins.filter(keys) do |key|
-        Ops.get_string(m, [key, "Hidden"], "false") != "true"
+        Ops.get_string(entry, [key, "Hidden"], "false") != "true"
       end
 
       Builtins.y2debug("keys=%1", keys)
 
       Builtins.maplist(keys) do |name|
-        Item(Id(name), Translate(Ops.get_string(m, [name, "Name"], "???")))
+        Item(Id(name), Translate(Ops.get_string(entry, [name, "Name"], "???")))
       end
     end
 

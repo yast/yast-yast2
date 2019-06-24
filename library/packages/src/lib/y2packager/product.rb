@@ -49,10 +49,10 @@ module Y2Packager
                             "category", "vendor"].freeze
 
       # Create a product from pkg-bindings hash data.
-      # @param p [Hash] the pkg-bindings product hash
+      # @param product [Hash] the pkg-bindings product hash
       # @return [Y2Packager::Product] converted product
-      def from_h(p)
-        params = PKG_BINDINGS_ATTRS.each_with_object({}) { |a, h| h[a.to_sym] = p[a] }
+      def from_h(product)
+        params = PKG_BINDINGS_ATTRS.each_with_object({}) { |a, h| h[a.to_sym] = product[a] }
         Y2Packager::Product.new(params)
       end
 

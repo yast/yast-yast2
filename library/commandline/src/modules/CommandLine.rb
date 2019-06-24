@@ -151,26 +151,26 @@ module Yast
     #  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
     #  Suppress printing if there are no commands to be handled (starting GUI)
     #
-    #  @param [String] s  the string to be printed
-    def PrintInternal(s, newline)
+    #  @param [String] string to be printed
+    def PrintInternal(string, newline)
       return if !Mode.commandline
 
       # avoid using of uninitialized value in .dev.tty perl agent
-      if s.nil?
+      if string.nil?
         Builtins.y2warning("CommandLine::Print: invalid argument (nil)")
         return
       end
 
       if @interactive
         if newline
-          SCR.Write(path(".dev.tty"), s)
+          SCR.Write(path(".dev.tty"), string)
         else
-          SCR.Write(path(".dev.tty.nocr"), s)
+          SCR.Write(path(".dev.tty.nocr"), string)
         end
       elsif newline
-        SCR.Write(path(".dev.tty.stderr"), s)
+        SCR.Write(path(".dev.tty.stderr"), string)
       else
-        SCR.Write(path(".dev.tty.stderr_nocr"), s)
+        SCR.Write(path(".dev.tty.stderr_nocr"), string)
       end
 
       nil
@@ -181,9 +181,9 @@ module Yast
     #  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
     #  Suppress printing if there are no commands to be handled (starting GUI)
     #
-    #  @param [String] s  the string to be printed
-    def Print(s)
-      PrintInternal(s, true)
+    #  @param [String] string to be printed
+    def Print(string)
+      PrintInternal(string, true)
     end
 
     #  Print a String, don't add a trailing newline character
@@ -191,25 +191,25 @@ module Yast
     #  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
     #  Suppress printing if there are no commands to be handled (starting GUI)
     #
-    #  @param [String] s  the string to be printed
-    def PrintNoCR(s)
-      PrintInternal(s, false)
+    #  @param [String] string to be printed
+    def PrintNoCR(string)
+      PrintInternal(string, false)
     end
 
     # Same as Print(), but the string is printed only when verbose command
     # line mode was activated
-    # @param [String] s string to print
-    def PrintVerbose(s)
-      Print(s) if @verbose
+    # @param [String] string to print
+    def PrintVerbose(string)
+      Print(string) if @verbose
 
       nil
     end
 
     # Same as PrintNoCR(), but the string is printed only when verbose command
     # line mode was activated
-    # @param [String] s string to print
-    def PrintVerboseNoCR(s)
-      PrintNoCR(s) if @verbose
+    # @param [String] string to print
+    def PrintVerboseNoCR(string)
+      PrintNoCR(string) if @verbose
 
       nil
     end

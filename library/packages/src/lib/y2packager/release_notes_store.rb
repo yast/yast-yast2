@@ -43,9 +43,9 @@ module Y2Packager
 
     # Store release notes for later retrieval
     #
-    # @param rn [ReleaseNotes] Release notes to store
-    def store(rn)
-      release_notes[rn.product_name] = rn
+    # @param release_note [ReleaseNotes] Release notes to store
+    def store(release_note)
+      release_notes[release_note.product_name] = release_note
     end
 
     # Clear store

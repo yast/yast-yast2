@@ -42,10 +42,10 @@ module Yast
     end
 
     # Helper function that replaces all ocurences of "\n" with "\\n", so items are not multiline :-)
-    # @param [String] s string to escape
+    # @param [String] string to escape
     # @return [String] escaped string
-    def escapestring(s)
-      Builtins.mergestring(Builtins.splitstring(s, "\n"), "\\n")
+    def escapestring(string)
+      Builtins.mergestring(Builtins.splitstring(string, "\n"), "\\n")
     end
 
     # Shows tree with contents of variable. This function does the job. Heavy recursion...

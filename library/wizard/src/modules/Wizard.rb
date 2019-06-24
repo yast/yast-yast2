@@ -1084,17 +1084,17 @@ module Yast
 
     # Sets the dialog title shown in the window manager's title bar.
     #
-    # @param [String] titleText title of the dialog
+    # @param [String] title_text title of the dialog
     #
     # @example
     #  SetDialogTitle ("DNS Server Configuration");
     #
-    def SetDialogTitle(titleText)
+    def SetDialogTitle(title_text)
       # backward compatibility with showing just YaST2 in qt
       # see bsc#1033161 comment#4
       UI.SetApplicationTitle("YaST2") if haveFancyUI
 
-      UI.WizardCommand(term(:SetDialogTitle, titleText))
+      UI.WizardCommand(term(:SetDialogTitle, title_text))
 
       nil
     end

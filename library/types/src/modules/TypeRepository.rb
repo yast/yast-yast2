@@ -60,11 +60,10 @@ module Yast
 
     # Check, if s is a string.
     #
-    # @param [Object] s    a value to be validated
-    # @return    true if s is string
-    def is_string(s)
-      s = deep_copy(s)
-      Ops.is_string?(s)
+    # @param [Object] value a value to be validated
+    # @return true if s is string
+    def is_string(value)
+      Ops.is_string?(value)
     end
 
     # Constructor, defines the known types.

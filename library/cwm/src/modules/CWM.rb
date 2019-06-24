@@ -109,18 +109,18 @@ module Yast
 
     # Process term with the dialog, replace strings in the term with
     # appropriate widgets
-    # @param t [::CWM::StringTerm] term dialog containing strings
+    # @param term [::CWM::StringTerm] term dialog containing strings
     # @param widgets [Hash{String => ::CWM::WidgetHash}] widget name -> widget description
     # @return [::CWM::UITerm] updated term ready to be used as a dialog
-    def ProcessTerm(t, widgets)
-      return t if t.empty?
+    def ProcessTerm(term, widgets)
+      return term if term.empty?
 
-      ret = Yast::Term.new(t.value)
+      ret = Yast::Term.new(term.value)
 
-      is_frame = t.value == :Frame
+      is_frame = term.value == :Frame
       is_id_frame = false
 
-      t.each.with_index do |arg, index|
+      term.each.with_index do |arg, index|
         if is_frame && index == 0 # no action
           # frame can have id and also label, so mark if id is used
           is_id_frame = arg.is_a?(Yast::Term) && arg.value == :id
@@ -132,7 +132,7 @@ module Yast
             arg = ProcessTerm(arg, widgets)
           end
         elsif Ops.is_string?(arg) # action
-          Builtins.y2error("find string '#{arg}' without associated widget in StringTerm #{t.inspect}") unless widgets[arg]
+          Builtins.y2error("find string '#{arg}' without associated widget in StringTerm #{term.inspect}") unless widgets[arg]
           Builtins.y2milestone("Known widgets #{widgets.inspect}") unless widgets[arg]
 
           arg = widgets.fetch(arg, {}).fetch("widget") { VBox() }
@@ -147,16 +147,16 @@ module Yast
 
     # Process term with the dialog, return all strings.
     # To be used as an argument for widget_names until they are obsoleted.
-    # @param t [::CWM::StringTerm] term dialog containing strings
+    # @param term [::CWM::StringTerm] term dialog containing strings
     # @return [Array<String>] found in the term
-    def StringsOfTerm(t)
-      t = deep_copy(t)
+    def StringsOfTerm(term)
+      term = deep_copy(term)
       rets = []
-      args = Builtins.size(t)
+      args = Builtins.size(term)
       index = 0
       while Ops.less_than(index, args)
-        arg = Ops.get(t, index)
-        current = Builtins.symbolof(t)
+        arg = Ops.get(term, index)
+        current = Builtins.symbolof(term)
         if current == :Frame && index == 0 # no action
           Builtins.y2debug("Leaving untouched %1", arg)
         elsif Ops.is_term?(arg)
@@ -1109,8 +1109,8 @@ module Yast
   private
 
     # such an accessor enables testing
-    def processed_widget=(w)
-      @processed_widget = w
+    def processed_widget=(widget)
+      @processed_widget = widget
     end
   end
 

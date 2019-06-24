@@ -104,15 +104,15 @@ module Yast
     #
     # The LogView widget must exist when calling this function. The `MaxLines
     # parameter of the widget will be set.
-    def Start(widget, d)
+    def Start(widget, data)
       widget = deep_copy(widget)
-      d = deep_copy(d)
+      data = deep_copy(data)
       if !@id.nil?
         SCR.Execute(path(".process.release"), @id)
         @id = nil
       end
 
-      @data = deep_copy(d)
+      @data = deep_copy(data)
 
       file = Ops.get_string(@data, "file", "")
       grep = Ops.get_string(@data, "grep", "")

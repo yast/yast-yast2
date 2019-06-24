@@ -534,8 +534,8 @@ module Yast
     # kernel was reinstalled stuff
 
     #  Set inform_about_kernel_change.
-    def SetInformAboutKernelChange(b)
-      @inform_about_kernel_change = b
+    def SetInformAboutKernelChange(value)
+      @inform_about_kernel_change = value
 
       nil
     end

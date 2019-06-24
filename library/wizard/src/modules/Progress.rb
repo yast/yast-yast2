@@ -313,10 +313,10 @@ module Yast
       "?@%!"
     end
 
-    # @param [Fixnum] i stage number
+    # @param [Fixnum] stage stage number
     # @return widget `id(...) for the marker
-    def MarkId(i)
-      Id(Builtins.sformat("mark_stage_%1", i))
+    def MarkId(stage)
+      Id(Builtins.sformat("mark_stage_%1", stage))
     end
 
     # New complex progress bar with stages.
@@ -589,7 +589,7 @@ module Yast
     # @param [Array<Array<String>>] icons_definition
     # @see Function Progress::New()
     def NewProgressIcons(window_title, progress_title, length, stg, tits, help_textmap, _icons_definition)
-      Builtins.y2warning(-1, "#{__method__} is deprecated. Use Progess::New instead!")
+      Builtins.y2warning(-1, "#{__method__} is deprecated. Use Progress::New instead!")
       New(window_title, progress_title, length, stg, tits, help_textmap)
     end
 
@@ -649,9 +649,9 @@ module Yast
     end
 
     # the bar is either `ProgressBar or `Label
-    # @param [String] s title
-    def SetProgressBarTitle(s)
-      UI.ChangeWidget(Id(:pb), 0 == @steps ? :Value : :Label, s)
+    # @param [String] title
+    def SetProgressBarTitle(title)
+      UI.ChangeWidget(Id(:pb), 0 == @steps ? :Value : :Label, title)
 
       nil
     end
@@ -711,13 +711,13 @@ module Yast
     end
 
     # Changes progress bar value to st.
-    # @param [Fixnum] st new value
-    def Step(st)
+    # @param [Fixnum] stet new value
+    def Step(step)
       return if !@visible || Mode.commandline || 0 == @steps
 
-      return if Ops.less_than(st, 0) || Ops.greater_than(st, @steps)
+      return if Ops.less_than(step, 0) || Ops.greater_than(step, @steps)
 
-      @current_step = st
+      @current_step = step
 
       UpdateProgressBar()
 
@@ -726,11 +726,11 @@ module Yast
 
     # Go to stage st, change progress bar title to title and set progress
     # bar step to step.
-    # @param [Fixnum] st New stage.
+    # @param [Fixnum] stage New stage.
     # @param [String] title New title for progress bar. If nil, title specified in
     #              New is used.
     # @param [Fixnum] step New step or -1 if step should not change.
-    def Stage(st, title, step)
+    def Stage(stage, title, step)
       return if !@visible
 
       Step(step) if -1 != step
@@ -746,11 +746,11 @@ module Yast
         UI.ChangeWidget(
           MarkId(@current_stage),
           :Value,
-          Mark(Ops.greater_than(st, @current_stage) ? :done : :todo)
+          Mark(Ops.greater_than(stage, @current_stage) ? :done : :todo)
         )
       end
 
-      @current_stage = st
+      @current_stage = stage
       s = ""
       if Ops.less_than(@current_stage, Builtins.size(@titles))
         s = Ops.get_string(@titles, @current_stage, "")
@@ -772,20 +772,20 @@ module Yast
     end
 
     # Jumps to the next stage and sets step to st.
-    # @param [Fixnum] st new progress bar value
-    def NextStageStep(st)
+    # @param [Fixnum] step new progress bar value
+    def NextStageStep(step)
       return if !@visible || Mode.commandline
 
       NextStage()
-      Step(st)
+      Step(step)
 
       nil
     end
 
     # Change progress bar title.
-    # @param [String] t new title. Use ""(empty string) if you want an empty progress bar.
-    def Title(t)
-      SetProgressBarTitle(t) if @visible && !Mode.commandline
+    # @param [String] title. Use ""(empty string) if you want an empty progress bar.
+    def Title(title)
+      SetProgressBarTitle(title) if @visible && !Mode.commandline
 
       nil
     end

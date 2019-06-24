@@ -80,12 +80,12 @@ module Yast
 
     # Checks parameters for global functions
     #
-    # @param [String] unique_ID
+    # @param [String] unique_id
     # @param [Symbol] type
     # @return [Boolean] if parameters are correct
-    def CheckParams(unique_ID, type)
-      if unique_ID.nil? || unique_ID == ""
-        log.error("Unique ID cannot be: #{unique_ID.inspect}")
+    def CheckParams(unique_id, type)
+      if unique_id.nil? || unique_id == ""
+        log.error("Unique ID cannot be: #{unique_id.inspect}")
         return false
       end
 
@@ -100,7 +100,7 @@ module Yast
     # Adds list of resolvables to pool that is then used by software proposal
     # to propose a selection of resolvables to install.
     #
-    # @param [String] unique_ID
+    # @param [String] unique_id
     # @param symbol resolvable type
     # @param list <string> of resolvables to add for installation
     # @param [Boolean] optional True for optional list, false (the default) for
@@ -114,18 +114,18 @@ module Yast
     #
     # @see #supported_resolvables
     # @see #RemoveResolvables()
-    def AddResolvables(unique_ID, type, resolvables, optional: false)
+    def AddResolvables(unique_id, type, resolvables, optional: false)
       resolvables = deep_copy(resolvables)
-      return false if !CheckParams(unique_ID, type)
+      return false if !CheckParams(unique_id, type)
 
       if resolvables.nil?
         log.info("Using empty list instead of nil")
         resolvables = []
       end
 
-      log.info("Adding #{log_label(optional)} #{resolvables} of type #{type} for #{unique_ID}")
+      log.info("Adding #{log_label(optional)} #{resolvables} of type #{type} for #{unique_id}")
 
-      current_resolvables = data_for(unique_ID, type, optional: optional)
+      current_resolvables = data_for(unique_id, type, optional: optional)
       current_resolvables.concat(resolvables)
 
       true
@@ -133,26 +133,26 @@ module Yast
 
     # Replaces the current resolvables with new ones. Similar to AddResolvables()
     # but it replaces the list of resolvables instead of adding them to the pool.
-    # It always replaces only the part that is identified by the unique_ID.
+    # It always replaces only the part that is identified by the unique_id.
     #
-    # @param [String] unique_ID the unique identificator
+    # @param [String] unique_id the unique identificator
     # @param [Symbol] type resolvable type
     # @param [Array<String>] resolvables list of resolvables to add for installation
     # @param [Boolean] optional True for optional list, false (the default) for
     #   the required list
     # @return [Boolean] whether successful
-    def SetResolvables(unique_ID, type, resolvables, optional: false)
+    def SetResolvables(unique_id, type, resolvables, optional: false)
       resolvables = deep_copy(resolvables)
-      return false if !CheckParams(unique_ID, type)
+      return false if !CheckParams(unique_id, type)
 
       if resolvables.nil?
         log.warn("Using empty list instead of nil")
         resolvables = []
       end
 
-      log.info("Setting #{log_label(optional)} #{resolvables} of type #{type} for #{unique_ID}")
+      log.info("Setting #{log_label(optional)} #{resolvables} of type #{type} for #{unique_id}")
 
-      current_resolvables = data_for(unique_ID, type, optional: optional)
+      current_resolvables = data_for(unique_id, type, optional: optional)
       current_resolvables.replace(resolvables)
 
       true
@@ -161,7 +161,7 @@ module Yast
     # Removes list of packages from pool that is then used by software proposal
     # to propose a selection of resolvables to install.
     #
-    # @param [String] unique_ID the unique identificator
+    # @param [String] unique_id the unique identificator
     # @param [Symbol] type resolvable type
     # @param [Array<String>] resolvables list of resolvables to add for installation
     # @param [Boolean] optional True for optional list, false (the default) for
@@ -173,18 +173,18 @@ module Yast
     #
     # @see #supported_resolvables
     # @see #AddResolvables()
-    def RemoveResolvables(unique_ID, type, resolvables, optional: false)
+    def RemoveResolvables(unique_id, type, resolvables, optional: false)
       resolvables = deep_copy(resolvables)
-      return false if !CheckParams(unique_ID, type)
+      return false if !CheckParams(unique_id, type)
 
       if resolvables.nil?
         log.warn("Using empty list instead of nil")
         resolvables = []
       end
 
-      log.info("Removing #{log_label(optional)} #{resolvables} type #{type} for #{unique_ID}")
+      log.info("Removing #{log_label(optional)} #{resolvables} type #{type} for #{unique_id}")
 
-      current_resolvables = data_for(unique_ID, type, optional: optional)
+      current_resolvables = data_for(unique_id, type, optional: optional)
       current_resolvables.reject! { |r| resolvables.include?(r) }
 
       log.info("#{log_label(optional)} left: #{current_resolvables.inspect}")
@@ -194,7 +194,7 @@ module Yast
 
     # Returns all resolvables selected for installation.
     #
-    # @param [String] unique_ID the unique identificator
+    # @param [String] unique_id the unique identificator
     # @param [Symbol] type resolvable type
     # @param [Boolean] optional True for optional list, false (the default) for
     #   the required list
@@ -203,10 +203,10 @@ module Yast
     #
     # @example
     #   GetResolvables ("y2_kdump", `package) -> ["yast2-kdump", "kdump"]
-    def GetResolvables(unique_ID, type, optional: false)
-      return nil if !CheckParams(unique_ID, type)
+    def GetResolvables(unique_id, type, optional: false)
+      return nil if !CheckParams(unique_id, type)
 
-      data(optional).fetch(unique_ID, {}).fetch(type, [])
+      data(optional).fetch(unique_id, {}).fetch(type, [])
     end
 
     # Returns list of selected resolvables of a given type
@@ -278,15 +278,15 @@ module Yast
 
     # Returns true/false indicating whether the ID is already in use.
     #
-    # @param [String] unique_ID the unique identificator to check
+    # @param [String] unique_id the unique identificator to check
     # @return [Boolean] true if the ID is not used, false otherwise
-    def IsUniqueID(unique_ID)
-      if unique_ID.nil? || unique_ID == ""
-        log.error("Unique ID cannot be #{unique_ID.inspect}")
+    def IsUniqueID(unique_id)
+      if unique_id.nil? || unique_id == ""
+        log.error("Unique ID cannot be #{unique_id.inspect}")
         return nil
       end
 
-      !@resolvables_to_install.key?(unique_ID) && !@opt_resolvables_to_install.key?(unique_ID)
+      !@resolvables_to_install.key?(unique_id) && !@opt_resolvables_to_install.key?(unique_id)
     end
 
     publish function: :ResetAll, type: "void ()"
@@ -319,23 +319,23 @@ module Yast
     # Returns the resolvable list for the requested ID, resolvable type and kind
     # (required/optinal). If the list does not exit yet then a new empty list is created.
     #
-    # @param [String] unique_ID
+    # @param [String] unique_id
     # @param [Symbol] type
     # @param [Boolean] optional True for optional list, false (the default) for
     #   the required list
     # @return [Array<String>] the stored resolvables list
-    def data_for(unique_ID, type, optional: false)
-      if !data(optional).key?(unique_ID)
-        log.debug("Creating #{unique_ID.inspect} ID")
-        data(optional)[unique_ID] = {}
+    def data_for(unique_id, type, optional: false)
+      if !data(optional).key?(unique_id)
+        log.debug("Creating #{unique_id.inspect} ID")
+        data(optional)[unique_id] = {}
       end
 
-      if !data(optional)[unique_ID].key?(type)
-        log.debug("Creating '#{type}' key for #{unique_ID.inspect} ID")
-        data(optional)[unique_ID][type] = []
+      if !data(optional)[unique_id].key?(type)
+        log.debug("Creating '#{type}' key for #{unique_id.inspect} ID")
+        data(optional)[unique_id][type] = []
       end
 
-      data(optional)[unique_ID][type]
+      data(optional)[unique_id][type]
     end
   end
 

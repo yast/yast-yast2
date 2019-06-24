@@ -8,10 +8,10 @@ require "cwm/pager"
 
 class TestPage < CWM::Page
   attr_reader :label, :contents
-  def initialize(n)
-    self.widget_id = "page#{n}"
-    @label = "Page #{n}"
-    @contents = Yast::Term.new(:Empty, Yast::Term.new(:id, "empty#{n}"))
+  def initialize(number)
+    self.widget_id = "page#{number}"
+    @label = "Page #{number}"
+    @contents = Yast::Term.new(:Empty, Yast::Term.new(:id, "empty#{number}"))
   end
 end
 

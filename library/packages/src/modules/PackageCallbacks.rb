@@ -354,9 +354,9 @@ module Yast
     # callbacks, but only the progress bar and not the final error
     # message.  Returns old value.
     # @note nasty hack for inst_do_net_test client. Remove it when client disappear
-    def EnableAsterixPackage(f)
+    def EnableAsterixPackage(value)
       ret = @enable_asterix_package
-      @enable_asterix_package = f
+      @enable_asterix_package = value
       ret
     end
 
@@ -3092,7 +3092,7 @@ module Yast
       SCR.Write(path(".target.ycp"), @conf_file, @config)
     end
 
-    def progress_box(heading, name, sz)
+    def progress_box(heading, name, size)
       VBox(
         HSpacing(40),
         # popup heading
@@ -3103,7 +3103,7 @@ module Yast
               Left(Label(Opt(:boldFont), _("Package: "))),
               Left(Label(Opt(:boldFont), _("Size: ")))
             ),
-            VBox(Left(Label(name)), Left(Label(sz)))
+            VBox(Left(Label(name)), Left(Label(size)))
           )
         ),
         ProgressBar(Id(:progress), " ", 100, 0),
