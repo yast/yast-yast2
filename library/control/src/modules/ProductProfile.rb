@@ -92,6 +92,7 @@ module Yast
           next
         end
         next if !productId.nil? && src_id != productId
+
         Ops.set(@compliance_checked, src_id, true)
         profile = Pkg.SourceProvideOptionalFile(src_id, 1, @profile_path)
         if !profile.nil?
@@ -115,13 +116,11 @@ module Yast
         )
         products = Builtins.add(
           products,
-
           "arch"    => Ops.get_string(product, "arch", ""),
           "name"    => name,
           "version" => Ops.get(version_release, 0, ""),
           "release" => Ops.get(version_release, 1, ""),
           "vendor"  => Ops.get_string(product, "vendor", "")
-
         )
         sigkeys = Convert.convert(
           Builtins.union(sigkeys, GetSigKeysForProduct(src_id)),

@@ -91,6 +91,7 @@ module Yast
 
     def manual
       return @_manual if !@_manual.nil?
+
       @_manual = InstallInf("Manual") == "1"
       if !@_manual
         tmp = Convert.to_string(

@@ -234,6 +234,7 @@ module Yast2
       def event_loop(content, focus, timeout, details, style)
         res = Yast::UI.OpenDialog(dialog_options(style), content)
         raise "Failed to open dialog, see logs." unless res
+
         begin
           remaining_time = timeout
           Yast::UI.SetFocus(focus)

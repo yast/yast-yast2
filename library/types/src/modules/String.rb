@@ -68,6 +68,7 @@ module Yast
     # @see #quote
     def UnQuote(var)
       return "" if var.nil?
+
       log.debug "var=#{var}"
 
       var.gsub("'\\''", "'")
@@ -83,6 +84,7 @@ module Yast
     # @return only non-"" items
     def NonEmpty(l)
       return nil unless l
+
       l.reject { |i| i == "" }
     end
 
@@ -509,6 +511,7 @@ module Yast
     # @return [String] that has matches removed
     def CutRegexMatch(input, regex, glob)
       return "" if input.nil? || input.empty?
+
       output = input
       if Builtins.regexpmatch(output, regex)
         p = Builtins.regexppos(output, regex)
@@ -534,6 +537,7 @@ module Yast
     # @return [String]	escaped text
     def EscapeTags(text)
       return nil unless text
+
       text = text.dup
 
       text.gsub!("&", "&amp;")
@@ -550,6 +554,7 @@ module Yast
     # @return first component or ""
     def FirstChunk(s, separators)
       return "" if !s || !separators
+
       s[/\A[^#{separators}]*/]
     end
 
@@ -641,6 +646,7 @@ module Yast
     # @return	[String] underlined header line
     def UnderlinedHeader(header_line, left_padding)
       return nil unless header_line
+
       left_padding ||= 0
 
       Pad("", left_padding) + header_line + "\n" +
@@ -689,6 +695,7 @@ module Yast
     # @return random string of 0-9 and a-z
     def Random(len)
       return "" if !len || len <= 0
+
       digits = DIGIT_CHARS + LOWER_CHARS # uses the character classes from above
       ret = Array.new(len) { digits[rand(digits.size)] }
 

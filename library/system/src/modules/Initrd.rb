@@ -342,6 +342,7 @@ module Yast
 
       Builtins.foreach(@modules_settings) do |modname, optmap|
         next if !Ops.is_map?(optmap)
+
         if Ops.greater_than(Builtins.size(Convert.to_map(optmap)), 0)
           # write options to /etc/modules.conf
           p = Builtins.add(path(".modules.options"), modname)

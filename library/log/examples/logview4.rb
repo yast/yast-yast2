@@ -28,12 +28,10 @@ module Yast
       Yast.import "LogView"
 
       LogView.Display(
-
         "file"    => "/var/log/messages",
         "grep"    => "conf",
         "save"    => true,
         "actions" => [["Jump", fun_ref(method(:Jump), "void ()")]]
-
       )
 
       nil

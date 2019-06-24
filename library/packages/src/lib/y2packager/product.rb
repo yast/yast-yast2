@@ -210,6 +210,7 @@ module Y2Packager
     # @return [String] Product's license; empty string ("") if no license was found.
     def license_content(lang)
       return "" unless license?
+
       license.content_for(lang)
     end
 
@@ -226,6 +227,7 @@ module Y2Packager
     # @return [Boolean] true if the license acceptance is required
     def license_confirmation_required?
       return false unless license?
+
       license.confirmation_required?
     end
 
@@ -234,6 +236,7 @@ module Y2Packager
     # @param confirmed [Boolean] determines whether the license should be accepted or not
     def license_confirmation=(confirmed)
       return unless license
+
       confirmed ? license.accept! : license.reject!
     end
 
@@ -242,6 +245,7 @@ module Y2Packager
     # @return [Boolean] true if the license was confirmed (or acceptance was not needed)
     def license_confirmed?
       return false unless license
+
       license.accepted? || !license_confirmation_required?
     end
 
@@ -274,6 +278,7 @@ module Y2Packager
     # @return [String,nil] Release notes URL or nil if it is not defined.
     def relnotes_url
       return nil unless resolvable_properties
+
       url = resolvable_properties["relnotes_url"]
       url.empty? ? nil : url
     end

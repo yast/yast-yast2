@@ -128,6 +128,7 @@ module Yast
       return :no_access if !File.readable?(file)
       return :no_file if !File.file?(file)
       return :empty if !File.size?(file)
+
       :ok
     end
 

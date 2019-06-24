@@ -57,6 +57,7 @@ module Y2Firewall
       # @return [Array<Y2Firewall::Firewalld::Zone>]
       def read
         return [] if !@zone_names || @zone_names.empty?
+
         parse_zones
         initialize_zones
       end
@@ -70,6 +71,7 @@ module Y2Firewall
         current_attribute = nil
         zones_definition.each_with_object(zone_entries) do |line, entries|
           next if line.lstrip.empty?
+
           # If  the entry looks like a zone name
           if line.start_with?(/\w/)
             current_zone = current_zone_from(line)

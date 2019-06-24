@@ -72,6 +72,7 @@ module Yast2
           socket_name += UNIT_SUFFIX unless socket_name.end_with?(UNIT_SUFFIX)
           socket = new(socket_name, propmap)
           return nil if socket.properties.not_found?
+
           socket
         end
 

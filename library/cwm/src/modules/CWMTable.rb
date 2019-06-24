@@ -117,6 +117,7 @@ module Yast
         if Ops.is_term?(t) && Builtins.symbolof(Convert.to_term(t)) == :id
           next true
         end
+
         false
       end
       targs = Convert.convert(args, from: "list", to: "list <term>")

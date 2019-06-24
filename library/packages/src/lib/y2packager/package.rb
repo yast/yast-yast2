@@ -41,6 +41,7 @@ module Y2Packager
       def find(name)
         props = Yast::Pkg.ResolvableProperties(name, :package, "")
         return nil if props.nil?
+
         props.map { |i| new(i["name"], i["source"], i["version"]) }
       end
 

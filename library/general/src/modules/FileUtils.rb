@@ -56,6 +56,7 @@ module Yast
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
 
       return true if info != {}
+
       false
     end
 

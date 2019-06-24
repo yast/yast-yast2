@@ -419,6 +419,7 @@ module Yast
         # zones in SuSEFirewall configuration are identified by lowercased zone shorters
         return Builtins.tolower(zone)
       end
+
       nil
     end
 
@@ -432,6 +433,7 @@ module Yast
         # zones in SuSEFirewall configuration are identified by lowercased zone shorters
         return Builtins.toupper(zone_string)
       end
+
       nil
     end
 
@@ -804,6 +806,7 @@ module Yast
       Builtins.foreach(@service_defined_by) do |key|
         needed_ports = Ops.get(needed, key, [])
         next if needed_ports == []
+
         if key == "tcp_ports"
           RemoveAllowedPortsOrServices(needed_ports, "TCP", zone, true)
         elsif key == "udp_ports"
@@ -854,6 +857,7 @@ module Yast
       Builtins.foreach(@service_defined_by) do |key|
         needed_ports = Ops.get(needed, key, [])
         next if needed_ports == []
+
         if key == "tcp_ports"
           AddAllowedPortsOrServices(needed_ports, "TCP", zone)
         elsif key == "udp_ports"
@@ -1367,6 +1371,7 @@ module Yast
       Builtins.foreach(@service_defined_by) do |key|
         needed_ports = Ops.get(needed, key, [])
         next if needed_ports == []
+
         if key == "tcp_ports"
           service_is_supported = ArePortsOrServicesAllowed(
             needed_ports,
@@ -1601,6 +1606,7 @@ module Yast
         end
         # easy case
         next if listed_services.nil? || listed_services == ""
+
         # something listed but it still might be empty definition
         services_list = Builtins.splitstring(listed_services, " \n\t")
         services_list = Builtins.filter(services_list) do |service|
@@ -2022,6 +2028,7 @@ module Yast
         )
       ) do |forward_rule|
         next if forward_rule == ""
+
         # Format: <source network>,<ip to forward to>,<protocol>,<port>[,redirect port,[destination ip]]
         fw_rul = Builtins.splitstring(forward_rule, ",")
         # first four parameters has to be defined
@@ -2036,7 +2043,6 @@ module Yast
         end
         list_of_rules = Builtins.add(
           list_of_rules,
-
           "source_net" => Ops.get(fw_rul, 0, ""),
           "forward_to" => Ops.get(fw_rul, 1, ""),
           "protocol"   => Builtins.tolower(Ops.get(fw_rul, 2, "")),
@@ -2046,7 +2052,6 @@ module Yast
             Ops.get(fw_rul, 4, Ops.get(fw_rul, 3, ""))
           ),
           "req_ip"     => Builtins.tolower(Ops.get(fw_rul, 5, ""))
-
         )
       end
 
@@ -2072,6 +2077,7 @@ module Yast
         )
       ) do |forward_rule|
         next if forward_rule == ""
+
         if row_counter != remove_item
           forward_rules = Builtins.add(forward_rules, forward_rule)
         end
@@ -2603,6 +2609,7 @@ module Yast
               ) != true
             next
           end
+
           if Ops.get_list(old_service_def, "convert_to", []) == []
             Builtins.y2milestone(
               "Service %1 supported, but it doesn't have any replacement",

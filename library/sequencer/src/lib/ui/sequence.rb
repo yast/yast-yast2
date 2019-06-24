@@ -135,6 +135,7 @@ module UI
     def from_methods(sequence_hash)
       sequence_hash.keys.map do |name|
         next nil if name == START
+
         if self.class.skip_stack?(name)
           [name, [method(name), true]]
         else

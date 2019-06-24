@@ -328,6 +328,7 @@ module Yast
 
         return "C" if r == :abort
         return "R" if r == :retry
+
         if r == :ignore
           # don't show the warning when a refresh fails or for signature errors (error 3)
           if !@autorefreshing && error != 3
@@ -931,6 +932,7 @@ module Yast
         @doing_eject = true
 
         return "E" if eject_device == ""
+
         # get the index in the list
         dindex = -1
 

@@ -664,6 +664,7 @@ module Yast
             Ops.get_string(one_module, "proposal", "") != ""
           next true
         end
+
         # the rest
         false
       end
@@ -683,6 +684,7 @@ module Yast
 
       label = Ops.get_string(workflow, "label", "")
       return "" if label == ""
+
       if Builtins.haskey(workflow, "textdomain")
         return Builtins.dgettext(
           Ops.get_string(workflow, "textdomain", ""),
@@ -1528,6 +1530,7 @@ module Yast
       modules = getModules(Stage.stage, Mode.mode, :enabled)
       return nil if @first_step.nil?
       return nil if Ops.greater_or_equal(@first_step, Builtins.size(modules))
+
       index = 0
       ret = []
       while Ops.less_than(index, @first_step)
@@ -1541,6 +1544,7 @@ module Yast
     # @return a map describing the step
     def RestartingStep
       return nil if @restarting_step.nil?
+
       modules = getModules(Stage.stage, Mode.mode, :enabled)
       Ops.get(modules, @restarting_step, {})
     end

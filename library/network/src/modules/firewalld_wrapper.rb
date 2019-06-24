@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 #
 # ***************************************************************************
 #
@@ -74,6 +75,7 @@ module Yast
 
       zone = interface_zone(interface)
       return false unless zone
+
       port = "#{port_or_range.sub(":", "-")}/#{protocol.downcase}"
       zone.add_port(port)
     end
@@ -98,6 +100,7 @@ module Yast
 
       zone = interface_zone(interface)
       return false unless zone
+
       port = "#{port_or_range.sub(":", "-")}/#{protocol.downcase}"
       zone.remove_port(port)
     end
@@ -125,6 +128,7 @@ module Yast
     def zone_name_of_interface(interface)
       zone = interface_zone(interface)
       return nil unless zone
+
       zone.name
     end
 
@@ -137,6 +141,7 @@ module Yast
     def is_service_in_zone(service, zone_name)
       zone = firewalld.find_zone(zone_name)
       return false unless zone
+
       zone.services.include?(service)
     end
 
@@ -161,6 +166,7 @@ module Yast
       interfaces.each do |interface|
         zone = interface_zone(interface)
         next unless zone
+
         if status
           services.each { |service| zone.add_service(service) }
         else

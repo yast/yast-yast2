@@ -180,6 +180,7 @@ module Yast
           Builtins.sformat("\\1%1\\2", @slide_pic_path)
         )
         break if replaced.nil?
+
         text = replaced
       end
 

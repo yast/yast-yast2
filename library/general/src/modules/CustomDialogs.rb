@@ -65,6 +65,7 @@ module Yast
         Builtins.y2debug("checking for %1", file)
         text = Convert.to_string(SCR.Read(path(".target.string"), [file, ""]))
         break if text != ""
+
         i = Ops.add(i, 1)
       end
       { "text" => text, "file" => file }

@@ -417,6 +417,7 @@ module Yast
 
         # yes-no popup
         return nil if !Popup.YesNo(_("The key will be created now. Continue?"))
+
         SCR.Execute(
           path(".target.bash"),
           "/usr/bin/mkdir -p /etc/named.d"

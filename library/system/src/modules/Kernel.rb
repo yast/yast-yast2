@@ -169,6 +169,7 @@ module Yast
     def ParseInstallationKernelCmdline
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
+
       # live installation does not create /etc/install.inf (bsc#793065)
       tmp = if Mode.live_installation
         # not using dedicated agent in order to use the same parser for cmdline
@@ -589,18 +590,14 @@ module Yast
           :ag_anyagent,
           term(
             :Description,
-
             term(
               :File,
               full_path
             ),
-
             # Comments
             "#\n",
-
             # Read-only?
             false,
-
             term(
               :List,
               term(:String, "^\n"),
@@ -711,6 +708,7 @@ module Yast
     # Parameters to the important cmdline parts.
     def ExtractCmdlineParameters(line)
       return unless line
+
       # list of parameters to be discarded (yast internals)
       cmdlist = list_of_params(line)
 
@@ -719,10 +717,13 @@ module Yast
       cmdlist.each do |parameter|
         next unless parameter
         next if parameter.empty?
+
         key, value = parameter.split("=", 2)
         next unless key
+
         value ||= ""
         next if discardlist.include?(key)
+
         if key == "vga"
           if value.match?(/^(((0x)?\h+)|(ask)|(ext)|(normal))$/)
             @vgaType = value

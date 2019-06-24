@@ -406,6 +406,7 @@ module Yast
       if Builtins.regexpmatch(num, "^[0-9]*$")
         return Builtins.sformat("%1%2", typ, num)
       end
+
       Builtins.sformat("%1-%2", typ, num)
     end
 
@@ -579,6 +580,7 @@ module Yast
     def ConcealSecrets(devs)
       devs = deep_copy(devs)
       return nil if devs.nil?
+
       out = Builtins.mapmap(
         Convert.convert(
           devs,
@@ -636,6 +638,7 @@ module Yast
         item = SCR.Read(path("#{pth}.#{val}"))
         log.debug("item=#{item}")
         next if item.nil?
+
         # No underscore '_' -> global
         # Also temporarily standard globals
         if !val.include?("_") || LOCALS.include?(val)
@@ -772,6 +775,7 @@ module Yast
     # @return [Array] of Devices that match the given regex
     def FilterNOT(devices, devregex)
       return {} if devices.nil? || devregex.nil? || devregex == ""
+
       devices = deep_copy(devices)
 
       regex = "^(#{@DeviceRegex[devregex] || devregex})[0-9]*$"
@@ -819,6 +823,7 @@ module Yast
       ) do |typ, devsmap|
         Builtins.maplist(devsmap) do |config, devmap|
           next if devmap == Ops.get_map(original_devs, [typ, config], {})
+
           # write sysconfig
           p = Ops.add(Ops.add(".network.value.\"", config), "\".")
           if Ops.greater_than(
@@ -1279,6 +1284,7 @@ module Yast
     def Add
       @operation = nil
       return false if Select("") != true
+
       @operation = :add
       true
     end
@@ -1289,6 +1295,7 @@ module Yast
     def Edit(name)
       @operation = nil
       return false if Select(name) != true
+
       @operation = :edit
       true
     end
@@ -1299,6 +1306,7 @@ module Yast
     def Delete(name)
       @operation = nil
       return false if Select(name) != true
+
       @operation = :delete
       true
     end
@@ -1397,6 +1405,7 @@ module Yast
 
     def GetValue(name, key)
       return nil if !Select(name)
+
       Ops.get_string(@Current, key, "")
     end
 
@@ -1479,6 +1488,7 @@ module Yast
       end
       ret = Builtins.filter(ret) do |row|
         next true if !row.nil?
+
         Builtins.y2error("Filtering out : %1", row)
         false
       end

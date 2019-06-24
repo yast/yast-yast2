@@ -141,6 +141,7 @@ module Yast
     # @return ip address as integer
     def ToInteger(ip)
       return nil unless Check4(ip)
+
       IPAddr.new(ip).to_i
     end
 
@@ -159,6 +160,7 @@ module Yast
     def ToHex(ip)
       int = ToInteger(ip)
       return nil unless int
+
       format("%08X", int)
     end
 
@@ -199,6 +201,7 @@ module Yast
     def IPv4ToBits(ipv4)
       int = ToInteger(ipv4)
       return nil unless int
+
       format("%032b", int)
     end
 
@@ -214,6 +217,7 @@ module Yast
     #     BitsToIPv4("00110101000110001110001001100101") -> "53.24.226.101"
     def BitsToIPv4(bits)
       return nil unless /\A[01]{32}\z/ =~ bits
+
       ToString(bits.to_i(2))
     end
 

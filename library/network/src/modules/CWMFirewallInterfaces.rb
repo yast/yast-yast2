@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 #
 # ***************************************************************************
 #
@@ -108,6 +109,7 @@ module Yast
     def EnableOrDisableFirewallDetails
       return if !UI.WidgetExists(Id("_cwm_open_firewall"))
       return if !UI.WidgetExists(Id("_cwm_firewall_details"))
+
       enabled = Convert.to_boolean(
         UI.QueryWidget(Id("_cwm_open_firewall"), :Value)
       )
@@ -172,9 +174,11 @@ module Yast
         zone_names.map do |zone_name|
           zone = firewalld.find_zone(zone_name)
           next [] unless zone
+
           interfaces = zone.interfaces
 
           next(interfaces) unless zone_name == default_zone.name
+
           interfaces += default_interfaces
 
           left_explicitly = interfaces.select { |i| ifaces.include?(i) }.uniq
@@ -546,7 +550,6 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-
           "widget"            => :custom,
           "custom_widget"     => widget,
           "help"              => help,
@@ -567,7 +570,6 @@ module Yast
             method(:InterfacesValidateWrapper),
             "boolean (string, map)"
           )
-
         ),
         from: "map",
         to:   "map <string, any>"
@@ -635,6 +637,7 @@ module Yast
     # @param [Hash] _event map that caused widget data storing
     def OpenFirewallStore(widget, _key, _event)
       return unless open_firewall_widget?
+
       services = widget.fetch("services", [])
       StoreAllowedInterfaces(services)
       nil
@@ -729,6 +732,7 @@ module Yast
     def EnableOpenFirewallWidget
       return if !UI.WidgetExists(Id("_cwm_open_firewall"))
       return if !UI.WidgetExists(Id("_cwm_firewall_details"))
+
       UI.ChangeWidget(Id("_cwm_open_firewall"), :Enabled, true)
       EnableOrDisableFirewallDetails()
 
@@ -739,6 +743,7 @@ module Yast
     def DisableOpenFirewallWidget
       return if !UI.WidgetExists(Id("_cwm_open_firewall"))
       return if !UI.WidgetExists(Id("_cwm_firewall_details"))
+
       UI.ChangeWidget(Id("_cwm_open_firewall"), :Enabled, false)
       UI.ChangeWidget(Id("_cwm_firewall_details"), :Enabled, false)
 

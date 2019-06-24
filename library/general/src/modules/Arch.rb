@@ -503,6 +503,7 @@ module Yast
     def x11_setup_needed
       # disable X11 setup after initial boot
       return false if board_iseries || s390
+
       true
     end
 

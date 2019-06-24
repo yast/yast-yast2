@@ -114,6 +114,7 @@ module Yast
     # @return [::CWM::UITerm] updated term ready to be used as a dialog
     def ProcessTerm(t, widgets)
       return t if t.empty?
+
       ret = Yast::Term.new(t.value)
 
       is_frame = t.value == :Frame
@@ -736,6 +737,7 @@ module Yast
     # @return [::CWM::UITerm] updated term ready to be used as a dialog
     def PrepareDialog(dialog, widgets)
       return dialog.clone if dialog.empty?
+
       m = widgets.map do |w|
         widget_key = w.fetch("_cwm_key", "")
         [widget_key, w]
@@ -1007,7 +1009,6 @@ module Yast
       contents = deep_copy(contents)
       fallback = deep_copy(fallback)
       ShowAndRun(
-
         "widget_names"       => widget_names,
         "widget_descr"       => widget_descr,
         "contents"           => contents,
@@ -1015,7 +1016,6 @@ module Yast
         "back_button"        => back_button,
         "next_button"        => next_button,
         "fallback_functions" => fallback
-
       )
     end
 

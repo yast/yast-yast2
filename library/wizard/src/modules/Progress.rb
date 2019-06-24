@@ -309,6 +309,7 @@ module Yast
       return "-" if kind == :todo
       return UI.Glyph(:BulletArrowRight) if kind == :current
       return UI.Glyph(:CheckMark) if kind == :done
+
       "?@%!"
     end
 
@@ -659,6 +660,7 @@ module Yast
     # function. Advances progress bar value by 1.
     def NextStep
       return if !@visible || Mode.commandline || 0 == @steps
+
       @current_step = Ops.add(@current_step, 1)
       UpdateProgressBar()
 
@@ -669,6 +671,7 @@ module Yast
     # that defined in New.
     def NextStage
       return if !@visible
+
       NextStep()
 
       if 0 == @stages || Ops.greater_than(@current_stage, @stages)
@@ -772,6 +775,7 @@ module Yast
     # @param [Fixnum] st new progress bar value
     def NextStageStep(st)
       return if !@visible || Mode.commandline
+
       NextStage()
       Step(st)
 
@@ -885,6 +889,7 @@ module Yast
       end
       @super_step = Ops.add(@super_step, 1)
       return if Ops.greater_or_equal(@super_step, @super_steps)
+
       if UI.HasSpecialWidget(:Wizard)
         UI.WizardCommand(
           term(

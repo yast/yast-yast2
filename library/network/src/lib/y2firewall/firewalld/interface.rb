@@ -85,6 +85,7 @@ module Y2Firewall
       # @return [String] its device name or 'Unknown' if not configured
       def device_name
         return _("Unknown") unless known?
+
         Yast::NetworkInterfaces.GetValue(name, "NAME")
       end
 

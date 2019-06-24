@@ -91,6 +91,7 @@ module Yast
     def Clamp(i, min, max)
       return min if Ops.less_than(i, min)
       return max if Ops.greater_than(i, max)
+
       i
     end
 

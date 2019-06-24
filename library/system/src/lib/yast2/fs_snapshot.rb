@@ -148,6 +148,7 @@ module Yast2
       #   installation
       def configure_snapper
         raise SnapperNotConfigurable if !Yast::Mode.installation || non_switched_installation?
+
         @configured = nil
 
         installation_helper_step_4
@@ -184,6 +185,7 @@ module Yast2
 
         if [:around, :single].include?(snapshot_type)
           return false if disable_snapshots.include?("all")
+
           return !disable_snapshots.include?(snapshot_type.to_s)
         else
           raise ArgumentError, "Unsupported snapshot type #{snapshot_type.inspect}, " \
@@ -261,6 +263,7 @@ module Yast2
         lines.each_with_object([]) do |line, snapshots|
           data = line.split("|").map(&:strip)
           next if data[0] == "0" # Ignores 'current' snapshot (id = 0) because it's not a real snapshot
+
           begin
             timestamp = DateTime.parse(data[3])
           rescue ArgumentError

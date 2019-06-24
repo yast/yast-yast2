@@ -44,6 +44,7 @@ module Yast
     def Keys(m)
       m = deep_copy(m)
       return [] if m.nil? || m == {}
+
       Builtins.maplist(m) { |var, _val| var }
     end
 
@@ -53,6 +54,7 @@ module Yast
     def Values(m)
       m = deep_copy(m)
       return [] if m.nil? || m == {}
+
       Builtins.maplist(m) { |_var, val| val }
     end
 
@@ -63,6 +65,7 @@ module Yast
       m = deep_copy(m)
       newk = nil
       return {} if m.nil?
+
       Builtins.mapmap(m) do |k, v|
         newk = Builtins.tolower(k)
         { newk => v }
@@ -76,6 +79,7 @@ module Yast
       m = deep_copy(m)
       newk = nil
       return {} if m.nil?
+
       Builtins.mapmap(m) do |k, v|
         newk = Builtins.toupper(k)
         { newk => v }
@@ -129,6 +133,7 @@ module Yast
             Ops.get_string(val, 0, "") == ""
           next
         end
+
         key = Ops.get_string(val, 0, "")
         if Ops.greater_than(Builtins.size(val), 1)
           Ops.set(ret, key, Ops.get_string(val, 1, ""))

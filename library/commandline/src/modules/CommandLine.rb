@@ -384,6 +384,7 @@ module Yast
       Builtins.maplist(args) do |aos|
         Builtins.y2debug("os=%1", aos)
         next if !Ops.is_string?(aos)
+
         os = Convert.to_string(aos)
         o = Builtins.regexptokenize(os, "([^=]+)=(.+)")
         Builtins.y2debug("o=%1", o)
@@ -430,6 +431,7 @@ module Yast
       Builtins.maplist(givenoptions) do |o, val|
         v = Convert.to_string(val)
         next if ret != true
+
         if Ops.get(cmdoptions, o).nil?
           if !non_strict
             # translators: error message, %1 is a command, %2 is the wrong option given by the user
@@ -952,11 +954,9 @@ module Yast
         Ops.set(
           doc,
           "listEntries",
-
           "commands" => "command",
           "options"  => "option",
           "examples" => "example"
-
         )
         #	    doc["cdataSections"] = [];
         Ops.set(
@@ -1002,7 +1002,6 @@ module Yast
           end
           opts = []
           Builtins.foreach(Ops.get(mappings, action, [])) do |option|
-            #
             optn = {
               "name" => option,
               "help" => Ops.get_string(options, [option, "help"], "")
@@ -1159,6 +1158,7 @@ module Yast
           end
           Builtins.foreach(def_) do |mapopt|
             next if !Ops.is_string?(mapopt)
+
             # is this option defined?
             if !Builtins.haskey(
               Ops.get_map(cmdlineinfo, "options", {}),
@@ -1263,6 +1263,7 @@ module Yast
     def Scan
       res = Convert.to_string(SCR.Read(path(".dev.tty")))
       return nil if res.nil?
+
       String.ParseOptions(res, "separator" => " ")
     end
 

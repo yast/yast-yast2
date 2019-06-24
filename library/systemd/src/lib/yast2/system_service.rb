@@ -206,6 +206,7 @@ module Yast2
     # @return [Symbol] :on_boot, :on_demand, :manual
     def current_start_mode
       return @current_start_mode unless @current_start_mode.nil?
+
       @current_start_mode =
         if service.enabled?
           :on_boot
@@ -238,6 +239,7 @@ module Yast2
     def start_modes
       @start_modes = [:on_boot, :manual, :on_demand] unless found?
       return @start_modes if @start_modes
+
       @start_modes = [:manual]
       @start_modes << :on_boot unless service.static?
       @start_modes << :on_demand if socket
@@ -592,6 +594,7 @@ module Yast2
     def changed_value?(key)
       new_value = new_value_for(key)
       return false if new_value.nil?
+
       new_value != send(CURRENT_VALUE_METHODS[key])
     end
 
@@ -609,6 +612,7 @@ module Yast2
     # @return [Boolean] false if the operation failed
     def disable_service
       return true if service.static?
+
       service.disable
     end
   end

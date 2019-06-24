@@ -263,6 +263,7 @@ module Yast
       # Try to read the data from os-release (fast)
       if OS_RELEASE_PROPERTIES.include?(key) && can_use_os_release_file?
         return if read_os_release_file
+
         log.warn "Incomplete os-release file, continue reading from zypp"
       end
 

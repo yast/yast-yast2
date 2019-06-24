@@ -34,6 +34,7 @@ class DisplayWidget < CWM::InputField
 
   def handle(event)
     return if event["ID"].to_s.start_with?("_") # underscored events is internal CWM events
+
     self.value = event["ID"]
 
     nil

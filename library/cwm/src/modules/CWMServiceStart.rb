@@ -57,6 +57,7 @@ module Yast
     def UpdateServiceStatusWidget(widget)
       widget = deep_copy(widget)
       return if !UI.WidgetExists(Id("_cwm_service_status_rp"))
+
       if Mode.config
         UI.ChangeWidget(Id("_cwm_start_service_now"), :Enabled, false)
         UI.ChangeWidget(Id("_cwm_stop_service_now"), :Enabled, false)
@@ -83,6 +84,7 @@ module Yast
     def UpdateLdapWidget(widget)
       widget = deep_copy(widget)
       return if !UI.WidgetExists(Id("_cwm_use_ldap"))
+
       get_use_ldap = Convert.convert(
         Ops.get(widget, "get_use_ldap"),
         from: "any",
@@ -384,7 +386,6 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-
           "widget"        => :custom,
           "custom_widget" => booting,
           "help"          => help,
@@ -396,7 +397,6 @@ module Yast
             method(:AutoStartStoreWrapper),
             "void (string, map)"
           )
-
         ),
         from: "map",
         to:   "map <string, any>"
@@ -644,7 +644,6 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-
           "widget"        => :custom,
           "custom_widget" => immediate_actions,
           "help"          => help,
@@ -662,7 +661,6 @@ module Yast
             "_cwm_stop_service_now",
             "_cwm_save_settings_now"
           ]
-
         ),
         from: "map",
         to:   "map <string, any>"
@@ -789,7 +787,6 @@ module Yast
       ret = Convert.convert(
         Builtins.union(
           settings,
-
           "widget"        => :custom,
           "custom_widget" => ldap_settings,
           "help"          => help,
@@ -802,7 +799,6 @@ module Yast
             "symbol (string, map)"
           ),
           "handle_events" => ["_cwm_use_ldap"]
-
         ),
         from: "map",
         to:   "map <string, any>"

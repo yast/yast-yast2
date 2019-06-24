@@ -417,6 +417,7 @@ module Yast
         which_input = UI.TimeoutUserInput(1000)
 
         break if which_input == :timed_ok
+
         if which_input == :timed_stop
           UI.ReplaceWidget(Id(:replace_buttons), button_box)
           which_input = UI.UserInput while which_input == :timed_stop
@@ -1552,6 +1553,7 @@ module Yast
         which_input = UI.TimeoutUserInput(1000)
         break if which_input == :timed_ok
         break if which_input == :timed_cancel
+
         if which_input == :timed_stop
           which_input = UI.UserInput while which_input == :timed_stop
           break

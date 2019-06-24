@@ -84,6 +84,7 @@ module Yast
       if host.nil? || host == "" || Ops.greater_than(Builtins.size(host), 63)
         return false
       end
+
       Builtins.regexpmatch(host, "^[[:alnum:]]([[:alnum:]-]*[[:alnum:]])?$")
     end
 
@@ -92,6 +93,7 @@ module Yast
     # @return true if correct
     def CheckDomain(domain)
       return false if domain.nil? || domain == ""
+
       # if "domain" contains "." character as last character remove it before validation (but it's valid)
       if Ops.greater_than(Builtins.size(domain), 1)
         if Builtins.substring(domain, Ops.subtract(Builtins.size(domain), 1), 1) == "."
@@ -104,6 +106,7 @@ module Yast
       end
       l = Builtins.splitstring(domain, ".")
       return false if Builtins.contains(Builtins.maplist(l) { |h| Check(h) }, false)
+
       !Builtins.regexpmatch(domain, "\\.[[:digit:]][^.]*$")
     end
 
@@ -148,6 +151,7 @@ module Yast
     # @return FQ hostname
     def MergeFQ(hostname, domain)
       return hostname if domain == "" || domain.nil?
+
       Ops.add(Ops.add(hostname, "."), domain)
     end
 

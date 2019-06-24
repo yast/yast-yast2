@@ -196,6 +196,7 @@ module Yast
       # Ruby's merge will probably not work since we have nested hashes
       @SETTINGS.keys.each do |key|
         next unless import_settings.include?(key)
+
         if import_settings[key].class == Hash
           # Merge them
           @SETTINGS[key].merge!(import_settings[key])
@@ -207,6 +208,7 @@ module Yast
       # Merge missing attributes
       @SETTINGS.keys.each do |key|
         next unless GetKnownFirewallZones().include?(key)
+
         # is this a zone?
         @SETTINGS[key] = EMPTY_ZONE.merge(@SETTINGS[key])
         # Everything may have been modified
@@ -278,6 +280,7 @@ module Yast
           attr = attrs[0].lstrip.to_sym
           # do not bother if empty
           next if attrs[1].nil?
+
           vals = attrs[1].split("\s")
           # Fix up for masquerade
           if attr == :masquerade
@@ -333,7 +336,6 @@ module Yast
           # Configuration is now live. Move on
           ResetModified()
         end
-
       rescue FirewallCMDError
         Builtins.y2error("firewall-cmd failed")
         raise
@@ -500,6 +502,7 @@ module Yast
     # @example GetInterfacesInZone ("external") -> ["eth4", "eth5"]
     def GetInterfacesInZone(zone)
       return [] unless IsKnownZone(zone)
+
       known_interfaces_now = GetListOfKnownInterfaces()
       get_zone_attr(zone, :interfaces).find_all { |i| known_interfaces_now.include?(i) }
     end
@@ -746,6 +749,7 @@ module Yast
     #
     def GetLoggingSettings(rule)
       return false if rule == "ACCEPT"
+
       if rule == "DROP"
         drop_rule = @SETTINGS["logging"]
         case drop_rule
@@ -767,6 +771,7 @@ module Yast
     # @param [String] state new logging state 'ALL', 'CRIT', or 'NONE'
     def SetLoggingSettings(rule, state)
       return nil if rule == "ACCEPT"
+
       if rule == "DROP"
         drop_rule = state.downcase
         case drop_rule
@@ -797,6 +802,7 @@ module Yast
     #   GetIgnoreLoggingBroadcast () -> "yes"
     def GetIgnoreLoggingBroadcast(_zone)
       return "no" if @SETTINGS["logging"] == "broadcast"
+
       "yes"
     end
 
@@ -1030,6 +1036,7 @@ module Yast
       return nil if zone_params.nil? || \
           !@known_firewall_zones.include?(zone) || \
           !zone_params.is_a?(Array)
+
       @SETTINGS[zone][:modified] = zone_params.to_set
     end
 
@@ -1037,6 +1044,7 @@ module Yast
       # Do nothing if the parameters are not valid
       return nil if zone_param.nil? || \
           !@known_firewall_zones.include?(zone)
+
       @SETTINGS[zone][:modified] << zone_param
     end
 
@@ -1044,6 +1052,7 @@ module Yast
       # Do nothing if the parameters are not valid
       return nil if zone_param.nil? || \
           !@known_firewall_zones.include?(zone)
+
       @SETTINGS[zone][:modified].delete(zone_param)
     end
 
@@ -1051,17 +1060,20 @@ module Yast
       return !!@SETTINGS[zone].empty? if zone_param.nil?
       # Do nothing if the parameters are not valid
       return nil if !@known_firewall_zones.include?(zone)
+
       @SETTINGS[zone][:modified].include?(zone_param)
     end
 
     def add_to_zone_attr(zone, attr, val)
       return nil if !ZONE_ATTRIBUTES.include?(attr)
+
       # No sanity checking. callers must be careful
       @SETTINGS[zone][attr] << val
     end
 
     def set_to_zone_attr(zone, attr, val)
       return nil if !ZONE_ATTRIBUTES.include?(attr)
+
       # No sanity checking. callers must be careful
       @SETTINGS[zone][attr] = val
     end
@@ -1072,6 +1084,7 @@ module Yast
 
     def del_from_zone_attr(zone, attr, val)
       return nil if !ZONE_ATTRIBUTES.include?(attr)
+
       # No sanity checking. callers must be careful
       @SETTINGS[zone][attr].delete(val)
     end
@@ -1094,6 +1107,7 @@ module Yast
 
     def write_zone_interfaces(zone)
       return nil if !zone_attr_modified?(zone, :interfaces)
+
       # These are the ones which should be enabled
       good_interfaces = get_zone_attr(zone, :interfaces)
       # These are the ones which are enabled
@@ -1109,6 +1123,7 @@ module Yast
 
     def write_zone_services(zone)
       return nil if !zone_attr_modified?(zone, :services)
+
       # These are the services which should be enabled
       good_services = get_zone_attr(zone, :services)
       # These are the ones which are enabled
@@ -1124,6 +1139,7 @@ module Yast
 
     def write_zone_ports(zone)
       return nil if !zone_attr_modified?(zone, :ports)
+
       # These are the ports which should be enabled
       good_ports = get_zone_attr(zone, :ports)
       # These are the ones which are enabled
@@ -1227,10 +1243,12 @@ module Yast
     # @return nil
     def set_services_to_zone(services, zone)
       return nil if services.empty?
+
       # Add the new services! We do not assign since that will override
       # services depending on other protocols!ugh!
       services.each do |s|
         next unless !in_zone_attr?(zone, :services, s)
+
         Builtins.y2debug("Service %1 will be added to the %2 zone", s, zone)
         add_to_zone_attr(zone, :services, s)
         add_zone_modified(zone, :services)
@@ -1255,11 +1273,13 @@ module Yast
     # @return nil
     def set_ports_with_protocol_to_zone(ports, protocol, zone)
       return nil if ports.empty?
+
       ports.each do |p|
         # Convert SF2 port range to FirewallD
         p.sub!(":", "-")
         port_proto = "#{p}/#{protocol}"
         next unless !@SETTINGS[zone][:ports].include?(port_proto)
+
         # Remove old services and set the new ones.
         Builtins.y2debug(
           "Port %1 will be added to the %2 zone",

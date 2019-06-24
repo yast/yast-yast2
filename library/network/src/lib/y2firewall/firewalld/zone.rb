@@ -116,6 +116,7 @@ module Y2Firewall
       # configuration for this zone.
       def read
         return unless firewalld.installed?
+
         read_relations
         @masquerade = api.masquerade_enabled?(name)
         untouched!

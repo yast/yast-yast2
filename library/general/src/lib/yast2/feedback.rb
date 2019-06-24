@@ -49,6 +49,7 @@ module Yast2
       if !Yast::UI.WidgetExists(Id(MESSAGE_ID))
         raise "Trying to stop feedback, but dialog is not feedback dialog"
       end
+
       Yast::UI.CloseDialog
     end
 

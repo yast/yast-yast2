@@ -104,11 +104,9 @@ module Yast
       if @root_alias != ""
         ret = Builtins.prepend(
           ret,
-
           "alias"        => "root",
           "destinations" => @root_alias,
           "comment"      => @root_alias_comment
-
         )
       end
       deep_copy(ret)
@@ -185,6 +183,7 @@ module Yast
     # @return eg. "joe, \\root", "" if not defined
     def GetRootAlias
       return "" if !ReadAliases()
+
       @root_alias
     end
 
@@ -204,6 +203,7 @@ module Yast
       return false if !WriteAliases()
 
       return false if !MailTable.Flush("aliases")
+
       true
     end
 

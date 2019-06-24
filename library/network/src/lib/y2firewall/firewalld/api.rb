@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 #
 # ***************************************************************************
 #
@@ -143,6 +144,7 @@ module Y2Firewall
       # @return [Boolean] true if the firewall was reloaded successfully
       def reload
         return true if offline?
+
         modify_command("--reload")
       end
 
@@ -152,6 +154,7 @@ module Y2Firewall
       # @return [Boolean] true if the firewall was reloaded completely with success
       def complete_reload
         return true if offline?
+
         modify_command("--complete-reload")
       end
 

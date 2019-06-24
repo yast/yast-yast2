@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 #
 # ***************************************************************************
 #
@@ -319,6 +320,7 @@ module Firewalld
     # @return [Boolean] True if masquerade was enabled in zone
     def add_masquerade(zone)
       return true if masquerade_enabled?(zone)
+
       fwd_quiet_result("--permanent --zone=#{zone.shellescape} --add-masquerade")
     end
 
@@ -326,6 +328,7 @@ module Firewalld
     # @return [Boolean] True if masquerade was removed in zone
     def remove_masquerade(zone)
       return true if !masquerade_enabled?(zone)
+
       fwd_quiet_result("--permanent --zone=#{zone.shellescape} --remove-masquerade")
     end
 

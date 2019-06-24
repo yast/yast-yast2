@@ -347,6 +347,7 @@ module Yast
               )
             )
             next if definition.nil? || definition.empty?
+
             # call gettext to translate the metadata
             @services[service_name][metadata_key] = Builtins.dgettext(SERVICES_TEXTDOMAIN, definition)
 

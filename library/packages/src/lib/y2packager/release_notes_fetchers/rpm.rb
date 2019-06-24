@@ -74,6 +74,7 @@ module Y2Packager
       #   was found.
       def latest_version
         return :none if release_notes_package.nil?
+
         release_notes_package.version
       end
 
@@ -184,6 +185,7 @@ module Y2Packager
         end
 
         return nil if path.nil?
+
         [path, path[/RELEASE-NOTES\.(.+)\.#{prefs.format}\z/, 1]] if path
       end
     end

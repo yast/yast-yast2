@@ -109,48 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: AllowBorderComment, AllowMarginComment.
-Layout/EmptyComment:
-  Exclude:
-    - 'library/commandline/src/modules/CommandLine.rb'
-
-# Offense count: 239
-# Cop supports --auto-correct.
-Layout/EmptyLineAfterGuardClause:
-  Enabled: false
-
-# Offense count: 20
-# Cop supports --auto-correct.
-Layout/EmptyLineAfterMagicComment:
-  Enabled: false
-
-# Offense count: 38
-# Cop supports --auto-correct.
-Layout/EmptyLinesAroundArguments:
-  Exclude:
-    - 'library/commandline/src/modules/CommandLine.rb'
-    - 'library/control/src/modules/ProductProfile.rb'
-    - 'library/cwm/src/modules/CWM.rb'
-    - 'library/cwm/src/modules/CWMServiceStart.rb'
-    - 'library/cwm/src/modules/WizardHW.rb'
-    - 'library/desktop/src/modules/Desktop.rb'
-    - 'library/general/src/modules/MailAliases.rb'
-    - 'library/log/examples/logview4.rb'
-    - 'library/network/src/lib/network/susefirewall.rb'
-    - 'library/network/src/lib/network/susefirewall2.rb'
-    - 'library/network/src/lib/network/susefirewallservices.rb'
-    - 'library/network/src/modules/CWMFirewallInterfaces.rb'
-    - 'library/packages/src/modules/SignatureCheckDialogs.rb'
-    - 'library/system/src/modules/Kernel.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Layout/EmptyLinesAroundExceptionHandlingKeywords:
-  Exclude:
-    - 'library/network/src/lib/network/susefirewalld.rb'
-
 # Offense count: 8
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

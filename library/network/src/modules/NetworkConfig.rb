@@ -64,6 +64,7 @@ module Yast
     def ReadConfig(config)
       Builtins.y2debug("config=%1", config)
       return {} if config.nil?
+
       ret = {}
 
       vars = SCR.Dir(config)

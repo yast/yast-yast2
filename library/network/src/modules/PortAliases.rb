@@ -153,6 +153,7 @@ module Yast
       if found["exit"] == 0
         found["stdout"].split("\n").each do |alias_|
           next if alias_.empty?
+
           aliases = Builtins.add(aliases, alias_)
         end
       else
@@ -287,6 +288,7 @@ module Yast
       if Ops.greater_than(Builtins.size(GetListOfServiceAliases(port_name)), 1)
         return true
       end
+
       false
     end
 

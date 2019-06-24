@@ -112,6 +112,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:enable, service_name, service.error) unless service.enable
+
       true
     end
 
@@ -126,6 +127,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:disable, service_name, service.error) unless service.disable
+
       true
     end
 
@@ -140,6 +142,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:start, service_name, service.error) unless service.start
+
       true
     end
 
@@ -154,6 +157,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:restart, service_name, service.error) unless service.restart
+
       true
     end
 
@@ -168,6 +172,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:reload, service_name, service.error) unless service.reload
+
       true
     end
 
@@ -182,6 +187,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:stop, service_name, service.error) unless service.stop
+
       true
     end
 
@@ -206,6 +212,7 @@ module Yast
       deprecate("use `Yast2::Systemd::Service.find` instead")
 
       return failure(:not_found, name) unless Yast2::Systemd::Service.find(name)
+
       true
     end
 
@@ -239,6 +246,7 @@ module Yast
 
       unit = Yast2::Systemd::Service.find(unit)
       return nil unless unit
+
       unit.id
     end
 
@@ -251,6 +259,7 @@ module Yast
 
       unit = Yast2::Systemd::Service.find(name)
       return nil unless unit
+
       unit.name
     end
 
@@ -277,6 +286,7 @@ module Yast
       deprecate("not supported by systemd")
 
       return {} if !checkExists(name)
+
       Builtins.add(Info(name), "started", Status(name))
     end
 

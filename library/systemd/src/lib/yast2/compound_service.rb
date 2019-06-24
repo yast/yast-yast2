@@ -74,6 +74,7 @@ module Yast2
     def currently_active?
       return true if services.all?(&:currently_active?)
       return false if services.none?(&:currently_active?)
+
       :inconsistent
     end
 

@@ -54,6 +54,7 @@ module Yast2
         return false if status.exit.zero?
         # the service exists and it's disabled
         return false if status.exit.nonzero? && status.stdout.match(/disabled|masked|linked/)
+
         # for all other cases the service does not exist
         true
       end

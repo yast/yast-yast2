@@ -184,6 +184,7 @@ module Yast
       actions = deep_copy(actions)
       sz = Builtins.size(actions)
       return Empty() if sz == 0
+
       if sz == 1
         id = Ops.get(actions, [0, 0])
         if id.nil?
@@ -332,7 +333,6 @@ module Yast
 
       # now run the dialog via CWM with handler set
       CWM.ShowAndRun(
-
         "widget_descr" => widget_descr,
         "widget_names" => ["wizard_hw"],
         "contents"     => VBox("wizard_hw"),
@@ -346,7 +346,6 @@ module Yast
         "next_button"  => Ops.get_string(settings, "next_button") do
           Label.NextButton
         end
-
       )
     end
 

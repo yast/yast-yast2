@@ -118,6 +118,7 @@ module Yast
       package = Ops.get_string(out, "stdout", "")
       Builtins.y2milestone("Package owning %1: %2", file, package)
       return false if package == "" || Ops.get_integer(out, "exit", -1) != 0
+
       cmd = Builtins.sformat("/usr/bin/rpm -V %1 |grep %2", package.shellescape, " #{file}$".shellescape)
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
       changes = Ops.get_string(out, "stdout", "")
@@ -138,6 +139,7 @@ module Yast
     def FileChanged(file)
       # when generating AutoYaST configuration, they are not written back
       return false if Mode.config
+
       ReadSettings()
       ret = false
       if Builtins.haskey(@file_checksums, file)

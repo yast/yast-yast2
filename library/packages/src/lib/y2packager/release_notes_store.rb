@@ -37,6 +37,7 @@ module Y2Packager
     def retrieve(product_name, user_lang, format, version)
       rn = release_notes[product_name]
       return nil if rn.nil?
+
       rn.matches?(user_lang, format, version) ? rn : nil
     end
 

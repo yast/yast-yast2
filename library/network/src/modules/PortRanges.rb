@@ -96,6 +96,7 @@ module Yast
       if Builtins.regexpmatch(check_this, "^[0123456789]+:[0123456789]+$")
         return true
       end
+
       false
     end
 
@@ -529,6 +530,7 @@ module Yast
           Builtins.foreach(try_all_these_ranges) do |try_this_pr|
             # Exact match means the same port range
             next if try_this_pr == port_range
+
             this_min = Builtins.regexpsub(
               try_this_pr,
               "^([0123456789]+):.*$",

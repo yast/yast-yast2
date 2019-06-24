@@ -164,6 +164,7 @@ module Yast
       if doit
         @last_op_canceled = false
         return DoRemove(packs) if install == false
+
         return DoInstall(packs)
       end
 

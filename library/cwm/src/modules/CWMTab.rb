@@ -250,6 +250,7 @@ module Yast
       all_tabs = Ops.get_list(widget, "tabs_list", [])
       h_ret = TabHandle(@current_tab_map, event)
       return h_ret if !h_ret.nil?
+
       ret = Ops.get(event, "ID")
       if Ops.is_string?(ret) &&
           Builtins.contains(all_tabs, Convert.to_string(ret)) &&

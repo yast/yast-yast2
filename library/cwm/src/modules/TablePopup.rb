@@ -63,6 +63,7 @@ module Yast
         to:   "list (map)"
       )
       return toEval.call(descr) if !toEval.nil?
+
       []
     end
 
@@ -190,6 +191,7 @@ module Yast
           Builtins.substring(Convert.to_string(opt_id), 0, 7) == "____sep"
         return "____sep"
       end
+
       toEval = Convert.convert(
         Ops.get(descr, "id2key"),
         from: "any",
@@ -310,6 +312,7 @@ module Yast
         to:   "string (any, string)"
       )
       return toEval.call(opt_id, opt_key) if !toEval.nil?
+
       ""
     end
 
@@ -327,6 +330,7 @@ module Yast
         to:   "boolean (any, string)"
       )
       return toEval.call(opt_id, opt_key) if !toEval.nil?
+
       false
     end
 
@@ -401,6 +405,7 @@ module Yast
         to:   "any (any, string, symbol)"
       )
       return toEval.call(opt_id, id2key(descr, opt_id), dir) if nil != toEval
+
       nil
     end
 
@@ -463,6 +468,7 @@ module Yast
       known_keys = {}
       possible = Builtins.maplist(possible) do |p|
         next if !Ops.is_string?(p)
+
         opt_descr = key2descr(descr, Convert.to_string(p))
         label = Ops.get_string(
           opt_descr,
@@ -512,6 +518,7 @@ module Yast
       end
       return nil if ret == :_tp_cancel
       return option if Ops.get(known_keys, option, false)
+
       Ops.get(val2key, option, option)
     end
 
@@ -711,6 +718,7 @@ module Yast
             until selected
               opt_key = askForNewOption(add_opts, add_unlisted, descr)
               return nil if opt_key.nil?
+
               if Builtins.contains(present, opt_key)
                 Report.Error(
                   # error report

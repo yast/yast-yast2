@@ -82,6 +82,7 @@ module  Y2Firewall
 
           define_method "#{attribute}=" do |item|
             return item if public_send(attribute) == item
+
             instance_variable_set("@#{attribute}", item)
 
             modified!(attribute) if cache
@@ -102,6 +103,7 @@ module  Y2Firewall
         define_method "apply_attributes_changes!" do
           attributes.each do |attribute|
             next if cache && !modified?(attribute)
+
             params = ["modify_#{scope_method}#{attribute}"]
             params << name if respond_to?("name")
             params << public_send(attribute)
@@ -185,6 +187,7 @@ module  Y2Firewall
 
           define_method "#{relation}=" do |item|
             return item if public_send(relation) == item
+
             instance_variable_set("@#{relation}", item)
 
             modified!(relation) if cache
@@ -192,6 +195,7 @@ module  Y2Firewall
 
           define_method "add_#{relation_singularized}" do |item|
             return public_send(relation) if public_send(relation).include?(item)
+
             modified!(relation) if cache
             public_send(relation) << item
           end
@@ -239,6 +243,7 @@ module  Y2Firewall
 
           define_method "apply_#{relation}_changes!" do
             return if cache && !modified?(relation)
+
             public_send("remove_#{relation}!")
             public_send("add_#{relation}!")
 

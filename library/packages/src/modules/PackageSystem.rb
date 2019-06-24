@@ -394,6 +394,7 @@ module Yast
       packages = deep_copy(packages)
       return true if Mode.config
       return true if InstalledAll(packages)
+
       InstallAll(packages)
     end
 

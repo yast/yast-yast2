@@ -94,6 +94,7 @@ module Yast
 
       # <0,256>
       return false if !Builtins.regexpmatch(netmask, "^[0-9]+$")
+
       nm = Builtins.tointeger(netmask)
       Ops.greater_or_equal(nm, 0) && Ops.less_or_equal(nm, 256)
     end
@@ -154,6 +155,7 @@ module Yast
     # @return number of bits in netmask; 32 for empty string
     def ToBits(netmask)
       return 32 if netmask == ""
+
       bits = 0
       m = {
         "128" => 1,

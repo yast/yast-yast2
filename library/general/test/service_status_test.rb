@@ -11,6 +11,7 @@ def matches_id_and_text?(widget, id, text)
   return false unless widget.params.any? do |p|
     p.is_a?(Yast::Term) && p.value == :id && p.params.first =~ id
   end
+
   widget.params.any? { |p| p.is_a?(::String) && p =~ text }
 end
 

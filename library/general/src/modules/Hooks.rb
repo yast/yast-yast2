@@ -136,6 +136,7 @@ module Yast
 
       def verify!
         raise "Hook search path #{path} does not exists" unless path.exist?
+
         path
       end
 
@@ -220,6 +221,7 @@ module Yast
 
       def output
         return "" unless result
+
         output = []
         output << "STDERR: #{result.stderr.strip}" unless result.stderr.empty?
         output << "STDOUT: #{result.stdout.strip}" unless result.stdout.empty?

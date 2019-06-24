@@ -104,6 +104,7 @@ module Yast
     # @param [Boolean] force boolean drop all settings which were set before
     def InitFeatures(force)
       return if !(force || @features.nil?)
+
       @features = deep_copy(@defaults)
 
       nil
@@ -355,6 +356,7 @@ module Yast
     # @raise RuntimeError if called twice without {ClearOverlay}
     def SetOverlay(features)
       raise "SetOverlay called when old overlay was not cleared" if @backup_features
+
       @backup_features = deep_copy(@features)
 
       features.each do |section_name, section|
@@ -369,6 +371,7 @@ module Yast
     # @return void
     def ClearOverlay
       return if @backup_features.nil?
+
       @features = deep_copy(@backup_features)
       # when overlay is cleared, remove backup as it can become invalid over-time
       # when new extensions is applied

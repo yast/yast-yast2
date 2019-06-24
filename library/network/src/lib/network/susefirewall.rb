@@ -289,6 +289,7 @@ module Yast
       GetListOfKnownInterfaces().each do |i|
         z = GetZoneOfInterface(i)
         next if z.nil? || z.empty?
+
         interfaces_in_zone[z] ||= []
         interfaces_in_zone[z] << i
       end
@@ -443,7 +444,6 @@ module Yast
       Builtins.foreach(dialup_interfaces) do |interface|
         known_interfaces = Builtins.add(
           known_interfaces,
-
           "id"   => interface,
           "type" => "dialup",
           # using function to get name
@@ -452,14 +452,12 @@ module Yast
             "NAME"
           ),
           "zone" => GetZoneOfInterface(interface)
-
         )
       end
 
       Builtins.foreach(non_dialup_interfaces) do |interface|
         known_interfaces = Builtins.add(
           known_interfaces,
-
           "id"   => interface,
           # using function to get name
           "name" => NetworkInterfaces.GetValue(
@@ -467,7 +465,6 @@ module Yast
             "NAME"
           ),
           "zone" => GetZoneOfInterface(interface)
-
         )
       end
 

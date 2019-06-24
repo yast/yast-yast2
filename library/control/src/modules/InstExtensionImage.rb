@@ -352,6 +352,7 @@ module Yast
       loading_msg = format(_("Loading to memory package '%s'"), package)
       res = LoadExtension(package, loading_msg)
       raise "Failed to load package. Please check logs." unless res
+
       begin
         block.call
       ensure

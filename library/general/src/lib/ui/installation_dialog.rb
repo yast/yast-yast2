@@ -142,6 +142,7 @@ module UI
 
     def close_dialog
       return unless @_wizard_opened
+
       @_wizard_opened = false
       Yast::Wizard.CloseDialog
     end

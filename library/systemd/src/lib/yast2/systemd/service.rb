@@ -85,6 +85,7 @@ module Yast2
         def find(service_name, propmap = UnitPropMap.new)
           service = build(service_name, propmap)
           return nil if service.properties.not_found?
+
           service
         end
 

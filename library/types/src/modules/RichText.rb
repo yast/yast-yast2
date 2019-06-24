@@ -94,6 +94,7 @@ module Yast
         end
         next if Builtins.regexpmatch(lpart, "^[ \n\t]*$")
         next if lpart == "&nbsp;"
+
         if lpart != "" && inli
           i = 1
           while Ops.less_than(i, indents)

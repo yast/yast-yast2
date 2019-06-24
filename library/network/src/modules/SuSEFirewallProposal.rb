@@ -121,6 +121,7 @@ module Yast
       interface_type = nil
       Builtins.foreach(all_interfaces) do |one|
         next if Ops.get(one, "id") != interface
+
         # this is THE interface
         interface_type = Ops.get(one, "type")
       end
@@ -159,6 +160,7 @@ module Yast
         next if Builtins.contains(last_known_interfaces, interface)
         # already configured in some zone
         next if !SuSEFirewall.GetZoneOfInterface(interface).nil?
+
         # any dial-up interfaces presented and the new one isn't dial-up
         if had_dialup_interfaces && !IsDialUpInterface(interface)
           AddWarning(

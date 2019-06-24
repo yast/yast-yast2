@@ -46,6 +46,7 @@ module Y2Packager
         # @see disable!
         def enabled?
           return true if @enabled.nil?
+
           @enabled
         end
 
@@ -233,6 +234,7 @@ module Y2Packager
       # @return [String] Release notes base URL
       def relnotes_url_base
         return @relnotes_url_base if @relnotes_url_base
+
         pos = relnotes_url.rindex("/")
         @relnotes_url_base = relnotes_url[0, pos]
       end
@@ -252,12 +254,14 @@ module Y2Packager
         Yast.import "Proxy"
 
         return @curl_proxy_args if @curl_proxy_args
+
         @curl_proxy_args = ""
         # proxy should be set by inst_install_inf if set via Linuxrc
         Yast::Proxy.Read
         # Test if proxy works
 
         return @curl_proxy_args unless Yast::Proxy.enabled
+
         # it is enough to test http proxy, release notes are downloaded via http
         proxy_ret = Yast::Proxy.RunTestProxy(
           Yast::Proxy.http,
@@ -283,6 +287,7 @@ module Y2Packager
       # @see #download_release_notes_index
       def release_notes_index
         return @release_notes_index if @release_notes_index
+
         @release_notes_index = download_release_notes_index(relnotes_url_base) || []
       end
 
@@ -335,6 +340,7 @@ module Y2Packager
       # @return [Boolean,nil] true: success, false: failure, nil: failure+dont retry
       def curl_download(url, filename, max_time: 300)
         return nil unless self.class.enabled?
+
         cmd = Yast::Builtins.sformat(
           "/usr/bin/curl --location --verbose --fail --max-time %6 " \
           "--connect-timeout 15  %1 '%2' --output '%3' > '%4/%5' 2>&1",

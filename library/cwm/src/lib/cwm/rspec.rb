@@ -6,6 +6,7 @@ RSpec.shared_examples "CWM::AbstractWidget" do
     describe "#label" do
       it "produces a String" do
         next unless subject.respond_to?(:label)
+
         expect(subject.label).to be_a String
       end
     end
@@ -13,6 +14,7 @@ RSpec.shared_examples "CWM::AbstractWidget" do
     describe "#help" do
       it "produces a String" do
         next unless subject.respond_to?(:help)
+
         expect(subject.help).to be_a String
       end
     end
@@ -20,6 +22,7 @@ RSpec.shared_examples "CWM::AbstractWidget" do
     describe "#opt" do
       it "produces Symbols" do
         next unless subject.respond_to?(:opt)
+
         expect(subject.opt).to be_an Enumerable
         subject.opt.each do |o|
           expect(o).to be_a Symbol
@@ -30,6 +33,7 @@ RSpec.shared_examples "CWM::AbstractWidget" do
     describe "#handle" do
       it "produces a Symbol or nil" do
         next unless subject.respond_to?(:handle)
+
         m = subject.method(:handle)
         args = m.arity == 0 ? [] : [:dummy_event]
         expect(subject.handle(* args)).to be_a(Symbol).or be_nil
@@ -39,6 +43,7 @@ RSpec.shared_examples "CWM::AbstractWidget" do
     describe "#validate" do
       it "produces a Boolean (or nil)" do
         next unless subject.respond_to?(:validate)
+
         expect(subject.validate).to be(true).or be(false).or be_nil
       end
     end

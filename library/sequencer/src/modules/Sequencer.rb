@@ -192,10 +192,12 @@ module Yast
       if found.nil?
         return WS_error(Builtins.sformat("Alias not found: %1", alias_))
       end
+
       if Ops.is_list?(found)
         if Ops.less_or_equal(Builtins.size(Convert.to_list(found)), 0)
           return WS_error(Builtins.sformat("Invalid alias: %1", found))
         end
+
         found = Ops.get(Convert.to_list(found), 0)
       end
       if found.nil?
@@ -237,11 +239,13 @@ module Yast
       if found.nil?
         return WS_error(Builtins.sformat("Current not found: %1", current))
       end
+
       # string|symbol next
       next_ = Ops.get(found, ret)
       if next_.nil?
         return WS_error(Builtins.sformat("Symbol not found: %1", ret))
       end
+
       deep_copy(next_)
     end
 
@@ -283,6 +287,7 @@ module Yast
       found = false
       newstack = Builtins.filter(stack) do |v|
         next false if found
+
         found = true if v == item
         true
       end
@@ -296,8 +301,10 @@ module Yast
     def WS_pop(stack)
       stack = deep_copy(stack)
       return nil if stack.nil?
+
       num = Builtins.size(stack)
       return nil if Ops.less_than(num, 2)
+
       newstack = Builtins.remove(stack, Ops.subtract(num, 1))
       poped = Ops.get(stack, Ops.subtract(num, 2))
       [newstack, poped]
@@ -342,6 +349,7 @@ module Yast
           special = true
           loop do
             return :back if Ops.less_than(Builtins.size(stack), 2)
+
             poped = WS_pop(stack)
             Builtins.y2debug("poped=%1", poped)
             current = Ops.get(poped, 1)
