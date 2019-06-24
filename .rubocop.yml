@@ -109,12 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 6
-# Cop supports --auto-correct.
-Layout/ClosingParenthesisIndentation:
-  Exclude:
-    - 'library/systemd/test/test_helper.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 # Configuration parameters: AllowBorderComment, AllowMarginComment.

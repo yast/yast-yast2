@@ -57,7 +57,7 @@ cups.socket                  enabled
 dbus.socket                  static
 dm-event.socket              disabled
 LIST
-    )
+                                                                   )
   end
 
   def stub_service_unit_files
@@ -69,7 +69,7 @@ sshd.service                               enabled
 sssd.service                               enabled
 startpreload.service                       masked
 LIST
-    )
+                                                                   )
   end
 
   def stub_target_unit_files
@@ -83,7 +83,7 @@ initrd.target             static
 kexec.target              disabled
 multi-user.target         disabled
 LIST
-    )
+                                                                   )
   end
 
   def stub_service_units
@@ -95,7 +95,7 @@ sshd.service                          loaded active   running OpenSSH Daemon
 sssd.service                          loaded active   running System Security Services Daemon
 SuSEfirewall2.service                 loaded inactive dead    SuSEfirewall2 phase 2
 LIST
-    )
+                                                              )
   end
 
   def stub_socket_units
@@ -108,7 +108,7 @@ dm-event.socket              loaded inactive dead      Device-mapper event daemo
 lvm2-lvmetad.socket          loaded inactive dead      LVM2 metadata daemon socket
 pcscd.socket                 loaded active   listening PC/SC Smart Card Daemon Activation Socket
 LIST
-    )
+                                                              )
   end
 
   def stub_target_units
@@ -122,7 +122,7 @@ network-online.target  loaded inactive dead   Network is Online
 network.target         loaded active   active Network
 nss-lookup.target      loaded active   active Host and Network Name Lookups
 LIST
-    )
+                                                              )
   end
 end
 
