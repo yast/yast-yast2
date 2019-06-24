@@ -101,7 +101,7 @@ module Y2Firewall
       def zone=(zone_name)
         fw.zones.each { |z| z.remove_interface(name) if z.interfaces.include?(name) }
         z = fw.find_zone(zone_name)
-        z && z.add_interface(name)
+        z&.add_interface(name)
       end
 
     private

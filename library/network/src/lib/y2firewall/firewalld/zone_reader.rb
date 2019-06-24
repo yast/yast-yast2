@@ -79,7 +79,7 @@ module Y2Firewall
           next unless current_zone
 
           attribute, value = line.split(":\s")
-          if attribute && attribute.start_with?(/\s\s\w/)
+          if attribute&.start_with?(/\s\s\w/)
             current_attribute = attribute.lstrip.tr("-", "_")
             entries[current_zone] ||= {}
             entries[current_zone][current_attribute] ||= [value.to_s]

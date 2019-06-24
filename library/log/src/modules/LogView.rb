@@ -396,7 +396,7 @@ module Yast
           from: "any",
           to:   "void ()"
         )
-        func.call if !func.nil?
+        func&.call
         if Ops.get(@mb_actions, [iret, 2]) == true
           KillBackgroundProcess(nil)
           UI.ChangeWidget(Id(:_cwm_log), :Value, "")

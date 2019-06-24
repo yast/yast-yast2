@@ -324,7 +324,7 @@ module Yast
           from: "any",
           to:   "void (string)"
         )
-        toEval.call(Ops.get_string(w, "_cwm_key", "")) if !toEval.nil?
+        toEval&.call(Ops.get_string(w, "_cwm_key", ""))
       end
 
       nil
@@ -372,7 +372,7 @@ module Yast
           from: "any",
           to:   "void (string, map)"
         )
-        toEval.call(Ops.get_string(w, "_cwm_key", ""), event) if !toEval.nil?
+        toEval&.call(Ops.get_string(w, "_cwm_key", ""), event)
       end
 
       nil
@@ -390,7 +390,7 @@ module Yast
           from: "any",
           to:   "void (string)"
         )
-        toEval.call(Ops.get_string(w, "_cwm_key", "")) if !toEval.nil?
+        toEval&.call(Ops.get_string(w, "_cwm_key", ""))
       end
 
       nil

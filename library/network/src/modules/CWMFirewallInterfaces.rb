@@ -198,7 +198,7 @@ module Yast
         from: "any",
         to:   "void (map <string, any>)"
       )
-      common_details_handler.call(widget) if !common_details_handler.nil?
+      common_details_handler&.call(widget)
 
       nil
     end
@@ -230,7 +230,7 @@ module Yast
       if !default_interfaces.empty?
         services.each do |service|
           service_status[firewalld.default_zone] =
-            default_zone && default_zone.services.include?(service)
+            default_zone&.services&.include?(service)
         end
         @allowed_interfaces = (allowed_interfaces + default_interfaces).uniq if service_status[firewalld.default_zone]
       end

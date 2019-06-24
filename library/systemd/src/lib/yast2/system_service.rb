@@ -208,7 +208,7 @@ module Yast2
       @current_start_mode =
         if service.enabled?
           :on_boot
-        elsif socket && socket.enabled?
+        elsif socket&.enabled?
           :on_demand
         else
           :manual
@@ -544,7 +544,7 @@ module Yast2
     #
     # @return [Yast2::Systemd::Socket]
     def socket
-      service && service.socket
+      service&.socket
     end
 
     # Whether the associated socket (if any) is actived
