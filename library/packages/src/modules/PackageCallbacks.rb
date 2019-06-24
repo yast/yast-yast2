@@ -3138,23 +3138,25 @@ module Yast
       )
       ret = []
 
-      Builtins.foreach(cds) do |cd|
-        dev = Ops.get_string(cd, "dev_name", "")
-        model = Ops.get_string(cd, "model", "")
-        deflt = preferred == dev
-        if !dev.nil? && dev != "" && !model.nil?
-          ret = Builtins.add(
-            ret,
-            Item(
-              Id(dev),
-              Ops.add(
-                Ops.add(deflt ? "\u27A4 " : "", model),
-                Builtins.sformat(" (%1)", dev)
+      if !cds.nil?
+        Builtins.foreach(cds) do |cd|
+          dev = Ops.get_string(cd, "dev_name", "")
+          model = Ops.get_string(cd, "model", "")
+          deflt = preferred == dev
+          if !dev.nil? && dev != "" && !model.nil?
+            ret = Builtins.add(
+              ret,
+              Item(
+                Id(dev),
+                Ops.add(
+                  Ops.add(deflt ? "\u27A4 " : "", model),
+                  Builtins.sformat(" (%1)", dev)
+                )
               )
             )
-          )
+          end
         end
-      end if !cds.nil?
+      end
 
       log.info "Detected CD devices: #{ret}"
 

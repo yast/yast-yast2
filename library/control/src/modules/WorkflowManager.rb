@@ -742,12 +742,14 @@ module Yast
         { old => new }
       end
 
-      Builtins.foreach(replaces) do |old, new|
-        base = ReplaceProposalModule(base, old, new)
-      end if Ops.greater_than(
+      if Ops.greater_than(
         Builtins.size(replaces),
         0
       )
+        Builtins.foreach(replaces) do |old, new|
+          base = ReplaceProposalModule(base, old, new)
+        end
+      end
 
       # Additional proposal settings - Removing settings
       removes = Ops.get_list(additional_control, "remove_modules", [])

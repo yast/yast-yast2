@@ -96,9 +96,11 @@ module Yast
       @modules = Builtins.listmap(@groups) do |gr|
         all_modules = Desktop.ModuleList(gr)
         # filter out root-only stuff if the user is not root (#246015)
-        all_modules = Builtins.filter(all_modules) do |t|
-          Builtins.contains(@non_root_modules, Ops.get_string(t, [0, 0], ""))
-        end if !@root
+        if !@root
+          all_modules = Builtins.filter(all_modules) do |t|
+            Builtins.contains(@non_root_modules, Ops.get_string(t, [0, 0], ""))
+          end
+        end
         { gr => all_modules }
       end
       Builtins.y2debug("modules=%1", @modules)

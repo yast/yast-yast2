@@ -226,9 +226,11 @@ module Yast
       functions = Ops.get_map(settings, "functions", {})
 
       initial_screen = "" if initial_screen.nil?
-      Builtins.foreach(screens) do |k, _v|
-        initial_screen = k if initial_screen == ""
-      end if initial_screen == ""
+      if initial_screen == ""
+        Builtins.foreach(screens) do |k, _v|
+          initial_screen = k if initial_screen == ""
+        end
+      end
 
       @selected_screen = initial_screen
       ids = Builtins.maplist(screens) { |k, _v| k }

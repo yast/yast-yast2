@@ -616,9 +616,11 @@ module Yast
         deep_copy(m)
       end
 
-      modules = Builtins.filter(modules) do |m|
-        Ops.get_boolean(m, "enabled", true) && !checkDisabled(m)
-      end if which == :enabled
+      if which == :enabled
+        modules = Builtins.filter(modules) do |m|
+          Ops.get_boolean(m, "enabled", true) && !checkDisabled(m)
+        end
+      end
 
       Builtins.y2debug("M2: %1", modules)
 

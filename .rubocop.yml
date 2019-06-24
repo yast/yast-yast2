@@ -144,17 +144,6 @@ Style/MissingRespondToMissing:
     - 'library/packages/src/modules/Product.rb'
     - 'library/packages/test/dummy_callbacks_test.rb'
 
-# Offense count: 6
-# Cop supports --auto-correct.
-Style/MultilineIfModifier:
-  Exclude:
-    - 'library/control/src/modules/ProductControl.rb'
-    - 'library/control/src/modules/WorkflowManager.rb'
-    - 'library/cwm/src/modules/DialogTree.rb'
-    - 'library/desktop/src/clients/menu.rb'
-    - 'library/network/src/modules/PortRanges.rb'
-    - 'library/packages/src/modules/PackageCallbacks.rb'
-
 # Offense count: 22
 Style/MultipleComparison:
   Exclude:

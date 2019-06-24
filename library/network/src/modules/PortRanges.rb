@@ -187,26 +187,28 @@ module Yast
 
       port_number = PortAliases.GetPortNumber(port)
 
-      Builtins.foreach(port_ranges) do |port_range|
-        # is portrange really a port range?
-        if IsValidPortRange(port_range)
-          min_pr = Builtins.tointeger(
-            Builtins.regexpsub(port_range, "^([0123456789]+):.*$", "\\1")
-          )
-          max_pr = Builtins.tointeger(
-            Builtins.regexpsub(port_range, "^.*:([0123456789]+)$", "\\1")
-          )
+      if !port_number.nil?
+        Builtins.foreach(port_ranges) do |port_range|
+          # is portrange really a port range?
+          if IsValidPortRange(port_range)
+            min_pr = Builtins.tointeger(
+              Builtins.regexpsub(port_range, "^([0123456789]+):.*$", "\\1")
+            )
+            max_pr = Builtins.tointeger(
+              Builtins.regexpsub(port_range, "^.*:([0123456789]+)$", "\\1")
+            )
 
-          # is the port inside?
-          if Ops.less_or_equal(min_pr, max_pr) &&
-              Ops.less_or_equal(min_pr, port_number) &&
-              Ops.less_or_equal(port_number, max_pr)
-            ret = true
+            # is the port inside?
+            if Ops.less_or_equal(min_pr, max_pr) &&
+                Ops.less_or_equal(min_pr, port_number) &&
+                Ops.less_or_equal(port_number, max_pr)
+              ret = true
 
-            raise Break # break the loop, match found
+              raise Break # break the loop, match found
+            end
           end
         end
-      end if !port_number.nil?
+      end
 
       ret
     end
