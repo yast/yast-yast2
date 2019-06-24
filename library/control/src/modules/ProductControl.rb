@@ -515,7 +515,7 @@ module Yast
       if Builtins.haskey(workflow, "prescript")
         interpreter = Ops.get_string(workflow, ["prescript", "interpreter"], "shell")
         source = Ops.get_string(workflow, ["prescript", "source"], "")
-        type = interpreter == "shell" ? "sh" : "pl"
+        type = (interpreter == "shell") ? "sh" : "pl"
         f = Builtins.sformat(
           "%1/%2_pre.%3",
           tmp_dir,
@@ -534,7 +534,7 @@ module Yast
       if Builtins.haskey(workflow, "postscript")
         interpreter = Ops.get_string(workflow, ["postscript", "interpreter"], "shell")
         source = Ops.get_string(workflow, ["postscript", "source"], "")
-        type = interpreter == "shell" ? "sh" : "pl"
+        type = (interpreter == "shell") ? "sh" : "pl"
         f = Builtins.sformat(
           "%1/%2_post.%3",
           tmp_dir,

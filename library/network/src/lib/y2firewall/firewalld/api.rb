@@ -194,7 +194,7 @@ module Y2Firewall
       # @param allowed_exitstatus [Fixnum, .include?, nil] allowed exit codes
       #   which do not cause an exception.
       def run_command(*args, permanent: false, allowed_exitstatus: nil)
-        arguments = !offline? && permanent ? ["--permanent"] : []
+        arguments = (!offline? && permanent) ? ["--permanent"] : []
         arguments.concat(args)
         log.info("Executing #{command} with #{arguments.inspect}")
 

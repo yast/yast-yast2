@@ -135,7 +135,7 @@ module Y2Packager
 
       # find the highest version
       Yast::Pkg.ResolvableDependencies(name, :package, "").reduce(nil) do |a, p|
-        !a || (Yast::Pkg.CompareVersions(a["version"], p["version"]) < 0) ? p : a
+        (!a || (Yast::Pkg.CompareVersions(a["version"], p["version"]) < 0)) ? p : a
       end
     end
 

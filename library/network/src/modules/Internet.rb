@@ -216,7 +216,7 @@ module Yast
       pp = path(".sysconfig.network.providers.v")
       pp = Builtins.add(pp, @provider)
       pp = Builtins.add(pp, "DEMAND")
-      SCR.Write(pp, demand == true ? "yes" : "no")
+      SCR.Write(pp, (demand == true) ? "yes" : "no")
       SCR.Write(path(".sysconfig.network.providers"), nil)
 
       nil

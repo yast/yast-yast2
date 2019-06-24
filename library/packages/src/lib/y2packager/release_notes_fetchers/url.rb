@@ -273,7 +273,7 @@ module Y2Packager
 
         http_ret = proxy_ret.fetch("HTTP", {})
         if http_ret.fetch("tested", true) == true && http_ret.fetch("exit", 1) == 0
-          user_pass = Yast::Proxy.user != "" ? "#{Yast::Proxy.user}:#{Yast::Proxy.pass}" : ""
+          user_pass = (Yast::Proxy.user != "") ? "#{Yast::Proxy.user}:#{Yast::Proxy.pass}" : ""
           proxy = "--proxy #{Yast::Proxy.http}"
           proxy << " --proxy-user '#{user_pass}'" unless user_pass.empty?
         end

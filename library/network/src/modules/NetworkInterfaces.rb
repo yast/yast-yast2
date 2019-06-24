@@ -1199,7 +1199,7 @@ module Yast
       if Builtins.haskey(device_types, type)
         return Ops.get_string(
           device_types,
-          [type, longdescr == true ? 1 : 0],
+          [type, (longdescr == true) ? 1 : 0],
           ""
         )
       end
@@ -1208,7 +1208,7 @@ module Yast
       if Builtins.haskey(device_types, type1)
         return Ops.get_string(
           device_types,
-          [type1, longdescr == true ? 1 : 0],
+          [type1, (longdescr == true) ? 1 : 0],
           ""
         )
       end

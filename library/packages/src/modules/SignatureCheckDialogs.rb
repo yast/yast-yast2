@@ -664,7 +664,7 @@ module Yast
             "(%2):"
         ),
         Ops.get_locale(repo, "name", _("Unknown")),
-        repo && repo["url"] ? repo["url"].scan(/.{1,59}/).join("\n") : _("Unknown")
+        (repo && repo["url"]) ? repo["url"].scan(/.{1,59}/).join("\n") : _("Unknown")
       )
 
       # popup message - label, part 2
@@ -885,13 +885,13 @@ module Yast
           max_size
         )
           splittedstring = Ops.add(
-            Ops.add(splittedstring, splittedstring == "" ? "" : delimiter),
+            Ops.add(splittedstring, (splittedstring == "") ? "" : delimiter),
             Builtins.substring(whattosplit, after_chars_counter)
           )
           break
         else
           splittedstring = Ops.add(
-            Ops.add(splittedstring, splittedstring == "" ? "" : delimiter),
+            Ops.add(splittedstring, (splittedstring == "") ? "" : delimiter),
             Builtins.substring(whattosplit, after_chars_counter, after_chars)
           )
           after_chars_counter = Ops.add(after_chars_counter, after_chars)

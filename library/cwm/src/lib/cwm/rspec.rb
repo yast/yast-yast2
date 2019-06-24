@@ -35,7 +35,7 @@ RSpec.shared_examples "CWM::AbstractWidget" do
         next unless subject.respond_to?(:handle)
 
         m = subject.method(:handle)
-        args = m.arity == 0 ? [] : [:dummy_event]
+        args = (m.arity == 0) ? [] : [:dummy_event]
         expect(subject.handle(* args)).to be_a(Symbol).or be_nil
       end
     end

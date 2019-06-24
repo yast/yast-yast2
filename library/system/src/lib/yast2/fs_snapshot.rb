@@ -268,7 +268,7 @@ module Yast2
             log.warn("Error when parsing date/time: #{timestamp}")
             timestamp = nil
           end
-          previous_number = data[2] == "" ? nil : data[2].to_i
+          previous_number = (data[2] == "") ? nil : data[2].to_i
           snapshots << new(data[0].to_i, data[1].to_sym, previous_number, timestamp,
             data[4], data[5].to_sym, data[6])
         end

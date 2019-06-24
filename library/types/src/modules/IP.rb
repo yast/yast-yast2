@@ -223,7 +223,7 @@ module Yast
       return false if network.nil? || network == ""
 
       # all networks
-      network == "0/0" ? true : nil
+      (network == "0/0") ? true : nil
     end
 
     # Checks the given IPv4 network entry.

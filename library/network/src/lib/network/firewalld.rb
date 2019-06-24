@@ -336,7 +336,7 @@ module Firewalld
     # all, unicast, broadcast, multicast and off
     # @return [Boolean] True if desired packet type is being logged when denied
     def log_denied_packets?(kind)
-      fwd_result("--get-log-denied").strip == kind ? true : false
+      (fwd_result("--get-log-denied").strip == kind) ? true : false
     end
 
     # @param kind [String] Denied packets to log. Possible values are:

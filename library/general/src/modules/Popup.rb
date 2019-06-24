@@ -91,7 +91,7 @@ module Yast
             VSpacing(0.2),
             richtext ? rt : Left(Label(message)),
             VSpacing(0.2),
-            !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
+            (!label.nil? && label != "") ? Label(Id(:label), label) : Empty()
           )
         ) # no headline
       else
@@ -100,7 +100,7 @@ module Yast
           VBox(
             richtext ? rt : VCenter(Label(message)),
             VSpacing(0.2),
-            !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
+            (!label.nil? && label != "") ? Label(Id(:label), label) : Empty()
           )
         )
       end
@@ -445,7 +445,7 @@ module Yast
     # @see #AnyQuestion
     def TimedErrorAnyQuestion(headline, message, yes_button_message, no_button_message, focus, timeout_seconds)
       buttons = { yes: yes_button_message, no: no_button_message }
-      focus_symbol = focus == :focus_no ? :no : :yes
+      focus_symbol = (focus == :focus_no) ? :no : :yes
       ret = Yast2::Popup.show(message, headline: headline, buttons: buttons,
         focus: focus_symbol, timeout: timeout_seconds)
 
@@ -637,7 +637,7 @@ module Yast
 
       no_button = PushButton(
         Id(:cancel),
-        focus == :focus_no ? Opt(:default, :key_F9) : Opt(:key_F9),
+        (focus == :focus_no) ? Opt(:default, :key_F9) : Opt(:key_F9),
         no_button_message
       )
 

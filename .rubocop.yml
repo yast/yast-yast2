@@ -239,14 +239,3 @@ Style/SafeNavigation:
 # SupportedStyles: percent, brackets
 Style/SymbolArray:
   EnforcedStyle: brackets
-
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, AllowSafeAssignment.
-# SupportedStyles: require_parentheses, require_no_parentheses, require_parentheses_when_complex
-Style/TernaryParentheses:
-  Exclude:
-    - 'library/commandline/src/modules/CommandLine.rb'
-    - 'library/control/src/modules/WorkflowManager.rb'
-    - 'library/general/src/modules/Report.rb'
-    - 'library/types/src/modules/String.rb'

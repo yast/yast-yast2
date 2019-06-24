@@ -1657,7 +1657,7 @@ module Yast
       end
 
       latest_package = pkgs.reduce(nil) do |a, p|
-        !a || (Pkg.CompareVersions(a["version"], p["version"]) < 0) ? p : a
+        (!a || (Pkg.CompareVersions(a["version"], p["version"]) < 0)) ? p : a
       end
 
       if pkgs.size > 1

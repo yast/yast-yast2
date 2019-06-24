@@ -541,8 +541,8 @@ module Yast
           VSpacing(1),
           Left(header),
           VSpacing(1),
-          help == "" ? VSpacing(0) : Left(Label(help)),
-          VSpacing(help == "" ? 0 : 1),
+          (help == "") ? VSpacing(0) : Left(Label(help)),
+          VSpacing((help == "") ? 0 : 1),
           Left(ReplacePoint(Id(:value_rp), widget)),
           VSpacing(1),
           HBox(
@@ -809,7 +809,7 @@ module Yast
         updateButtons(descr, opt_descr)
       elsif event_id == :_tp_up || event_id == :_tp_down
         opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
-        opt_id = moveTableItem(opt_id, descr, event_id == :_tp_up ? :up : :down)
+        opt_id = moveTableItem(opt_id, descr, (event_id == :_tp_up) ? :up : :down)
         if nil != opt_id
           TableRedraw(descr, false)
           UI.ChangeWidget(Id(:_tp_table), :CurrentItem, opt_id)

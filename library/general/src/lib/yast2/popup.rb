@@ -233,7 +233,7 @@ module Yast2
           remaining_time = timeout
           Yast::UI.SetFocus(focus)
           loop do
-            res = timeout > 0 ? Yast::UI.TimeoutUserInput(1000) : Yast::UI.UserInput
+            res = (timeout > 0) ? Yast::UI.TimeoutUserInput(1000) : Yast::UI.UserInput
             remaining_time -= 1
             res = handle_event(res, details, remaining_time, focus)
             return res if res

@@ -145,7 +145,7 @@ module Yast
 
       precision ||= 0
       # auto precision - depends on the suffix, but max. 3 decimal digits
-      precision = index < 3 ? index : 3 if precision < 0
+      precision = (index < 3) ? index : 3 if precision < 0
 
       if omit_zeroes == true
         max_difference = 0.9
@@ -304,7 +304,7 @@ module Yast
 
       pad = padding * (length - text.size)
 
-      alignment == :right ? (pad + text) : (text + pad)
+      (alignment == :right) ? (pad + text) : (text + pad)
     end
 
     # Add spaces after the text to make it long enough
@@ -822,7 +822,7 @@ module Yast
     # Optional formatted text
     # @return sformat (f, s) if s is neither empty or nil, else ""
     def opt_format(format, string)
-      string == "" || string.nil? ? "" : Builtins.sformat(format, string)
+      (string == "" || string.nil?) ? "" : Builtins.sformat(format, string)
     end
 
     # Return a pretty description of a download rate

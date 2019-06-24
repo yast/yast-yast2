@@ -282,7 +282,7 @@ module Yast
           vals = attrs[1].split("\s")
           # Fix up for masquerade
           if attr == :masquerade
-            set_to_zone_attr(zone, attr, (vals == "no" ? false : true))
+            set_to_zone_attr(zone, attr, ((vals == "no") ? false : true))
           else
             vals.each { |x| add_to_zone_attr(zone, attr, x) }
           end

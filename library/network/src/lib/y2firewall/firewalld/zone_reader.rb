@@ -113,7 +113,7 @@ module Y2Firewall
             value = entries.first.to_s
 
             if BOOLEAN_ATTRIBUTES.include?(attribute)
-              zone.public_send("#{attribute}=", value == "yes" ? true : false)
+              zone.public_send("#{attribute}=", (value == "yes") ? true : false)
             elsif zone.attributes.include?(attribute.to_sym)
               zone.public_send("#{attribute}=", value)
             else

@@ -255,7 +255,7 @@ module Yast
         Ops.set(tokens, "host", host6)
         port6 = Builtins.regexpsub(hostport6, "^\\[.*\\]:(.*)", "\\1")
         Builtins.y2debug("port: %1", port6)
-        Ops.set(tokens, "port", !port6.nil? ? port6 : "")
+        Ops.set(tokens, "port", port6 || "")
       end
 
       # some exceptions for samba scheme (there is optional extra option "domain")

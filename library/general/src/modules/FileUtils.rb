@@ -70,7 +70,7 @@ module Yast
     #  FileUtils::IsDirectory ("/does-not-exist") -> nil
     def IsDirectory(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
-      defaultv = info != {} ? false : nil
+      defaultv = (info != {}) ? false : nil
 
       Ops.get_boolean(info, "isdir", defaultv)
     end
@@ -87,7 +87,7 @@ module Yast
     #  FileUtils::IsFile ("/does-not-exist") -> nil
     def IsFile(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
-      defaultv = info != {} ? false : nil
+      defaultv = (info != {}) ? false : nil
 
       Ops.get_boolean(info, "isreg", defaultv)
     end
@@ -104,7 +104,7 @@ module Yast
     #  FileUtils::IsBlock ("/dev/does-not-exist") -> nil
     def IsBlock(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
-      defaultv = info != {} ? false : nil
+      defaultv = (info != {}) ? false : nil
 
       Ops.get_boolean(info, "isblock", defaultv)
     end
@@ -116,7 +116,7 @@ module Yast
     # @param  string file name
     def IsFifo(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
-      defaultv = info != {} ? false : nil
+      defaultv = (info != {}) ? false : nil
 
       Ops.get_boolean(info, "isfifo", defaultv)
     end
@@ -127,7 +127,7 @@ module Yast
     # @param  string file name
     def IsLink(target)
       info = Convert.to_map(SCR.Read(path(".target.lstat"), target))
-      defaultv = info != {} ? false : nil
+      defaultv = (info != {}) ? false : nil
 
       Ops.get_boolean(info, "islink", defaultv)
     end
@@ -139,7 +139,7 @@ module Yast
     # @param  string file name
     def IsSocket(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
-      defaultv = info != {} ? false : nil
+      defaultv = (info != {}) ? false : nil
 
       Ops.get_boolean(info, "issock", defaultv)
     end
@@ -151,7 +151,7 @@ module Yast
     # @param  string file name
     def IsCharacterDevice(target)
       info = Convert.to_map(SCR.Read(path(".target.stat"), target))
-      defaultv = info != {} ? false : nil
+      defaultv = (info != {}) ? false : nil
 
       Ops.get_boolean(info, "ischr", defaultv)
     end

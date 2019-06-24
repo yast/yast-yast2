@@ -275,7 +275,7 @@ module Yast
       unit = Yast2::Systemd::Service.find(name)
       failure(:not_found, name) unless unit
 
-      unit && unit.active? ? 0 : -1
+      (unit && unit.active?) ? 0 : -1
     end
 
     # @deprecated Not supported by systemd

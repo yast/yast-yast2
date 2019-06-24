@@ -250,3 +250,7 @@ Style/YodaCondition:
 # Do not enforce neither style of access modifiers as both are useful
 Style/AccessModifierDeclarations:
   Enabled: false
+
+# when ternany is complex is should be clear enclosed in parentheses for easier read
+Style/TernaryParentheses:
+  EnforcedStyle: require_parentheses_when_complex

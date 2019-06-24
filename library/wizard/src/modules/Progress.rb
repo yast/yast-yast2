@@ -647,7 +647,7 @@ module Yast
     # the bar is either `ProgressBar or `Label
     # @param [String] title
     def SetProgressBarTitle(title)
-      UI.ChangeWidget(Id(:pb), 0 == @steps ? :Value : :Label, title)
+      UI.ChangeWidget(Id(:pb), (0 == @steps) ? :Value : :Label, title)
 
       nil
     end

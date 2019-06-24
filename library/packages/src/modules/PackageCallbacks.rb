@@ -1484,7 +1484,7 @@ module Yast
     end
 
     def FormatPatchName(patch_name, patch_version, patch_arch)
-      patch_full_name = !patch_name.nil? && patch_name != "" ? patch_name : ""
+      patch_full_name = (!patch_name.nil? && patch_name != "") ? patch_name : ""
 
       if patch_full_name != ""
         if !patch_version.nil? && patch_version != ""
