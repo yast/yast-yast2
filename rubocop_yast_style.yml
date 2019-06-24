@@ -66,6 +66,9 @@ Style/WordArray:
   StyleGuide: https://github.com/SUSE/style-guides/blob/master/Ruby.md#deviations-from-the-upstream-style-guide
   Enabled: false
 
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
 Style/RegexpLiteral:
   StyleGuide: https://github.com/SUSE/style-guides/blob/master/Ruby.md#deviations-from-the-upstream-style-guide
   Enabled: false
