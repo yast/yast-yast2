@@ -50,7 +50,7 @@ module Yast
     # return [String, nil] current network backend identification, nil is valid value for "no service selected / running"
     attr_accessor :current_name
     # return [String, nil] new network backend identification, nil is valid value for "no service selected / running"
-    attr_accessor :cached_name
+    attr_writer :cached_name
 
     # network backend identification to service name mapping
     BACKENDS = {
@@ -355,8 +355,6 @@ module Yast
       ret
     end
 
-  private
-
     # Replies with currently selected network service name
     #
     # Currently known backends:
@@ -369,6 +367,8 @@ module Yast
       Read()
       @cached_name
     end
+
+  private
 
     # Checks if currently cached service is the given one
     def cached_service?(service)

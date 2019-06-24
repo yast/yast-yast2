@@ -150,7 +150,7 @@ module Yast
     class Hook
       include Yast::Logger
 
-      attr_reader :name, :results, :files, :caller_path, :search_path
+      attr_reader :name, :files, :caller_path, :search_path
 
       def initialize(name, caller_path, search_path)
         log.debug "Creating hook '#{name}' from '#{self.caller_path}'"
@@ -200,7 +200,7 @@ module Yast
     class HookFile
       include Yast::Logger
 
-      attr_reader :path, :content, :result
+      attr_reader :path, :result
 
       def initialize(path)
         @path = path

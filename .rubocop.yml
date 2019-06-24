@@ -109,12 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 3
-Lint/DuplicateMethods:
-  Exclude:
-    - 'library/general/src/modules/Hooks.rb'
-    - 'library/network/src/modules/NetworkService.rb'
-
 # Offense count: 1
 # Configuration parameters: MaximumRangeSize.
 Lint/MissingCopEnableDirective:
