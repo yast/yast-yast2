@@ -109,14 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 11
-Lint/AmbiguousBlockAssociation:
-  Exclude:
-    - 'library/control/test/workflow_manager_test.rb'
-    - 'library/general/test/agents_test/fstab_agent_test.rb'
-    - 'library/general/test/packages_proposal_test.rb'
-    - 'library/systemd/test/yast2/system_service_test.rb'
-
 # Offense count: 3
 Lint/DuplicateMethods:
   Exclude:

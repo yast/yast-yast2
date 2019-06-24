@@ -546,7 +546,7 @@ describe Yast2::SystemService do
     end
 
     it "sets the service to stay as active" do
-      expect { system_service.restart }.to_not change { system_service.active? }
+      expect { system_service.restart }.to_not(change { system_service.active? })
     end
   end
 
@@ -558,7 +558,7 @@ describe Yast2::SystemService do
     end
 
     it "sets the service to stay as active" do
-      expect { system_service.reload }.to_not change { system_service.active? }
+      expect { system_service.reload }.to_not(change { system_service.active? })
     end
   end
 

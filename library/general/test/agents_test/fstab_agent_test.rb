@@ -32,13 +32,13 @@ describe ".etc.fstab" do
     end
 
     it "returns an array containing nfs entries" do
-      expect(content).to satisfy { |r| r.find { |e| e["file"] == "/home/kv2" } }
-      expect(content).to satisfy { |r| r.find { |e| e["file"] == "/media/new" } }
-      expect(content).to satisfy { |r| r.find { |e| e["file"] == "/media/new2" } }
+      expect(content).to(satisfy { |r| r.find { |e| e["file"] == "/home/kv2" } })
+      expect(content).to(satisfy { |r| r.find { |e| e["file"] == "/media/new" } })
+      expect(content).to(satisfy { |r| r.find { |e| e["file"] == "/media/new2" } })
     end
 
     it "returns an array containing tmpfs entry" do
-      expect(content).to satisfy { |r| r.find { |e| e["file"] == "/tmp" } }
+      expect(content).to(satisfy { |r| r.find { |e| e["file"] == "/tmp" } })
     end
 
     it "is able to parse comments" do

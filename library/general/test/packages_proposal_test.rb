@@ -54,8 +54,9 @@ describe Yast::PackagesProposal do
     end
 
     it "adding nil does not change the stored resolvables" do
-      expect { subject.AddResolvables(proposal_id, :package, nil) }.to_not \
+      expect { subject.AddResolvables(proposal_id, :package, nil) }.to_not(
         change { subject.GetResolvables(proposal_id, :package) }
+      )
     end
   end
 
@@ -73,50 +74,58 @@ describe Yast::PackagesProposal do
 
   describe "SetResolvables" do
     it "removes the previous resolvables and sets new ones" do
-      expect { subject.SetResolvables(proposal_id, :package, packages2) }.to \
+      expect { subject.SetResolvables(proposal_id, :package, packages2) }.to(
         change { subject.GetResolvables(proposal_id, :package) }
         .from(packages).to(packages2)
+      )
     end
 
     it "removes the previous optional resolvables and sets new ones" do
-      expect { subject.SetResolvables(proposal_id, :package, packages, optional: true) }.to \
+      expect { subject.SetResolvables(proposal_id, :package, packages, optional: true) }.to(
         change { subject.GetResolvables(proposal_id, :package, optional: true) }
         .from(packages2).to(packages)
+      )
     end
 
     it "resets to empty list when nil is used" do
-      expect { subject.SetResolvables(proposal_id, :package, nil) }.to \
+      expect { subject.SetResolvables(proposal_id, :package, nil) }.to(
         change { subject.GetResolvables(proposal_id, :package) }
         .from(packages).to([])
+      )
     end
   end
 
   describe "RemoveResolvables" do
     it "removes only the listed resolvables" do
-      expect { subject.RemoveResolvables(proposal_id, :package, ["kexec-tools"]) }.to \
+      expect { subject.RemoveResolvables(proposal_id, :package, ["kexec-tools"]) }.to(
         change { subject.GetResolvables(proposal_id, :package) }
         .from(["grub2", "kexec-tools"]).to(["grub2"])
+      )
     end
 
     it "keeps the optional resolvables when removing the required ones" do
-      expect { subject.RemoveResolvables(proposal_id, :package, ["kexec-tools"]) }.to_not \
+      expect { subject.RemoveResolvables(proposal_id, :package, ["kexec-tools"]) }.to_not(
         change { subject.GetResolvables(proposal_id, :package, optional: true) }
+      )
     end
 
     it "removes only the listed optional resolvables" do
-      expect { subject.RemoveResolvables(proposal_id, :package, ["kdump"], optional: true) }.to \
+      expect { subject.RemoveResolvables(proposal_id, :package, ["kdump"], optional: true) }.to(
         change { subject.GetResolvables(proposal_id, :package, optional: true) }
         .from(["kdump"]).to([])
+      )
     end
 
     it "keeps the optional resolvables when removing the required ones" do
-      expect { subject.RemoveResolvables(proposal_id, :package, packages2, optional: true) }.to_not \
+      expect { subject.RemoveResolvables(proposal_id, :package, packages2, optional: true) }.to_not(
         change { subject.GetResolvables(proposal_id, :package) }
+      )
     end
 
     it "does not remove anything when nil is used" do
-      expect { subject.RemoveResolvables(proposal_id, :package, nil) }.to_not \
+      expect { subject.RemoveResolvables(proposal_id, :package, nil) }.to_not(
         change { subject.GetResolvables(proposal_id, :package) }
+      )
     end
   end
 

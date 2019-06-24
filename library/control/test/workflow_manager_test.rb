@@ -530,7 +530,7 @@ describe Yast::WorkflowManager do
       end
 
       it "keeps the existing content if cleanup is not requested" do
-        expect { subject.addon_control_dir(src_id) }.to_not change { File.exist?(path) }
+        expect { subject.addon_control_dir(src_id) }.to_not(change { File.exist?(path) })
       end
     end
 
