@@ -170,11 +170,3 @@ Style/MutableConstant:
   Exclude:
     - 'library/system/src/lib/yast2/fs_snapshot.rb'
     - 'library/types/src/modules/Punycode.rb'
-
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: both, prefix, postfix
-Style/NegatedUnless:
-  Exclude:
-    - 'library/network/src/lib/network/susefirewalld.rb'

@@ -1245,7 +1245,7 @@ module Yast
       # Add the new services! We do not assign since that will override
       # services depending on other protocols!ugh!
       services.each do |s|
-        next unless !in_zone_attr?(zone, :services, s)
+        next if in_zone_attr?(zone, :services, s)
 
         Builtins.y2debug("Service %1 will be added to the %2 zone", s, zone)
         add_to_zone_attr(zone, :services, s)
@@ -1276,7 +1276,7 @@ module Yast
         # Convert SF2 port range to FirewallD
         p.sub!(":", "-")
         port_proto = "#{p}/#{protocol}"
-        next unless !@SETTINGS[zone][:ports].include?(port_proto)
+        next if @SETTINGS[zone][:ports].include?(port_proto)
 
         # Remove old services and set the new ones.
         Builtins.y2debug(
