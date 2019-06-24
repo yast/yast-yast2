@@ -109,13 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 2
-# Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
-Naming/UncommunicativeBlockParamName:
-  Exclude:
-    - 'library/general/src/modules/Arch.rb'
-    - 'library/general/src/modules/PackagesProposal.rb'
-
 # Offense count: 70
 # Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
 # AllowedNames: io, id, to, by, on, in, at, ip, db

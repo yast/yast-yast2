@@ -231,7 +231,7 @@ module Yast
 
       ret = []
 
-      data(optional).each do |_unique_ID, resolvables|
+      data(optional).each_value do |resolvables|
         ret.concat(resolvables[type]) if resolvables.key?(type)
       end
 

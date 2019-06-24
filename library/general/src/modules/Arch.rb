@@ -199,9 +199,9 @@ module Yast
         )
         systemProbe = [] if systemProbe.nil?
 
-        Builtins.foreach(systemProbe) do |systemEntry|
-          checksys = Ops.get_string(systemEntry, "system", "")
-          @_checkgeneration = Ops.get_string(systemEntry, "generation", "")
+        Builtins.foreach(systemProbe) do |entry|
+          checksys = Ops.get_string(entry, "system", "")
+          @_checkgeneration = Ops.get_string(entry, "generation", "")
           @_board_compatible = checksys if checksys != ""
         end
         Builtins.y2milestone("_board_compatible '%1' \n", @_board_compatible)
