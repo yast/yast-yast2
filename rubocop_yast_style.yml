@@ -101,6 +101,8 @@ Style/NumericLiterals:
 #
 Layout/AlignParameters:
   EnforcedStyle: with_fixed_indentation
+Layout/AlignArguments:
+  EnforcedStyle: with_fixed_indentation
 
 # no extra indentation for case.
 # We prefer style

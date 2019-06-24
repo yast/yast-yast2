@@ -27,6 +27,11 @@ Metrics/MethodLength:
 Metrics/ParameterLists:
   Max: 11
 
+# Configuration parameters: CountComments, ExcludedMethods.
+# ExcludedMethods: refine
+Metrics/BlockLength:
+  Max: 877
+
 Metrics/PerceivedComplexity:
   Max: 65
 
@@ -103,13 +108,6 @@ Style/MixinUsage:
     - 'library/system/test/kernel_test.rb'
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
-
-# Offense count: 41
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: with_first_argument, with_fixed_indentation
-Layout/AlignArguments:
-  Enabled: false
 
 # Offense count: 6
 # Cop supports --auto-correct.
@@ -234,12 +232,6 @@ Lint/ScriptPermission:
     - 'library/packages/test/y2packager/licenses_handlers/rpm_test.rb'
     - 'library/packages/test/y2packager/product_license_test.rb'
     - 'library/packages/test/y2packager/product_upgrade_test.rb'
-
-# Offense count: 306
-# Configuration parameters: CountComments, ExcludedMethods.
-# ExcludedMethods: refine
-Metrics/BlockLength:
-  Max: 877
 
 # Offense count: 2
 # Configuration parameters: Blacklist.
