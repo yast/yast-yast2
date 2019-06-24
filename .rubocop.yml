@@ -109,14 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 6
-Style/CommentedKeyword:
-  Exclude:
-    - 'library/general/src/modules/Misc.rb'
-    - 'library/system/src/modules/Hotplug.rb'
-    - 'library/system/src/modules/Kernel.rb'
-    - 'library/system/src/modules/ModuleLoading.rb'
-
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, SingleLineConditionsOnly, IncludeTernaryExpressions.

@@ -125,12 +125,12 @@ module Yast
             end
             # break out of module load loop if one module failed
             one_module_failed = true if !all_modules_loaded
-          end # foreach module of current driver info
-        end # stop_loading
+          end
+        end
         # break out of driver load loop if all modules of
         #   the current driver loaded successfully
         stop_loading = true if all_modules_loaded
-      end # foreach driver
+      end
 
       HwStatus.Set(unique_key, one_module_failed ? :no : :yes)
 

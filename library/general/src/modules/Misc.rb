@@ -188,7 +188,7 @@ module Yast
         Builtins.y2milestone("%1: '%2'", sysconfig_path, local_ret)
         return local_ret
       end
-    end # SysconfigRead()
+    end
 
     # Try to read value from sysconfig file and return the result if successful.
     # Function reads from arbitrary sysconfig file, for which the agent

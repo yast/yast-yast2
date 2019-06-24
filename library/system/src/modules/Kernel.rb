@@ -335,7 +335,7 @@ module Yast
       Builtins.y2milestone("ProbeKernel determined: %1", @kernel_packages)
 
       nil
-    end # ProbeKernel ()
+    end
 
     # Set a custom kernel.
     # @param custom_kernels a list of kernel packages

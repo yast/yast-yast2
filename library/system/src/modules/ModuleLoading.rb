@@ -254,7 +254,7 @@ module Yast
             )
             return :dont
           end
-        end # ask_before_loading
+        end
       end
 
       load_success = if with_modprobe
