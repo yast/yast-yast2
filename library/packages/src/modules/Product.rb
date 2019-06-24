@@ -287,6 +287,10 @@ module Yast
       end
     end
 
+    def respond_to_missing?(name, _include_private)
+      DROPPED_METHODS.include?(name)
+    end
+
     publish function: :name, type: "string ()"
     publish function: :short_name, type: "string ()"
     publish function: :version, type: "string ()"

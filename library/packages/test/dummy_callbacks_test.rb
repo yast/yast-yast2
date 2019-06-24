@@ -13,6 +13,10 @@ class FakePkg
       passed_args = Array.new(args_count, nil)
       args.first.call(*passed_args) # try to call method to avoid syntax errors and typos
     end
+
+    def respond_to_missing?(_name, _include_private)
+      true
+    end
   end
 end
 

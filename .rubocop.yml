@@ -133,12 +133,6 @@ Style/IdenticalConditionalBranches:
   Exclude:
     - 'library/packages/src/modules/PackageCallbacks.rb'
 
-# Offense count: 2
-Style/MissingRespondToMissing:
-  Exclude:
-    - 'library/packages/src/modules/Product.rb'
-    - 'library/packages/test/dummy_callbacks_test.rb'
-
 # Offense count: 22
 Style/MultipleComparison:
   Exclude:
