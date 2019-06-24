@@ -70,7 +70,7 @@ module  Y2Firewall
       # @param scope [String, nil] prepend some API calls with the given scope
       # @param cache [Boolean] if enabled will define some methods for caching
       #   the object modifications
-      def has_attributes(*attributes, scope: nil, cache: false) # rubocop:disable Style/PredicateName
+      def has_attributes(*attributes, scope: nil, cache: false) # rubocop:disable Naming/PredicateName
         scope_method = scope ? "#{scope}_" : ""
         enable_modifications_cache if cache
         define_method "attributes" do
@@ -161,7 +161,7 @@ module  Y2Firewall
       # @param scope [String, nil] prepend some API calls with the given scope
       # @param cache [Boolean] if enabled will define some methods for caching
       #   the object modifications
-      def has_many(*relations, scope: nil, cache: false) # rubocop:disable Style/PredicateName
+      def has_many(*relations, scope: nil, cache: false) # rubocop:disable Naming/PredicateName
         scope = "#{scope}_" if scope
         enable_modifications_cache if cache
 

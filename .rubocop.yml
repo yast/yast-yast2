@@ -1,6 +1,7 @@
 # use the shared Yast defaults
 inherit_from:
-  /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
+#  /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
+  - rubocop_yast_style.yml
 
 Metrics/AbcSize:
   Max: 446
@@ -29,18 +30,19 @@ Metrics/ParameterLists:
 Metrics/PerceivedComplexity:
   Max: 65
 
-Style/AccessorMethodName:
+# this needs more testing if we can have frozen string literals
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Naming/AccessorMethodName:
   # keep backward compatibility, but do not allow new code to be non-ruby style
   Exclude:
     - library/systemd/src/modules/systemd_target.rb
 
-# set reasonable ruby version
-AllCops:
-  TargetRubyVersion: 2.2
-
-# UI_ID module is not camel case
-Style/ClassAndModuleCamelCase:
-  Enabled: false
+Naming/ClassAndModuleCamelCase:
+  # UI_ID module is not camel case
+  Exclude:
+    - "library/packages/src/modules/SlideShow.rb"
 
 Style/ClassVars:
   # We really need the class variables in SuSEFirewall modules
@@ -52,11 +54,11 @@ Style/Documentation:
   Include:
     - "library/*/src/lib/**/*.rb"
 
-Style/FileName:
+Naming/FileName:
   Include:
     - "library/*/src/lib/**/*.rb"
 
-Style/MethodName:
+Naming/MethodName:
   Include:
     - "library/*/src/lib/**/*.rb"
   Exclude:
@@ -74,7 +76,7 @@ Style/Next:
     - "library/network/src/lib/network/susefirewalld.rb"
 
 # keep it as it is part of API for old code
-Style/PredicateName:
+Naming/PredicateName:
   Include:
     - "library/*/src/lib/**/*.rb"
 
@@ -83,7 +85,7 @@ Style/TrivialAccessors:
   Include:
     - "library/*/src/lib/**/*.rb"
 
-Style/VariableName:
+Naming/VariableName:
   Include:
     - "library/*/src/lib/**/*.rb"
   Exclude:
@@ -91,3 +93,454 @@ Style/VariableName:
     - "library/network/src/lib/network/susefirewalld.rb"
     - "library/network/src/lib/network/susefirewall2.rb"
     - "library/network/src/lib/network/susefirewall2services.rb"
+
+# Some tests and examples mixin to global, where it is not so harmful
+# (not so sure about tests as it modify global namespace for multiple tests in paralel )
+Style/MixinUsage:
+  Exclude:
+    - 'library/packages/test/product_test.rb'
+    - 'library/packages/test/slide_show_test.rb'
+    - 'library/system/test/kernel_test.rb'
+    - 'library/systemd/examples/comparison_of_widgets.rb'
+    - 'library/systemd/examples/service_widget.rb'
+
+# Offense count: 41
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, IndentationWidth.
+# SupportedStyles: with_first_argument, with_fixed_indentation
+Layout/AlignArguments:
+  Enabled: false
+
+# Offense count: 6
+# Cop supports --auto-correct.
+Layout/ClosingParenthesisIndentation:
+  Exclude:
+    - 'library/systemd/test/test_helper.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+# Configuration parameters: AllowBorderComment, AllowMarginComment.
+Layout/EmptyComment:
+  Exclude:
+    - 'library/commandline/src/modules/CommandLine.rb'
+
+# Offense count: 239
+# Cop supports --auto-correct.
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+# Offense count: 20
+# Cop supports --auto-correct.
+Layout/EmptyLineAfterMagicComment:
+  Enabled: false
+
+# Offense count: 38
+# Cop supports --auto-correct.
+Layout/EmptyLinesAroundArguments:
+  Exclude:
+    - 'library/commandline/src/modules/CommandLine.rb'
+    - 'library/control/src/modules/ProductProfile.rb'
+    - 'library/cwm/src/modules/CWM.rb'
+    - 'library/cwm/src/modules/CWMServiceStart.rb'
+    - 'library/cwm/src/modules/WizardHW.rb'
+    - 'library/desktop/src/modules/Desktop.rb'
+    - 'library/general/src/modules/MailAliases.rb'
+    - 'library/log/examples/logview4.rb'
+    - 'library/network/src/lib/network/susefirewall.rb'
+    - 'library/network/src/lib/network/susefirewall2.rb'
+    - 'library/network/src/lib/network/susefirewallservices.rb'
+    - 'library/network/src/modules/CWMFirewallInterfaces.rb'
+    - 'library/packages/src/modules/SignatureCheckDialogs.rb'
+    - 'library/system/src/modules/Kernel.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+Layout/EmptyLinesAroundExceptionHandlingKeywords:
+  Exclude:
+    - 'library/network/src/lib/network/susefirewalld.rb'
+
+# Offense count: 8
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: squiggly, active_support, powerpack, unindent
+Layout/IndentHeredoc:
+  Exclude:
+    - 'library/general/test/asciifile_test.rb'
+    - 'library/network/test/port_aliases_test.rb'
+    - 'library/systemd/test/test_helper.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+Layout/LeadingBlankLines:
+  Exclude:
+    - 'library/packages/src/lib/packages/file_conflict_callbacks.rb'
+
+# Offense count: 75
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, IndentationWidth.
+# SupportedStyles: aligned, indented, indented_relative_to_receiver
+Layout/MultilineMethodCallIndentation:
+  Enabled: false
+
+# Offense count: 6
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, IndentationWidth.
+# SupportedStyles: aligned, indented
+Layout/MultilineOperationIndentation:
+  Exclude:
+    - 'library/network/src/lib/network/susefirewalld.rb'
+    - 'library/network/src/lib/network/susefirewalldservices.rb'
+    - 'library/packages/src/lib/y2packager/product_upgrade.rb'
+
+# Offense count: 949
+# Cop supports --auto-correct.
+# Configuration parameters: IndentationWidth.
+Layout/Tab:
+  Enabled: false
+
+# Offense count: 11
+Lint/AmbiguousBlockAssociation:
+  Exclude:
+    - 'library/control/test/workflow_manager_test.rb'
+    - 'library/general/test/agents_test/fstab_agent_test.rb'
+    - 'library/general/test/packages_proposal_test.rb'
+    - 'library/systemd/test/yast2/system_service_test.rb'
+
+# Offense count: 3
+Lint/DuplicateMethods:
+  Exclude:
+    - 'library/general/src/modules/Hooks.rb'
+    - 'library/network/src/modules/NetworkService.rb'
+
+# Offense count: 1
+# Configuration parameters: MaximumRangeSize.
+Lint/MissingCopEnableDirective:
+  Exclude:
+    - 'library/general/src/lib/ui/greasemonkey.rb'
+
+# Offense count: 12
+# Cop supports --auto-correct.
+Lint/ScriptPermission:
+  Exclude:
+    - 'library/general/test/control_log_dir_rotator_test.rb'
+    - 'library/general/test/text_helpers_test.rb'
+    - 'library/general/test/yast2/feedback_test.rb'
+    - 'library/network/test/port_aliases_test.rb'
+    - 'library/network/test/y2firewall/relations_test.rb'
+    - 'library/packages/test/y2packager/licenses_fetchers/libzypp_test.rb'
+    - 'library/packages/test/y2packager/licenses_fetchers/rpm_test.rb'
+    - 'library/packages/test/y2packager/licenses_fetchers/shared_examples.rb'
+    - 'library/packages/test/y2packager/licenses_handlers/libzypp_test.rb'
+    - 'library/packages/test/y2packager/licenses_handlers/rpm_test.rb'
+    - 'library/packages/test/y2packager/product_license_test.rb'
+    - 'library/packages/test/y2packager/product_upgrade_test.rb'
+
+# Offense count: 306
+# Configuration parameters: CountComments, ExcludedMethods.
+# ExcludedMethods: refine
+Metrics/BlockLength:
+  Max: 877
+
+# Offense count: 2
+# Configuration parameters: Blacklist.
+# Blacklist: (?-mix:(^|\s)(EO[A-Z]{1}|END)(\s|$))
+Naming/HeredocDelimiterNaming:
+  Exclude:
+    - 'library/general/test/asciifile_test.rb'
+    - 'library/network/test/port_aliases_test.rb'
+
+# Offense count: 2
+# Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
+Naming/UncommunicativeBlockParamName:
+  Exclude:
+    - 'library/general/src/modules/Arch.rb'
+    - 'library/general/src/modules/PackagesProposal.rb'
+
+# Offense count: 70
+# Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
+# AllowedNames: io, id, to, by, on, in, at, ip, db
+Naming/UncommunicativeMethodParamName:
+  Enabled: false
+
+# Offense count: 1
+# Cop supports --auto-correct.
+Security/YAMLLoad:
+  Exclude:
+    - 'library/packages/test/y2packager/product_reader_test.rb'
+
+# Offense count: 12
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: inline, group
+Style/AccessModifierDeclarations:
+  Exclude:
+    - 'library/general/src/lib/ui/greasemonkey.rb'
+    - 'library/general/src/modules/Hooks.rb'
+    - 'library/packages/src/lib/y2packager/product_license.rb'
+
+# Offense count: 6
+Style/CommentedKeyword:
+  Exclude:
+    - 'library/general/src/modules/Misc.rb'
+    - 'library/system/src/modules/Hotplug.rb'
+    - 'library/system/src/modules/Kernel.rb'
+    - 'library/system/src/modules/ModuleLoading.rb'
+
+# Offense count: 3
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, SingleLineConditionsOnly, IncludeTernaryExpressions.
+# SupportedStyles: assign_to_condition, assign_inside_condition
+Style/ConditionalAssignment:
+  Exclude:
+    - 'library/cwm/src/modules/CWM.rb'
+    - 'library/general/src/modules/Popup.rb'
+    - 'library/wizard/src/modules/Progress.rb'
+
+# Offense count: 4
+# Cop supports --auto-correct.
+Style/Dir:
+  Exclude:
+    - 'library/general/test/os_release_test.rb'
+    - 'library/general/test/report_test.rb'
+    - 'library/network/test/test_helper.rb'
+    - 'library/packages/test/product_test.rb'
+
+# Offense count: 8
+# Cop supports --auto-correct.
+Style/EmptyLambdaParameter:
+  Exclude:
+    - 'library/sequencer/doc/examples/examples.rb'
+
+# Offense count: 20
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: compact, expanded
+Style/EmptyMethod:
+  Exclude:
+    - 'library/cwm/test/abstract_widget_test.rb'
+    - 'library/cwm/test/pager_test.rb'
+    - 'library/cwm/test/replace_point_test.rb'
+    - 'library/general/src/lib/ui/dialog.rb'
+    - 'library/general/src/lib/ui/installation_dialog.rb'
+    - 'library/general/src/modules/Call.rb'
+    - 'library/general/src/modules/CustomDialogs.rb'
+    - 'library/packages/src/modules/PackageKit.rb'
+    - 'library/sequencer/test/sequence_test.rb'
+
+# Offense count: 189
+# Cop supports --auto-correct.
+Style/Encoding:
+  Enabled: false
+
+# Offense count: 11
+# Cop supports --auto-correct.
+Style/ExpandPathArguments:
+  Exclude:
+    - 'library/cwm/examples/example_helper.rb'
+    - 'library/general/test/arch_test.rb'
+    - 'library/packages/test/lib/package_extractor_test.rb'
+    - 'library/system/test/fs_snapshot_test.rb'
+    - 'test/test_helper.rb'
+    - 'test/yast2_test.rb'
+
+# Offense count: 11
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: format, sprintf, percent
+Style/FormatString:
+  Exclude:
+    - 'library/general/src/lib/ui/service_status.rb'
+    - 'library/general/src/modules/OSRelease.rb'
+    - 'library/network/src/lib/network/susefirewall2services.rb'
+    - 'library/network/src/lib/network/susefirewalldservices.rb'
+    - 'library/network/src/modules/CWMFirewallInterfaces.rb'
+    - 'library/system/src/lib/yast2/execute.rb'
+
+# Offense count: 29
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: annotated, template, unannotated
+Style/FormatStringToken:
+  Exclude:
+    - 'library/control/src/modules/InstExtensionImage.rb'
+    - 'library/general/src/lib/ui/service_status.rb'
+    - 'library/general/src/modules/OSRelease.rb'
+    - 'library/network/src/lib/network/susefirewall2services.rb'
+    - 'library/network/src/lib/network/susefirewalldservices.rb'
+    - 'library/network/src/modules/CWMFirewallInterfaces.rb'
+    - 'library/packages/src/lib/packages/file_conflict_callbacks.rb'
+    - 'library/packages/src/lib/packages/update_messages_view.rb'
+    - 'library/packages/src/modules/PackageCallbacks.rb'
+    - 'library/packages/src/modules/SlideShow.rb'
+    - 'library/system/src/lib/yast2/execute.rb'
+    - 'library/system/src/lib/yast2/fs_snapshot.rb'
+    - 'library/system/src/modules/FileChanges.rb'
+
+# Offense count: 2
+Style/IdenticalConditionalBranches:
+  Exclude:
+    - 'library/packages/src/modules/PackageCallbacks.rb'
+
+# Offense count: 208
+# Cop supports --auto-correct.
+Style/IfUnlessModifier:
+  Enabled: false
+
+# Offense count: 6
+# Cop supports --auto-correct.
+# Configuration parameters: InverseMethods, InverseBlocks.
+Style/InverseMethods:
+  Exclude:
+    - 'library/desktop/src/clients/menu.rb'
+    - 'library/network/src/modules/CWMFirewallInterfaces.rb'
+    - 'library/network/src/modules/NetworkInterfaces.rb'
+    - 'library/system/src/modules/FileChanges.rb'
+
+# Offense count: 1
+Style/MethodMissingSuper:
+  Exclude:
+    - 'library/packages/test/dummy_callbacks_test.rb'
+
+# Offense count: 2
+Style/MissingRespondToMissing:
+  Exclude:
+    - 'library/packages/src/modules/Product.rb'
+    - 'library/packages/test/dummy_callbacks_test.rb'
+
+# Offense count: 6
+# Cop supports --auto-correct.
+Style/MultilineIfModifier:
+  Exclude:
+    - 'library/control/src/modules/ProductControl.rb'
+    - 'library/control/src/modules/WorkflowManager.rb'
+    - 'library/cwm/src/modules/DialogTree.rb'
+    - 'library/desktop/src/clients/menu.rb'
+    - 'library/network/src/modules/PortRanges.rb'
+    - 'library/packages/src/modules/PackageCallbacks.rb'
+
+# Offense count: 22
+Style/MultipleComparison:
+  Exclude:
+    - 'library/control/src/modules/ProductControl.rb'
+    - 'library/control/src/modules/WorkflowManager.rb'
+    - 'library/cwm/src/modules/CWM.rb'
+    - 'library/cwm/src/modules/CWMTable.rb'
+    - 'library/cwm/src/modules/TablePopup.rb'
+    - 'library/general/src/modules/Arch.rb'
+    - 'library/network/src/modules/CWMFirewallInterfaces.rb'
+    - 'library/network/src/modules/Internet.rb'
+    - 'library/packages/src/modules/PackageCallbacks.rb'
+    - 'library/packages/src/modules/PackageSystem.rb'
+    - 'library/packages/src/modules/PackagesUI.rb'
+    - 'library/packages/src/modules/SlideShow.rb'
+    - 'library/types/src/modules/String.rb'
+    - 'library/wizard/src/modules/Progress.rb'
+
+# Offense count: 2
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: literals, strict
+Style/MutableConstant:
+  Exclude:
+    - 'library/system/src/lib/yast2/fs_snapshot.rb'
+    - 'library/types/src/modules/Punycode.rb'
+
+# Offense count: 2
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: both, prefix, postfix
+Style/NegatedUnless:
+  Exclude:
+    - 'library/network/src/lib/network/susefirewalld.rb'
+
+# Offense count: 5
+# Cop supports --auto-correct.
+# Configuration parameters: PreferredDelimiters.
+Style/PercentLiteralDelimiters:
+  Exclude:
+    - 'library/network/test/y2firewall/firewalld_test.rb'
+    - 'library/system/test/proc_cmdline_test.rb'
+    - 'library/systemd/src/lib/yast2/systemd/unit.rb'
+    - 'library/systemd/src/lib/yast2/systemd/unit_properties.rb'
+
+# Offense count: 3
+# Cop supports --auto-correct.
+Style/RedundantConditional:
+  Exclude:
+    - 'library/network/src/lib/network/firewalld.rb'
+    - 'library/network/src/lib/network/susefirewalld.rb'
+    - 'library/network/src/lib/y2firewall/firewalld/zone_reader.rb'
+
+# Offense count: 14
+# Cop supports --auto-correct.
+# Configuration parameters: AllowMultipleReturnValues.
+Style/RedundantReturn:
+  Exclude:
+    - 'library/network/src/modules/NetworkInterfaces.rb'
+    - 'library/network/src/modules/PortAliases.rb'
+    - 'library/packages/src/modules/PackageCallbacks.rb'
+    - 'library/xml/src/modules/XML.rb'
+
+# Offense count: 5
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: implicit, explicit
+Style/RescueStandardError:
+  Exclude:
+    - 'library/general/test/dialog_test.rb'
+    - 'library/network/src/modules/NetworkService.rb'
+    - 'library/system/src/lib/yast2/clients/view_anymsg.rb'
+    - 'library/types/src/modules/IP.rb'
+
+# Offense count: 12
+# Cop supports --auto-correct.
+# Configuration parameters: ConvertCodeThatCanStartToReturnNil, Whitelist.
+# Whitelist: present?, blank?, presence, try, try!
+Style/SafeNavigation:
+  Exclude:
+    - 'library/cwm/src/modules/CWM.rb'
+    - 'library/log/src/modules/LogView.rb'
+    - 'library/network/src/lib/y2firewall/firewalld/interface.rb'
+    - 'library/network/src/lib/y2firewall/firewalld/zone_reader.rb'
+    - 'library/network/src/modules/CWMFirewallInterfaces.rb'
+    - 'library/packages/src/lib/y2packager/product_reader.rb'
+    - 'library/systemd/src/lib/yast2/system_service.rb'
+    - 'library/systemd/src/modules/Service.rb'
+
+# Offense count: 35
+# Cop supports --auto-correct.
+# Configuration parameters: MinSize.
+# SupportedStyles: percent, brackets
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+# Offense count: 4
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, AllowSafeAssignment.
+# SupportedStyles: require_parentheses, require_no_parentheses, require_parentheses_when_complex
+Style/TernaryParentheses:
+  Exclude:
+    - 'library/commandline/src/modules/CommandLine.rb'
+    - 'library/control/src/modules/WorkflowManager.rb'
+    - 'library/general/src/modules/Report.rb'
+    - 'library/types/src/modules/String.rb'
+
+# Offense count: 2
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyleForMultiline.
+# SupportedStylesForMultiline: comma, consistent_comma, no_comma
+Style/TrailingCommaInArrayLiteral:
+  Exclude:
+    - 'library/control/src/modules/ProductControl.rb'
+    - 'library/types/test/ip_test.rb'
+
+# Offense count: 2
+# Cop supports --auto-correct.
+Style/UnneededCondition:
+  Exclude:
+    - 'library/systemd/src/lib/yast2/systemd/target.rb'
+    - 'library/types/src/modules/String.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+Style/UnneededSort:
+  Exclude:
+    - 'library/packages/src/lib/y2packager/package.rb'
