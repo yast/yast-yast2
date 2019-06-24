@@ -109,12 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 8
-# Cop supports --auto-correct.
-Style/EmptyLambdaParameter:
-  Exclude:
-    - 'library/sequencer/doc/examples/examples.rb'
-
 # Offense count: 20
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

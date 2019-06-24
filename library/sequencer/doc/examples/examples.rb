@@ -31,14 +31,14 @@ module Yast
 
     def Aliases
       aliases = {
-        "begin"        => ->() { BeginDialog() },
-        "end"          => ->() { EndDialog() },
-        "config"       => ->() { ConfigDialog() },
-        "details"      => ->() { DetailsDialog() },
-        "superdetails" => ->() { SuperDetailsDialog() },
-        "expert"       => ->() { ExpertDialog() },
-        "expert2"      => ->() { Expert2Dialog() },
-        "decide"       => [->() { Decide() }, true]
+        "begin"        => -> { BeginDialog() },
+        "end"          => -> { EndDialog() },
+        "config"       => -> { ConfigDialog() },
+        "details"      => -> { DetailsDialog() },
+        "superdetails" => -> { SuperDetailsDialog() },
+        "expert"       => -> { ExpertDialog() },
+        "expert2"      => -> { Expert2Dialog() },
+        "decide"       => [-> { Decide() }, true]
       }
       deep_copy(aliases)
     end
