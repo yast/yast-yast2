@@ -109,16 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 3
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SingleLineConditionsOnly, IncludeTernaryExpressions.
-# SupportedStyles: assign_to_condition, assign_inside_condition
-Style/ConditionalAssignment:
-  Exclude:
-    - 'library/cwm/src/modules/CWM.rb'
-    - 'library/general/src/modules/Popup.rb'
-    - 'library/wizard/src/modules/Progress.rb'
-
 # Offense count: 8
 # Cop supports --auto-correct.
 Style/EmptyLambdaParameter:

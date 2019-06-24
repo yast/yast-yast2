@@ -74,8 +74,6 @@ module Yast
     # @return [Yast::Term] the layout contents as a term
     def popupLayoutInternalTypeWithLabel(headline, message, button_box, label, richtext, width, height)
       button_box = deep_copy(button_box)
-      content = Empty()
-
       rt = VWeight(
         1,
         VBox(
@@ -87,8 +85,8 @@ module Yast
         )
       )
 
-      if Ops.greater_than(Builtins.size(headline), 0)
-        content = VBox(
+      content = if Ops.greater_than(Builtins.size(headline), 0)
+        VBox(
           VSpacing(0.4),
           VBox(
             Left(Heading(headline)),
@@ -99,7 +97,7 @@ module Yast
           )
         ) # no headline
       else
-        content = VBox(
+        VBox(
           VSpacing(0.4),
           VBox(
             richtext ? rt : VCenter(Label(message)),

@@ -211,9 +211,8 @@ module Yast
         "fallback"      => "map"
       }
       type = Ops.get(types, key)
-      success = true
-      if type.nil?
-        success = case key
+      success = if type.nil?
+        case key
         when "widget_func" then Ops.is(value, "term ()")
         when "init" then Ops.is(value, "void (string)")
         when "handle" then Ops.is(value, "symbol (string, map)")
@@ -231,7 +230,7 @@ module Yast
           true
         end
       else
-        success = ValidateBasicType(value, type)
+        ValidateBasicType(value, type)
       end
 
       if !success

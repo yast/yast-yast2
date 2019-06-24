@@ -423,8 +423,8 @@ module Yast
         end
         bar = Builtins.add(bar, Left(HBox(HSquash(items))))
 
-        if 0 != @steps
-          bar = Builtins.add(
+        bar = if 0 != @steps
+          Builtins.add(
             bar,
             VBox(
               VStretch(),
@@ -437,7 +437,7 @@ module Yast
             )
           )
         else
-          bar = Builtins.add(
+          Builtins.add(
             bar,
             VBox(
               VStretch(),
