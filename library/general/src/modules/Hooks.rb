@@ -209,9 +209,7 @@ module Yast
       def execute
         log.info "Executing hook file '#{path}'"
         @result = OpenStruct.new(SCR.Execute(Path.new(".target.bash_output"), path.to_s.shellescape))
-        if failed?
-          log.error "Hook file '#{path.basename}' failed with stderr: #{result.stderr}"
-        end
+        log.error "Hook file '#{path.basename}' failed with stderr: #{result.stderr}" if failed?
         result
       end
 

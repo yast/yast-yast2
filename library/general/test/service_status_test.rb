@@ -69,9 +69,7 @@ class DummyDialog
   end
 
   def handle_input(input)
-    if @srv1_component.handle_input(input) == :enabled_flag
-      @enabled1 = @srv1_component.enabled_flag?
-    end
+    @enabled1 = @srv1_component.enabled_flag? if @srv1_component.handle_input(input) == :enabled_flag
     @srv2_component.handle_input(input)
   end
 

@@ -331,9 +331,7 @@ module Yast
           # popup headline
           _("Select File for the Authentication Key")
         )
-        if !new_filename.nil?
-          UI.ChangeWidget(Id("_cwm_new_key_file"), :Value, new_filename)
-        end
+        UI.ChangeWidget(Id("_cwm_new_key_file"), :Value, new_filename) if !new_filename.nil?
         return nil
       elsif ret == "_cwm_generate_key"
         if !UI.WidgetExists(Id("_cwm_new_key_file"))
@@ -406,9 +404,7 @@ module Yast
               to:   "list <string>"
             )
             Builtins.foreach(files) do |f|
-              if Builtins.contains(AnalyzeTSIGKeyFile(f), key2)
-                DeleteTSIGKeyFromDisk(f)
-              end
+              DeleteTSIGKeyFromDisk(f) if Builtins.contains(AnalyzeTSIGKeyFile(f), key2)
             end
           end
         end

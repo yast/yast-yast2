@@ -55,9 +55,7 @@ module Yast
     # @param [String] icon_name deprecated
     # @return true on continue
     def Detection(class_, icon_name)
-      if !icon_name.nil?
-        Builtins.y2warning(-1, "Parameter 'icon_name' is deprecated.")
-      end
+      Builtins.y2warning(-1, "Parameter 'icon_name' is deprecated.") if !icon_name.nil?
 
       return true if Linuxrc.manual != true
 
@@ -164,9 +162,7 @@ module Yast
         Convert.to_integer(SCR.Read(path(".target.size"), "/usr/bin/id")),
         0
       )
-        if !Stage.initial
-          Builtins.y2warning("/usr/bin/id not existing, supposing to be root")
-        end
+        Builtins.y2warning("/usr/bin/id not existing, supposing to be root") if !Stage.initial
         return true
       end
 

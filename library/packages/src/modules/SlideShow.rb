@@ -390,9 +390,7 @@ module Yast
 
       @inst_log << log_line
 
-      if ShowingDetails() && UI.WidgetExists(:instLog)
-        UI.ChangeWidget(:instLog, :LastLine, log_line)
-      end
+      UI.ChangeWidget(:instLog, :LastLine, log_line) if ShowingDetails() && UI.WidgetExists(:instLog)
 
       nil
     end
@@ -468,9 +466,7 @@ module Yast
     # necessary.
     #
     def ChangeSlideIfNecessary
-      if Yast2::SystemTime.uptime > (@slide_start_time + @slide_interval)
-        LoadSlide(@current_slide_no + 1)
-      end
+      LoadSlide(@current_slide_no + 1) if Yast2::SystemTime.uptime > (@slide_start_time + @slide_interval)
 
       nil
     end
@@ -601,9 +597,7 @@ module Yast
         Builtins.y2milestone("Contents set to details")
       end
 
-      if UI.WidgetExists(:instLog) && @inst_log != ""
-        UI.ChangeWidget(:instLog, :Value, @inst_log)
-      end
+      UI.ChangeWidget(:instLog, :Value, @inst_log) if UI.WidgetExists(:instLog) && @inst_log != ""
 
       nil
     end
@@ -676,13 +670,9 @@ module Yast
         end
 
         @_rn_tabs = {}
-        if @_relnotes.key?(@_base_product)
-          add_relnotes_for_product @_base_product, @_relnotes[@_base_product], tabs
-        end
+        add_relnotes_for_product @_base_product, @_relnotes[@_base_product], tabs if @_relnotes.key?(@_base_product)
         @_relnotes.each do |product, relnotes|
-          if @_base_product != product
-            add_relnotes_for_product product, relnotes, tabs
-          end
+          add_relnotes_for_product product, relnotes, tabs if @_base_product != product
         end
 
         contents = DumbTab(
@@ -894,9 +884,7 @@ module Yast
     def UpdateTable(items)
       items = deep_copy(items)
       @table_items = deep_copy(items)
-      if ShowingDetails() && @_show_table
-        UI.ChangeWidget(Id(:cdStatisticsTable), :Items, items)
-      end
+      UI.ChangeWidget(Id(:cdStatisticsTable), :Items, items) if ShowingDetails() && @_show_table
 
       nil
     end

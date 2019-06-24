@@ -87,9 +87,7 @@ module Yast
           result = Ops.add(result, "\n")
         end
         # *** Add the text ****
-        if s != -1
-          lpart = String.CutBlanks(Builtins.substring(lpart, Ops.add(s, 1)))
-        end
+        lpart = String.CutBlanks(Builtins.substring(lpart, Ops.add(s, 1))) if s != -1
         next if Builtins.regexpmatch(lpart, "^[ \n\t]*$")
         next if lpart == "&nbsp;"
 

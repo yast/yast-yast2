@@ -83,9 +83,7 @@ module Yast
       event = deep_copy(event)
       ret = Ops.get(event, "ID")
 
-      if ret == :wizardTree
-        ret = Convert.to_string(UI.QueryWidget(Id(:wizardTree), :CurrentItem))
-      end
+      ret = Convert.to_string(UI.QueryWidget(Id(:wizardTree), :CurrentItem)) if ret == :wizardTree
       @previous_screen = @selected_screen
       @selected_screen = Convert.to_string(ret)
       :_cwm_internal_tree_handle

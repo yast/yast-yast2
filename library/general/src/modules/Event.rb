@@ -39,13 +39,9 @@ module Yast
     # Returns id or nil.
     def IsWidgetActivated(event)
       event = deep_copy(event)
-      if Ops.get_string(event, "EventType", "Unknown") != "WidgetEvent"
-        return nil
-      end
+      return nil if Ops.get_string(event, "EventType", "Unknown") != "WidgetEvent"
 
-      if Ops.get_string(event, "EventReason", "Unknown") != "Activated"
-        return nil
-      end
+      return nil if Ops.get_string(event, "EventReason", "Unknown") != "Activated"
 
       Ops.get_symbol(event, "ID")
     end
@@ -56,13 +52,9 @@ module Yast
     # Returns id or nil.
     def IsWidgetSelectionChanged(event)
       event = deep_copy(event)
-      if Ops.get_string(event, "EventType", "Unknown") != "WidgetEvent"
-        return nil
-      end
+      return nil if Ops.get_string(event, "EventType", "Unknown") != "WidgetEvent"
 
-      if Ops.get_string(event, "EventReason", "Unknown") != "SelectionChanged"
-        return nil
-      end
+      return nil if Ops.get_string(event, "EventReason", "Unknown") != "SelectionChanged"
 
       Ops.get_symbol(event, "ID")
     end
@@ -73,13 +65,9 @@ module Yast
     # Returns id or nil.
     def IsWidgetValueChanged(event)
       event = deep_copy(event)
-      if Ops.get_string(event, "EventType", "Unknown") != "WidgetEvent"
-        return nil
-      end
+      return nil if Ops.get_string(event, "EventType", "Unknown") != "WidgetEvent"
 
-      if Ops.get_string(event, "EventReason", "Unknown") != "ValueChanged"
-        return nil
-      end
+      return nil if Ops.get_string(event, "EventReason", "Unknown") != "ValueChanged"
 
       Ops.get_symbol(event, "ID")
     end
@@ -90,9 +78,7 @@ module Yast
     # Returns id or nil.
     def IsWidgetActivatedOrSelectionChanged(event)
       event = deep_copy(event)
-      if Ops.get_string(event, "EventType", "Unknown") != "WidgetEvent"
-        return nil
-      end
+      return nil if Ops.get_string(event, "EventType", "Unknown") != "WidgetEvent"
 
       if Ops.get_string(event, "EventReason", "Unknown") != "Activated" &&
           Ops.get_string(event, "EventReason", "Unknown") != "SelectionChanged"
@@ -108,9 +94,7 @@ module Yast
     # Returns id or nil.
     def IsWidgetContextMenuActivated(event)
       event = deep_copy(event)
-      if Ops.get_string(event, "EventType", "Unknown") != "WidgetEvent"
-        return nil
-      end
+      return nil if Ops.get_string(event, "EventType", "Unknown") != "WidgetEvent"
 
       if Ops.get_string(event, "EventReason", "Unknown") !=
           "ContextMenuActivated"
@@ -135,9 +119,7 @@ module Yast
     # return id or nil.
     def IsTimeout(event)
       event = deep_copy(event)
-      if Ops.get_string(event, "EventType", "Unknown") != "TimeoutEvent"
-        return nil
-      end
+      return nil if Ops.get_string(event, "EventType", "Unknown") != "TimeoutEvent"
 
       Ops.get_symbol(event, "ID")
     end
@@ -147,9 +129,7 @@ module Yast
     # return id or nil.
     def IsCancel(event)
       event = deep_copy(event)
-      if Ops.get_string(event, "EventType", "Unknown") != "CancelEvent"
-        return nil
-      end
+      return nil if Ops.get_string(event, "EventType", "Unknown") != "CancelEvent"
 
       Ops.get_symbol(event, "ID")
     end

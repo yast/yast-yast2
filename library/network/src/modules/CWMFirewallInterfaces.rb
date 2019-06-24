@@ -232,9 +232,7 @@ module Yast
           service_status[firewalld.default_zone] =
             default_zone && default_zone.services.include?(service)
         end
-        if service_status[firewalld.default_zone]
-          @allowed_interfaces = (allowed_interfaces + default_interfaces).uniq
-        end
+        @allowed_interfaces = (allowed_interfaces + default_interfaces).uniq if service_status[firewalld.default_zone]
       end
 
       log.info "Allowed interfaces: #{allowed_interfaces}"
@@ -541,9 +539,7 @@ module Yast
 
       help = "" # TODO
 
-      if Builtins.haskey(settings, "help")
-        help = Ops.get_string(settings, "help", "")
-      end
+      help = Ops.get_string(settings, "help", "") if Builtins.haskey(settings, "help")
 
       ret = Convert.convert(
         Builtins.union(

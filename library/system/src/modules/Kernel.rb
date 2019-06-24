@@ -685,9 +685,7 @@ module Yast
       discardlist.concat(S390_ZIPL_ARGS) if Arch.s390
 
       # get rid of live-installer-specific parameters
-      if Mode.live_installation
-        discardlist.push("initrd", "ramdisk_size", "ramdisk_blocksize", "liveinstall", "splash", "quiet", "lang")
-      end
+      discardlist.push("initrd", "ramdisk_size", "ramdisk_blocksize", "liveinstall", "splash", "quiet", "lang") if Mode.live_installation
 
       # TODO: is it still needed?
       # backdoor to re-enable update on UL/SLES

@@ -165,9 +165,7 @@ module Yast
           to:   "map <string, map <string, any>>"
         )
         Builtins.foreach(des) do |group, d|
-          if group != "table" && group != "popup"
-            Builtins.y2error("Unknown entry in option %1: %2", w_key, group)
-          end
+          Builtins.y2error("Unknown entry in option %1: %2", w_key, group) if group != "table" && group != "popup"
           Builtins.foreach(d) do |key2, value|
             ValidateValueType(key2, value, w_key, true)
           end
@@ -414,9 +412,7 @@ module Yast
     def TableRedraw(descr, update_buttons)
       descr = deep_copy(descr)
       id_list = getIdList(descr)
-      if @previous_selected_item.nil?
-        @previous_selected_item = Ops.get(id_list, 0)
-      end
+      @previous_selected_item = Ops.get(id_list, 0) if @previous_selected_item.nil?
       entries = Builtins.maplist(id_list) do |opt_id|
         opt_val = ""
         opt_changed = false
@@ -431,9 +427,7 @@ module Yast
           opt_val = tableEntryValue(opt_id, opt_descr)
           opt_changed = tableEntryChanged(opt_id, opt_descr)
         end
-        if update_buttons && opt_id == @previous_selected_item
-          updateButtons(descr, opt_descr)
-        end
+        updateButtons(descr, opt_descr) if update_buttons && opt_id == @previous_selected_item
         if Ops.get_boolean(descr, ["_cwm_attrib", "changed_column"], false)
           next Item(
             Id(opt_id),
@@ -507,9 +501,7 @@ module Yast
         option = nil
         while ret != :_tp_ok && ret != :_tp_cancel
           ret = UI.UserInput
-          if ret == :_tp_ok
-            option = Convert.to_string(UI.QueryWidget(Id(:optname), :Value))
-          end
+          option = Convert.to_string(UI.QueryWidget(Id(:optname), :Value)) if ret == :_tp_ok
         end
       ensure
         UI.CloseDialog
@@ -625,9 +617,7 @@ module Yast
     def DisableTable(descr)
       descr = deep_copy(descr)
       UI.ChangeWidget(Id(:_tp_table), :Enabled, false)
-      if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
-        UI.ChangeWidget(Id(:_tp_edit), :Enabled, false)
-      end
+      UI.ChangeWidget(Id(:_tp_edit), :Enabled, false) if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
       if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
         UI.ChangeWidget(Id(:_tp_delete), :Enabled, false)
         UI.ChangeWidget(Id(:_tp_add), :Enabled, false)
@@ -646,12 +636,8 @@ module Yast
     def EnableTable(descr)
       descr = deep_copy(descr)
       UI.ChangeWidget(Id(:_tp_table), :Enabled, true)
-      if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
-        UI.ChangeWidget(Id(:_tp_edit), :Enabled, true)
-      end
-      if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
-        UI.ChangeWidget(Id(:_tp_add), :Enabled, false)
-      end
+      UI.ChangeWidget(Id(:_tp_edit), :Enabled, true) if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
+      UI.ChangeWidget(Id(:_tp_add), :Enabled, false) if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
 
       opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
       opt_key = id2key(descr, opt_id)

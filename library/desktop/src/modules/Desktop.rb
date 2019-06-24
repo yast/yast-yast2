@@ -63,9 +63,7 @@ module Yast
     end
 
     def ReadLocalizedKey(fname, keypath, key)
-      if key != "Name" && key != "GenericName" && key != "Comment"
-        return Convert.to_string(SCR.Read(Builtins.add(keypath, key)))
-      end
+      return Convert.to_string(SCR.Read(Builtins.add(keypath, key))) if key != "Name" && key != "GenericName" && key != "Comment"
 
       ret = ""
       fallback = Convert.to_string(SCR.Read(Builtins.add(keypath, key)))
@@ -104,12 +102,8 @@ module Yast
       # read language
       @LanguageFull = ""
       @Language = UI.GetLanguage(true)
-      if Builtins.regexpmatch(@Language, "(.*_[^.]*)\\.?.*") # matches: ll_TT ll_TT.UTF-8
-        @LanguageFull = Builtins.regexpsub(@Language, "(.*_[^.]*)\\.?.*", "\\1")
-      end
-      if Builtins.regexpmatch(@Language, "(.*)_")
-        @Language = Builtins.regexpsub(@Language, "(.*)_", "\\1")
-      end
+      @LanguageFull = Builtins.regexpsub(@Language, "(.*_[^.]*)\\.?.*", "\\1") if Builtins.regexpmatch(@Language, "(.*_[^.]*)\\.?.*") # matches: ll_TT ll_TT.UTF-8
+      @Language = Builtins.regexpsub(@Language, "(.*)_", "\\1") if Builtins.regexpmatch(@Language, "(.*)_")
       Builtins.y2debug("LanguageFull=%1", @LanguageFull)
       Builtins.y2debug("Language=%1", @Language)
 

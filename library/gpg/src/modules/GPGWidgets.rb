@@ -296,9 +296,7 @@ module Yast
       event = deep_copy(event)
       Builtins.y2debug("PassphraseStore: %1, %2", key, event)
 
-      if Ops.get_symbol(event, "WidgetID", :_none) == :ok
-        @passphrase = Convert.to_string(UI.QueryWidget(Id(:passphrase), :Value))
-      end
+      @passphrase = Convert.to_string(UI.QueryWidget(Id(:passphrase), :Value)) if Ops.get_symbol(event, "WidgetID", :_none) == :ok
 
       nil
     end

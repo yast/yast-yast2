@@ -175,9 +175,7 @@ module Yast
         adv_button = _("Ad&vanced")
       end
 
-      if Builtins.regexpmatch(adv_button, "^.*&.*$")
-        adv_button = Builtins.regexpsub(adv_button, "^(.*)&(.*)$", "\\1\\2")
-      end
+      adv_button = Builtins.regexpsub(adv_button, "^(.*)&(.*)$", "\\1\\2") if Builtins.regexpmatch(adv_button, "^.*&.*$")
 
       save = Ops.get_boolean(parameters, "save", false)
       save = false if save.nil?
@@ -326,9 +324,7 @@ module Yast
         index = -1
         Builtins.foreach(log_maps) do |m|
           index = Ops.add(index, 1)
-          if Builtins.haskey(m, "default") && default_log == 0
-            default_log = index
-          end
+          default_log = index if Builtins.haskey(m, "default") && default_log == 0
         end
       end
       default_log
@@ -362,9 +358,7 @@ module Yast
       @current_index = Ops.get_integer(@param, "_cwm_default_index", 0)
       @mb_actions = Ops.get_list(@param, "_cwm_button_actions", [])
       @logs = Ops.get_list(@param, "_cwm_log_files", [])
-      if UI.WidgetExists(Id(:cwm_log_files))
-        UI.ChangeWidget(Id(:cwm_log_files), :value, @current_index)
-      end
+      UI.ChangeWidget(Id(:cwm_log_files), :value, @current_index) if UI.WidgetExists(Id(:cwm_log_files))
       LogSwitch(@current_index)
 
       nil
@@ -562,9 +556,7 @@ module Yast
         )
       )
 
-      if Ops.get_string(@param, "help", "") != ""
-        UI.ReplaceWidget(Id(:rep_left), PushButton(Id(:help), Label.HelpButton))
-      end
+      UI.ReplaceWidget(Id(:rep_left), PushButton(Id(:help), Label.HelpButton)) if Ops.get_string(@param, "help", "") != ""
       @mb_actions = Ops.get_list(@param, "actions", [])
 
       InitLogReading(0)

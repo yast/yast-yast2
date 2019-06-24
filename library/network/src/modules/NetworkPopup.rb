@@ -69,9 +69,7 @@ module Yast
           device_name = _("Unknown device")
         end
 
-        if Ops.greater_than(Builtins.size(device_name), 30)
-          device_name = Ops.add(Builtins.substring(device_name, 0, 27), "...")
-        end
+        device_name = Ops.add(Builtins.substring(device_name, 0, 27), "...") if Ops.greater_than(Builtins.size(device_name), 30)
 
         ip_addr = if NetworkInterfaces.GetValue(i, "BOOTPROTO") == "dhcp"
           # TRANSLATORS: Informs that the IP address is assigned via DHCP
@@ -133,9 +131,7 @@ module Yast
       ret = nil
       ret = UI.UserInput while ret != :cancel && ret != :ok
 
-      if ret == :ok
-        item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem))
-      end
+      item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem)) if ret == :ok
       UI.CloseDialog
 
       item
@@ -174,9 +170,7 @@ module Yast
       ret = nil
       ret = UI.UserInput while ret != :cancel && ret != :ok
 
-      if ret == :ok
-        item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem))
-      end
+      item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem)) if ret == :ok
       UI.CloseDialog
 
       item

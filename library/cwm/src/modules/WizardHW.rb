@@ -169,9 +169,7 @@ module Yast
     def GetActionLabel(action)
       action = deep_copy(action)
       fallback = ""
-      if Ops.is_string?(Ops.get(action, 0))
-        fallback = Ops.get_string(action, 0, "")
-      end
+      fallback = Ops.get_string(action, 0, "") if Ops.is_string?(Ops.get(action, 0))
       Ops.get_string(action, 1, fallback)
     end
 
@@ -479,13 +477,9 @@ module Yast
 
       ret = ""
 
-      if !title.nil? && title != ""
-        ret = Ops.add(Ops.add("<P><B>", title), "</B></P>")
-      end
+      ret = Ops.add(Ops.add("<P><B>", title), "</B></P>") if !title.nil? && title != ""
 
-      if items != ""
-        ret = Ops.add(Ops.add(Ops.add(ret, "<P><UL>"), items), "</UL></P>")
-      end
+      ret = Ops.add(Ops.add(Ops.add(ret, "<P><UL>"), items), "</UL></P>") if items != ""
 
       ret
     end

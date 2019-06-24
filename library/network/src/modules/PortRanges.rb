@@ -91,9 +91,7 @@ module Yast
     #     IsPortRange("port-range") -> false
     #     IsPortRange("19-22")      -> false
     def IsPortRange(check_this)
-      if Builtins.regexpmatch(check_this, "^[0123456789]+:[0123456789]+$")
-        return true
-      end
+      return true if Builtins.regexpmatch(check_this, "^[0123456789]+:[0123456789]+$")
 
       false
     end
@@ -338,9 +336,7 @@ module Yast
         # Port range might be now only "port"
         if !IsPortRange(port_range)
           # If the port doesn't match the ~port_range...
-          if Builtins.tostring(port_number) != port_range
-            ret = Builtins.add(ret, port_range)
-          end
+          ret = Builtins.add(ret, port_range) if Builtins.tostring(port_number) != port_range
           # If matches, it isn't added (it is filtered)
           # Modify the port range when the port is included
         elsif PortIsInPortranges(Builtins.tostring(port_number), [port_range])

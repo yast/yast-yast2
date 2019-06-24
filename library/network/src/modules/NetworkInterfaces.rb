@@ -401,9 +401,7 @@ module Yast
         Builtins.y2error("wrong number: %1", num)
         return nil
       end
-      if Builtins.regexpmatch(num, "^[0-9]*$")
-        return Builtins.sformat("%1%2", typ, num)
-      end
+      return Builtins.sformat("%1%2", typ, num) if Builtins.regexpmatch(num, "^[0-9]*$")
 
       Builtins.sformat("%1-%2", typ, num)
     end
@@ -945,9 +943,7 @@ module Yast
             )
           end
           @OriginalDevices = {} if @OriginalDevices.nil?
-          if Ops.get(@OriginalDevices, typ).nil?
-            Ops.set(@OriginalDevices, typ, {})
-          end
+          Ops.set(@OriginalDevices, typ, {}) if Ops.get(@OriginalDevices, typ).nil?
           Ops.set(
             @OriginalDevices,
             [typ, config],

@@ -152,9 +152,7 @@ module Yast
               )
               lines_count = 0 if Ops.less_than(lines_count, 0)
 
-              if Ops.greater_than(lines_count, 0)
-                command << Builtins.sformat(" | tail -n +%1", lines_count.to_s.shellescape)
-              end
+              command << Builtins.sformat(" | tail -n +%1", lines_count.to_s.shellescape) if Ops.greater_than(lines_count, 0)
             end
           end
         end

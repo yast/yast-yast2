@@ -268,9 +268,7 @@ module Yast
 
         options = MakeMapFromParams(Ops.get_string(tokens, "query", ""))
 
-        if Builtins.haskey(options, "workgroup")
-          Ops.set(tokens, "domain", Ops.get(options, "workgroup", ""))
-        end
+        Ops.set(tokens, "domain", Ops.get(options, "workgroup", "")) if Builtins.haskey(options, "workgroup")
       end
 
       # merge host and path if the scheme does not allow a host (bsc#991935)
@@ -314,9 +312,7 @@ module Yast
       # Check "path"    : /path/index.html"
 
       # Check "port"    : "80"
-      if !Builtins.regexpmatch(Ops.get_string(tokens, "port", ""), "^[0-9]*$")
-        return false
-      end
+      return false if !Builtins.regexpmatch(Ops.get_string(tokens, "port", ""), "^[0-9]*$")
 
       # Check "user"    : "name"
 
@@ -366,9 +362,7 @@ module Yast
           URLRecode.EscapePassword(Ops.get_string(tokens, "pass", ""))
         )
       end
-      if Ops.greater_than(Builtins.size(userpass), 0)
-        userpass = Ops.add(userpass, "@")
-      end
+      userpass = Ops.add(userpass, "@") if Ops.greater_than(Builtins.size(userpass), 0)
 
       url = Builtins.sformat("%1://%2", url, userpass)
       Builtins.y2debug("url: %1", url)

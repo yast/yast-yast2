@@ -23,9 +23,7 @@ RSpec.configure do |config|
     # https://relishapp.com/rspec/rspec-mocks/v/3-0/docs/verifying-doubles/partial-doubles
     #
     # With graceful degradation for RSpec 2
-    if mocks.respond_to?(:verify_partial_doubles=)
-      mocks.verify_partial_doubles = true
-    end
+    mocks.verify_partial_doubles = true if mocks.respond_to?(:verify_partial_doubles=)
   end
 
   config.extend Yast::I18n  # available in context/describe

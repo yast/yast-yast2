@@ -187,20 +187,14 @@ module Yast
     def WS_alias(aliases, alias_)
       aliases = deep_copy(aliases)
       found = Ops.get(aliases, alias_)
-      if found.nil?
-        return WS_error(Builtins.sformat("Alias not found: %1", alias_))
-      end
+      return WS_error(Builtins.sformat("Alias not found: %1", alias_)) if found.nil?
 
       if Ops.is_list?(found)
-        if Ops.less_or_equal(Builtins.size(Convert.to_list(found)), 0)
-          return WS_error(Builtins.sformat("Invalid alias: %1", found))
-        end
+        return WS_error(Builtins.sformat("Invalid alias: %1", found)) if Ops.less_or_equal(Builtins.size(Convert.to_list(found)), 0)
 
         found = Ops.get(Convert.to_list(found), 0)
       end
-      if found.nil?
-        return WS_error(Builtins.sformat("Invalid alias: %1", found))
-      end
+      return WS_error(Builtins.sformat("Invalid alias: %1", found)) if found.nil?
 
       deep_copy(found)
     end
@@ -219,9 +213,7 @@ module Yast
       end
       ret = false
       if Ops.is_list?(found)
-        if Ops.greater_than(Builtins.size(Convert.to_list(found)), 1)
-          ret = Ops.get_boolean(Convert.to_list(found), 1)
-        end
+        ret = Ops.get_boolean(Convert.to_list(found), 1) if Ops.greater_than(Builtins.size(Convert.to_list(found)), 1)
       end
       ret
     end
@@ -234,15 +226,11 @@ module Yast
     def WS_next(sequence, current, ret)
       sequence = deep_copy(sequence)
       found = Ops.get_map(sequence, current)
-      if found.nil?
-        return WS_error(Builtins.sformat("Current not found: %1", current))
-      end
+      return WS_error(Builtins.sformat("Current not found: %1", current)) if found.nil?
 
       # string|symbol next
       next_ = Ops.get(found, ret)
-      if next_.nil?
-        return WS_error(Builtins.sformat("Symbol not found: %1", ret))
-      end
+      return WS_error(Builtins.sformat("Symbol not found: %1", ret)) if next_.nil?
 
       deep_copy(next_)
     end
@@ -256,9 +244,7 @@ module Yast
       Builtins.y2debug("Running: %1", id)
 
       function = WS_alias(aliases, id)
-      if function.nil?
-        return Convert.to_symbol(WS_error(Builtins.sformat("Bad id: %1", id)))
-      end
+      return Convert.to_symbol(WS_error(Builtins.sformat("Bad id: %1", id))) if function.nil?
 
       ret = Builtins.eval(function)
 
@@ -316,16 +302,12 @@ module Yast
       aliases = deep_copy(aliases)
       sequence = deep_copy(sequence)
       # Check aliases and sequence correctness
-      if @docheck && WS_check(aliases, sequence) != true
-        return Convert.to_symbol(WS_error("CHECK FAILED"))
-      end
+      return Convert.to_symbol(WS_error("CHECK FAILED")) if @docheck && WS_check(aliases, sequence) != true
 
       stack = []
       # string|symbol current
       current = Ops.get(sequence, "ws_start")
-      if current.nil?
-        return Convert.to_symbol(WS_error("Starting dialog not found"))
-      end
+      return Convert.to_symbol(WS_error("Starting dialog not found")) if current.nil?
 
       loop do
         if Ops.is_symbol?(current)

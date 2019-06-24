@@ -481,9 +481,7 @@ module Yast
           Ops.get_symbol(l, 1, :NONE) == Ops.get_symbol(l, 2, :NONE)
       end
 
-      if Builtins.size(kernels) != 1
-        Builtins.y2error("not exactly one package provides tag kernel")
-      end
+      Builtins.y2error("not exactly one package provides tag kernel") if Builtins.size(kernels) != 1
 
       kernel = Ops.get_string(kernels, [0, 0], "none")
       packs = [kernel]

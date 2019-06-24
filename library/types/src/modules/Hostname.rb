@@ -79,9 +79,7 @@ module Yast
     # @param [String] host hostname
     # @return true if correct
     def Check(host)
-      if host.nil? || host == "" || Ops.greater_than(Builtins.size(host), 63)
-        return false
-      end
+      return false if host.nil? || host == "" || Ops.greater_than(Builtins.size(host), 63)
 
       Builtins.regexpmatch(host, "^[[:alnum:]]([[:alnum:]-]*[[:alnum:]])?$")
     end
@@ -205,9 +203,7 @@ module Yast
       if !IP.Check(fqhostname)
         data = SplitFQ(fqhostname)
 
-        if data != [] && Ops.greater_than(Builtins.size(data), 1)
-          domain = Ops.get(data, 1, "")
-        end
+        domain = Ops.get(data, 1, "") if data != [] && Ops.greater_than(Builtins.size(data), 1)
       end
 
       Builtins.y2debug("Current domainname: %1", domain)

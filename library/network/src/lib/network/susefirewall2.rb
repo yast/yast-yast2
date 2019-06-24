@@ -345,13 +345,9 @@ module Yast
         end
         # BNC #194419
         # replace all "\n" with " " in variables
-        if Builtins.regexpmatch(value, "\n")
-          value = Builtins.mergestring(Builtins.splitstring(value, "\n"), " ")
-        end
+        value = Builtins.mergestring(Builtins.splitstring(value, "\n"), " ") if Builtins.regexpmatch(value, "\n")
         # replace all "\t" with " " in variables
-        if Builtins.regexpmatch(value, "\t")
-          value = Builtins.mergestring(Builtins.splitstring(value, "\t"), " ")
-        end
+        value = Builtins.mergestring(Builtins.splitstring(value, "\t"), " ") if Builtins.regexpmatch(value, "\t")
         Ops.set(@SETTINGS, variable, value)
       end
 
@@ -791,9 +787,7 @@ module Yast
 
       # FATE #300687: Ports for SuSEfirewall added via packages
       if SuSEFirewallServices.ServiceDefinedByPackage(service)
-        if IsServiceSupportedInZone(service, zone) == true
-          RemoveServiceDefinedByPackageFromZone(service, zone)
-        end
+        RemoveServiceDefinedByPackageFromZone(service, zone) if IsServiceSupportedInZone(service, zone) == true
 
         return nil
       end
@@ -848,9 +842,7 @@ module Yast
       end
 
       # Removing service ports first (and also port aliases for TCP and UDP)
-      if IsServiceSupportedInZone(service, zone) == true
-        RemoveServiceSupportFromZone(service, zone)
-      end
+      RemoveServiceSupportFromZone(service, zone) if IsServiceSupportedInZone(service, zone) == true
 
       Builtins.foreach(@service_defined_by) do |key|
         needed_ports = Ops.get(needed, key, [])
@@ -1035,9 +1027,7 @@ module Yast
       interface_zone = []
 
       Builtins.foreach(GetKnownFirewallZones()) do |zone|
-        if IsInterfaceInZone(interface, zone)
-          interface_zone = Builtins.add(interface_zone, zone)
-        end
+        interface_zone = Builtins.add(interface_zone, zone) if IsInterfaceInZone(interface, zone)
       end
 
       # Fallback handling for 'any' in the FW_DEV_* configuration
@@ -2076,9 +2066,7 @@ module Yast
       ) do |forward_rule|
         next if forward_rule == ""
 
-        if row_counter != remove_item
-          forward_rules = Builtins.add(forward_rules, forward_rule)
-        end
+        forward_rules = Builtins.add(forward_rules, forward_rule) if row_counter != remove_item
         row_counter = Ops.add(row_counter, 1)
       end
 

@@ -196,9 +196,7 @@ module Yast
 
         timeout = Ops.subtract(timeout, 1)
 
-        if success == true
-          UI.ChangeWidget(Id(:label), :Value, Builtins.sformat("%1", timeout))
-        end
+        UI.ChangeWidget(Id(:label), :Value, Builtins.sformat("%1", timeout)) if success == true
       end
 
       UI.CloseDialog if success == true

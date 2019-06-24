@@ -112,9 +112,7 @@ module Yast
       ter = deep_copy(ter)
       args = Builtins.argsof(ter)
       args = Builtins.filter(args) do |t|
-        if Ops.is_term?(t) && Builtins.symbolof(Convert.to_term(t)) == :id
-          next true
-        end
+        next true if Ops.is_term?(t) && Builtins.symbolof(Convert.to_term(t)) == :id
 
         false
       end
@@ -268,9 +266,7 @@ module Yast
     def DisableTable(descr)
       descr = deep_copy(descr)
       UI.ChangeWidget(Id(:_tw_table), :Enabled, false)
-      if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
-        UI.ChangeWidget(Id(:_tw_edit), :Enabled, false)
-      end
+      UI.ChangeWidget(Id(:_tw_edit), :Enabled, false) if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
       if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
         UI.ChangeWidget(Id(:_tw_delete), :Enabled, false)
         UI.ChangeWidget(Id(:_tw_add), :Enabled, false)
@@ -279,9 +275,7 @@ module Yast
         UI.ChangeWidget(Id(:_tw_up), :Enabled, false)
         UI.ChangeWidget(Id(:_tw_down), :Enabled, false)
       end
-      if Ops.get_boolean(descr, ["_cwm_attrib", "custom_button"], false)
-        UI.ChangeWidget(Id(:_tw_custom), :Enabled, false)
-      end
+      UI.ChangeWidget(Id(:_tw_custom), :Enabled, false) if Ops.get_boolean(descr, ["_cwm_attrib", "custom_button"], false)
 
       nil
     end
@@ -292,15 +286,9 @@ module Yast
     def EnableTable(descr)
       descr = deep_copy(descr)
       UI.ChangeWidget(Id(:_tw_table), :Enabled, true)
-      if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
-        UI.ChangeWidget(Id(:_tw_edit), :Enabled, true)
-      end
-      if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
-        UI.ChangeWidget(Id(:_tw_add), :Enabled, true)
-      end
-      if Ops.get_boolean(descr, ["_cwm_attrib", "custom_button"], false)
-        UI.ChangeWidget(Id(:_tw_custom), :Enabled, true)
-      end
+      UI.ChangeWidget(Id(:_tw_edit), :Enabled, true) if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
+      UI.ChangeWidget(Id(:_tw_add), :Enabled, true) if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
+      UI.ChangeWidget(Id(:_tw_custom), :Enabled, true) if Ops.get_boolean(descr, ["_cwm_attrib", "custom_button"], false)
       TableHandle(descr, "", {})
 
       nil

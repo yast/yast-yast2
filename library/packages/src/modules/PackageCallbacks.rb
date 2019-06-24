@@ -426,9 +426,7 @@ module Yast
     def pkg_gpg_check(data)
       log.debug("pkgGpgCheck data: #{data}")
 
-      if data["CheckPackageResult"] && data["CheckPackageResult"] != 0
-        log.warn("Signature check failed: #{data}")
-      end
+      log.warn("Signature check failed: #{data}") if data["CheckPackageResult"] && data["CheckPackageResult"] != 0
 
       insecure = Stage.initial && Linuxrc.InstallInf("Insecure") == "1"
       insecure ? "I" : ""
@@ -682,9 +680,7 @@ module Yast
         PushButton(Id(:retry), Opt(:default, :okButton), Label.RetryButton)
       )
 
-      if current == -1 # wrong media id, offer "Ignore"
-        button_box.params << PushButton(Id(:ignore), Opt(:customButton), Label.IgnoreButton)
-      end
+      button_box.params << PushButton(Id(:ignore), Opt(:customButton), Label.IgnoreButton) if current == -1 # wrong media id, offer "Ignore"
 
       button_box.params << PushButton(
         Id(:cancel),
@@ -697,9 +693,7 @@ module Yast
       button_box.params << PushButton(Id(:skip), Opt(:customButton), _("&Skip"))
 
       if is_disc
-        if !@doing_eject
-          @detected_cd_devices = cd_devices(Ops.get(devices, current_device, ""))
-        end
+        @detected_cd_devices = cd_devices(Ops.get(devices, current_device, "")) if !@doing_eject
 
         # detect the CD/DVD devices if the ejecting is not in progress,
         # the CD detection closes the ejected tray!
@@ -751,9 +745,7 @@ module Yast
             RETRY_MAX_TIMEOUT
           end
 
-          if Ops.greater_than(@current_retry_timeout, RETRY_MAX_TIMEOUT)
-            @current_retry_timeout = RETRY_MAX_TIMEOUT
-          end
+          @current_retry_timeout = RETRY_MAX_TIMEOUT if Ops.greater_than(@current_retry_timeout, RETRY_MAX_TIMEOUT)
 
           button_box = VBox(
             # failed download will be automatically retried after the timeout, %1 = formatted time (MM:SS format)
@@ -772,9 +764,7 @@ module Yast
 
       Builtins.y2milestone("Autoretry: %1", doing_auto_retry)
 
-      if doing_auto_retry
-        Builtins.y2milestone("Autoretry attempt: %1", @current_retry_attempt)
-      end
+      Builtins.y2milestone("Autoretry attempt: %1", @current_retry_attempt) if doing_auto_retry
 
       if Mode.commandline
         CommandLine.Print(message)
@@ -1504,9 +1494,7 @@ module Yast
           )
         end
 
-        if !patch_arch.nil? && patch_arch != ""
-          patch_full_name = Ops.add(Ops.add(patch_full_name, "."), patch_arch)
-        end
+        patch_full_name = Ops.add(Ops.add(patch_full_name, "."), patch_arch) if !patch_arch.nil? && patch_arch != ""
       end
 
       patch_full_name
@@ -1808,15 +1796,11 @@ module Yast
         if full_screen
           Progress.SubprogressValue(percent)
 
-          if Ops.greater_than(Builtins.size(msg_rate), 0)
-            Progress.SubprogressTitle(msg_rate)
-          end
+          Progress.SubprogressTitle(msg_rate) if Ops.greater_than(Builtins.size(msg_rate), 0)
         else
           UI.ChangeWidget(Id(:progress), :Value, percent)
 
-          if Ops.greater_than(Builtins.size(msg_rate), 0)
-            UI.ChangeWidget(Id(:progress), :Label, msg_rate)
-          end
+          UI.ChangeWidget(Id(:progress), :Label, msg_rate) if Ops.greater_than(Builtins.size(msg_rate), 0)
         end
 
         download_aborted = UI.PollInput == :abort
@@ -3206,9 +3190,7 @@ module Yast
 
       ret = words.join(" ")
 
-      if ret != msg
-        log.info "URL conversion: '#{URL.HidePassword(msg)}' converted to '#{URL.HidePassword(ret)}%2'"
-      end
+      log.info "URL conversion: '#{URL.HidePassword(msg)}' converted to '#{URL.HidePassword(ret)}%2'" if ret != msg
 
       ret
     end

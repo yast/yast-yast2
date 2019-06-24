@@ -66,9 +66,7 @@ module Yast
       sub_vendor = Ops.get_string(hardware_entry, "sub_vendor", "")
       sub_device = Ops.get_string(hardware_entry, "sub_device", "")
 
-      if sub_vendor != "" && sub_device != ""
-        return Ops.add(Ops.add(sub_vendor, "\n"), sub_device)
-      end
+      return Ops.add(Ops.add(sub_vendor, "\n"), sub_device) if sub_vendor != "" && sub_device != ""
 
       vendor = Ops.get_string(hardware_entry, "vendor", "")
 
@@ -90,9 +88,7 @@ module Yast
     def translate(lmap, lang)
       lmap = deep_copy(lmap)
       t = Ops.get_string(lmap, lang, "")
-      if Builtins.size(t) == 0 && Ops.greater_than(Builtins.size(lang), 2)
-        t = Ops.get_string(lmap, Builtins.substring(lang, 0, 2), "")
-      end
+      t = Ops.get_string(lmap, Builtins.substring(lang, 0, 2), "") if Builtins.size(t) == 0 && Ops.greater_than(Builtins.size(lang), 2)
       t = Ops.get_string(lmap, "default", "") if Builtins.size(t) == 0
 
       t

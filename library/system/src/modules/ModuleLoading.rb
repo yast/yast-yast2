@@ -223,9 +223,7 @@ module Yast
             if Ops.greater_than(Builtins.size(module_data), 0)
               # skip leading spaces
               firstspace = Builtins.findfirstnotof(module_data, " ")
-              if !firstspace.nil?
-                module_data = Builtins.substring(module_data, firstspace)
-              end
+              module_data = Builtins.substring(module_data, firstspace) if !firstspace.nil?
 
               # split name and args
               firstspace = Builtins.findfirstof(module_data, " ")

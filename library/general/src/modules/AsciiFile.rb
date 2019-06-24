@@ -173,9 +173,7 @@ module Yast
               line,
               Ops.get_string(file.value, "delim", "")
             )
-            if !pos.nil? && Ops.greater_than(pos, 0)
-              line = Builtins.substring(line, pos)
-            end
+            line = Builtins.substring(line, pos) if !pos.nil? && Ops.greater_than(pos, 0)
             pos = Builtins.findfirstof(
               line,
               Ops.get_string(file.value, "delim", "")
@@ -296,9 +294,7 @@ module Yast
     def ReplaceLine(file, line, entry)
       entry = deep_copy(entry)
       Builtins.y2debug("line %1 entry %2", line, entry)
-      if !Builtins.haskey(Ops.get_map(file.value, "l", {}), line)
-        Ops.set(file.value, ["l", line], {})
-      end
+      Ops.set(file.value, ["l", line], {}) if !Builtins.haskey(Ops.get_map(file.value, "l", {}), line)
       Ops.set(file.value, ["l", line, "fields"], entry)
       Ops.set(file.value, ["l", line, "changed"], true)
       Ops.set(file.value, ["l", line, "buildline"], true)
@@ -366,9 +362,7 @@ module Yast
       end
       Builtins.y2debug("Out text: %1", out)
       if Builtins.size(out) == 0
-        if Ops.greater_or_equal(SCR.Read(path(".target.size"), fpath), 0)
-          SCR.Execute(path(".target.remove"), fpath)
-        end
+        SCR.Execute(path(".target.remove"), fpath) if Ops.greater_or_equal(SCR.Read(path(".target.size"), fpath), 0)
       else
         SCR.Write(path(".target.string"), fpath, out)
       end

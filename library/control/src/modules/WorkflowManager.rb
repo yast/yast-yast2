@@ -502,9 +502,7 @@ module Yast
       # but as we generate directory, it should be ok
       files = Dir.glob("#{dir}/*.xml")
 
-      if files.size > 1
-        log.error "More than one XML file in #{dir}: #{files.inspect}"
-      end
+      log.error "More than one XML file in #{dir}: #{files.inspect}" if files.size > 1
 
       files.first
     end
@@ -669,9 +667,7 @@ module Yast
           )
         )
 
-        if Ops.get_integer(cmd, "exit", -1) != 0
-          Builtins.y2error("Removing failed: %1", cmd)
-        end
+        Builtins.y2error("Removing failed: %1", cmd) if Ops.get_integer(cmd, "exit", -1) != 0
       end
 
       nil
@@ -704,9 +700,7 @@ module Yast
         end
       end
 
-      if !found
-        Builtins.y2internal("Replace/Remove proposal item %1 not found", old)
-      end
+      Builtins.y2internal("Replace/Remove proposal item %1 not found", old) if !found
 
       Ops.set(proposal, "proposal_modules", Builtins.flatten(modules))
 
@@ -795,9 +789,7 @@ module Yast
         end
       end
 
-      if Ops.get_string(additional_control, "enable_skip", "yes") == "no"
-        Ops.set(base, "enable_skip", "no")
-      end
+      Ops.set(base, "enable_skip", "no") if Ops.get_string(additional_control, "enable_skip", "yes") == "no"
 
       deep_copy(base)
     end

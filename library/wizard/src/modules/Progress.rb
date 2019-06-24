@@ -451,9 +451,7 @@ module Yast
       end
 
       # patch from Michal Srb https://bugzilla.novell.com/show_bug.cgi?id=406890#c7
-      if !Mode.test && UI.WidgetExists(Id(:contents))
-        UI.ReplaceWidget(Id(:contents), bar)
-      end
+      UI.ReplaceWidget(Id(:contents), bar) if !Mode.test && UI.WidgetExists(Id(:contents))
 
       if !UI.WizardCommand(term(:SetDialogHeading, window_title))
         UI.ChangeWidget(Id(:title), :Value, window_title)
@@ -699,9 +697,7 @@ module Yast
       end
       # we may be past the last stage
       if Ops.less_than(@current_stage, @stages)
-        if Ops.less_than(@current_stage, Builtins.size(@titles))
-          SetProgressBarTitle(Ops.get_string(@titles, @current_stage, ""))
-        end
+        SetProgressBarTitle(Ops.get_string(@titles, @current_stage, "")) if Ops.less_than(@current_stage, Builtins.size(@titles))
         UI.ChangeWidget(MarkId(@current_stage), :Value, Mark(:current))
       end
 
@@ -750,9 +746,7 @@ module Yast
 
       @current_stage = stage
       s = ""
-      if Ops.less_than(@current_stage, Builtins.size(@titles))
-        s = Ops.get_string(@titles, @current_stage, "")
-      end
+      s = Ops.get_string(@titles, @current_stage, "") if Ops.less_than(@current_stage, Builtins.size(@titles))
       s = title if nil != title
       if Ops.less_than(@current_stage, Builtins.size(@titles))
         if Mode.commandline
@@ -762,9 +756,7 @@ module Yast
           SetProgressBarTitle(s)
         end
       end
-      if Ops.less_than(@current_stage, @stages)
-        UI.ChangeWidget(MarkId(@current_stage), :Value, Mark(:current))
-      end
+      UI.ChangeWidget(MarkId(@current_stage), :Value, Mark(:current)) if Ops.less_than(@current_stage, @stages)
 
       nil
     end

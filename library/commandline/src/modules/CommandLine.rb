@@ -235,9 +235,7 @@ module Yast
             ret = Builtins.add(ret, s)
           elsif Ops.is_term?(a)
             t = Convert.to_term(a)
-            if Builtins.contains([:Left, :Center, :Right], Builtins.symbolof(t))
-              ret = Builtins.add(ret, Ops.get_string(Builtins.argsof(t), 0, ""))
-            end
+            ret = Builtins.add(ret, Ops.get_string(Builtins.argsof(t), 0, "")) if Builtins.contains([:Left, :Center, :Right], Builtins.symbolof(t))
           end
         end
         deep_copy(ret)
@@ -370,9 +368,7 @@ module Yast
       allopts = Ops.get_map(@allcommands, "options", {})
       cmdoptions = {}
       Builtins.maplist(opts) do |k|
-        if Ops.is_string?(k)
-          cmdoptions = Builtins.add(cmdoptions, k, Ops.get_map(allopts, k, {}))
-        end
+        cmdoptions = Builtins.add(cmdoptions, k, Ops.get_map(allopts, k, {})) if Ops.is_string?(k)
       end
 
       ret = true
@@ -626,9 +622,7 @@ module Yast
           end
           t = Ops.add(t, "]")
         end
-        if Ops.greater_than(Builtins.size(t), longestarg)
-          longestarg = Builtins.size(t)
-        end
+        longestarg = Builtins.size(t) if Ops.greater_than(Builtins.size(t), longestarg)
         if Ops.is_string?(opt) &&
             Ops.greater_than(Builtins.size(Convert.to_string(opt)), longestopt)
           longestopt = Builtins.size(Convert.to_string(opt))
@@ -805,9 +799,7 @@ module Yast
 
       longest = 0
       Builtins.foreach(Ops.get_map(@modulecommands, "actions", {})) do |action, _desc|
-        if Ops.greater_than(Builtins.size(action), longest)
-          longest = Builtins.size(action)
-        end
+        longest = Builtins.size(action) if Ops.greater_than(Builtins.size(action), longest)
       end
 
       Builtins.maplist(Ops.get_map(@modulecommands, "actions", {})) do |cmd, desc|
@@ -1068,9 +1060,7 @@ module Yast
         Builtins.y2error("Command line specification does not define module id")
 
         # use 'unknown' as id
-        if Builtins.haskey(cmdlineinfo, "id")
-          cmdlineinfo = Builtins.remove(cmdlineinfo, "id")
-        end
+        cmdlineinfo = Builtins.remove(cmdlineinfo, "id") if Builtins.haskey(cmdlineinfo, "id")
 
         # translators: fallback name for a module at command line
         cmdlineinfo = Builtins.add(cmdlineinfo, "id", _("unknown"))

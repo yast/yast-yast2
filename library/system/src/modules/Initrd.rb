@@ -203,9 +203,7 @@ module Yast
         tmp_mods = Convert.to_string(
           SCR.Read(path(".etc.install_inf.InitrdModules"))
         )
-        if !tmp_mods.nil? && tmp_mods != ""
-          @modules = Builtins.splitstring(tmp_mods, " ")
-        end
+        @modules = Builtins.splitstring(tmp_mods, " ") if !tmp_mods.nil? && tmp_mods != ""
         @was_read = true
       elsif !(@was_read || Mode.config)
         Read()

@@ -266,9 +266,7 @@ module Yast
       # remove the final slash
       # but never the last one "/"
       # bugzilla #203363
-      if Builtins.regexpmatch(check_path, "/$") && check_path != "/"
-        check_path = Builtins.regexpsub(check_path, "^(.*)/$", "\\1")
-      end
+      check_path = Builtins.regexpsub(check_path, "^(.*)/$", "\\1") if Builtins.regexpmatch(check_path, "/$") && check_path != "/"
       Builtins.y2milestone("Checking existency of %1 path", check_path)
 
       # Directory (path) already exists

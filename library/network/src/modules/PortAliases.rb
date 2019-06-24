@@ -283,9 +283,7 @@ module Yast
     # @return  [Boolean] if is known
     def IsKnownPortName(port_name)
       # function returns the requested port and aliases if exists
-      if Ops.greater_than(Builtins.size(GetListOfServiceAliases(port_name)), 1)
-        return true
-      end
+      return true if Ops.greater_than(Builtins.size(GetListOfServiceAliases(port_name)), 1)
 
       false
     end

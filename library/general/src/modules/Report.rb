@@ -451,9 +451,7 @@ module Yast
       # Use exactly the same y2milestone call than other yesno methods
       Builtins.y2milestone(1, "%1", message) if @log_yesno_messages
 
-      if extra_args.key?(:timeout)
-        log.warn "Report.yesno_popup will ignore the :timeout argument"
-      end
+      log.warn "Report.yesno_popup will ignore the :timeout argument" if extra_args.key?(:timeout)
 
       ret =
         if @display_yesno_messages

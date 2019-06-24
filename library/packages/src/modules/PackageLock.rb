@@ -132,9 +132,7 @@ module Yast
     # @return [Hash] with lock status and user reaction
     def Connect(show_continue_button)
       # we already have a lock
-      if !@have_lock.nil?
-        return { "connected" => @have_lock, "aborted" => @aborted }
-      end
+      return { "connected" => @have_lock, "aborted" => @aborted } if !@have_lock.nil?
 
       try_again = true
 

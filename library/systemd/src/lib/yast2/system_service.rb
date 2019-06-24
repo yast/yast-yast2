@@ -266,9 +266,7 @@ module Yast2
     #
     # @raise ArgumentError when mode is not valid
     def start_mode=(mode)
-      if !start_modes.include?(mode)
-        raise ArgumentError, "Invalid start mode: '#{mode}' for service '#{service.name}'"
-      end
+      raise ArgumentError, "Invalid start mode: '#{mode}' for service '#{service.name}'" if !start_modes.include?(mode)
 
       register_change(:start_mode, mode)
     end

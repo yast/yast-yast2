@@ -77,15 +77,11 @@ module Yast
       Builtins.foreach(
         Convert.convert(@Modules, from: "map", to: "map <string, map>")
       ) do |name, params|
-        if !(Ops.get_string(params, "X-SuSE-YaST-RootOnly", "false") == "true")
-          @non_root_modules = Builtins.add(@non_root_modules, name)
-        end
+        @non_root_modules = Builtins.add(@non_root_modules, name) if !(Ops.get_string(params, "X-SuSE-YaST-RootOnly", "false") == "true")
       end
       Builtins.y2debug("non-root modules: %1", @non_root_modules)
 
-      if FileUtils.Exists(@restart_file)
-        SCR.Execute(path(".target.remove"), @restart_file)
-      end
+      SCR.Execute(path(".target.remove"), @restart_file) if FileUtils.Exists(@restart_file)
 
       UI.CloseDialog
 

@@ -167,9 +167,7 @@ module Yast
     # Returns the current temporary directory.
     # Lazy loading for the initialization is used.
     def GetTmpDirectory
-      if @tmp_dir.nil?
-        @tmp_dir = Convert.to_string(SCR.Read(path(".target.tmpdir")))
-      end
+      @tmp_dir = Convert.to_string(SCR.Read(path(".target.tmpdir"))) if @tmp_dir.nil?
 
       @tmp_dir
     end

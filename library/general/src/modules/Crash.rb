@@ -85,18 +85,14 @@ module Yast
     # @param [String] operation to start
     def Run(operation)
       Read()
-      if !Builtins.contains(@all_failed, operation)
-        @all_failed = Builtins.add(@all_failed, operation)
-      end
+      @all_failed = Builtins.add(@all_failed, operation) if !Builtins.contains(@all_failed, operation)
       if Ops.greater_than(Builtins.size(@this_run_active), 0)
         @last_failed = Builtins.filter(@last_failed) do |f|
           f != Ops.get(@this_run_active, 0)
         end
       end
       @this_run_active = Builtins.prepend(@this_run_active, operation)
-      if !Builtins.contains(@last_failed, operation)
-        @last_failed = Builtins.add(@last_failed, operation)
-      end
+      @last_failed = Builtins.add(@last_failed, operation) if !Builtins.contains(@last_failed, operation)
       Write()
 
       nil
@@ -109,9 +105,7 @@ module Yast
       @all_failed = Builtins.filter(@all_failed) { |f| f != operation }
       @this_run_active = Builtins.filter(@this_run_active) { |f| f != operation }
       @last_failed = Builtins.filter(@last_failed) { |f| f != operation }
-      if Ops.greater_than(Builtins.size(@this_run_active), 0)
-        @last_failed = Builtins.add(@last_failed, Ops.get(@this_run_active, 0))
-      end
+      @last_failed = Builtins.add(@last_failed, Ops.get(@this_run_active, 0)) if Ops.greater_than(Builtins.size(@this_run_active), 0)
       @last_done = operation
       Write()
 

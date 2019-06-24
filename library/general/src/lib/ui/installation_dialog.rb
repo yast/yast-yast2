@@ -119,9 +119,7 @@ module UI
     #
     # It ignores UI::Dialog#dialog_options
     def create_dialog
-      if dialog_options
-        log.info "This is an InstallationDialog, ignoring #dialog_options"
-      end
+      log.info "This is an InstallationDialog, ignoring #dialog_options" if dialog_options
 
       # Allow manual testing
       if !Yast::Wizard.IsWizardDialog

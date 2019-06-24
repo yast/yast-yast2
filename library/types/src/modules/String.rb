@@ -478,9 +478,7 @@ module Yast
 
         # error - still in quoted string
         if state == :in_quoted_string || state == :in_quoted_string_after_dblqt
-          if state == :in_quoted_string
-            log.warn "Missing trainling double quote character(\") in input: '#{options}'"
-          end
+          log.warn "Missing trainling double quote character(\") in input: '#{options}'" if state == :in_quoted_string
 
           ret << str if !unique || !ret.include?(str)
         end
@@ -670,9 +668,7 @@ module Yast
       end
 
       # avoid infinite loop even if it break backward compatibility
-      if target.include?(source)
-        raise "Target #{target} include #{source} which will lead to infinite loop"
-      end
+      raise "Target #{target} include #{source} which will lead to infinite loop" if target.include?(source)
 
       pos = input.index(source)
       while pos

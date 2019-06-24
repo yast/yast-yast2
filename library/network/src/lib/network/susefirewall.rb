@@ -611,15 +611,11 @@ module Yast
 
         # Add these services
         Builtins.foreach(new_list_services) do |service|
-          if !Builtins.contains(old_list_services, service)
-            add_services = Builtins.add(add_services, service)
-          end
+          add_services = Builtins.add(add_services, service) if !Builtins.contains(old_list_services, service)
         end
         # Remove these services
         Builtins.foreach(old_list_services) do |service|
-          if !Builtins.contains(new_list_services, service)
-            remove_services = Builtins.add(remove_services, service)
-          end
+          remove_services = Builtins.add(remove_services, service) if !Builtins.contains(new_list_services, service)
         end
 
         if Ops.greater_than(Builtins.size(remove_services), 0)

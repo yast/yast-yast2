@@ -224,9 +224,7 @@ module Yast
 
     # Setter for {#ui}.
     def SetUI(new_ui)
-      if !Builtins.contains(["commandline", "dialog", "none"], new_ui)
-        Builtins.y2error("Unknown UI mode %1", new_ui)
-      end
+      Builtins.y2error("Unknown UI mode %1", new_ui) if !Builtins.contains(["commandline", "dialog", "none"], new_ui)
       @_ui = new_ui
 
       nil

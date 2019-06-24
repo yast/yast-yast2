@@ -110,12 +110,8 @@ module Yast
               # Record mustn't be nil or empty to be reused
               if !record_options.nil? && record_options != {}
                 # Creating map from the base
-                if Ops.get(new_configuration, dont_show_type).nil?
-                  Ops.set(new_configuration, dont_show_type, {})
-                end
-                if Ops.get(new_configuration, [dont_show_type, popup_type]).nil?
-                  Ops.set(new_configuration, [dont_show_type, popup_type], {})
-                end
+                Ops.set(new_configuration, dont_show_type, {}) if Ops.get(new_configuration, dont_show_type).nil?
+                Ops.set(new_configuration, [dont_show_type, popup_type], {}) if Ops.get(new_configuration, [dont_show_type, popup_type]).nil?
 
                 Ops.set(
                   new_configuration,
@@ -215,15 +211,9 @@ module Yast
         end
 
         # building the configuration map
-        if Ops.get(@current_configuration, q_type).nil?
-          Ops.set(@current_configuration, q_type, {})
-        end
-        if Ops.get(@current_configuration, [q_type, q_ident]).nil?
-          Ops.set(@current_configuration, [q_type, q_ident], {})
-        end
-        if Ops.get(@current_configuration, [q_type, q_ident, q_url]).nil?
-          Ops.set(@current_configuration, [q_type, q_ident, q_url], {})
-        end
+        Ops.set(@current_configuration, q_type, {}) if Ops.get(@current_configuration, q_type).nil?
+        Ops.set(@current_configuration, [q_type, q_ident], {}) if Ops.get(@current_configuration, [q_type, q_ident]).nil?
+        Ops.set(@current_configuration, [q_type, q_ident, q_url], {}) if Ops.get(@current_configuration, [q_type, q_ident, q_url]).nil?
 
         # save the new value into the configuration
         conf_changed = true
@@ -315,15 +305,9 @@ module Yast
         end
 
         # building the configuration map
-        if Ops.get(@current_configuration, q_type).nil?
-          Ops.set(@current_configuration, q_type, {})
-        end
-        if Ops.get(@current_configuration, [q_type, q_ident]).nil?
-          Ops.set(@current_configuration, [q_type, q_ident], {})
-        end
-        if Ops.get(@current_configuration, [q_type, q_ident, q_url]).nil?
-          Ops.set(@current_configuration, [q_type, q_ident, q_url], {})
-        end
+        Ops.set(@current_configuration, q_type, {}) if Ops.get(@current_configuration, q_type).nil?
+        Ops.set(@current_configuration, [q_type, q_ident], {}) if Ops.get(@current_configuration, [q_type, q_ident]).nil?
+        Ops.set(@current_configuration, [q_type, q_ident, q_url], {}) if Ops.get(@current_configuration, [q_type, q_ident, q_url]).nil?
 
         # save the new value into the configuration
         conf_changed = true

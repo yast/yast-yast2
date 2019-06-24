@@ -138,9 +138,7 @@ module Yast
         text = Ops.add(text, Builtins.sformat("%1<br>", p))
       end
 
-      if !message.nil?
-        text = Builtins.sformat(message, Builtins.mergestring(packs, ", "))
-      end
+      text = Builtins.sformat(message, Builtins.mergestring(packs, ", ")) if !message.nil?
 
       doit = if Mode.commandline
         CommandLine.Interactive ? AskPackages(packs, install) : true

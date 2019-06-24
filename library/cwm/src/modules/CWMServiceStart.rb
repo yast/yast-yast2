@@ -664,9 +664,7 @@ module Yast
         to:   "map <string, any>"
       )
 
-      if Builtins.haskey(settings, "service_id")
-        Ops.set(ret, "ui_timeout", 5000)
-      end
+      Ops.set(ret, "ui_timeout", 5000) if Builtins.haskey(settings, "service_id")
       deep_copy(ret)
     end
 

@@ -273,9 +273,7 @@ module Yast
         # Normal step
       elsif !Ops.get_string(mod, "name", "").nil? &&
           Ops.get_string(mod, "name", "") != ""
-        if Builtins.contains(@DisabledModules, Ops.get_string(mod, "name", ""))
-          return true
-        end
+        return true if Builtins.contains(@DisabledModules, Ops.get_string(mod, "name", ""))
       end
 
       false
@@ -423,9 +421,7 @@ module Yast
         )
       end
 
-      if Builtins.haskey(step, "proposal")
-        Ops.set(arguments, "proposal", Ops.get_string(step, "proposal", ""))
-      end
+      Ops.set(arguments, "proposal", Ops.get_string(step, "proposal", "")) if Builtins.haskey(step, "proposal")
       other_args = Ops.get_map(step, "arguments", {})
 
       if Ops.greater_than(Builtins.size(other_args), 0)
@@ -436,9 +432,7 @@ module Yast
         )
       end
 
-      if Ops.is_symbol?(former_result) && former_result == :back
-        Ops.set(arguments, "going_back", true)
-      end
+      Ops.set(arguments, "going_back", true) if Ops.is_symbol?(former_result) && former_result == :back
 
       if Mode.test
         Ops.set(arguments, "step_name", Ops.get_string(step, "name", ""))
@@ -916,9 +910,7 @@ module Yast
               id = Ops.get_string(m, "id", "")
             end
           end
-          if !heading.nil? && heading != ""
-            UI.WizardCommand(term(:AddStepHeading, heading))
-          end
+          UI.WizardCommand(term(:AddStepHeading, heading)) if !heading.nil? && heading != ""
           if !label.nil? && label != ""
             if debug_workflow == true
               label = Ops.add(
@@ -1304,9 +1296,7 @@ module Yast
 
         if do_continue
           if former_result == :next
-            if Ops.less_or_equal(@current_step, minimum_step) && !allow_back
-              minimum_step = Ops.add(minimum_step, 1)
-            end
+            minimum_step = Ops.add(minimum_step, 1) if Ops.less_or_equal(@current_step, minimum_step) && !allow_back
             @current_step = Ops.add(@current_step, 1)
           else
             @current_step = Ops.subtract(@current_step, 1)
@@ -1475,9 +1465,7 @@ module Yast
             if former_result == :next
               # if the first client just returns `auto, the back button
               # of the next client must be disabled
-              if Ops.less_or_equal(@current_step, minimum_step) && !allow_back
-                minimum_step = Ops.add(minimum_step, 1)
-              end
+              minimum_step = Ops.add(minimum_step, 1) if Ops.less_or_equal(@current_step, minimum_step) && !allow_back
               @current_step = Ops.add(@current_step, 1)
             elsif former_result == :back
               @current_step = Ops.subtract(@current_step, 1)

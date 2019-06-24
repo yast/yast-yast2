@@ -40,9 +40,7 @@ module Yast2
     #   iscsid = Yast2::SystemService.find("iscsid")
     #   service = Yast2::CompoundService.new(iscsi, iscsid)
     def initialize(*services)
-      if services.any? { |s| !s.is_a?(Yast2::SystemService) }
-        raise ArgumentError, "Services can be only System Service - #{services.inspect}"
-      end
+      raise ArgumentError, "Services can be only System Service - #{services.inspect}" if services.any? { |s| !s.is_a?(Yast2::SystemService) }
 
       @services = services
     end
@@ -177,9 +175,7 @@ module Yast2
     #
     # @param configuration [Symbol] new start mode (e.g., :on_boot, :on_demand, :manual, :inconsistent)
     def start_mode=(configuration)
-      if !AUTOSTART_OPTIONS.include?(configuration)
-        raise ArgumentError, "Invalid parameter #{configuration.inspect}"
-      end
+      raise ArgumentError, "Invalid parameter #{configuration.inspect}" if !AUTOSTART_OPTIONS.include?(configuration)
 
       if configuration == :inconsistent
         reset(exclude: [:action])

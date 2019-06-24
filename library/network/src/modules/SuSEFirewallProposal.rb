@@ -394,25 +394,19 @@ module Yast
           Ops.greater_than(Builtins.size(dial_up_interfaces), 0)
         SetInterfacesToZone(non_dup_interfaces, "INT")
         SetInterfacesToZone(dial_up_interfaces, "EXT")
-        if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
-          SuSEFirewall.SetServicesForZones([@ssh_service], ["INT", "EXT"], true)
-        end
+        SuSEFirewall.SetServicesForZones([@ssh_service], ["INT", "EXT"], true) if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
 
         # has non-dial-up and doesn't have dial-up interfaces
       elsif Ops.greater_than(Builtins.size(non_dup_interfaces), 0) &&
           Builtins.size(dial_up_interfaces) == 0
         SetInterfacesToZone(non_dup_interfaces, "EXT")
-        if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
-          SuSEFirewall.SetServicesForZones([@ssh_service], ["EXT"], true)
-        end
+        SuSEFirewall.SetServicesForZones([@ssh_service], ["EXT"], true) if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
 
         # doesn't have non-dial-up and has dial-up interfaces
       elsif Builtins.size(non_dup_interfaces) == 0 &&
           Ops.greater_than(Builtins.size(dial_up_interfaces), 0)
         SetInterfacesToZone(dial_up_interfaces, "EXT")
-        if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
-          SuSEFirewall.SetServicesForZones([@ssh_service], ["EXT"], true)
-        end
+        SuSEFirewall.SetServicesForZones([@ssh_service], ["EXT"], true) if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
       end
 
       # Dial-up interfaces are considered to be internal,

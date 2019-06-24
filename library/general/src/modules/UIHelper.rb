@@ -82,9 +82,7 @@ module Yast
         PushButton(Id(:delete_button), Opt(:key_F5), _("De&lete"))
       )
 
-      if nil != buttons
-        but_box = Builtins.add(Builtins.add(but_box, HStretch()), buttons)
-      end
+      but_box = Builtins.add(Builtins.add(but_box, HStretch()), buttons) if nil != buttons
       contents = Builtins.add(contents, but_box)
       contents = Builtins.add(contents, below_buttons) if nil != below_buttons
       deep_copy(contents)

@@ -277,9 +277,7 @@ module Yast
       mode = Ops.get_symbol(options, "mode")
 
       # set the defaults if the option is missing or nil
-      if display_support_status.nil?
-        display_support_status = ReadSupportStatus()
-      end
+      display_support_status = ReadSupportStatus() if display_support_status.nil?
 
       if enable_repo_mgr.nil?
         # disable repository management by default
@@ -297,13 +295,9 @@ module Yast
 
       widget_options = Builtins.add(widget_options, mode) if !mode.nil?
 
-      if !enable_repo_mgr.nil? && enable_repo_mgr
-        widget_options = Builtins.add(widget_options, :repoMgr)
-      end
+      widget_options = Builtins.add(widget_options, :repoMgr) if !enable_repo_mgr.nil? && enable_repo_mgr
 
-      if !display_support_status.nil? && display_support_status
-        widget_options = Builtins.add(widget_options, :confirmUnsupported)
-      end
+      widget_options = Builtins.add(widget_options, :confirmUnsupported) if !display_support_status.nil? && display_support_status
 
       Builtins.y2milestone(
         "Options for the package selector widget: %1",

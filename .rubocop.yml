@@ -133,11 +133,6 @@ Style/IdenticalConditionalBranches:
   Exclude:
     - 'library/packages/src/modules/PackageCallbacks.rb'
 
-# Offense count: 208
-# Cop supports --auto-correct.
-Style/IfUnlessModifier:
-  Enabled: false
-
 # Offense count: 6
 # Cop supports --auto-correct.
 # Configuration parameters: InverseMethods, InverseBlocks.

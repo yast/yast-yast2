@@ -111,9 +111,7 @@ end
 RSpec.shared_examples "CWM spacing" do |method|
   describe "##{method}" do
     it "returns and Integer or a Float number if defined" do
-      if subject.respond_to?(method)
-        expect(subject.send(method)).to be_an(Integer).or be_a(Float)
-      end
+      expect(subject.send(method)).to be_an(Integer).or be_a(Float) if subject.respond_to?(method)
     end
 
     it "returns a positive number or zero if defined" do

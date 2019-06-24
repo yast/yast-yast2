@@ -424,9 +424,7 @@ module Yast
 
       set_icon
       UI.OpenDialog(Opt(:wizardDialog), dialog)
-      if !@relnotes_button_id.empty?
-        ShowReleaseNotesButton(@relnotes_button_label, @relnotes_button_id)
-      end
+      ShowReleaseNotesButton(@relnotes_button_label, @relnotes_button_id) if !@relnotes_button_id.empty?
 
       nil
     end
@@ -634,9 +632,7 @@ module Yast
       set_icon
       UI.OpenDialog(Opt(:wizardDialog), GenericDialog(button_box))
 
-      if !help_space_contents.nil?
-        UI.ReplaceWidget(Id(:helpSpace), help_space_contents)
-      end
+      UI.ReplaceWidget(Id(:helpSpace), help_space_contents) if !help_space_contents.nil?
 
       nil
     end
@@ -739,9 +735,7 @@ module Yast
     # @example Wizard::SetHelpText("This is a help Text");
     #
     def SetHelpText(help_text)
-      if UI.WizardCommand(term(:SetHelpText, help_text)) == false
-        UI.ChangeWidget(Id(:WizardDialog), :HelpText, help_text)
-      end
+      UI.ChangeWidget(Id(:WizardDialog), :HelpText, help_text) if UI.WizardCommand(term(:SetHelpText, help_text)) == false
 
       nil
     end
@@ -813,15 +807,9 @@ module Yast
           UI.SetFocus(Id(:next))
         end
 
-        if UI.WidgetExists(Id(:back))
-          UI.ChangeWidget(Id(:back), :Enabled, has_back)
-        end
-        if UI.WidgetExists(Id(:abort))
-          UI.ChangeWidget(Id(:abort), :Enabled, true)
-        end
-        if UI.WidgetExists(Id(:title))
-          UI.ChangeWidget(Id(:title), :Value, title)
-        end
+        UI.ChangeWidget(Id(:back), :Enabled, has_back) if UI.WidgetExists(Id(:back))
+        UI.ChangeWidget(Id(:abort), :Enabled, true) if UI.WidgetExists(Id(:abort))
+        UI.ChangeWidget(Id(:title), :Value, title) if UI.WidgetExists(Id(:title))
 
         UI.SetFocus(Id(:accept)) if set_focus && UI.WidgetExists(Id(:accept))
       end
@@ -942,9 +930,7 @@ module Yast
     #
     def HideNextButton
       if UI.WizardCommand(term(:SetNextButtonLabel, "")) == false
-        if UI.WidgetExists(Id(:rep_next))
-          UI.ReplaceWidget(Id(:rep_next), Empty())
-        end
+        UI.ReplaceWidget(Id(:rep_next), Empty()) if UI.WidgetExists(Id(:rep_next))
       end
 
       nil
@@ -958,9 +944,7 @@ module Yast
     #
     def HideBackButton
       if UI.WizardCommand(term(:SetBackButtonLabel, "")) == false
-        if UI.WidgetExists(Id(:rep_back))
-          UI.ReplaceWidget(Id(:rep_back), Empty())
-        end
+        UI.ReplaceWidget(Id(:rep_back), Empty()) if UI.WidgetExists(Id(:rep_back))
       end
 
       nil
@@ -1065,12 +1049,8 @@ module Yast
         # Set button labels first to avoid geometry problems: SetContents()
         # calls ReplaceWidget() wich triggers a re-layout.
 
-        if UI.WidgetExists(Id(:back))
-          UI.ChangeWidget(Id(:back), :Label, back_label)
-        end
-        if UI.WidgetExists(Id(:next))
-          UI.ChangeWidget(Id(:next), :Label, next_label)
-        end
+        UI.ChangeWidget(Id(:back), :Label, back_label) if UI.WidgetExists(Id(:back))
+        UI.ChangeWidget(Id(:next), :Label, next_label) if UI.WidgetExists(Id(:next))
       end
 
       SetContents(title, contents, help_text, true, true)
@@ -1213,9 +1193,7 @@ module Yast
     # @note This is a stable API function
     #
     def EnableAbortButton
-      if UI.WizardCommand(term(:EnableAbortButton, true)) == false
-        UI.ChangeWidget(Id(:abort), :Enabled, true)
-      end
+      UI.ChangeWidget(Id(:abort), :Enabled, true) if UI.WizardCommand(term(:EnableAbortButton, true)) == false
 
       nil
     end
@@ -1226,9 +1204,7 @@ module Yast
     # @note This is a stable API function
     #
     def DisableAbortButton
-      if UI.WizardCommand(term(:EnableAbortButton, false)) == false
-        UI.ChangeWidget(Id(:abort), :Enabled, false)
-      end
+      UI.ChangeWidget(Id(:abort), :Enabled, false) if UI.WizardCommand(term(:EnableAbortButton, false)) == false
 
       nil
     end
@@ -1275,9 +1251,7 @@ module Yast
     # @note This is a stable API function
     #
     def DisableBackButton
-      if UI.WizardCommand(term(:EnableBackButton, false)) == false
-        UI.ChangeWidget(Id(:back), :Enabled, false)
-      end
+      UI.ChangeWidget(Id(:back), :Enabled, false) if UI.WizardCommand(term(:EnableBackButton, false)) == false
 
       nil
     end
@@ -1288,9 +1262,7 @@ module Yast
     # @note This is a stable API function
     #
     def EnableBackButton
-      if UI.WizardCommand(term(:EnableBackButton, true)) == false
-        UI.ChangeWidget(Id(:back), :Enabled, true)
-      end
+      UI.ChangeWidget(Id(:back), :Enabled, true) if UI.WizardCommand(term(:EnableBackButton, true)) == false
 
       nil
     end
@@ -1301,9 +1273,7 @@ module Yast
     # @note This is a stable API function
     #
     def DisableCancelButton
-      if UI.WizardCommand(term(:EnableCancelButton, false)) == false
-        UI.ChangeWidget(Id(:cancel), :Enabled, false)
-      end
+      UI.ChangeWidget(Id(:cancel), :Enabled, false) if UI.WizardCommand(term(:EnableCancelButton, false)) == false
 
       nil
     end
@@ -1314,9 +1284,7 @@ module Yast
     # @note This is a stable API function
     #
     def EnableCancelButton
-      if UI.WizardCommand(term(:EnableCancelButton, true)) == false
-        UI.ChangeWidget(Id(:cancel), :Enabled, true)
-      end
+      UI.ChangeWidget(Id(:cancel), :Enabled, true) if UI.WizardCommand(term(:EnableCancelButton, true)) == false
 
       nil
     end
