@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/SuSEFirewallProposal.ycp
-# Package:	SuSEFirewall configuration
-# Summary:	Functional interface for SuSEFirewall installation proposal
-# Authors:	Lukas Ocilka <locilka@suse.cz>
+# File:  modules/SuSEFirewallProposal.ycp
+# Package:  SuSEFirewall configuration
+# Summary:  Functional interface for SuSEFirewall installation proposal
+# Authors:  Lukas Ocilka <locilka@suse.cz>
 #
 # $Id$
 #
@@ -88,7 +88,7 @@ module Yast
 
     # Function returns list of warnings for user
     #
-    # @return	[Array<String>] of warnings
+    # @return  [Array<String>] of warnings
     def GetWarnings
       deep_copy(@warnings_now)
     end
@@ -107,14 +107,14 @@ module Yast
     # They must have been set using SetKnownInterfaces(list [string] interfaces)
     # function.
     #
-    # @return	[Array<String>] of known interfaces
+    # @return  [Array<String>] of known interfaces
     def GetKnownInterfaces
       deep_copy(@known_interfaces)
     end
 
     # Function returns if interface is a dial-up type.
     #
-    # @return	[Boolean] if is dial-up interface
+    # @return  [Boolean] if is dial-up interface
     def IsDialUpInterface(interface)
       all_interfaces = SuSEFirewall.GetAllKnownInterfaces
 
@@ -471,7 +471,7 @@ module Yast
 
     # Local function returns if proposal was changed by user
     #
-    # @return	[Boolean] if proposal was changed by user
+    # @return  [Boolean] if proposal was changed by user
     def GetChangedByUser
       @proposal_changed_by_user
     end
@@ -487,7 +487,7 @@ module Yast
 
     # Local function returns if proposal was initialized already
     #
-    # @return	[Boolean] if proposal was initialized
+    # @return  [Boolean] if proposal was initialized
     def GetProposalInitialized
       @proposal_initialized
     end
@@ -534,8 +534,8 @@ module Yast
     # **Structure:**
     #
     #     map $[
-    #     	"output" : "HTML Proposal Summary",
-    #     	"warning" : "HTML Warning Summary",
+    #       "output" : "HTML Proposal Summary",
+    #       "warning" : "HTML Warning Summary",
     #      ]
     def ProposalSummary
       # output: $[ "output" : "HTML Proposal", "warning" : "HTML Warning" ];

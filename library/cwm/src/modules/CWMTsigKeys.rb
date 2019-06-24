@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CWMTsigKeys.ycp
-# Package:	Common widget manipulation, TSIG keys management widget
-# Summary:	Routines for management of TSIG keys
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/CWMTsigKeys.ycp
+# Package:  Common widget manipulation, TSIG keys management widget
+# Summary:  Routines for management of TSIG keys
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #

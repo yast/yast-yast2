@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module: 		AsciiFile.ycp
+# Module:     AsciiFile.ycp
 #
-# Authors:		Thomas Fehr (fehr@suse.de)
+# Authors:    Thomas Fehr (fehr@suse.de)
 #
-# Purpose: 		Handle reading and modifying of ascii files.
+# Purpose:     Handle reading and modifying of ascii files.
 #
 # $Id$
 require "yast"
@@ -209,9 +209,9 @@ module Yast
     # Returns the list of rows where matches searched string in the defined column
     #
     # @param [Hash] file content
-    # @param [Integer] field		column (counted from 0 to n)
-    # @param [String] content		searched string
-    # @return [Array<Fixnum>]	matching rows
+    # @param [Integer] field    column (counted from 0 to n)
+    # @param [String] content    searched string
+    # @return [Array<Fixnum>]  matching rows
     def FindLineField(file, field, content)
       file = deep_copy(file)
       ret = []
@@ -228,8 +228,8 @@ module Yast
     # Returns map of wanted line
     #
     # @param [ArgRef<Hash>] file content
-    # @param [Integer] line	row number (counted from 1 to n)
-    # @return [Hash]		of wanted line
+    # @param [Integer] line  row number (counted from 1 to n)
+    # @return [Hash]    of wanted line
     def GetLine(file, line)
       ret = {}
       if Builtins.haskey(Ops.get_map(file.value, "l", {}), line)
@@ -245,7 +245,7 @@ module Yast
     # Returns count of lines in file
     #
     # @param [Hash] file content
-    # @return [Fixnum]	count of lines
+    # @return [Fixnum]  count of lines
     def NumLines(file)
       file = deep_copy(file)
       Builtins.size(Ops.get_map(file, "l", {}))
@@ -254,8 +254,8 @@ module Yast
     # Changes the record in the file defined by row and column
     #
     # @param [ArgRef<Hash>] file content
-    # @param [Integer] line	row number (counted from 1 to n)
-    # @param [Integer] field	column number (counted from 0 to n)
+    # @param [Integer] line  row number (counted from 1 to n)
+    # @param [Integer] field  column number (counted from 0 to n)
     def ChangeLineField(file, line, field, entry)
       Builtins.y2debug("line %1 field %2 entry %3", line, field, entry)
       changed = false
@@ -293,8 +293,8 @@ module Yast
     # Changes a complete line
     #
     # @param [ArgRef<Hash>] file content
-    # @param [Integer] line	row number (counted from 1 to n)
-    # @param [Array] entry	array of new fields on the line
+    # @param [Integer] line  row number (counted from 1 to n)
+    # @param [Array] entry  array of new fields on the line
     def ReplaceLine(file, line, entry)
       entry = deep_copy(entry)
       Builtins.y2debug("line %1 entry %2", line, entry)
@@ -311,7 +311,7 @@ module Yast
     # Appends a new line at the bottom
     #
     # @param [ArgRef<Hash>] file content
-    # @param [Array] entry	array of new fields on the line
+    # @param [Array] entry  array of new fields on the line
     def AppendLine(file, entry)
       entry = deep_copy(entry)
       line = Ops.add(Builtins.size(Ops.get_map(file.value, "l", {})), 1)

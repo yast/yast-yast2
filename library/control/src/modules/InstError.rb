@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/InstError.ycp
-# Package:	Installation
-# Summary:	Module for reporting installation errors
-# Authors:	Lukas Ocilka <locilka@suse.cz>
+# File:  modules/InstError.ycp
+# Package:  Installation
+# Summary:  Module for reporting installation errors
+# Authors:  Lukas Ocilka <locilka@suse.cz>
 #
 # $Id$
 #

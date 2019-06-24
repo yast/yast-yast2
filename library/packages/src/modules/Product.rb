@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Product.ycp
-# Package:	yast2
-# Summary:	Product data
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
-#		Lukas Ocilka <locilka@suse.cz>
+# File:  modules/Product.ycp
+# Package:  yast2
+# Summary:  Product data
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
+#    Lukas Ocilka <locilka@suse.cz>
 #
 # $Id$
 require "yast"

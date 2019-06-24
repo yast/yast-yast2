@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Encoding.ycp
-# Package:	yast2
-# Summary:	Provide the encoding stuff
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
+# File:  modules/Encoding.ycp
+# Package:  yast2
+# Summary:  Provide the encoding stuff
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
 #
 # $Id$
 require "yast"

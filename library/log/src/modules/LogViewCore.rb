@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/LogViewCore.ycp
-# Package:	YaST2
-# Summary:	Displaying a log
-# Authors:	Jiri Srain <jsrain@suse.cz>
-#		Arvin Schnell <aschnell@suse.de>
+# File:  modules/LogViewCore.ycp
+# Package:  YaST2
+# Summary:  Displaying a log
+# Authors:  Jiri Srain <jsrain@suse.cz>
+#    Arvin Schnell <aschnell@suse.de>
 #
 # $Id: LogViewCore.ycp 45503 2008-03-17 09:46:23Z aschnell $
 require "yast"

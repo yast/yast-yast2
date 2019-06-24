@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Integer.ycp
-# Package:	yast2
-# Summary:	Integer routines
-# Authors:	Arvin Schnell <aschnell@suse.de>
+# File:  modules/Integer.ycp
+# Package:  yast2
+# Summary:  Integer routines
+# Authors:  Arvin Schnell <aschnell@suse.de>
 #
 # $Id: Integer.ycp 45945 2008-04-01 19:41:01Z aschnell $
 require "yast"

@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/TablePopup.ycp
-# Package:	Table/Popup dialogs backend
-# Summary:	Routines for Table/Popup interface
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/TablePopup.ycp
+# Package:  Table/Popup dialogs backend
+# Summary:  Routines for Table/Popup interface
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -737,7 +737,7 @@ module Yast
         option_map = key2descr(descr, opt_key)
         toEval = Ops.get(option_map, ["table", "handle"])
         if !toEval.nil?
-          #		if (is (toEval, symbol))
+          #    if (is (toEval, symbol))
           if !Ops.is(toEval, "symbol (any, string, map)")
             ret2 = Convert.to_symbol(toEval)
             return ret2

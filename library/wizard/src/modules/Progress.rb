@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Progress.ycp
-# Module:	Progress
-# Summary:	Progress bar
-# Authors:	Petr Blahos <pblahos@suse.cz>
+# File:  modules/Progress.ycp
+# Module:  Progress
+# Summary:  Progress bar
+# Authors:  Petr Blahos <pblahos@suse.cz>
 #
 # $Id$
 #

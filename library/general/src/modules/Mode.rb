@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Mode.ycp
-# Module:	yast2
-# Summary:	Installation mode
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
-# Flags:	Stable
+# File:  modules/Mode.ycp
+# Module:  yast2
+# Summary:  Installation mode
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
+# Flags:  Stable
 #
 # $Id$
 #

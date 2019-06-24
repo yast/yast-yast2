@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/ProductFetures.ycp
-# Package:	installation
-# Summary:	Product features
-# Authors:	Anas Nashif <nashif@suse.de>
+# File:  modules/ProductFetures.ycp
+# Package:  installation
+# Summary:  Product features
+# Authors:  Anas Nashif <nashif@suse.de>
 #              Jiri Srain <jsrain@suse.cz>
 #
 # $Id$

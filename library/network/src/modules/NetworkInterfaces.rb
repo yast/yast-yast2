@@ -925,7 +925,7 @@ module Yast
                 end
                 Builtins.maplist(amap) do |ak, av|
                   akk = Ops.add(Ops.add(ak, "_"), anum)
-                  SCR.Write(Builtins.topath(Ops.add(p, akk)), av) #			    seen_label = seen_label || ak == "LABEL";
+                  SCR.Write(Builtins.topath(Ops.add(p, akk)), av) #          seen_label = seen_label || ak == "LABEL";
                 end
               end
             else

@@ -24,7 +24,7 @@
 # File: fs_snapshot.rb
 #
 # Authors:
-#	Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+#  Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 require "yast"
 require "date"

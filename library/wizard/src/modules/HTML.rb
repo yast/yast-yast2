@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/HTML.ycp
-# Package:	yast2
-# Summary:	Generic HTML formatting
-# Authors:	Stefan Hundhammer <sh@suse.de>
-# Flags:	Stable
+# File:  modules/HTML.ycp
+# Package:  yast2
+# Summary:  Generic HTML formatting
+# Authors:  Stefan Hundhammer <sh@suse.de>
+# Flags:  Stable
 #
 # $Id$
 #

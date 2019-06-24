@@ -22,16 +22,16 @@
 #
 # ***************************************************************************
 # File:
-#	HWConfig.ycp
+#  HWConfig.ycp
 #
 # Module:
-#	HWConfig
+#  HWConfig
 #
 # Authors:
-#	Ladislav Slezak <lslezak@suse.cz>
+#  Ladislav Slezak <lslezak@suse.cz>
 #
 # Summary:
-#	Module for accessing hardware configuration files (/etc/sysconfig/hwcfg-*)
+#  Module for accessing hardware configuration files (/etc/sysconfig/hwcfg-*)
 #
 # Flags: Stable
 #

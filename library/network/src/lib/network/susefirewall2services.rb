@@ -381,7 +381,7 @@ module Yast
     # Function returns needed ports allowing broadcast
     #
     # @param [String] service (including the "service:" prefix)
-    # @return	[Array<String>] of needed broadcast ports
+    # @return  [Array<String>] of needed broadcast ports
     def GetNeededBroadcastPorts(service)
       service_details(service)["broadcast_ports"] || []
     end
@@ -501,7 +501,7 @@ module Yast
     # Conflicting services are for instance nis-client and nis-server.
     # @deprecated we currently don't have such services - services are defined by packages.
     #
-    # @return	[Array<String>] of conflicting services
+    # @return  [Array<String>] of conflicting services
     def GetPossiblyConflictServices
       []
     end

@@ -21,12 +21,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Package.ycp
-# Package:	yast2
-# Summary:	Packages manipulation
-# Authors:	Martin Vidner <mvidner@suse.cz>
-#		Michal Svec <msvec@suse.cz>
-# Flags:	Stable
+# File:  modules/Package.ycp
+# Package:  yast2
+# Summary:  Packages manipulation
+# Authors:  Martin Vidner <mvidner@suse.cz>
+#    Michal Svec <msvec@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 #

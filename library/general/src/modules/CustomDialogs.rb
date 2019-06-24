@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CustomDialogs.ycp
-# Module:	yast2
-# Summary:	Installation mode
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
+# File:  modules/CustomDialogs.ycp
+# Module:  yast2
+# Summary:  Installation mode
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
 #
 # $Id$
 #

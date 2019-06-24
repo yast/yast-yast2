@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CWMTab.ycp
-# Package:	Common widget manipulation
-# Summary:	Routines for tab widget handling
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/CWMTab.ycp
+# Package:  Common widget manipulation
+# Summary:  Routines for tab widget handling
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #

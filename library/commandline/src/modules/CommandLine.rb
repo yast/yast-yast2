@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CommandLine.ycp
-# Package:	yast2
-# Summary:	Command line interface for YaST2 modules
-# Author:	Stanislav Visnovsky <visnov@suse.cz>
+# File:  modules/CommandLine.ycp
+# Package:  yast2
+# Summary:  Command line interface for YaST2 modules
+# Author:  Stanislav Visnovsky <visnov@suse.cz>
 #
 # $Id$
 require "yast"
@@ -151,7 +151,7 @@ module Yast
     #  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
     #  Suppress printing if there are no commands to be handled (starting GUI)
     #
-    #  @param [String] s	the string to be printed
+    #  @param [String] s  the string to be printed
     def PrintInternal(s, newline)
       return if !Mode.commandline
 
@@ -181,7 +181,7 @@ module Yast
     #  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
     #  Suppress printing if there are no commands to be handled (starting GUI)
     #
-    #  @param [String] s	the string to be printed
+    #  @param [String] s  the string to be printed
     def Print(s)
       PrintInternal(s, true)
     end
@@ -191,7 +191,7 @@ module Yast
     #  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
     #  Suppress printing if there are no commands to be handled (starting GUI)
     #
-    #  @param [String] s	the string to be printed
+    #  @param [String] s  the string to be printed
     def PrintNoCR(s)
       PrintInternal(s, false)
     end
@@ -219,8 +219,8 @@ module Yast
     #  Print a table using Print(). Format of table is as libyui but not all features
     #  are supported, e.g. no icons.
     #
-    #  @param [Yast::Term] header	header of table in libyui format
-    #  @param [Array<Yast::Term>] content	content of table in libyui format
+    #  @param [Yast::Term] header  header of table in libyui format
+    #  @param [Array<Yast::Term>] content  content of table in libyui format
     def PrintTable(header, content)
       header = deep_copy(header)
       content = deep_copy(content)
@@ -313,7 +313,7 @@ module Yast
     # Print an Error Message
     #
     # Print an error message and add the description how to get the help.
-    # @param [String] message	error message to be printed. Use nil for no message
+    # @param [String] message  error message to be printed. Use nil for no message
     def Error(message)
       Print(message) if !message.nil?
 
@@ -337,9 +337,9 @@ module Yast
     #
     #  It checks the validity of the arguments, the type correctness
     #  and returns the command and its options in a map.
-    #  @param [Array] arguments	the list of arguments to be parsed
-    #  @return [Hash{String => Object}]	containing the command and it's option. In case of
-    #				error it is an empty map.
+    #  @param [Array] arguments  the list of arguments to be parsed
+    #  @return [Hash{String => Object}]  containing the command and it's option. In case of
+    #        error it is an empty map.
     def Parse(arguments)
       arguments = deep_copy(arguments)
       args = deep_copy(arguments)
@@ -877,8 +877,8 @@ module Yast
 
     # Handle the system-wide commands, like help etc.
     #
-    # @param [Hash] command	a map of the current command
-    # @return		true, if the command was handled
+    # @param [Hash] command  a map of the current command
+    # @return    true, if the command was handled
     def ProcessSystemCommands(command)
       command = deep_copy(command)
       # handle help for specific command
@@ -950,7 +950,7 @@ module Yast
 
         doc = {}
 
-        #	    TODO: DTD specification
+        #      TODO: DTD specification
         Ops.set(
           doc,
           "listEntries",
@@ -958,13 +958,13 @@ module Yast
           "options"  => "option",
           "examples" => "example"
         )
-        #	    doc["cdataSections"] = [];
+        #      doc["cdataSections"] = [];
         Ops.set(
           doc,
           "systemID",
           Ops.add(Directory.schemadir, "/commandline.dtd")
         )
-        #	    doc["nameSpace"] = "http://www.suse.com/1.0/yast2ns";
+        #      doc["nameSpace"] = "http://www.suse.com/1.0/yast2ns";
         Ops.set(doc, "typeNamespace", "http://www.suse.com/1.0/configns")
 
         Ops.set(doc, "rootElement", "commandline")
@@ -1041,9 +1041,9 @@ module Yast
     #
     #  Initialize the module, setup the command line syntax and arguments passed on the command line.
     #
-    #  @param [Hash] cmdlineinfo		the map describing the module command line
-    #  @param [Array] args			arguments given by the user on the command line
-    #  @return [Boolean]		true, if there are some commands to be processed (and cmdlineinfo passes sanity checks)
+    #  @param [Hash] cmdlineinfo    the map describing the module command line
+    #  @param [Array] args      arguments given by the user on the command line
+    #  @return [Boolean]    true, if there are some commands to be processed (and cmdlineinfo passes sanity checks)
     #  @see #Command
     def Init(cmdlineinfo, args)
       cmdlineinfo = deep_copy(cmdlineinfo)
@@ -1400,8 +1400,8 @@ module Yast
     # error, Report::Error is used.
     #
     # @param [Hash{String => String}] options  options specified by the user on the command line to be checked
-    # @param [Array] unique_options	list of mutually exclusive options to check against
-    # @return	nil if there is a problem, otherwise the unique option found
+    # @param [Array] unique_options  list of mutually exclusive options to check against
+    # @return  nil if there is a problem, otherwise the unique option found
     def UniqueOption(options, unique_options)
       options = deep_copy(options)
       unique_options = deep_copy(unique_options)
@@ -1473,11 +1473,11 @@ module Yast
     # Function to parse the command line, start a GUI or handle interactive and
     # command line actions as supported by the {Yast::CommandLine} module.
     #
-    # @param [Hash] commandline	a map used in the CommandLine module with information
+    # @param [Hash] commandline  a map used in the CommandLine module with information
     #                      about the handlers for GUI and commands.
-    # @return [Object]		false if there was an error or no changes to be written (for example "help").
-    #			true if the changes should be written, or a value returned by the
-    #			handler
+    # @return [Object]    false if there was an error or no changes to be written (for example "help").
+    #      true if the changes should be written, or a value returned by the
+    #      handler
     def Run(commandline)
       commandline = deep_copy(commandline)
       # The main ()

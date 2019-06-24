@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/String.ycp
-# Package:	yast2
-# Summary:	String manipulation routines
-# Authors:	Michal Svec <msvec@suse.cz>
+# File:  modules/String.ycp
+# Package:  yast2
+# Summary:  String manipulation routines
+# Authors:  Michal Svec <msvec@suse.cz>
 #
 # $Id$
 require "yast"
@@ -111,10 +111,10 @@ module Yast
     # Uses the current locale defined decimal separator
     # (i.e. the result is language dependant).
     #
-    # @param [Fixnum] bytes	size (e.g. free diskspace, memory size) in Bytes
+    # @param [Fixnum] bytes  size (e.g. free diskspace, memory size) in Bytes
     # @param [Fixnum] precision number of fraction digits in output, if negative (less than 0) the precision is set automatically depending on the suffix
     # @param [Boolean] omit_zeroes if true then do not add zeroes
-    #	(useful for memory size - 128 MiB RAM looks better than 128.00 MiB RAM)
+    #  (useful for memory size - 128 MiB RAM looks better than 128.00 MiB RAM)
     # @return formatted string
     #
     # @example FormatSizeWithPrecision(128, 2, true) -> "128 B"
@@ -167,7 +167,7 @@ module Yast
     # Uses the current locale defined decimal separator
     # (i.e. the result is language dependant).
     #
-    # @param [Fixnum] bytes	size (e.g. free diskspace) in Bytes
+    # @param [Fixnum] bytes  size (e.g. free diskspace) in Bytes
     # @return formatted string
     #
     # @example FormatSize(23456767890) -> "223.70 MiB"
@@ -534,7 +534,7 @@ module Yast
     # Usable to present text "as is" in RichText.
     #
     # @param [String] text to escape
-    # @return [String]	escaped text
+    # @return [String]  escaped text
     def EscapeTags(text)
       return nil unless text
 
@@ -603,7 +603,7 @@ module Yast
     # @param [Array<String>] header
     # @param [Array<Array<String>>] items
     # @param [Hash{String => Object}] options
-    # @return	[String] table
+    # @return  [String] table
     #
     # Header: [ "Id", "Configuration", "Device" ]
     # Items: [ [ "1", "aaa", "Samsung Calex" ], [ "2", "bbb", "Trivial Trinitron" ] ]
@@ -641,9 +641,9 @@ module Yast
     # Function returns underlined text header without using HTML tags.
     # (Useful for commandline)
     #
-    # @param	string header line
-    # @param	integer left padding
-    # @return	[String] underlined header line
+    # @param  string header line
+    # @param  integer left padding
+    # @return  [String] underlined header line
     def UnderlinedHeader(header_line, left_padding)
       return nil unless header_line
 
@@ -855,8 +855,8 @@ module Yast
 
     # Local function returns underline string /length/ long.
     #
-    # @param	integer length of underline
-    # @return	string /length/ long underline
+    # @param  integer length of underline
+    # @return  string /length/ long underline
     def underline(length)
       return "" unless length
 
@@ -866,9 +866,9 @@ module Yast
     # Local function for creating header underline for table.
     # It uses maximal lengths of records defined in cols_lenghts.
     #
-    # @param	list <integer> maximal lengths of records in columns
-    # @param	integer horizontal padding of records
-    # @return	string table header underline
+    # @param  list <integer> maximal lengths of records in columns
+    # @param  integer horizontal padding of records
+    # @return  string table header underline
     def table_header_underline(cols_lenghts, horizontal_padding)
       horizontal_padding ||= 0
 
@@ -888,8 +888,8 @@ module Yast
 
     # Local function for finding longest records in the table.
     #
-    # @param	list <list <string> > table items
-    # @return	list <integer> longest records by columns
+    # @param  list <list <string> > table items
+    # @return  list <integer> longest records by columns
     def find_longest_records(items)
       return [] unless items
 
@@ -907,10 +907,10 @@ module Yast
 
     # Local function creates table row.
     #
-    # @param	list <string> row items
-    # @param	list <integer> columns lengths
-    # @param	integer record horizontal padding
-    # @return	string padded table row
+    # @param  list <string> row items
+    # @param  list <integer> columns lengths
+    # @param  integer record horizontal padding
+    # @return  string padded table row
     def table_row(row_items, cols_lenghts, horizontal_padding)
       row = ""
       row_items ||= []

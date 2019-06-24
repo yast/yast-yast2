@@ -51,7 +51,7 @@ module Yast
     # Function which returns if SuSEfirewall2 should start in Write process.
     # In fact it means that SuSEfirewall2 will at the end.
     #
-    # @return	[Boolean] if the firewall should start
+    # @return  [Boolean] if the firewall should start
     def GetStartService
       Ops.get_boolean(@SETTINGS, "start_firewall", false)
     end
@@ -89,14 +89,14 @@ module Yast
     # @see #Write()
     # @see #EnableServices()
     #
-    # @return	[Boolean] if the firewall should start
+    # @return  [Boolean] if the firewall should start
     def GetEnableService
       Ops.get_boolean(@SETTINGS, "enable_firewall", false)
     end
 
     # Function which sets if SuSEfirewall should start in Write process
     #
-    # @param	boolean start_service at Write() process
+    # @param  boolean start_service at Write() process
     def SetEnableService(enable_service)
       if !SuSEFirewallIsSelectedOrInstalled()
         Builtins.y2warning("Cannot set SetEnableService")
@@ -122,7 +122,7 @@ module Yast
 
     # Functions starts services needed for SuSEFirewall
     #
-    # @return	[Boolean] result
+    # @return  [Boolean] result
     def StartServices
       return true if Mode.testsuite
 
@@ -139,7 +139,7 @@ module Yast
 
     # Functions stops services needed for SuSEFirewall
     #
-    # @return	[Boolean] result
+    # @return  [Boolean] result
     def StopServices
       return true if Mode.testsuite
 
@@ -156,7 +156,7 @@ module Yast
 
     # Functions enables services needed for SuSEFirewall in /etc/inet.d/
     #
-    # @return	[Boolean] result
+    # @return  [Boolean] result
     def EnableServices
       all_ok = true
 
@@ -173,7 +173,7 @@ module Yast
 
     # Functions disables services needed for SuSEFirewall in /etc/inet.d/
     #
-    # @return	[Boolean] result
+    # @return  [Boolean] result
     def DisableServices
       return false if !SuSEFirewallIsInstalled()
 
@@ -187,7 +187,7 @@ module Yast
     # init scripts /etc/init.d/ now.
     # For configuration "enabled" status use GetEnableService().
     #
-    # @return	[Boolean] if enabled
+    # @return  [Boolean] if enabled
     def IsEnabled
       return false if !SuSEFirewallIsInstalled()
 
@@ -203,7 +203,7 @@ module Yast
     # Function determines if at least one SuSEFirewall script is started now.
     # For configuration "started" status use GetStartService().
     #
-    # @return	[Boolean] if started
+    # @return  [Boolean] if started
     def IsStarted
       return false if !SuSEFirewallIsInstalled()
 
@@ -221,7 +221,7 @@ module Yast
 
     # Function returns list of known firewall zones (shortnames)
     #
-    # @return	[Array<String>] of firewall zones
+    # @return  [Array<String>] of firewall zones
     #
     # @example GetKnownFirewallZones() -> ["DMZ", "EXT", "INT"]
     def GetKnownFirewallZones
@@ -230,13 +230,13 @@ module Yast
 
     # Function returns map of supported services in all firewall zones.
     #
-    # @param	list <string> of services
-    # @return	[Hash <String, Hash{String => Boolean>}]
+    # @param  list <string> of services
+    # @return  [Hash <String, Hash{String => Boolean>}]
     #
     #
     # **Structure:**
     #
-    #    	Returns $[service : $[ zone_name : supported_status]]
+    #      Returns $[service : $[ zone_name : supported_status]]
     #
     # @example
     #  // Firewall in not protected from internal zone, that's why
@@ -268,18 +268,18 @@ module Yast
 
     # Function returns map of supported services all network interfaces.
     #
-    # @param	list <string> of services
-    # @return	[Hash <String, Hash{String => Boolean} >]
+    # @param  list <string> of services
+    # @return  [Hash <String, Hash{String => Boolean} >]
     #
     #
     # **Structure:**
     #
-    #    	Returns $[service : $[ interface : supported_status ]]
+    #      Returns $[service : $[ interface : supported_status ]]
     #
     # @example
-    #	GetServicesInZones (["service:irc-server"]) -> $["service:irc-server":$["eth1":true]]
+    #  GetServicesInZones (["service:irc-server"]) -> $["service:irc-server":$["eth1":true]]
     #  // No such service "something"
-    #	GetServicesInZones (["something"])) -> $["something":$["eth1":nil]]
+    #  GetServicesInZones (["something"])) -> $["something":$["eth1":nil]]
     #  GetServicesInZones (["samba-server"]) -> $["samba-server":$["eth1":false]]
     def GetServicesInZones(services)
       services = deep_copy(services)
@@ -315,14 +315,14 @@ module Yast
 
     # Function sets status for several services on several network interfaces.
     #
-    # @param	list <string> service ids
-    # @param	list <string> network interfaces
-    # @param	boolean new status of services
-    # @return	[Boolean] if successfull
+    # @param  list <string> service ids
+    # @param  list <string> network interfaces
+    # @param  boolean new status of services
+    # @return  [Boolean] if successfull
     #
     # @example
     #  // Disabling services
-    #	SetServices (["samba-server", "service:irc-server"], ["eth1", "modem0"], false)
+    #  SetServices (["samba-server", "service:irc-server"], ["eth1", "modem0"], false)
     #  // Enabling services
     #  SetServices (["samba-server", "service:irc-server"], ["eth1", "modem0"], true)
     # @see #SetServicesForZones()
@@ -361,7 +361,7 @@ module Yast
 
     # Functions returns whether any firewall's configuration was modified.
     #
-    # @return	[Boolean] if the configuration was modified
+    # @return  [Boolean] if the configuration was modified
     def GetModified
       Yast.import "SuSEFirewallServices"
       # Changed SuSEFirewall or
@@ -399,7 +399,7 @@ module Yast
     #
     #     [ $[ "id":"modem1", "name":"Askey 815C", "type":"dialup", "zone":"EXT" ], ... ]
     #
-    # @return	[Array<Hash{String => String>}]
+    # @return  [Array<Hash{String => String>}]
     # @return [Array<Hash{String => String>}] of all interfaces
     def GetAllKnownInterfaces
       known_interfaces = []
@@ -473,7 +473,7 @@ module Yast
 
     # Function returns list of all known interfaces.
     #
-    # @return	[Array<String>] of interfaces
+    # @return  [Array<String>] of interfaces
     # @example GetListOfKnownInterfaces() -> ["eth1", "eth2", "modem0", "dsl5"]
     def GetListOfKnownInterfaces
       GetAllKnownInterfaces().map { |i| i["id"] }
@@ -482,10 +482,10 @@ module Yast
     # Function returns list of zones of requested interfaces
     #
     # @param [Array<String>] interfaces
-    # @return	[Array<String>] firewall zones
+    # @return  [Array<String>] firewall zones
     #
     # @example
-    #	GetZonesOfInterfaces (["eth1","eth4"]) -> ["DMZ", "EXT"]
+    #  GetZonesOfInterfaces (["eth1","eth4"]) -> ["DMZ", "EXT"]
     def GetZonesOfInterfaces(interfaces)
       interfaces = deep_copy(interfaces)
       zones = []
@@ -501,8 +501,8 @@ module Yast
 
     # Function returns localized name of the zone identified by zone shortname.
     #
-    # @param	string short name
-    # @return	[String] zone name
+    # @param  string short name
+    # @return  [String] zone name
     #
     # @example
     #  LANG=en_US GetZoneFullName ("EXT") -> "External Zone"
@@ -516,7 +516,7 @@ module Yast
     # Undefined zones are, for sure, unsupported.
     #
     # @param [String] zone shortname
-    # @return	[Boolean] if zone is known and supported.
+    # @return  [Boolean] if zone is known and supported.
     def IsKnownZone(zone)
       is_zone = false
 
@@ -567,7 +567,7 @@ module Yast
     # Function for saving configuration and restarting firewall.
     # Is is the same as Write() but write is allways forced.
     #
-    # @return	[Boolean] if successful
+    # @return  [Boolean] if successful
     def SaveAndRestartService
       Builtins.y2milestone("Forced save and restart")
       SetModified()
@@ -595,11 +595,11 @@ module Yast
     #
     # @param [String] protocol
     # @param [String] zone
-    # @param	list <string> list of ports/protocols
+    # @param  list <string> list of ports/protocols
     # @see #GetAdditionalServices()
     #
     # @example
-    #	SetAdditionalServices ("TCP", "EXT", ["53", "128"])
+    #  SetAdditionalServices ("TCP", "EXT", ["53", "128"])
     def SetAdditionalServices(protocol, zone, new_list_services)
       new_list_services = deep_copy(new_list_services)
       old_list_services = Builtins.toset(GetAdditionalServices(protocol, zone))
@@ -650,10 +650,10 @@ module Yast
     # Local function removes ports and their aliases (if check_for_aliases is true), for
     # requested protocol and zone.
     #
-    # @param	list <string> ports to be removed
+    # @param  list <string> ports to be removed
     # @param [String] protocol
     # @param [String] zone
-    # @param	boolean check for port-aliases
+    # @param  boolean check for port-aliases
     def RemoveAllowedPortsOrServices(remove_ports, protocol, zone, check_for_aliases)
       remove_ports = deep_copy(remove_ports)
       if Ops.less_than(Builtins.size(remove_ports), 1)
@@ -764,7 +764,7 @@ module Yast
     # iptables rules and compares the output with current status of the selected
     # firewall backend
     #
-    # @return	[Boolean] if other firewall is running
+    # @return  [Boolean] if other firewall is running
     def IsOtherFirewallRunning
       any_firewall_running = true
 
@@ -858,12 +858,12 @@ module Yast
     # @param [String] service (service name, port name, port alias or port number)
     # @param [String] protocol TCP, UDP, RCP or IP
     # @param [String] interface name (like modem0), firewall zone (like "EXT") or "any" for all zones.
-    # @return	[Boolean] if service is allowed
+    # @return  [Boolean] if service is allowed
     #
     # @example
-    #	HaveService ("ssh", "TCP", "EXT") -> true
-    #	HaveService ("ssh", "TCP", "modem0") -> false
-    #	HaveService ("53", "UDP", "dsl") -> false
+    #  HaveService ("ssh", "TCP", "EXT") -> true
+    #  HaveService ("ssh", "TCP", "modem0") -> false
+    #  HaveService ("53", "UDP", "dsl") -> false
     def HaveService(service, protocol, interface)
       if !IsSupportedProtocol(protocol)
         Builtins.y2error("Unknown protocol: %1", protocol)
@@ -915,12 +915,12 @@ module Yast
     #
     # @param [String] service/port
     # @param [String] protocol TCP, UDP, RPC, IP
-    # @param	string zone name or interface name
-    # @return	[Boolean] success
+    # @param  string zone name or interface name
+    # @return  [Boolean] success
     #
     # @example
-    #	AddService ("ssh", "TCP", "EXT")
-    #	AddService ("ssh", "TCP", "dsl0")
+    #  AddService ("ssh", "TCP", "EXT")
+    #  AddService ("ssh", "TCP", "dsl0")
     def AddService(service, protocol, interface)
       Builtins.y2milestone(
         "Adding service %1, protocol %2 to %3",
@@ -991,13 +991,13 @@ module Yast
     #
     # @param [String] service/port
     # @param [String] protocol TCP, UDP, RPC, IP
-    # @param	string zone name or interface name
-    # @return	[Boolean] success
+    # @param  string zone name or interface name
+    # @return  [Boolean] success
     #
     # @example
-    #	RemoveService ("22", "TCP", "DMZ") -> true
+    #  RemoveService ("22", "TCP", "DMZ") -> true
     #  is the same as
-    #	RemoveService ("ssh", "TCP", "DMZ") -> true
+    #  RemoveService ("ssh", "TCP", "DMZ") -> true
     def RemoveService(service, protocol, interface)
       Builtins.y2milestone(
         "Removing service %1, protocol %2 from %3",

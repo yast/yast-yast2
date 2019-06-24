@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/WorkflowManager.rb
-# Package:	yast2
-# Summary:	Provides API for configuring workflows
-# Authors:	Lukas Ocilka <locilka@suse.cz>
+# File:  modules/WorkflowManager.rb
+# Package:  yast2
+# Summary:  Provides API for configuring workflows
+# Authors:  Lukas Ocilka <locilka@suse.cz>
 #
 # Provides API for managing and configuring installation and
 # configuration workflow.
@@ -186,13 +186,13 @@ module Yast
     # **Structure:**
     #
     #
-    #     	Input: [
-    #     		$["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"initial,firstboot"]
-    #     	]
-    #     	Output: [
-    #     		$["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"initial"]
-    #     		$["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"firstboot"]
-    #     	]
+    #       Input: [
+    #         $["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"initial,firstboot"]
+    #       ]
+    #       Output: [
+    #         $["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"initial"]
+    #         $["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"firstboot"]
+    #       ]
     def PrepareProposals(proposals)
       proposals = deep_copy(proposals)
       new_proposals = []
@@ -565,7 +565,7 @@ module Yast
     # @return [Boolean] whether successful (true also in case of no workflow file)
     #
     # @example
-    #	AddWorkflow (`addon, 4, "");
+    #  AddWorkflow (`addon, 4, "");
     def AddWorkflow(type, src_id, name)
       Builtins.y2milestone(
         "Adding Workflow:  Type %1, ID %2, Name %3",
@@ -603,7 +603,7 @@ module Yast
     # @return [Boolean] whether successful (true also in case of no workflow file)
     #
     # @example
-    #	RemoveWorkflow (:addon, 4, "");
+    #  RemoveWorkflow (:addon, 4, "");
     def RemoveWorkflow(type, src_id, name)
       Builtins.y2milestone(
         "Removing Workflow:  Type %1, ID %2, Name %3",
@@ -1496,7 +1496,7 @@ module Yast
     # @see #GetAllUsedControlFiles()
     # @param list <string> new workflows (XML files in absolute-path format)
     # @example
-    #	SetAllUsedControlFiles (["/tmp/new_addon_control.xml", "/root/special_addon.xml"]);
+    #  SetAllUsedControlFiles (["/tmp/new_addon_control.xml", "/root/special_addon.xml"]);
     def SetAllUsedControlFiles(new_list)
       new_list = deep_copy(new_list)
       Builtins.y2milestone("New list of additional workflows: %1", new_list)
@@ -1521,13 +1521,13 @@ module Yast
     # **Structure:**
     #
     #     [
-    #     		"workflows" : ...
-    #     		"proposals" : ...
-    #     		"inst_finish" : ...
-    #     		"clone_modules" : ...
+    #         "workflows" : ...
+    #         "proposals" : ...
+    #         "inst_finish" : ...
+    #         "clone_modules" : ...
     #         "system_roles" : ...
-    #     		"unmerged_changes" : ...
-    #     	];
+    #         "unmerged_changes" : ...
+    #       ];
     def DumpCurrentSettings
       {
         "workflows"        => ProductControl.workflows,

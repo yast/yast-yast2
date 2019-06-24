@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/IP.ycp
-# Module:	yast2
-# Summary:	IP manipulation routines
-# Authors:	Michal Svec <msvec@suse.cz>
-# Flags:	Stable
+# File:  modules/IP.ycp
+# Module:  yast2
+# Summary:  IP manipulation routines
+# Authors:  Michal Svec <msvec@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 require "yast"

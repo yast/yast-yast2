@@ -21,13 +21,13 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/ProductControl.rb
-# Package:	installation
-# Summary:	Product Control routines
-# Authors:	Anas Nashif <nashif@suse.de>
-#		Stanislav Visnovsky <visnov@suse.cz>
-#		Jiri Srain <jsrain@suse.cz>
-#		Lukas Ocilka <locilka@suse.cz>
+# File:  modules/ProductControl.rb
+# Package:  installation
+# Summary:  Product Control routines
+# Authors:  Anas Nashif <nashif@suse.de>
+#    Stanislav Visnovsky <visnov@suse.cz>
+#    Jiri Srain <jsrain@suse.cz>
+#    Lukas Ocilka <locilka@suse.cz>
 #
 require "yast"
 require "yast2/control_log_dir_rotator"

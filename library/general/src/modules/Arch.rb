@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Arch.ycp
-# Module:	yast2
-# Summary:	Architecture, board and bios data
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
-# Flags:	Stable
+# File:  modules/Arch.ycp
+# Module:  yast2
+# Summary:  Architecture, board and bios data
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
+# Flags:  Stable
 #
 # $Id$
 require "yast"

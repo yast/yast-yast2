@@ -19,13 +19,13 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Service.ycp
-# Package:	yast2
-# Summary:	Service manipulation
-# Authors:	Martin Vidner <mvidner@suse.cz>
-#		Petr Blahos <pblahos@suse.cz>
-#		Michal Svec <msvec@suse.cz>
-#		Lukas Ocilka <locilka@suse.cz>
+# File:  modules/Service.ycp
+# Package:  yast2
+# Summary:  Service manipulation
+# Authors:  Martin Vidner <mvidner@suse.cz>
+#    Petr Blahos <pblahos@suse.cz>
+#    Michal Svec <msvec@suse.cz>
+#    Lukas Ocilka <locilka@suse.cz>
 ###
 
 # Functions for systemd service handling used by other modules.

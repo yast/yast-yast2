@@ -159,9 +159,9 @@ module Yast
 
     # sets status for several services on several network interfaces.
     #
-    # @param	list <string> service ids
-    # @param	list <string> network interfaces
-    # @param	boolean new status of services
+    # @param  list <string> service ids
+    # @param  list <string> network interfaces
+    # @param  boolean new status of services
     def modify_interface_services(services, interfaces, status)
       interfaces.each do |interface|
         zone = interface_zone(interface)

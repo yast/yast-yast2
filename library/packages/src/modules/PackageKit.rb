@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/PackageKit.ycp
-# Package:	yast2
-# Summary:	PackageKit access functions
-# Authors:	Ladislav Slezak <lslezak@suse.cz>
+# File:  modules/PackageKit.ycp
+# Package:  yast2
+# Summary:  PackageKit access functions
+# Authors:  Ladislav Slezak <lslezak@suse.cz>
 #
 # $Id:$
 #

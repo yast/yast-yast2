@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Summary.ycp
-# Module:	yast2
-# Summary:	Support for summaries of the configured devices
-# Authors:	Jan Holesovsky <kendy@suse.cz>
-#		Stefan Hundhammer <sh@suse.de>
+# File:  modules/Summary.ycp
+# Module:  yast2
+# Summary:  Support for summaries of the configured devices
+# Authors:  Jan Holesovsky <kendy@suse.cz>
+#    Stefan Hundhammer <sh@suse.de>
 #
 # $Id$
 #
@@ -102,42 +102,42 @@ module Yast
 
     # Add a RichText section header to an existing summary.
     #
-    # @param [String] summary	previous RichText (HTML) summary to add to
-    # @param [String] header	header to add (plain text, no HTML)
-    # @return [String]	the new summary including the new header
+    # @param [String] summary  previous RichText (HTML) summary to add to
+    # @param [String] header  header to add (plain text, no HTML)
+    # @return [String]  the new summary including the new header
     def AddHeader(summary, header)
       Ops.add(Ops.add(Ops.add(summary, "<h3>"), header), "</h3>")
     end
 
     # Add a line to an existing summary.
     #
-    # @param [String] summary	previous RichText (HTML) summary to add to
-    # @param [String] line	line to add (plain text, no HTML)
-    # @return [String]	the new summary including the new line
+    # @param [String] summary  previous RichText (HTML) summary to add to
+    # @param [String] line  line to add (plain text, no HTML)
+    # @return [String]  the new summary including the new line
     def AddLine(summary, line)
       Ops.add(Ops.add(Ops.add(summary, "<p>"), line), "</p>")
     end
 
     # Add a newline to an existing summary.
     #
-    # @param [String] summary	previous RichText (HTML) summary to add to
-    # @return [String]	the new summary
+    # @param [String] summary  previous RichText (HTML) summary to add to
+    # @return [String]  the new summary
     def AddNewLine(summary)
       Ops.add(summary, "<br>")
     end
 
     # Start a list within a summary.
     #
-    # @param [String] summary	previous RichText (HTML) summary to add to
-    # @return [String]	the new summary
+    # @param [String] summary  previous RichText (HTML) summary to add to
+    # @return [String]  the new summary
     def OpenList(summary)
       Ops.add(summary, "<ul>")
     end
 
     # End a list within a summary.
     #
-    # @param [String] summary	previous RichText (HTML) summary to add to
-    # @return [String]	the new summary
+    # @param [String] summary  previous RichText (HTML) summary to add to
+    # @return [String]  the new summary
     def CloseList(summary)
       Ops.add(summary, "</ul>")
     end
@@ -145,9 +145,9 @@ module Yast
     # Add a list item to an existing summary.
     # Requires a previous call to 'summaryOpenList()'.
     #
-    # @param [String] summary	previous RichText (HTML) summary to add to
-    # @param [String] item	item to add (plain text, no HTML)
-    # @return [String]	the new summary including the new line
+    # @param [String] summary  previous RichText (HTML) summary to add to
+    # @param [String] item  item to add (plain text, no HTML)
+    # @return [String]  the new summary including the new line
     def AddListItem(summary, item)
       Ops.add(Ops.add(Ops.add(summary, "\n<li>"), item), "</li>")
     end
@@ -155,10 +155,10 @@ module Yast
     # Add a simple section to an existing summary,
     # consisting of a header and one single item.
     #
-    # @param [String] summary	previous RichText (HTML) summary to add to
-    # @param [String] header	section header (plain text, no HTML)
-    # @param [String] item	section item   (plain text, no HTML)
-    # @return [String]	the new summary including the new line
+    # @param [String] summary  previous RichText (HTML) summary to add to
+    # @param [String] header  section header (plain text, no HTML)
+    # @param [String] item  section item   (plain text, no HTML)
+    # @return [String]  the new summary including the new line
     def AddSimpleSection(summary, header, item)
       summary = AddHeader(summary, header)
       summary = OpenList(summary)

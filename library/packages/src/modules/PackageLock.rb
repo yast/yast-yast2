@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/PackageLock.ycp
-# Package:	yast2
-# Summary:	Packages manipulation (system)
-# Authors:	Martin Vidner <mvidner@suse.cz>
+# File:  modules/PackageLock.ycp
+# Package:  yast2
+# Summary:  Packages manipulation (system)
+# Authors:  Martin Vidner <mvidner@suse.cz>
 #
 # $Id$
 #

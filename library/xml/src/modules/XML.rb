@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/XML.ycp
-# Package:	XML
-# Summary:	XML routines
-# Authors:	Anas Nashif <nashif@suse.de>
+# File:  modules/XML.ycp
+# Package:  XML
+# Summary:  XML routines
+# Authors:  Anas Nashif <nashif@suse.de>
 #
 # $Id$
 require "yast"

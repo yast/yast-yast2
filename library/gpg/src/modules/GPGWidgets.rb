@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/GPGWidgets.ycp
-# Package:	yast2
-# Summary:	UI widgets and functions related to GPG
-# Authors:	Ladislav Slezák <lslezak@suse.cz>
+# File:  modules/GPGWidgets.ycp
+# Package:  yast2
+# Summary:  UI widgets and functions related to GPG
+# Authors:  Ladislav Slezák <lslezak@suse.cz>
 #
 # $Id$
 #

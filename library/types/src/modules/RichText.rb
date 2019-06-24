@@ -21,12 +21,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/RichText.ycp
-# Package:	yast2
-# Summary:	Rich text manipulation routines
-# Authors:	Michal Svec <msvec@suse.cz>
-#		Stano Visnovsky <visnov@suse.cz>
-# Flags:	Stable
+# File:  modules/RichText.ycp
+# Package:  yast2
+# Summary:  Rich text manipulation routines
+# Authors:  Michal Svec <msvec@suse.cz>
+#    Stano Visnovsky <visnov@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 require "yast"

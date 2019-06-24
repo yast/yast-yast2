@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CWMTable.ycp
-# Package:	Table dialogs backend
-# Summary:	Routines for Unified Table widget
-# Authors:	Josef Reidinger <jreidinger@suse.cz>
+# File:  modules/CWMTable.ycp
+# Package:  Table dialogs backend
+# Summary:  Routines for Unified Table widget
+# Authors:  Josef Reidinger <jreidinger@suse.cz>
 #
 # $Id: CWMTable.ycp
 #

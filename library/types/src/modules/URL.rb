@@ -21,12 +21,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/URL.ycp
-# Package:	yast2
-# Summary:	Manipulate and Parse URLs
-# Authors:	Michal Svec <msvec@suse.cz>
-#		Anas Nashif <nashif@suse.cz>
-# Flags:	Stable
+# File:  modules/URL.ycp
+# Package:  yast2
+# Summary:  Manipulate and Parse URLs
+# Authors:  Michal Svec <msvec@suse.cz>
+#    Anas Nashif <nashif@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -106,8 +106,8 @@ module Yast
     # @return [String] unescaped string
     #
     # @example
-    #	URL::UnEscapeString ("http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f", URL::transform_map_passwd)
-    #		-> http://some.nice.url/:with:/$p#ci&l/ch@rs/
+    #  URL::UnEscapeString ("http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f", URL::transform_map_passwd)
+    #    -> http://some.nice.url/:with:/$p#ci&l/ch@rs/
 
     def UnEscapeString(in_, transform)
       transform = deep_copy(transform)
@@ -133,8 +133,8 @@ module Yast
     # @return [String] escaped string
     #
     # @example
-    #	URL::EscapeString ("http://some.nice.url/:with:/$p#ci&l/ch@rs/", URL::transform_map_passwd)
-    #		-> http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f
+    #  URL::EscapeString ("http://some.nice.url/:with:/$p#ci&l/ch@rs/", URL::transform_map_passwd)
+    #    -> http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f
 
     def EscapeString(in_, transform)
       transform = deep_copy(transform)
@@ -348,7 +348,7 @@ module Yast
         "^[[:alpha:]]*$"
       )
         # if (tokens["scheme"]:"" == "samba") url="smb";
-        # 		else
+        #     else
         url = Ops.get_string(tokens, "scheme", "")
       end
       Builtins.y2debug("url: %1", url)

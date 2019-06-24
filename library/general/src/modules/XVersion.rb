@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/XVersion.ycp
-# Module:	yast2
-# Summary:	Differences between multiple X versions
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/XVersion.ycp
+# Module:  yast2
+# Summary:  Differences between multiple X versions
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 require "yast"
 

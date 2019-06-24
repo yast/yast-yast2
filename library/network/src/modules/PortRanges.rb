@@ -22,10 +22,10 @@
 #
 # ***************************************************************************
 #
-# File:	modules/PortRanges.ycp
-# Package:	SuSEFirewall configuration
-# Summary:	Checking and manipulation with port ranges (iptables).
-# Authors:	Lukas Ocilka <locilka@suse.cz>
+# File:  modules/PortRanges.ycp
+# Package:  SuSEFirewall configuration
+# Summary:  Checking and manipulation with port ranges (iptables).
+# Authors:  Lukas Ocilka <locilka@suse.cz>
 #
 # $id$
 #
@@ -64,8 +64,8 @@ module Yast
     # @return [Boolean] whether the message should be reported or not
     #
     # @example
-    #	string error = sformat("Port number %1 is invalid.", port_nr);
-    #	if (ReportOnlyOnce(error)) y2error(error);
+    #  string error = sformat("Port number %1 is invalid.", port_nr);
+    #  if (ReportOnlyOnce(error)) y2error(error);
     def ReportOnlyOnce(what_to_report)
       return false if Builtins.contains(@report_only_once, what_to_report)
 

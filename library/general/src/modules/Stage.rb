@@ -21,12 +21,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Stage.ycp
-# Module:	yast2
-# Summary:	Installation mode
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
-#		Jiri Srain <jsrain@suse.cz>
-# Flags:	Stable
+# File:  modules/Stage.ycp
+# Module:  yast2
+# Summary:  Installation mode
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
+#    Jiri Srain <jsrain@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 #

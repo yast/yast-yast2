@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/InstExtensionImage.ycp
-# Package:	Base
-# Summary:	Functionality for downloading and merging extending
-#		images for the inst-sys
-# Authors:	Lukas Ocilka <locilka@suse.cz>
+# File:  modules/InstExtensionImage.ycp
+# Package:  Base
+# Summary:  Functionality for downloading and merging extending
+#    images for the inst-sys
+# Authors:  Lukas Ocilka <locilka@suse.cz>
 #
 # $Id$
 #
@@ -362,9 +362,9 @@ module Yast
     end
 
     # Load a rpm package from the media into the inst-sys
-    # @param [String] package	The path to package to be loaded (by default,
+    # @param [String] package  The path to package to be loaded (by default,
     # the package is expected in the /boot/<arch>/ directory of the media
-    # @param [String] message	The message to be shown in the progress popup
+    # @param [String] message  The message to be shown in the progress popup
     def LoadExtension(package, message)
       if !Stage.initial
         Builtins.y2error("This module should be used in Stage::initial only!")
@@ -402,9 +402,9 @@ module Yast
     end
 
     # Remove given package from the inst-sys
-    # @param [String] package	The path to package to be unloaded (by default,
+    # @param [String] package  The path to package to be unloaded (by default,
     # the package is expected in the /boot/<arch>/ directory of the media
-    # @param [String] message	The message to be shown in the progress popup
+    # @param [String] message  The message to be shown in the progress popup
     def UnLoadExtension(package, message)
       if !Stage.initial
         Builtins.y2error("This module should be used in Stage::initial only!")

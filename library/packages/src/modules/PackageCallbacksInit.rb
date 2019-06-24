@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/PackageCallbacksInit.ycp
-# Package:	yast2
-# Summary:	Initialize packager callbacks
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/PackageCallbacksInit.ycp
+# Package:  yast2
+# Summary:  Initialize packager callbacks
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #

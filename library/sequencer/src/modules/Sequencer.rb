@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Sequencer.ycp
-# Module:	yast2
-# Summary:	Wizard Sequencer
-# Authors:	Michal Svec <msvec@suse.cz>
-# Flags:	Stable
+# File:  modules/Sequencer.ycp
+# Module:  yast2
+# Summary:  Wizard Sequencer
+# Authors:  Michal Svec <msvec@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 #

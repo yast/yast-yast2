@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Punycode.ycp
-# Package:	Main yast package
-# Summary:	DNS Punycode Handling
-# Authors:	Lukas Ocilka <lukas.ocilka@suse.cz>
-# Tags:	Unstable
+# File:  modules/Punycode.ycp
+# Package:  Main yast package
+# Summary:  DNS Punycode Handling
+# Authors:  Lukas Ocilka <lukas.ocilka@suse.cz>
+# Tags:  Unstable
 #
 # $Id$
 #
@@ -253,8 +253,8 @@ module Yast
     # @return [String] encoded domain_name
     #
     # @example
-    #	EncodeDomainName("žížala.jůlinka.go.home")
-    #		-> "xn--ala-qma83eb.xn--jlinka-3mb.go.home"
+    #  EncodeDomainName("žížala.jůlinka.go.home")
+    #    -> "xn--ala-qma83eb.xn--jlinka-3mb.go.home"
     def EncodeDomainName(decoded_domain_name)
       Builtins.mergestring(
         EncodePunycodes(Builtins.splitstring(decoded_domain_name, ".")),
@@ -268,8 +268,8 @@ module Yast
     # @return [String] decoded domain_name
     #
     # @example
-    #	DecodeDomainName("xn--ala-qma83eb.xn--jlinka-3mb.go.home")
-    #		-> "žížala.jůlinka.go.home"
+    #  DecodeDomainName("xn--ala-qma83eb.xn--jlinka-3mb.go.home")
+    #    -> "žížala.jůlinka.go.home"
     def DecodeDomainName(encoded_domain_name)
       Builtins.mergestring(
         DecodePunycodes(Builtins.splitstring(encoded_domain_name, ".")),
@@ -286,8 +286,8 @@ module Yast
     # @return [Array<String>] decoded_domain_names
     #
     # @example
-    # 	DocodeDomainNames(["mx1.example.org", "xp3.example.org.", "xn--ala-qma83eb.org.example."])
-    #		-> ["mx1.example.org", "xp3.example.org.", "žížala.org.example."]
+    #   DocodeDomainNames(["mx1.example.org", "xp3.example.org.", "xn--ala-qma83eb.org.example."])
+    #    -> ["mx1.example.org", "xp3.example.org.", "žížala.org.example."]
     def DocodeDomainNames(encoded_domain_names)
       encoded_domain_names = deep_copy(encoded_domain_names)
       decoded_domain_names = []

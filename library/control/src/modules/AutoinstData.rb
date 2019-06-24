@@ -21,12 +21,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/AutoinstData.ycp
-# Package:	Autoyast
-# Summary:	Data storage for Autoinstallation
-# Authors:	Anas Nashif <nashif@suse.de>
-#		Uwe Gansert <ug@suse.de>
-#		Lukas Ocilka <locilka@suse.cz>
+# File:  modules/AutoinstData.ycp
+# Package:  Autoyast
+# Summary:  Data storage for Autoinstallation
+# Authors:  Anas Nashif <nashif@suse.de>
+#    Uwe Gansert <ug@suse.de>
+#    Lukas Ocilka <locilka@suse.cz>
 #
 # $Id$
 require "yast"

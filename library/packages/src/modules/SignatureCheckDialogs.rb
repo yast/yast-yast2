@@ -21,8 +21,8 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module:		SignatureCheckDialogs.ycp
-# Authors:		Lukas Ocilka <locilka@suse.cz>
+# Module:    SignatureCheckDialogs.ycp
+# Authors:    Lukas Ocilka <locilka@suse.cz>
 #
 # Dialogs handling for RPM/Repository GPM signatures.
 #

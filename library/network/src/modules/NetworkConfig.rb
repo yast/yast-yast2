@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/NetworkConfig.ycp
-# Package:	Network configuration
-# Summary:	Network configuration data
-# Authors:	Michal Svec <msvec@suse.cz>
+# File:  modules/NetworkConfig.ycp
+# Package:  Network configuration
+# Summary:  Network configuration data
+# Authors:  Michal Svec <msvec@suse.cz>
 #
 # $Id$
 #

@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Systemd.ycp
-# Package:	yast2
-# Summary:	systemd configuration
-# Authors:	Ladislav Slezák <lslezak@suse.cz>
+# File:  modules/Systemd.ycp
+# Package:  yast2
+# Summary:  systemd configuration
+# Authors:  Ladislav Slezák <lslezak@suse.cz>
 #
 # $Id$
 #

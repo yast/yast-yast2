@@ -22,10 +22,10 @@
 #
 # ***************************************************************************
 #
-# File:	modules/SuSEFirewallServices.rb
-# Package:	Firewall Services, Ports Aliases.
-# Summary:	Definition of Supported Firewall Services and Port Aliases.
-# Authors:	Markos Chandras <mchandras@suse.de>
+# File:  modules/SuSEFirewallServices.rb
+# Package:  Firewall Services, Ports Aliases.
+# Summary:  Definition of Supported Firewall Services and Port Aliases.
+# Authors:  Markos Chandras <mchandras@suse.de>
 #
 # Global Definition of Firewall Services
 # Manages services for SuSEFirewall2 and FirewallD

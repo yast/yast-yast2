@@ -24,7 +24,7 @@
 # File: hw_detection.rb
 #
 # Authors:
-#	Ladislav Slezak <lslezak@suse.cz>
+#  Ladislav Slezak <lslezak@suse.cz>
 
 require "yast"
 

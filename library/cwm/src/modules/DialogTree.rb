@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/DialogTree.ycp
-# Package:	Common widget manipulation
-# Summary:	Routines for handling the dialog with tree on the left side
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/DialogTree.ycp
+# Package:  Common widget manipulation
+# Summary:  Routines for handling the dialog with tree on the left side
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #

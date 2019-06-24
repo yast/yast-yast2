@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Kernel.ycp
-# Package:	Installation
-# Summary:	Kernel related functions and data
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
-#		Arvin Schnell <arvin@suse.de>
+# File:  modules/Kernel.ycp
+# Package:  Installation
+# Summary:  Kernel related functions and data
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
+#    Arvin Schnell <arvin@suse.de>
 #
 # $Id$
 #
@@ -148,7 +148,7 @@ module Yast
 
     # AddCmdLine ()
     # @param [String] name of parameter
-    # @param	string	args of parameter
+    # @param  string  args of parameter
     #
     # add "name=args" to kernel boot parameters
     # add just "name" if args = ""
@@ -701,9 +701,9 @@ module Yast
       discardlist
     end
 
-    # @param	[String] cmdline to parse
+    # @param  [String] cmdline to parse
     #
-    # @return	[void]
+    # @return  [void]
     # Filters out yast2 specific boot parameters and sets
     # Parameters to the important cmdline parts.
     def ExtractCmdlineParameters(line)

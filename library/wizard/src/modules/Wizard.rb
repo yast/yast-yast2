@@ -21,9 +21,9 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	Wizard.ycp
-# Package:	yast2
-# Author:	Stefan Hundhammer <sh@suse.de>
+# File:  Wizard.ycp
+# Package:  yast2
+# Author:  Stefan Hundhammer <sh@suse.de>
 #
 # Provides the wizard dialog (common screen for all YaST2 installation
 # modules) and functions to set the contents, to replace and restore
@@ -271,7 +271,7 @@ module Yast
     # @note This is a stable API function
     #
     # @param [Yast::Term] button_box term that contains a `HBox() with buttons in it
-    # @return	[Yast::Term] term describing the dialog.
+    # @return  [Yast::Term] term describing the dialog.
     #
     def GenericDialog(button_box)
       button_box = deep_copy(button_box)
@@ -313,7 +313,7 @@ module Yast
     # @note This is a stable API function
     #
     # @param [Yast::Term] button_box term that contains a `HBox() with buttons in it
-    # @return	[Yast::Term] term describing the dialog.
+    # @return  [Yast::Term] term describing the dialog.
     #
 
     def GenericTreeDialog(button_box)
@@ -419,7 +419,7 @@ module Yast
     #
     # @note This is a stable API function
     #
-    # @param [Yast::Term] dialog	a wizard dialog, e.g. Wizard::GenericDialog()
+    # @param [Yast::Term] dialog  a wizard dialog, e.g. Wizard::GenericDialog()
     #
     def OpenDialog(dialog)
       dialog = deep_copy(dialog)
@@ -1087,7 +1087,7 @@ module Yast
     # @param [String] titleText title of the dialog
     #
     # @example
-    #	SetDialogTitle ("DNS Server Configuration");
+    #  SetDialogTitle ("DNS Server Configuration");
     #
     def SetDialogTitle(titleText)
       # backward compatibility with showing just YaST2 in qt
@@ -1108,7 +1108,7 @@ module Yast
     # @see #ClearTitleIcon
     #
     # @example
-    #	SetTitleIcon ("yast-dns-server");
+    #  SetTitleIcon ("yast-dns-server");
     #
     def SetTitleIcon(_icon_name)
       nil
@@ -1131,10 +1131,10 @@ module Yast
     # @return [Boolean] true on success
     #
     # @example
-    #	// Opens /usr/share/applications/YaST2/lan.desktop
-    #	// Reads (localized) "name" entry from there
-    #	// Sets the window title.
-    #	SetDesktopTitle ("lan")
+    #  // Opens /usr/share/applications/YaST2/lan.desktop
+    #  // Reads (localized) "name" entry from there
+    #  // Sets the window title.
+    #  SetDesktopTitle ("lan")
     def SetDesktopTitle(file)
       description = Desktop.ParseSingleDesktopFile(file)
 
@@ -1156,10 +1156,10 @@ module Yast
     # @return [Boolean] true on success
     #
     # @example
-    #	// Opens /usr/share/applications/YaST2/lan.desktop
-    #	// Reads "Icon" entry from there
-    #	// Sets the icon.
-    #	SetDesktopIcon ("lan")
+    #  // Opens /usr/share/applications/YaST2/lan.desktop
+    #  // Reads "Icon" entry from there
+    #  // Sets the icon.
+    #  SetDesktopIcon ("lan")
     def SetDesktopIcon(file)
       description = Desktop.ParseSingleDesktopFile(file)
       return false unless description
@@ -1181,10 +1181,10 @@ module Yast
     # @return [Boolean] true on success
     #
     # @example
-    #	// Opens /usr/share/applications/YaST2/lan.desktop
-    #	// Reads "Icon" and "Name" entries from there
-    #	// Sets the icon, sets the dialog title
-    #	SetDialogTitleAndIcon ("lan")
+    #  // Opens /usr/share/applications/YaST2/lan.desktop
+    #  // Reads "Icon" and "Name" entries from there
+    #  // Sets the icon, sets the dialog title
+    #  SetDialogTitleAndIcon ("lan")
     def SetDesktopTitleAndIcon(file)
       description = Desktop.ParseSingleDesktopFile(file)
 

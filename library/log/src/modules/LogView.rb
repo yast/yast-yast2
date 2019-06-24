@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/LogView.ycp
-# Package:	YaST2
-# Summary:	Displaying a log with additional functionality
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/LogView.ycp
+# Package:  YaST2
+# Summary:  Displaying a log with additional functionality
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -37,7 +37,7 @@
 #          "file" : "/var/log/messages",
 #          "grep" : "dhcpd",
 #          "save" : true,
-#          "actions" : [	// menu buttons
+#          "actions" : [  // menu buttons
 #              [ _("Restart DHCP Server"),
 #                  RestartDhcpDaemon ],
 #              [ _("Save Settings and Restart DHCP Server"),
@@ -428,9 +428,9 @@ module Yast
     #                 label for the menubutton, the second one is a function
     #                 that will be called when the entry is selected,
     #                 the signature of the function must be void(),
-    #			optional 3rd argument, if set to true, forces
-    #			restarting of the log displaying command after the
-    #			action is performed
+    #      optional 3rd argument, if set to true, forces
+    #      restarting of the log displaying command after the
+    #      action is performed
     #  - "mb_label" -- string, label of the menubutton, if not specified,
     #                  then "Advanced" is used
     #  - "max_lines" -- integer, maximum of lines to be displayed. If 0,
@@ -524,9 +524,9 @@ module Yast
     #                 label for the menubutton, the second one is a function
     #                 that will be called when the entry is selected,
     #                 the signature of the function must be void(),
-    #			optional 3rd argument, if set to true, forces
-    #			restarting of the log displaying command after the
-    #			action is performed
+    #      optional 3rd argument, if set to true, forces
+    #      restarting of the log displaying command after the
+    #      action is performed
     #  - "help" -- string for a rich text, help to be offered via a popup
     #              when user clicks the "Help" button. If not present,
     #              Help button isn't shown

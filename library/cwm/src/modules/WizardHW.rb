@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/WizardHW
-# Package:	Base YaST package
-# Summary:	Routines for generic hardware summary dialog
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/WizardHW
+# Package:  Base YaST package
+# Summary:  Routines for generic hardware summary dialog
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -467,7 +467,7 @@ module Yast
     # @note This is a stable API function
     # @param [String] title header - usually device name
     # @param [Array<String>] properties important properties of the device which should be
-    #		displayed in the overview dialog
+    #    displayed in the overview dialog
     # @return [String] rich text string
     def CreateRichTextDescription(title, properties)
       properties = deep_copy(properties)

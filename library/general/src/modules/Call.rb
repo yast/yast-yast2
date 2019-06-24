@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Call.ycp
-# Package:	yast2
-# Summary:	Workaround for CallFunction problems
-# Authors:	Michal Svec <msvec@suse.cz>
+# File:  modules/Call.ycp
+# Package:  yast2
+# Summary:  Workaround for CallFunction problems
+# Authors:  Michal Svec <msvec@suse.cz>
 #
 # $Id$
 require "yast"

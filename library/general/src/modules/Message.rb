@@ -21,12 +21,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Message.ycp
-# Package:	yast2
-# Summary:	Often used messages
-# Authors:	Lukas Ocilka <locilka@suse.cz>
+# File:  modules/Message.ycp
+# Package:  yast2
+# Summary:  Often used messages
+# Authors:  Lukas Ocilka <locilka@suse.cz>
 # Copyright:   Copyright 2004, Novell, Inc.  All rights reserved.
-# Flags:	Stable
+# Flags:  Stable
 #
 # $Id$
 #

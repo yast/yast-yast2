@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/PortAliases.ycp
-# Package:	Ports Aliases.
-# Summary:	Definition of Port Aliases.
-# Authors:	Lukas Ocilka <locilka@suse.cz>
+# File:  modules/PortAliases.ycp
+# Package:  Ports Aliases.
+# Summary:  Definition of Port Aliases.
+# Authors:  Lukas Ocilka <locilka@suse.cz>
 #
 # $Id$
 #
@@ -44,7 +44,7 @@ module Yast
       textdomain "base"
 
       # an internal service aliases map for port-numbers pointing to port-names,
-      # 	aliases are separated by space
+      #   aliases are separated by space
       @SERVICE_PORT_TO_NAME = {
         22   => "ssh",
         25   => "smtp",
@@ -114,7 +114,7 @@ module Yast
 
     # Function returns if the port name is allowed port name (or number).
     #
-    # @return	[Boolean] if allowed
+    # @return  [Boolean] if allowed
     def IsAllowedPortName(port_name)
       if port_name.nil?
         Builtins.y2error("Invalid port name: %1", port_name)
@@ -133,7 +133,7 @@ module Yast
 
     # Function returns string describing allowed port name or number.
     #
-    # @return	[String] with description
+    # @return  [String] with description
     def AllowedPortNameOrNumber
       # TRANSLATORS: popup informing message, allowed characters for port-names
       _(
@@ -213,7 +213,7 @@ module Yast
     # requested port-number or port-name. Also the requested name or port is returned.
     #
     # @param [String] port-number or port-name
-    # @return	[Array] [string] of aliases
+    # @return  [Array] [string] of aliases
     def GetListOfServiceAliases(port)
       service_aliases = [port]
       port_number = nil
@@ -281,8 +281,8 @@ module Yast
     # Function returns if the requested port-name is known port.
     # Known port have an IANA alias.
     #
-    # @param	string port-name
-    # @return	[Boolean] if is known
+    # @param  string port-name
+    # @return  [Boolean] if is known
     def IsKnownPortName(port_name)
       # function returns the requested port and aliases if exists
       if Ops.greater_than(Builtins.size(GetListOfServiceAliases(port_name)), 1)

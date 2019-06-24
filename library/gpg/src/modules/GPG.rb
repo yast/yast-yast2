@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/GPG.ycp
-# Package:	yast2
-# Summary:	A wrapper for gpg binary
-# Authors:	Ladislav Slezák <lslezak@suse.cz>
+# File:  modules/GPG.ycp
+# Package:  yast2
+# Summary:  A wrapper for gpg binary
+# Authors:  Ladislav Slezák <lslezak@suse.cz>
 #
 # $Id$
 #

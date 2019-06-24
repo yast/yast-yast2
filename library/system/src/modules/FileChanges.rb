@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/FileChanges.ycp
-# Module:	yast2
-# Summary:	Detect if a configuratil file was changed
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/FileChanges.ycp
+# Module:  yast2
+# Summary:  Detect if a configuratil file was changed
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # Support routines for detecting changes of configuration files being done
 # externally (not by YaST) to prevent the changes from being lost because

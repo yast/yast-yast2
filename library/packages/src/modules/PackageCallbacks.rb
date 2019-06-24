@@ -109,7 +109,7 @@ module Yast
       @current_retry_attempt = 0
 
       #=============================================================================
-      #	MEDIA CHANGE
+      #  MEDIA CHANGE
       #=============================================================================
 
       @detected_cd_devices = []
@@ -2065,11 +2065,11 @@ module Yast
                 100,
                 0
               ), # TODO: allow Abort
-              # 			,
-              # 			`VBox(
-              # 			    `Label(""),
-              # 			    `PushButton(`id(`abort), Label::AbortButton())
-              # 			)
+              #       ,
+              #       `VBox(
+              #           `Label(""),
+              #           `PushButton(`id(`abort), Label::AbortButton())
+              #       )
               HSpacing(1)
             )
           )
@@ -2891,7 +2891,7 @@ module Yast
     end
 
     #=============================================================================
-    #	constructor and callback init
+    #  constructor and callback init
     #=============================================================================
 
     def RegisterEmptyProgressCallbacks

@@ -77,7 +77,7 @@ module Yast
     # Function returns if the service_id is a known (defined) service
     #
     # @param [String] service_id (including the "service:" prefix)
-    # @return	[Boolean] if is known (defined)
+    # @return  [Boolean] if is known (defined)
     def IsKnownService(service_id)
       !service_details(service_id, true).nil?
     end
@@ -93,7 +93,7 @@ module Yast
     # Function returns needed TCP ports for service
     #
     # @param [String] service (including the "service:" prefix)
-    # @return	[Array<String>] of needed TCP ports
+    # @return  [Array<String>] of needed TCP ports
     def GetNeededTCPPorts(service)
       service_details(service)["tcp_ports"] || []
     end
@@ -101,7 +101,7 @@ module Yast
     # Function returns needed UDP ports for service
     #
     # @param [String] service (including the "service:" prefix)
-    # @return	[Array<String>] of needed UDP ports
+    # @return  [Array<String>] of needed UDP ports
     def GetNeededUDPPorts(service)
       service_details(service)["udp_ports"] || []
     end
@@ -109,7 +109,7 @@ module Yast
     # Function returns needed RPC ports for service
     #
     # @param [String] service (including the "service:" prefix)
-    # @return	[Array<String>] of needed RPC ports
+    # @return  [Array<String>] of needed RPC ports
     def GetNeededRPCPorts(service)
       service_details(service)["rpc_ports"] || []
     end
@@ -117,7 +117,7 @@ module Yast
     # Function returns needed IP protocols for service
     #
     # @param [String] service (including the "service:" prefix)
-    # @return	[Array<String>] of needed IP protocols
+    # @return  [Array<String>] of needed IP protocols
     def GetNeededIPProtocols(service)
       service_details(service)["ip_protocols"] || []
     end
@@ -125,7 +125,7 @@ module Yast
     # Function returns description of a firewall service
     #
     # @param [String] service (including the "service:" prefix)
-    # @return	[String] service description
+    # @return  [String] service description
     def GetDescription(service)
       service_details(service)["description"] || []
     end
@@ -136,7 +136,7 @@ module Yast
     # if service is not known (undefined).
     #
     # @param [String] service (including the "service:" prefix)
-    # @return	[Hash{String => Array<String>}] of needed ports and protocols
+    # @return  [Hash{String => Array<String>}] of needed ports and protocols
     #
     # @example
     #   GetNeededPortsAndProtocols ("service:aaa") -> {
@@ -175,7 +175,7 @@ module Yast
     # Returns 'false' if it isn't.
     #
     # @param [String] service
-    # @return	[Boolean] whether service is defined by package
+    # @return  [Boolean] whether service is defined by package
     #
     # @example
     #   ServiceDefinedByPackage ("http-server") -> false

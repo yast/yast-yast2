@@ -22,16 +22,16 @@
 #
 # ***************************************************************************
 # File:
-#	HwStatus.ycp
+#  HwStatus.ycp
 #
 # Module:
-#	HwStatus
+#  HwStatus
 #
 # Authors:
-#	Klaus Kaempf (kkaempf@suse.de)
+#  Klaus Kaempf (kkaempf@suse.de)
 #
 # Summary:
-#	All hardware status relevant functions are here
+#  All hardware status relevant functions are here
 # $Id$
 require "yast"
 
@@ -45,8 +45,8 @@ module Yast
 
     # Set
     # set status for a hardware device
-    # @param [String] id	string, unique-id for device
-    # @param [Symbol] stat	symbol, status of device (`yes or `no)
+    # @param [String] id  string, unique-id for device
+    # @param [Symbol] stat  symbol, status of device (`yes or `no)
     #
     def Set(id, stat)
       Ops.set(@statusmap, id, stat)
@@ -56,9 +56,9 @@ module Yast
 
     # Get()
     # get status for device
-    # @param [String] id	string, unique-id for device
-    # @return [Symbol]	status of device, (`yes or `no)
-    #			returns `unknown if status wasn't set before
+    # @param [String] id  string, unique-id for device
+    # @return [Symbol]  status of device, (`yes or `no)
+    #      returns `unknown if status wasn't set before
     def Get(id)
       Ops.get(@statusmap, id, :unknown)
     end

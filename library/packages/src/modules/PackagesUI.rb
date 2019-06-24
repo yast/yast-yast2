@@ -21,13 +21,13 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module:		PackagesUI.ycp
+# Module:    PackagesUI.ycp
 #
-# Authors:		Gabriele Strattner (gs@suse.de)
-#			Ladislav Slezák <lslezak@novell.com>
+# Authors:    Gabriele Strattner (gs@suse.de)
+#      Ladislav Slezák <lslezak@novell.com>
 #
-# Purpose:		Provides common dialogs related to
-#			the package management.
+# Purpose:    Provides common dialogs related to
+#      the package management.
 #
 # $Id$
 require "yast"
@@ -255,15 +255,15 @@ module Yast
     # @param [Hash{String => Object}] options options passed to the widget. All options are optional,
     # if an option is missing or is nil the default value will be used. All options:
     # $[ "enable_repo_mgr" : boolean // display the repository management menu,
-    #	    // default: false (disabled)
-    #	  "display_support_status" : boolean // display the support status summary dialog,
-    #	    // default: depends on the Product Feature "software", "display_support_status"
-    #	  "mode" : symbol // package selector mode, no default value, supported values:
-    #		`youMode (online update mode),
-    #		`updateMode (update mode),
-    #		`searchMode (search filter view),
-    #		`summaryMode (installation summary filter view),
-    #		`repoMode (repositories filter view
+    #      // default: false (disabled)
+    #    "display_support_status" : boolean // display the support status summary dialog,
+    #      // default: depends on the Product Feature "software", "display_support_status"
+    #    "mode" : symbol // package selector mode, no default value, supported values:
+    #    `youMode (online update mode),
+    #    `updateMode (update mode),
+    #    `searchMode (search filter view),
+    #    `summaryMode (installation summary filter view),
+    #    `repoMode (repositories filter view
     # ]
     #
     # @return [Symbol] Returns `accept or `cancel .

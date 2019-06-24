@@ -21,12 +21,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	include/hwinfo/classnames.ycp
-# Module:	Hardware information
-# Summary:	Class DB file
-# Authors:	Dan Meszaros <dmeszar@suse.cz>
-#		Ladislav Slezak <lslezak@suse.cz>
-#		Michal Svec <msvec@suse.cz>
+# File:  include/hwinfo/classnames.ycp
+# Module:  Hardware information
+# Summary:  Class DB file
+# Authors:  Dan Meszaros <dmeszar@suse.cz>
+#    Ladislav Slezak <lslezak@suse.cz>
+#    Michal Svec <msvec@suse.cz>
 #
 # $Id$
 #

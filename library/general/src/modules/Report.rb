@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Report.ycp
-# Package:	yast2
-# Summary:	Messages handling
-# Authors:	Ladislav Slezak <lslezak@suse.cz>
-# Flags:	Stable
+# File:  modules/Report.ycp
+# Package:  yast2
+# Summary:  Messages handling
+# Authors:  Ladislav Slezak <lslezak@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 #
@@ -199,14 +199,14 @@ module Yast
       # // Report configuration - will be error messages displayed?
       # // '%1' will be replaced by translated string "Yes" or "No"
       # summary = Summary::AddListItem(summary, sformat(_("Display Yes or No Messages: %1"), (display_yesno_messages) ?
-      # 						    _("Yes") : _("No")));
+      #                 _("Yes") : _("No")));
       # // Report configuration - will have error messages timeout?
       # // '%1' will be replaced by number of seconds
       # summary = Summary::AddListItem(summary, sformat(_("Time-out Yes or No Messages: %1"), timeout_yesno_messages));
       # // Report configuration - will be error messages logged to file?
       # // '%1' will be replaced by translated string "Yes" or "No"
       # summary = Summary::AddListItem(summary, sformat(_("Log Yes or No Messages: %1"), (log_yesno_messages) ?
-      # 						    _("Yes") : _("No")));
+      #                 _("Yes") : _("No")));
       # summary = Summary::CloseList(summary);
       summary
     end
@@ -216,7 +216,7 @@ module Yast
     # the map may be empty.
     #
     # @param [Hash] settings Map with settings (keys: "messages", "errors", "warnings"; values: map
-    # @return	success
+    # @return  success
     def Import(settings)
       settings = deep_copy(settings)
       @message_settings = Ops.get_map(settings, "messages", {})

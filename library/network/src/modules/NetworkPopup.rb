@@ -28,8 +28,8 @@
 #   Popup dialogs for browsing the local network
 #
 # Authors:
-#	Martin Vidner <mvidner@suse.cz>
-#	Ladislav Slezak <lslezak@suse.cz>
+#  Martin Vidner <mvidner@suse.cz>
+#  Ladislav Slezak <lslezak@suse.cz>
 #
 # $Id$
 #
@@ -55,10 +55,10 @@ module Yast
     end
 
     # Let the user choose one of a list of items
-    # @param [String] title	selectionbox title
-    # @param [Array<String>] items	a list of items
-    # @param [String] selected	preselected a value in the list
-    # @return		one item or nil
+    # @param [String] title  selectionbox title
+    # @param [Array<String>] items  a list of items
+    # @param [String] selected  preselected a value in the list
+    # @return    one item or nil
     def ChooseItem(_title, items, selected)
       items = deep_copy(items)
       item = nil
@@ -144,10 +144,10 @@ module Yast
     end
 
     # Let the user choose one of a list of items
-    # @param [String] title	selectionbox title
-    # @param [Array<String>] items	a list of items
-    # @param [String] selected	preselected a value in the list
-    # @return		one item or nil
+    # @param [String] title  selectionbox title
+    # @param [Array<String>] items  a list of items
+    # @param [String] selected  preselected a value in the list
+    # @return    one item or nil
     def ChooseItemSimple(title, items, selected)
       items = deep_copy(items)
       item = nil
@@ -187,8 +187,8 @@ module Yast
     # Give me NFS server name on the local network
     #
     # display dialog with all local NFS servers
-    # @param [String] selected	preselected a value in the list
-    # @return		a hostname or nil if "Cancel" was pressed
+    # @param [String] selected  preselected a value in the list
+    # @return    a hostname or nil if "Cancel" was pressed
     def NFSServer(selected)
       if @found_nfs_servers.nil?
         # label message
@@ -218,8 +218,8 @@ module Yast
     # Give me one host name on the local network
     #
     # display dialog with all hosts on the local network
-    # @param [String] selected	preselect a value in the list
-    # @return		a hostname or nil if "Cancel" was pressed
+    # @param [String] selected  preselect a value in the list
+    # @return    a hostname or nil if "Cancel" was pressed
     def HostName(selected)
       if @found_hosts.nil?
         # label message
@@ -242,9 +242,9 @@ module Yast
     # Give me export path of selected server
     #
     # display dialog with all exported directories from the selected server
-    # @param [String] server	a NFS server name
-    # @param [String] selected	preselected a value in the list
-    # @return		an export or nil if "Cancel" was pressed
+    # @param [String] server  a NFS server name
+    # @param [String] selected  preselected a value in the list
+    # @return    an export or nil if "Cancel" was pressed
     def NFSExport(server, selected)
       dirs = Convert.convert(
         SCR.Read(path(".net.showexports"), server),

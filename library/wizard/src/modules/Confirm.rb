@@ -21,15 +21,15 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Confirm.ycp
+# File:  modules/Confirm.ycp
 #
-# Package:	yast2
+# Package:  yast2
 #
-# Summary:	Confirmation routines
+# Summary:  Confirmation routines
 #
-# Authors:	Michal Svec <msvec@suse.cz>
+# Authors:  Michal Svec <msvec@suse.cz>
 #
-# Flags:	Stable
+# Flags:  Stable
 #
 # $Id$
 require "yast"

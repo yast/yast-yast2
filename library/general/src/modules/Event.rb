@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	Event.ycp
-# Package:	yast2
-# Summary:	UI Event Helpers
-# Authors:	Arvin Schnell <aschnell@suse.de>
+# File:  Event.ycp
+# Package:  yast2
+# Summary:  UI Event Helpers
+# Authors:  Arvin Schnell <aschnell@suse.de>
 require "yast"
 
 module Yast

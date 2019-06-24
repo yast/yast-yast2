@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Desktop.ycp
-# Package:	yast2
-# Summary:	Handling of .desktop entries
-# Author:	Michal Svec <msvec@suse.cz>
+# File:  modules/Desktop.ycp
+# Package:  yast2
+# Summary:  Handling of .desktop entries
+# Author:  Michal Svec <msvec@suse.cz>
 #
 # $Id$
 require "yast"
@@ -44,14 +44,14 @@ module Yast
       #  *
       #  * <PRE>
       #     Groups=$[
-      # 	"Hardware":$[
-      # 	    "Icon":"hardware56.png",
-      # 	    "Name":"_(\"Hardware\")",
-      # 	    "SortKey":"20",
-      # 	    "Textdomain":"base",
-      # 	    "modules":["cdrom", "hwinfo", ...]
-      # 	],
-      # 	...
+      #   "Hardware":$[
+      #       "Icon":"hardware56.png",
+      #       "Name":"_(\"Hardware\")",
+      #       "SortKey":"20",
+      #       "Textdomain":"base",
+      #       "modules":["cdrom", "hwinfo", ...]
+      #   ],
+      #   ...
       #    ];
       #  * </PRE>
       @Groups = {}
@@ -326,9 +326,9 @@ module Yast
     # @return [Hash] filled with data, or nil
     #
     # @example
-    #	// Opens /usr/share/applications/YaST2/lan.desktop
-    #	map<string,string> description = Desktop::ParseSingleDesktopFile ("lan");
-    #	Wizard::SetDialogTitle (description["Name"]:_("None));
+    #  // Opens /usr/share/applications/YaST2/lan.desktop
+    #  map<string,string> description = Desktop::ParseSingleDesktopFile ("lan");
+    #  Wizard::SetDialogTitle (description["Name"]:_("None));
     def ParseSingleDesktopFile(file)
       filename = Builtins.sformat("%1/%2.desktop", Directory.desktopdir, file)
       # Do not use .yast2.desktop.v.$filename, because ini-agent reads

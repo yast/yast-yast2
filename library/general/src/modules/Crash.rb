@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Crash.ycp
-# Package:	YaST2 base package
-# Summary:	Handling crashes and recovery of other modules
-# Authors:	Jiri Srain <jsrain@suse.cz>
-# Flags:	Stable
+# File:  modules/Crash.ycp
+# Package:  YaST2 base package
+# Summary:  Handling crashes and recovery of other modules
+# Authors:  Jiri Srain <jsrain@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 require "yast"

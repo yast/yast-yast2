@@ -1,9 +1,9 @@
 # encoding: utf-8
 
-# File:	modules/ProductProfile.ycp
-# Package:	yast2
-# Summary:	Functions for handling Product Profiles
-# Authors:	Jiri Suchomel <jsuchome@suse.cz>
+# File:  modules/ProductProfile.ycp
+# Package:  yast2
+# Summary:  Functions for handling Product Profiles
+# Authors:  Jiri Suchomel <jsuchome@suse.cz>
 #
 # $Id$
 require "yast"

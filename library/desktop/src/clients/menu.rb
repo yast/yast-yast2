@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	clients/menu.ycp
-# Module:	yast2
-# Summary:	NCurses Control Center
-# Authors:	Michal Svec <msvec@suse.cz>
+# File:  clients/menu.ycp
+# Module:  yast2
+# Summary:  NCurses Control Center
+# Authors:  Michal Svec <msvec@suse.cz>
 #
 # $Id$
 #

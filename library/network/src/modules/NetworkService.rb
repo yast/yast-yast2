@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/NetworkService.ycp
-# Package:	Network configuration
-# Summary:	Init script handling, ifup vs NetworkManager
-# Authors:	Martin Vidner <mvidner@suse.cz>
+# File:  modules/NetworkService.ycp
+# Package:  Network configuration
+# Summary:  Init script handling, ifup vs NetworkManager
+# Authors:  Martin Vidner <mvidner@suse.cz>
 #
 # This module used to switch between /etc/init.d/network providing
 # LSB network.service and the NetworkManager.service (or another),

@@ -25,8 +25,8 @@
 # Package:     YaST2 base package
 # Summary:     Useful tool for viewing any variable contents.
 # Authors:     Martin Vidner <mvidner@suse.cz>
-#		Dan Vesely?
-# Flags:	Unstable
+#    Dan Vesely?
+# Flags:  Unstable
 #
 # $Id$
 require "yast"

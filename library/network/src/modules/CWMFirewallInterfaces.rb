@@ -23,10 +23,10 @@
 #
 # ***************************************************************************
 
-# File:	modules/CWMFirewallInterfaces.ycp
-# Package:	Common widget manipulation, firewall interfaces widget
-# Summary:	Routines for selecting interfaces opened in firewall
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/CWMFirewallInterfaces.ycp
+# Package:  Common widget manipulation, firewall interfaces widget
+# Summary:  Routines for selecting interfaces opened in firewall
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -36,7 +36,7 @@
 #          and you should call 'firewalld.write' in the
 #          Write() function.
 #
-#	    Functionality of this module only changes the firewalld
+#      Functionality of this module only changes the firewalld
 #          settings in memory, it never Reads or Writes the settings.
 
 require "yast"

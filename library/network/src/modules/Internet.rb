@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Internet.ycp
-# Package:	Network configuration
-# Summary:	Internet connection and YOU during the installation
-# Authors:	Michal Svec <msvec@suse.cz>
-#		Arvin Schnell <arvin@suse.de>
+# File:  modules/Internet.ycp
+# Package:  Network configuration
+# Summary:  Internet connection and YOU during the installation
+# Authors:  Michal Svec <msvec@suse.cz>
+#    Arvin Schnell <arvin@suse.de>
 #
 # $Id$
 require "yast"

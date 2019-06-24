@@ -21,11 +21,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module:		Slides.ycp
+# Module:    Slides.ycp
 #
-# Purpose:		Module to access slides from installation repository
+# Purpose:    Module to access slides from installation repository
 #
-# Author:		Stefan Hundhammer <sh@suse.de>
+# Author:    Stefan Hundhammer <sh@suse.de>
 #                      Stanislav Visnovsky <visnov@suse.cz>
 #
 require "yast"

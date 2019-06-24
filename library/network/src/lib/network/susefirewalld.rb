@@ -166,7 +166,7 @@ module Yast
 
     # Function for getting exported SuSEFirewall configuration
     #
-    # @return	[Hash{String => Object}] with configuration
+    # @return  [Hash{String => Object}] with configuration
     def Export
       # FIXME: Temporal export until a new schema is defined for firewalld
       @SETTINGS.select { |k, v| KEY_SETTINGS.include?(k) && !v.nil? }
@@ -369,7 +369,7 @@ module Yast
     # needs to be reloaded instead of doing a full-blown restart to get the new
     # configuration up and running.
     #
-    # @return	[Boolean] if successful
+    # @return  [Boolean] if successful
     def ActivateConfiguration
       # starting firewall during second stage can cause deadlock in systemd - bnc#798620
       # Moreover, it is not needed. Firewall gets started via dependency on multi-user.target
@@ -416,7 +416,7 @@ module Yast
     #
     # @param [String] interface
     # @param [String] zone firewall zone
-    # @return	[Boolean] is in zone
+    # @return  [Boolean] is in zone
     #
     # @example IsInterfaceInZone ("eth-id-01:11:DA:9C:8A:2F", "INT") -> false
     def IsInterfaceInZone(interface, zone)
@@ -442,7 +442,7 @@ module Yast
     # Special string 'any' in 'EXT' zone is supported.
     #
     # @param [Array<String>] interfaces
-    # @return	[Array<String>] firewall zones
+    # @return  [Array<String>] firewall zones
     #
     # @example
     #   GetZonesOfInterfaces (["eth1","eth4"]) -> ["EXT"]
@@ -468,7 +468,7 @@ module Yast
     # @see Module SuSEFirewallServices
     # @param [String] service id
     # @param [String] zone
-    # @return	[Boolean] if supported
+    # @return  [Boolean] if supported
     #
     # @example
     #   # All ports defined by dns-server service in SuSEFirewallServices module
@@ -489,7 +489,7 @@ module Yast
     # firewalld, we just return true since the internal zone is treated
     # like any other zone.
     #
-    # @return	[Boolean] if protected from internal
+    # @return  [Boolean] if protected from internal
     def GetProtectFromInternalZone
       true
     end
@@ -498,7 +498,7 @@ module Yast
     # Special strings like 'any' or 'auto' and unknown interfaces are removed from list.
     #
     # @param [String] zone
-    # @return	[Array<String>] of interfaces
+    # @return  [Array<String>] of interfaces
     # @example GetInterfacesInZone ("external") -> ["eth4", "eth5"]
     def GetInterfacesInZone(zone)
       return [] unless IsKnownZone(zone)
@@ -566,7 +566,7 @@ module Yast
     # Thus, interfaces not in a zone will not be included.
     #
     # @param [String] zone
-    # @return	[Array<String>] of interfaces
+    # @return  [Array<String>] of interfaces
     def GetInterfacesInZoneSupportingAnyFeature(zone)
       GetInterfacesInZone(zone)
     end
@@ -600,7 +600,7 @@ module Yast
     # @param services_ids [Array<String>] service ids
     # @param firewall_zones [Array<String>] firewall zones (EXT|INT|DMZ...)
     # @param new_status [true, false] new status of services
-    # @return	nil
+    # @return  nil
     #
     # @example
     #   SetServicesForZones (["samba-server", "service:irc-server"], ["DMZ", "EXT"], false);
@@ -678,7 +678,7 @@ module Yast
     # zone if no zone is given as parameter.
     #
     # @param    zone [String] zone to get masqurade status from (default: internal)
-    # @return	[Boolean] if supported
+    # @return  [Boolean] if supported
     def GetMasquerade(zone = "internal")
       if !IsKnownZone(zone)
         Builtins.y2error("zone %1 is not valid", zone)
@@ -708,7 +708,7 @@ module Yast
     # This function is only valid for SF2. For firewalld, we return an empty array.
     #
     # @param [String] zone
-    # @return	[Array<String>] special strings or unknown interfaces
+    # @return  [Array<String>] special strings or unknown interfaces
     #
     # @example
     #   GetSpecialInterfacesInZone("EXT") -> ["any", "unknown-1", "wrong-3"]
@@ -745,7 +745,7 @@ module Yast
     # @ note to "CRIT" and "off" to "NONE".
     # @ note As a result of which, this method has little value in FirewallD
     # @param [String] rule definition 'ACCEPT' or 'DROP'
-    # @return	[String] 'ALL' or 'NONE'
+    # @return  [String] 'ALL' or 'NONE'
     #
     def GetLoggingSettings(rule)
       return false if rule == "ACCEPT"
@@ -835,7 +835,7 @@ module Yast
     #
     # @param [String] zone
     # @param [String] protocol
-    # @return	[Array<String>] of allowed ports
+    # @return  [Array<String>] of allowed ports
     def GetAllowedServicesForZoneProto(zone, protocol)
       Yast.import "SuSEFirewallServices"
 
@@ -866,7 +866,7 @@ module Yast
     # This function doesn't check for services defined by packages.
     # They are listed by a different way.
     #
-    # @return	[Array<String>] of additional (unassigned) services
+    # @return  [Array<String>] of additional (unassigned) services
     #
     # @example
     #   GetAdditionalServices("TCP", "EXT") -> ["53", "128"]

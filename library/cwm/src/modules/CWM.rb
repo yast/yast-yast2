@@ -21,10 +21,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CWM.ycp
-# Package:	Common widget manipulation
-# Summary:	Routines for common widget manipulation
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/CWM.ycp
+# Package:  Common widget manipulation
+# Summary:  Routines for common widget manipulation
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -1030,8 +1030,8 @@ module Yast
 
     # Do-nothing replacement for a widget storing function.
     # Used for push buttons if all the other widgets have a fallback.
-    # @param [String] _key	id of the widget
-    # @param [Hash] _event	the event being handled
+    # @param [String] _key  id of the widget
+    # @param [Hash] _event  the event being handled
     def StoreNull(_key, _event)
       nil
     end
