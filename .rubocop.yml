@@ -109,12 +109,6 @@ Style/MixinUsage:
     - 'library/systemd/examples/comparison_of_widgets.rb'
     - 'library/systemd/examples/service_widget.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Security/YAMLLoad:
-  Exclude:
-    - 'library/packages/test/y2packager/product_reader_test.rb'
-
 # Offense count: 12
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: inline, group
