@@ -111,17 +111,6 @@ Style/MixinUsage:
 
 # Offense count: 11
 # Cop supports --auto-correct.
-Style/ExpandPathArguments:
-  Exclude:
-    - 'library/cwm/examples/example_helper.rb'
-    - 'library/general/test/arch_test.rb'
-    - 'library/packages/test/lib/package_extractor_test.rb'
-    - 'library/system/test/fs_snapshot_test.rb'
-    - 'test/test_helper.rb'
-    - 'test/yast2_test.rb'
-
-# Offense count: 11
-# Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
 # SupportedStyles: format, sprintf, percent
 Style/FormatString:

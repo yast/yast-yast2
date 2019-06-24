@@ -13,7 +13,7 @@ describe Yast::Arch do
       # need to reset all initializeation of the module for individual
       # test cases which mock different hardware
       # otherwise values in Arch.rb remain cached
-      module_path = File.expand_path("../../src/modules/Arch.rb", __FILE__)
+      module_path = File.expand_path("../src/modules/Arch.rb", __dir__)
       load module_path
     end
 

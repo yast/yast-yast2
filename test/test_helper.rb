@@ -1,4 +1,4 @@
-root_location = File.expand_path("../../", __FILE__)
+root_location = File.expand_path("..", __dir__)
 inc_dirs = Dir.glob("#{root_location}/library/*/src")
 # Y2DIRs location needed for testing purpose
 ADDITIONAL_Y2DIRS = [
@@ -38,7 +38,7 @@ if ENV["COVERAGE"]
     add_filter "/test/"
   end
 
-  top_location = File.expand_path("../../", __FILE__)
+  top_location = File.expand_path("..", __dir__)
   # track all ruby files under src
   SimpleCov.track_files("#{top_location}/**/src/**/*.rb")
 

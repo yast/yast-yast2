@@ -4,12 +4,12 @@ require_relative "test_helper"
 
 require "cheetah"
 
-TEST_DIR = File.expand_path("../../scripts", __FILE__)
+TEST_DIR = File.expand_path("../scripts", __dir__)
 
 describe "yast2 script" do
   around do |example|
     old_y2dir = ENV["Y2DIR"]
-    additional_y2dir = File.expand_path("../test_y2dir", __FILE__)
+    additional_y2dir = File.expand_path("test_y2dir", __dir__)
     ENV["Y2DIR"] = ENV["Y2DIR"] + ":#{additional_y2dir}"
     example.run
     ENV["Y2DIR"] = old_y2dir
