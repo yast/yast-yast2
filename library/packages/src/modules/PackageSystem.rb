@@ -33,10 +33,13 @@
 # The documentation is maintained at
 # <a href="../index.html">.../docs/index.html</a>.
 require "yast"
+require "yast2/execute"
 require "shellwords"
 
 module Yast
   class PackageSystemClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "Pkg"
       textdomain "base"
@@ -335,7 +338,9 @@ module Yast
     end
 
     # Is a package provided in the system? Is there any installed package providing 'package'?
-    # @return true if yes
+    #
+    # @param package [String] name of the package to check if provided
+    # @return [Boolean] whether the package is provided in the system or not
     def Installed(package)
       # This is a most commonly called function and so it's
       # important that it's fast, especially in the common
@@ -343,14 +348,15 @@ module Yast
       # Unfortunately, initializing Pkg reads the RPM database...
       # so we must avoid it.
       # added --whatprovides due to bug #76181
-      0 ==
-        Convert.to_integer(
-          SCR.Execute(
-            path(".target.bash"),
-            Ops.add("/usr/bin/rpm -q --whatprovides ", package.shellescape)
-          )
-        )
+      # Use Yast::Execute to prevent false positives (boo#1137992)
+      rpm_command = ["/usr/bin/rpm", "-q", "--whatprovides", package]
+      # We are not raising exceptions in case of return codes different than
+      # 0 or 1. So do not plan to modify the current behavior.
+      output, return_code = Yast::Execute.stdout.on_target!(rpm_command, allowed_exitstatus: 0..1)
+      log.info "Query installed package with '#{rpm_command.join(" ")}' and result #{output}"
+
       # return Pkg::IsProvided (package);
+      return_code == 0
     end
 
     # Is a package installed? Checks only the package name in contrast to Installed() function.
