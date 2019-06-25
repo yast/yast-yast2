@@ -151,6 +151,7 @@ module Yast
     end
 
     # true for all IA64 (itanium) architectures
+    # @deprecated Itanium is no longer supported
     def ia64
       architecture == "ia64"
     end
