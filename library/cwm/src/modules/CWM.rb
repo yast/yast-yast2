@@ -501,15 +501,16 @@ module Yast
         end
         label = Ops.get_string(w, "label", Ops.get_string(w, "_cwm_key", ""))
 
-        if widget == :inputfield || widget == :textentry
+        case widget
+        when :inputfield, :textentry
           # backward compatibility
           opt_term = Builtins.add(opt_term, :hstretch) if !Builtins.contains(Builtins.argsof(opt_term), :hstretch)
           Ops.set(w, "widget", InputField(id_term, opt_term, label))
-        elsif widget == :password
+        when :password
           Ops.set(w, "widget", Password(id_term, opt_term, label))
-        elsif widget == :checkbox
+        when :checkbox
           Ops.set(w, "widget", CheckBox(id_term, opt_term, label))
-        elsif widget == :combobox
+        when :combobox
           Ops.set(
             w,
             "widget",
@@ -522,7 +523,7 @@ module Yast
               end
             )
           )
-        elsif widget == :selection_box
+        when :selection_box
           Ops.set(
             w,
             "widget",
@@ -535,7 +536,7 @@ module Yast
               end
             )
           )
-        elsif widget == :multi_selection_box
+        when :multi_selection_box
           Ops.set(
             w,
             "widget",
@@ -548,7 +549,7 @@ module Yast
               end
             )
           )
-        elsif widget == :intfield
+        when :intfield
           min = Ops.get_integer(w, "minimum", 0)
           max = Ops.get_integer(w, "maximum", 2**31 - 1) # libyui support only signed int
           Ops.set(
@@ -556,7 +557,7 @@ module Yast
             "widget",
             IntField(id_term, opt_term, label, min, max, min)
           )
-        elsif widget == :radio_buttons
+        when :radio_buttons
           hspacing = Ops.get_integer(w, "hspacing", 0)
           vspacing = Ops.get_integer(w, "vspacing", 0)
           buttons = VBox(VSpacing(vspacing))
@@ -585,11 +586,11 @@ module Yast
               )
             )
           )
-        elsif widget == :radio_button
+        when :radio_button
           Ops.set(w, "widget", RadioButton(id_term, opt_term, label))
-        elsif widget == :push_button
+        when :push_button
           Ops.set(w, "widget", PushButton(id_term, opt_term, label))
-        elsif widget == :menu_button
+        when :menu_button
           Ops.set(
             w,
             "widget",
@@ -602,13 +603,13 @@ module Yast
               end
             )
           )
-        elsif widget == :multi_line_edit
+        when :multi_line_edit
           Ops.set(w, "widget", MultiLineEdit(id_term, opt_term, label))
-        elsif widget == :richtext
+        when :richtext
           Ops.set(w, "widget", RichText(id_term, opt_term, ""))
-        elsif widget == :date_field
+        when :date_field
           Ops.set(w, "widget", DateField(id_term, opt_term, label))
-        elsif widget == :time_field
+        when :time_field
           Ops.set(w, "widget", TimeField(id_term, opt_term, label))
         end
       end
@@ -627,14 +628,15 @@ module Yast
       self.processed_widget = deep_copy(widget)
       failed = false
       val_type = Ops.get_symbol(widget, "validate_type")
-      if val_type == :function || val_type == :function_no_popup
+      case val_type
+      when :function, :function_no_popup
         toEval = Convert.convert(
           Ops.get(widget, "validate_function"),
           from: "any",
           to:   "boolean (string, map)"
         )
         failed = !toEval.call(key, event) if !toEval.nil?
-      elsif val_type == :regexp
+      when :regexp
         regexp = Ops.get_string(widget, "validate_condition", "")
         if !Builtins.regexpmatch(
           Convert.to_string(UI.QueryWidget(Id(:_tp_value), :Value)),
@@ -642,7 +644,7 @@ module Yast
         )
           failed = true
         end
-      elsif val_type == :list
+      when :list
         possible = Ops.get_list(widget, "validate_condition", [])
         failed = true if !Builtins.contains(possible, UI.QueryWidget(Id(:_tp_value), :Value))
       end

@@ -472,7 +472,7 @@ module Yast
         end
 
         # error - still in quoted string
-        if state == :in_quoted_string || state == :in_quoted_string_after_dblqt
+        if [:in_quoted_string, :in_quoted_string_after_dblqt].include?(state)
           log.warn "Missing trainling double quote character(\") in input: '#{options}'" if state == :in_quoted_string
 
           ret << str if !unique || !ret.include?(str)

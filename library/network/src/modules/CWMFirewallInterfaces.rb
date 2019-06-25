@@ -148,7 +148,7 @@ module Yast
       log.info("Status: #{status}, All: #{all_interfaces}, Allowed: #{allowed_interfaces}")
 
       SetFirewallLabel(status)
-      open = status == :open_all || status == :custom
+      open = [:open_all, :custom].include?(status)
       UI.ChangeWidget(Id("_cwm_open_firewall"), :Value, open)
 
       nil

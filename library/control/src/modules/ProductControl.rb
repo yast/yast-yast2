@@ -1347,7 +1347,7 @@ module Yast
         Builtins.y2milestone("Calling %1 returned %2", argterm, result)
 
         # bnc #369846
-        if result == :accept || result == :ok
+        if [:access, :ok].include?(result)
           Builtins.y2milestone("Evaluating %1 as it was `next", result)
           result = :next
         end
@@ -1440,29 +1440,28 @@ module Yast
           result = :again
         end
 
-        if result == :next
+        case result
+        when :next
           @current_step = Ops.add(@current_step, 1)
-        elsif result == :back
+        when :back
           @current_step = Ops.subtract(@current_step, 1)
-        elsif result == :cancel
+        when :cancel
           break
-        elsif result == :abort
+        when :abort
           # handling when user aborts the workflow (FATE #300422, bnc #406401, bnc #247552)
           final_result = result
           Hooks.run("installation_aborted")
 
           break
-        elsif result == :finish
+        when :finish
           break
-        elsif result == :again
+        when :again
           next # Show same dialog again
         # BNC #475650: Adding `reboot_same_step
-        elsif result == :restart_yast || result == :restart_same_step ||
-            result == :reboot ||
-            result == :reboot_same_step
+        when :restart_yast, :restart_same_step, :reboot, :reboot_same_step
           final_result = result
           break
-        elsif result == :auto
+        when :auto
           if !former_result.nil?
             if former_result == :next
               # if the first client just returns `auto, the back button

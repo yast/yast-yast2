@@ -239,7 +239,7 @@ module Yast
       type = Ops.get_symbol(state, "subprogress_type", :none)
       SubprogressType(type, @last_subprogress_max)
 
-      if type == :progress || type == :tick
+      if [:progress, :tick].include?(type)
         SubprogressTitle(Ops.get_string(state, "subprogress_label", ""))
         SubprogressValue(Ops.get_integer(state, "subprogress_value", 0))
       end

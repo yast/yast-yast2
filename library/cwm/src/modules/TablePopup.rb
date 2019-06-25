@@ -676,7 +676,8 @@ module Yast
           event_id = :_tp_edit
         end
       end
-      if event_id == :_tp_edit || event_id == :_tp_add
+      case event_id
+      when :_tp_edit, :_tp_add
         opt_key = nil
         opt_id = nil
 
@@ -769,10 +770,10 @@ module Yast
             end
           end
         end
-      elsif event_id == :_tp_delete
+      when :_tp_delete
         opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
         TableInit(descr, key) if deleteTableItem(opt_id, descr)
-      elsif event_id == :_tp_table
+      when :_tp_table
         opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
         key2 = id2key(descr, opt_id)
         if key2 == "____sep"
@@ -807,7 +808,7 @@ module Yast
 
         opt_descr = key2descr(descr, id2key(descr, opt_id))
         updateButtons(descr, opt_descr)
-      elsif event_id == :_tp_up || event_id == :_tp_down
+      when :_tp_up, :_tp_down
         opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
         opt_id = moveTableItem(opt_id, descr, (event_id == :_tp_up) ? :up : :down)
         if nil != opt_id

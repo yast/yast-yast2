@@ -399,7 +399,7 @@ module Yast
             result = nil
           end
         end
-        break if result == :cancel || result == :accept || result == :back
+        break if [:cancel, :accept, :back].include?(result)
       end
 
       Wizard.CloseDialog

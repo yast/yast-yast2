@@ -235,7 +235,7 @@ module Yast
         Builtins.y2internal("Package selector returned: %1", ret)
 
         # do not fix the system
-        return false if ret == :cancel || ret == :close
+        return false if [:cancel, :close].include?(ret)
       end
 
       # is a package or a patch selected for installation?

@@ -317,7 +317,7 @@ module Yast
               UI.ReplaceWidget(Id(:info), Empty())
             end
           end
-          break if r == :abort || r == :retry || r == :ignore
+          break if [:abort, :retry, :ignore].include?(r)
         end
 
         Builtins.y2milestone("DoneProvide %1", r)
@@ -524,7 +524,7 @@ module Yast
                 UI.ReplaceWidget(Id(:info), Empty())
               end
             end
-            break if r == :abort || r == :retry || r == :ignore
+            break if [:abort, :retry, :ignore].include?(r)
           end
           Builtins.y2milestone("DonePackage %1", r)
 
@@ -875,7 +875,7 @@ module Yast
           else
             UI.ReplaceWidget(Id(:info), Empty())
           end
-        elsif r == :retry || r == :url
+        elsif [:retry, :url].include?(r)
           if @showLongInfo # id(`url) must exist
             newurl = Convert.to_string(UI.QueryWidget(Id(:url), :Value))
             if newurl != url
@@ -1577,7 +1577,7 @@ module Yast
         end
 
         input = UI.PollInput
-        return false if input == :abort || input == :close
+        return false if [:abort, :close].include?(input)
       end
       true
     end
@@ -2159,7 +2159,7 @@ module Yast
             UI.ReplaceWidget(Id(:info), Empty())
           end
         end
-        break if r == :abort || r == :retry || r == :ignore
+        break if [:abort, :retry, :ignore].include?(r)
       end
 
       Builtins.y2milestone("ErrorScanDb: user input: %1", r)

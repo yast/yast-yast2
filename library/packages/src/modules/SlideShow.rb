@@ -800,11 +800,10 @@ module Yast
     # progress handlers.
     #
     def GenericHandleInput
-      # any button = SlideShow::debug ? UI::PollInput() : UI::TimeoutUserInput( 10 );
       button = UI.PollInput
 
       # in case of cancel ask user if he really wants to quit installation
-      if button == :abort || button == :cancel
+      if [:abort, :cancel].include?(button)
         if Mode.normal
           SetUserAbort(
             Popup.AnyQuestion(

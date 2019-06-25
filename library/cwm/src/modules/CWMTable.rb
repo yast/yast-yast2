@@ -216,35 +216,36 @@ module Yast
           event_id = :_tw_edit
         end
       end
-      if event_id == :_tw_edit
+      case event_id
+      when :_tw_edit
         edit_handle = Convert.convert(
           Ops.get(attrib, "edit"),
           from: "any",
           to:   "symbol (string, map, integer)"
         )
         ret = edit_handle.call(key, event_descr, index) if !edit_handle.nil?
-      elsif event_id == :_tw_add
+      when :_tw_add
         add_handle = Convert.convert(
           Ops.get(attrib, "add"),
           from: "any",
           to:   "symbol (string, map, integer)"
         )
         ret = add_handle.call(key, event_descr, index) if !add_handle.nil?
-      elsif event_id == :_tw_delete
+      when :_tw_delete
         delete_handle = Convert.convert(
           Ops.get(attrib, "delete"),
           from: "any",
           to:   "symbol (string, map, integer)"
         )
         ret = delete_handle.call(key, event_descr, index) if delete_handle
-      elsif event_id == :_tw_custom
+      when :_tw_custom
         custom_handle = Convert.convert(
           Ops.get(attrib, "custom_handle"),
           from: "any",
           to:   "symbol (string, map, integer)"
         )
         ret = custom_handle.call(key, event_descr, index) if custom_handle
-      elsif event_id == :_tw_up || event_id == :_tw_down
+      when :_tw_up, :_tw_down
         up = event_id == :_tw_up
         updown_handle = Convert.convert(
           Ops.get(attrib, "updown"),

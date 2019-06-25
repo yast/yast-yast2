@@ -239,10 +239,7 @@ module Yast
             @_board_compatible = "CHRP"
           end
           # Maple has its own way of pretenting OF1275 compliance
-          if board == "Momentum,Maple-D" || board == "Momentum,Maple-L" ||
-              board == "Momentum,Maple"
-            @_board_compatible = "CHRP"
-          end
+          @_board_compatible = "CHRP" if ["Momentum,Maple-D", "Momentum,Maple-L", "Momentum,Maple"].include?(board)
           # Pegasos has CHRP in /proc/cpuinfo and 'chrp' in /proc/device-tree/device_type
           if board == "Pegasos2" ||
               Builtins.issubstring(

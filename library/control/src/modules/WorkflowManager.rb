@@ -819,12 +819,10 @@ module Yast
             new_proposals = Builtins.add(new_proposals, p)
             next
           end
-          if Ops.get_string(p, "archs", "") == arch || arch == "" ||
-              arch == "all"
+          if [Ops.get_string(p, "archs", ""), "", "all"].include?(arch)
             p = MergeProposal(p, proposal, prod_name, domain)
             found = true
-          elsif Ops.get_string(p, "archs", "") == "" ||
-              Ops.get_string(p, "archs", "") == "all"
+          elsif ["", "all"].include?(Ops.get_string(p, "archs", ""))
             arch_all_prop = deep_copy(p)
           end
           new_proposals = Builtins.add(new_proposals, p)
@@ -971,12 +969,10 @@ module Yast
             new_workflows = Builtins.add(new_workflows, w)
             next
           end
-          if Ops.get_string(w, ["defaults", "archs"], "") == arch || arch == "" ||
-              arch == "all"
+          if [Ops.get_string(w, ["defaults", "archs"], ""), "", "all"].include?(arch)
             w = MergeWorkflow(w, workflow, prod_name, domain)
             found = true
-          elsif Ops.get_string(w, ["defaults", "archs"], "") == "" ||
-              Ops.get_string(w, ["default", "archs"], "") == "all"
+          elsif ["", "all"].include?(Ops.get_string(w, ["defaults", "archs"], ""))
             arch_all_wf = deep_copy(w)
           end
           new_workflows = Builtins.add(new_workflows, w)

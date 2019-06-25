@@ -177,7 +177,7 @@ module Yast
 
       ret = SCR.Execute(path(".target.bash"), "/sbin/ifstatus #{@device.shellescape}")
       Builtins.y2milestone("ifstatus %1: %2", @device, ret)
-      ret == 0 || ret == 10
+      [0, 10].include?(ret)
     end
 
     # Test if the interface is connected
