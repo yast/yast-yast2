@@ -1,7 +1,6 @@
 # use the shared Yast defaults
 inherit_from:
-#  /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
-  - rubocop_yast_style.yml
+  /usr/share/YaST2/data/devtools/data/rubocop-0.71.0_yast_style.yml
 
 Metrics/AbcSize:
   Max: 446
