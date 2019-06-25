@@ -5,11 +5,9 @@ require_relative "test_helper"
 Yast.import "SlideShow"
 Yast.import "UI"
 
-include Yast::Logger
-
 describe "Yast::SlideShow" do
   before(:each) do
-    log.info "--------- Running test ---------"
+    Yast.y2milestone "--------- Running test ---------"
     allow(::File).to receive(:exist?).and_return(true)
   end
 

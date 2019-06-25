@@ -3,8 +3,6 @@
 require_relative "test_helper"
 require "tmpdir"
 
-include Yast::Logger
-
 Yast.import "Kernel"
 Yast.import "FileUtils"
 
@@ -12,7 +10,7 @@ describe Yast::Kernel do
   let(:stubbed_modules_dir) { File.join(File.dirname(__FILE__), "data", "modules.d") }
 
   before do
-    log.info "--- test ---"
+    Yast.y2milestone "--- test ---"
     # reset variables
     subject.main
     stub_const("Yast::KernelClass::MODULES_DIR", stubbed_modules_dir)
