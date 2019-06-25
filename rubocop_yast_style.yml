@@ -257,3 +257,7 @@ Style/AccessModifierDeclarations:
 # when ternany is complex is should be clear enclosed in parentheses for easier read
 Style/TernaryParentheses:
   EnforcedStyle: require_parentheses_when_complex
+
+# format string is not unified and depending on usage.
+Style/FormatStringToken:
+  Enabled: false
