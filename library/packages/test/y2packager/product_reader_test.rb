@@ -17,7 +17,7 @@ require "y2packager/product_reader"
 
 describe Y2Packager::ProductReader do
   subject { Y2Packager::ProductReader.new }
-  let(:products) { YAML.safe_load(File.read(File.join(PACKAGES_FIXTURES_PATH, "products-sles15.yml"))) }
+  let(:products) { YAML.load(File.read(File.join(PACKAGES_FIXTURES_PATH, "products-sles15.yml"))) } # rubocop:disable Security/YAMLLoad
   let(:installation_package_map) { { "SLES" => "skelcd-SLES" } }
 
   describe "#available_base_products" do

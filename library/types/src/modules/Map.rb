@@ -41,7 +41,7 @@ module Yast
     # @return a list of all keys from the map
     def Keys(map)
       map = deep_copy(map)
-      return [] if map.nil? || m == {}
+      return [] if map.nil? || map == {}
 
       Builtins.maplist(map) { |var, _val| var }
     end
@@ -51,7 +51,7 @@ module Yast
     # @return a list of all values from the map
     def Values(map)
       map = deep_copy(map)
-      return [] if map.nil? || m == {}
+      return [] if map.nil? || map == {}
 
       Builtins.maplist(map) { |_var, val| val }
     end

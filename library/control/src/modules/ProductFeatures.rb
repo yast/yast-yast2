@@ -101,7 +101,7 @@ module Yast
     # Initialize default values of features
     # @param [Boolean] force boolean drop all settings which were set before
     def InitFeatures(force)
-      return if !(force || @features.nil?)
+      return if @features && !force
 
       @features = deep_copy(@defaults)
 
@@ -337,7 +337,6 @@ module Yast
     #
     # @param map <string, map <string, any> > features
     def Import(import_settings)
-      import_settings = deep_copy(import_settings)
       @features = deep_copy(import_settings)
 
       nil
