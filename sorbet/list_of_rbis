@@ -1,0 +1,5 @@
+../ruby-bindings/rbi/yast/i18n.rbi
+../ruby-bindings/rbi/yast/scr.rbi
+../ruby-bindings/rbi/yast/ui.rbi
+../ruby-bindings/rbi/yast/uishortcuts.rbi
+../ruby-bindings/rbi/yast/y2logger.rbi
