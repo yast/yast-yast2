@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # encoding: utf-8
 # ------------------------------------------------------------------------------
 # Copyright (c) 2017 SUSE LLC

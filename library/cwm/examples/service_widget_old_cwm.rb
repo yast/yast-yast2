@@ -1,4 +1,4 @@
-# typed: false
+# typed: true
 # Simple example to demonstrate service widget API for CWM
 
 require_relative "example_helper"

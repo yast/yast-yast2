@@ -10,7 +10,24 @@
 # wrong constant name <Magic>
 # wrong constant name <Class:<Magic>>
 # wrong constant name <RESERVED_0>
+# wrong constant name <RESERVED_100>
+# wrong constant name <RESERVED_101>
+# wrong constant name <RESERVED_102>
+# wrong constant name <RESERVED_103>
+# wrong constant name <RESERVED_104>
+# wrong constant name <RESERVED_105>
+# wrong constant name <RESERVED_106>
+# wrong constant name <RESERVED_107>
+# wrong constant name <RESERVED_108>
+# wrong constant name <RESERVED_109>
 # wrong constant name <RESERVED_10>
+# wrong constant name <RESERVED_110>
+# wrong constant name <RESERVED_111>
+# wrong constant name <RESERVED_112>
+# wrong constant name <RESERVED_113>
+# wrong constant name <RESERVED_114>
+# wrong constant name <RESERVED_115>
+# wrong constant name <RESERVED_116>
 # wrong constant name <RESERVED_11>
 # wrong constant name <RESERVED_12>
 # wrong constant name <RESERVED_13>
@@ -104,6 +121,10 @@
 # wrong constant name <RESERVED_93>
 # wrong constant name <RESERVED_94>
 # wrong constant name <RESERVED_95>
+# wrong constant name <RESERVED_96>
+# wrong constant name <RESERVED_97>
+# wrong constant name <RESERVED_98>
+# wrong constant name <RESERVED_99>
 # wrong constant name <RESERVED_9>
 # wrong constant name <TypeAlias>
 # wrong constant name <TypeAlias>
@@ -458,12 +479,6 @@
 # wrong constant name ambiguous_gems
 # wrong constant name ambiguous_gems=
 # wrong constant name install
-# wrong constant name definition
-# wrong constant name generate!
-# wrong constant name initialize
-# wrong constant name out
-# wrong constant name <static-init>
-# wrong constant name generate
 # wrong constant name ==
 # wrong constant name app_cache_dirname
 # wrong constant name app_cache_path
@@ -715,9 +730,6 @@
 # wrong constant name name
 # wrong constant name formatter
 # wrong constant name formatter=
-# undefined method `initialize$1' for class `Dir'
-# Did you mean?  initialize
-# wrong constant name initialize$1
 # undefined singleton method `[]$2' for `Dir'
 # undefined singleton method `chdir$2' for `Dir'
 # undefined singleton method `entries$1' for `Dir'
@@ -824,21 +836,12 @@
 # wrong constant name to_set
 # wrong constant name uniq
 # wrong constant name zip
-# undefined method `each$2' for class `Enumerator'
-# undefined method `initialize$2' for class `Enumerator'
-# Did you mean?  initialize
-# undefined method `with_index$2' for class `Enumerator'
-# wrong constant name each$2
-# wrong constant name initialize$2
-# wrong constant name with_index$2
 # wrong constant name each
 # wrong constant name initialize
 # wrong constant name chunk
 # wrong constant name chunk_while
 # wrong constant name force
 # wrong constant name slice_when
-# wrong constant name <<
-# wrong constant name yield
 # wrong constant name EWOULDBLOCK$1
 # wrong constant name EWOULDBLOCK$1
 # wrong constant name gid
@@ -3226,7 +3229,6 @@
 #                singleton_method
 # undefined method `to_enum$2' for module `Kernel'
 # Did you mean?  to_enum
-# wrong constant name class
 # wrong constant name clone$1
 # wrong constant name define_singleton_method$2
 # wrong constant name display$1
@@ -3578,11 +3580,6 @@
 # wrong constant name waitpid2$1
 # uninitialized constant Racc
 # uninitialized constant Racc
-# undefined method `initialize$1' for class `Random'
-# Did you mean?  initialize
-# uninitialized constant Random::ALPHANUMERIC
-# Did you mean?  Random::ALPHANUMERIC
-# wrong constant name initialize$1
 # undefined method `rand$2' for module `Random::Formatter'
 # Did you mean?  rand
 # undefined method `random_number$2' for module `Random::Formatter'
@@ -3590,13 +3587,6 @@
 # wrong constant name rand$2
 # wrong constant name random_number$2
 # wrong constant name urandom
-# undefined method `initialize$1' for class `Range'
-# Did you mean?  initialize
-# undefined method `last$2' for class `Range'
-# undefined method `step$2' for class `Range'
-# wrong constant name initialize$1
-# wrong constant name last$2
-# wrong constant name step$2
 # wrong constant name expand
 # wrong constant name ruby
 # undefined method `initialize$2' for class `Regexp'
@@ -3723,9 +3713,11 @@
 # wrong constant name output_file
 # wrong constant name paths_for_gem_version
 # wrong constant name paths_for_ruby_version
-# wrong constant name paths_within_gem_sources
-# wrong constant name serialize_rbi_list
 # wrong constant name vendor_rbis_within_paths
+# wrong constant name <static-init>
+# wrong constant name main
+# wrong constant name output_file
+# wrong constant name paths_within_gem_sources
 # wrong constant name <Class:ClassDefinition>
 # wrong constant name <Class:TracepointSerializer>
 # wrong constant name <Class:Tracer>
@@ -3741,15 +3733,6 @@
 # wrong constant name members
 # wrong constant name initialize
 # wrong constant name serialize
-# wrong constant name <static-init>
-# wrong constant name <Class:ClassOverride>
-# wrong constant name <Class:ModuleOverride>
-# wrong constant name <Class:ObjectOverride>
-# wrong constant name new
-# wrong constant name <static-init>
-# wrong constant name include
-# wrong constant name <static-init>
-# wrong constant name extend
 # wrong constant name <static-init>
 # wrong constant name <static-init>
 # wrong constant name add_to_context
@@ -3776,17 +3759,13 @@
 # wrong constant name capture_stderr
 # wrong constant name constant_cache
 # wrong constant name gen_source_rbi
-# wrong constant name hidden_diff
-# wrong constant name hidden_json
-# wrong constant name hidden_rbi
-# wrong constant name hidden_splits
 # wrong constant name looks_like_stub_name
 # wrong constant name main
-# wrong constant name mkdir
+# wrong constant name mk_dir
 # wrong constant name read_constants
 # wrong constant name real_name
-# wrong constant name remove_temp_files
 # wrong constant name require_everything
+# wrong constant name rm_dir
 # wrong constant name serialize_alias
 # wrong constant name serialize_class
 # wrong constant name serialize_constants
@@ -4113,15 +4092,6 @@
 # wrong constant name enclose
 # wrong constant name enclosed?
 # wrong constant name list
-# undefined method `getlocal$1' for class `Time'
-# undefined method `initialize$1' for class `Time'
-# Did you mean?  initialize
-# undefined method `localtime$1' for class `Time'
-# undefined method `round$1' for class `Time'
-# wrong constant name getlocal$1
-# wrong constant name initialize$1
-# wrong constant name localtime$1
-# wrong constant name round$1
 # undefined singleton method `at$2' for `Time'
 # undefined singleton method `gm$1' for `Time'
 # undefined singleton method `local$1' for `Time'

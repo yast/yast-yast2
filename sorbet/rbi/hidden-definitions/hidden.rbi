@@ -9,7 +9,6 @@ end
 
 class Array
   include ::JSON::Ext::Generator::GeneratorMethods::Array
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def append(*_); end
 
   def bsearch(); end
@@ -42,8 +41,6 @@ BasicObject::BasicObject = BasicObject
 
 class BasicObject
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ClassOverride
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class BasicSocket
@@ -83,11 +80,9 @@ end
 
 module BigMath
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class Binding
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def clone(); end
 
   def irb(); end
@@ -482,20 +477,6 @@ class Bundler::Installer
   def self.ambiguous_gems=(ambiguous_gems); end
 
   def self.install(root, definition, options=T.unsafe(nil)); end
-end
-
-class Bundler::LockfileGenerator
-  def definition(); end
-
-  def generate!(); end
-
-  def initialize(definition); end
-
-  def out(); end
-end
-
-class Bundler::LockfileGenerator
-  def self.generate(definition); end
 end
 
 module Bundler::MatchPlatform
@@ -928,12 +909,9 @@ end
 
 module Bundler
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class Class
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ClassOverride
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def json_creatable?(); end
 end
 
@@ -947,7 +925,6 @@ end
 
 module Comparable
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class Complex
@@ -960,10 +937,6 @@ class Complex
 end
 
 ConditionVariable = Thread::ConditionVariable
-
-class Data
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
-end
 
 class Data
   extend ::T::Sig
@@ -1006,7 +979,6 @@ class Delegator
 end
 
 class DidYouMean::ClassNameChecker
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def class_name(); end
 
   def class_names(); end
@@ -1034,7 +1006,6 @@ end
 
 module DidYouMean::Correctable
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class DidYouMean::DeprecatedIgnoredCallers
@@ -1048,13 +1019,11 @@ end
 
 module DidYouMean::Jaro
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.distance(str1, str2); end
 end
 
 module DidYouMean::JaroWinkler
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.distance(str1, str2); end
 end
 
@@ -1069,14 +1038,12 @@ end
 
 module DidYouMean::Levenshtein
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.distance(str1, str2); end
 
   def self.min3(a, b, c); end
 end
 
 class DidYouMean::MethodNameChecker
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def corrections(); end
 
   def initialize(exception); end
@@ -1093,7 +1060,6 @@ class DidYouMean::MethodNameChecker
 end
 
 class DidYouMean::NullChecker
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def corrections(); end
 
   def initialize(*_); end
@@ -1111,7 +1077,6 @@ class DidYouMean::PlainFormatter
 end
 
 class DidYouMean::SpellChecker
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def correct(input); end
 
   def initialize(dictionary:); end
@@ -1122,7 +1087,6 @@ class DidYouMean::SpellChecker
 end
 
 class DidYouMean::VariableNameChecker
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def corrections(); end
 
   def cvar_names(); end
@@ -1145,14 +1109,13 @@ end
 
 module DidYouMean
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.formatter(); end
 
   def self.formatter=(formatter); end
 end
 
-class Digest::Class
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
+class Digest::Base
+  extend ::T::Sig
 end
 
 class Digest::Class
@@ -1161,16 +1124,14 @@ end
 
 module Digest::Instance
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
-class Dir
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
+module Digest
+  extend ::T::Sig
 end
 
 module Dir::Tmpname
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class Dir
@@ -1191,7 +1152,6 @@ class EOFError
 end
 
 class Encoding
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def _dump(*_); end
 end
 
@@ -1315,15 +1275,9 @@ end
 
 module Enumerable
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
-end
-
-class Enumerator
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
 end
 
 class Enumerator::Generator
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def each(*_); end
 
   def initialize(*_); end
@@ -1345,13 +1299,6 @@ end
 
 class Enumerator::Lazy
   extend ::T::Sig
-end
-
-class Enumerator::Yielder
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
-  def <<(*_); end
-
-  def yield(*_); end
 end
 
 class Enumerator::Yielder
@@ -1924,7 +1871,6 @@ end
 
 module Errno
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class Etc::Group
@@ -1997,7 +1943,6 @@ end
 
 module Etc
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.confstr(_); end
 
   def self.endgrent(); end
@@ -2038,7 +1983,6 @@ module Etc
 end
 
 class Exception
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def full_message(); end
 
 end
@@ -2056,7 +2000,6 @@ end
 
 class FalseClass
   include ::JSON::Ext::Generator::GeneratorMethods::FalseClass
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
 end
 
 class FalseClass
@@ -2064,7 +2007,6 @@ class FalseClass
 end
 
 class Fiber
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def resume(*_); end
 end
 
@@ -2083,11 +2025,9 @@ end
 
 module File::Constants
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class File::Stat
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def size?(); end
 end
 
@@ -2109,7 +2049,6 @@ end
 
 module FileTest
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.blockdev?(_); end
 
   def self.chardev?(_); end
@@ -2182,11 +2121,9 @@ module FileUtils::DryRun
   extend ::FileUtils::LowMethods
   extend ::FileUtils
   extend ::FileUtils::StreamUtils_
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class FileUtils::Entry_
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def blockdev?(); end
 
   def chardev?(); end
@@ -2258,7 +2195,6 @@ end
 
 module FileUtils::LowMethods
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 module FileUtils::NoWrite
@@ -2273,12 +2209,10 @@ module FileUtils::NoWrite
   extend ::FileUtils::LowMethods
   extend ::FileUtils
   extend ::FileUtils::StreamUtils_
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 module FileUtils::StreamUtils_
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 module FileUtils::Verbose
@@ -2291,13 +2225,11 @@ module FileUtils::Verbose
   extend ::FileUtils::Verbose
   extend ::FileUtils
   extend ::FileUtils::StreamUtils_
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 module FileUtils
   extend ::T::Sig
   extend ::FileUtils::StreamUtils_
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.cd(dir, verbose: T.unsafe(nil), &block); end
 
   def self.chdir(dir, verbose: T.unsafe(nil), &block); end
@@ -2419,7 +2351,6 @@ end
 
 module Forwardable
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self._compile_method(src, file, line); end
 
   def self._delegator_method(obj, accessor, method, ali); end
@@ -2443,12 +2374,10 @@ end
 
 module GC::Profiler
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 module GC
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.latest_gc_info(*_); end
 
   def self.stress=(stress); end
@@ -2525,7 +2454,6 @@ class Gem::AvailableSet
 end
 
 class Gem::BasicSpecification
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def activated?(); end
 
   def base_dir(); end
@@ -2842,7 +2770,6 @@ module Gem::DefaultUserInteraction
 end
 
 class Gem::Dependency
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def ==(other); end
 
   def ===(other); end
@@ -3035,7 +2962,6 @@ end
 
 module Gem::Deprecate
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.deprecate(name, repl, year, month); end
 
   def self.skip(); end
@@ -3051,10 +2977,6 @@ end
 
 class Gem::EndOfYAMLException
   extend ::T::Sig
-end
-
-class Gem::ErrorReason
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
 end
 
 class Gem::ErrorReason
@@ -3331,7 +3253,6 @@ class Gem::Licenses
 end
 
 class Gem::List
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def each(); end
 
   def initialize(value=T.unsafe(nil), tail=T.unsafe(nil)); end
@@ -3776,7 +3697,6 @@ class Gem::Package
 end
 
 class Gem::PathSupport
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def home(); end
 
   def initialize(env); end
@@ -3791,7 +3711,6 @@ class Gem::PathSupport
 end
 
 class Gem::Platform
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def ==(other); end
 
   def ===(other); end
@@ -4236,7 +4155,6 @@ class Gem::RequestSet
 end
 
 class Gem::Requirement
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def ==(other); end
 
   def ===(version); end
@@ -6203,7 +6121,6 @@ class Gem::StubSpecification
 end
 
 class Gem::StubSpecification::StubLine
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def extensions(); end
 
   def full_name(); end
@@ -6344,7 +6261,6 @@ class Gem::VerificationError
 end
 
 class Gem::Version
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def _segments(); end
 
   def _split_segments(); end
@@ -6395,7 +6311,6 @@ end
 
 module Gem
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self._deprecated_datadir(gem_name); end
 
   def self.activate_bin_path(name, *args); end
@@ -6571,7 +6486,6 @@ end
 
 class Hash
   include ::JSON::Ext::Generator::GeneratorMethods::Hash
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def <(_); end
 
   def <=(_); end
@@ -6623,7 +6537,6 @@ class Hash
 end
 
 class IO
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def external_encoding(); end
 
   def nonblock(*_); end
@@ -6675,12 +6588,10 @@ IO::EWOULDBLOCKWaitWritable = IO::EAGAINWaitWritable
 
 module IO::WaitReadable
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 module IO::WaitWritable
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class IO
@@ -7047,12 +6958,9 @@ JSON::UnparserError = JSON::GeneratorError
 
 module JSON
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 module Kernel
-  def class(); end
-
   def gem(dep, *reqs); end
 
   def itself(); end
@@ -7068,7 +6976,6 @@ end
 
 module Kernel
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.at_exit(); end
 end
 
@@ -7103,12 +7010,10 @@ end
 
 module Marshal
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.restore(*_); end
 end
 
 class MatchData
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def named_captures(); end
 end
 
@@ -7122,11 +7027,9 @@ end
 
 module Math
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class Method
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def ===(*_); end
 
   def [](*_); end
@@ -7159,8 +7062,6 @@ class Method
 end
 
 class Module
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def deprecate_constant(*_); end
 
   def undef_method(*_); end
@@ -7172,7 +7073,6 @@ class Module
 end
 
 class Monitor
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def enter(); end
 
   def exit(); end
@@ -7207,7 +7107,6 @@ module MonitorMixin
 end
 
 class MonitorMixin::ConditionVariable
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def broadcast(); end
 
   def initialize(monitor); end
@@ -7231,7 +7130,6 @@ end
 
 module MonitorMixin
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.extend_object(obj); end
 end
 
@@ -7250,7 +7148,6 @@ end
 
 class NilClass
   include ::JSON::Ext::Generator::GeneratorMethods::NilClass
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def to_i(); end
 end
 
@@ -7278,7 +7175,6 @@ class NotImplementedError
 end
 
 class Numeric
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def finite?(); end
 
   def infinite?(); end
@@ -7294,7 +7190,6 @@ class Numeric
 end
 
 class Object
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   include ::JSON::Ext::Generator::GeneratorMethods::Object
   ADDITIONAL_Y2DIRS = ::T.let(nil, ::T.untyped)
   ARGF = ::T.let(nil, ::T.untyped)
@@ -7322,7 +7217,6 @@ class Object
 end
 
 class ObjectSpace::WeakMap
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def [](_); end
 
   def []=(_, _1); end
@@ -7352,7 +7246,6 @@ end
 
 module ObjectSpace
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.count_objects(*_); end
 
   def self.define_finalizer(*_); end
@@ -7367,15 +7260,7 @@ class OpenSSL::Digest
 end
 
 class OpenSSL::PKey::PKey
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
-end
-
-class OpenSSL::PKey::PKey
   extend ::T::Sig
-end
-
-class OpenStruct
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
 end
 
 class OpenStruct
@@ -7393,7 +7278,6 @@ module Packages
 end
 
 class Pathname
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def empty?(); end
 
   def fnmatch?(*_); end
@@ -7409,7 +7293,6 @@ class Pathname
 end
 
 class Proc
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def ===(*_); end
 
   def [](*_); end
@@ -7427,11 +7310,6 @@ end
 
 module Process::GID
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
-end
-
-class Process::Status
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
 end
 
 class Process::Status
@@ -7440,7 +7318,6 @@ end
 
 module Process::Sys
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.getegid(); end
 
 end
@@ -7472,7 +7349,6 @@ end
 
 module Process::UID
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class Process::Waiter
@@ -7481,7 +7357,6 @@ end
 
 module Process
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.last_status(); end
 
   def self.setpgrp(); end
@@ -7489,10 +7364,6 @@ module Process
 end
 
 Queue = Thread::Queue
-
-class Random
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
-end
 
 module Random::Formatter
   def alphanumeric(n=T.unsafe(nil)); end
@@ -7502,16 +7373,11 @@ end
 
 module Random::Formatter
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class Random
   extend ::T::Sig
   def self.urandom(_); end
-end
-
-class Range
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
 end
 
 class Range
@@ -7528,14 +7394,12 @@ end
 
 module RbConfig
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.expand(val, config=T.unsafe(nil)); end
 
   def self.ruby(); end
 end
 
 class Regexp
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def match?(*_); end
 end
 
@@ -7548,12 +7412,7 @@ class RegexpError
   extend ::T::Sig
 end
 
-class RubyVM
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
-end
-
 class RubyVM::InstructionSequence
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def absolute_path(); end
 
   def base_label(); end
@@ -7679,7 +7538,6 @@ class SecurityError
 end
 
 class Set
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def ==(other); end
 
   def ===(o); end
@@ -7728,7 +7586,6 @@ end
 
 module Signal
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class SignalException
@@ -7765,14 +7622,9 @@ end
 
 module SingleForwardable
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 SizedQueue = Thread::SizedQueue
-
-class Sorbet
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
-end
 
 class Sorbet::Private::ConstantLookupCache
   def all_module_aliases(); end
@@ -7860,11 +7712,23 @@ class Sorbet::Private::FetchRBIs
 
   def self.paths_for_ruby_version(ruby_version); end
 
-  def self.paths_within_gem_sources(gemspec); end
-
-  def self.serialize_rbi_list(gem_source_paths); end
-
   def self.vendor_rbis_within_paths(vendor_paths); end
+end
+
+class Sorbet::Private::FindGemRBIs
+  include ::Sorbet::Private::StepInterface
+  GEM_DIR = ::T.let(nil, ::T.untyped)
+  HEADER = ::T.let(nil, ::T.untyped)
+  RBI_CACHE_DIR = ::T.let(nil, ::T.untyped)
+  XDG_CACHE_HOME = ::T.let(nil, ::T.untyped)
+end
+
+class Sorbet::Private::FindGemRBIs
+  def self.main(); end
+
+  def self.output_file(); end
+
+  def self.paths_within_gem_sources(gemspec); end
 end
 
 module Sorbet::Private::GemGeneratorTracepoint
@@ -7905,30 +7769,6 @@ class Sorbet::Private::GemGeneratorTracepoint::TracepointSerializer
 end
 
 class Sorbet::Private::GemGeneratorTracepoint::Tracer
-end
-
-module Sorbet::Private::GemGeneratorTracepoint::Tracer::ClassOverride
-  def new(*_); end
-end
-
-module Sorbet::Private::GemGeneratorTracepoint::Tracer::ClassOverride
-  extend ::T::Sig
-end
-
-module Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
-  def include(mod, *smth); end
-end
-
-module Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
-  extend ::T::Sig
-end
-
-module Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
-  def extend(mod, *args); end
-end
-
-module Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
-  extend ::T::Sig
 end
 
 class Sorbet::Private::GemGeneratorTracepoint::Tracer
@@ -7989,27 +7829,19 @@ class Sorbet::Private::HiddenMethodFinder
 
   def gen_source_rbi(classes, aliases); end
 
-  def hidden_diff(); end
-
-  def hidden_json(); end
-
-  def hidden_rbi(); end
-
-  def hidden_splits(); end
-
   def looks_like_stub_name(name); end
 
   def main(); end
 
-  def mkdir(); end
+  def mk_dir(); end
 
   def read_constants(); end
 
   def real_name(mod); end
 
-  def remove_temp_files(); end
-
   def require_everything(); end
+
+  def rm_dir(); end
 
   def serialize_alias(source_entry, rbi_entry, my_klass, source_symbols, rbi_symbols); end
 
@@ -8198,7 +8030,6 @@ end
 
 module Sorbet::Private
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class Sorbet
@@ -8228,7 +8059,6 @@ end
 
 class String
   include ::JSON::Ext::Generator::GeneratorMethods::String
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def +@(); end
 
   def -@(); end
@@ -8296,7 +8126,6 @@ class StringIO
 end
 
 class Struct
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def [](_); end
 
   def []=(_, _1); end
@@ -8333,7 +8162,6 @@ class Struct
 end
 
 class Symbol
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def casecmp?(_); end
 
   def match?(*_); end
@@ -8378,11 +8206,9 @@ end
 
 module TSort
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class Thread
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def abort_on_exception(); end
 
   def abort_on_exception=(abort_on_exception); end
@@ -8444,14 +8270,6 @@ class Thread
   def wakeup(); end
 end
 
-class Thread::Backtrace
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
-end
-
-class Thread::Backtrace::Location
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
-end
-
 class Thread::Backtrace::Location
   extend ::T::Sig
 end
@@ -8461,7 +8279,6 @@ class Thread::Backtrace
 end
 
 class Thread::ConditionVariable
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def broadcast(); end
 
   def marshal_dump(); end
@@ -8476,7 +8293,6 @@ class Thread::ConditionVariable
 end
 
 class Thread::Mutex
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def lock(); end
 
   def locked?(); end
@@ -8495,7 +8311,6 @@ class Thread::Mutex
 end
 
 class Thread::Queue
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def <<(_); end
 
   def clear(); end
@@ -8583,7 +8398,6 @@ class ThreadError
 end
 
 class ThreadGroup
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def add(_); end
 
   def enclose(); end
@@ -8599,10 +8413,6 @@ class ThreadGroup
 end
 
 class Time
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
-end
-
-class Time
   extend ::T::Sig
 end
 
@@ -8612,11 +8422,9 @@ end
 
 module Timeout
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class TracePoint
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def event(); end
 end
 
@@ -8626,7 +8434,6 @@ end
 
 class TrueClass
   include ::JSON::Ext::Generator::GeneratorMethods::TrueClass
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
 end
 
 class TrueClass
@@ -8669,7 +8476,6 @@ end
 
 module URI::Escape
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class URI::FTP
@@ -8686,7 +8492,6 @@ class URI::FTP
 end
 
 class URI::Generic
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def +(oth); end
 
   def -(oth); end
@@ -8904,7 +8709,6 @@ URI::Parser = URI::RFC2396_Parser
 URI::REGEXP = URI::RFC2396_REGEXP
 
 class URI::RFC2396_Parser
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def escape(str, unsafe=T.unsafe(nil)); end
 
   def extract(str, schemes=T.unsafe(nil)); end
@@ -8932,16 +8736,13 @@ end
 
 module URI::RFC2396_REGEXP::PATTERN
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 module URI::RFC2396_REGEXP
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 class URI::RFC3986_Parser
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def join(*uris); end
 
   def parse(uri); end
@@ -8958,14 +8759,12 @@ end
 
 module URI::Util
   extend ::T::Sig
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.make_components_hash(klass, array_hash); end
 end
 
 module URI
   extend ::T::Sig
   extend ::URI::Escape
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
   def self.decode_www_form(str, enc=T.unsafe(nil), separator: T.unsafe(nil), use__charset_: T.unsafe(nil), isindex: T.unsafe(nil)); end
 
   def self.encode_www_form(enum, enc=T.unsafe(nil)); end
@@ -8976,7 +8775,6 @@ module URI
 end
 
 class UnboundMethod
-  include ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ObjectOverride
   def clone(); end
 
   def original_name(); end
@@ -9010,7 +8808,6 @@ end
 module Warning
   extend ::T::Sig
   extend ::Warning
-  extend ::Sorbet::Private::GemGeneratorTracepoint::Tracer::ModuleOverride
 end
 
 module Y2Firewall::Firewalld::Api::Services

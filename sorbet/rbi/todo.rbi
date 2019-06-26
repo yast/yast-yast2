@@ -276,8 +276,6 @@ module Yast::Builtins; end
 module Yast::Builtins; end
 module Yast::Builtins; end
 module Yast::Builtins; end
-module Yast::Builtins; end
-module Yast::Builtins; end
 module Yast::CWMClass::Builtins; end
 module Yast::CWMClass::Builtins; end
 module Yast::CWMClass::Builtins; end
