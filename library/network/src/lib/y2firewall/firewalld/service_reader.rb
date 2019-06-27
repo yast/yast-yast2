@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2018 SUSE LLC
 #
@@ -34,6 +32,7 @@ module Y2Firewall
       def read(name)
         info = Y2Firewall::Firewalld.instance.api.info_service(name)
         raise(Service::NotFound, name) if $CHILD_STATUS.exitstatus == 101
+
         service = Service.new(name: name)
 
         info.each do |line|
@@ -44,6 +43,7 @@ module Y2Firewall
           attribute = attribute.lstrip.tr("-", "_")
           attribute = "short" if attribute == "summary"
           next unless service.respond_to?("#{attribute}=")
+
           if service.attributes.include?(attribute.to_sym)
             service.public_send("#{attribute}=", value.to_s)
           else

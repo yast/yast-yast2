@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2018 SUSE LLC
 #
@@ -104,6 +102,7 @@ module Y2Firewall
       # @return [Boolean] true if read
       def read
         return false unless supported?
+
         read_attributes
         read_relations
         untouched!
@@ -116,6 +115,7 @@ module Y2Firewall
       def apply_changes!
         return true if !modified?
         return false if !supported?
+
         apply_attributes_changes!
         apply_relations_changes!
         untouched!

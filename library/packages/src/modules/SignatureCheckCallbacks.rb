@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,8 +19,8 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module:		SignatureCheckCallbacks.ycp
-# Authors:		Lukas Ocilka <locilka@suse.cz>
+# Module:    SignatureCheckCallbacks.ycp
+# Authors:    Lukas Ocilka <locilka@suse.cz>
 #
 # Callbacks for handling signatures.
 #
@@ -58,9 +56,7 @@ module Yast
     # function for CallbackAcceptUnsignedFile()
     def AcceptUnsignedFile(filename, repo_id)
       # Check signatures at all?
-      if SignatureCheckDialogs.CheckSignaturesInYaST == false
-        return @default_return_unchecked
-      end
+      return @default_return_unchecked if SignatureCheckDialogs.CheckSignaturesInYaST == false
 
       dont_show_dialog_ident = "-AcceptUnsignedFile-"
 
@@ -95,9 +91,7 @@ module Yast
     # function for CallbackAcceptFileWithoutChecksum()
     def AcceptFileWithoutChecksum(filename)
       # Check signatures at all?
-      if SignatureCheckDialogs.CheckSignaturesInYaST == false
-        return @default_return_unchecked
-      end
+      return @default_return_unchecked if SignatureCheckDialogs.CheckSignaturesInYaST == false
 
       dont_show_dialog_ident = "-AcceptFileWithoutChecksum-"
 
@@ -125,9 +119,7 @@ module Yast
     # zypp: askUserToAcceptWrongDigest
     def AcceptWrongDigest(filename, requested_digest, found_digest)
       # Check signatures at all?
-      if SignatureCheckDialogs.CheckSignaturesInYaST == false
-        return @default_return_unchecked
-      end
+      return @default_return_unchecked if SignatureCheckDialogs.CheckSignaturesInYaST == false
 
       dont_show_dialog_ident = "-AcceptWrongDigest-"
 
@@ -157,9 +149,7 @@ module Yast
     # zypp: askUserToAccepUnknownDigest
     def AcceptUnknownDigest(filename, digest)
       # Check signatures at all?
-      if SignatureCheckDialogs.CheckSignaturesInYaST == false
-        return @default_return_unchecked
-      end
+      return @default_return_unchecked if SignatureCheckDialogs.CheckSignaturesInYaST == false
 
       dont_show_dialog_ident = "-AcceptUnknownDigest-"
 
@@ -194,9 +184,7 @@ module Yast
     # function for CallbackAcceptUnknownGpgKey()
     def AcceptUnknownGpgKey(filename, keyid, repoid)
       # Check signatures at all?
-      if SignatureCheckDialogs.CheckSignaturesInYaST == false
-        return @default_return_unchecked
-      end
+      return @default_return_unchecked if SignatureCheckDialogs.CheckSignaturesInYaST == false
 
       dont_show_dialog_ident = "-AcceptUnknownGpgKey-"
 
@@ -233,9 +221,7 @@ module Yast
     def ImportGpgKey(key, repo_id)
       key = deep_copy(key)
       # Check signatures at all?
-      if SignatureCheckDialogs.CheckSignaturesInYaST == false
-        return @default_return_unchecked
-      end
+      return @default_return_unchecked if SignatureCheckDialogs.CheckSignaturesInYaST == false
 
       SignatureCheckDialogs.ImportGPGKeyIntoTrustedDialog(key, repo_id)
     end
@@ -266,9 +252,7 @@ module Yast
     def AcceptVerificationFailed(filename, key, repo_id)
       key = deep_copy(key)
       # Check signatures at all?
-      if SignatureCheckDialogs.CheckSignaturesInYaST == false
-        return @default_return_unchecked
-      end
+      return @default_return_unchecked if SignatureCheckDialogs.CheckSignaturesInYaST == false
 
       SignatureCheckDialogs.UseCorruptedItem(:file, filename, key, repo_id)
     end

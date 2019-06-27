@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Hostname.ycp
-# Package:	yast2
-# Summary:	Hostname manipulation routines
-# Authors:	Michal Svec <msvec@suse.cz>
-# Flags:	Stable
+# File:  modules/Hostname.ycp
+# Package:  yast2
+# Summary:  Hostname manipulation routines
+# Authors:  Michal Svec <msvec@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -81,9 +79,8 @@ module Yast
     # @param [String] host hostname
     # @return true if correct
     def Check(host)
-      if host.nil? || host == "" || Ops.greater_than(Builtins.size(host), 63)
-        return false
-      end
+      return false if host.nil? || host == "" || Ops.greater_than(Builtins.size(host), 63)
+
       Builtins.regexpmatch(host, "^[[:alnum:]]([[:alnum:]-]*[[:alnum:]])?$")
     end
 
@@ -92,6 +89,7 @@ module Yast
     # @return true if correct
     def CheckDomain(domain)
       return false if domain.nil? || domain == ""
+
       # if "domain" contains "." character as last character remove it before validation (but it's valid)
       if Ops.greater_than(Builtins.size(domain), 1)
         if Builtins.substring(domain, Ops.subtract(Builtins.size(domain), 1), 1) == "."
@@ -104,6 +102,7 @@ module Yast
       end
       l = Builtins.splitstring(domain, ".")
       return false if Builtins.contains(Builtins.maplist(l) { |h| Check(h) }, false)
+
       !Builtins.regexpmatch(domain, "\\.[[:digit:]][^.]*$")
     end
 
@@ -148,6 +147,7 @@ module Yast
     # @return FQ hostname
     def MergeFQ(hostname, domain)
       return hostname if domain == "" || domain.nil?
+
       Ops.add(Ops.add(hostname, "."), domain)
     end
 
@@ -203,9 +203,7 @@ module Yast
       if !IP.Check(fqhostname)
         data = SplitFQ(fqhostname)
 
-        if data != [] && Ops.greater_than(Builtins.size(data), 1)
-          domain = Ops.get(data, 1, "")
-        end
+        domain = Ops.get(data, 1, "") if data != [] && Ops.greater_than(Builtins.size(data), 1)
       end
 
       Builtins.y2debug("Current domainname: %1", domain)

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/TablePopup.ycp
-# Package:	Table/Popup dialogs backend
-# Summary:	Routines for Table/Popup interface
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/TablePopup.ycp
+# Package:  Table/Popup dialogs backend
+# Summary:  Routines for Table/Popup interface
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -63,6 +61,7 @@ module Yast
         to:   "list (map)"
       )
       return toEval.call(descr) if !toEval.nil?
+
       []
     end
 
@@ -166,9 +165,7 @@ module Yast
           to:   "map <string, map <string, any>>"
         )
         Builtins.foreach(des) do |group, d|
-          if group != "table" && group != "popup"
-            Builtins.y2error("Unknown entry in option %1: %2", w_key, group)
-          end
+          Builtins.y2error("Unknown entry in option %1: %2", w_key, group) if group != "table" && group != "popup"
           Builtins.foreach(d) do |key2, value|
             ValidateValueType(key2, value, w_key, true)
           end
@@ -190,6 +187,7 @@ module Yast
           Builtins.substring(Convert.to_string(opt_id), 0, 7) == "____sep"
         return "____sep"
       end
+
       toEval = Convert.convert(
         Ops.get(descr, "id2key"),
         from: "any",
@@ -310,6 +308,7 @@ module Yast
         to:   "string (any, string)"
       )
       return toEval.call(opt_id, opt_key) if !toEval.nil?
+
       ""
     end
 
@@ -327,6 +326,7 @@ module Yast
         to:   "boolean (any, string)"
       )
       return toEval.call(opt_id, opt_key) if !toEval.nil?
+
       false
     end
 
@@ -401,6 +401,7 @@ module Yast
         to:   "any (any, string, symbol)"
       )
       return toEval.call(opt_id, id2key(descr, opt_id), dir) if nil != toEval
+
       nil
     end
 
@@ -411,9 +412,7 @@ module Yast
     def TableRedraw(descr, update_buttons)
       descr = deep_copy(descr)
       id_list = getIdList(descr)
-      if @previous_selected_item.nil?
-        @previous_selected_item = Ops.get(id_list, 0)
-      end
+      @previous_selected_item = Ops.get(id_list, 0) if @previous_selected_item.nil?
       entries = Builtins.maplist(id_list) do |opt_id|
         opt_val = ""
         opt_changed = false
@@ -428,9 +427,7 @@ module Yast
           opt_val = tableEntryValue(opt_id, opt_descr)
           opt_changed = tableEntryChanged(opt_id, opt_descr)
         end
-        if update_buttons && opt_id == @previous_selected_item
-          updateButtons(descr, opt_descr)
-        end
+        updateButtons(descr, opt_descr) if update_buttons && opt_id == @previous_selected_item
         if Ops.get_boolean(descr, ["_cwm_attrib", "changed_column"], false)
           next Item(
             Id(opt_id),
@@ -463,6 +460,7 @@ module Yast
       known_keys = {}
       possible = Builtins.maplist(possible) do |p|
         next if !Ops.is_string?(p)
+
         opt_descr = key2descr(descr, Convert.to_string(p))
         label = Ops.get_string(
           opt_descr,
@@ -503,15 +501,14 @@ module Yast
         option = nil
         while ret != :_tp_ok && ret != :_tp_cancel
           ret = UI.UserInput
-          if ret == :_tp_ok
-            option = Convert.to_string(UI.QueryWidget(Id(:optname), :Value))
-          end
+          option = Convert.to_string(UI.QueryWidget(Id(:optname), :Value)) if ret == :_tp_ok
         end
       ensure
         UI.CloseDialog
       end
       return nil if ret == :_tp_cancel
       return option if Ops.get(known_keys, option, false)
+
       Ops.get(val2key, option, option)
     end
 
@@ -544,8 +541,8 @@ module Yast
           VSpacing(1),
           Left(header),
           VSpacing(1),
-          help == "" ? VSpacing(0) : Left(Label(help)),
-          VSpacing(help == "" ? 0 : 1),
+          (help == "") ? VSpacing(0) : Left(Label(help)),
+          VSpacing((help == "") ? 0 : 1),
           Left(ReplacePoint(Id(:value_rp), widget)),
           VSpacing(1),
           HBox(
@@ -620,9 +617,7 @@ module Yast
     def DisableTable(descr)
       descr = deep_copy(descr)
       UI.ChangeWidget(Id(:_tp_table), :Enabled, false)
-      if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
-        UI.ChangeWidget(Id(:_tp_edit), :Enabled, false)
-      end
+      UI.ChangeWidget(Id(:_tp_edit), :Enabled, false) if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
       if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
         UI.ChangeWidget(Id(:_tp_delete), :Enabled, false)
         UI.ChangeWidget(Id(:_tp_add), :Enabled, false)
@@ -641,12 +636,8 @@ module Yast
     def EnableTable(descr)
       descr = deep_copy(descr)
       UI.ChangeWidget(Id(:_tp_table), :Enabled, true)
-      if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
-        UI.ChangeWidget(Id(:_tp_edit), :Enabled, true)
-      end
-      if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
-        UI.ChangeWidget(Id(:_tp_add), :Enabled, false)
-      end
+      UI.ChangeWidget(Id(:_tp_edit), :Enabled, true) if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
+      UI.ChangeWidget(Id(:_tp_add), :Enabled, false) if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
 
       opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
       opt_key = id2key(descr, opt_id)
@@ -685,7 +676,8 @@ module Yast
           event_id = :_tp_edit
         end
       end
-      if event_id == :_tp_edit || event_id == :_tp_add
+      case event_id
+      when :_tp_edit, :_tp_add
         opt_key = nil
         opt_id = nil
 
@@ -711,6 +703,7 @@ module Yast
             until selected
               opt_key = askForNewOption(add_opts, add_unlisted, descr)
               return nil if opt_key.nil?
+
               if Builtins.contains(present, opt_key)
                 Report.Error(
                   # error report
@@ -729,7 +722,7 @@ module Yast
         option_map = key2descr(descr, opt_key)
         toEval = Ops.get(option_map, ["table", "handle"])
         if !toEval.nil?
-          #		if (is (toEval, symbol))
+          #    if (is (toEval, symbol))
           if !Ops.is(toEval, "symbol (any, string, map)")
             ret2 = Convert.to_symbol(toEval)
             return ret2
@@ -777,10 +770,10 @@ module Yast
             end
           end
         end
-      elsif event_id == :_tp_delete
+      when :_tp_delete
         opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
         TableInit(descr, key) if deleteTableItem(opt_id, descr)
-      elsif event_id == :_tp_table
+      when :_tp_table
         opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
         key2 = id2key(descr, opt_id)
         if key2 == "____sep"
@@ -815,9 +808,9 @@ module Yast
 
         opt_descr = key2descr(descr, id2key(descr, opt_id))
         updateButtons(descr, opt_descr)
-      elsif event_id == :_tp_up || event_id == :_tp_down
+      when :_tp_up, :_tp_down
         opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
-        opt_id = moveTableItem(opt_id, descr, event_id == :_tp_up ? :up : :down)
+        opt_id = moveTableItem(opt_id, descr, (event_id == :_tp_up) ? :up : :down)
         if nil != opt_id
           TableRedraw(descr, false)
           UI.ChangeWidget(Id(:_tp_table), :CurrentItem, opt_id)

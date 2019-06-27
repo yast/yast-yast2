@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Kernel.ycp
-# Package:	Installation
-# Summary:	Kernel related functions and data
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
-#		Arvin Schnell <arvin@suse.de>
+# File:  modules/Kernel.ycp
+# Package:  Installation
+# Summary:  Kernel related functions and data
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
+#    Arvin Schnell <arvin@suse.de>
 #
 # $Id$
 #
@@ -148,7 +146,7 @@ module Yast
 
     # AddCmdLine ()
     # @param [String] name of parameter
-    # @param	string	args of parameter
+    # @param  string  args of parameter
     #
     # add "name=args" to kernel boot parameters
     # add just "name" if args = ""
@@ -169,6 +167,7 @@ module Yast
     def ParseInstallationKernelCmdline
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
+
       # live installation does not create /etc/install.inf (bsc#793065)
       tmp = if Mode.live_installation
         # not using dedicated agent in order to use the same parser for cmdline
@@ -334,7 +333,7 @@ module Yast
       Builtins.y2milestone("ProbeKernel determined: %1", @kernel_packages)
 
       nil
-    end # ProbeKernel ()
+    end
 
     # Set a custom kernel.
     # @param custom_kernels a list of kernel packages
@@ -533,8 +532,8 @@ module Yast
     # kernel was reinstalled stuff
 
     #  Set inform_about_kernel_change.
-    def SetInformAboutKernelChange(b)
-      @inform_about_kernel_change = b
+    def SetInformAboutKernelChange(value)
+      @inform_about_kernel_change = value
 
       nil
     end
@@ -589,18 +588,14 @@ module Yast
           :ag_anyagent,
           term(
             :Description,
-
             term(
               :File,
               full_path
             ),
-
             # Comments
             "#\n",
-
             # Read-only?
             false,
-
             term(
               :List,
               term(:String, "^\n"),
@@ -690,9 +685,7 @@ module Yast
       discardlist.concat(S390_ZIPL_ARGS) if Arch.s390
 
       # get rid of live-installer-specific parameters
-      if Mode.live_installation
-        discardlist.push("initrd", "ramdisk_size", "ramdisk_blocksize", "liveinstall", "splash", "quiet", "lang")
-      end
+      discardlist.push("initrd", "ramdisk_size", "ramdisk_blocksize", "liveinstall", "splash", "quiet", "lang") if Mode.live_installation
 
       # TODO: is it still needed?
       # backdoor to re-enable update on UL/SLES
@@ -704,13 +697,14 @@ module Yast
       discardlist
     end
 
-    # @param	[String] cmdline to parse
+    # @param  [String] cmdline to parse
     #
-    # @return	[void]
+    # @return  [void]
     # Filters out yast2 specific boot parameters and sets
     # Parameters to the important cmdline parts.
     def ExtractCmdlineParameters(line)
       return unless line
+
       # list of parameters to be discarded (yast internals)
       cmdlist = list_of_params(line)
 
@@ -719,10 +713,13 @@ module Yast
       cmdlist.each do |parameter|
         next unless parameter
         next if parameter.empty?
+
         key, value = parameter.split("=", 2)
         next unless key
+
         value ||= ""
         next if discardlist.include?(key)
+
         if key == "vga"
           if value.match?(/^(((0x)?\h+)|(ask)|(ext)|(normal))$/)
             @vgaType = value

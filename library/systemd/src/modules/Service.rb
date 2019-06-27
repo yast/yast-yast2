@@ -19,13 +19,13 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Service.ycp
-# Package:	yast2
-# Summary:	Service manipulation
-# Authors:	Martin Vidner <mvidner@suse.cz>
-#		Petr Blahos <pblahos@suse.cz>
-#		Michal Svec <msvec@suse.cz>
-#		Lukas Ocilka <locilka@suse.cz>
+# File:  modules/Service.ycp
+# Package:  yast2
+# Summary:  Service manipulation
+# Authors:  Martin Vidner <mvidner@suse.cz>
+#    Petr Blahos <pblahos@suse.cz>
+#    Michal Svec <msvec@suse.cz>
+#    Lukas Ocilka <locilka@suse.cz>
 ###
 
 # Functions for systemd service handling used by other modules.
@@ -112,6 +112,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:enable, service_name, service.error) unless service.enable
+
       true
     end
 
@@ -126,6 +127,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:disable, service_name, service.error) unless service.disable
+
       true
     end
 
@@ -140,6 +142,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:start, service_name, service.error) unless service.start
+
       true
     end
 
@@ -154,6 +157,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:restart, service_name, service.error) unless service.restart
+
       true
     end
 
@@ -168,6 +172,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:reload, service_name, service.error) unless service.reload
+
       true
     end
 
@@ -182,6 +187,7 @@ module Yast
       service = Yast2::Systemd::Service.find(service_name)
       return failure(:not_found, service_name) unless service
       return failure(:stop, service_name, service.error) unless service.stop
+
       true
     end
 
@@ -206,6 +212,7 @@ module Yast
       deprecate("use `Yast2::Systemd::Service.find` instead")
 
       return failure(:not_found, name) unless Yast2::Systemd::Service.find(name)
+
       true
     end
 
@@ -239,6 +246,7 @@ module Yast
 
       unit = Yast2::Systemd::Service.find(unit)
       return nil unless unit
+
       unit.id
     end
 
@@ -251,6 +259,7 @@ module Yast
 
       unit = Yast2::Systemd::Service.find(name)
       return nil unless unit
+
       unit.name
     end
 
@@ -266,7 +275,7 @@ module Yast
       unit = Yast2::Systemd::Service.find(name)
       failure(:not_found, name) unless unit
 
-      unit && unit.active? ? 0 : -1
+      (unit&.active?) ? 0 : -1
     end
 
     # @deprecated Not supported by systemd
@@ -277,6 +286,7 @@ module Yast
       deprecate("not supported by systemd")
 
       return {} if !checkExists(name)
+
       Builtins.add(Info(name), "started", Status(name))
     end
 
@@ -326,15 +336,15 @@ module Yast
     # enabled, otherwise disabled.
     #
     # @param [String] name name of service to adjust
-    # @param [Array] rl list of runlevels in which service should start
+    # @param [Array] list list of runlevels in which service should start
     # @return success state
-    def Finetune(name, rl)
+    def Finetune(name, list)
       deprecate("use `enable` or `disable` instead")
 
       service = Yast2::Systemd::Service.find(name)
       return failure(:not_found, name) unless service
 
-      if rl.empty?
+      if list.empty?
         service.disable
       else
         log.warn "Cannot enable service '#{name}' in selected runlevels, enabling for all"

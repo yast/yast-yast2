@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -23,7 +21,7 @@
 # ***************************************************************************
 # Popups example concerning installation
 #
-# Author:	Arvin Schnell <arvin@suse.de>
+# Author:  Arvin Schnell <arvin@suse.de>
 #
 # $Id$
 module Yast

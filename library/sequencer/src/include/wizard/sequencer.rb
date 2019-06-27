@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	include/wizard/sequencer.ycp
-# Module:	yast2
-# Summary:	Wizard sequencer
-# Authors:	Michal Svec <msvec@suse.cz>
+# File:  include/wizard/sequencer.ycp
+# Module:  yast2
+# Summary:  Wizard sequencer
+# Authors:  Michal Svec <msvec@suse.cz>
 #
 # $Id$
 #

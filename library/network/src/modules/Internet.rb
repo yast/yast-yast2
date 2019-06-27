@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Internet.ycp
-# Package:	Network configuration
-# Summary:	Internet connection and YOU during the installation
-# Authors:	Michal Svec <msvec@suse.cz>
-#		Arvin Schnell <arvin@suse.de>
+# File:  modules/Internet.ycp
+# Package:  Network configuration
+# Summary:  Internet connection and YOU during the installation
+# Authors:  Michal Svec <msvec@suse.cz>
+#    Arvin Schnell <arvin@suse.de>
 #
 # $Id$
 require "yast"
@@ -179,7 +177,7 @@ module Yast
 
       ret = SCR.Execute(path(".target.bash"), "/sbin/ifstatus #{@device.shellescape}")
       Builtins.y2milestone("ifstatus %1: %2", @device, ret)
-      ret == 0 || ret == 10
+      [0, 10].include?(ret)
     end
 
     # Test if the interface is connected
@@ -218,7 +216,7 @@ module Yast
       pp = path(".sysconfig.network.providers.v")
       pp = Builtins.add(pp, @provider)
       pp = Builtins.add(pp, "DEMAND")
-      SCR.Write(pp, demand == true ? "yes" : "no")
+      SCR.Write(pp, (demand == true) ? "yes" : "no")
       SCR.Write(path(".sysconfig.network.providers"), nil)
 
       nil

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/UIHelper.ycp
-# Package:	yast2
-# Summary:	Set of helper modules for UI formatting
-# Authors:	Stanislav Visnovsky <visnov@suse.cz>
+# File:  modules/UIHelper.ycp
+# Package:  yast2
+# Summary:  Set of helper modules for UI formatting
+# Authors:  Stanislav Visnovsky <visnov@suse.cz>
 #
 # $Id: Version.ycp.in 10158 2003-06-23 12:48:40Z visnov $
 require "yast"
@@ -84,9 +82,7 @@ module Yast
         PushButton(Id(:delete_button), Opt(:key_F5), _("De&lete"))
       )
 
-      if nil != buttons
-        but_box = Builtins.add(Builtins.add(but_box, HStretch()), buttons)
-      end
+      but_box = Builtins.add(Builtins.add(but_box, HStretch()), buttons) if nil != buttons
       contents = Builtins.add(contents, but_box)
       contents = Builtins.add(contents, below_buttons) if nil != below_buttons
       deep_copy(contents)

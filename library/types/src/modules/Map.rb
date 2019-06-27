@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Map.ycp
-# Package:	yast2
-# Summary:	Map manipulation routines
-# Authors:	Michal Svec <msvec@suse.cz>
-# Flags:	Stable
+# File:  modules/Map.ycp
+# Package:  yast2
+# Summary:  Map manipulation routines
+# Authors:  Michal Svec <msvec@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -39,31 +37,34 @@ module Yast
     end
 
     # Return all keys from the map
-    # @param [Hash] m the map
+    # @param [Hash] map
     # @return a list of all keys from the map
-    def Keys(m)
-      m = deep_copy(m)
-      return [] if m.nil? || m == {}
-      Builtins.maplist(m) { |var, _val| var }
+    def Keys(map)
+      map = deep_copy(map)
+      return [] if map.nil? || map == {}
+
+      Builtins.maplist(map) { |var, _val| var }
     end
 
     # Return all values from the map
-    # @param [Hash] m the map
+    # @param [Hash] map
     # @return a list of all values from the map
-    def Values(m)
-      m = deep_copy(m)
-      return [] if m.nil? || m == {}
-      Builtins.maplist(m) { |_var, val| val }
+    def Values(map)
+      map = deep_copy(map)
+      return [] if map.nil? || map == {}
+
+      Builtins.maplist(map) { |_var, val| val }
     end
 
     # Switch map keys to lower case
-    # @param [Hash{String => Object}] m input map
+    # @param [Hash{String => Object}] map
     # @return [Hash] with keys converted to lower case
-    def KeysToLower(m)
-      m = deep_copy(m)
+    def KeysToLower(map)
+      map = deep_copy(map)
       newk = nil
-      return {} if m.nil?
-      Builtins.mapmap(m) do |k, v|
+      return {} if map.nil?
+
+      Builtins.mapmap(map) do |k, v|
         newk = Builtins.tolower(k)
         { newk => v }
       end
@@ -72,28 +73,29 @@ module Yast
     # Switch map keys to upper case
     # @param [Hash{String => Object}] m input map
     # @return [Hash] with keys converted to lower case
-    def KeysToUpper(m)
-      m = deep_copy(m)
+    def KeysToUpper(map)
+      map = deep_copy(map)
       newk = nil
-      return {} if m.nil?
-      Builtins.mapmap(m) do |k, v|
+      return {} if map.nil?
+
+      Builtins.mapmap(map) do |k, v|
         newk = Builtins.toupper(k)
         { newk => v }
       end
     end
 
     # Check if a map contains all needed keys
-    # @param [Hash] m map to be checked
+    # @param [Hash] map to be checked
     # @param [Array] keys needed keys
     # @return true if map kontains all keys
-    def CheckKeys(m, keys)
-      m = deep_copy(m)
+    def CheckKeys(map, keys)
+      map = deep_copy(map)
       keys = deep_copy(keys)
-      return false if m.nil? || keys.nil?
+      return false if map.nil? || keys.nil?
 
       ret = true
       Builtins.foreach(keys) do |k|
-        if k.nil? || !Builtins.haskey(m, k)
+        if k.nil? || !Builtins.haskey(map, k)
           Builtins.y2error("Missing key: %1", k)
           ret = false
         end
@@ -103,32 +105,33 @@ module Yast
     end
 
     # Convert options map $[var:val, ...] to string "var=val ..."
-    # @param [Hash] m map to be converted
+    # @param [Hash] map to be converted
     # @return converted map
-    def ToString(m)
-      m = deep_copy(m)
-      return "" if m.nil?
+    def ToString(map)
+      map = deep_copy(map)
+      return "" if map.nil?
 
       ret = ""
-      Builtins.foreach(m) do |var, val|
+      Builtins.foreach(map) do |var, val|
         ret = Ops.add(ret, Builtins.sformat(" %1=%2", var, val))
       end
       String.CutBlanks(ret)
     end
 
     # Convert string "var=val ..." to map $[val:var, ...]
-    # @param [String] s string to be converted
+    # @param [String] string to be converted
     # @return converted string
-    def FromString(s)
-      return {} if s.nil?
+    def FromString(string)
+      return {} if string.nil?
 
       ret = {}
-      Builtins.foreach(Builtins.splitstring(s, " ")) do |vals|
+      Builtins.foreach(Builtins.splitstring(string, " ")) do |vals|
         val = Builtins.splitstring(vals, "=")
         if Ops.less_than(Builtins.size(val), 1) ||
             Ops.get_string(val, 0, "") == ""
           next
         end
+
         key = Ops.get_string(val, 0, "")
         if Ops.greater_than(Builtins.size(val), 1)
           Ops.set(ret, key, Ops.get_string(val, 1, ""))

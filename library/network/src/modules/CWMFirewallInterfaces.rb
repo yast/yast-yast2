@@ -1,4 +1,3 @@
-# encoding: utf-8
 #
 # ***************************************************************************
 #
@@ -22,10 +21,10 @@
 #
 # ***************************************************************************
 
-# File:	modules/CWMFirewallInterfaces.ycp
-# Package:	Common widget manipulation, firewall interfaces widget
-# Summary:	Routines for selecting interfaces opened in firewall
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/CWMFirewallInterfaces.ycp
+# Package:  Common widget manipulation, firewall interfaces widget
+# Summary:  Routines for selecting interfaces opened in firewall
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -35,7 +34,7 @@
 #          and you should call 'firewalld.write' in the
 #          Write() function.
 #
-#	    Functionality of this module only changes the firewalld
+#      Functionality of this module only changes the firewalld
 #          settings in memory, it never Reads or Writes the settings.
 
 require "yast"
@@ -108,6 +107,7 @@ module Yast
     def EnableOrDisableFirewallDetails
       return if !UI.WidgetExists(Id("_cwm_open_firewall"))
       return if !UI.WidgetExists(Id("_cwm_firewall_details"))
+
       enabled = Convert.to_boolean(
         UI.QueryWidget(Id("_cwm_open_firewall"), :Value)
       )
@@ -148,7 +148,7 @@ module Yast
       log.info("Status: #{status}, All: #{all_interfaces}, Allowed: #{allowed_interfaces}")
 
       SetFirewallLabel(status)
-      open = status == :open_all || status == :custom
+      open = [:open_all, :custom].include?(status)
       UI.ChangeWidget(Id("_cwm_open_firewall"), :Value, open)
 
       nil
@@ -172,9 +172,11 @@ module Yast
         zone_names.map do |zone_name|
           zone = firewalld.find_zone(zone_name)
           next [] unless zone
+
           interfaces = zone.interfaces
 
           next(interfaces) unless zone_name == default_zone.name
+
           interfaces += default_interfaces
 
           left_explicitly = interfaces.select { |i| ifaces.include?(i) }.uniq
@@ -196,7 +198,7 @@ module Yast
         from: "any",
         to:   "void (map <string, any>)"
       )
-      common_details_handler.call(widget) if !common_details_handler.nil?
+      common_details_handler&.call(widget)
 
       nil
     end
@@ -228,11 +230,9 @@ module Yast
       if !default_interfaces.empty?
         services.each do |service|
           service_status[firewalld.default_zone] =
-            default_zone && default_zone.services.include?(service)
+            default_zone&.services&.include?(service)
         end
-        if service_status[firewalld.default_zone]
-          @allowed_interfaces = (allowed_interfaces + default_interfaces).uniq
-        end
+        @allowed_interfaces = (allowed_interfaces + default_interfaces).uniq if service_status[firewalld.default_zone]
       end
 
       log.info "Allowed interfaces: #{allowed_interfaces}"
@@ -399,9 +399,9 @@ module Yast
 
       firewall_ifaces = Selected2Opened(ifaces, false)
       log.info("firewall_ifaces: #{firewall_ifaces}")
-      added_ifaces = firewall_ifaces.select { |i| !ifaces.include?(i) }
+      added_ifaces = firewall_ifaces.reject { |i| ifaces.include?(i) }
       log.info("added_ifaces: #{added_ifaces}")
-      removed_ifaces = ifaces.select { |i| !firewall_ifaces.include?(i) }
+      removed_ifaces = ifaces.reject { |i| firewall_ifaces.include?(i) }
       log.info("removed_ifaces: #{removed_ifaces}")
 
       # to hide that special string
@@ -539,14 +539,11 @@ module Yast
 
       help = "" # TODO
 
-      if Builtins.haskey(settings, "help")
-        help = Ops.get_string(settings, "help", "")
-      end
+      help = Ops.get_string(settings, "help", "") if Builtins.haskey(settings, "help")
 
       ret = Convert.convert(
         Builtins.union(
           settings,
-
           "widget"            => :custom,
           "custom_widget"     => widget,
           "help"              => help,
@@ -567,7 +564,6 @@ module Yast
             method(:InterfacesValidateWrapper),
             "boolean (string, map)"
           )
-
         ),
         from: "map",
         to:   "map <string, any>"
@@ -635,6 +631,7 @@ module Yast
     # @param [Hash] _event map that caused widget data storing
     def OpenFirewallStore(widget, _key, _event)
       return unless open_firewall_widget?
+
       services = widget.fetch("services", [])
       StoreAllowedInterfaces(services)
       nil
@@ -729,6 +726,7 @@ module Yast
     def EnableOpenFirewallWidget
       return if !UI.WidgetExists(Id("_cwm_open_firewall"))
       return if !UI.WidgetExists(Id("_cwm_firewall_details"))
+
       UI.ChangeWidget(Id("_cwm_open_firewall"), :Enabled, true)
       EnableOrDisableFirewallDetails()
 
@@ -739,6 +737,7 @@ module Yast
     def DisableOpenFirewallWidget
       return if !UI.WidgetExists(Id("_cwm_open_firewall"))
       return if !UI.WidgetExists(Id("_cwm_firewall_details"))
+
       UI.ChangeWidget(Id("_cwm_open_firewall"), :Enabled, false)
       UI.ChangeWidget(Id("_cwm_firewall_details"), :Enabled, false)
 
@@ -864,7 +863,7 @@ module Yast
 
       firewall_settings = VBox(
         Frame(
-          _("Firewall Settings for %{firewall}") % { firewall: Y2Firewall::Firewalld::SERVICE },
+          format(_("Firewall Settings for %{firewall}"), firewall: Y2Firewall::Firewalld::SERVICE),
           VBox(
             Left(firewall_settings),
             Left(
@@ -1059,11 +1058,11 @@ module Yast
           if !firewalld.current_service_names.include?(service)
             # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
             # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
-            HBox(HSpacing(2), Left(Label(_("- %{service} (Not available)") % { service: service })))
+            HBox(HSpacing(2), Left(Label(format(_("- %{service} (Not available)"), service: service))))
           else
             # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
             # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
-            HBox(HSpacing(2), Left(Label(_("- %{service}") % { service: service })))
+            HBox(HSpacing(2), Left(Label(format(_("- %{service}"), service: service))))
           end
         end
 

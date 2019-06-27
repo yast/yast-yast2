@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/String.ycp
-# Package:	yast2
-# Summary:	String manipulation routines
-# Authors:	Michal Svec <msvec@suse.cz>
+# File:  modules/String.ycp
+# Package:  yast2
+# Summary:  String manipulation routines
+# Authors:  Michal Svec <msvec@suse.cz>
 #
 # $Id$
 require "yast"
@@ -68,6 +66,7 @@ module Yast
     # @see #quote
     def UnQuote(var)
       return "" if var.nil?
+
       log.debug "var=#{var}"
 
       var.gsub("'\\''", "'")
@@ -75,23 +74,24 @@ module Yast
 
     # Optional parenthesized text
     # @return " (Foo)" if Foo is neither empty or nil, else ""
-    def OptParens(s)
-      opt_format(" (%1)", s)
+    def OptParens(input)
+      opt_format(" (%1)", input)
     end
 
-    # @param [Array<String>] l a list of strings
+    # @param [Array<String>] list of strings
     # @return only non-"" items
-    def NonEmpty(l)
-      return nil unless l
-      l.reject { |i| i == "" }
+    def NonEmpty(list)
+      return nil unless list
+
+      list.reject { |i| i == "" }
     end
 
-    # @param [String] s \n-terminated items
+    # @param [String] string \n-terminated items
     # @return the items as a list, with empty lines removed
-    def NewlineItems(s)
-      return nil unless s
+    def NewlineItems(string)
+      return nil unless string
 
-      NonEmpty(s.split("\n"))
+      NonEmpty(string.split("\n"))
     end
 
     # @param [Boolean] value boolean
@@ -109,10 +109,10 @@ module Yast
     # Uses the current locale defined decimal separator
     # (i.e. the result is language dependant).
     #
-    # @param [Fixnum] bytes	size (e.g. free diskspace, memory size) in Bytes
+    # @param [Fixnum] bytes  size (e.g. free diskspace, memory size) in Bytes
     # @param [Fixnum] precision number of fraction digits in output, if negative (less than 0) the precision is set automatically depending on the suffix
     # @param [Boolean] omit_zeroes if true then do not add zeroes
-    #	(useful for memory size - 128 MiB RAM looks better than 128.00 MiB RAM)
+    #  (useful for memory size - 128 MiB RAM looks better than 128.00 MiB RAM)
     # @return formatted string
     #
     # @example FormatSizeWithPrecision(128, 2, true) -> "128 B"
@@ -145,7 +145,7 @@ module Yast
 
       precision ||= 0
       # auto precision - depends on the suffix, but max. 3 decimal digits
-      precision = index < 3 ? index : 3 if precision < 0
+      precision = (index < 3) ? index : 3 if precision < 0
 
       if omit_zeroes == true
         max_difference = 0.9
@@ -165,7 +165,7 @@ module Yast
     # Uses the current locale defined decimal separator
     # (i.e. the result is language dependant).
     #
-    # @param [Fixnum] bytes	size (e.g. free diskspace) in Bytes
+    # @param [Fixnum] bytes  size (e.g. free diskspace) in Bytes
     # @return formatted string
     #
     # @example FormatSize(23456767890) -> "223.70 MiB"
@@ -214,12 +214,12 @@ module Yast
 
     # Format an integer number as (at least) two digits; use leading zeroes if
     # necessary.
-    # @param [Fixnum] x input
+    # @param [Fixnum] input
     # @return [String] number as two-digit string
     #
-    def FormatTwoDigits(x)
-      msg = (0..9).member?(x) ? "0%1" : "%1"
-      Builtins.sformat(msg, x)
+    def FormatTwoDigits(input)
+      msg = (0..9).member?(input) ? "0%1" : "%1"
+      Builtins.sformat(msg, input)
     end
 
     # Format an integer seconds value with min:sec or hours:min:sec
@@ -304,7 +304,7 @@ module Yast
 
       pad = padding * (length - text.size)
 
-      alignment == :right ? (pad + text) : (text + pad)
+      (alignment == :right) ? (pad + text) : (text + pad)
     end
 
     # Add spaces after the text to make it long enough
@@ -409,12 +409,7 @@ module Yast
                 "\"" => "\\\""
               }
 
-              character = if backslash_seq[nextcharacter]
-                backslash_seq[nextcharacter]
-              else
-                # ignore backslash in invalid backslash sequence
-                nextcharacter
-              end
+              character = backslash_seq[nextcharacter] || nextcharacter
 
               log.debug "backslash sequence: '#{character}'"
             else
@@ -477,10 +472,8 @@ module Yast
         end
 
         # error - still in quoted string
-        if state == :in_quoted_string || state == :in_quoted_string_after_dblqt
-          if state == :in_quoted_string
-            log.warn "Missing trainling double quote character(\") in input: '#{options}'"
-          end
+        if [:in_quoted_string, :in_quoted_string_after_dblqt].include?(state)
+          log.warn "Missing trainling double quote character(\") in input: '#{options}'" if state == :in_quoted_string
 
           ret << str if !unique || !ret.include?(str)
         end
@@ -509,6 +502,7 @@ module Yast
     # @return [String] that has matches removed
     def CutRegexMatch(input, regex, glob)
       return "" if input.nil? || input.empty?
+
       output = input
       if Builtins.regexpmatch(output, regex)
         p = Builtins.regexppos(output, regex)
@@ -531,9 +525,10 @@ module Yast
     # Usable to present text "as is" in RichText.
     #
     # @param [String] text to escape
-    # @return [String]	escaped text
+    # @return [String]  escaped text
     def EscapeTags(text)
       return nil unless text
+
       text = text.dup
 
       text.gsub!("&", "&amp;")
@@ -545,12 +540,13 @@ module Yast
 
     # Shorthand for select (splitstring (s, separators), 0, "")
     # Useful now that the above produces a deprecation warning.
-    # @param [String] s string to be split
+    # @param [String] string to be split
     # @param [String] separators characters which delimit components
     # @return first component or ""
-    def FirstChunk(s, separators)
-      return "" if !s || !separators
-      s[/\A[^#{separators}]*/]
+    def FirstChunk(string, separators)
+      return "" if !string || !separators
+
+      string[/\A[^#{separators}]*/]
     end
 
     # The 26 lowercase ASCII letters
@@ -598,7 +594,7 @@ module Yast
     # @param [Array<String>] header
     # @param [Array<Array<String>>] items
     # @param [Hash{String => Object}] options
-    # @return	[String] table
+    # @return  [String] table
     #
     # Header: [ "Id", "Configuration", "Device" ]
     # Items: [ [ "1", "aaa", "Samsung Calex" ], [ "2", "bbb", "Trivial Trinitron" ] ]
@@ -636,11 +632,12 @@ module Yast
     # Function returns underlined text header without using HTML tags.
     # (Useful for commandline)
     #
-    # @param	string header line
-    # @param	integer left padding
-    # @return	[String] underlined header line
+    # @param  string header line
+    # @param  integer left padding
+    # @return  [String] underlined header line
     def UnderlinedHeader(header_line, left_padding)
       return nil unless header_line
+
       left_padding ||= 0
 
       Pad("", left_padding) + header_line + "\n" +
@@ -648,39 +645,37 @@ module Yast
     end
 
     # Replace substring in a string. All substrings source are replaced by string target.
-    # @param [String] s input string
+    # @param [String] input string
     # @param [String] source the string which will be replaced
     # @param [String] target the new string which is used instead of source
     # @return [String] result
-    def Replace(s, source, target)
-      return nil if s.nil?
+    def Replace(input, source, target)
+      return nil if input.nil?
 
       if source.nil? || source == ""
         Builtins.y2warning("invalid parameter source: %1", source)
-        return s
+        return input
       end
 
       if target.nil?
         Builtins.y2warning("invalid parameter target: %1", target)
-        return s
+        return input
       end
 
       # avoid infinite loop even if it break backward compatibility
-      if target.include?(source)
-        raise "Target #{target} include #{source} which will lead to infinite loop"
-      end
+      raise "Target #{target} include #{source} which will lead to infinite loop" if target.include?(source)
 
-      pos = s.index(source)
+      pos = input.index(source)
       while pos
-        tmp = s[0, pos] + target
-        tmp << s[(pos + source.size)..-1] if s.size > (pos + source.size)
+        tmp = input[0, pos] + target
+        tmp << input[(pos + source.size)..-1] if input.size > (pos + source.size)
 
-        s = tmp
+        input = tmp
 
-        pos = s.index(source)
+        pos = input.index(source)
       end
 
-      s
+      input
     end
 
     # Make a random base-36 number.
@@ -689,6 +684,7 @@ module Yast
     # @return random string of 0-9 and a-z
     def Random(len)
       return "" if !len || len <= 0
+
       digits = DIGIT_CHARS + LOWER_CHARS # uses the character classes from above
       ret = Array.new(len) { digits[rand(digits.size)] }
 
@@ -825,8 +821,8 @@ module Yast
 
     # Optional formatted text
     # @return sformat (f, s) if s is neither empty or nil, else ""
-    def opt_format(f, s)
-      s == "" || s.nil? ? "" : Builtins.sformat(f, s)
+    def opt_format(format, string)
+      (string == "" || string.nil?) ? "" : Builtins.sformat(format, string)
     end
 
     # Return a pretty description of a download rate
@@ -848,8 +844,8 @@ module Yast
 
     # Local function returns underline string /length/ long.
     #
-    # @param	integer length of underline
-    # @return	string /length/ long underline
+    # @param  integer length of underline
+    # @return  string /length/ long underline
     def underline(length)
       return "" unless length
 
@@ -859,9 +855,9 @@ module Yast
     # Local function for creating header underline for table.
     # It uses maximal lengths of records defined in cols_lenghts.
     #
-    # @param	list <integer> maximal lengths of records in columns
-    # @param	integer horizontal padding of records
-    # @return	string table header underline
+    # @param  list <integer> maximal lengths of records in columns
+    # @param  integer horizontal padding of records
+    # @return  string table header underline
     def table_header_underline(cols_lenghts, horizontal_padding)
       horizontal_padding ||= 0
 
@@ -881,8 +877,8 @@ module Yast
 
     # Local function for finding longest records in the table.
     #
-    # @param	list <list <string> > table items
-    # @return	list <integer> longest records by columns
+    # @param  list <list <string> > table items
+    # @return  list <integer> longest records by columns
     def find_longest_records(items)
       return [] unless items
 
@@ -900,10 +896,10 @@ module Yast
 
     # Local function creates table row.
     #
-    # @param	list <string> row items
-    # @param	list <integer> columns lengths
-    # @param	integer record horizontal padding
-    # @return	string padded table row
+    # @param  list <string> row items
+    # @param  list <integer> columns lengths
+    # @param  integer record horizontal padding
+    # @return  string padded table row
     def table_row(row_items, cols_lenghts, horizontal_padding)
       row = ""
       row_items ||= []

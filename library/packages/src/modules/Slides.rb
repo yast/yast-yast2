@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module:		Slides.ycp
+# Module:    Slides.ycp
 #
-# Purpose:		Module to access slides from installation repository
+# Purpose:    Module to access slides from installation repository
 #
-# Author:		Stefan Hundhammer <sh@suse.de>
+# Author:    Stefan Hundhammer <sh@suse.de>
 #                      Stanislav Visnovsky <visnov@suse.cz>
 #
 require "yast"
@@ -180,6 +178,7 @@ module Yast
           Builtins.sformat("\\1%1\\2", @slide_pic_path)
         )
         break if replaced.nil?
+
         text = replaced
       end
 

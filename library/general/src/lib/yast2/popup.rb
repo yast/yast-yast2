@@ -91,17 +91,11 @@ module Yast2
       include Yast::UIShortcuts
 
       def check_arguments!(message, details, timeout, focus, buttons)
-        if !message.is_a?(::String)
-          raise ArgumentError, "Invalid value #{message.inspect} of parameter message"
-        end
+        raise ArgumentError, "Invalid value #{message.inspect} of parameter message" if !message.is_a?(::String)
 
-        if !details.is_a?(::String)
-          raise ArgumentError, "Invalid value #{details.inspect} of parameter details"
-        end
+        raise ArgumentError, "Invalid value #{details.inspect} of parameter details" if !details.is_a?(::String)
 
-        if !timeout.is_a?(::Integer)
-          raise ArgumentError, "Invalid value #{timeout.inspect} of parameter timeout"
-        end
+        raise ArgumentError, "Invalid value #{timeout.inspect} of parameter timeout" if !timeout.is_a?(::Integer)
 
         if !buttons.key?(focus)
           raise ArgumentError, "Invalid value #{focus.inspect} for parameter focus. " \
@@ -234,11 +228,12 @@ module Yast2
       def event_loop(content, focus, timeout, details, style)
         res = Yast::UI.OpenDialog(dialog_options(style), content)
         raise "Failed to open dialog, see logs." unless res
+
         begin
           remaining_time = timeout
           Yast::UI.SetFocus(focus)
           loop do
-            res = timeout > 0 ? Yast::UI.TimeoutUserInput(1000) : Yast::UI.UserInput
+            res = (timeout > 0) ? Yast::UI.TimeoutUserInput(1000) : Yast::UI.UserInput
             remaining_time -= 1
             res = handle_event(res, details, remaining_time, focus)
             return res if res

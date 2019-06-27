@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -25,8 +23,8 @@
 # Package:     YaST2 base package
 # Summary:     Useful tool for viewing any variable contents.
 # Authors:     Martin Vidner <mvidner@suse.cz>
-#		Dan Vesely?
-# Flags:	Unstable
+#    Dan Vesely?
+# Flags:  Unstable
 #
 # $Id$
 require "yast"
@@ -42,10 +40,10 @@ module Yast
     end
 
     # Helper function that replaces all ocurences of "\n" with "\\n", so items are not multiline :-)
-    # @param [String] s string to escape
+    # @param [String] string to escape
     # @return [String] escaped string
-    def escapestring(s)
-      Builtins.mergestring(Builtins.splitstring(s, "\n"), "\\n")
+    def escapestring(string)
+      Builtins.mergestring(Builtins.splitstring(string, "\n"), "\\n")
     end
 
     # Shows tree with contents of variable. This function does the job. Heavy recursion...

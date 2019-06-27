@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2018 SUSE LLC
 #
@@ -57,6 +55,7 @@ module Y2Firewall
       # @return [Array<Y2Firewall::Firewalld::Zone>]
       def read
         return [] if !@zone_names || @zone_names.empty?
+
         parse_zones
         initialize_zones
       end
@@ -70,6 +69,7 @@ module Y2Firewall
         current_attribute = nil
         zones_definition.each_with_object(zone_entries) do |line, entries|
           next if line.lstrip.empty?
+
           # If  the entry looks like a zone name
           if line.start_with?(/\w/)
             current_zone = current_zone_from(line)
@@ -79,7 +79,7 @@ module Y2Firewall
           next unless current_zone
 
           attribute, value = line.split(":\s")
-          if attribute && attribute.start_with?(/\s\s\w/)
+          if attribute&.start_with?(/\s\s\w/)
             current_attribute = attribute.lstrip.tr("-", "_")
             entries[current_zone] ||= {}
             entries[current_zone][current_attribute] ||= [value.to_s]
@@ -113,7 +113,7 @@ module Y2Firewall
             value = entries.first.to_s
 
             if BOOLEAN_ATTRIBUTES.include?(attribute)
-              zone.public_send("#{attribute}=", value == "yes" ? true : false)
+              zone.public_send("#{attribute}=", (value == "yes") ? true : false)
             elsif zone.attributes.include?(attribute.to_sym)
               zone.public_send("#{attribute}=", value)
             else

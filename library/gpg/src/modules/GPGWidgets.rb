@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/GPGWidgets.ycp
-# Package:	yast2
-# Summary:	UI widgets and functions related to GPG
-# Authors:	Ladislav Slezák <lslezak@suse.cz>
+# File:  modules/GPGWidgets.ycp
+# Package:  yast2
+# Summary:  UI widgets and functions related to GPG
+# Authors:  Ladislav Slezák <lslezak@suse.cz>
 #
 # $Id$
 #
@@ -298,9 +296,7 @@ module Yast
       event = deep_copy(event)
       Builtins.y2debug("PassphraseStore: %1, %2", key, event)
 
-      if Ops.get_symbol(event, "WidgetID", :_none) == :ok
-        @passphrase = Convert.to_string(UI.QueryWidget(Id(:passphrase), :Value))
-      end
+      @passphrase = Convert.to_string(UI.QueryWidget(Id(:passphrase), :Value)) if Ops.get_symbol(event, "WidgetID", :_none) == :ok
 
       nil
     end

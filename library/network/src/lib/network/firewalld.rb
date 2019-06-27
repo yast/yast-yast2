@@ -1,4 +1,3 @@
-# encoding: utf-8
 #
 # ***************************************************************************
 #
@@ -319,6 +318,7 @@ module Firewalld
     # @return [Boolean] True if masquerade was enabled in zone
     def add_masquerade(zone)
       return true if masquerade_enabled?(zone)
+
       fwd_quiet_result("--permanent --zone=#{zone.shellescape} --add-masquerade")
     end
 
@@ -326,6 +326,7 @@ module Firewalld
     # @return [Boolean] True if masquerade was removed in zone
     def remove_masquerade(zone)
       return true if !masquerade_enabled?(zone)
+
       fwd_quiet_result("--permanent --zone=#{zone.shellescape} --remove-masquerade")
     end
 
@@ -335,7 +336,7 @@ module Firewalld
     # all, unicast, broadcast, multicast and off
     # @return [Boolean] True if desired packet type is being logged when denied
     def log_denied_packets?(kind)
-      fwd_result("--get-log-denied").strip == kind ? true : false
+      (fwd_result("--get-log-denied").strip == kind) ? true : false
     end
 
     # @param kind [String] Denied packets to log. Possible values are:

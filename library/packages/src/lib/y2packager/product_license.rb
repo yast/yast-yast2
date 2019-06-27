@@ -53,8 +53,10 @@ module Y2Packager
       # @return [ProductLicense]
       def find(product_name, content: nil)
         return cache[product_name] if cache[product_name]
+
         license = License.find(product_name, content: content)
         return nil unless license
+
         cache[product_name] = ProductLicense.new(product_name, license)
       end
 
@@ -106,6 +108,7 @@ module Y2Packager
 
     def sync_acceptance
       return @handler unless @handler
+
       @handler.confirmation = license.accepted?
     end
   end

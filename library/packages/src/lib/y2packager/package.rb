@@ -41,6 +41,7 @@ module Y2Packager
       def find(name)
         props = Yast::Pkg.ResolvableProperties(name, :package, "")
         return nil if props.nil?
+
         props.map { |i| new(i["name"], i["source"], i["version"]) }
       end
 
@@ -57,8 +58,7 @@ module Y2Packager
 
         packages
           .select { |i| statuses.include?(i.status) }
-          .sort { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
-          .last
+          .max { |a, b| Yast::Pkg.CompareVersions(a.version, b.version) }
       end
     end
 

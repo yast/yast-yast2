@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,27 +19,25 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Call.ycp
-# Package:	yast2
-# Summary:	Workaround for CallFunction problems
-# Authors:	Michal Svec <msvec@suse.cz>
+# File:  modules/Call.ycp
+# Package:  yast2
+# Summary:  Workaround for CallFunction problems
+# Authors:  Michal Svec <msvec@suse.cz>
 #
 # $Id$
 require "yast"
 
 module Yast
   class CallClass < Module
-    def main
-    end
+    def main; end
 
     # Workaround function for WFM::CallFunction scope problems (#22486).
     # Same use as WFM::CallFunction.
-    # @param [String] f function client to be called
-    # @param [Array] a function params
+    # @param [String] function client to be called
+    # @param [Array] params
     # @return function result
-    def Function(f, a)
-      a = deep_copy(a)
-      WFM.CallFunction(f, a)
+    def Function(function, params)
+      WFM.CallFunction(function, params)
     end
 
     publish function: :Function, type: "any (string, list)"

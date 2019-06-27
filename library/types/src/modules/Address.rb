@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Address.ycp
-# Package:	yast2
-# Summary:	Address manipulation routines
-# Authors:	Michal Svec <msvec@suse.cz>
-# Flags:	Stable
+# File:  modules/Address.ycp
+# Package:  yast2
+# Summary:  Address manipulation routines
+# Authors:  Michal Svec <msvec@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 #

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/WorkflowManager.rb
-# Package:	yast2
-# Summary:	Provides API for configuring workflows
-# Authors:	Lukas Ocilka <locilka@suse.cz>
+# File:  modules/WorkflowManager.rb
+# Package:  yast2
+# Summary:  Provides API for configuring workflows
+# Authors:  Lukas Ocilka <locilka@suse.cz>
 #
 # Provides API for managing and configuring installation and
 # configuration workflow.
@@ -186,13 +184,13 @@ module Yast
     # **Structure:**
     #
     #
-    #     	Input: [
-    #     		$["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"initial,firstboot"]
-    #     	]
-    #     	Output: [
-    #     		$["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"initial"]
-    #     		$["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"firstboot"]
-    #     	]
+    #       Input: [
+    #         $["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"initial,firstboot"]
+    #       ]
+    #       Output: [
+    #         $["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"initial"]
+    #         $["label":"Example", "name":"example","proposal_modules":["one","two"],"stage":"firstboot"]
+    #       ]
     def PrepareProposals(proposals)
       proposals = deep_copy(proposals)
       new_proposals = []
@@ -504,9 +502,7 @@ module Yast
       # but as we generate directory, it should be ok
       files = Dir.glob("#{dir}/*.xml")
 
-      if files.size > 1
-        log.error "More than one XML file in #{dir}: #{files.inspect}"
-      end
+      log.error "More than one XML file in #{dir}: #{files.inspect}" if files.size > 1
 
       files.first
     end
@@ -565,7 +561,7 @@ module Yast
     # @return [Boolean] whether successful (true also in case of no workflow file)
     #
     # @example
-    #	AddWorkflow (`addon, 4, "");
+    #  AddWorkflow (`addon, 4, "");
     def AddWorkflow(type, src_id, name)
       Builtins.y2milestone(
         "Adding Workflow:  Type %1, ID %2, Name %3",
@@ -603,7 +599,7 @@ module Yast
     # @return [Boolean] whether successful (true also in case of no workflow file)
     #
     # @example
-    #	RemoveWorkflow (:addon, 4, "");
+    #  RemoveWorkflow (:addon, 4, "");
     def RemoveWorkflow(type, src_id, name)
       Builtins.y2milestone(
         "Removing Workflow:  Type %1, ID %2, Name %3",
@@ -671,9 +667,7 @@ module Yast
           )
         )
 
-        if Ops.get_integer(cmd, "exit", -1) != 0
-          Builtins.y2error("Removing failed: %1", cmd)
-        end
+        Builtins.y2error("Removing failed: %1", cmd) if Ops.get_integer(cmd, "exit", -1) != 0
       end
 
       nil
@@ -706,9 +700,7 @@ module Yast
         end
       end
 
-      if !found
-        Builtins.y2internal("Replace/Remove proposal item %1 not found", old)
-      end
+      Builtins.y2internal("Replace/Remove proposal item %1 not found", old) if !found
 
       Ops.set(proposal, "proposal_modules", Builtins.flatten(modules))
 
@@ -750,12 +742,14 @@ module Yast
         { old => new }
       end
 
-      Builtins.foreach(replaces) do |old, new|
-        base = ReplaceProposalModule(base, old, new)
-      end if Ops.greater_than(
+      if Ops.greater_than(
         Builtins.size(replaces),
         0
       )
+        Builtins.foreach(replaces) do |old, new|
+          base = ReplaceProposalModule(base, old, new)
+        end
+      end
 
       # Additional proposal settings - Removing settings
       removes = Ops.get_list(additional_control, "remove_modules", [])
@@ -797,9 +791,7 @@ module Yast
         end
       end
 
-      if Ops.get_string(additional_control, "enable_skip", "yes") == "no"
-        Ops.set(base, "enable_skip", "no")
-      end
+      Ops.set(base, "enable_skip", "no") if Ops.get_string(additional_control, "enable_skip", "yes") == "no"
 
       deep_copy(base)
     end
@@ -827,12 +819,10 @@ module Yast
             new_proposals = Builtins.add(new_proposals, p)
             next
           end
-          if Ops.get_string(p, "archs", "") == arch || arch == "" ||
-              arch == "all"
+          if [Ops.get_string(p, "archs", ""), "", "all"].include?(arch)
             p = MergeProposal(p, proposal, prod_name, domain)
             found = true
-          elsif Ops.get_string(p, "archs", "") == "" ||
-              Ops.get_string(p, "archs", "") == "all"
+          elsif ["", "all"].include?(Ops.get_string(p, "archs", ""))
             arch_all_prop = deep_copy(p)
           end
           new_proposals = Builtins.add(new_proposals, p)
@@ -979,12 +969,10 @@ module Yast
             new_workflows = Builtins.add(new_workflows, w)
             next
           end
-          if Ops.get_string(w, ["defaults", "archs"], "") == arch || arch == "" ||
-              arch == "all"
+          if [Ops.get_string(w, ["defaults", "archs"], ""), "", "all"].include?(arch)
             w = MergeWorkflow(w, workflow, prod_name, domain)
             found = true
-          elsif Ops.get_string(w, ["defaults", "archs"], "") == "" ||
-              Ops.get_string(w, ["default", "archs"], "") == "all"
+          elsif ["", "all"].include?(Ops.get_string(w, ["defaults", "archs"], ""))
             arch_all_wf = deep_copy(w)
           end
           new_workflows = Builtins.add(new_workflows, w)
@@ -1496,7 +1484,7 @@ module Yast
     # @see #GetAllUsedControlFiles()
     # @param list <string> new workflows (XML files in absolute-path format)
     # @example
-    #	SetAllUsedControlFiles (["/tmp/new_addon_control.xml", "/root/special_addon.xml"]);
+    #  SetAllUsedControlFiles (["/tmp/new_addon_control.xml", "/root/special_addon.xml"]);
     def SetAllUsedControlFiles(new_list)
       new_list = deep_copy(new_list)
       Builtins.y2milestone("New list of additional workflows: %1", new_list)
@@ -1521,13 +1509,13 @@ module Yast
     # **Structure:**
     #
     #     [
-    #     		"workflows" : ...
-    #     		"proposals" : ...
-    #     		"inst_finish" : ...
-    #     		"clone_modules" : ...
+    #         "workflows" : ...
+    #         "proposals" : ...
+    #         "inst_finish" : ...
+    #         "clone_modules" : ...
     #         "system_roles" : ...
-    #     		"unmerged_changes" : ...
-    #     	];
+    #         "unmerged_changes" : ...
+    #       ];
     def DumpCurrentSettings
       {
         "workflows"        => ProductControl.workflows,
@@ -1665,7 +1653,7 @@ module Yast
       end
 
       latest_package = pkgs.reduce(nil) do |a, p|
-        !a || (Pkg.CompareVersions(a["version"], p["version"]) < 0) ? p : a
+        (!a || (Pkg.CompareVersions(a["version"], p["version"]) < 0)) ? p : a
       end
 
       if pkgs.size > 1

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/GPG.ycp
-# Package:	yast2
-# Summary:	A wrapper for gpg binary
-# Authors:	Ladislav Slezák <lslezak@suse.cz>
+# File:  modules/GPG.ycp
+# Package:  yast2
+# Summary:  A wrapper for gpg binary
+# Authors:  Ladislav Slezák <lslezak@suse.cz>
 #
 # $Id$
 #
@@ -105,9 +103,7 @@ module Yast
 
       ret = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
 
-      if Ops.get_integer(ret, "exit", -1) != 0
-        Builtins.y2error("gpg error: %1", ret)
-      end
+      Builtins.y2error("gpg error: %1", ret) if Ops.get_integer(ret, "exit", -1) != 0
 
       deep_copy(ret)
     end
@@ -178,9 +174,7 @@ module Yast
       # parse each group to map
       Builtins.foreach(key_lines) do |keylines|
         parsed = parse_key(keylines)
-        if Ops.greater_than(Builtins.size(parsed), 0)
-          ret = Builtins.add(ret, parsed)
-        end
+        ret = Builtins.add(ret, parsed) if Ops.greater_than(Builtins.size(parsed), 0)
       end
 
       Builtins.y2milestone("Parsed keys: %1", ret)
@@ -196,9 +190,7 @@ module Yast
 
       out = callGPG("--list-keys --fingerprint")
 
-      if Ops.get_integer(out, "exit", -1) == 0
-        @public_keys = parseKeys(Ops.get_string(out, "stdout", ""))
-      end
+      @public_keys = parseKeys(Ops.get_string(out, "stdout", "")) if Ops.get_integer(out, "exit", -1) == 0
 
       deep_copy(@public_keys)
     end
@@ -211,9 +203,7 @@ module Yast
 
       out = callGPG("--list-secret-keys --fingerprint")
 
-      if Ops.get_integer(out, "exit", -1) == 0
-        @private_keys = parseKeys(Ops.get_string(out, "stdout", ""))
-      end
+      @private_keys = parseKeys(Ops.get_string(out, "stdout", "")) if Ops.get_integer(out, "exit", -1) == 0
 
       deep_copy(@private_keys)
     end
@@ -240,9 +230,7 @@ module Yast
           Convert.to_string(SCR.Read(path(".target.tmpdir"))),
           "/gpg_tmp_exit_file"
         )
-        if FileUtils.Exists(exit_file)
-          SCR.Execute(path(".target.bash"), "/usr/bin/rm -f #{exit_file.shellescape}")
-        end
+        SCR.Execute(path(".target.bash"), "/usr/bin/rm -f #{exit_file.shellescape}") if FileUtils.Exists(exit_file)
 
         command = "LC_ALL=en_US.UTF-8 #{XTERM_PATH} -e " \
           "\"#{command}; echo $? > #{exit_file.shellescape}\""

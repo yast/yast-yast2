@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/WizardHW
-# Package:	Base YaST package
-# Summary:	Routines for generic hardware summary dialog
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/WizardHW
+# Package:  Base YaST package
+# Summary:  Routines for generic hardware summary dialog
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -171,9 +169,7 @@ module Yast
     def GetActionLabel(action)
       action = deep_copy(action)
       fallback = ""
-      if Ops.is_string?(Ops.get(action, 0))
-        fallback = Ops.get_string(action, 0, "")
-      end
+      fallback = Ops.get_string(action, 0, "") if Ops.is_string?(Ops.get(action, 0))
       Ops.get_string(action, 1, fallback)
     end
 
@@ -184,6 +180,7 @@ module Yast
       actions = deep_copy(actions)
       sz = Builtins.size(actions)
       return Empty() if sz == 0
+
       if sz == 1
         id = Ops.get(actions, [0, 0])
         if id.nil?
@@ -332,7 +329,6 @@ module Yast
 
       # now run the dialog via CWM with handler set
       CWM.ShowAndRun(
-
         "widget_descr" => widget_descr,
         "widget_names" => ["wizard_hw"],
         "contents"     => VBox("wizard_hw"),
@@ -346,7 +342,6 @@ module Yast
         "next_button"  => Ops.get_string(settings, "next_button") do
           Label.NextButton
         end
-
       )
     end
 
@@ -468,7 +463,7 @@ module Yast
     # @note This is a stable API function
     # @param [String] title header - usually device name
     # @param [Array<String>] properties important properties of the device which should be
-    #		displayed in the overview dialog
+    #    displayed in the overview dialog
     # @return [String] rich text string
     def CreateRichTextDescription(title, properties)
       properties = deep_copy(properties)
@@ -482,13 +477,9 @@ module Yast
 
       ret = ""
 
-      if !title.nil? && title != ""
-        ret = Ops.add(Ops.add("<P><B>", title), "</B></P>")
-      end
+      ret = Ops.add(Ops.add("<P><B>", title), "</B></P>") if !title.nil? && title != ""
 
-      if items != ""
-        ret = Ops.add(Ops.add(Ops.add(ret, "<P><UL>"), items), "</UL></P>")
-      end
+      ret = Ops.add(Ops.add(Ops.add(ret, "<P><UL>"), items), "</UL></P>") if items != ""
 
       ret
     end

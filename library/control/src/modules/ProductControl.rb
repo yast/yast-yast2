@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,13 +19,13 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/ProductControl.rb
-# Package:	installation
-# Summary:	Product Control routines
-# Authors:	Anas Nashif <nashif@suse.de>
-#		Stanislav Visnovsky <visnov@suse.cz>
-#		Jiri Srain <jsrain@suse.cz>
-#		Lukas Ocilka <locilka@suse.cz>
+# File:  modules/ProductControl.rb
+# Package:  installation
+# Summary:  Product Control routines
+# Authors:  Anas Nashif <nashif@suse.de>
+#    Stanislav Visnovsky <visnov@suse.cz>
+#    Jiri Srain <jsrain@suse.cz>
+#    Lukas Ocilka <locilka@suse.cz>
 #
 require "yast"
 require "yast2/control_log_dir_rotator"
@@ -275,9 +273,7 @@ module Yast
         # Normal step
       elsif !Ops.get_string(mod, "name", "").nil? &&
           Ops.get_string(mod, "name", "") != ""
-        if Builtins.contains(@DisabledModules, Ops.get_string(mod, "name", ""))
-          return true
-        end
+        return true if Builtins.contains(@DisabledModules, Ops.get_string(mod, "name", ""))
       end
 
       false
@@ -425,9 +421,7 @@ module Yast
         )
       end
 
-      if Builtins.haskey(step, "proposal")
-        Ops.set(arguments, "proposal", Ops.get_string(step, "proposal", ""))
-      end
+      Ops.set(arguments, "proposal", Ops.get_string(step, "proposal", "")) if Builtins.haskey(step, "proposal")
       other_args = Ops.get_map(step, "arguments", {})
 
       if Ops.greater_than(Builtins.size(other_args), 0)
@@ -438,9 +432,7 @@ module Yast
         )
       end
 
-      if Ops.is_symbol?(former_result) && former_result == :back
-        Ops.set(arguments, "going_back", true)
-      end
+      Ops.set(arguments, "going_back", true) if Ops.is_symbol?(former_result) && former_result == :back
 
       if Mode.test
         Ops.set(arguments, "step_name", Ops.get_string(step, "name", ""))
@@ -515,19 +507,19 @@ module Yast
     end
 
     # Prepare Workflow Scripts
-    # @param [Hash] m Workflow module map
+    # @param [Hash] workflow Workflow module map
     # @return [void]
-    def PrepareScripts(m)
-      m = deep_copy(m)
+    def PrepareScripts(workflow)
+      workflow = deep_copy(workflow)
       tmp_dir = Convert.to_string(WFM.Read(path(".local.tmpdir"), []))
-      if Builtins.haskey(m, "prescript")
-        interpreter = Ops.get_string(m, ["prescript", "interpreter"], "shell")
-        source = Ops.get_string(m, ["prescript", "source"], "")
-        type = interpreter == "shell" ? "sh" : "pl"
+      if Builtins.haskey(workflow, "prescript")
+        interpreter = Ops.get_string(workflow, ["prescript", "interpreter"], "shell")
+        source = Ops.get_string(workflow, ["prescript", "source"], "")
+        type = (interpreter == "shell") ? "sh" : "pl"
         f = Builtins.sformat(
           "%1/%2_pre.%3",
           tmp_dir,
-          Ops.get_string(m, "name", ""),
+          Ops.get_string(workflow, "name", ""),
           type
         )
         WFM.Write(path(".local.string"), f, source)
@@ -535,18 +527,18 @@ module Yast
           @logfiles,
           Builtins.sformat(
             "%1.log",
-            Builtins.sformat("%1_pre.%2", Ops.get_string(m, "name", ""), type)
+            Builtins.sformat("%1_pre.%2", Ops.get_string(workflow, "name", ""), type)
           )
         )
       end
-      if Builtins.haskey(m, "postscript")
-        interpreter = Ops.get_string(m, ["postscript", "interpreter"], "shell")
-        source = Ops.get_string(m, ["postscript", "source"], "")
-        type = interpreter == "shell" ? "sh" : "pl"
+      if Builtins.haskey(workflow, "postscript")
+        interpreter = Ops.get_string(workflow, ["postscript", "interpreter"], "shell")
+        source = Ops.get_string(workflow, ["postscript", "source"], "")
+        type = (interpreter == "shell") ? "sh" : "pl"
         f = Builtins.sformat(
           "%1/%2_post.%3",
           tmp_dir,
-          Ops.get_string(m, "name", ""),
+          Ops.get_string(workflow, "name", ""),
           type
         )
         WFM.Write(path(".local.string"), f, source)
@@ -554,7 +546,7 @@ module Yast
           @logfiles,
           Builtins.sformat(
             "%1.log",
-            Builtins.sformat("%1_post.%2", Ops.get_string(m, "name", ""), type)
+            Builtins.sformat("%1_post.%2", Ops.get_string(workflow, "name", ""), type)
           )
         )
       end
@@ -624,9 +616,11 @@ module Yast
         deep_copy(m)
       end
 
-      modules = Builtins.filter(modules) do |m|
-        Ops.get_boolean(m, "enabled", true) && !checkDisabled(m)
-      end if which == :enabled
+      if which == :enabled
+        modules = Builtins.filter(modules) do |m|
+          Ops.get_boolean(m, "enabled", true) && !checkDisabled(m)
+        end
+      end
 
       Builtins.y2debug("M2: %1", modules)
 
@@ -664,6 +658,7 @@ module Yast
             Ops.get_string(one_module, "proposal", "") != ""
           next true
         end
+
         # the rest
         false
       end
@@ -683,6 +678,7 @@ module Yast
 
       label = Ops.get_string(workflow, "label", "")
       return "" if label == ""
+
       if Builtins.haskey(workflow, "textdomain")
         return Builtins.dgettext(
           Ops.get_string(workflow, "textdomain", ""),
@@ -916,9 +912,7 @@ module Yast
               id = Ops.get_string(m, "id", "")
             end
           end
-          if !heading.nil? && heading != ""
-            UI.WizardCommand(term(:AddStepHeading, heading))
-          end
+          UI.WizardCommand(term(:AddStepHeading, heading)) if !heading.nil? && heading != ""
           if !label.nil? && label != ""
             if debug_workflow == true
               label = Ops.add(
@@ -1187,7 +1181,7 @@ module Yast
       control_file_candidates = [
         @y2update_control_file,     # /y2update/control.xml
         @installation_control_file, # /control.xml
-        @saved_control_file,        # /etc/YaST2/control.xml
+        @saved_control_file # /etc/YaST2/control.xml
       ]
 
       if @custom_control_file.nil?
@@ -1304,9 +1298,7 @@ module Yast
 
         if do_continue
           if former_result == :next
-            if Ops.less_or_equal(@current_step, minimum_step) && !allow_back
-              minimum_step = Ops.add(minimum_step, 1)
-            end
+            minimum_step = Ops.add(minimum_step, 1) if Ops.less_or_equal(@current_step, minimum_step) && !allow_back
             @current_step = Ops.add(@current_step, 1)
           else
             @current_step = Ops.subtract(@current_step, 1)
@@ -1355,7 +1347,7 @@ module Yast
         Builtins.y2milestone("Calling %1 returned %2", argterm, result)
 
         # bnc #369846
-        if result == :accept || result == :ok
+        if [:access, :ok].include?(result)
           Builtins.y2milestone("Evaluating %1 as it was `next", result)
           result = :next
         end
@@ -1448,36 +1440,33 @@ module Yast
           result = :again
         end
 
-        if result == :next
+        case result
+        when :next
           @current_step = Ops.add(@current_step, 1)
-        elsif result == :back
+        when :back
           @current_step = Ops.subtract(@current_step, 1)
-        elsif result == :cancel
+        when :cancel
           break
-        elsif result == :abort
+        when :abort
           # handling when user aborts the workflow (FATE #300422, bnc #406401, bnc #247552)
           final_result = result
           Hooks.run("installation_aborted")
 
           break
-        elsif result == :finish
+        when :finish
           break
-        elsif result == :again
+        when :again
           next # Show same dialog again
         # BNC #475650: Adding `reboot_same_step
-        elsif result == :restart_yast || result == :restart_same_step ||
-            result == :reboot ||
-            result == :reboot_same_step
+        when :restart_yast, :restart_same_step, :reboot, :reboot_same_step
           final_result = result
           break
-        elsif result == :auto
+        when :auto
           if !former_result.nil?
             if former_result == :next
               # if the first client just returns `auto, the back button
               # of the next client must be disabled
-              if Ops.less_or_equal(@current_step, minimum_step) && !allow_back
-                minimum_step = Ops.add(minimum_step, 1)
-              end
+              minimum_step = Ops.add(minimum_step, 1) if Ops.less_or_equal(@current_step, minimum_step) && !allow_back
               @current_step = Ops.add(@current_step, 1)
             elsif former_result == :back
               @current_step = Ops.subtract(@current_step, 1)
@@ -1528,6 +1517,7 @@ module Yast
       modules = getModules(Stage.stage, Mode.mode, :enabled)
       return nil if @first_step.nil?
       return nil if Ops.greater_or_equal(@first_step, Builtins.size(modules))
+
       index = 0
       ret = []
       while Ops.less_than(index, @first_step)
@@ -1541,6 +1531,7 @@ module Yast
     # @return a map describing the step
     def RestartingStep
       return nil if @restarting_step.nil?
+
       modules = getModules(Stage.stage, Mode.mode, :enabled)
       Ops.get(modules, @restarting_step, {})
     end

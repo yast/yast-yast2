@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,12 +19,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Stage.ycp
-# Module:	yast2
-# Summary:	Installation mode
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
-#		Jiri Srain <jsrain@suse.cz>
-# Flags:	Stable
+# File:  modules/Stage.ycp
+# Module:  yast2
+# Summary:  Installation mode
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
+#    Jiri Srain <jsrain@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 #

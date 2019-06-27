@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/TypeRepository.ycp
-# Package:	yast2
-# Summary:	Type repository for validation of user-defined types
-# Authors:	Stanislav Visnovsky <visnov@suse.cz>
-# Flags:	Stable
+# File:  modules/TypeRepository.ycp
+# Package:  yast2
+# Summary:  Type repository for validation of user-defined types
+# Authors:  Stanislav Visnovsky <visnov@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -46,7 +44,7 @@ module Yast
 
     # Validate, that the given value is of given type.
     #
-    # @param [Object] value	value to be validated
+    # @param [Object] value  value to be validated
     # @param [String] type type against which to validate
     # @return true, if the value can be considered to be of a given type
     def is_a(value, type)
@@ -60,11 +58,10 @@ module Yast
 
     # Check, if s is a string.
     #
-    # @param [Object] s		a value to be validated
-    # @return		true if s is string
-    def is_string(s)
-      s = deep_copy(s)
-      Ops.is_string?(s)
+    # @param [Object] value a value to be validated
+    # @return true if s is string
+    def is_string(value)
+      Ops.is_string?(value)
     end
 
     # Constructor, defines the known types.
@@ -118,18 +115,18 @@ module Yast
 
     #  Generic regular expression validator.
     #
-    #  @param [String] regex	the regular expression to be matched
-    #  @param [String] value	the value to be matched
-    #  @return	true if successful
+    #  @param [String] regex  the regular expression to be matched
+    #  @param [String] value  the value to be matched
+    #  @return  true if successful
     def regex_validator(regex, value)
       Builtins.regexpmatch(value, regex)
     end
 
     #  Generic enumerated type validator.
     #
-    #  @param [Array] values	a list of possible values
-    #  @param [String] value	the value to be matched
-    #  @return	true if successful
+    #  @param [Array] values  a list of possible values
+    #  @param [String] value  the value to be matched
+    #  @return  true if successful
     def enum_validator(values, value)
       values = deep_copy(values)
       Builtins.contains(values, value)

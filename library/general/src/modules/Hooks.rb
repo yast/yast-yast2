@@ -136,6 +136,7 @@ module Yast
 
       def verify!
         raise "Hook search path #{path} does not exists" unless path.exist?
+
         path
       end
 
@@ -149,7 +150,7 @@ module Yast
     class Hook
       include Yast::Logger
 
-      attr_reader :name, :results, :files, :caller_path, :search_path
+      attr_reader :name, :files, :caller_path, :search_path
 
       def initialize(name, caller_path, search_path)
         log.debug "Creating hook '#{name}' from '#{self.caller_path}'"
@@ -199,7 +200,7 @@ module Yast
     class HookFile
       include Yast::Logger
 
-      attr_reader :path, :content, :result
+      attr_reader :path, :result
 
       def initialize(path)
         @path = path
@@ -208,9 +209,7 @@ module Yast
       def execute
         log.info "Executing hook file '#{path}'"
         @result = OpenStruct.new(SCR.Execute(Path.new(".target.bash_output"), path.to_s.shellescape))
-        if failed?
-          log.error "Hook file '#{path.basename}' failed with stderr: #{result.stderr}"
-        end
+        log.error "Hook file '#{path.basename}' failed with stderr: #{result.stderr}" if failed?
         result
       end
 
@@ -220,6 +219,7 @@ module Yast
 
       def output
         return "" unless result
+
         output = []
         output << "STDERR: #{result.stderr.strip}" unless result.stderr.empty?
         output << "STDOUT: #{result.stdout.strip}" unless result.stdout.empty?

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CustomDialogs.ycp
-# Module:	yast2
-# Summary:	Installation mode
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
+# File:  modules/CustomDialogs.ycp
+# Module:  yast2
+# Summary:  Installation mode
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
 #
 # $Id$
 #
@@ -32,8 +30,7 @@ require "yast"
 
 module Yast
   class CustomDialogsClass < Module
-    def main
-    end
+    def main; end
 
     def load_file_locale(patterns, file_path, language)
       patterns = deep_copy(patterns)
@@ -65,6 +62,7 @@ module Yast
         Builtins.y2debug("checking for %1", file)
         text = Convert.to_string(SCR.Read(path(".target.string"), [file, ""]))
         break if text != ""
+
         i = Ops.add(i, 1)
       end
       { "text" => text, "file" => file }

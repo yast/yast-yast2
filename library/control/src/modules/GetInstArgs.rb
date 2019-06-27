@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/GetInstArgs.rb
-# Package:	yast2
-# Summary:	Get client arguments
-# Authors:	Anas Nashif <nashif@suse.de>
+# File:  modules/GetInstArgs.rb
+# Package:  yast2
+# Summary:  Get client arguments
+# Authors:  Anas Nashif <nashif@suse.de>
 #
 require "yast"
 
@@ -81,9 +79,9 @@ module Yast
     # @return [String] proposal name
     #
     # @example
-    #	GetInstArgs::proposal() -> "initial"
-    #	GetInstArgs::proposal() -> "network"
-    #	GetInstArgs::proposal() -> "hardware"
+    #  GetInstArgs::proposal() -> "initial"
+    #  GetInstArgs::proposal() -> "network"
+    #  GetInstArgs::proposal() -> "hardware"
     def proposal
       Init()
       Ops.get_string(@args, "proposal", "")
@@ -94,12 +92,12 @@ module Yast
     # @return [Hash] of parameters
     #
     # @example
-    #	GetInstArgs::argmap() -> $[
-    #		"enable_back" : true,
-    #		"enable_next" : true,
-    #		"going_back"  : true,
-    #		"anything"    : "yes, of course",
-    #	]
+    #  GetInstArgs::argmap() -> $[
+    #    "enable_back" : true,
+    #    "enable_next" : true,
+    #    "going_back"  : true,
+    #    "anything"    : "yes, of course",
+    #  ]
     def argmap
       Init()
       deep_copy(@args)
@@ -111,11 +109,11 @@ module Yast
     # @return [Hash] of parameters
     #
     # @example
-    #	GetInstArgs::ButtonsProposal() -> $[
-    #		"enable_back" : true,
-    #		"enable_next" : true,
-    #		"proposal"  : "initial"
-    #	]
+    #  GetInstArgs::ButtonsProposal() -> $[
+    #    "enable_back" : true,
+    #    "enable_next" : true,
+    #    "proposal"  : "initial"
+    #  ]
     def ButtonsProposal(back, next_, proposal_name)
       {
         "enable_back" => back,
@@ -130,10 +128,10 @@ module Yast
     # @return [Hash] of parameters
     #
     # @example
-    #	GetInstArgs::Buttons() -> $[
-    #		"enable_back" : false,
-    #		"enable_next" : true
-    #	]
+    #  GetInstArgs::Buttons() -> $[
+    #    "enable_back" : false,
+    #    "enable_next" : true
+    #  ]
     def Buttons(back, next_)
       {
         "enable_back" => back,

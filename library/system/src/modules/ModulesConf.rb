@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -22,16 +20,16 @@
 #
 # ***************************************************************************
 # File:
-#	ModulesConf.ycp
+#  ModulesConf.ycp
 #
 # Module:
-#	ModulesConf
+#  ModulesConf
 #
 # Authors:
-#	Klaus Kaempf (kkaempf@suse.de)
+#  Klaus Kaempf (kkaempf@suse.de)
 #
 # Summary:
-#	All modules.conf related functions are here
+#  All modules.conf related functions are here
 #
 # $Id$
 require "yast"
@@ -51,8 +49,8 @@ module Yast
 
     # ModuleArgs
     # save arguments for a kernel module
-    # @param [String] name	string, name of kernel module
-    # @param [String] arg	string, arguments ("opt1=val1 opt2=val2 ...")
+    # @param [String] name  string, name of kernel module
+    # @param [String] arg  string, arguments ("opt1=val1 opt2=val2 ...")
     def ModuleArgs(name, arg)
       return if name == ""
 
@@ -66,7 +64,7 @@ module Yast
     # RunDepmod
     # runs /sbin/depmod
     # !! call only when SCR runs on target !!
-    # @param [Boolean] force	boolean, force depmod run (option "-a" instead of "-A")
+    # @param [Boolean] force  boolean, force depmod run (option "-a" instead of "-A")
     def RunDepmod(force)
       Yast.import "Kernel"
 
@@ -98,7 +96,7 @@ module Yast
 
     # Save
     # save module names and arguments to /etc/modules.conf
-    # @param [Boolean] force	boolean, force depmod run even if /etc/modules.conf is unchanged
+    # @param [Boolean] force  boolean, force depmod run even if /etc/modules.conf is unchanged
     # !! call only when SCR runs on target !!
     def Save(force)
       # make module names to one long string

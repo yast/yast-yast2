@@ -78,14 +78,14 @@ module Yast2
           targets.compact
         end
 
-        def get_default # rubocop:disable Style/AccessorMethodName
+        def get_default # rubocop:disable Naming/AccessorMethodName
           result = Systemctl.execute("get-default")
           raise(SystemctlError, result) unless result.exit.zero?
 
           find(result.stdout.strip)
         end
 
-        def set_default(target) # rubocop:disable Style/AccessorMethodName
+        def set_default(target) # rubocop:disable Naming/AccessorMethodName
           target_unit = target.is_a?(Systemd::Target) ? target : find(target)
 
           unless target_unit
@@ -111,7 +111,7 @@ module Yast2
         end
 
         # Constructing a fallback target ID if we can't get it from systemctl
-        target_name = id ? id : "#{name}.target"
+        target_name = id || "#{name}.target"
 
         result = Systemctl.execute("set-default --force #{target_name}")
         result.exit.zero?

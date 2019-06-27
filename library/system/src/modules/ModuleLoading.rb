@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,9 +19,9 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module:		ModuleLoading.ycp
+# Module:    ModuleLoading.ycp
 #
-# Authors:		Klaus Kaempf <kkaempf@suse.de> (initial)
+# Authors:    Klaus Kaempf <kkaempf@suse.de> (initial)
 #
 # Purpose:
 # This module does all module loading stuff.
@@ -50,7 +48,7 @@ module Yast
     end
 
     # @param [Hash] controller
-    # @return [Array]	[string vendor, string device]
+    # @return [Array]  [string vendor, string device]
     # Convert internal probing data to user readable string
     # for module loading.
     # @see #ModuleLoading::Load
@@ -119,9 +117,9 @@ module Yast
     # @param [Boolean] ask_before_loading
     # @param [Boolean] with_modprobe
     #
-    # @return [Symbol]:	`dont	user choose *not* to load module
-    #			`ok	module loaded ok
-    #			`fail	module loading failed
+    # @return [Symbol]:  `dont  user choose *not* to load module
+    #      `ok  module loaded ok
+    #      `fail  module loading failed
     #
     # load a module if not already loaded by linuxrc
 
@@ -129,7 +127,7 @@ module Yast
       if modulename != "" &&
           # there is no reason for checking initrd, if I need the module to get loaded, I just  need to
           # check if it isn't already loaded
-          #	    && (!contains (Initrd::ListModules (), modulename))
+          #      && (!contains (Initrd::ListModules (), modulename))
           !Mode.test
         # always look whether the module is already loaded
         loaded_modules = Convert.to_map(SCR.Read(path(".proc.modules")))
@@ -225,9 +223,7 @@ module Yast
             if Ops.greater_than(Builtins.size(module_data), 0)
               # skip leading spaces
               firstspace = Builtins.findfirstnotof(module_data, " ")
-              if !firstspace.nil?
-                module_data = Builtins.substring(module_data, firstspace)
-              end
+              module_data = Builtins.substring(module_data, firstspace) if !firstspace.nil?
 
               # split name and args
               firstspace = Builtins.findfirstof(module_data, " ")
@@ -254,7 +250,7 @@ module Yast
             )
             return :dont
           end
-        end # ask_before_loading
+        end
       end
 
       load_success = if with_modprobe

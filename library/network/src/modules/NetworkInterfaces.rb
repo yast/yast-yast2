@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -367,24 +365,24 @@ module Yast
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "modem", ""))
       )
-        return _("Modem")
+        _("Modem")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "netcard", ""))
       )
-        return _("Network Card")
+        _("Network Card")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "isdn", ""))
       )
-        return _("ISDN")
+        _("ISDN")
       elsif Builtins.regexpmatch(
         dev,
         Ops.add("^", Ops.get(@DeviceRegex, "dsl", ""))
       )
-        return _("DSL")
+        _("DSL")
       else
-        return _("Unknown")
+        _("Unknown")
       end
     end
 
@@ -403,9 +401,8 @@ module Yast
         Builtins.y2error("wrong number: %1", num)
         return nil
       end
-      if Builtins.regexpmatch(num, "^[0-9]*$")
-        return Builtins.sformat("%1%2", typ, num)
-      end
+      return Builtins.sformat("%1%2", typ, num) if Builtins.regexpmatch(num, "^[0-9]*$")
+
       Builtins.sformat("%1-%2", typ, num)
     end
 
@@ -579,6 +576,7 @@ module Yast
     def ConcealSecrets(devs)
       devs = deep_copy(devs)
       return nil if devs.nil?
+
       out = Builtins.mapmap(
         Convert.convert(
           devs,
@@ -636,6 +634,7 @@ module Yast
         item = SCR.Read(path("#{pth}.#{val}"))
         log.debug("item=#{item}")
         next if item.nil?
+
         # No underscore '_' -> global
         # Also temporarily standard globals
         if !val.include?("_") || LOCALS.include?(val)
@@ -772,12 +771,13 @@ module Yast
     # @return [Array] of Devices that match the given regex
     def FilterNOT(devices, devregex)
       return {} if devices.nil? || devregex.nil? || devregex == ""
+
       devices = deep_copy(devices)
 
       regex = "^(#{@DeviceRegex[devregex] || devregex})[0-9]*$"
 
       log.debug("regex=#{regex}")
-      devices.select! { |f, _d| f !~ /#{regex}/ }
+      devices.reject! { |f, _d| f =~ /#{regex}/ }
 
       log.debug("devices=#{devices}")
       devices
@@ -819,6 +819,7 @@ module Yast
       ) do |typ, devsmap|
         Builtins.maplist(devsmap) do |config, devmap|
           next if devmap == Ops.get_map(original_devs, [typ, config], {})
+
           # write sysconfig
           p = Ops.add(Ops.add(".network.value.\"", config), "\".")
           if Ops.greater_than(
@@ -920,7 +921,7 @@ module Yast
                 end
                 Builtins.maplist(amap) do |ak, av|
                   akk = Ops.add(Ops.add(ak, "_"), anum)
-                  SCR.Write(Builtins.topath(Ops.add(p, akk)), av) #			    seen_label = seen_label || ak == "LABEL";
+                  SCR.Write(Builtins.topath(Ops.add(p, akk)), av) #          seen_label = seen_label || ak == "LABEL";
                 end
               end
             else
@@ -942,9 +943,7 @@ module Yast
             )
           end
           @OriginalDevices = {} if @OriginalDevices.nil?
-          if Ops.get(@OriginalDevices, typ).nil?
-            Ops.set(@OriginalDevices, typ, {})
-          end
+          Ops.set(@OriginalDevices, typ, {}) if Ops.get(@OriginalDevices, typ).nil?
           Ops.set(
             @OriginalDevices,
             [typ, config],
@@ -1200,7 +1199,7 @@ module Yast
       if Builtins.haskey(device_types, type)
         return Ops.get_string(
           device_types,
-          [type, longdescr == true ? 1 : 0],
+          [type, (longdescr == true) ? 1 : 0],
           ""
         )
       end
@@ -1209,7 +1208,7 @@ module Yast
       if Builtins.haskey(device_types, type1)
         return Ops.get_string(
           device_types,
-          [type1, longdescr == true ? 1 : 0],
+          [type1, (longdescr == true) ? 1 : 0],
           ""
         )
       end
@@ -1279,6 +1278,7 @@ module Yast
     def Add
       @operation = nil
       return false if Select("") != true
+
       @operation = :add
       true
     end
@@ -1289,6 +1289,7 @@ module Yast
     def Edit(name)
       @operation = nil
       return false if Select(name) != true
+
       @operation = :edit
       true
     end
@@ -1299,6 +1300,7 @@ module Yast
     def Delete(name)
       @operation = nil
       return false if Select(name) != true
+
       @operation = :delete
       true
     end
@@ -1397,6 +1399,7 @@ module Yast
 
     def GetValue(name, key)
       return nil if !Select(name)
+
       Ops.get_string(@Current, key, "")
     end
 
@@ -1479,6 +1482,7 @@ module Yast
       end
       ret = Builtins.filter(ret) do |row|
         next true if !row.nil?
+
         Builtins.y2error("Filtering out : %1", row)
         false
       end
@@ -1557,7 +1561,7 @@ module Yast
     def get_devices(devregex)
       devices = SCR.Dir(path(".network.section")) || []
 
-      devices.select! { |file| file !~ devregex } unless devregex.nil?
+      devices.reject! { |file| file =~ devregex } unless devregex.nil?
       devices.delete_if(&:empty?)
 
       log.debug "devices=#{devices}"

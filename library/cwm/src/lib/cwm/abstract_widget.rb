@@ -140,9 +140,7 @@ module CWM
     # @raise [RuntimeError] if a required method is not implemented
     #   or widget_type is not set.
     def cwm_definition
-      if !respond_to?(:widget_type)
-        raise "Widget '#{self.class}' does set its widget type"
-      end
+      raise "Widget '#{self.class}' does set its widget type" if !respond_to?(:widget_type)
 
       res = {}
 

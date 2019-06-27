@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,13 +19,13 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Label.ycp
-# Package:	yast2
-# Summary:	Often used messages and button labels
-# Authors:	Gabriele Strattner <gs@suse.de>
-#		Stefan Hundhammer <sh@suse.de>
-#		Arvin Schnell <arvin@suse.de>
-# Flags:	Stable
+# File:  modules/Label.ycp
+# Package:  yast2
+# Summary:  Often used messages and button labels
+# Authors:  Gabriele Strattner <gs@suse.de>
+#    Stefan Hundhammer <sh@suse.de>
+#    Arvin Schnell <arvin@suse.de>
+# Flags:  Stable
 #
 # $Id$
 #

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CWMTab.ycp
-# Package:	Common widget manipulation
-# Summary:	Routines for tab widget handling
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/CWMTab.ycp
+# Package:  Common widget manipulation
+# Summary:  Routines for tab widget handling
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -250,6 +248,7 @@ module Yast
       all_tabs = Ops.get_list(widget, "tabs_list", [])
       h_ret = TabHandle(@current_tab_map, event)
       return h_ret if !h_ret.nil?
+
       ret = Ops.get(event, "ID")
       if Ops.is_string?(ret) &&
           Builtins.contains(all_tabs, Convert.to_string(ret)) &&

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Copyright (c) [2018] SUSE LLC
 #
 # All Rights Reserved.
@@ -206,10 +204,11 @@ module Yast2
     # @return [Symbol] :on_boot, :on_demand, :manual
     def current_start_mode
       return @current_start_mode unless @current_start_mode.nil?
+
       @current_start_mode =
         if service.enabled?
           :on_boot
-        elsif socket && socket.enabled?
+        elsif socket&.enabled?
           :on_demand
         else
           :manual
@@ -238,6 +237,7 @@ module Yast2
     def start_modes
       @start_modes = [:on_boot, :manual, :on_demand] unless found?
       return @start_modes if @start_modes
+
       @start_modes = [:manual]
       @start_modes << :on_boot unless service.static?
       @start_modes << :on_demand if socket
@@ -266,9 +266,7 @@ module Yast2
     #
     # @raise ArgumentError when mode is not valid
     def start_mode=(mode)
-      if !start_modes.include?(mode)
-        raise ArgumentError, "Invalid start mode: '#{mode}' for service '#{service.name}'"
-      end
+      raise ArgumentError, "Invalid start mode: '#{mode}' for service '#{service.name}'" if !start_modes.include?(mode)
 
       register_change(:start_mode, mode)
     end
@@ -546,7 +544,7 @@ module Yast2
     #
     # @return [Yast2::Systemd::Socket]
     def socket
-      service && service.socket
+      service&.socket
     end
 
     # Whether the associated socket (if any) is actived
@@ -592,6 +590,7 @@ module Yast2
     def changed_value?(key)
       new_value = new_value_for(key)
       return false if new_value.nil?
+
       new_value != send(CURRENT_VALUE_METHODS[key])
     end
 
@@ -609,6 +608,7 @@ module Yast2
     # @return [Boolean] false if the operation failed
     def disable_service
       return true if service.static?
+
       service.disable
     end
   end

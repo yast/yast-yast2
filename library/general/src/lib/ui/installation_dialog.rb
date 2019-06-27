@@ -99,8 +99,7 @@ module UI
     # Optional title icon
     #
     # @return [String] name of the icon to use
-    def title_icon
-    end
+    def title_icon; end
 
     # Headline for the dialog
     #
@@ -120,9 +119,7 @@ module UI
     #
     # It ignores UI::Dialog#dialog_options
     def create_dialog
-      if dialog_options
-        log.info "This is an InstallationDialog, ignoring #dialog_options"
-      end
+      log.info "This is an InstallationDialog, ignoring #dialog_options" if dialog_options
 
       # Allow manual testing
       if !Yast::Wizard.IsWizardDialog
@@ -142,6 +139,7 @@ module UI
 
     def close_dialog
       return unless @_wizard_opened
+
       @_wizard_opened = false
       Yast::Wizard.CloseDialog
     end

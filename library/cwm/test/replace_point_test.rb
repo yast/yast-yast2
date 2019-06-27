@@ -20,11 +20,9 @@ describe CWM::ReplacePoint do
       "test"
     end
 
-    def init
-    end
+    def init; end
 
-    def handle
-    end
+    def handle; end
 
     def help
       "help"
@@ -34,11 +32,9 @@ describe CWM::ReplacePoint do
       false
     end
 
-    def store
-    end
+    def store; end
 
-    def cleanup
-    end
+    def cleanup; end
   end
 
   include_examples "CWM::CustomWidget"

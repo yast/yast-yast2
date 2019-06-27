@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2018 SUSE LLC
 #
@@ -85,6 +83,7 @@ module Y2Firewall
       # @return [String] its device name or 'Unknown' if not configured
       def device_name
         return _("Unknown") unless known?
+
         Yast::NetworkInterfaces.GetValue(name, "NAME")
       end
 
@@ -102,7 +101,7 @@ module Y2Firewall
       def zone=(zone_name)
         fw.zones.each { |z| z.remove_interface(name) if z.interfaces.include?(name) }
         z = fw.find_zone(zone_name)
-        z && z.add_interface(name)
+        z&.add_interface(name)
       end
 
     private

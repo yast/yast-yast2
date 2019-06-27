@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Copyright (c) [2018] SUSE LLC
 #
 # All Rights Reserved.
@@ -45,6 +43,7 @@ module Yast2
       def for_service(service_name)
         socket_name = socket_name_for(service_name)
         return nil unless socket_name
+
         Yast2::Systemd::Socket.find(socket_name)
       end
 
@@ -57,6 +56,7 @@ module Yast2
       # @return [String,nil]
       def socket_name_for(service_name)
         return service_name if Yast::Stage.initial
+
         sockets_map[service_name]
       end
 
@@ -67,8 +67,10 @@ module Yast2
       # @return [Hash<String,String>] Sockets indexed by the name of the service they trigger
       def sockets_map
         return @sockets_map if @sockets_map
+
         result = Yast2::Systemctl.execute(show_triggers_cmd)
         return {} unless result.exit.zero?
+
         lines = result.stdout.lines.map(&:chomp)
         @sockets_map = lines.each_slice(3).each_with_object({}) do |(id_str, triggers_str, _), memo|
           id = id_str[/Id=(\w+).socket/, 1]

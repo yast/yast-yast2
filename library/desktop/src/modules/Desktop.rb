@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Desktop.ycp
-# Package:	yast2
-# Summary:	Handling of .desktop entries
-# Author:	Michal Svec <msvec@suse.cz>
+# File:  modules/Desktop.ycp
+# Package:  yast2
+# Summary:  Handling of .desktop entries
+# Author:  Michal Svec <msvec@suse.cz>
 #
 # $Id$
 require "yast"
@@ -44,14 +42,14 @@ module Yast
       #  *
       #  * <PRE>
       #     Groups=$[
-      # 	"Hardware":$[
-      # 	    "Icon":"hardware56.png",
-      # 	    "Name":"_(\"Hardware\")",
-      # 	    "SortKey":"20",
-      # 	    "Textdomain":"base",
-      # 	    "modules":["cdrom", "hwinfo", ...]
-      # 	],
-      # 	...
+      #   "Hardware":$[
+      #       "Icon":"hardware56.png",
+      #       "Name":"_(\"Hardware\")",
+      #       "SortKey":"20",
+      #       "Textdomain":"base",
+      #       "modules":["cdrom", "hwinfo", ...]
+      #   ],
+      #   ...
       #    ];
       #  * </PRE>
       @Groups = {}
@@ -65,9 +63,7 @@ module Yast
     end
 
     def ReadLocalizedKey(fname, keypath, key)
-      if key != "Name" && key != "GenericName" && key != "Comment"
-        return Convert.to_string(SCR.Read(Builtins.add(keypath, key)))
-      end
+      return Convert.to_string(SCR.Read(Builtins.add(keypath, key))) if key != "Name" && key != "GenericName" && key != "Comment"
 
       ret = ""
       fallback = Convert.to_string(SCR.Read(Builtins.add(keypath, key)))
@@ -106,12 +102,8 @@ module Yast
       # read language
       @LanguageFull = ""
       @Language = UI.GetLanguage(true)
-      if Builtins.regexpmatch(@Language, "(.*_[^.]*)\\.?.*") # matches: ll_TT ll_TT.UTF-8
-        @LanguageFull = Builtins.regexpsub(@Language, "(.*_[^.]*)\\.?.*", "\\1")
-      end
-      if Builtins.regexpmatch(@Language, "(.*)_")
-        @Language = Builtins.regexpsub(@Language, "(.*)_", "\\1")
-      end
+      @LanguageFull = Builtins.regexpsub(@Language, "(.*_[^.]*)\\.?.*", "\\1") if Builtins.regexpmatch(@Language, "(.*_[^.]*)\\.?.*") # matches: ll_TT ll_TT.UTF-8
+      @Language = Builtins.regexpsub(@Language, "(.*)_", "\\1") if Builtins.regexpmatch(@Language, "(.*)_")
       Builtins.y2debug("LanguageFull=%1", @LanguageFull)
       Builtins.y2debug("Language=%1", @Language)
 
@@ -220,24 +212,24 @@ module Yast
       key
     end
 
-    def CreateList(m)
-      m = deep_copy(m)
-      keys = Map.Keys(m)
+    def CreateList(entry)
+      entry = deep_copy(entry)
+      keys = Map.Keys(entry)
       keys = Builtins.sort(keys) do |x, y|
         Ops.less_than(
-          Ops.get_string(m, [x, "SortKey"], ""),
-          Ops.get_string(m, [y, "SortKey"], "")
+          Ops.get_string(entry, [x, "SortKey"], ""),
+          Ops.get_string(entry, [y, "SortKey"], "")
         )
       end
 
       keys = Builtins.filter(keys) do |key|
-        Ops.get_string(m, [key, "Hidden"], "false") != "true"
+        Ops.get_string(entry, [key, "Hidden"], "false") != "true"
       end
 
       Builtins.y2debug("keys=%1", keys)
 
       Builtins.maplist(keys) do |name|
-        Item(Id(name), Translate(Ops.get_string(m, [name, "Name"], "???")))
+        Item(Id(name), Translate(Ops.get_string(entry, [name, "Name"], "???")))
       end
     end
 
@@ -326,9 +318,9 @@ module Yast
     # @return [Hash] filled with data, or nil
     #
     # @example
-    #	// Opens /usr/share/applications/YaST2/lan.desktop
-    #	map<string,string> description = Desktop::ParseSingleDesktopFile ("lan");
-    #	Wizard::SetDialogTitle (description["Name"]:_("None));
+    #  // Opens /usr/share/applications/YaST2/lan.desktop
+    #  map<string,string> description = Desktop::ParseSingleDesktopFile ("lan");
+    #  Wizard::SetDialogTitle (description["Name"]:_("None));
     def ParseSingleDesktopFile(file)
       filename = Builtins.sformat("%1/%2.desktop", Directory.desktopdir, file)
       # Do not use .yast2.desktop.v.$filename, because ini-agent reads
@@ -341,7 +333,6 @@ module Yast
           term(
             :IniAgent,
             filename,
-
             "options"  => ["read_only"], # rw works but not needed
             "comments" => ["^[ \t]*[;#].*", ";.*", "\\{[^}]*\\}", "^[ \t]*$"],
             "sections" => [
@@ -360,7 +351,6 @@ module Yast
                 ]
               }
             ]
-
           )
         )
       )

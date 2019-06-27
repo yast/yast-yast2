@@ -1,5 +1,3 @@
-#       encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -122,12 +120,13 @@ module Yast
         return :no_access
       rescue Errno::ENOENT
         return :missing
-      rescue
+      rescue StandardError
         nil
       end
       return :no_access if !File.readable?(file)
       return :no_file if !File.file?(file)
       return :empty if !File.size?(file)
+
       :ok
     end
 

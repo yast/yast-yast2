@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/SuSEFirewallProposal.ycp
-# Package:	SuSEFirewall configuration
-# Summary:	Functional interface for SuSEFirewall installation proposal
-# Authors:	Lukas Ocilka <locilka@suse.cz>
+# File:  modules/SuSEFirewallProposal.ycp
+# Package:  SuSEFirewall configuration
+# Summary:  Functional interface for SuSEFirewall installation proposal
+# Authors:  Lukas Ocilka <locilka@suse.cz>
 #
 # $Id$
 #
@@ -88,7 +86,7 @@ module Yast
 
     # Function returns list of warnings for user
     #
-    # @return	[Array<String>] of warnings
+    # @return  [Array<String>] of warnings
     def GetWarnings
       deep_copy(@warnings_now)
     end
@@ -107,20 +105,21 @@ module Yast
     # They must have been set using SetKnownInterfaces(list [string] interfaces)
     # function.
     #
-    # @return	[Array<String>] of known interfaces
+    # @return  [Array<String>] of known interfaces
     def GetKnownInterfaces
       deep_copy(@known_interfaces)
     end
 
     # Function returns if interface is a dial-up type.
     #
-    # @return	[Boolean] if is dial-up interface
+    # @return  [Boolean] if is dial-up interface
     def IsDialUpInterface(interface)
       all_interfaces = SuSEFirewall.GetAllKnownInterfaces
 
       interface_type = nil
       Builtins.foreach(all_interfaces) do |one|
         next if Ops.get(one, "id") != interface
+
         # this is THE interface
         interface_type = Ops.get(one, "type")
       end
@@ -159,6 +158,7 @@ module Yast
         next if Builtins.contains(last_known_interfaces, interface)
         # already configured in some zone
         next if !SuSEFirewall.GetZoneOfInterface(interface).nil?
+
         # any dial-up interfaces presented and the new one isn't dial-up
         if had_dialup_interfaces && !IsDialUpInterface(interface)
           AddWarning(
@@ -394,25 +394,19 @@ module Yast
           Ops.greater_than(Builtins.size(dial_up_interfaces), 0)
         SetInterfacesToZone(non_dup_interfaces, "INT")
         SetInterfacesToZone(dial_up_interfaces, "EXT")
-        if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
-          SuSEFirewall.SetServicesForZones([@ssh_service], ["INT", "EXT"], true)
-        end
+        SuSEFirewall.SetServicesForZones([@ssh_service], ["INT", "EXT"], true) if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
 
         # has non-dial-up and doesn't have dial-up interfaces
       elsif Ops.greater_than(Builtins.size(non_dup_interfaces), 0) &&
           Builtins.size(dial_up_interfaces) == 0
         SetInterfacesToZone(non_dup_interfaces, "EXT")
-        if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
-          SuSEFirewall.SetServicesForZones([@ssh_service], ["EXT"], true)
-        end
+        SuSEFirewall.SetServicesForZones([@ssh_service], ["EXT"], true) if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
 
         # doesn't have non-dial-up and has dial-up interfaces
       elsif Builtins.size(non_dup_interfaces) == 0 &&
           Ops.greater_than(Builtins.size(dial_up_interfaces), 0)
         SetInterfacesToZone(dial_up_interfaces, "EXT")
-        if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
-          SuSEFirewall.SetServicesForZones([@ssh_service], ["EXT"], true)
-        end
+        SuSEFirewall.SetServicesForZones([@ssh_service], ["EXT"], true) if ProductFeatures.GetBooleanFeature("globals", "firewall_enable_ssh")
       end
 
       # Dial-up interfaces are considered to be internal,
@@ -469,7 +463,7 @@ module Yast
 
     # Local function returns if proposal was changed by user
     #
-    # @return	[Boolean] if proposal was changed by user
+    # @return  [Boolean] if proposal was changed by user
     def GetChangedByUser
       @proposal_changed_by_user
     end
@@ -485,7 +479,7 @@ module Yast
 
     # Local function returns if proposal was initialized already
     #
-    # @return	[Boolean] if proposal was initialized
+    # @return  [Boolean] if proposal was initialized
     def GetProposalInitialized
       @proposal_initialized
     end
@@ -532,8 +526,8 @@ module Yast
     # **Structure:**
     #
     #     map $[
-    #     	"output" : "HTML Proposal Summary",
-    #     	"warning" : "HTML Warning Summary",
+    #       "output" : "HTML Proposal Summary",
+    #       "warning" : "HTML Warning Summary",
     #      ]
     def ProposalSummary
       # output: $[ "output" : "HTML Proposal", "warning" : "HTML Warning" ];

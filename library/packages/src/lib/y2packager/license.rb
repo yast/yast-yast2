@@ -117,8 +117,10 @@ module Y2Packager
     # @return [String,nil] Unique identifier; nil if the license was not found.
     def id
       return @id if @id
+
       content = content_for(DEFAULT_LANG)
       return unless content
+
       @id = Digest::SHA2.hexdigest(content)
     end
 
@@ -140,6 +142,7 @@ module Y2Packager
     # @return [Array<String>] List of available language codes ("de_DE", "en_US", etc.)
     def locales
       return [DEFAULT_LANG] unless fetcher
+
       fetcher.locales
     end
 

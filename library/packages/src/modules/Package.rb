@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,12 +19,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Package.ycp
-# Package:	yast2
-# Summary:	Packages manipulation
-# Authors:	Martin Vidner <mvidner@suse.cz>
-#		Michal Svec <msvec@suse.cz>
-# Flags:	Stable
+# File:  modules/Package.ycp
+# Package:  yast2
+# Summary:  Packages manipulation
+# Authors:  Martin Vidner <mvidner@suse.cz>
+#    Michal Svec <msvec@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 #

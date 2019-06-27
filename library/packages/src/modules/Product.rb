@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Product.ycp
-# Package:	yast2
-# Summary:	Product data
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
-#		Lukas Ocilka <locilka@suse.cz>
+# File:  modules/Product.ycp
+# Package:  yast2
+# Summary:  Product data
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
+#    Lukas Ocilka <locilka@suse.cz>
 #
 # $Id$
 require "yast"
@@ -263,6 +261,7 @@ module Yast
       # Try to read the data from os-release (fast)
       if OS_RELEASE_PROPERTIES.include?(key) && can_use_os_release_file?
         return if read_os_release_file
+
         log.warn "Incomplete os-release file, continue reading from zypp"
       end
 
@@ -286,6 +285,10 @@ module Yast
       else
         super
       end
+    end
+
+    def respond_to_missing?(name, _include_private)
+      DROPPED_METHODS.include?(name)
     end
 
     publish function: :name, type: "string ()"

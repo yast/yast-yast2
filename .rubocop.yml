@@ -1,6 +1,6 @@
 # use the shared Yast defaults
 inherit_from:
-  /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
+  /usr/share/YaST2/data/devtools/data/rubocop-0.71.0_yast_style.yml
 
 Metrics/AbcSize:
   Max: 446
@@ -26,21 +26,27 @@ Metrics/MethodLength:
 Metrics/ParameterLists:
   Max: 11
 
+# Configuration parameters: CountComments, ExcludedMethods.
+# ExcludedMethods: refine
+Metrics/BlockLength:
+  Max: 877
+
 Metrics/PerceivedComplexity:
   Max: 65
 
-Style/AccessorMethodName:
+# this needs more testing if we can have frozen string literals
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Naming/AccessorMethodName:
   # keep backward compatibility, but do not allow new code to be non-ruby style
   Exclude:
     - library/systemd/src/modules/systemd_target.rb
 
-# set reasonable ruby version
-AllCops:
-  TargetRubyVersion: 2.2
-
-# UI_ID module is not camel case
-Style/ClassAndModuleCamelCase:
-  Enabled: false
+Naming/ClassAndModuleCamelCase:
+  # UI_ID module is not camel case
+  Exclude:
+    - "library/packages/src/modules/SlideShow.rb"
 
 Style/ClassVars:
   # We really need the class variables in SuSEFirewall modules
@@ -52,11 +58,11 @@ Style/Documentation:
   Include:
     - "library/*/src/lib/**/*.rb"
 
-Style/FileName:
+Naming/FileName:
   Include:
     - "library/*/src/lib/**/*.rb"
 
-Style/MethodName:
+Naming/MethodName:
   Include:
     - "library/*/src/lib/**/*.rb"
   Exclude:
@@ -74,7 +80,7 @@ Style/Next:
     - "library/network/src/lib/network/susefirewalld.rb"
 
 # keep it as it is part of API for old code
-Style/PredicateName:
+Naming/PredicateName:
   Include:
     - "library/*/src/lib/**/*.rb"
 
@@ -83,7 +89,7 @@ Style/TrivialAccessors:
   Include:
     - "library/*/src/lib/**/*.rb"
 
-Style/VariableName:
+Naming/VariableName:
   Include:
     - "library/*/src/lib/**/*.rb"
   Exclude:

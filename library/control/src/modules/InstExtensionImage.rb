@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/InstExtensionImage.ycp
-# Package:	Base
-# Summary:	Functionality for downloading and merging extending
-#		images for the inst-sys
-# Authors:	Lukas Ocilka <locilka@suse.cz>
+# File:  modules/InstExtensionImage.ycp
+# Package:  Base
+# Summary:  Functionality for downloading and merging extending
+#    images for the inst-sys
+# Authors:  Lukas Ocilka <locilka@suse.cz>
 #
 # $Id$
 #
@@ -177,9 +175,7 @@ module Yast
       base_params_pos = Builtins.search(base_url, "?")
       base_params = ""
 
-      if !base_params_pos.nil? && Ops.greater_or_equal(base_params_pos, 0)
-        base_params = Builtins.substring(base_url, Ops.add(base_params_pos, 1))
-      end
+      base_params = Builtins.substring(base_url, Ops.add(base_params_pos, 1)) if !base_params_pos.nil? && Ops.greater_or_equal(base_params_pos, 0)
 
       # URL params with modifications
       modif_params_pos = Builtins.search(url_with_modifs, "?")
@@ -263,21 +259,15 @@ module Yast
       end
 
       # Modif URL is not relative, not using the base URL at all
-      if !IsURLRelative(url_with_modifs_onlyurl)
-        return CutLastDirOrFile(url_with_modifs_onlyurl)
-      end
+      return CutLastDirOrFile(url_with_modifs_onlyurl) if !IsURLRelative(url_with_modifs_onlyurl)
 
       # base URL
       url_base_pos = Builtins.search(url_base, "?")
       url_base_onlyurl = url_base
 
-      if !url_base_pos.nil? && Ops.greater_or_equal(url_base_pos, 0)
-        url_base_onlyurl = Builtins.substring(url_base, 0, url_base_pos)
-      end
+      url_base_onlyurl = Builtins.substring(url_base, 0, url_base_pos) if !url_base_pos.nil? && Ops.greater_or_equal(url_base_pos, 0)
 
-      if !Builtins.regexpmatch(url_base_onlyurl, "/$")
-        url_base_onlyurl = Ops.add(url_base_onlyurl, "/")
-      end
+      url_base_onlyurl = Ops.add(url_base_onlyurl, "/") if !Builtins.regexpmatch(url_base_onlyurl, "/$")
 
       CutLastDirOrFile(Ops.add(url_base_onlyurl, url_with_modifs_onlyurl))
     end
@@ -352,6 +342,7 @@ module Yast
       loading_msg = format(_("Loading to memory package '%s'"), package)
       res = LoadExtension(package, loading_msg)
       raise "Failed to load package. Please check logs." unless res
+
       begin
         block.call
       ensure
@@ -361,13 +352,11 @@ module Yast
     end
 
     # Load a rpm package from the media into the inst-sys
-    # @param [String] package	The path to package to be loaded (by default,
+    # @param [String] package  The path to package to be loaded (by default,
     # the package is expected in the /boot/<arch>/ directory of the media
-    # @param [String] message	The message to be shown in the progress popup
+    # @param [String] message  The message to be shown in the progress popup
     def LoadExtension(package, message)
-      if !Stage.initial
-        Builtins.y2error("This module should be used in Stage::initial only!")
-      end
+      Builtins.y2error("This module should be used in Stage::initial only!") if !Stage.initial
 
       if package.nil? || package == ""
         Builtins.y2error("Such package name can't work: %1", package)
@@ -401,13 +390,11 @@ module Yast
     end
 
     # Remove given package from the inst-sys
-    # @param [String] package	The path to package to be unloaded (by default,
+    # @param [String] package  The path to package to be unloaded (by default,
     # the package is expected in the /boot/<arch>/ directory of the media
-    # @param [String] message	The message to be shown in the progress popup
+    # @param [String] message  The message to be shown in the progress popup
     def UnLoadExtension(package, message)
-      if !Stage.initial
-        Builtins.y2error("This module should be used in Stage::initial only!")
-      end
+      Builtins.y2error("This module should be used in Stage::initial only!") if !Stage.initial
 
       if package.nil? || package == ""
         Builtins.y2error("Such package name can't work: %1", package)

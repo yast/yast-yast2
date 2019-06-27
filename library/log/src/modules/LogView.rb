@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/LogView.ycp
-# Package:	YaST2
-# Summary:	Displaying a log with additional functionality
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/LogView.ycp
+# Package:  YaST2
+# Summary:  Displaying a log with additional functionality
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -37,7 +35,7 @@
 #          "file" : "/var/log/messages",
 #          "grep" : "dhcpd",
 #          "save" : true,
-#          "actions" : [	// menu buttons
+#          "actions" : [  // menu buttons
 #              [ _("Restart DHCP Server"),
 #                  RestartDhcpDaemon ],
 #              [ _("Save Settings and Restart DHCP Server"),
@@ -177,9 +175,7 @@ module Yast
         adv_button = _("Ad&vanced")
       end
 
-      if Builtins.regexpmatch(adv_button, "^.*&.*$")
-        adv_button = Builtins.regexpsub(adv_button, "^(.*)&(.*)$", "\\1\\2")
-      end
+      adv_button = Builtins.regexpsub(adv_button, "^(.*)&(.*)$", "\\1\\2") if Builtins.regexpmatch(adv_button, "^.*&.*$")
 
       save = Ops.get_boolean(parameters, "save", false)
       save = false if save.nil?
@@ -328,9 +324,7 @@ module Yast
         index = -1
         Builtins.foreach(log_maps) do |m|
           index = Ops.add(index, 1)
-          if Builtins.haskey(m, "default") && default_log == 0
-            default_log = index
-          end
+          default_log = index if Builtins.haskey(m, "default") && default_log == 0
         end
       end
       default_log
@@ -364,9 +358,7 @@ module Yast
       @current_index = Ops.get_integer(@param, "_cwm_default_index", 0)
       @mb_actions = Ops.get_list(@param, "_cwm_button_actions", [])
       @logs = Ops.get_list(@param, "_cwm_log_files", [])
-      if UI.WidgetExists(Id(:cwm_log_files))
-        UI.ChangeWidget(Id(:cwm_log_files), :value, @current_index)
-      end
+      UI.ChangeWidget(Id(:cwm_log_files), :value, @current_index) if UI.WidgetExists(Id(:cwm_log_files))
       LogSwitch(@current_index)
 
       nil
@@ -404,7 +396,7 @@ module Yast
           from: "any",
           to:   "void ()"
         )
-        func.call if !func.nil?
+        func&.call
         if Ops.get(@mb_actions, [iret, 2]) == true
           KillBackgroundProcess(nil)
           UI.ChangeWidget(Id(:_cwm_log), :Value, "")
@@ -428,9 +420,9 @@ module Yast
     #                 label for the menubutton, the second one is a function
     #                 that will be called when the entry is selected,
     #                 the signature of the function must be void(),
-    #			optional 3rd argument, if set to true, forces
-    #			restarting of the log displaying command after the
-    #			action is performed
+    #      optional 3rd argument, if set to true, forces
+    #      restarting of the log displaying command after the
+    #      action is performed
     #  - "mb_label" -- string, label of the menubutton, if not specified,
     #                  then "Advanced" is used
     #  - "max_lines" -- integer, maximum of lines to be displayed. If 0,
@@ -524,9 +516,9 @@ module Yast
     #                 label for the menubutton, the second one is a function
     #                 that will be called when the entry is selected,
     #                 the signature of the function must be void(),
-    #			optional 3rd argument, if set to true, forces
-    #			restarting of the log displaying command after the
-    #			action is performed
+    #      optional 3rd argument, if set to true, forces
+    #      restarting of the log displaying command after the
+    #      action is performed
     #  - "help" -- string for a rich text, help to be offered via a popup
     #              when user clicks the "Help" button. If not present,
     #              Help button isn't shown
@@ -564,9 +556,7 @@ module Yast
         )
       )
 
-      if Ops.get_string(@param, "help", "") != ""
-        UI.ReplaceWidget(Id(:rep_left), PushButton(Id(:help), Label.HelpButton))
-      end
+      UI.ReplaceWidget(Id(:rep_left), PushButton(Id(:help), Label.HelpButton)) if Ops.get_string(@param, "help", "") != ""
       @mb_actions = Ops.get_list(@param, "actions", [])
 
       InitLogReading(0)

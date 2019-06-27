@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,13 +19,13 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Popup.ycp
-# Package:	yast2
-# Summary:	Commonly used popup dialogs
-# Authors:	Gabriele Strattner <gs@suse.de>
-#		Stefan Hundhammer <sh@suse.de>
-#		Arvin Schnell <arvin@suse.de>
-# Flags:	Stable
+# File:  modules/Popup.ycp
+# Package:  yast2
+# Summary:  Commonly used popup dialogs
+# Authors:  Gabriele Strattner <gs@suse.de>
+#    Stefan Hundhammer <sh@suse.de>
+#    Arvin Schnell <arvin@suse.de>
+# Flags:  Stable
 #
 # $Id$
 #
@@ -66,16 +64,14 @@ module Yast
 
     # Internal function that returns a popup dialog with an additional label.
     #
-    # @param [String] headline	headline to show or Popup::NoHeadline()
-    # @param [String] message	message text to show
-    # @param [Yast::Term] button_box	term with one or more buttons
-    # @param [String] label		second label with id `label which can be used e.g. for time out value displaying
+    # @param [String] headline  headline to show or Popup::NoHeadline()
+    # @param [String] message  message text to show
+    # @param [Yast::Term] button_box  term with one or more buttons
+    # @param [String] label    second label with id `label which can be used e.g. for time out value displaying
     #
     # @return [Yast::Term] the layout contents as a term
     def popupLayoutInternalTypeWithLabel(headline, message, button_box, label, richtext, width, height)
       button_box = deep_copy(button_box)
-      content = Empty()
-
       rt = VWeight(
         1,
         VBox(
@@ -87,24 +83,24 @@ module Yast
         )
       )
 
-      if Ops.greater_than(Builtins.size(headline), 0)
-        content = VBox(
+      content = if Ops.greater_than(Builtins.size(headline), 0)
+        VBox(
           VSpacing(0.4),
           VBox(
             Left(Heading(headline)),
             VSpacing(0.2),
             richtext ? rt : Left(Label(message)),
             VSpacing(0.2),
-            !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
+            (!label.nil? && label != "") ? Label(Id(:label), label) : Empty()
           )
         ) # no headline
       else
-        content = VBox(
+        VBox(
           VSpacing(0.4),
           VBox(
             richtext ? rt : VCenter(Label(message)),
             VSpacing(0.2),
-            !label.nil? && label != "" ? Label(Id(:label), label) : Empty()
+            (!label.nil? && label != "") ? Label(Id(:label), label) : Empty()
           )
         )
       end
@@ -158,9 +154,9 @@ module Yast
     # Show a message with optional headline above and
     # wait until user clicked "OK" or until a timeout runs out.
     #
-    # @param [String] headline	optional headline or Popup::NoHeadline()
-    # @param [String] message	the message (maybe multi-line) to display.
-    # @param [Fixnum] timeout	After timeout seconds dialog will be automatically closed
+    # @param [String] headline  optional headline or Popup::NoHeadline()
+    # @param [String] message  the message (maybe multi-line) to display.
+    # @param [Fixnum] timeout  After timeout seconds dialog will be automatically closed
     #
     # @return [void]
     #
@@ -200,9 +196,7 @@ module Yast
 
         timeout = Ops.subtract(timeout, 1)
 
-        if success == true
-          UI.ChangeWidget(Id(:label), :Value, Builtins.sformat("%1", timeout))
-        end
+        UI.ChangeWidget(Id(:label), :Value, Builtins.sformat("%1", timeout)) if success == true
       end
 
       UI.CloseDialog if success == true
@@ -250,9 +244,9 @@ module Yast
 
     # Button box for the AnyQuestion Dialog (internal function).
     #
-    # @param [String] yes_button_message	label on affirmative buttons (on left side)
-    # @param [String] no_button_message	label on negating button (on right side)
-    # @param [Symbol] focus			`focus_yes (first button) or `focus_no (second button)
+    # @param [String] yes_button_message  label on affirmative buttons (on left side)
+    # @param [String] no_button_message  label on negating button (on right side)
+    # @param [Symbol] focus      `focus_yes (first button) or `focus_no (second button)
     #
     # @return [Yast::Term] button box
     def AnyQuestionButtonBox(yes_button_message, no_button_message, focus)
@@ -290,15 +284,15 @@ module Yast
     # NEVER use this generic question popup to simply exchange the order of
     # yes/no, continue/cancel or ok/cancel buttons!
     #
-    # @param [String] headline		headline or Popup::NoHeadline()
-    # @param [String] message		message string
-    # @param [String] yes_button_message	label on affirmative buttons (on left side)
-    # @param [String] no_button_message	label on negating button (on right side)
-    # @param [Symbol] focus			`focus_yes (first button) or `focus_no (second button)
+    # @param [String] headline    headline or Popup::NoHeadline()
+    # @param [String] message    message string
+    # @param [String] yes_button_message  label on affirmative buttons (on left side)
+    # @param [String] no_button_message  label on negating button (on right side)
+    # @param [Symbol] focus      `focus_yes (first button) or `focus_no (second button)
     # ![screenshots/AnyQuestion.png](../../screenshots/AnyQuestion.png)
     #
     # @return true:  first button has been clicked
-    #	 false: second button has been clicked
+    #   false: second button has been clicked
     #
     # @see #YesNo
     # @see #ContinueCancel
@@ -336,15 +330,15 @@ module Yast
     # NEVER use this generic question popup to simply exchange the order of
     # yes/no, continue/cancel or ok/cancel buttons!
     #
-    # @param [String] headline		headline or Popup::NoHeadline()
-    # @param [String] message		message string
-    # @param [String] yes_button_message	label on affirmative buttons (on left side)
-    # @param [String] no_button_message	label on negating button (on right side)
-    # @param [Symbol] focus			`focus_yes (first button) or `focus_no (second button)
+    # @param [String] headline    headline or Popup::NoHeadline()
+    # @param [String] message    message string
+    # @param [String] yes_button_message  label on affirmative buttons (on left side)
+    # @param [String] no_button_message  label on negating button (on right side)
+    # @param [Symbol] focus      `focus_yes (first button) or `focus_no (second button)
     # ![screenshots/AnyQuestion.png](../../screenshots/AnyQuestion.png)
     #
     # @return true:  first button has been clicked
-    #	 false: second button has been clicked
+    #   false: second button has been clicked
     #
     # @see #YesNo
     # @see #ContinueCancel
@@ -377,12 +371,12 @@ module Yast
 
     # Timed question popup with two buttons and time display
     #
-    # @param [String] headline		headline or Popup::NoHeadline()
-    # @param [String] message		message string
-    # @param [String] yes_button_message	label on affirmative buttons (on left side)
-    # @param [String] no_button_message	label on negating button (on right side)
-    # @param [Symbol] focus			`focus_yes (first button) or `focus_no (second button)
-    # @param [Fixnum] timeout_seconds	timeout, if 0, normal behaviour
+    # @param [String] headline    headline or Popup::NoHeadline()
+    # @param [String] message    message string
+    # @param [String] yes_button_message  label on affirmative buttons (on left side)
+    # @param [String] no_button_message  label on negating button (on right side)
+    # @param [Symbol] focus      `focus_yes (first button) or `focus_no (second button)
+    # @param [Fixnum] timeout_seconds  timeout, if 0, normal behaviour
     # @return [Boolean]              True if Yes, False if no
     # @see #AnyQuestion
     def TimedAnyQuestion(headline, message, yes_button_message, no_button_message, focus, timeout_seconds)
@@ -417,6 +411,7 @@ module Yast
         which_input = UI.TimeoutUserInput(1000)
 
         break if which_input == :timed_ok
+
         if which_input == :timed_stop
           UI.ReplaceWidget(Id(:replace_buttons), button_box)
           which_input = UI.UserInput while which_input == :timed_stop
@@ -440,17 +435,17 @@ module Yast
 
     # Timed error question popup with two buttons and time display
     #
-    # @param [String] headline		headline or Popup::NoHeadline()
-    # @param [String] message		message string
-    # @param [String] yes_button_message	label on affirmative buttons (on left side)
-    # @param [String] no_button_message	label on negating button (on right side)
-    # @param [Symbol] focus			`focus_yes (first button) or `focus_no (second button)
-    # @param [Fixnum] timeout_seconds	timeout, if 0, normal behaviour
+    # @param [String] headline    headline or Popup::NoHeadline()
+    # @param [String] message    message string
+    # @param [String] yes_button_message  label on affirmative buttons (on left side)
+    # @param [String] no_button_message  label on negating button (on right side)
+    # @param [Symbol] focus      `focus_yes (first button) or `focus_no (second button)
+    # @param [Fixnum] timeout_seconds  timeout, if 0, normal behaviour
     # @return [Boolean]              True if Yes, False if no
     # @see #AnyQuestion
     def TimedErrorAnyQuestion(headline, message, yes_button_message, no_button_message, focus, timeout_seconds)
       buttons = { yes: yes_button_message, no: no_button_message }
-      focus_symbol = focus == :focus_no ? :no : :yes
+      focus_symbol = (focus == :focus_no) ? :no : :yes
       ret = Yast2::Popup.show(message, headline: headline, buttons: buttons,
         focus: focus_symbol, timeout: timeout_seconds)
 
@@ -527,9 +522,9 @@ module Yast
     #
     # ![screenshots/YesNoHeadline.png](../../screenshots/YesNoHeadline.png)
     #
-    # @param [String] headline	short headline or Popup::NoHeadline()
-    # @param [String] message	message string
-    # @return [Boolean]	true if [Yes] has been pressed
+    # @param [String] headline  short headline or Popup::NoHeadline()
+    # @param [String] message  message string
+    # @return [Boolean]  true if [Yes] has been pressed
     #
     # @example  Popup::YesNoHeadline ( "Resize Windows Partition?", "... explanation of dangers ..." );
     #
@@ -558,8 +553,8 @@ module Yast
     #
     # ![screenshots/YesNo.png](../../screenshots/YesNo.png)
     #
-    # @param [String] message	message string
-    # @return [Boolean]	true if [Yes] has been pressed
+    # @param [String] message  message string
+    # @return [Boolean]  true if [Yes] has been pressed
     #
     # @example  Popup::YesNo ( "Create a backup of the config files?" );
     #
@@ -642,7 +637,7 @@ module Yast
 
       no_button = PushButton(
         Id(:cancel),
-        focus == :focus_no ? Opt(:default, :key_F9) : Opt(:key_F9),
+        (focus == :focus_no) ? Opt(:default, :key_F9) : Opt(:key_F9),
         no_button_message
       )
 
@@ -679,7 +674,7 @@ module Yast
     #
     # ![screenshots/ConfirmAbort.png](../../screenshots/ConfirmAbort.png)
     #
-    # @param [Symbol] severity		`painless, `incomplete, `unusable
+    # @param [Symbol] severity    `painless, `incomplete, `unusable
     #
     # @return [Boolean]
     #
@@ -768,11 +763,11 @@ module Yast
     # anyway, but of course with "have_changes" set to "false" so the user
     # isn't warned about changes that might be lost.
     #
-    # @param [Boolean] have_changes	true:  There are changes that will be lost
-    #			false: No changes
+    # @param [Boolean] have_changes  true:  There are changes that will be lost
+    #      false: No changes
     #
-    # @return	true: "abort" confirmed;
-    #		false: don't abort
+    # @return  true: "abort" confirmed;
+    #    false: don't abort
     def ReallyAbort(have_changes)
       focus = :focus_yes
 
@@ -807,9 +802,9 @@ module Yast
     # Show a message with optional headline above and
     # wait until user clicked "OK" or "Details". On "Details", show window with detailed information.
     #
-    # @param [String] headline	optional headline or Popup::NoHeadline()
-    # @param [String] message	the message (maybe multi-line) to display.
-    # @param [String] details	the detailed information text
+    # @param [String] headline  optional headline or Popup::NoHeadline()
+    # @param [String] message  the message (maybe multi-line) to display.
+    # @param [String] details  the detailed information text
     def anyMessageDetailsInternalType(headline, message, details, richtext, width, height)
       button_box = ButtonBox(
         PushButton(Id(:ok_msg), Opt(:default, :okButton), Label.OKButton),
@@ -879,8 +874,8 @@ module Yast
     # Show a message with optional headline above and
     # wait until user clicked "OK".
     #
-    # @param [String] headline	optional headline or Popup::NoHeadline()
-    # @param [String] message	the message (maybe multi-line) to display.
+    # @param [String] headline  optional headline or Popup::NoHeadline()
+    # @param [String] message  the message (maybe multi-line) to display.
     def anyMessageInternalType(headline, message, richtext, width, height)
       button_box = ButtonBox(
         PushButton(
@@ -947,8 +942,8 @@ module Yast
     # Show a message with optional headline above and
     # wait until user clicked "OK".
     #
-    # @param [String] headline	optional headline or Popup::NoHeadline()
-    # @param [String] message	the message (maybe multi-line) to display.
+    # @param [String] headline  optional headline or Popup::NoHeadline()
+    # @param [String] message  the message (maybe multi-line) to display.
     def anyRichMessageInternal(headline, message, width, height)
       button_box = ButtonBox(
         PushButton(Id(:ok_msg), Opt(:default, :key_F10), Label.OKButton)
@@ -979,8 +974,8 @@ module Yast
     # Show a message with optional headline above and
     # wait until user clicked "OK".
     #
-    # @param [String] headline	optional headline or Popup::NoHeadline()
-    # @param [String] message	the message (maybe multi-line) to display.
+    # @param [String] headline  optional headline or Popup::NoHeadline()
+    # @param [String] message  the message (maybe multi-line) to display.
     def AnyMessage(headline, message)
       anyMessageInternal(headline, message)
 
@@ -1132,8 +1127,8 @@ module Yast
 
     # Show a message with Details button and wait until user clicked "OK".
     #
-    # @param [String] message	message string
-    # @param [String] details	detailed information string
+    # @param [String] message  message string
+    # @param [String] details  detailed information string
     # @example  Popup::MessageDetails("This is an information about ... .", "This service is intended to...");
     #
     # @see #Message
@@ -1251,8 +1246,8 @@ module Yast
 
     # Show a warning with Details button and wait until user clicked "OK".
     #
-    # @param [String] message	warning message string
-    # @param [String] details	detailed information string
+    # @param [String] message  warning message string
+    # @param [String] details  detailed information string
     # @example Popup::WarningDetails("Something is wrong. Please check your configuration.", "possible problem is in..." );
     #
     # @see #Message
@@ -1268,7 +1263,7 @@ module Yast
 
     # Show an error message and wait until user clicked "OK".
     #
-    # @param [String] message	error message string
+    # @param [String] message  error message string
     #
     # @example  Popup::Error("The configuration was not succesful." );
     # ![screenshots/Error.png](../../screenshots/Error.png)
@@ -1328,7 +1323,7 @@ module Yast
     #
     # ![screenshots/TimedErrorPopup.png](../../screenshots/TimedErrorPopup.png)
     #
-    # @param [String] message	error message string
+    # @param [String] message  error message string
     # @param [Fixnum] timeout_seconds time out in seconds
     #
     # @return [void]
@@ -1380,8 +1375,8 @@ module Yast
 
     # Show an error message with Details button and wait until user clicked "OK".
     #
-    # @param [String] message	error message string
-    # @param [String] details	detailed information string
+    # @param [String] message  error message string
+    # @param [String] details  detailed information string
     # @example  Popup::ErrorDetails("The configuration was not succesful.", "Service failed to start");
     #
     # @see #Message
@@ -1491,8 +1486,8 @@ module Yast
 
     # Show a notify message with Details button and wait until user clicked "OK".
     #
-    # @param [String] message	error message string
-    # @param [String] details	detailed information string
+    # @param [String] message  error message string
+    # @param [String] details  detailed information string
     #
     # @see #Message
     def NotifyDetails(message, details)
@@ -1514,11 +1509,11 @@ module Yast
     # user clicks that, the popup will wait forever (or until "OK" or "Cancel" is
     # clicked, of course).
     #
-    # @param [String] message		message to display
-    # @param [Fixnum] timeout_seconds		the timeout in seconds
+    # @param [String] message    message to display
+    # @param [Fixnum] timeout_seconds    the timeout in seconds
     #
-    # @return true	--> "OK" or timer expired<br>
-    #	 false  --> "Cancel"
+    # @return true  --> "OK" or timer expired<br>
+    #   false  --> "Cancel"
     #
     # @example boolean ret = Popup::TimedOKCancel("This is a timed message", 2 );
     def TimedOKCancel(message, timeout_seconds)
@@ -1552,6 +1547,7 @@ module Yast
         which_input = UI.TimeoutUserInput(1000)
         break if which_input == :timed_ok
         break if which_input == :timed_cancel
+
         if which_input == :timed_stop
           which_input = UI.UserInput while which_input == :timed_stop
           break
@@ -1570,17 +1566,17 @@ module Yast
 
     # Generic question popup with three buttons.
     #
-    # @param [String] headline		headline or Popup::NoHeadline()
-    # @param [String] message			message string
-    # @param [String] yes_button_message	label on affirmative button (on left side)
-    # @param [String] no_button_message	label on negating button (middle)
-    # @param [String] retry_button_message	label on retry button (on right side)
-    # @param [Symbol] focus			`focus_yes (first button), `focus_no (second button) or
-    #				`focus_retry (third button)
+    # @param [String] headline    headline or Popup::NoHeadline()
+    # @param [String] message      message string
+    # @param [String] yes_button_message  label on affirmative button (on left side)
+    # @param [String] no_button_message  label on negating button (middle)
+    # @param [String] retry_button_message  label on retry button (on right side)
+    # @param [Symbol] focus      `focus_yes (first button), `focus_no (second button) or
+    #        `focus_retry (third button)
     #
     # @return - `yes:  first button has been clicked
-    #	   - `no: second button has been clicked
-    #	   - `retry: third button has been clicked
+    #     - `no: second button has been clicked
+    #     - `retry: third button has been clicked
     #
     # @see #AnyQuestion
     #
@@ -1671,7 +1667,7 @@ module Yast
     #
     # ![screenshots/ModuleError.png](../../screenshots/ModuleError.png)
     #
-    # @param [String] text	 string
+    # @param [String] text   string
     # @return [Symbol] `back, `again, `cancel, `next
     #
     # @example Popup::ModuleError( "The module " + symbolof(argterm) + " does not work." );
@@ -1721,9 +1717,9 @@ module Yast
     # Show a message with optional headline above and
     # wait until user clicked "OK" or until a timeout runs out.
     #
-    # @param [String] headline	optional headline or Popup::NoHeadline()
-    # @param [String] message	the message (maybe multi-line) to display.
-    # @param [Fixnum] timeout	After timeout seconds dialog will be automatically closed
+    # @param [String] headline  optional headline or Popup::NoHeadline()
+    # @param [String] message  the message (maybe multi-line) to display.
+    # @param [Fixnum] timeout  After timeout seconds dialog will be automatically closed
     #
     # @return [void]
     #
@@ -1749,9 +1745,9 @@ module Yast
 
     # Show the contents of an entire file in a popup.
     #
-    # @param [String] headline	headline text
-    # @param [String] text	text to show
-    # @param [Fixnum] timeout	text to show
+    # @param [String] headline  headline text
+    # @param [String] text  text to show
+    # @param [Fixnum] timeout  text to show
     #
     # @example Popup::ShowText ("Boot Messages", "kernel panic", 10);
     def ShowTextTimed(headline, text, timeout)
@@ -1805,8 +1801,8 @@ module Yast
 
     # Show the contents of an entire file in a popup.
     #
-    # @param [String] headline	headline text
-    # @param [String] text	text to show
+    # @param [String] headline  headline text
+    # @param [String] text  text to show
     #
     # @example Popup::ShowText ("Boot Messages", "kernel panic");
     def ShowText(headline, text)
@@ -1850,8 +1846,8 @@ module Yast
     #
     # Notice: This is a WFM function, NOT an UI function!
     #
-    # @param [String] headline	headline text
-    # @param [String] filename	filename with path of the file to show
+    # @param [String] headline  headline text
+    # @param [String] filename  filename with path of the file to show
     #
     # @example Popup::ShowFile ("Boot Messages", "/var/log/boot.msg");
     def ShowFile(headline, filename)

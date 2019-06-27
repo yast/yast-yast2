@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Copyright (c) 2012 Novell, Inc.
 #
 # All Rights Reserved.
@@ -50,7 +48,7 @@ module UI
     ]
 
     # The compatibility API needs CamelCase method names
-    # rubocop:disable MethodName
+    # rubocop:disable Naming/MethodName
 
     # Wrap terms in a VBox with small vertical spacings in between.
     # @param old [Yast::Term]
@@ -257,5 +255,6 @@ module UI
 
     alias_method :transform, :Transform
     module_function :transform
+    # rubocop:enable Naming/MethodName
   end
 end

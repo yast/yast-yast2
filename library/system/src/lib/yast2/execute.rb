@@ -230,15 +230,11 @@ module Yast
       Yast.import "Report"
 
       Yast::Report.Error(
-        _(
-          "Execution of command \"%{command}\" failed.\n"\
-          "Exit code: %{exitcode}\n"\
-          "Error output: %{stderr}"
-        ) % {
-          command:  e.commands.inspect,
-          exitcode: e.status.exitstatus,
-          stderr:   e.stderr
-        }
+        format(_(
+                 "Execution of command \"%{command}\" failed.\n"\
+                 "Exit code: %{exitcode}\n"\
+                 "Error output: %{stderr}"
+               ), command: e.commands.inspect, exitcode: e.status.exitstatus, stderr: e.stderr)
       )
     end
 

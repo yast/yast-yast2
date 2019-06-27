@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2018-2019 SUSE LLC
@@ -59,6 +57,7 @@ module Yast2
     # Prepare (create, rotate and delete) the log directory.
     def prepare
       return if Yast::Mode.test
+
       begin
         log.info "preparing log dir #{self.class::NAME}"
         rotate_log_dirs
@@ -74,6 +73,7 @@ module Yast2
     # @param dest [String] basename of destination
     def copy(src, dest)
       return if Yast::Mode.test
+
       begin
         FileUtils.cp(src, log_dir + "/" + dest)
       rescue SystemCallError => e
@@ -87,6 +87,7 @@ module Yast2
     # @param content [String] content to write
     def write(dest, content)
       return if Yast::Mode.test
+
       begin
         File.write(log_dir + "/" + dest, content)
       rescue SystemCallError => e
@@ -128,6 +129,7 @@ module Yast2
     # This will NOT create any new log directory.
     def rotate_log_dirs
       return unless File.exist?(base_dir)
+
       if installation?
         kill_old_log_dirs([File.basename(log_dir)])
       else
@@ -144,6 +146,7 @@ module Yast2
     def kill_old_log_dirs(log_dirs)
       log_dirs.each do |dir|
         next unless File.exist?(base_dir + "/" + dir)
+
         log.info("Removing old log dir #{dir}")
         FileUtils.remove_dir(base_dir + "/" + dir)
       end

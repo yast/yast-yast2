@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,12 +19,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/RichText.ycp
-# Package:	yast2
-# Summary:	Rich text manipulation routines
-# Authors:	Michal Svec <msvec@suse.cz>
-#		Stano Visnovsky <visnov@suse.cz>
-# Flags:	Stable
+# File:  modules/RichText.ycp
+# Package:  yast2
+# Summary:  Rich text manipulation routines
+# Authors:  Michal Svec <msvec@suse.cz>
+#    Stano Visnovsky <visnov@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -89,11 +87,10 @@ module Yast
           result = Ops.add(result, "\n")
         end
         # *** Add the text ****
-        if s != -1
-          lpart = String.CutBlanks(Builtins.substring(lpart, Ops.add(s, 1)))
-        end
+        lpart = String.CutBlanks(Builtins.substring(lpart, Ops.add(s, 1))) if s != -1
         next if Builtins.regexpmatch(lpart, "^[ \n\t]*$")
         next if lpart == "&nbsp;"
+
         if lpart != "" && inli
           i = 1
           while Ops.less_than(i, indents)

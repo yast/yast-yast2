@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Netmask.ycp
-# Module:	yast2
-# Summary:	Netmask manipulation routines
-# Authors:	Michal Svec <msvec@suse.cz>
-# Flags:	Stable
+# File:  modules/Netmask.ycp
+# Module:  yast2
+# Summary:  Netmask manipulation routines
+# Authors:  Michal Svec <msvec@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -94,6 +92,7 @@ module Yast
 
       # <0,256>
       return false if !Builtins.regexpmatch(netmask, "^[0-9]+$")
+
       nm = Builtins.tointeger(netmask)
       Ops.greater_or_equal(nm, 0) && Ops.less_or_equal(nm, 256)
     end
@@ -140,12 +139,12 @@ module Yast
         Ops.add(
           Ops.get_string(l, b, ""),
           if d != 0
-            Ops.add(Ops.get_string(m, d, ""), b != 3 ? "." : "")
+            Ops.add(Ops.get_string(m, d, ""), (b != 3) ? "." : "")
           else
             ""
           end
         ),
-        Ops.get_string(r, d == 0 ? b : Ops.add(b, 1), "")
+        Ops.get_string(r, (d == 0) ? b : Ops.add(b, 1), "")
       )
     end
 
@@ -154,6 +153,7 @@ module Yast
     # @return number of bits in netmask; 32 for empty string
     def ToBits(netmask)
       return 32 if netmask == ""
+
       bits = 0
       m = {
         "128" => 1,

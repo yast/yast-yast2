@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -22,17 +20,17 @@
 #
 # ***************************************************************************
 # File:
-#	Installation.ycp
+#  Installation.ycp
 #
 # Module:
-#	Installation
+#  Installation
 #
 # Summary:
-#	provide installation related information
+#  provide installation related information
 #
 # Author:
-#	Klaus Kaempf <kkaempf@suse.de>
-#	Lukas Ocilka <locilka@suse.cz>
+#  Klaus Kaempf <kkaempf@suse.de>
+#  Lukas Ocilka <locilka@suse.cz>
 #
 # $Id$
 require "yast"

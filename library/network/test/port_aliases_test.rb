@@ -4,20 +4,20 @@ require_relative "test_helper"
 
 Yast.import "PortAliases"
 
-FILE_CONTENT = <<EOS.freeze
-blocks             10288/tcp    # Blocks  [Carl_Malamud]
-blocks             10288/udp    # Blocks  [Carl_Malamud]
-cosir              10321/tcp    # Computer Op System Information Report  [Kevin_C_Barber]
-#                  10321/udp    Reserved
-bngsync            10439/udp    # BalanceNG session table synchronization protocol  [Inlab_Software_GmbH] [Thomas_G._Obermair]
-#                  10439/tcp    Reserved
-#                  10500/tcp    Reserved
-hip-nat-t          10500/udp    # HIP NAT-Traversal  [RFC5770] [Ari_Keranen]
-MOS-lower          10540/tcp    # MOS Media Object Metadata Port  [Eric_Thorniley]
-MOS-lower          10540/udp    # MOS Media Object Metadata Port  [Eric_Thorniley]
-MOS-upper          10541/tcp    # MOS Running Order Port  [Eric_Thorniley]
-MOS-upper          10541/udp    # MOS Running Order Port  [Eric_Thorniley]
-EOS
+FILE_CONTENT = <<~CONTENT.freeze
+  blocks             10288/tcp    # Blocks  [Carl_Malamud]
+  blocks             10288/udp    # Blocks  [Carl_Malamud]
+  cosir              10321/tcp    # Computer Op System Information Report  [Kevin_C_Barber]
+  #                  10321/udp    Reserved
+  bngsync            10439/udp    # BalanceNG session table synchronization protocol  [Inlab_Software_GmbH] [Thomas_G._Obermair]
+  #                  10439/tcp    Reserved
+  #                  10500/tcp    Reserved
+  hip-nat-t          10500/udp    # HIP NAT-Traversal  [RFC5770] [Ari_Keranen]
+  MOS-lower          10540/tcp    # MOS Media Object Metadata Port  [Eric_Thorniley]
+  MOS-lower          10540/udp    # MOS Media Object Metadata Port  [Eric_Thorniley]
+  MOS-upper          10541/tcp    # MOS Running Order Port  [Eric_Thorniley]
+  MOS-upper          10541/udp    # MOS Running Order Port  [Eric_Thorniley]
+CONTENT
 
 describe Yast::PortAliases do
   describe ".LoadAndReturnNameToPort" do

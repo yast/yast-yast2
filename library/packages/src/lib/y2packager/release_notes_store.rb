@@ -37,14 +37,15 @@ module Y2Packager
     def retrieve(product_name, user_lang, format, version)
       rn = release_notes[product_name]
       return nil if rn.nil?
+
       rn.matches?(user_lang, format, version) ? rn : nil
     end
 
     # Store release notes for later retrieval
     #
-    # @param rn [ReleaseNotes] Release notes to store
-    def store(rn)
-      release_notes[rn.product_name] = rn
+    # @param release_note [ReleaseNotes] Release notes to store
+    def store(release_note)
+      release_notes[release_note.product_name] = release_note
     end
 
     # Clear store

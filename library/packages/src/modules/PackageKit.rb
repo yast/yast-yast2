@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/PackageKit.ycp
-# Package:	yast2
-# Summary:	PackageKit access functions
-# Authors:	Ladislav Slezak <lslezak@suse.cz>
+# File:  modules/PackageKit.ycp
+# Package:  yast2
+# Summary:  PackageKit access functions
+# Authors:  Ladislav Slezak <lslezak@suse.cz>
 #
 # $Id:$
 #
@@ -33,8 +31,7 @@ require "yast"
 
 module Yast
   class PackageKitClass < Module
-    def main
-    end
+    def main; end
 
     # Check whether PackageKit daemon is running
     # @return [Boolean] return true if PackageKit is currently running

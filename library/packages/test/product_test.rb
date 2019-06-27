@@ -16,24 +16,22 @@ Yast.import "PackageLock"
 Yast.import "Mode"
 Yast.import "Stage"
 
-include Yast::Logger
-
 # Path to a test data - service file - mocking the default data path
-DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data")
+DATA_PATH = File.join(__dir__, "data")
 
 def load_zypp(file_name)
   file_name = File.join(DATA_PATH, "zypp", file_name)
 
   raise "File not found: #{file_name}" unless File.exist?(file_name)
 
-  log.info "Loading file: #{file_name}"
+  Yast.y2milestone "Loading file: #{file_name}"
   YAML.load_file(file_name)
 end
 
 PRODUCTS_FROM_ZYPP = load_zypp("products.yml").freeze
 
 def stub_defaults
-  log.info "--------- Running test ---------"
+  Yast.y2milestone "--------- Running test ---------"
   Yast::Product.send(:reset)
   allow(Yast::PackageSystem).to receive(:EnsureTargetInit).and_return(true)
   allow(Yast::PackageSystem).to receive(:EnsureSourceInit).and_return(true)
@@ -295,12 +293,12 @@ describe Yast::Product do
         allow(Yast::Mode).to receive(:mode).and_return("installation")
 
         SUPPORTED_METHODS.each do |method_name|
-          log.info "Yast::Product.#{method_name}"
+          Yast.y2milestone "Yast::Product.#{method_name}"
           expect { Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
         end
 
         SUPPORTED_METHODS_ALLOWED_EMPTY.each do |method_name|
-          log.info "Yast::Product.#{method_name}"
+          Yast.y2milestone "Yast::Product.#{method_name}"
           expect(Yast::Product.send(method_name)).to be_empty
         end
       end
@@ -312,12 +310,12 @@ describe Yast::Product do
         allow(Yast::Mode).to receive(:mode).and_return("normal")
 
         SUPPORTED_METHODS.each do |method_name|
-          log.info "Yast::Product.#{method_name}"
+          Yast.y2milestone "Yast::Product.#{method_name}"
           expect { Yast::Product.send(method_name) }.to raise_error(/no base product found/i)
         end
 
         SUPPORTED_METHODS_ALLOWED_EMPTY.each do |method_name|
-          log.info "Yast::Product.#{method_name}"
+          Yast.y2milestone "Yast::Product.#{method_name}"
           expect(Yast::Product.send(method_name)).to be_empty
         end
       end

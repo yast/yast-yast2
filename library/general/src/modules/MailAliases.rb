@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -104,11 +102,9 @@ module Yast
       if @root_alias != ""
         ret = Builtins.prepend(
           ret,
-
           "alias"        => "root",
           "destinations" => @root_alias,
           "comment"      => @root_alias_comment
-
         )
       end
       deep_copy(ret)
@@ -119,9 +115,9 @@ module Yast
     # Merges mail tables, which are order-preserving maps.
     # First are the entries of the old map, with values updated
     # from the new one, then the rest of the new map.
-    # @param [Array<Hash>] new	new table
-    # @param [Array<Hash>] old	old table
-    # @return		merged table
+    # @param [Array<Hash>] new  new table
+    # @param [Array<Hash>] old  old table
+    # @return    merged table
     def mergeTables(new, old)
       new = deep_copy(new)
       old = deep_copy(old)
@@ -185,6 +181,7 @@ module Yast
     # @return eg. "joe, \\root", "" if not defined
     def GetRootAlias
       return "" if !ReadAliases()
+
       @root_alias
     end
 
@@ -204,6 +201,7 @@ module Yast
       return false if !WriteAliases()
 
       return false if !MailTable.Flush("aliases")
+
       true
     end
 

@@ -1,9 +1,7 @@
-# encoding: utf-8
-
-# File:	modules/ProductProfile.ycp
-# Package:	yast2
-# Summary:	Functions for handling Product Profiles
-# Authors:	Jiri Suchomel <jsuchome@suse.cz>
+# File:  modules/ProductProfile.ycp
+# Package:  yast2
+# Summary:  Functions for handling Product Profiles
+# Authors:  Jiri Suchomel <jsuchome@suse.cz>
 #
 # $Id$
 require "yast"
@@ -70,10 +68,10 @@ module Yast
     end
 
     # Checks the profile compliance with the system.
-    # @param if productId is not nil, check only compliance with given product
+    # @param if product_id is not nil, check only compliance with given product
     # (once new product is added, function should be called to with new product ID)
     # @ret true if the system is compliant
-    def IsCompliant(productId)
+    def IsCompliant(product_id)
       profiles = []
       products = []
       sigkeys = []
@@ -87,11 +85,12 @@ module Yast
       Builtins.foreach(Pkg.ResolvableProperties("", :product, "")) do |product|
         src_id = Ops.get_integer(product, "source", -1)
         name = Ops.get_string(product, "name", "")
-        if productId.nil? &&
+        if product_id.nil? &&
             Ops.get_symbol(product, "status", :none) != :selected
           next
         end
-        next if !productId.nil? && src_id != productId
+        next if !product_id.nil? && src_id != product_id
+
         Ops.set(@compliance_checked, src_id, true)
         profile = Pkg.SourceProvideOptionalFile(src_id, 1, @profile_path)
         if !profile.nil?
@@ -115,13 +114,11 @@ module Yast
         )
         products = Builtins.add(
           products,
-
           "arch"    => Ops.get_string(product, "arch", ""),
           "name"    => name,
           "version" => Ops.get(version_release, 0, ""),
           "release" => Ops.get(version_release, 1, ""),
           "vendor"  => Ops.get_string(product, "vendor", "")
-
         )
         sigkeys = Convert.convert(
           Builtins.union(sigkeys, GetSigKeysForProduct(src_id)),
@@ -145,15 +142,15 @@ module Yast
     # to continue with the installation.
     # @ret Returns true if system is complient or user agrees to continue
     # although the complience test failed.
-    # @param if productId is not nil, check only compliance with given product
+    # @param if product_id is not nil, check only compliance with given product
     # (once new product is added, function should be called to with new product ID)
-    def CheckCompliance(productId)
+    def CheckCompliance(product_id)
       # behavior for non-installation not defined yet
       return true if !Mode.installation
 
       # no need to check same products twice
-      if productId.nil? && @compliance_checked != {} ||
-          !productId.nil? && Ops.get(@compliance_checked, productId, false)
+      if product_id.nil? && @compliance_checked != {} ||
+          !product_id.nil? && Ops.get(@compliance_checked, product_id, false)
         return true
       end
 
@@ -165,7 +162,7 @@ module Yast
         return true
       end
 
-      return true if IsCompliant(productId)
+      return true if IsCompliant(product_id)
 
       reasons = []
       Builtins.foreach(@compliance) do |_key, val|
@@ -186,7 +183,7 @@ module Yast
       cancel_button = _("&Abort Installation")
 
       # checking specific product
-      if !productId.nil?
+      if !product_id.nil?
         # last part of the question (variable)
         end_question = _("Do you want to add new product anyway?")
         continue_button = Label.YesButton
@@ -216,9 +213,9 @@ module Yast
         cancel_button,
         :no_button
       )
-      if !ret && !productId.nil?
+      if !ret && !product_id.nil?
         # canceled adding add-on: remove profile stored before
-        name = Ops.get(@productid2name, productId, "")
+        name = Ops.get(@productid2name, product_id, "")
         tmp_path = Ops.add(Ops.add(@profiles_dir, name), ".profile")
         Builtins.y2milestone("deleting %1", tmp_path)
         SCR.Execute(path(".target.bash"), "/bin/rm #{tmp_path.shellescape}")

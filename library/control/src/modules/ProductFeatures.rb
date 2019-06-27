@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2014 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/ProductFetures.ycp
-# Package:	installation
-# Summary:	Product features
-# Authors:	Anas Nashif <nashif@suse.de>
+# File:  modules/ProductFetures.ycp
+# Package:  installation
+# Summary:  Product features
+# Authors:  Anas Nashif <nashif@suse.de>
 #              Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
@@ -103,7 +101,8 @@ module Yast
     # Initialize default values of features
     # @param [Boolean] force boolean drop all settings which were set before
     def InitFeatures(force)
-      return if !(force || @features.nil?)
+      return if @features && !force
+
       @features = deep_copy(@defaults)
 
       nil
@@ -338,7 +337,6 @@ module Yast
     #
     # @param map <string, map <string, any> > features
     def Import(import_settings)
-      import_settings = deep_copy(import_settings)
       @features = deep_copy(import_settings)
 
       nil
@@ -355,6 +353,7 @@ module Yast
     # @raise RuntimeError if called twice without {ClearOverlay}
     def SetOverlay(features)
       raise "SetOverlay called when old overlay was not cleared" if @backup_features
+
       @backup_features = deep_copy(@features)
 
       features.each do |section_name, section|
@@ -369,6 +368,7 @@ module Yast
     # @return void
     def ClearOverlay
       return if @backup_features.nil?
+
       @features = deep_copy(@backup_features)
       # when overlay is cleared, remove backup as it can become invalid over-time
       # when new extensions is applied

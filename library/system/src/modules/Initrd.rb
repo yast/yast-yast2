@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -205,9 +203,7 @@ module Yast
         tmp_mods = Convert.to_string(
           SCR.Read(path(".etc.install_inf.InitrdModules"))
         )
-        if !tmp_mods.nil? && tmp_mods != ""
-          @modules = Builtins.splitstring(tmp_mods, " ")
-        end
+        @modules = Builtins.splitstring(tmp_mods, " ") if !tmp_mods.nil? && tmp_mods != ""
         @was_read = true
       elsif !(@was_read || Mode.config)
         Read()
@@ -342,6 +338,7 @@ module Yast
 
       Builtins.foreach(@modules_settings) do |modname, optmap|
         next if !Ops.is_map?(optmap)
+
         if Ops.greater_than(Builtins.size(Convert.to_map(optmap)), 0)
           # write options to /etc/modules.conf
           p = Builtins.add(path(".modules.options"), modname)

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Mode.ycp
-# Module:	yast2
-# Summary:	Installation mode
-# Authors:	Klaus Kaempf <kkaempf@suse.de>
-# Flags:	Stable
+# File:  modules/Mode.ycp
+# Module:  yast2
+# Summary:  Installation mode
+# Authors:  Klaus Kaempf <kkaempf@suse.de>
+# Flags:  Stable
 #
 # $Id$
 #
@@ -226,9 +224,7 @@ module Yast
 
     # Setter for {#ui}.
     def SetUI(new_ui)
-      if !Builtins.contains(["commandline", "dialog", "none"], new_ui)
-        Builtins.y2error("Unknown UI mode %1", new_ui)
-      end
+      Builtins.y2error("Unknown UI mode %1", new_ui) if !Builtins.contains(["commandline", "dialog", "none"], new_ui)
       @_ui = new_ui
 
       nil

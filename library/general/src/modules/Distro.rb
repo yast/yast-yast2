@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Distro.ycp
-# Module:	yast2
-# Summary:	Distinguish between distributions that can run YaST
-# Authors:	Martin Vidner <mvidner@suse.cz>
+# File:  modules/Distro.ycp
+# Module:  yast2
+# Summary:  Distinguish between distributions that can run YaST
+# Authors:  Martin Vidner <mvidner@suse.cz>
 #
 # $Id$
 require "yast"

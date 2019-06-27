@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CommandLine.ycp
-# Package:	yast2
-# Summary:	Command line interface for YaST2 modules
-# Author:	Stanislav Visnovsky <visnov@suse.cz>
+# File:  modules/CommandLine.ycp
+# Package:  yast2
+# Summary:  Command line interface for YaST2 modules
+# Author:  Stanislav Visnovsky <visnov@suse.cz>
 #
 # $Id$
 require "yast"
@@ -151,26 +149,26 @@ module Yast
     #  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
     #  Suppress printing if there are no commands to be handled (starting GUI)
     #
-    #  @param [String] s	the string to be printed
-    def PrintInternal(s, newline)
+    #  @param [String] string to be printed
+    def PrintInternal(string, newline)
       return if !Mode.commandline
 
       # avoid using of uninitialized value in .dev.tty perl agent
-      if s.nil?
+      if string.nil?
         Builtins.y2warning("CommandLine::Print: invalid argument (nil)")
         return
       end
 
       if @interactive
         if newline
-          SCR.Write(path(".dev.tty"), s)
+          SCR.Write(path(".dev.tty"), string)
         else
-          SCR.Write(path(".dev.tty.nocr"), s)
+          SCR.Write(path(".dev.tty.nocr"), string)
         end
       elsif newline
-        SCR.Write(path(".dev.tty.stderr"), s)
+        SCR.Write(path(".dev.tty.stderr"), string)
       else
-        SCR.Write(path(".dev.tty.stderr_nocr"), s)
+        SCR.Write(path(".dev.tty.stderr_nocr"), string)
       end
 
       nil
@@ -181,9 +179,9 @@ module Yast
     #  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
     #  Suppress printing if there are no commands to be handled (starting GUI)
     #
-    #  @param [String] s	the string to be printed
-    def Print(s)
-      PrintInternal(s, true)
+    #  @param [String] string to be printed
+    def Print(string)
+      PrintInternal(string, true)
     end
 
     #  Print a String, don't add a trailing newline character
@@ -191,25 +189,25 @@ module Yast
     #  Print a string to /dev/tty in interactive mode, to stderr in non-interactive
     #  Suppress printing if there are no commands to be handled (starting GUI)
     #
-    #  @param [String] s	the string to be printed
-    def PrintNoCR(s)
-      PrintInternal(s, false)
+    #  @param [String] string to be printed
+    def PrintNoCR(string)
+      PrintInternal(string, false)
     end
 
     # Same as Print(), but the string is printed only when verbose command
     # line mode was activated
-    # @param [String] s string to print
-    def PrintVerbose(s)
-      Print(s) if @verbose
+    # @param [String] string to print
+    def PrintVerbose(string)
+      Print(string) if @verbose
 
       nil
     end
 
     # Same as PrintNoCR(), but the string is printed only when verbose command
     # line mode was activated
-    # @param [String] s string to print
-    def PrintVerboseNoCR(s)
-      PrintNoCR(s) if @verbose
+    # @param [String] string to print
+    def PrintVerboseNoCR(string)
+      PrintNoCR(string) if @verbose
 
       nil
     end
@@ -219,8 +217,8 @@ module Yast
     #  Print a table using Print(). Format of table is as libyui but not all features
     #  are supported, e.g. no icons.
     #
-    #  @param [Yast::Term] header	header of table in libyui format
-    #  @param [Array<Yast::Term>] content	content of table in libyui format
+    #  @param [Yast::Term] header  header of table in libyui format
+    #  @param [Array<Yast::Term>] content  content of table in libyui format
     def PrintTable(header, content)
       header = deep_copy(header)
       content = deep_copy(content)
@@ -237,9 +235,7 @@ module Yast
             ret = Builtins.add(ret, s)
           elsif Ops.is_term?(a)
             t = Convert.to_term(a)
-            if Builtins.contains([:Left, :Center, :Right], Builtins.symbolof(t))
-              ret = Builtins.add(ret, Ops.get_string(Builtins.argsof(t), 0, ""))
-            end
+            ret = Builtins.add(ret, Ops.get_string(Builtins.argsof(t), 0, "")) if Builtins.contains([:Left, :Center, :Right], Builtins.symbolof(t))
           end
         end
         deep_copy(ret)
@@ -313,7 +309,7 @@ module Yast
     # Print an Error Message
     #
     # Print an error message and add the description how to get the help.
-    # @param [String] message	error message to be printed. Use nil for no message
+    # @param [String] message  error message to be printed. Use nil for no message
     def Error(message)
       Print(message) if !message.nil?
 
@@ -337,9 +333,9 @@ module Yast
     #
     #  It checks the validity of the arguments, the type correctness
     #  and returns the command and its options in a map.
-    #  @param [Array] arguments	the list of arguments to be parsed
-    #  @return [Hash{String => Object}]	containing the command and it's option. In case of
-    #				error it is an empty map.
+    #  @param [Array] arguments  the list of arguments to be parsed
+    #  @return [Hash{String => Object}]  containing the command and it's option. In case of
+    #        error it is an empty map.
     def Parse(arguments)
       arguments = deep_copy(arguments)
       args = deep_copy(arguments)
@@ -372,9 +368,7 @@ module Yast
       allopts = Ops.get_map(@allcommands, "options", {})
       cmdoptions = {}
       Builtins.maplist(opts) do |k|
-        if Ops.is_string?(k)
-          cmdoptions = Builtins.add(cmdoptions, k, Ops.get_map(allopts, k, {}))
-        end
+        cmdoptions = Builtins.add(cmdoptions, k, Ops.get_map(allopts, k, {})) if Ops.is_string?(k)
       end
 
       ret = true
@@ -384,6 +378,7 @@ module Yast
       Builtins.maplist(args) do |aos|
         Builtins.y2debug("os=%1", aos)
         next if !Ops.is_string?(aos)
+
         os = Convert.to_string(aos)
         o = Builtins.regexptokenize(os, "([^=]+)=(.+)")
         Builtins.y2debug("o=%1", o)
@@ -430,6 +425,7 @@ module Yast
       Builtins.maplist(givenoptions) do |o, val|
         v = Convert.to_string(val)
         next if ret != true
+
         if Ops.get(cmdoptions, o).nil?
           if !non_strict
             # translators: error message, %1 is a command, %2 is the wrong option given by the user
@@ -626,9 +622,7 @@ module Yast
           end
           t = Ops.add(t, "]")
         end
-        if Ops.greater_than(Builtins.size(t), longestarg)
-          longestarg = Builtins.size(t)
-        end
+        longestarg = Builtins.size(t) if Ops.greater_than(Builtins.size(t), longestarg)
         if Ops.is_string?(opt) &&
             Ops.greater_than(Builtins.size(Convert.to_string(opt)), longestopt)
           longestopt = Builtins.size(Convert.to_string(opt))
@@ -805,9 +799,7 @@ module Yast
 
       longest = 0
       Builtins.foreach(Ops.get_map(@modulecommands, "actions", {})) do |action, _desc|
-        if Ops.greater_than(Builtins.size(action), longest)
-          longest = Builtins.size(action)
-        end
+        longest = Builtins.size(action) if Ops.greater_than(Builtins.size(action), longest)
       end
 
       Builtins.maplist(Ops.get_map(@modulecommands, "actions", {})) do |cmd, desc|
@@ -875,8 +867,8 @@ module Yast
 
     # Handle the system-wide commands, like help etc.
     #
-    # @param [Hash] command	a map of the current command
-    # @return		true, if the command was handled
+    # @param [Hash] command  a map of the current command
+    # @return    true, if the command was handled
     def ProcessSystemCommands(command)
       command = deep_copy(command)
       # handle help for specific command
@@ -948,23 +940,21 @@ module Yast
 
         doc = {}
 
-        #	    TODO: DTD specification
+        #      TODO: DTD specification
         Ops.set(
           doc,
           "listEntries",
-
           "commands" => "command",
           "options"  => "option",
           "examples" => "example"
-
         )
-        #	    doc["cdataSections"] = [];
+        #      doc["cdataSections"] = [];
         Ops.set(
           doc,
           "systemID",
           Ops.add(Directory.schemadir, "/commandline.dtd")
         )
-        #	    doc["nameSpace"] = "http://www.suse.com/1.0/yast2ns";
+        #      doc["nameSpace"] = "http://www.suse.com/1.0/yast2ns";
         Ops.set(doc, "typeNamespace", "http://www.suse.com/1.0/configns")
 
         Ops.set(doc, "rootElement", "commandline")
@@ -1002,7 +992,6 @@ module Yast
           end
           opts = []
           Builtins.foreach(Ops.get(mappings, action, [])) do |option|
-            #
             optn = {
               "name" => option,
               "help" => Ops.get_string(options, [option, "help"], "")
@@ -1042,9 +1031,9 @@ module Yast
     #
     #  Initialize the module, setup the command line syntax and arguments passed on the command line.
     #
-    #  @param [Hash] cmdlineinfo		the map describing the module command line
-    #  @param [Array] args			arguments given by the user on the command line
-    #  @return [Boolean]		true, if there are some commands to be processed (and cmdlineinfo passes sanity checks)
+    #  @param [Hash] cmdlineinfo    the map describing the module command line
+    #  @param [Array] args      arguments given by the user on the command line
+    #  @return [Boolean]    true, if there are some commands to be processed (and cmdlineinfo passes sanity checks)
     #  @see #Command
     def Init(cmdlineinfo, args)
       cmdlineinfo = deep_copy(cmdlineinfo)
@@ -1071,9 +1060,7 @@ module Yast
         Builtins.y2error("Command line specification does not define module id")
 
         # use 'unknown' as id
-        if Builtins.haskey(cmdlineinfo, "id")
-          cmdlineinfo = Builtins.remove(cmdlineinfo, "id")
-        end
+        cmdlineinfo = Builtins.remove(cmdlineinfo, "id") if Builtins.haskey(cmdlineinfo, "id")
 
         # translators: fallback name for a module at command line
         cmdlineinfo = Builtins.add(cmdlineinfo, "id", _("unknown"))
@@ -1159,6 +1146,7 @@ module Yast
           end
           Builtins.foreach(def_) do |mapopt|
             next if !Ops.is_string?(mapopt)
+
             # is this option defined?
             if !Builtins.haskey(
               Ops.get_map(cmdlineinfo, "options", {}),
@@ -1263,6 +1251,7 @@ module Yast
     def Scan
       res = Convert.to_string(SCR.Read(path(".dev.tty")))
       return nil if res.nil?
+
       String.ParseOptions(res, "separator" => " ")
     end
 
@@ -1399,8 +1388,8 @@ module Yast
     # error, Report::Error is used.
     #
     # @param [Hash{String => String}] options  options specified by the user on the command line to be checked
-    # @param [Array] unique_options	list of mutually exclusive options to check against
-    # @return	nil if there is a problem, otherwise the unique option found
+    # @param [Array] unique_options  list of mutually exclusive options to check against
+    # @return  nil if there is a problem, otherwise the unique option found
     def UniqueOption(options, unique_options)
       options = deep_copy(options)
       unique_options = deep_copy(unique_options)
@@ -1472,11 +1461,11 @@ module Yast
     # Function to parse the command line, start a GUI or handle interactive and
     # command line actions as supported by the {Yast::CommandLine} module.
     #
-    # @param [Hash] commandline	a map used in the CommandLine module with information
+    # @param [Hash] commandline  a map used in the CommandLine module with information
     #                      about the handlers for GUI and commands.
-    # @return [Object]		false if there was an error or no changes to be written (for example "help").
-    #			true if the changes should be written, or a value returned by the
-    #			handler
+    # @return [Object]    false if there was an error or no changes to be written (for example "help").
+    #      true if the changes should be written, or a value returned by the
+    #      handler
     def Run(commandline)
       commandline = deep_copy(commandline)
       # The main ()

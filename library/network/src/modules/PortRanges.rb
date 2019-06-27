@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -22,10 +20,10 @@
 #
 # ***************************************************************************
 #
-# File:	modules/PortRanges.ycp
-# Package:	SuSEFirewall configuration
-# Summary:	Checking and manipulation with port ranges (iptables).
-# Authors:	Lukas Ocilka <locilka@suse.cz>
+# File:  modules/PortRanges.ycp
+# Package:  SuSEFirewall configuration
+# Summary:  Checking and manipulation with port ranges (iptables).
+# Authors:  Lukas Ocilka <locilka@suse.cz>
 #
 # $id$
 #
@@ -64,8 +62,8 @@ module Yast
     # @return [Boolean] whether the message should be reported or not
     #
     # @example
-    #	string error = sformat("Port number %1 is invalid.", port_nr);
-    #	if (ReportOnlyOnce(error)) y2error(error);
+    #  string error = sformat("Port number %1 is invalid.", port_nr);
+    #  if (ReportOnlyOnce(error)) y2error(error);
     def ReportOnlyOnce(what_to_report)
       return false if Builtins.contains(@report_only_once, what_to_report)
 
@@ -93,9 +91,8 @@ module Yast
     #     IsPortRange("port-range") -> false
     #     IsPortRange("19-22")      -> false
     def IsPortRange(check_this)
-      if Builtins.regexpmatch(check_this, "^[0123456789]+:[0123456789]+$")
-        return true
-      end
+      return true if Builtins.regexpmatch(check_this, "^[0123456789]+:[0123456789]+$")
+
       false
     end
 
@@ -190,26 +187,28 @@ module Yast
 
       port_number = PortAliases.GetPortNumber(port)
 
-      Builtins.foreach(port_ranges) do |port_range|
-        # is portrange really a port range?
-        if IsValidPortRange(port_range)
-          min_pr = Builtins.tointeger(
-            Builtins.regexpsub(port_range, "^([0123456789]+):.*$", "\\1")
-          )
-          max_pr = Builtins.tointeger(
-            Builtins.regexpsub(port_range, "^.*:([0123456789]+)$", "\\1")
-          )
+      if !port_number.nil?
+        Builtins.foreach(port_ranges) do |port_range|
+          # is portrange really a port range?
+          if IsValidPortRange(port_range)
+            min_pr = Builtins.tointeger(
+              Builtins.regexpsub(port_range, "^([0123456789]+):.*$", "\\1")
+            )
+            max_pr = Builtins.tointeger(
+              Builtins.regexpsub(port_range, "^.*:([0123456789]+)$", "\\1")
+            )
 
-          # is the port inside?
-          if Ops.less_or_equal(min_pr, max_pr) &&
-              Ops.less_or_equal(min_pr, port_number) &&
-              Ops.less_or_equal(port_number, max_pr)
-            ret = true
+            # is the port inside?
+            if Ops.less_or_equal(min_pr, max_pr) &&
+                Ops.less_or_equal(min_pr, port_number) &&
+                Ops.less_or_equal(port_number, max_pr)
+              ret = true
 
-            raise Break # break the loop, match found
+              raise Break # break the loop, match found
+            end
           end
         end
-      end if !port_number.nil?
+      end
 
       ret
     end
@@ -339,9 +338,7 @@ module Yast
         # Port range might be now only "port"
         if !IsPortRange(port_range)
           # If the port doesn't match the ~port_range...
-          if Builtins.tostring(port_number) != port_range
-            ret = Builtins.add(ret, port_range)
-          end
+          ret = Builtins.add(ret, port_range) if Builtins.tostring(port_number) != port_range
           # If matches, it isn't added (it is filtered)
           # Modify the port range when the port is included
         elsif PortIsInPortranges(Builtins.tostring(port_number), [port_range])
@@ -529,6 +526,7 @@ module Yast
           Builtins.foreach(try_all_these_ranges) do |try_this_pr|
             # Exact match means the same port range
             next if try_this_pr == port_range
+
             this_min = Builtins.regexpsub(
               try_this_pr,
               "^([0123456789]+):.*$",

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -28,8 +26,8 @@
 #   Popup dialogs for browsing the local network
 #
 # Authors:
-#	Martin Vidner <mvidner@suse.cz>
-#	Ladislav Slezak <lslezak@suse.cz>
+#  Martin Vidner <mvidner@suse.cz>
+#  Ladislav Slezak <lslezak@suse.cz>
 #
 # $Id$
 #
@@ -55,10 +53,10 @@ module Yast
     end
 
     # Let the user choose one of a list of items
-    # @param [String] title	selectionbox title
-    # @param [Array<String>] items	a list of items
-    # @param [String] selected	preselected a value in the list
-    # @return		one item or nil
+    # @param [String] title  selectionbox title
+    # @param [Array<String>] items  a list of items
+    # @param [String] selected  preselected a value in the list
+    # @return    one item or nil
     def ChooseItem(_title, items, selected)
       items = deep_copy(items)
       item = nil
@@ -71,9 +69,7 @@ module Yast
           device_name = _("Unknown device")
         end
 
-        if Ops.greater_than(Builtins.size(device_name), 30)
-          device_name = Ops.add(Builtins.substring(device_name, 0, 27), "...")
-        end
+        device_name = Ops.add(Builtins.substring(device_name, 0, 27), "...") if Ops.greater_than(Builtins.size(device_name), 30)
 
         ip_addr = if NetworkInterfaces.GetValue(i, "BOOTPROTO") == "dhcp"
           # TRANSLATORS: Informs that the IP address is assigned via DHCP
@@ -135,19 +131,17 @@ module Yast
       ret = nil
       ret = UI.UserInput while ret != :cancel && ret != :ok
 
-      if ret == :ok
-        item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem))
-      end
+      item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem)) if ret == :ok
       UI.CloseDialog
 
       item
     end
 
     # Let the user choose one of a list of items
-    # @param [String] title	selectionbox title
-    # @param [Array<String>] items	a list of items
-    # @param [String] selected	preselected a value in the list
-    # @return		one item or nil
+    # @param [String] title  selectionbox title
+    # @param [Array<String>] items  a list of items
+    # @param [String] selected  preselected a value in the list
+    # @return    one item or nil
     def ChooseItemSimple(title, items, selected)
       items = deep_copy(items)
       item = nil
@@ -176,9 +170,7 @@ module Yast
       ret = nil
       ret = UI.UserInput while ret != :cancel && ret != :ok
 
-      if ret == :ok
-        item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem))
-      end
+      item = Convert.to_string(UI.QueryWidget(Id(:items), :CurrentItem)) if ret == :ok
       UI.CloseDialog
 
       item
@@ -187,8 +179,8 @@ module Yast
     # Give me NFS server name on the local network
     #
     # display dialog with all local NFS servers
-    # @param [String] selected	preselected a value in the list
-    # @return		a hostname or nil if "Cancel" was pressed
+    # @param [String] selected  preselected a value in the list
+    # @return    a hostname or nil if "Cancel" was pressed
     def NFSServer(selected)
       if @found_nfs_servers.nil?
         # label message
@@ -218,8 +210,8 @@ module Yast
     # Give me one host name on the local network
     #
     # display dialog with all hosts on the local network
-    # @param [String] selected	preselect a value in the list
-    # @return		a hostname or nil if "Cancel" was pressed
+    # @param [String] selected  preselect a value in the list
+    # @return    a hostname or nil if "Cancel" was pressed
     def HostName(selected)
       if @found_hosts.nil?
         # label message
@@ -242,9 +234,9 @@ module Yast
     # Give me export path of selected server
     #
     # display dialog with all exported directories from the selected server
-    # @param [String] server	a NFS server name
-    # @param [String] selected	preselected a value in the list
-    # @return		an export or nil if "Cancel" was pressed
+    # @param [String] server  a NFS server name
+    # @param [String] selected  preselected a value in the list
+    # @return    an export or nil if "Cancel" was pressed
     def NFSExport(server, selected)
       dirs = Convert.convert(
         SCR.Read(path(".net.showexports"), server),

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/PackageLock.ycp
-# Package:	yast2
-# Summary:	Packages manipulation (system)
-# Authors:	Martin Vidner <mvidner@suse.cz>
+# File:  modules/PackageLock.ycp
+# Package:  yast2
+# Summary:  Packages manipulation (system)
+# Authors:  Martin Vidner <mvidner@suse.cz>
 #
 # $Id$
 #
@@ -134,9 +132,7 @@ module Yast
     # @return [Hash] with lock status and user reaction
     def Connect(show_continue_button)
       # we already have a lock
-      if !@have_lock.nil?
-        return { "connected" => @have_lock, "aborted" => @aborted }
-      end
+      return { "connected" => @have_lock, "aborted" => @aborted } if !@have_lock.nil?
 
       try_again = true
 

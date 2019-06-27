@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/NetworkService.ycp
-# Package:	Network configuration
-# Summary:	Init script handling, ifup vs NetworkManager
-# Authors:	Martin Vidner <mvidner@suse.cz>
+# File:  modules/NetworkService.ycp
+# Package:  Network configuration
+# Summary:  Init script handling, ifup vs NetworkManager
+# Authors:  Martin Vidner <mvidner@suse.cz>
 #
 # This module used to switch between /etc/init.d/network providing
 # LSB network.service and the NetworkManager.service (or another),
@@ -50,7 +48,7 @@ module Yast
     # return [String, nil] current network backend identification, nil is valid value for "no service selected / running"
     attr_accessor :current_name
     # return [String, nil] new network backend identification, nil is valid value for "no service selected / running"
-    attr_accessor :cached_name
+    attr_writer :cached_name
 
     # network backend identification to service name mapping
     BACKENDS = {
@@ -96,6 +94,7 @@ module Yast
     # @return exit code
     def RunSystemCtl(service, action, force: false)
       raise ArgumentError, "No network service defined." if service.nil?
+
       cmd = "/usr/bin/systemctl "\
         "#{force ? "--force" : ""} " \
         "#{action.shellescape} " \
@@ -354,8 +353,6 @@ module Yast
       ret
     end
 
-  private
-
     # Replies with currently selected network service name
     #
     # Currently known backends:
@@ -369,10 +366,12 @@ module Yast
       @cached_name
     end
 
+  private
+
     # Checks if currently cached service is the given one
     def cached_service?(service)
       cached_name == service
-    rescue
+    rescue StandardError
       Builtins.y2error("NetworkService: error when checking cached network service")
       false
     end

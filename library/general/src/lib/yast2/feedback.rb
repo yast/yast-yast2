@@ -46,9 +46,8 @@ module Yast2
     # @see {Feedback.show}
     # @raise [RuntimeError] when feedback was not started or another dialog is open on top of it.
     def stop
-      if !Yast::UI.WidgetExists(Id(MESSAGE_ID))
-        raise "Trying to stop feedback, but dialog is not feedback dialog"
-      end
+      raise "Trying to stop feedback, but dialog is not feedback dialog" if !Yast::UI.WidgetExists(Id(MESSAGE_ID))
+
       Yast::UI.CloseDialog
     end
 
@@ -75,13 +74,9 @@ module Yast2
   private
 
     def check_params!(message, headline)
-      if !message.is_a?(::String)
-        raise ArgumentError, "Invalid value #{message.inspect} of parameter message"
-      end
+      raise ArgumentError, "Invalid value #{message.inspect} of parameter message" if !message.is_a?(::String)
 
-      if !headline.is_a?(::String)
-        raise ArgumentError, "Invalid value #{headline.inspect} of parameter headline"
-      end
+      raise ArgumentError, "Invalid value #{headline.inspect} of parameter headline" if !headline.is_a?(::String)
 
       nil
     end

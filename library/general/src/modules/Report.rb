@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Report.ycp
-# Package:	yast2
-# Summary:	Messages handling
-# Authors:	Ladislav Slezak <lslezak@suse.cz>
-# Flags:	Stable
+# File:  modules/Report.ycp
+# Package:  yast2
+# Summary:  Messages handling
+# Authors:  Ladislav Slezak <lslezak@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 #
@@ -199,14 +197,14 @@ module Yast
       # // Report configuration - will be error messages displayed?
       # // '%1' will be replaced by translated string "Yes" or "No"
       # summary = Summary::AddListItem(summary, sformat(_("Display Yes or No Messages: %1"), (display_yesno_messages) ?
-      # 						    _("Yes") : _("No")));
+      #                 _("Yes") : _("No")));
       # // Report configuration - will have error messages timeout?
       # // '%1' will be replaced by number of seconds
       # summary = Summary::AddListItem(summary, sformat(_("Time-out Yes or No Messages: %1"), timeout_yesno_messages));
       # // Report configuration - will be error messages logged to file?
       # // '%1' will be replaced by translated string "Yes" or "No"
       # summary = Summary::AddListItem(summary, sformat(_("Log Yes or No Messages: %1"), (log_yesno_messages) ?
-      # 						    _("Yes") : _("No")));
+      #                 _("Yes") : _("No")));
       # summary = Summary::CloseList(summary);
       summary
     end
@@ -216,7 +214,7 @@ module Yast
     # the map may be empty.
     #
     # @param [Hash] settings Map with settings (keys: "messages", "errors", "warnings"; values: map
-    # @return	success
+    # @return  success
     def Import(settings)
       settings = deep_copy(settings)
       @message_settings = Ops.get_map(settings, "messages", {})
@@ -453,9 +451,7 @@ module Yast
       # Use exactly the same y2milestone call than other yesno methods
       Builtins.y2milestone(1, "%1", message) if @log_yesno_messages
 
-      if extra_args.key?(:timeout)
-        log.warn "Report.yesno_popup will ignore the :timeout argument"
-      end
+      log.warn "Report.yesno_popup will ignore the :timeout argument" if extra_args.key?(:timeout)
 
       ret =
         if @display_yesno_messages
@@ -723,15 +719,15 @@ module Yast
     #
     # Every new line character "\n" is replaced by string "[BR]".
     #
-    # @param [Boolean] w include warnings in returned string
-    # @param [Boolean] e include errors in returned string
-    # @param [Boolean] m include messages in returned string
-    # @param [Boolean] ynm include Yes/No messages in returned string
+    # @param [Boolean] warning include warnings in returned string
+    # @param [Boolean] errors include errors in returned string
+    # @param [Boolean] messages include messages in returned string
+    # @param [Boolean] yes_no include Yes/No messages in returned string
     # @return [String] rich text string
-    def GetMessages(w, e, m, ynm)
+    def GetMessages(warnings, errors, messages, yes_no)
       richtext = ""
 
-      if w
+      if warnings
         # translators: warnings summary header
         richtext = Ops.add(
           Ops.add(Ops.add(richtext, "<P><B>"), _("Warning:")),
@@ -748,7 +744,7 @@ module Yast
         richtext = Ops.add(richtext, "</P>")
       end
 
-      if e
+      if errors
         # translators: errors summary header
         richtext = Ops.add(
           Ops.add(Ops.add(richtext, "<P><B>"), _("Error:")),
@@ -765,7 +761,7 @@ module Yast
         richtext = Ops.add(richtext, "</P>")
       end
 
-      if m
+      if messages
         # translators: message summary header
         richtext = Ops.add(
           Ops.add(Ops.add(richtext, "<P><B>"), _("Message:")),
@@ -782,7 +778,7 @@ module Yast
         richtext = Ops.add(richtext, "</P>")
       end
 
-      if ynm
+      if yes_no
         # translators: message summary header
         richtext = Ops.add(
           Ops.add(Ops.add(richtext, "<P><B>"), _("Message:")),

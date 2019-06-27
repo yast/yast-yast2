@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Copyright 2014 SUSE, LLC
 
 require "yast"
@@ -45,6 +43,7 @@ module Yast
 
     def escape(input, safe_chars)
       return nil if input.nil?
+
       input.gsub(/[^#{safe_chars}]/) do |unicode_char|
         escaped = ""
         unicode_char.each_byte { |b| escaped << format("%%%02x", b) }

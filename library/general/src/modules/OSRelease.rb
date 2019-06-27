@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2013 Novell, Inc.
@@ -59,7 +57,7 @@ module Yast
         log.info "Release file #{release_file} not found"
         raise(
           OSReleaseFileMissingError,
-          _("Release file %{file} not found") % { file: release_file }
+          format(_("Release file %{file} not found"), file: release_file)
         )
       end
 

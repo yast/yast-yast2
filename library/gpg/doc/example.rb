@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -64,9 +62,7 @@ module Yast
 
       Builtins.y2milestone("SelectedPrivateKey: %1", @selected_key)
 
-      if !@selected_key.nil? && @selected_key != ""
-        GPGWidgets.AskPassphrasePopup(GPGWidgets.SelectedPrivateKey)
-      end
+      GPGWidgets.AskPassphrasePopup(GPGWidgets.SelectedPrivateKey) if !@selected_key.nil? && @selected_key != ""
 
       nil
     end

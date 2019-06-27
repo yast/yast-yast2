@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,12 +19,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module:		SlideShow.ycp
+# Module:    SlideShow.ycp
 #
-# Purpose:		Slide show during installation
+# Purpose:    Slide show during installation
 #
-# Author:		Stefan Hundhammer <sh@suse.de>
-#			Stanislav Visnovsky <visnov@suse.cz>
+# Author:    Stefan Hundhammer <sh@suse.de>
+#      Stanislav Visnovsky <visnov@suse.cz>
 #
 # $Id$
 #
@@ -250,7 +248,7 @@ module Yast
 
     # Restart the subprogress of the slideshow. This means the
     # label will be set to given text, value to 0.
-    # @param [String] text	new label for the subprogress
+    # @param [String] text  new label for the subprogress
     def SubProgressStart(text)
       SubProgress(0, text)
     end
@@ -259,8 +257,8 @@ module Yast
     # will be set to values given as parametes. If a given parameter contains *nil*,
     # respective value/label will not be updated.
     #
-    # @param [Fixnum] value	new value for the subprogress
-    # @param [String] label	new label for the subprogress
+    # @param [Fixnum] value  new value for the subprogress
+    # @param [String] label  new label for the subprogress
     def SubProgress(value, label)
       value ||= @sub_progress_value
       label ||= @sub_progress_label
@@ -283,7 +281,7 @@ module Yast
     # Restart the global progress of the slideshow. This means the
     # label will be set to given text, value to 0.
     #
-    # @param [String] text	new label for the global progress
+    # @param [String] text  new label for the global progress
     def GlobalProgressStart(text)
       UpdateGlobalProgress(0, text)
     end
@@ -292,8 +290,8 @@ module Yast
     # will be set to values given as parametes. If a given parameter contains *nil*,
     # respective value/label will not be updated.
     #
-    # @param [Fixnum] value	new value for the global progress
-    # @param [String] label	new label for the global progress
+    # @param [Fixnum] value  new value for the global progress
+    # @param [String] label  new label for the global progress
     def UpdateGlobalProgress(value, label)
       value ||= @total_progress_value
       label ||= @total_progress_label
@@ -319,13 +317,13 @@ module Yast
     end
 
     # Return the description for the current stage.
-    # @return [String]	localized string description
+    # @return [String]  localized string description
     def CurrentStageDescription
       Ops.get_locale(@_current_stage, "description", _("Installing..."))
     end
 
     # Move the global progress to the beginning of the given stage.
-    # @param [String] stage_name	id of the stage to move to
+    # @param [String] stage_name  id of the stage to move to
     def MoveToStage(stage_name)
       if !Builtins.haskey(@_stages, stage_name)
         Builtins.y2error("Unknown progress stage \"%1\"", stage_name)
@@ -354,8 +352,8 @@ module Yast
     # If the \text is not nil, the label will be updated
     # to this text as well. Otherwise label will not change.
     #
-    # @param [Fixnum] value	new value for the stage progress in per cents
-    # @param [String] text	new label for the global progress
+    # @param [Fixnum] value  new value for the stage progress in per cents
+    # @param [String] text  new label for the global progress
     def StageProgress(value, text)
       if Ops.greater_than(value, 100)
         Builtins.y2error("Stage progress value larger than expected: %1", value)
@@ -378,7 +376,7 @@ module Yast
 
     # Sets the current global progress label.
     #
-    # @param [String]	new label
+    # @param [String]  new label
     def SetGlobalProgressLabel(text)
       UpdateGlobalProgress(nil, text)
 
@@ -386,15 +384,13 @@ module Yast
     end
 
     # Append message to the installation log.
-    # @param [String] msg	message to be added, without trailing eoln
+    # @param [String] msg  message to be added, without trailing eoln
     def AppendMessageToInstLog(msg)
       log_line = "#{msg}\n"
 
       @inst_log << log_line
 
-      if ShowingDetails() && UI.WidgetExists(:instLog)
-        UI.ChangeWidget(:instLog, :LastLine, log_line)
-      end
+      UI.ChangeWidget(:instLog, :LastLine, log_line) if ShowingDetails() && UI.WidgetExists(:instLog)
 
       nil
     end
@@ -470,17 +466,15 @@ module Yast
     # necessary.
     #
     def ChangeSlideIfNecessary
-      if Yast2::SystemTime.uptime > (@slide_start_time + @slide_interval)
-        LoadSlide(@current_slide_no + 1)
-      end
+      LoadSlide(@current_slide_no + 1) if Yast2::SystemTime.uptime > (@slide_start_time + @slide_interval)
 
       nil
     end
 
     # Add widgets for progress bar etc. around a slide show page
-    # @param [Symbol] page_id		ID to use for this page (for checking with UI::WidgetExists() )
-    # @param [Yast::Term] page_contents	The inner widgets (the page contents)
-    # @return			A term describing the widgets
+    # @param [Symbol] page_id    ID to use for this page (for checking with UI::WidgetExists() )
+    # @param [Yast::Term] page_contents  The inner widgets (the page contents)
+    # @return      A term describing the widgets
     #
     def AddProgressWidgets(page_id, page_contents)
       page_contents = deep_copy(page_contents)
@@ -511,7 +505,7 @@ module Yast
     # Construct widgets describing a page with the real slide show
     # (the RichText / HTML page)
     #
-    # @return	A term describing the widgets
+    # @return  A term describing the widgets
     #
     def SlidePageWidgets
       widgets = AddProgressWidgets(:slideShowPage, RichText(Id(:slideText), ""))
@@ -542,7 +536,7 @@ module Yast
 
     # Construct widgets for the "details" page
     #
-    # @return	A term describing the widgets
+    # @return  A term describing the widgets
     #
     def DetailsPageWidgets
       widgets = AddProgressWidgets(
@@ -565,7 +559,7 @@ module Yast
 
     # Construct widgets for the "release notes" page
     #
-    # @return	A term describing the widgets
+    # @return  A term describing the widgets
     #
     def RelNotesPageWidgets(id)
       # Release notes in plain text need to be escaped to be shown properly (bsc#1028721)
@@ -589,7 +583,7 @@ module Yast
       if UI.WidgetExists(:tabContents)
         UI.ChangeWidget(:dumbTab, :CurrentItem, :showSlide)
         UI.ReplaceWidget(:tabContents, SlidePageWidgets())
-        # UpdateTotalProgress(false);		// FIXME: this breaks other stages!
+        # UpdateTotalProgress(false);    // FIXME: this breaks other stages!
       end
 
       nil
@@ -603,9 +597,7 @@ module Yast
         Builtins.y2milestone("Contents set to details")
       end
 
-      if UI.WidgetExists(:instLog) && @inst_log != ""
-        UI.ChangeWidget(:instLog, :Value, @inst_log)
-      end
+      UI.ChangeWidget(:instLog, :Value, @inst_log) if UI.WidgetExists(:instLog) && @inst_log != ""
 
       nil
     end
@@ -681,13 +673,9 @@ module Yast
 
         if show_release_notes
           @_rn_tabs = {}
-          if @_relnotes.key?(@_base_product)
-            add_relnotes_for_product @_base_product, @_relnotes[@_base_product], tabs
-          end
+          add_relnotes_for_product @_base_product, @_relnotes[@_base_product], tabs if @_relnotes.key?(@_base_product)
           @_relnotes.each do |product, relnotes|
-            if @_base_product != product
-              add_relnotes_for_product product, relnotes, tabs
-            end
+            add_relnotes_for_product product, relnotes, tabs if @_base_product != product
           end
         end
 
@@ -816,11 +804,10 @@ module Yast
     # progress handlers.
     #
     def GenericHandleInput
-      # any button = SlideShow::debug ? UI::PollInput() : UI::TimeoutUserInput( 10 );
       button = UI.PollInput
 
       # in case of cancel ask user if he really wants to quit installation
-      if button == :abort || button == :cancel
+      if [:abort, :cancel].include?(button)
         if Mode.normal
           SetUserAbort(
             Popup.AnyQuestion(
@@ -900,9 +887,7 @@ module Yast
     def UpdateTable(items)
       items = deep_copy(items)
       @table_items = deep_copy(items)
-      if ShowingDetails() && @_show_table
-        UI.ChangeWidget(Id(:cdStatisticsTable), :Items, items)
-      end
+      UI.ChangeWidget(Id(:cdStatisticsTable), :Items, items) if ShowingDetails() && @_show_table
 
       nil
     end
@@ -914,17 +899,17 @@ module Yast
     #  The stages description list example:
     #  [
     #      $[
-    #		"name" : "disk",
-    #		"description" : "Prepare disk...",
-    #		"value" : 85,		// disk speed can be guessed by the storage, thus passing time
-    #		"units" : `sec
-    #	     ],
+    #    "name" : "disk",
+    #    "description" : "Prepare disk...",
+    #    "value" : 85,    // disk speed can be guessed by the storage, thus passing time
+    #    "units" : `sec
+    #       ],
     #      $[
-    #		"name" : "images";
-    #		"description" : "Deploying images...",
-    #		"value" : 204800,	// amount of kb to be downloaded/installed
-    #		"units" : `kb
-    #	     ],
+    #    "name" : "images";
+    #    "description" : "Deploying images...",
+    #    "value" : 204800,  // amount of kb to be downloaded/installed
+    #    "units" : `kb
+    #       ],
     #  ]
     def Setup(stages)
       stages = deep_copy(stages)

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,13 +19,13 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module:		PackagesUI.ycp
+# Module:    PackagesUI.ycp
 #
-# Authors:		Gabriele Strattner (gs@suse.de)
-#			Ladislav Slezák <lslezak@novell.com>
+# Authors:    Gabriele Strattner (gs@suse.de)
+#      Ladislav Slezák <lslezak@novell.com>
 #
-# Purpose:		Provides common dialogs related to
-#			the package management.
+# Purpose:    Provides common dialogs related to
+#      the package management.
 #
 # $Id$
 require "yast"
@@ -255,15 +253,15 @@ module Yast
     # @param [Hash{String => Object}] options options passed to the widget. All options are optional,
     # if an option is missing or is nil the default value will be used. All options:
     # $[ "enable_repo_mgr" : boolean // display the repository management menu,
-    #	    // default: false (disabled)
-    #	  "display_support_status" : boolean // display the support status summary dialog,
-    #	    // default: depends on the Product Feature "software", "display_support_status"
-    #	  "mode" : symbol // package selector mode, no default value, supported values:
-    #		`youMode (online update mode),
-    #		`updateMode (update mode),
-    #		`searchMode (search filter view),
-    #		`summaryMode (installation summary filter view),
-    #		`repoMode (repositories filter view
+    #      // default: false (disabled)
+    #    "display_support_status" : boolean // display the support status summary dialog,
+    #      // default: depends on the Product Feature "software", "display_support_status"
+    #    "mode" : symbol // package selector mode, no default value, supported values:
+    #    `youMode (online update mode),
+    #    `updateMode (update mode),
+    #    `searchMode (search filter view),
+    #    `summaryMode (installation summary filter view),
+    #    `repoMode (repositories filter view
     # ]
     #
     # @return [Symbol] Returns `accept or `cancel .
@@ -279,9 +277,7 @@ module Yast
       mode = Ops.get_symbol(options, "mode")
 
       # set the defaults if the option is missing or nil
-      if display_support_status.nil?
-        display_support_status = ReadSupportStatus()
-      end
+      display_support_status = ReadSupportStatus() if display_support_status.nil?
 
       if enable_repo_mgr.nil?
         # disable repository management by default
@@ -299,13 +295,9 @@ module Yast
 
       widget_options = Builtins.add(widget_options, mode) if !mode.nil?
 
-      if !enable_repo_mgr.nil? && enable_repo_mgr
-        widget_options = Builtins.add(widget_options, :repoMgr)
-      end
+      widget_options = Builtins.add(widget_options, :repoMgr) if !enable_repo_mgr.nil? && enable_repo_mgr
 
-      if !display_support_status.nil? && display_support_status
-        widget_options = Builtins.add(widget_options, :confirmUnsupported)
-      end
+      widget_options = Builtins.add(widget_options, :confirmUnsupported) if !display_support_status.nil? && display_support_status
 
       Builtins.y2milestone(
         "Options for the package selector widget: %1",
@@ -407,7 +399,7 @@ module Yast
             result = nil
           end
         end
-        break if result == :cancel || result == :accept || result == :back
+        break if [:cancel, :accept, :back].include?(result)
       end
 
       Wizard.CloseDialog
@@ -784,8 +776,10 @@ module Yast
     # @param [Array] result Result from package commit (as it comes from PkgCommit)
     def show_update_messages(result)
       return false if result.nil?
+
       commit_result = ::Packages::CommitResult.from_result(result)
       return false if commit_result.update_messages.empty?
+
       view = ::Packages::UpdateMessagesView.new(commit_result.update_messages)
       Report.LongMessage(view.richtext)
       true

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Copyright (c) [2018] SUSE LLC
 #
 # All Rights Reserved.
@@ -147,6 +145,7 @@ module CWM
     # @return [CWM::Page, nil]
     def find_tab(pages)
       return nil unless tab
+
       pages.find { |page| page.label == tab }
     end
 

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -22,19 +20,19 @@
 #
 # ***************************************************************************
 # File:
-#	Hotplug.ycp
+#  Hotplug.ycp
 #
 # Module:
-#	Hotplug
+#  Hotplug
 #
 # Summary:
-#	provide hotplug (USB, FireWire, PCMCIA) functions
+#  provide hotplug (USB, FireWire, PCMCIA) functions
 #
 # $Id$
 #
 # Authors:
-#	Klaus Kaempf <kkaempf@suse.de>
-#	Arvin Schnell <arvin@suse.de>
+#  Klaus Kaempf <kkaempf@suse.de>
+#  Arvin Schnell <arvin@suse.de>
 require "yast"
 
 module Yast
@@ -125,21 +123,21 @@ module Yast
             end
             # break out of module load loop if one module failed
             one_module_failed = true if !all_modules_loaded
-          end # foreach module of current driver info
-        end # stop_loading
+          end
+        end
         # break out of driver load loop if all modules of
         #   the current driver loaded successfully
         stop_loading = true if all_modules_loaded
-      end # foreach driver
+      end
 
       HwStatus.Set(unique_key, one_module_failed ? :no : :yes)
 
       !one_module_failed
     end
 
-    # @param	none
+    # @param  none
     #
-    # @return	[void]
+    # @return  [void]
     # probe for usb type, load appropriate modules, and mount
     # usbfs to /proc/bus/usb
 
@@ -160,9 +158,9 @@ module Yast
       nil
     end
 
-    # @param	none
+    # @param  none
     #
-    # @return	[void]
+    # @return  [void]
     # probe for firewire type, load appropriate modules, and mount
     # usbfs to /proc/bus/usb
 

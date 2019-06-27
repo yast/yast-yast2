@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,12 +19,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/PackageSystem.ycp
-# Package:	yast2
-# Summary:	Packages manipulation (system)
-# Authors:	Martin Vidner <mvidner@suse.cz>
-#		Michal Svec <msvec@suse.cz>
-# Flags:	Stable
+# File:  modules/PackageSystem.ycp
+# Package:  yast2
+# Summary:  Packages manipulation (system)
+# Authors:  Martin Vidner <mvidner@suse.cz>
+#    Michal Svec <msvec@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 #
@@ -240,7 +238,7 @@ module Yast
         Builtins.y2internal("Package selector returned: %1", ret)
 
         # do not fix the system
-        return false if ret == :cancel || ret == :close
+        return false if [:cancel, :close].include?(ret)
       end
 
       # is a package or a patch selected for installation?
@@ -400,6 +398,7 @@ module Yast
       packages = deep_copy(packages)
       return true if Mode.config
       return true if InstalledAll(packages)
+
       InstallAll(packages)
     end
 
@@ -488,9 +487,7 @@ module Yast
           Ops.get_symbol(l, 1, :NONE) == Ops.get_symbol(l, 2, :NONE)
       end
 
-      if Builtins.size(kernels) != 1
-        Builtins.y2error("not exactly one package provides tag kernel")
-      end
+      Builtins.y2error("not exactly one package provides tag kernel") if Builtins.size(kernels) != 1
 
       kernel = Ops.get_string(kernels, [0, 0], "none")
       packs = [kernel]

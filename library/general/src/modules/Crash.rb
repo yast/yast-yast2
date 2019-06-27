@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Crash.ycp
-# Package:	YaST2 base package
-# Summary:	Handling crashes and recovery of other modules
-# Authors:	Jiri Srain <jsrain@suse.cz>
-# Flags:	Stable
+# File:  modules/Crash.ycp
+# Package:  YaST2 base package
+# Summary:  Handling crashes and recovery of other modules
+# Authors:  Jiri Srain <jsrain@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -84,56 +82,50 @@ module Yast
     end
 
     # Start operation
-    # @param [String] op string operation to start
-    def Run(op)
+    # @param [String] operation to start
+    def Run(operation)
       Read()
-      if !Builtins.contains(@all_failed, op)
-        @all_failed = Builtins.add(@all_failed, op)
-      end
+      @all_failed = Builtins.add(@all_failed, operation) if !Builtins.contains(@all_failed, operation)
       if Ops.greater_than(Builtins.size(@this_run_active), 0)
         @last_failed = Builtins.filter(@last_failed) do |f|
           f != Ops.get(@this_run_active, 0)
         end
       end
-      @this_run_active = Builtins.prepend(@this_run_active, op)
-      if !Builtins.contains(@last_failed, op)
-        @last_failed = Builtins.add(@last_failed, op)
-      end
+      @this_run_active = Builtins.prepend(@this_run_active, operation)
+      @last_failed = Builtins.add(@last_failed, operation) if !Builtins.contains(@last_failed, operation)
       Write()
 
       nil
     end
 
     # Finish operation
-    # @param [String] op string operation to finish
-    def Finish(op)
+    # @param [String] operation to finish
+    def Finish(operation)
       Read()
-      @all_failed = Builtins.filter(@all_failed) { |f| f != op }
-      @this_run_active = Builtins.filter(@this_run_active) { |f| f != op }
-      @last_failed = Builtins.filter(@last_failed) { |f| f != op }
-      if Ops.greater_than(Builtins.size(@this_run_active), 0)
-        @last_failed = Builtins.add(@last_failed, Ops.get(@this_run_active, 0))
-      end
-      @last_done = op
+      @all_failed = Builtins.filter(@all_failed) { |f| f != operation }
+      @this_run_active = Builtins.filter(@this_run_active) { |f| f != operation }
+      @last_failed = Builtins.filter(@last_failed) { |f| f != operation }
+      @last_failed = Builtins.add(@last_failed, Ops.get(@this_run_active, 0)) if Ops.greater_than(Builtins.size(@this_run_active), 0)
+      @last_done = operation
       Write()
 
       nil
     end
 
     # Check whether operation failed
-    # @param [String] op string operation to check
+    # @param [String] operation to check
     # @return [Boolean] true if yes
-    def Failed(op)
+    def Failed(operation)
       Read()
-      Builtins.contains(@all_failed, op)
+      Builtins.contains(@all_failed, operation)
     end
 
     # Check whether operation was last started when failed
-    # @param [String] op string operation to check
+    # @param [String] operation to check
     # @return [Boolean] true if yes
-    def FailedLast(op)
+    def FailedLast(operation)
       Read()
-      Builtins.contains(@last_failed, op)
+      Builtins.contains(@last_failed, operation)
     end
 
     # Get last finished operation
@@ -147,13 +139,13 @@ module Yast
     # Return whether operation shall be run
     # If not, return true (no reason to think that operation is unsafe),
     # Otherwise ask user
-    # @param [String] op string operation name
+    # @param [String] operation name
     # @param [String] question string question to ask when was unsuccessfull last time
     # @return [Boolean] true if operation shall be started
-    def AskRun(op, question)
+    def AskRun(operation, question)
       ret = true
       Read()
-      ret = Popup.YesNo(question) if FailedLast(op)
+      ret = Popup.YesNo(question) if FailedLast(operation)
       ret
     end
 

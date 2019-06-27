@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,12 +19,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Package.ycp
-# Package:	yast2
-# Summary:	Packages manipulation
-# Authors:	Martin Vidner <mvidner@suse.cz>
-#		Michal Svec <msvec@suse.cz>
-# Flags:	Stable
+# File:  modules/Package.ycp
+# Package:  yast2
+# Summary:  Packages manipulation
+# Authors:  Martin Vidner <mvidner@suse.cz>
+#    Michal Svec <msvec@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 #
@@ -140,9 +138,7 @@ module Yast
         text = Ops.add(text, Builtins.sformat("%1<br>", p))
       end
 
-      if !message.nil?
-        text = Builtins.sformat(message, Builtins.mergestring(packs, ", "))
-      end
+      text = Builtins.sformat(message, Builtins.mergestring(packs, ", ")) if !message.nil?
 
       doit = if Mode.commandline
         CommandLine.Interactive ? AskPackages(packs, install) : true
@@ -153,7 +149,7 @@ module Yast
           40,
           10,
           # labels changed for bug #215195
-          #	Label::ContinueButton (), Label::CancelButton (),
+          #  Label::ContinueButton (), Label::CancelButton (),
           # push button label
           install ? Label.InstallButton : _("&Uninstall"),
           Label.CancelButton,
@@ -164,6 +160,7 @@ module Yast
       if doit
         @last_op_canceled = false
         return DoRemove(packs) if install == false
+
         return DoInstall(packs)
       end
 

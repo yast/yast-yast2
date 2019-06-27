@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2017 SUSE LLC
 #
@@ -116,6 +114,7 @@ module Y2Firewall
       # configuration for this zone.
       def read
         return unless firewalld.installed?
+
         read_relations
         @masquerade = api.masquerade_enabled?(name)
         untouched!

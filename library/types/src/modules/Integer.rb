@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Integer.ycp
-# Package:	yast2
-# Summary:	Integer routines
-# Authors:	Arvin Schnell <aschnell@suse.de>
+# File:  modules/Integer.ycp
+# Package:  yast2
+# Summary:  Integer routines
+# Authors:  Arvin Schnell <aschnell@suse.de>
 #
 # $Id: Integer.ycp 45945 2008-04-01 19:41:01Z aschnell $
 require "yast"
@@ -58,8 +56,8 @@ module Yast
     end
 
     # Checks whether i is a power of two. That is 1, 2, 4, 8, ... .
-    def IsPowerOfTwo(i)
-      Ops.greater_than(i, 0) && Ops.bitwise_and(i, Ops.subtract(i, 1)) == 0
+    def IsPowerOfTwo(input)
+      Ops.greater_than(input, 0) && Ops.bitwise_and(input, Ops.subtract(input, 1)) == 0
     end
 
     # Calculates the sum of values.
@@ -88,10 +86,11 @@ module Yast
     end
 
     # Clamps the integer i.
-    def Clamp(i, min, max)
-      return min if Ops.less_than(i, min)
-      return max if Ops.greater_than(i, max)
-      i
+    def Clamp(number, min, max)
+      return min if Ops.less_than(number, min)
+      return max if Ops.greater_than(number, max)
+
+      number
     end
 
     publish function: :Range, type: "list <integer> (integer)"

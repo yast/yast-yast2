@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/FileChanges.ycp
-# Module:	yast2
-# Summary:	Detect if a configuratil file was changed
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/FileChanges.ycp
+# Module:  yast2
+# Summary:  Detect if a configuratil file was changed
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # Support routines for detecting changes of configuration files being done
 # externally (not by YaST) to prevent the changes from being lost because
@@ -118,6 +116,7 @@ module Yast
       package = Ops.get_string(out, "stdout", "")
       Builtins.y2milestone("Package owning %1: %2", file, package)
       return false if package == "" || Ops.get_integer(out, "exit", -1) != 0
+
       cmd = Builtins.sformat("/usr/bin/rpm -V %1 |grep %2", package.shellescape, " #{file}$".shellescape)
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
       changes = Ops.get_string(out, "stdout", "")
@@ -138,12 +137,13 @@ module Yast
     def FileChanged(file)
       # when generating AutoYaST configuration, they are not written back
       return false if Mode.config
+
       ReadSettings()
       ret = false
       if Builtins.haskey(@file_checksums, file)
         Builtins.y2milestone("Comparing file %1 to stored checksum", file)
         sum = ComputeFileChecksum(file)
-        ret = !(sum == Ops.get(@file_checksums, file, ""))
+        ret = sum != Ops.get(@file_checksums, file, "")
       else
         Builtins.y2milestone("Comparing file %1 to RPM database", file)
         ret = FileChangedFromPackage(file)

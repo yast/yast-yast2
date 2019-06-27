@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -22,12 +20,12 @@
 #
 # ***************************************************************************
 # Module:
-#	Misc
+#  Misc
 # File:
-#	Misc.ycp
+#  Misc.ycp
 # Purpose:
-#	miscellaneous definitions for installation
-# Author:	Klaus Kaempf <kkaempf@suse.de>
+#  miscellaneous definitions for installation
+# Author:  Klaus Kaempf <kkaempf@suse.de>
 # $Id$
 require "yast"
 
@@ -44,9 +42,9 @@ module Yast
       @boot_msg = ""
     end
 
-    # @param [String] first	string	name of first file to try
-    # @param [String] second	string	name of second file to try
-    # @return	[Object]	content of file
+    # @param [String] first  string  name of first file to try
+    # @param [String] second  string  name of second file to try
+    # @return  [Object]  content of file
     #
     # try to read first file, if it doesn't exist, read second
     # files must reside below /usr/lib/YaST2
@@ -58,8 +56,8 @@ module Yast
       deep_copy(result)
     end
 
-    # @param [Hash] hardware_entry	map	map of .probe entry
-    # @return	[String]	vendor and device name
+    # @param [Hash] hardware_entry  map  map of .probe entry
+    # @return  [String]  vendor and device name
     #
     # common function to extract 'name' of hardware
 
@@ -68,23 +66,21 @@ module Yast
       sub_vendor = Ops.get_string(hardware_entry, "sub_vendor", "")
       sub_device = Ops.get_string(hardware_entry, "sub_device", "")
 
-      if sub_vendor != "" && sub_device != ""
-        return Ops.add(Ops.add(sub_vendor, "\n"), sub_device)
-      end
+      return Ops.add(Ops.add(sub_vendor, "\n"), sub_device) if sub_vendor != "" && sub_device != ""
 
       vendor = Ops.get_string(hardware_entry, "vendor", "")
 
       Ops.add(
-        Ops.add(vendor, vendor != "" ? "\n" : ""),
+        Ops.add(vendor, (vendor != "") ? "\n" : ""),
         Ops.get_string(hardware_entry, "device", "")
       )
     end
 
-    # @param [Hash] lmap	map	map of language codes and translations
-    #				e.g. $[ "default" : "Defaultstring", "de" : "German....", ...]
-    # @param [String] lang	string	language as ISO code, either 2 chars (de)
-    #				or 5 chars (de_DE)
-    # @return	[String]		translation
+    # @param [Hash] lmap  map  map of language codes and translations
+    #        e.g. $[ "default" : "Defaultstring", "de" : "German....", ...]
+    # @param [String] lang  string  language as ISO code, either 2 chars (de)
+    #        or 5 chars (de_DE)
+    # @return  [String]    translation
     #
     # Define a macro that looks up a localized string in a language map
     # of the form $[ "default" : "Defaultstring", "de" : "German....", ...]
@@ -92,19 +88,17 @@ module Yast
     def translate(lmap, lang)
       lmap = deep_copy(lmap)
       t = Ops.get_string(lmap, lang, "")
-      if Builtins.size(t) == 0 && Ops.greater_than(Builtins.size(lang), 2)
-        t = Ops.get_string(lmap, Builtins.substring(lang, 0, 2), "")
-      end
+      t = Ops.get_string(lmap, Builtins.substring(lang, 0, 2), "") if Builtins.size(t) == 0 && Ops.greater_than(Builtins.size(lang), 2)
       t = Ops.get_string(lmap, "default", "") if Builtins.size(t) == 0
 
       t
     end
 
     # SysconfigWrite()
-    # @param [Yast::Path] level	path behind .sysconfig for all values
-    # @param [Array<Array>] values	list of [ .NAME, value] lists
+    # @param [Yast::Path] level  path behind .sysconfig for all values
+    # @param [Array<Array>] values  list of [ .NAME, value] lists
     #
-    # @return [Boolean]		false if SCR::Write reported error
+    # @return [Boolean]    false if SCR::Write reported error
     #
     # write list of sysyconfig entries via rcconfig agent
 
@@ -134,9 +128,9 @@ module Yast
     # Merges "opt1=val1 opt2=val2 ..." and $["opta":"vala", ..."]
     # to $["opt1":"val1", "opt2":"val2", "opta":"vala", ...]
     # as needed by modules.conf agent
-    # @param [String] options	string	module options, e.g. "opt1=val1 opt2=val2 ..."
-    # @param [Hash] optmap	map	possible old options $["opta":"vala", ...]
-    # @return [Hash]	$["opt1":"val1", "opt2":"val2", ...]
+    # @param [String] options  string  module options, e.g. "opt1=val1 opt2=val2 ..."
+    # @param [Hash] optmap  map  possible old options $["opta":"vala", ...]
+    # @return [Hash]  $["opt1":"val1", "opt2":"val2", ...]
 
     def SplitOptions(options, optmap)
       optmap = deep_copy(optmap)
@@ -172,7 +166,7 @@ module Yast
     # @param [String] defaultv         Default value
     #
     # @return  Success --> Result of SCR::Read<br>
-    #		Failure --> Default value
+    #    Failure --> Default value
     #
 
     def SysconfigRead(sysconfig_path, defaultv)
@@ -188,18 +182,18 @@ module Yast
         Builtins.y2milestone("%1: '%2'", sysconfig_path, local_ret)
         return local_ret
       end
-    end # SysconfigRead()
+    end
 
     # Try to read value from sysconfig file and return the result if successful.
     # Function reads from arbitrary sysconfig file, for which the agent
     # doesn't exist: e.g. from different partition like /mnt/etc/sysconfig/file.
     #
-    # @param [String] key		Key of the value we want to read from sysconfig file.
-    # @param	defaultv        Default value
-    # @param [String] location	Full path to target sysconfig file.
+    # @param [String] key    Key of the value we want to read from sysconfig file.
+    # @param  defaultv        Default value
+    # @param [String] location  Full path to target sysconfig file.
     #
     # @return  Success --> Result of SCR::Read<br>
-    #		Failure --> Default value
+    #    Failure --> Default value
     #
     # @example Misc::CustomSysconfigRead ("INSTALLED_LANGUAGES", "", Installation::destdir + "/etc/sysconfig/language");
     #

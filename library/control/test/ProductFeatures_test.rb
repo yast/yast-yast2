@@ -7,6 +7,10 @@ Yast.import "ProductFeatures"
 describe Yast::ProductFeatures do
   subject { Yast::ProductFeatures }
 
+  before do
+    allow(Yast::SCR).to receive(:Dir).and_return([])
+  end
+
   context "With simple features" do
 
     let(:simple_features) do
@@ -167,6 +171,7 @@ describe Yast::ProductFeatures do
     before do
       allow(Yast::Stage).to receive(:normal).and_return(normal_stage)
       allow(Yast::Stage).to receive(:firstboot).and_return(firstboot_stage)
+      allow(Yast::SCR).to receive(:Dir).and_call_original
     end
 
     around do |example|

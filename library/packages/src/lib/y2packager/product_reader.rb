@@ -45,7 +45,7 @@ module Y2Packager
           # package provide same product installation. So we just pick the first one.
           dependencies = Yast::Pkg.ResolvableDependencies(pkg_name, :package, "").first["deps"]
           install_provides = dependencies.find_all do |d|
-            d["provides"] && d["provides"].match(/system-installation\(\)/)
+            d["provides"]&.match(/system-installation\(\)/)
           end
 
           # parse product name from provides. Format of provide is
@@ -135,7 +135,7 @@ module Y2Packager
 
       # find the highest version
       Yast::Pkg.ResolvableDependencies(name, :package, "").reduce(nil) do |a, p|
-        !a || (Yast::Pkg.CompareVersions(a["version"], p["version"]) < 0) ? p : a
+        (!a || (Yast::Pkg.CompareVersions(a["version"], p["version"]) < 0)) ? p : a
       end
     end
 

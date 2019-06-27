@@ -438,7 +438,7 @@ describe Yast2::FsSnapshot do
       end
 
       context "given some snapshots exist" do
-        let(:output_path) { File.expand_path("../fixtures/snapper-list.txt", __FILE__) }
+        let(:output_path) { File.expand_path("fixtures/snapper-list.txt", __dir__) }
 
         it "should return the snapshots and log about how many were found" do
           expect(logger).to receive(:info).with(/Retrieving snapshots list/)
@@ -449,7 +449,7 @@ describe Yast2::FsSnapshot do
       end
 
       context "given no snapshots exist" do
-        let(:output_path) { File.expand_path("../fixtures/empty-snapper-list.txt", __FILE__) }
+        let(:output_path) { File.expand_path("fixtures/empty-snapper-list.txt", __dir__) }
 
         it "should return an empty array" do
           expect(described_class.all).to eq([])
@@ -475,7 +475,7 @@ describe Yast2::FsSnapshot do
     context "when snapper is configured" do
       let(:configured) { true }
       let(:output) { File.read(output_path) }
-      let(:output_path) { File.expand_path("../fixtures/snapper-list.txt", __FILE__) }
+      let(:output_path) { File.expand_path("fixtures/snapper-list.txt", __dir__) }
 
       before do
         allow(Yast::SCR).to receive(:Execute)
@@ -515,7 +515,7 @@ describe Yast2::FsSnapshot do
 
   describe "#previous" do
     let(:output) { File.read(output_path) }
-    let(:output_path) { File.expand_path("../fixtures/snapper-list.txt", __FILE__) }
+    let(:output_path) { File.expand_path("fixtures/snapper-list.txt", __dir__) }
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(true)

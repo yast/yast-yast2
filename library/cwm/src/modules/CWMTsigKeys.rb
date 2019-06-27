@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CWMTsigKeys.ycp
-# Package:	Common widget manipulation, TSIG keys management widget
-# Summary:	Routines for management of TSIG keys
-# Authors:	Jiri Srain <jsrain@suse.cz>
+# File:  modules/CWMTsigKeys.ycp
+# Package:  Common widget manipulation, TSIG keys management widget
+# Summary:  Routines for management of TSIG keys
+# Authors:  Jiri Srain <jsrain@suse.cz>
 #
 # $Id$
 #
@@ -333,9 +331,7 @@ module Yast
           # popup headline
           _("Select File for the Authentication Key")
         )
-        if !new_filename.nil?
-          UI.ChangeWidget(Id("_cwm_new_key_file"), :Value, new_filename)
-        end
+        UI.ChangeWidget(Id("_cwm_new_key_file"), :Value, new_filename) if !new_filename.nil?
         return nil
       elsif ret == "_cwm_generate_key"
         if !UI.WidgetExists(Id("_cwm_new_key_file"))
@@ -408,15 +404,14 @@ module Yast
               to:   "list <string>"
             )
             Builtins.foreach(files) do |f|
-              if Builtins.contains(AnalyzeTSIGKeyFile(f), key2)
-                DeleteTSIGKeyFromDisk(f)
-              end
+              DeleteTSIGKeyFromDisk(f) if Builtins.contains(AnalyzeTSIGKeyFile(f), key2)
             end
           end
         end
 
         # yes-no popup
         return nil if !Popup.YesNo(_("The key will be created now. Continue?"))
+
         SCR.Execute(
           path(".target.bash"),
           "/usr/bin/mkdir -p /etc/named.d"

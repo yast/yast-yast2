@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -109,7 +107,7 @@ module Yast
       @current_retry_attempt = 0
 
       #=============================================================================
-      #	MEDIA CHANGE
+      #  MEDIA CHANGE
       #=============================================================================
 
       @detected_cd_devices = []
@@ -319,7 +317,7 @@ module Yast
               UI.ReplaceWidget(Id(:info), Empty())
             end
           end
-          break if r == :abort || r == :retry || r == :ignore
+          break if [:abort, :retry, :ignore].include?(r)
         end
 
         Builtins.y2milestone("DoneProvide %1", r)
@@ -328,6 +326,7 @@ module Yast
 
         return "C" if r == :abort
         return "R" if r == :retry
+
         if r == :ignore
           # don't show the warning when a refresh fails or for signature errors (error 3)
           if !@autorefreshing && error != 3
@@ -353,9 +352,9 @@ module Yast
     # callbacks, but only the progress bar and not the final error
     # message.  Returns old value.
     # @note nasty hack for inst_do_net_test client. Remove it when client disappear
-    def EnableAsterixPackage(f)
+    def EnableAsterixPackage(value)
       ret = @enable_asterix_package
-      @enable_asterix_package = f
+      @enable_asterix_package = value
       ret
     end
 
@@ -427,9 +426,7 @@ module Yast
     def pkg_gpg_check(data)
       log.debug("pkgGpgCheck data: #{data}")
 
-      if data["CheckPackageResult"] && data["CheckPackageResult"] != 0
-        log.warn("Signature check failed: #{data}")
-      end
+      log.warn("Signature check failed: #{data}") if data["CheckPackageResult"] && data["CheckPackageResult"] != 0
 
       insecure = Stage.initial && Linuxrc.InstallInf("Insecure") == "1"
       insecure ? "I" : ""
@@ -527,7 +524,7 @@ module Yast
                 UI.ReplaceWidget(Id(:info), Empty())
               end
             end
-            break if r == :abort || r == :retry || r == :ignore
+            break if [:abort, :retry, :ignore].include?(r)
           end
           Builtins.y2milestone("DonePackage %1", r)
 
@@ -683,9 +680,7 @@ module Yast
         PushButton(Id(:retry), Opt(:default, :okButton), Label.RetryButton)
       )
 
-      if current == -1 # wrong media id, offer "Ignore"
-        button_box.params << PushButton(Id(:ignore), Opt(:customButton), Label.IgnoreButton)
-      end
+      button_box.params << PushButton(Id(:ignore), Opt(:customButton), Label.IgnoreButton) if current == -1 # wrong media id, offer "Ignore"
 
       button_box.params << PushButton(
         Id(:cancel),
@@ -698,9 +693,7 @@ module Yast
       button_box.params << PushButton(Id(:skip), Opt(:customButton), _("&Skip"))
 
       if is_disc
-        if !@doing_eject
-          @detected_cd_devices = cd_devices(Ops.get(devices, current_device, ""))
-        end
+        @detected_cd_devices = cd_devices(Ops.get(devices, current_device, "")) if !@doing_eject
 
         # detect the CD/DVD devices if the ejecting is not in progress,
         # the CD detection closes the ejected tray!
@@ -752,9 +745,7 @@ module Yast
             RETRY_MAX_TIMEOUT
           end
 
-          if Ops.greater_than(@current_retry_timeout, RETRY_MAX_TIMEOUT)
-            @current_retry_timeout = RETRY_MAX_TIMEOUT
-          end
+          @current_retry_timeout = RETRY_MAX_TIMEOUT if Ops.greater_than(@current_retry_timeout, RETRY_MAX_TIMEOUT)
 
           button_box = VBox(
             # failed download will be automatically retried after the timeout, %1 = formatted time (MM:SS format)
@@ -773,9 +764,7 @@ module Yast
 
       Builtins.y2milestone("Autoretry: %1", doing_auto_retry)
 
-      if doing_auto_retry
-        Builtins.y2milestone("Autoretry attempt: %1", @current_retry_attempt)
-      end
+      Builtins.y2milestone("Autoretry attempt: %1", @current_retry_attempt) if doing_auto_retry
 
       if Mode.commandline
         CommandLine.Print(message)
@@ -886,7 +875,7 @@ module Yast
           else
             UI.ReplaceWidget(Id(:info), Empty())
           end
-        elsif r == :retry || r == :url
+        elsif [:retry, :url].include?(r)
           if @showLongInfo # id(`url) must exist
             newurl = Convert.to_string(UI.QueryWidget(Id(:url), :Value))
             if newurl != url
@@ -931,6 +920,7 @@ module Yast
         @doing_eject = true
 
         return "E" if eject_device == ""
+
         # get the index in the list
         dindex = -1
 
@@ -1494,7 +1484,7 @@ module Yast
     end
 
     def FormatPatchName(patch_name, patch_version, patch_arch)
-      patch_full_name = !patch_name.nil? && patch_name != "" ? patch_name : ""
+      patch_full_name = (!patch_name.nil? && patch_name != "") ? patch_name : ""
 
       if patch_full_name != ""
         if !patch_version.nil? && patch_version != ""
@@ -1504,9 +1494,7 @@ module Yast
           )
         end
 
-        if !patch_arch.nil? && patch_arch != ""
-          patch_full_name = Ops.add(Ops.add(patch_full_name, "."), patch_arch)
-        end
+        patch_full_name = Ops.add(Ops.add(patch_full_name, "."), patch_arch) if !patch_arch.nil? && patch_arch != ""
       end
 
       patch_full_name
@@ -1589,7 +1577,7 @@ module Yast
         end
 
         input = UI.PollInput
-        return false if input == :abort || input == :close
+        return false if [:abort, :close].include?(input)
       end
       true
     end
@@ -1808,15 +1796,11 @@ module Yast
         if full_screen
           Progress.SubprogressValue(percent)
 
-          if Ops.greater_than(Builtins.size(msg_rate), 0)
-            Progress.SubprogressTitle(msg_rate)
-          end
+          Progress.SubprogressTitle(msg_rate) if Ops.greater_than(Builtins.size(msg_rate), 0)
         else
           UI.ChangeWidget(Id(:progress), :Value, percent)
 
-          if Ops.greater_than(Builtins.size(msg_rate), 0)
-            UI.ChangeWidget(Id(:progress), :Label, msg_rate)
-          end
+          UI.ChangeWidget(Id(:progress), :Label, msg_rate) if Ops.greater_than(Builtins.size(msg_rate), 0)
         end
 
         download_aborted = UI.PollInput == :abort
@@ -2063,11 +2047,11 @@ module Yast
                 100,
                 0
               ), # TODO: allow Abort
-              # 			,
-              # 			`VBox(
-              # 			    `Label(""),
-              # 			    `PushButton(`id(`abort), Label::AbortButton())
-              # 			)
+              #       ,
+              #       `VBox(
+              #           `Label(""),
+              #           `PushButton(`id(`abort), Label::AbortButton())
+              #       )
               HSpacing(1)
             )
           )
@@ -2175,7 +2159,7 @@ module Yast
             UI.ReplaceWidget(Id(:info), Empty())
           end
         end
-        break if r == :abort || r == :retry || r == :ignore
+        break if [:abort, :retry, :ignore].include?(r)
       end
 
       Builtins.y2milestone("ErrorScanDb: user input: %1", r)
@@ -2889,7 +2873,7 @@ module Yast
     end
 
     #=============================================================================
-    #	constructor and callback init
+    #  constructor and callback init
     #=============================================================================
 
     def RegisterEmptyProgressCallbacks
@@ -3090,7 +3074,7 @@ module Yast
       SCR.Write(path(".target.ycp"), @conf_file, @config)
     end
 
-    def progress_box(heading, name, sz)
+    def progress_box(heading, name, size)
       VBox(
         HSpacing(40),
         # popup heading
@@ -3101,7 +3085,7 @@ module Yast
               Left(Label(Opt(:boldFont), _("Package: "))),
               Left(Label(Opt(:boldFont), _("Size: ")))
             ),
-            VBox(Left(Label(name)), Left(Label(sz)))
+            VBox(Left(Label(name)), Left(Label(size)))
           )
         ),
         ProgressBar(Id(:progress), " ", 100, 0),
@@ -3128,21 +3112,20 @@ module Yast
     end
 
     def show_log_info(message, buttonbox)
+      UI.CloseDialog
       if UI.QueryWidget(Id(:show), :Value)
-        UI.CloseDialog
         UI.OpenDialog(
           Opt(:decorated),
           layout_popup(message, buttonbox, true)
         )
-        return true
+        true
       else
-        UI.CloseDialog
         UI.OpenDialog(
           Opt(:decorated),
           layout_popup(message, buttonbox, false)
         )
         UI.ReplaceWidget(Id(:info), Empty())
-        return false
+        false
       end
     end
 
@@ -3154,23 +3137,25 @@ module Yast
       )
       ret = []
 
-      Builtins.foreach(cds) do |cd|
-        dev = Ops.get_string(cd, "dev_name", "")
-        model = Ops.get_string(cd, "model", "")
-        deflt = preferred == dev
-        if !dev.nil? && dev != "" && !model.nil?
-          ret = Builtins.add(
-            ret,
-            Item(
-              Id(dev),
-              Ops.add(
-                Ops.add(deflt ? "\u27A4 " : "", model),
-                Builtins.sformat(" (%1)", dev)
+      if !cds.nil?
+        Builtins.foreach(cds) do |cd|
+          dev = Ops.get_string(cd, "dev_name", "")
+          model = Ops.get_string(cd, "model", "")
+          deflt = preferred == dev
+          if !dev.nil? && dev != "" && !model.nil?
+            ret = Builtins.add(
+              ret,
+              Item(
+                Id(dev),
+                Ops.add(
+                  Ops.add(deflt ? "\u27A4 " : "", model),
+                  Builtins.sformat(" (%1)", dev)
+                )
               )
             )
-          )
+          end
         end
-      end if !cds.nil?
+      end
 
       log.info "Detected CD devices: #{ret}"
 
@@ -3206,9 +3191,7 @@ module Yast
 
       ret = words.join(" ")
 
-      if ret != msg
-        log.info "URL conversion: '#{URL.HidePassword(msg)}' converted to '#{URL.HidePassword(ret)}%2'"
-      end
+      log.info "URL conversion: '#{URL.HidePassword(msg)}' converted to '#{URL.HidePassword(ret)}%2'" if ret != msg
 
       ret
     end

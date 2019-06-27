@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2014 SUSE LLC
@@ -24,7 +22,7 @@
 # File: hw_detection.rb
 #
 # Authors:
-#	Ladislav Slezak <lslezak@suse.cz>
+#  Ladislav Slezak <lslezak@suse.cz>
 
 require "yast"
 

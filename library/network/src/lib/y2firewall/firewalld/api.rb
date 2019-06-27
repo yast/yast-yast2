@@ -1,4 +1,3 @@
-# encoding: utf-8
 #
 # ***************************************************************************
 #
@@ -143,6 +142,7 @@ module Y2Firewall
       # @return [Boolean] true if the firewall was reloaded successfully
       def reload
         return true if offline?
+
         modify_command("--reload")
       end
 
@@ -152,6 +152,7 @@ module Y2Firewall
       # @return [Boolean] true if the firewall was reloaded completely with success
       def complete_reload
         return true if offline?
+
         modify_command("--complete-reload")
       end
 
@@ -193,7 +194,7 @@ module Y2Firewall
       # @param allowed_exitstatus [Fixnum, .include?, nil] allowed exit codes
       #   which do not cause an exception.
       def run_command(*args, permanent: false, allowed_exitstatus: nil)
-        arguments = !offline? && permanent ? ["--permanent"] : []
+        arguments = (!offline? && permanent) ? ["--permanent"] : []
         arguments.concat(args)
         log.info("Executing #{command} with #{arguments.inspect}")
 

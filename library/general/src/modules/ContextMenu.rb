@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	ContextMenu.ycp
-# Package:	yast2
-# Summary:	UI ContextMenu Helper
-# Authors:	Arvin Schnell <aschnell@suse.de>
+# File:  ContextMenu.ycp
+# Package:  yast2
+# Summary:  UI ContextMenu Helper
+# Authors:  Arvin Schnell <aschnell@suse.de>
 require "yast"
 
 module Yast

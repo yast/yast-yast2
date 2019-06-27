@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,15 +19,15 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/Confirm.ycp
+# File:  modules/Confirm.ycp
 #
-# Package:	yast2
+# Package:  yast2
 #
-# Summary:	Confirmation routines
+# Summary:  Confirmation routines
 #
-# Authors:	Michal Svec <msvec@suse.cz>
+# Authors:  Michal Svec <msvec@suse.cz>
 #
-# Flags:	Stable
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -57,9 +55,7 @@ module Yast
     # @param [String] icon_name deprecated
     # @return true on continue
     def Detection(class_, icon_name)
-      if !icon_name.nil?
-        Builtins.y2warning(-1, "Parameter 'icon_name' is deprecated.")
-      end
+      Builtins.y2warning(-1, "Parameter 'icon_name' is deprecated.") if !icon_name.nil?
 
       return true if Linuxrc.manual != true
 
@@ -166,9 +162,7 @@ module Yast
         Convert.to_integer(SCR.Read(path(".target.size"), "/usr/bin/id")),
         0
       )
-        if !Stage.initial
-          Builtins.y2warning("/usr/bin/id not existing, supposing to be root")
-        end
+        Builtins.y2warning("/usr/bin/id not existing, supposing to be root") if !Stage.initial
         return true
       end
 

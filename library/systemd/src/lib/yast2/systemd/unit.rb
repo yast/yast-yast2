@@ -37,7 +37,7 @@ module Yast2
       Yast.import "Stage"
       include Yast::Logger
 
-      SUPPORTED_TYPES = %w(service socket target).freeze
+      SUPPORTED_TYPES = %w[service socket target].freeze
 
       # with ruby 2.4 delegating ostruct with Forwardable start to write warning
       # so define it manually (bsc#1049433)

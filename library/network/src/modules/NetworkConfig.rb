@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/NetworkConfig.ycp
-# Package:	Network configuration
-# Summary:	Network configuration data
-# Authors:	Michal Svec <msvec@suse.cz>
+# File:  modules/NetworkConfig.ycp
+# Package:  Network configuration
+# Summary:  Network configuration data
+# Authors:  Michal Svec <msvec@suse.cz>
 #
 # $Id$
 #
@@ -64,6 +62,7 @@ module Yast
     def ReadConfig(config)
       Builtins.y2debug("config=%1", config)
       return {} if config.nil?
+
       ret = {}
 
       vars = SCR.Dir(config)

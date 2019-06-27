@@ -17,12 +17,12 @@ end
 describe "AsciiFile" do
   context "when working with a fstab file" do
     FSTAB_FILENAME = "/etc/fstab".freeze
-    FSTAB_CONTENTS = <<EOS.freeze
-UUID=001c0d61-e99f-4ab7-ba4b-bda6f54a052d       /       btrfs   defaults 0 0
-# NFS
-192.168.1.1:/ /mnt    nfs4    rw 0 0
-# trailing comment
-EOS
+    FSTAB_CONTENTS = <<~FSTAB.freeze
+      UUID=001c0d61-e99f-4ab7-ba4b-bda6f54a052d       /       btrfs   defaults 0 0
+      # NFS
+      192.168.1.1:/ /mnt    nfs4    rw 0 0
+      # trailing comment
+    FSTAB
     let(:fstab_ref) do
       stub_file_reading(FSTAB_FILENAME, FSTAB_CONTENTS)
       fstab = {}

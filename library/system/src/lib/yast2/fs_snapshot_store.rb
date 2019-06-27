@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2015 SUSE LLC
@@ -51,9 +49,7 @@ module Yast2
         snapshot_path(purpose)
       )
 
-      if !content || content !~ /^\d+$/
-        raise "Failed to read Pre Snapshot id for #{purpose} from store. See logs."
-      end
+      raise "Failed to read Pre Snapshot id for #{purpose} from store. See logs." if !content || content !~ /^\d+$/
 
       content.to_i
     end

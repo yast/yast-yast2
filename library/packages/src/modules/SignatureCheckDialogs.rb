@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,8 +19,8 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module:		SignatureCheckDialogs.ycp
-# Authors:		Lukas Ocilka <locilka@suse.cz>
+# Module:    SignatureCheckDialogs.ycp
+# Authors:    Lukas Ocilka <locilka@suse.cz>
 #
 # Dialogs handling for RPM/Repository GPM signatures.
 #
@@ -125,11 +123,9 @@ module Yast
 
       # Read the current configuration from system configuration
       stored = DontShowAgain.GetShowQuestionAgain(
-
         "q_type"  => "inst-source",
         "q_ident" => popup_type,
         "q_url"   => popup_url
-
       )
 
       # Stored in the configuration?
@@ -182,11 +178,9 @@ module Yast
 
       stored_return = Convert.to_boolean(
         DontShowAgain.GetDefaultReturn(
-
           "q_type"  => "inst-source",
           "q_ident" => popup_type,
           "q_url"   => popup_url
-
         )
       )
 
@@ -670,7 +664,7 @@ module Yast
             "(%2):"
         ),
         Ops.get_locale(repo, "name", _("Unknown")),
-        repo && repo["url"] ? repo["url"].scan(/.{1,59}/).join("\n") : _("Unknown")
+        (repo && repo["url"]) ? repo["url"].scan(/.{1,59}/).join("\n") : _("Unknown")
       )
 
       # popup message - label, part 2
@@ -891,13 +885,13 @@ module Yast
           max_size
         )
           splittedstring = Ops.add(
-            Ops.add(splittedstring, splittedstring == "" ? "" : delimiter),
+            Ops.add(splittedstring, (splittedstring == "") ? "" : delimiter),
             Builtins.substring(whattosplit, after_chars_counter)
           )
           break
         else
           splittedstring = Ops.add(
-            Ops.add(splittedstring, splittedstring == "" ? "" : delimiter),
+            Ops.add(splittedstring, (splittedstring == "") ? "" : delimiter),
             Builtins.substring(whattosplit, after_chars_counter, after_chars)
           )
           after_chars_counter = Ops.add(after_chars_counter, after_chars)

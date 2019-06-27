@@ -1,4 +1,3 @@
-# encoding: utf-8
 #
 # ***************************************************************************
 #
@@ -91,6 +90,7 @@ module Y2Firewall
     # @return [Boolean] true
     def read(minimal: false)
       return false unless installed?
+
       @current_zone_names = api.zones
       @current_service_names = api.services
       if minimal
@@ -112,6 +112,7 @@ module Y2Firewall
     #   was alredy defined
     def add_zone(name)
       return false if find_zone(name)
+
       zones << Y2Firewall::Firewalld::Zone.new(name: name)
       true
     end
@@ -150,6 +151,7 @@ module Y2Firewall
     # @return [Y2Firewall::Firewalld::Service] the recently added service
     def read_service(name)
       raise(Service::NotFound, name) unless installed?
+
       service = ServiceReader.new.read(name)
       services << service
       service
@@ -173,6 +175,7 @@ module Y2Firewall
     # Apply the changes to the modified zones and sets the logging option
     def write_only
       return false unless installed?
+
       read unless read?
       apply_zones_changes!
       apply_attributes_changes!

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/CWMTable.ycp
-# Package:	Table dialogs backend
-# Summary:	Routines for Unified Table widget
-# Authors:	Josef Reidinger <jreidinger@suse.cz>
+# File:  modules/CWMTable.ycp
+# Package:  Table dialogs backend
+# Summary:  Routines for Unified Table widget
+# Authors:  Josef Reidinger <jreidinger@suse.cz>
 #
 # $Id: CWMTable.ycp
 #
@@ -114,9 +112,8 @@ module Yast
       ter = deep_copy(ter)
       args = Builtins.argsof(ter)
       args = Builtins.filter(args) do |t|
-        if Ops.is_term?(t) && Builtins.symbolof(Convert.to_term(t)) == :id
-          next true
-        end
+        next true if Ops.is_term?(t) && Builtins.symbolof(Convert.to_term(t)) == :id
+
         false
       end
       targs = Convert.convert(args, from: "list", to: "list <term>")
@@ -219,35 +216,36 @@ module Yast
           event_id = :_tw_edit
         end
       end
-      if event_id == :_tw_edit
+      case event_id
+      when :_tw_edit
         edit_handle = Convert.convert(
           Ops.get(attrib, "edit"),
           from: "any",
           to:   "symbol (string, map, integer)"
         )
         ret = edit_handle.call(key, event_descr, index) if !edit_handle.nil?
-      elsif event_id == :_tw_add
+      when :_tw_add
         add_handle = Convert.convert(
           Ops.get(attrib, "add"),
           from: "any",
           to:   "symbol (string, map, integer)"
         )
         ret = add_handle.call(key, event_descr, index) if !add_handle.nil?
-      elsif event_id == :_tw_delete
+      when :_tw_delete
         delete_handle = Convert.convert(
           Ops.get(attrib, "delete"),
           from: "any",
           to:   "symbol (string, map, integer)"
         )
         ret = delete_handle.call(key, event_descr, index) if delete_handle
-      elsif event_id == :_tw_custom
+      when :_tw_custom
         custom_handle = Convert.convert(
           Ops.get(attrib, "custom_handle"),
           from: "any",
           to:   "symbol (string, map, integer)"
         )
         ret = custom_handle.call(key, event_descr, index) if custom_handle
-      elsif event_id == :_tw_up || event_id == :_tw_down
+      when :_tw_up, :_tw_down
         up = event_id == :_tw_up
         updown_handle = Convert.convert(
           Ops.get(attrib, "updown"),
@@ -269,9 +267,7 @@ module Yast
     def DisableTable(descr)
       descr = deep_copy(descr)
       UI.ChangeWidget(Id(:_tw_table), :Enabled, false)
-      if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
-        UI.ChangeWidget(Id(:_tw_edit), :Enabled, false)
-      end
+      UI.ChangeWidget(Id(:_tw_edit), :Enabled, false) if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
       if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
         UI.ChangeWidget(Id(:_tw_delete), :Enabled, false)
         UI.ChangeWidget(Id(:_tw_add), :Enabled, false)
@@ -280,9 +276,7 @@ module Yast
         UI.ChangeWidget(Id(:_tw_up), :Enabled, false)
         UI.ChangeWidget(Id(:_tw_down), :Enabled, false)
       end
-      if Ops.get_boolean(descr, ["_cwm_attrib", "custom_button"], false)
-        UI.ChangeWidget(Id(:_tw_custom), :Enabled, false)
-      end
+      UI.ChangeWidget(Id(:_tw_custom), :Enabled, false) if Ops.get_boolean(descr, ["_cwm_attrib", "custom_button"], false)
 
       nil
     end
@@ -293,15 +287,9 @@ module Yast
     def EnableTable(descr)
       descr = deep_copy(descr)
       UI.ChangeWidget(Id(:_tw_table), :Enabled, true)
-      if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
-        UI.ChangeWidget(Id(:_tw_edit), :Enabled, true)
-      end
-      if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
-        UI.ChangeWidget(Id(:_tw_add), :Enabled, true)
-      end
-      if Ops.get_boolean(descr, ["_cwm_attrib", "custom_button"], false)
-        UI.ChangeWidget(Id(:_tw_custom), :Enabled, true)
-      end
+      UI.ChangeWidget(Id(:_tw_edit), :Enabled, true) if Ops.get_boolean(descr, ["_cwm_attrib", "edit_button"], true)
+      UI.ChangeWidget(Id(:_tw_add), :Enabled, true) if Ops.get_boolean(descr, ["_cwm_attrib", "add_delete_buttons"], true)
+      UI.ChangeWidget(Id(:_tw_custom), :Enabled, true) if Ops.get_boolean(descr, ["_cwm_attrib", "custom_button"], false)
       TableHandle(descr, "", {})
 
       nil

@@ -74,8 +74,7 @@ module UI
     # Optional abstract method to specify options for dialog.
     # @see http://doc.opensuse.org/projects/YaST/openSUSE11.3/tdg/OpenDialog_with_options.html
     # @return [Yast::Term,nil] options. By default returns nil for no special options
-    def dialog_options
-    end
+    def dialog_options; end
 
     # Abstract method to specify content of dialog.
     # @see http://doc.opensuse.org/projects/YaST/openSUSE11.3/tdg/OpenDialog_with_options.html

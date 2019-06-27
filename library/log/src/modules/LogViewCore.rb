@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/LogViewCore.ycp
-# Package:	YaST2
-# Summary:	Displaying a log
-# Authors:	Jiri Srain <jsrain@suse.cz>
-#		Arvin Schnell <aschnell@suse.de>
+# File:  modules/LogViewCore.ycp
+# Package:  YaST2
+# Summary:  Displaying a log
+# Authors:  Jiri Srain <jsrain@suse.cz>
+#    Arvin Schnell <aschnell@suse.de>
 #
 # $Id: LogViewCore.ycp 45503 2008-03-17 09:46:23Z aschnell $
 require "yast"
@@ -104,15 +102,15 @@ module Yast
     #
     # The LogView widget must exist when calling this function. The `MaxLines
     # parameter of the widget will be set.
-    def Start(widget, d)
+    def Start(widget, data)
       widget = deep_copy(widget)
-      d = deep_copy(d)
+      data = deep_copy(data)
       if !@id.nil?
         SCR.Execute(path(".process.release"), @id)
         @id = nil
       end
 
-      @data = deep_copy(d)
+      @data = deep_copy(data)
 
       file = Ops.get_string(@data, "file", "")
       grep = Ops.get_string(@data, "grep", "")
@@ -154,9 +152,7 @@ module Yast
               )
               lines_count = 0 if Ops.less_than(lines_count, 0)
 
-              if Ops.greater_than(lines_count, 0)
-                command << Builtins.sformat(" | tail -n +%1", lines_count.to_s.shellescape)
-              end
+              command << Builtins.sformat(" | tail -n +%1", lines_count.to_s.shellescape) if Ops.greater_than(lines_count, 0)
             end
           end
         end

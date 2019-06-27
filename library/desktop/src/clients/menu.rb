@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,10 +19,10 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	clients/menu.ycp
-# Module:	yast2
-# Summary:	NCurses Control Center
-# Authors:	Michal Svec <msvec@suse.cz>
+# File:  clients/menu.ycp
+# Module:  yast2
+# Summary:  NCurses Control Center
+# Authors:  Michal Svec <msvec@suse.cz>
 #
 # $Id$
 #
@@ -79,15 +77,11 @@ module Yast
       Builtins.foreach(
         Convert.convert(@Modules, from: "map", to: "map <string, map>")
       ) do |name, params|
-        if !(Ops.get_string(params, "X-SuSE-YaST-RootOnly", "false") == "true")
-          @non_root_modules = Builtins.add(@non_root_modules, name)
-        end
+        @non_root_modules = Builtins.add(@non_root_modules, name) if Ops.get_string(params, "X-SuSE-YaST-RootOnly", "false") != "true"
       end
       Builtins.y2debug("non-root modules: %1", @non_root_modules)
 
-      if FileUtils.Exists(@restart_file)
-        SCR.Execute(path(".target.remove"), @restart_file)
-      end
+      SCR.Execute(path(".target.remove"), @restart_file) if FileUtils.Exists(@restart_file)
 
       UI.CloseDialog
 
@@ -102,9 +96,11 @@ module Yast
       @modules = Builtins.listmap(@groups) do |gr|
         all_modules = Desktop.ModuleList(gr)
         # filter out root-only stuff if the user is not root (#246015)
-        all_modules = Builtins.filter(all_modules) do |t|
-          Builtins.contains(@non_root_modules, Ops.get_string(t, [0, 0], ""))
-        end if !@root
+        if !@root
+          all_modules = Builtins.filter(all_modules) do |t|
+            Builtins.contains(@non_root_modules, Ops.get_string(t, [0, 0], ""))
+          end
+        end
         { gr => all_modules }
       end
       Builtins.y2debug("modules=%1", @modules)

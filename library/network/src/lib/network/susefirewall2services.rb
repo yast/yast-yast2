@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2016 Novell, Inc.
@@ -258,7 +256,7 @@ module Yast
 
         raise(
           SuSEFirewalServiceNotFound,
-          _("Service with name '%{service_name}' does not exist") % { service_name: service_name }
+          format(_("Service with name '%{service_name}' does not exist"), service_name: service_name)
         )
       end
 
@@ -329,7 +327,7 @@ module Yast
         SCR.UnregisterAgent(path(".firewall_service_definition"))
 
         # Fallback for presented service
-        @services[service_name]["name"] = _("Service: %{filename}") % { filename: filename }
+        @services[service_name]["name"] = format(_("Service: %{filename}"), filename: filename)
         @services[service_name]["description"] = ""
 
         # Registering sysconfig agent for this file (to get metadata)
@@ -347,6 +345,7 @@ module Yast
               )
             )
             next if definition.nil? || definition.empty?
+
             # call gettext to translate the metadata
             @services[service_name][metadata_key] = Builtins.dgettext(SERVICES_TEXTDOMAIN, definition)
 
@@ -380,7 +379,7 @@ module Yast
     # Function returns needed ports allowing broadcast
     #
     # @param [String] service (including the "service:" prefix)
-    # @return	[Array<String>] of needed broadcast ports
+    # @return  [Array<String>] of needed broadcast ports
     def GetNeededBroadcastPorts(service)
       service_details(service)["broadcast_ports"] || []
     end
@@ -415,7 +414,7 @@ module Yast
         log.error "Service #{service} is unknown"
         raise(
           SuSEFirewalServiceNotFound,
-          _("Service with name '%{service_name}' does not exist") % { service_name: service }
+          format(_("Service with name '%{service_name}' does not exist"), service_name: service)
         )
       end
 
@@ -500,7 +499,7 @@ module Yast
     # Conflicting services are for instance nis-client and nis-server.
     # @deprecated we currently don't have such services - services are defined by packages.
     #
-    # @return	[Array<String>] of conflicting services
+    # @return  [Array<String>] of conflicting services
     def GetPossiblyConflictServices
       []
     end

@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,11 +19,11 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# Module: 		AsciiFile.ycp
+# Module:     AsciiFile.ycp
 #
-# Authors:		Thomas Fehr (fehr@suse.de)
+# Authors:    Thomas Fehr (fehr@suse.de)
 #
-# Purpose: 		Handle reading and modifying of ascii files.
+# Purpose:     Handle reading and modifying of ascii files.
 #
 # $Id$
 require "yast"
@@ -175,9 +173,7 @@ module Yast
               line,
               Ops.get_string(file.value, "delim", "")
             )
-            if !pos.nil? && Ops.greater_than(pos, 0)
-              line = Builtins.substring(line, pos)
-            end
+            line = Builtins.substring(line, pos) if !pos.nil? && Ops.greater_than(pos, 0)
             pos = Builtins.findfirstof(
               line,
               Ops.get_string(file.value, "delim", "")
@@ -209,9 +205,9 @@ module Yast
     # Returns the list of rows where matches searched string in the defined column
     #
     # @param [Hash] file content
-    # @param [Integer] field		column (counted from 0 to n)
-    # @param [String] content		searched string
-    # @return [Array<Fixnum>]	matching rows
+    # @param [Integer] field    column (counted from 0 to n)
+    # @param [String] content    searched string
+    # @return [Array<Fixnum>]  matching rows
     def FindLineField(file, field, content)
       file = deep_copy(file)
       ret = []
@@ -228,8 +224,8 @@ module Yast
     # Returns map of wanted line
     #
     # @param [ArgRef<Hash>] file content
-    # @param [Integer] line	row number (counted from 1 to n)
-    # @return [Hash]		of wanted line
+    # @param [Integer] line  row number (counted from 1 to n)
+    # @return [Hash]    of wanted line
     def GetLine(file, line)
       ret = {}
       if Builtins.haskey(Ops.get_map(file.value, "l", {}), line)
@@ -245,7 +241,7 @@ module Yast
     # Returns count of lines in file
     #
     # @param [Hash] file content
-    # @return [Fixnum]	count of lines
+    # @return [Fixnum]  count of lines
     def NumLines(file)
       file = deep_copy(file)
       Builtins.size(Ops.get_map(file, "l", {}))
@@ -254,8 +250,8 @@ module Yast
     # Changes the record in the file defined by row and column
     #
     # @param [ArgRef<Hash>] file content
-    # @param [Integer] line	row number (counted from 1 to n)
-    # @param [Integer] field	column number (counted from 0 to n)
+    # @param [Integer] line  row number (counted from 1 to n)
+    # @param [Integer] field  column number (counted from 0 to n)
     def ChangeLineField(file, line, field, entry)
       Builtins.y2debug("line %1 field %2 entry %3", line, field, entry)
       changed = false
@@ -293,14 +289,12 @@ module Yast
     # Changes a complete line
     #
     # @param [ArgRef<Hash>] file content
-    # @param [Integer] line	row number (counted from 1 to n)
-    # @param [Array] entry	array of new fields on the line
+    # @param [Integer] line  row number (counted from 1 to n)
+    # @param [Array] entry  array of new fields on the line
     def ReplaceLine(file, line, entry)
       entry = deep_copy(entry)
       Builtins.y2debug("line %1 entry %2", line, entry)
-      if !Builtins.haskey(Ops.get_map(file.value, "l", {}), line)
-        Ops.set(file.value, ["l", line], {})
-      end
+      Ops.set(file.value, ["l", line], {}) if !Builtins.haskey(Ops.get_map(file.value, "l", {}), line)
       Ops.set(file.value, ["l", line, "fields"], entry)
       Ops.set(file.value, ["l", line, "changed"], true)
       Ops.set(file.value, ["l", line, "buildline"], true)
@@ -311,7 +305,7 @@ module Yast
     # Appends a new line at the bottom
     #
     # @param [ArgRef<Hash>] file content
-    # @param [Array] entry	array of new fields on the line
+    # @param [Array] entry  array of new fields on the line
     def AppendLine(file, entry)
       entry = deep_copy(entry)
       line = Ops.add(Builtins.size(Ops.get_map(file.value, "l", {})), 1)
@@ -368,9 +362,7 @@ module Yast
       end
       Builtins.y2debug("Out text: %1", out)
       if Builtins.size(out) == 0
-        if Ops.greater_or_equal(SCR.Read(path(".target.size"), fpath), 0)
-          SCR.Execute(path(".target.remove"), fpath)
-        end
+        SCR.Execute(path(".target.remove"), fpath) if Ops.greater_or_equal(SCR.Read(path(".target.size"), fpath), 0)
       else
         SCR.Write(path(".target.string"), fpath, out)
       end

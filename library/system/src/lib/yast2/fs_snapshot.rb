@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2015 SUSE LLC
@@ -24,7 +22,7 @@
 # File: fs_snapshot.rb
 #
 # Authors:
-#	Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+#  Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 require "yast"
 require "date"
@@ -75,7 +73,7 @@ module Yast2
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
     CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description %{description}".freeze
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list --disable-used-space".freeze
-    VALID_LINE_REGEX = /\A\s*\d+[-+*]?\s*\|\s*\w+/
+    VALID_LINE_REGEX = /\A\s*\d+[-+*]?\s*\|\s*\w+/.freeze
 
     # Predefined snapshot cleanup strategies (the user can define custom ones, too)
     CLEANUP_STRATEGY = { number: "number", timeline: "timeline" }.freeze
@@ -148,6 +146,7 @@ module Yast2
       #   installation
       def configure_snapper
         raise SnapperNotConfigurable if !Yast::Mode.installation || non_switched_installation?
+
         @configured = nil
 
         installation_helper_step_4
@@ -184,6 +183,7 @@ module Yast2
 
         if [:around, :single].include?(snapshot_type)
           return false if disable_snapshots.include?("all")
+
           return !disable_snapshots.include?(snapshot_type.to_s)
         else
           raise ArgumentError, "Unsupported snapshot type #{snapshot_type.inspect}, " \
@@ -261,13 +261,14 @@ module Yast2
         lines.each_with_object([]) do |line, snapshots|
           data = line.split("|").map(&:strip)
           next if data[0] == "0" # Ignores 'current' snapshot (id = 0) because it's not a real snapshot
+
           begin
             timestamp = DateTime.parse(data[3])
           rescue ArgumentError
             log.warn("Error when parsing date/time: #{timestamp}")
             timestamp = nil
           end
-          previous_number = data[2] == "" ? nil : data[2].to_i
+          previous_number = (data[2] == "") ? nil : data[2].to_i
           snapshots << new(data[0].to_i, data[1].to_sym, previous_number, timestamp,
             data[4], data[5].to_sym, data[6])
         end

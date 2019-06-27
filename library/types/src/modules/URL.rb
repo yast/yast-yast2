@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -21,12 +19,12 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:	modules/URL.ycp
-# Package:	yast2
-# Summary:	Manipulate and Parse URLs
-# Authors:	Michal Svec <msvec@suse.cz>
-#		Anas Nashif <nashif@suse.cz>
-# Flags:	Stable
+# File:  modules/URL.ycp
+# Package:  yast2
+# Summary:  Manipulate and Parse URLs
+# Authors:  Michal Svec <msvec@suse.cz>
+#    Anas Nashif <nashif@suse.cz>
+# Flags:  Stable
 #
 # $Id$
 require "yast"
@@ -106,8 +104,8 @@ module Yast
     # @return [String] unescaped string
     #
     # @example
-    #	URL::UnEscapeString ("http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f", URL::transform_map_passwd)
-    #		-> http://some.nice.url/:with:/$p#ci&l/ch@rs/
+    #  URL::UnEscapeString ("http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f", URL::transform_map_passwd)
+    #    -> http://some.nice.url/:with:/$p#ci&l/ch@rs/
 
     def UnEscapeString(in_, transform)
       transform = deep_copy(transform)
@@ -133,8 +131,8 @@ module Yast
     # @return [String] escaped string
     #
     # @example
-    #	URL::EscapeString ("http://some.nice.url/:with:/$p#ci&l/ch@rs/", URL::transform_map_passwd)
-    #		-> http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f
+    #  URL::EscapeString ("http://some.nice.url/:with:/$p#ci&l/ch@rs/", URL::transform_map_passwd)
+    #    -> http%3a%2f%2fsome.nice.url%2f%3awith%3a%2f%24p#ci%26l%2fch%40rs%2f
 
     def EscapeString(in_, transform)
       transform = deep_copy(transform)
@@ -257,7 +255,7 @@ module Yast
         Ops.set(tokens, "host", host6)
         port6 = Builtins.regexpsub(hostport6, "^\\[.*\\]:(.*)", "\\1")
         Builtins.y2debug("port: %1", port6)
-        Ops.set(tokens, "port", !port6.nil? ? port6 : "")
+        Ops.set(tokens, "port", port6 || "")
       end
 
       # some exceptions for samba scheme (there is optional extra option "domain")
@@ -270,9 +268,7 @@ module Yast
 
         options = MakeMapFromParams(Ops.get_string(tokens, "query", ""))
 
-        if Builtins.haskey(options, "workgroup")
-          Ops.set(tokens, "domain", Ops.get(options, "workgroup", ""))
-        end
+        Ops.set(tokens, "domain", Ops.get(options, "workgroup", "")) if Builtins.haskey(options, "workgroup")
       end
 
       # merge host and path if the scheme does not allow a host (bsc#991935)
@@ -316,9 +312,7 @@ module Yast
       # Check "path"    : /path/index.html"
 
       # Check "port"    : "80"
-      if !Builtins.regexpmatch(Ops.get_string(tokens, "port", ""), "^[0-9]*$")
-        return false
-      end
+      return false if !Builtins.regexpmatch(Ops.get_string(tokens, "port", ""), "^[0-9]*$")
 
       # Check "user"    : "name"
 
@@ -348,7 +342,7 @@ module Yast
         "^[[:alpha:]]*$"
       )
         # if (tokens["scheme"]:"" == "samba") url="smb";
-        # 		else
+        #     else
         url = Ops.get_string(tokens, "scheme", "")
       end
       Builtins.y2debug("url: %1", url)
@@ -368,9 +362,7 @@ module Yast
           URLRecode.EscapePassword(Ops.get_string(tokens, "pass", ""))
         )
       end
-      if Ops.greater_than(Builtins.size(userpass), 0)
-        userpass = Ops.add(userpass, "@")
-      end
+      userpass = Ops.add(userpass, "@") if Ops.greater_than(Builtins.size(userpass), 0)
 
       url = Builtins.sformat("%1://%2", url, userpass)
       Builtins.y2debug("url: %1", url)
