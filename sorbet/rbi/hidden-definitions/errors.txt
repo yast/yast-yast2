@@ -1091,8 +1091,6 @@
 # wrong constant name <Class:DefaultUserInteraction>
 # wrong constant name <Class:DependencyInstaller>
 # wrong constant name <Class:DependencyList>
-# wrong constant name DependencyResolver$1
-# wrong constant name <Class:DependencyResolver>
 # wrong constant name <Class:Ext>
 # wrong constant name <Class:Installer>
 # wrong constant name <Class:Licenses>
@@ -1349,7 +1347,6 @@
 # wrong constant name conflict
 # wrong constant name conflicting_dependencies
 # wrong constant name initialize
-# wrong constant name <Class:Molinillo>
 # wrong constant name deprecate
 # wrong constant name skip
 # wrong constant name skip=
@@ -3255,8 +3252,8 @@
 # wrong constant name path
 # wrong constant name exit_value
 # wrong constant name reason
-# uninitialized constant Logger
-# uninitialized constant Logger
+# uninitialized constant Logger::LogDevice::SiD
+# Did you mean?  Logger::LogDevice::SiD
 # undefined singleton method `dump$2' for `Marshal'
 # wrong constant name dump$2
 # wrong constant name restore
@@ -3676,10 +3673,10 @@
 # wrong constant name def_single_delegators
 # wrong constant name delegate
 # wrong constant name single_delegate
-# uninitialized constant Singleton
-# Did you mean?  SignalException
-# uninitialized constant Singleton
-# Did you mean?  SignalException
+# wrong constant name _dump
+# wrong constant name clone
+# wrong constant name dup
+# wrong constant name __init__
 # wrong constant name <Class:ConstantEntry>
 # wrong constant name all_module_aliases
 # wrong constant name all_module_names
@@ -4107,6 +4104,11 @@
 # undefined singleton method `catch$1' for `Timeout::Error'
 # wrong constant name catch$1
 # wrong constant name event
+# wrong constant name <Class:Normalizer>
+# wrong constant name normalize
+# wrong constant name <static-init>
+# wrong constant name instance
+# wrong constant name normalize
 # wrong constant name decode
 # wrong constant name encode
 # wrong constant name escape
@@ -4540,7 +4542,6 @@
 # wrong constant name import
 # wrong constant name import_pure
 # wrong constant name include
-# wrong constant name path
 # wrong constant name symbols
 # wrong constant name term
 # wrong constant name ui_component
