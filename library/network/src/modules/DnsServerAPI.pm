@@ -61,6 +61,7 @@ YaST::YCP::Import ("Report");
 YaST::YCP::Import ("IP");
 # for syntax checking
 YaST::YCP::Import ("Hostname");
+YaST::YCP::Import ("Mode");
 
 our %TYPEINFO;
 my $package_installed = -1;
@@ -654,6 +655,11 @@ sub UnquoteString {
 }
 
 sub Init {
+    if (Mode->test ()) {
+      $package_installed = 1;
+      y2milestone("TestMode -> PackageSystem->Installed: ", $package_installed);
+    }
+
     if ($package_installed != -1){
         return $package_installed;
     }
