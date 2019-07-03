@@ -18,4 +18,4 @@
 # find current contact information at www.suse.com.
 require_relative "../../../test/test_helper.rb"
 
-DESKTOP_DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data")
+DESKTOP_DATA_PATH = File.join(__dir__, "data")

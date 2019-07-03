@@ -31,11 +31,9 @@ describe Yast::Desktop do
 
     it "returns modules information using the short name as key" do
       expect(Yast::Desktop.Modules).to eq(
-        {
-          "add-on"           => { "Name" => "YaST Add-On Products"},
-          "lan"              => { "Name" => "YaST Network" },
-          "services-manager" => { "Name" => "YaST Services Manager" }
-        }
+        "add-on"           => { "Name" => "YaST Add-On Products" },
+        "lan"              => { "Name" => "YaST Network" },
+        "services-manager" => { "Name" => "YaST Services Manager" }
       )
     end
   end

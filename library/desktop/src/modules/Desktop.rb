@@ -404,7 +404,7 @@ module Yast
   private
 
     # @return [Regexp] Regular expression which matches the module name of a desktop file
-    FILE_REGEXP = /([^\.]+).desktop\Z/
+    FILE_REGEXP = /([^\.]+).desktop\Z/.freeze
 
     # Converts the file name to the expected module name
     #
@@ -418,6 +418,7 @@ module Yast
       basename = File.basename(filename)
       name = basename[FILE_REGEXP, 1]
       return if name.nil?
+
       name.gsub(/([[:lower:]])([[:upper:]]+)/, '\1-\2').downcase
     end
   end
