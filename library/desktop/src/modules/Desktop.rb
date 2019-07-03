@@ -180,7 +180,7 @@ module Yast
           ret = ReadLocalizedKey(filename, filepath, value)
           Ops.set(filemap, value, ret) if !ret.nil? && ret != ""
         end
-        name2 = Builtins.regexpsub(file, "^.*/(.*).desktop", "\\1")
+        name2 = desktop_file_to_module(file)
         if name2 != "" && !name2.nil?
           Ops.set(@Modules, name2, filemap)
           group = Ops.get_string(filemap, "X-SuSE-YaST-Group", "")
@@ -400,6 +400,26 @@ module Yast
     publish function: :ModuleList, type: "list <term> (string)"
     publish function: :RunViaDesktop, type: "void (string, list <string>)"
     publish function: :ParseSingleDesktopFile, type: "map <string, string> (string)"
+
+  private
+
+    # @return [Regexp] Regular expression which matches the module name of a desktop file
+    FILE_REGEXP = /([^\.]+).desktop\Z/
+
+    # Converts the file name to the expected module name
+    #
+    # In 2019, desktop files were renamed to org.opensuse.yast.MODULE.desktop. This method extracts
+    # and normalizes the *MODULE* part of the filename.
+    #
+    # @param [String] filename
+    # @return [String,nil] Module name or nil if it cannot be inferred.
+    # @see https://github.com/yast/yast-yast2/issues/934
+    def desktop_file_to_module(filename)
+      basename = File.basename(filename)
+      name = basename[FILE_REGEXP, 1]
+      return if name.nil?
+      name.gsub(/([[:lower:]])([[:upper:]]+)/, '\1-\2').downcase
+    end
   end
 
   Desktop = DesktopClass.new
