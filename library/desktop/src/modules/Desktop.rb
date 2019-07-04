@@ -417,8 +417,12 @@ module Yast
     def desktop_file_to_module(filename)
       basename = File.basename(filename)
       name = basename[FILE_REGEXP, 1]
-      return if name.nil?
+      if name.nil?
+        log.info "Could not infer the module name from #{filename}"
+        return
+      end
 
+      # E.g. 'AddOn' to 'add-on'
       name.gsub(/([[:lower:]])([[:upper:]]+)/, '\1-\2').downcase
     end
   end
