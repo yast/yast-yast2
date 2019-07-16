@@ -79,7 +79,7 @@ describe ::UI::TextHelpers do
       end
     end
 
-    context "when current language is 'arabic'" do
+    context "when current language is 'hebrew'" do
       let(:lang) { "he_HE" }
 
       it "wraps the text in a 'rtl' marker" do
