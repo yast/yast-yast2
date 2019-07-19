@@ -45,6 +45,8 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
 # For converting to/from punycode strings
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:simpleidn)
+# Type checking
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:sorbet-runtime)
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
@@ -73,6 +75,8 @@ Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
 Requires:       rubygem(%{rb_default_ruby_abi}:cfa)
 # For converting to/from punycode strings
 Requires:       rubygem(%{rb_default_ruby_abi}:simpleidn)
+# Type checking
+Requires:       rubygem(%{rb_default_ruby_abi}:sorbet-runtime)
 Requires:       sysconfig >= 0.80.0
 # for running scripts
 Requires:       rubygem(%{rb_default_ruby_abi}:cheetah)
