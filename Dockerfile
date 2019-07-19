@@ -1,4 +1,5 @@
-FROM yastdevel/ruby:sle12-sp4
+FROM yastdevel/ruby:sle12-sp5
+
 
 COPY . /usr/src/app
 # English messages, UTF-8, "C" locale for numeric formatting tests
