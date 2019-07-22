@@ -189,4 +189,33 @@ describe Y2Packager::ProductReader do
       expect(subject.all_products.size).to eq(1)
     end
   end
+
+  describe ".installation_package_mapping" do
+    before do
+      allow(Yast::Pkg).to receive(:PkgQueryProvides).with("system-installation()").and_return(
+        # the first is the old product which will be removed from the system
+        [["openSUSE-release", :CAND, :NONE], ["openSUSE-release", :CAND, :CAND]]
+      )
+      allow(Yast::Pkg).to receive(:Resolvables).with({ name: "openSUSE-release", kind: :package },
+        [:dependencies, :status]).and_return(
+          [
+            {
+              # emulate an older system with no "system-installation()" provides
+              "deps"   => [],
+              # put the removed product first so we can check it is skipped
+              "status" => :removed
+            },
+            {
+              # in reality there are many more dependencies, but they are irrelevant for this test
+              "deps"   => [{ "provides" => "system-installation() = openSUSE" }],
+              "status" => :selected
+            }
+          ]
+        )
+    end
+
+    it "prefers the data from the new available product instead of the old installed one" do
+      expect(described_class.installation_package_mapping).to eq("openSUSE" => "openSUSE-release")
+    end
+  end
 end
