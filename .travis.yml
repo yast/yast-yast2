@@ -9,6 +9,8 @@ before_install:
   # list the installed packages (just for easier debugging)
   - docker run --rm -it yast-yast2-image rpm -qa | sort
 
+install: echo "Gemfile exists but we have run Bundler already"
+
 script:
   # the "yast-travis-ruby" script is included in the base yastdevel/ruby image
   # see https://github.com/yast/docker-yast-ruby/blob/master/yast-travis-ruby
