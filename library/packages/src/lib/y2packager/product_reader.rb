@@ -41,9 +41,15 @@ module Y2Packager
         installation_package_mapping = {}
         installation_packages.each do |list|
           pkg_name = list.first
-          # There can be more instances of same package in different version. We except that one
-          # package provide same product installation. So we just pick the first one.
-          dependencies = Yast::Pkg.ResolvableDependencies(pkg_name, :package, "").first["deps"]
+          # There can be more instances of same package in different version.
+          # Prefer the selected or the available package, they should provide newer data
+          # than the installed one.
+          packages = Yast::Pkg.Resolvables({ name: pkg_name, kind: :package }, [:dependencies, :status])
+          package = packages.find { |p| p["status"] == :selected } ||
+            packages.find { |p| p["status"] == :available } ||
+            packages.first
+
+          dependencies = package["deps"]
           install_provides = dependencies.find_all do |d|
             d["provides"]&.match(/system-installation\(\)/)
           end
