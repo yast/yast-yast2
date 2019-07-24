@@ -97,6 +97,8 @@ Requires:       yast2-logs
 # these should be present even in a very minimal installation
 Requires:       cpio
 Requires:       rpm
+# /usr/bin/hostname command
+Requires:       hostname
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq
 
