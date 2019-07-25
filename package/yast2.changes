@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul 25 12:25:37 UTC 2019 - Ladislav Slezák <lslezak@suse.cz>
+
+- Release the sources to avoid using up all server connections
+  (bsc#1141127)
+- 4.2.14
+
+-------------------------------------------------------------------
 Tue Jul 23 12:50:07 UTC 2019 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed evaluating the base products to avoid the "No base product
