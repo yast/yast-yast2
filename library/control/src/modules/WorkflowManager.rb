@@ -550,6 +550,9 @@ module Yast
         # File exists?
         return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
       end
+    ensure
+      # release the media accessors (close server connections/unmount disks)
+      Pkg.SourceReleaseAll
     end
 
     # Stores new workflow (if such workflow exists) into the Worflow Store.
