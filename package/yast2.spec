@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.2.15
+Version:        4.2.16
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -97,6 +97,8 @@ Requires:       yast2-logs
 # these should be present even in a very minimal installation
 Requires:       cpio
 Requires:       rpm
+# /usr/bin/hostname command
+Requires:       hostname
 # pre-requires for filling the sysconfig template (sysconfig.yast2)
 PreReq:         %fillup_prereq
 
