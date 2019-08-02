@@ -48,6 +48,15 @@ module Y2Packager
       PKG_BINDINGS_ATTRS = ["name", "short_name", "display_name", "version", "arch",
                             "category", "vendor"].freeze
 
+      # Resets cached attributes of the class
+      #
+      # @return [true]
+      def reset
+        @forced_base_product = nil
+
+        true
+      end
+
       # Create a product from pkg-bindings hash data.
       # @param product [Hash] the pkg-bindings product hash
       # @return [Y2Packager::Product] converted product
@@ -99,6 +108,26 @@ module Y2Packager
       # @return [Array<Product>] Products with the given status
       def with_status(*statuses)
         all.select { |p| p.status?(*statuses) }
+      end
+
+      # Returns, if any, the base product which must be select
+      #
+      # A base product can be forced to be selected through the `select_product`
+      # element in the software section of the control.xml file (bsc#1124590,
+      # bsc#1143943).
+      #
+      # @return [Y2Packager::Product, nil] the forced base product or nil when
+      # either, it wasn't selected or the selected wasn't found among the
+      # available ones.
+      def forced_base_product
+        Yast.import "ProductFeatures"
+
+        return @forced_base_product if @forced_base_product
+
+        forced_product_name = Yast::ProductFeatures.GetStringFeature("software", "select_product")
+        return if forced_product_name.to_s.empty?
+
+        @forced_base_product = available_base_products.find { |p| p.name == forced_product_name }
       end
     end
 
