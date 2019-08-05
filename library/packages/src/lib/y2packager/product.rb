@@ -53,8 +53,6 @@ module Y2Packager
       # @return [true]
       def reset
         @forced_base_product = nil
-
-        true
       end
 
       # Create a product from pkg-bindings hash data.
@@ -110,7 +108,7 @@ module Y2Packager
         all.select { |p| p.status?(*statuses) }
       end
 
-      # Returns, if any, the base product which must be select
+      # Returns, if any, the base product which must be selected
       #
       # A base product can be forced to be selected through the `select_product`
       # element in the software section of the control.xml file (bsc#1124590,
