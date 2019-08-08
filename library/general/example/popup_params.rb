@@ -39,5 +39,3 @@ loop do
 end
 
 Yast::UI.CloseDialog
-
-nil
