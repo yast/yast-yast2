@@ -2,6 +2,7 @@ module Yast
   class DummyCmdlineClient < Client
     def main
       Yast.import "CommandLine"
+      textdomain "example"
 
       # Command line definition
       cmdline = {

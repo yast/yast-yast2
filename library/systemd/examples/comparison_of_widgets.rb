@@ -53,5 +53,3 @@ end
 Example.read
 Example.ui_loop
 Example.write
-
-nil

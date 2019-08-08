@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.2.17
+Version:        4.2.18
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -105,12 +105,12 @@ PreReq:         %fillup_prereq
 # xdg-su in .desktops
 Recommends:     xdg-utils
 
+# removed the XVersion API
+Conflicts:      yast2-country < 4.2.3
 # SrvStatusComponent moved to yast2.rpm
 Conflicts:      yast2-dns-server < 3.1.17
-# InstError
-Conflicts:      yast2-installation < 2.18.5
-# moved export method
-Conflicts:      yast2-installation < 4.1.8
+# removed the XVersion API
+Conflicts:      yast2-installation < 4.2.9
 # moved cfg_mail.scr
 Conflicts:      yast2-mail < 3.1.7
 # Older packager use removed API
@@ -137,6 +137,7 @@ This package contains scripts for handling YAST logs.
 %setup -q
 
 %check
+export Y2STRICTTEXTDOMAIN=1
 %yast_check
 
 %build
@@ -206,8 +207,6 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %{_fillupdir}/sysconfig.yast2
 
 %{_datadir}/bash-completion/completions/yast2*.sh
-# configuration files
-%config %{_sysconfdir}/YaST2/XVersion
 
 # documentation (not included in devel subpackage)
 %doc %dir %{yast_docdir}
