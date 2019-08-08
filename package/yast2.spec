@@ -137,6 +137,7 @@ This package contains scripts for handling YAST logs.
 %setup -q
 
 %check
+export Y2STRICTTEXTDOMAIN=1
 %yast_check
 
 %build
