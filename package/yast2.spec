@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.1.72
+Version:        4.1.73
 
 Release:        0
 Summary:        YaST2 - Main Package
@@ -184,7 +184,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %{yast_agentdir}/ag_*
 %{_fillupdir}/sysconfig.yast2
 
-%{_datadir}/bash-completion/completions/yast2*.sh
+%{_datadir}/bash-completion/completions
 # configuration files
 %config %{_sysconfdir}/YaST2/XVersion
 
