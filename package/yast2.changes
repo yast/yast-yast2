@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Aug 30 13:10:04 UTC 2019 - Steffen Winterfeldt <snwint@suse.com>
+
+- yast completions have to be named after their respective command
+  name (bsc#1122259)
+- 4.1.73
+
+-------------------------------------------------------------------
 Wed Jun 19 12:52:35 UTC 2019 - mvidner@suse.com
 
 - Stop "ls: write error: Broken pipe" messages (bsc#1128032)
