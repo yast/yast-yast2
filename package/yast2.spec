@@ -206,7 +206,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %{yast_agentdir}/ag_*
 %{_fillupdir}/sysconfig.yast2
 
-%{_datadir}/bash-completion/completions/yast2*.sh
+%{_datadir}/bash-completion/completions
 
 # documentation (not included in devel subpackage)
 %doc %dir %{yast_docdir}
