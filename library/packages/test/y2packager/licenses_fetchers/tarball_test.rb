@@ -14,47 +14,37 @@
 require_relative "../../test_helper"
 require_relative "./shared_examples"
 
-require "y2packager/licenses_fetchers/rpm"
+require "y2packager/licenses_fetchers/tarball"
 require "y2packager/package"
 
 require "fileutils"
 
-describe Y2Packager::LicensesFetchers::Rpm do
+describe Y2Packager::LicensesFetchers::Tarball do
   subject(:fetcher) { described_class.new(product_name) }
 
-  def rpm_path_for(package)
+  def tar_path_for(package)
     File.expand_path("../../../data/rpm/#{package}", __FILE__)
   end
 
   let(:lang) { "cz_CZ" }
   let(:product_name) { "SLES" }
-  let(:package_name) { "sles-release" }
-  let(:package_properties) { [{ "product_package" => package_name }] }
-  let(:package_status) { :selected }
-  let(:package_path) { rpm_path_for("licenses_test_package-0.1-0.noarch.rpm") }
-  let(:package) do
-    double = instance_double(Y2Packager::Package, status: package_status)
-    allow(double).to receive(:extract_to) do |dir|
-      Packages::PackageExtractor.new(package_path).extract(dir)
-    end
-    double
-  end
-  let(:found_packages) { [package] }
+  let(:tar_path) { tar_path_for("licenses_test.tar.gz") }
 
   before do
-    allow(Yast::Pkg).to receive(:ResolvableProperties)
-      .with(product_name, :product, "")
-      .and_return(package_properties)
+    allow(Yast::InstURL).to receive(:installInf2Url)
+      .with("").and_return("file:///Foo")
 
-    allow(Y2Packager::Package).to receive(:find)
-      .with(package_name)
-      .and_return(found_packages)
+    allow(Yast::Pkg).to receive(:RepositoryAdd)
+      .and_return nil
+
+    allow(Yast::Pkg).to receive(:SourceProvideFile)
+      .and_return tar_path
   end
 
   it_behaves_like "a fetcher"
 
   describe "#content" do
-    context "when a selected package is found" do
+    context "when a tar archive is found" do
       context "and there are license files available" do
         it "returns the requested license file content" do
           expect(fetcher.content(lang)).to match(/Dummy obsah/)
@@ -62,7 +52,7 @@ describe Y2Packager::LicensesFetchers::Rpm do
       end
 
       context "and there is only the fallback license file available" do
-        let(:package_path) { rpm_path_for("fallback_licenses_test_package-0.1-0.noarch.rpm") }
+        let(:tar_path) { tar_path_for("fallback_licenses_test.tar.gz") }
 
         it "returns the default license file content" do
           expect(fetcher.content(lang)).to match(/Dummy content for the fallback license file/)
@@ -70,7 +60,7 @@ describe Y2Packager::LicensesFetchers::Rpm do
       end
 
       context "and there are none license files available" do
-        let(:package_path) { rpm_path_for("dummy_package-0.1-0.noarch.rpm") }
+        let(:tar_path) { tar_path_for("dummy.tar.gz") }
 
         it "returns nil" do
           expect(fetcher.content(lang)).to be_nil
@@ -78,16 +68,8 @@ describe Y2Packager::LicensesFetchers::Rpm do
       end
     end
 
-    context "when package name is not found" do
-      let(:package_properties) { {} }
-
-      it "returns nil" do
-        expect(fetcher.content(lang)).to be_nil
-      end
-    end
-
-    context "when package is not selected" do
-      let(:package_status) { :unknown }
+    context "when a tar archive is not found" do
+     let(:tar_path) { nil }
 
       it "returns nil" do
         expect(fetcher.content(lang)).to be_nil
@@ -96,8 +78,8 @@ describe Y2Packager::LicensesFetchers::Rpm do
   end
 
   describe "#locales" do
-    context "when package is not found" do
-      let(:found_packages) { nil }
+    context "when a tar archive is not found" do
+      let(:tar_path) { nil }
 
       it "returns an empty list" do
         expect(fetcher.locales).to eq([])
@@ -111,7 +93,7 @@ describe Y2Packager::LicensesFetchers::Rpm do
     end
 
     context "when license translation files are not found" do
-      let(:package_path) { rpm_path_for("dummy_package-0.1-0.noarch.rpm") }
+      let(:tar_path) { tar_path_for("dummy.tar.gz") }
 
       it "returns a list with the default language" do
         expect(fetcher.locales).to eq([described_class::DEFAULT_LANG])
