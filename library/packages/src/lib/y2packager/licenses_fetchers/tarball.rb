@@ -21,8 +21,12 @@ module Y2Packager
     # This class is responsible for obtaining the license and license content
     # of a given product from a tarball archive (.tar.gz)
     class Tarball < Archive
+    # there's no way to indent the 'private' below so rubocop accepts it
+    # rubocop:disable Layout/IndentationWidth
 
     private
+
+      # rubocop:enable Layout/IndentationWidth
 
       attr_reader :archive_file_name
 

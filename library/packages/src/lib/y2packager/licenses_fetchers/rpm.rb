@@ -17,8 +17,12 @@ module Y2Packager
     # This class is responsible for obtaining the license and license content
     # of a given product from a RPM package
     class Rpm < Archive
+    # there's no way to indent the 'private' below so rubocop accepts it
+    # rubocop:disable Layout/IndentationWidth
 
     private
+
+      # rubocop:enable Layout/IndentationWidth
 
       def archive_exists?
         !package.nil?
@@ -27,7 +31,7 @@ module Y2Packager
       def unpack_archive
         if !archive_dir
           archive_dir = super
-          package.extract_to(archive_dir) if !package.nil?
+          package&.extract_to(archive_dir)
         end
         archive_dir
       end

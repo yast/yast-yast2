@@ -18,7 +18,6 @@ module Y2Packager
   module LicensesFetchers
     # Base class for licenses fetchers
     class Archive < Base
-
       # Return available locales for product's license
       #
       # @return [Array<String>] Language codes ("de_DE", "en_US", etc.)
@@ -38,6 +37,10 @@ module Y2Packager
           end
       end
 
+      def self.finalize(dir)
+        proc { FileUtils.remove_entry_secure(dir) }
+      end
+
     private
 
       # Fallback license file
@@ -45,16 +48,13 @@ module Y2Packager
 
       attr_reader :archive_dir
 
-      def self.finalize(dir)
-        proc { FileUtils.remove_entry_secure(dir) }
-      end
-
       def archive_exists?
         false
       end
 
       def unpack_archive
         return @archive_dir if @archive_dir
+
         @archive_dir = Dir.mktmpdir("yast-licenses-")
         ObjectSpace.define_finalizer(self, self.class.finalize(@archive_dir))
         @archive_dir

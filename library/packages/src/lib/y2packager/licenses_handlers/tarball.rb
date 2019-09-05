@@ -26,14 +26,12 @@ module Y2Packager
       #
       # @return [Boolean] true if the license acceptance is required
       def confirmation_required?
-        begin
-          tmpdir = Dir.mktmpdir
-          extract_archive(tmpdir)
+        tmpdir = Dir.mktmpdir
+        extract_archive(tmpdir)
 
-          Dir.glob(File.join(tmpdir, "**", NO_ACCEPTANCE_FILE), File::FNM_CASEFOLD).empty?
-        ensure
-          FileUtils.remove_entry_secure(tmpdir)
-        end
+        Dir.glob(File.join(tmpdir, "**", NO_ACCEPTANCE_FILE), File::FNM_CASEFOLD).empty?
+      ensure
+        FileUtils.remove_entry_secure(tmpdir)
       end
 
       # Set the license confirmation for the product

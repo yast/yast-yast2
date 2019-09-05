@@ -69,7 +69,7 @@ describe Y2Packager::LicensesFetchers::Tarball do
     end
 
     context "when a tar archive is not found" do
-     let(:tar_path) { nil }
+      let(:tar_path) { nil }
 
       it "returns nil" do
         expect(fetcher.content(lang)).to be_nil
