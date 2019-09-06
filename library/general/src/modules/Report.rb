@@ -566,7 +566,7 @@ module Yast
 
       if @display_warnings
         if Mode.commandline
-          CommandLine.Print("Warning: #{error_string}")
+          CommandLine.Print("Warning: #{warning_string}")
         elsif Ops.greater_than(@timeout_warnings, 0)
           Popup.TimedLongWarningGeometry(warning_string, @timeout_warnings, width, height)
         else
