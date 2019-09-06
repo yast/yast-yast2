@@ -108,6 +108,17 @@ describe Yast::Report do
       subject.LongWarning("Message")
       expect(subject.GetMessages(0, 1, 0, 0)).to match(/Message/)
     end
+
+    context "when running on command line mode" do
+      before do
+        allow(Yast::Mode).to receive(:commandline).and_return(true)
+      end
+
+      it "prints the message" do
+        expect(Yast::CommandLine).to receive(:Print).with("Warning: message")
+        subject.LongWarning("message")
+      end
+    end
   end
 
   describe ".LongError" do
@@ -127,6 +138,17 @@ describe Yast::Report do
     it "stores the message" do
       subject.LongError("Message")
       expect(subject.GetMessages(0, 1, 0, 0)).to match(/Message/)
+    end
+
+    context "when running on command line mode" do
+      before do
+        allow(Yast::Mode).to receive(:commandline).and_return(true)
+      end
+
+      it "prints the message" do
+        expect(Yast::CommandLine).to receive(:Print).with("Error: message")
+        subject.LongError("message")
+      end
     end
   end
 
