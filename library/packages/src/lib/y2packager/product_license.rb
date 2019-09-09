@@ -79,6 +79,7 @@ module Y2Packager
       @product_name = product_name
       @license = license
       @handler = license.handler
+      @fetcher = license.fetcher
     end
 
     # Determine whether the license have been accepted or not
