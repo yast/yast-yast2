@@ -22,8 +22,9 @@ describe Y2Packager::ProductLicense do
 
   let(:product_name) { "SLES" }
   let(:handler) { instance_double(Y2Packager::LicensesHandlers::Libzypp, :confirmation= => nil) }
+  let(:fetcher) { instance_double(Y2Packager::LicensesFetchers::Libzypp) }
   let(:license) do
-    instance_double(Y2Packager::License, accept!: true, reject!: false, handler: handler)
+    instance_double(Y2Packager::License, accept!: true, reject!: false, handler: handler, fetcher: fetcher)
   end
 
   before do

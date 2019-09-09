@@ -11,6 +11,7 @@
 # ------------------------------------------------------------------------------
 
 require "y2packager/licenses_fetchers/base"
+require "tmpdir"
 
 Yast.import "Pkg"
 
