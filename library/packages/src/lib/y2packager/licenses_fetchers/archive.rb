@@ -18,6 +18,12 @@ module Y2Packager
   module LicensesFetchers
     # Base class for licenses fetchers
     class Archive < Base
+      # Acceptance is not needed if the file exists
+      NO_ACCEPTANCE_FILE = "no-acceptance-needed".freeze
+
+      # Fallback license file
+      FALLBACK_LICENSE_FILE = "LICENSE.TXT".freeze
+
       # Return available locales for product's license
       #
       # @return [Array<String>] Language codes ("de_DE", "en_US", etc.)
@@ -37,14 +43,19 @@ module Y2Packager
           end
       end
 
+      # Determine whether the license should be accepted or not
+      #
+      # @return [Boolean] true if the license acceptance is required
+      def confirmation_required?
+        unpack_archive
+        Dir.glob(File.join(archive_dir, "**", NO_ACCEPTANCE_FILE), File::FNM_CASEFOLD).empty?
+      end
+
       def self.finalize(dir)
         proc { FileUtils.remove_entry_secure(dir) }
       end
 
     private
-
-      # Fallback license file
-      FALLBACK_LICENSE_FILE = "LICENSE.TXT".freeze
 
       attr_reader :archive_dir
 

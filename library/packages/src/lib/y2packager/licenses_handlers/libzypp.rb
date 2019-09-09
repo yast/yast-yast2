@@ -19,13 +19,6 @@ module Y2Packager
     # This class is responsible for interacting with libzypp in order to get/set
     # the license acceptance status for a given product
     class Libzypp < Base
-      # Determine whether the license should be accepted or not
-      #
-      # @return [Boolean] true if the license acceptance is required
-      def confirmation_required?
-        Yast::Pkg.PrdNeedToAcceptLicense(product_name)
-      end
-
       # Set the license confirmation for the product
       #
       # @param confirmed [Boolean] true if it should be accepted; false otherwise

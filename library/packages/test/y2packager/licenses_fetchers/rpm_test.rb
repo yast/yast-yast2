@@ -118,4 +118,20 @@ describe Y2Packager::LicensesFetchers::Rpm do
       end
     end
   end
+
+  describe "#confirmation_required?" do
+    context "when 'no-acceptance-neeed' file is present" do
+      it "returns false" do
+        expect(fetcher.confirmation_required?).to eq(false)
+      end
+    end
+
+    context "when 'no-acceptance-neeed' file is not found" do
+      let(:package_path) { rpm_path_for("dummy_package-0.1-0.noarch.rpm") }
+
+      it "returns true" do
+        expect(fetcher.confirmation_required?).to eq(true)
+      end
+    end
+  end
 end

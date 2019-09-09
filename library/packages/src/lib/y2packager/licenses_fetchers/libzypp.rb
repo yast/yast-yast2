@@ -33,6 +33,13 @@ module Y2Packager
         locales
       end
 
+      # Determine whether the license should be accepted or not
+      #
+      # @return [Boolean] true if the license acceptance is required
+      def confirmation_required?
+        Yast::Pkg.PrdNeedToAcceptLicense(product_name)
+      end
+
     private
 
       def license_content_for(lang)

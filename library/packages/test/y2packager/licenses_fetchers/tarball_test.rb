@@ -100,4 +100,20 @@ describe Y2Packager::LicensesFetchers::Tarball do
       end
     end
   end
+
+  describe "#confirmation_required?" do
+    context "when 'no-acceptance-neeed' file is present" do
+      it "returns false" do
+        expect(fetcher.confirmation_required?).to eq(false)
+      end
+    end
+
+    context "when 'no-acceptance-neeed' file is not found" do
+      let(:tar_path) { tar_path_for("dummy.tar.gz") }
+
+      it "returns true" do
+        expect(fetcher.confirmation_required?).to eq(true)
+      end
+    end
+  end
 end

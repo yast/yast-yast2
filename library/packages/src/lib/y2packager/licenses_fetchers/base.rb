@@ -60,6 +60,13 @@ module Y2Packager
         []
       end
 
+      # Determine whether the license should be accepted or not
+      #
+      # @return [Boolean] true if the license acceptance is required
+      def confirmation_required?
+        true
+      end
+
     private
 
       # Return (and cache) the license content for the default language

@@ -34,11 +34,12 @@ module Y2Packager
     # @!method license_confirmation_required?
     #   Determine whether the license should be accepted or not
     #   @return [Boolean] true if the license acceptance is required
-    #
+    def_delegator :@fetcher, :confirmation_required?
+
     # @!method license_confirmation=(confirmed)
     #   Set the license confirmation for the product
     #   @param confirmed [Boolean] true if it should be accepted; false otherwise
-    def_delegators :@handler, :confirmation_required?, :confirmation=
+    def_delegator :@handler, :confirmation=
 
     # @return [License] Product's license
     attr_reader :license

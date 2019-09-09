@@ -40,10 +40,10 @@ mkdir -p $RPM_BUILD_ROOT/%{ReadmeDir}
 mkdir -p $RPM_BUILD_ROOT/%{LicensesDir}
 
 echo "Just a package to test licenses" > $RPM_BUILD_ROOT/%{ReadmeDir}/README
-echo "Dummy content for the English license" > $RPM_BUILD_ROOT/%{LicensesDir}/LICENCE.en_US.TXT
-echo "Dummy obsah" > $RPM_BUILD_ROOT/%{LicensesDir}/LICENCE.cz_CZ.TXT
-echo "Contenido de ejemplo" > $RPM_BUILD_ROOT/%{LicensesDir}/LICENCE.es_ES.TXT
-
+echo "Dummy content for the English license" > $RPM_BUILD_ROOT/%{LicensesDir}/LICENSE.en_US.TXT
+echo "Dummy obsah" > $RPM_BUILD_ROOT/%{LicensesDir}/LICENSE.cz_CZ.TXT
+echo "Contenido de ejemplo" > $RPM_BUILD_ROOT/%{LicensesDir}/LICENSE.es_ES.TXT
+touch $RPM_BUILD_ROOT/%{LicensesDir}/no-acceptance-needed
 
 %files
 %defattr(644,root,root,755)
