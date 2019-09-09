@@ -17,17 +17,30 @@ module Y2Packager
     # This class is responsible for obtaining the license and license content
     # of a given product from a RPM package
     class Rpm < Archive
-    # there's no way to indent the 'private' below so rubocop accepts it
+    # FIXME: there's (ATM) no way to indent the 'private' below so rubocop accepts it
     # rubocop:disable Layout/IndentationWidth
 
     private
 
       # rubocop:enable Layout/IndentationWidth
 
+      # Check if a license archive exists
+      #
+      # @return [Boolean] True, if an archive exists
       def archive_exists?
         !package.nil?
       end
 
+      # Unpack license archive
+      #
+      # This will unpack the archive once and keep the temporary directory.
+      #
+      # If the unpacking fails, the directory is still returned but the
+      # directory is empty.
+      #
+      # The provisioning of a temporary dir is done be the parent class.
+      #
+      # @return [String] Unpacked archive directory
       def unpack_archive
         if !archive_dir
           archive_dir = super

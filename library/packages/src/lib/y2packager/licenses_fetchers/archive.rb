@@ -16,7 +16,14 @@ Yast.import "Pkg"
 
 module Y2Packager
   module LicensesFetchers
-    # Base class for licenses fetchers
+    # Base class for licenses fetchers based on some kind of license
+    # archive.
+    #
+    # It takes care of looking up the licenses in the unpacked
+    # archive and manages a temporary cache directory.
+    #
+    # The actual unpacking and provisioning of the archive file itself must
+    # be done in a derived class.
     class Archive < Base
       # Acceptance is not needed if the file exists
       NO_ACCEPTANCE_FILE = "no-acceptance-needed".freeze
@@ -48,9 +55,13 @@ module Y2Packager
       # @return [Boolean] true if the license acceptance is required
       def confirmation_required?
         unpack_archive
-        Dir.glob(File.join(archive_dir, "**", NO_ACCEPTANCE_FILE), File::FNM_CASEFOLD).empty?
+
+        find_path_for(archive_dir, NO_ACCEPTANCE_FILE).nil?
       end
 
+      # Explicit destructor to clean up temporary dir
+      #
+      # @param dir [String] Temporary directory where licenses were unpacked
       def self.finalize(dir)
         proc { FileUtils.remove_entry_secure(dir) }
       end
@@ -59,10 +70,23 @@ module Y2Packager
 
       attr_reader :archive_dir
 
+      # Check if a license archive exists
+      #
+      # Will be overloaded by the actual implementation.
+      #
+      # @return [Boolean] True, if an archive exists
       def archive_exists?
         false
       end
 
+      # Unpack license archive
+      #
+      # The idea is to unpack the archive once and keep the temporary directory.
+      #
+      # This is only a stub that provides the temporary directory. The
+      # actual archive unpacking has to be done by the derived class.
+      #
+      # @return [String] Archive directory
       def unpack_archive
         return @archive_dir if @archive_dir
 
@@ -71,15 +95,14 @@ module Y2Packager
         @archive_dir
       end
 
-      # Return the license content for a package and language
+      # Return the license content for a language
       #
-      # Package is extracted to a work directory. When a license for a language "xx_XX" is not
-      # found, it will fallback to "xx".
+      # The license archive is extracted to a temporary directory. When a
+      # license for a language "xx_XX" is not found, fall back to "xx".
       #
       # @see license_file
       #
-      # FIXME: @param package [Y2Packager::Package] Product package
-      # @param lang    [String] Searched language
+      # @param lang    [String] Language code
       #
       # @return [Array<String, String>, nil] Array containing content and language code
       def license_content_for(lang)
@@ -102,16 +125,16 @@ module Y2Packager
       #
       # When a license for a language "xx_XX" is not found, it will fallback to "xx".
       #
-      # @param directory [String] Directory where licenses were uncompressed
-      # @param lang      [String] Searched translation
+      # @param directory [String] Directory where licenses were unpacked
+      # @param lang      [String] Language code
       #
-      # @return [String, lang] The first licence path for given languages or nil
+      # @return [String, nil] The first licence path for given languages or nil
       def license_path(directory, lang)
         candidate_langs = [lang]
         candidate_langs << lang.split("_", 2).first if lang
         candidate_langs.uniq!
 
-        log.info("Searching for a #{candidate_langs.join(",")} license translations in #{directory}")
+        log.info("Searching for a #{candidate_langs.join(",")} license translation in #{directory}")
 
         find_path_for(directory, "LICENSE.{#{candidate_langs.join(",")}}.TXT")
       end
@@ -120,7 +143,7 @@ module Y2Packager
       #
       # Looking for a license file without language code
       #
-      # @param directory [String] Directory where licenses were uncompressed
+      # @param directory [String] Directory where licenses were unpacked
       #
       # @return [String, nil] The fallback license path
       def fallback_path(directory)
@@ -131,8 +154,8 @@ module Y2Packager
 
       # Return the path for the given file in specified directory
       #
-      # @param directory [String] Directory where licenses were uncompressed
-      # @param file      [String] Searched file
+      # @param directory [String] Directory where licenses were unpacked
+      # @param file      [String] File name (without directory component)
       #
       # @return [String, nil] The file path; nil if was not found
       def find_path_for(directory, file)

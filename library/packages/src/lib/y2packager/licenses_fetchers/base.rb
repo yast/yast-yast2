@@ -62,7 +62,7 @@ module Y2Packager
 
       # Determine whether the license should be accepted or not
       #
-      # @return [Boolean] true if the license acceptance is required
+      # @return [Boolean] true if license acceptance is required
       def confirmation_required?
         true
       end
@@ -76,13 +76,18 @@ module Y2Packager
         @default_content ||= content(DEFAULT_LANG).to_s
       end
 
+      # Check for default language
+      #
+      # @param lang [String] Language
+      #
+      # @return [Boolean] True, if this was the default language
       def default_lang?(lang)
         lang == DEFAULT_LANG
       end
 
       # Return the license content for a specific language
       #
-      # When a license for language "xx_XX" is not found, fallback to "xx".
+      # When a license for language "xx_XX" is not found, fall back to "xx".
       #
       # @param lang [String] Language
       #

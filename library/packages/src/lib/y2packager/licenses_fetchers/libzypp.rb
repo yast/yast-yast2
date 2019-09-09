@@ -35,7 +35,7 @@ module Y2Packager
 
       # Determine whether the license should be accepted or not
       #
-      # @return [Boolean] true if the license acceptance is required
+      # @return [Boolean] true if license acceptance is required
       def confirmation_required?
         Yast::Pkg.PrdNeedToAcceptLicense(product_name)
       end
