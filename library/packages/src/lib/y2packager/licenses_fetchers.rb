@@ -13,6 +13,7 @@
 require "yast"
 require "y2packager/licenses_fetchers/libzypp"
 require "y2packager/licenses_fetchers/rpm"
+require "y2packager/licenses_fetchers/tarball"
 
 module Y2Packager
   # This module contains licenses fetchers
@@ -24,7 +25,7 @@ module Y2Packager
 
     # Candidate sources to retrieve the license content. Note that order matters because it will be
     # chosen the first source able to fetch the content.
-    KNOWN_SOURCES = [:libzypp, :rpm].freeze
+    KNOWN_SOURCES = [:libzypp, :rpm, :tarball].freeze
 
     # Return the proper license fetcher
     #

@@ -17,17 +17,6 @@ module Y2Packager
     # This class is responsible for obtaining the license and license content
     # of a given product from libzypp.
     class Libzypp < Base
-      # Return the license text to be confirmed
-      #
-      # @param lang [String] Language
-      #
-      # @return [String, nil] Product's license; nil if the product or the license were not found.
-      def content(lang)
-        return @default_content if default_lang?(lang) && @default_content
-
-        Yast::Pkg.PrdGetLicenseToConfirm(product_name, lang)
-      end
-
       # Return available locales for product's license
       #
       # @return [Array<String>] Language codes ("de_DE", "en_US", etc.)
@@ -42,6 +31,19 @@ module Y2Packager
         empty_idx = locales.index("")
         locales[empty_idx] = DEFAULT_LANG if empty_idx
         locales
+      end
+
+      # Determine whether the license should be accepted or not
+      #
+      # @return [Boolean] true if license acceptance is required
+      def confirmation_required?
+        Yast::Pkg.PrdNeedToAcceptLicense(product_name)
+      end
+
+    private
+
+      def license_content_for(lang)
+        Yast::Pkg.PrdGetLicenseToConfirm(product_name, lang)
       end
     end
   end

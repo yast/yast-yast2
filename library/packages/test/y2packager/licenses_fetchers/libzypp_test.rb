@@ -77,4 +77,27 @@ describe Y2Packager::LicensesFetchers::Libzypp do
       end
     end
   end
+
+  describe "#license_confirmation_required?" do
+    before do
+      allow(Yast::Pkg).to receive(:PrdNeedToAcceptLicense)
+        .with(product_name).and_return(needed)
+    end
+
+    context "when according to libzypp the license is required to be confirmed" do
+      let(:needed) { true }
+
+      it "returns true" do
+        expect(fetcher.confirmation_required?).to eq(true)
+      end
+    end
+
+    context "when according to libzypp the license is not required to be confirmed" do
+      let(:needed) { false }
+
+      it "returns false" do
+        expect(fetcher.confirmation_required?).to eq(false)
+      end
+    end
+  end
 end

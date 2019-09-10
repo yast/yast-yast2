@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 10 07:57:34 UTC 2019 - Steffen Winterfeldt <snwint@suse.com>
+
+- support reading licenses from tar archive (jsc#SLE-7214)
+- 4.2.21
+
+-------------------------------------------------------------------
 Fri Sep  6 11:15:40 UTC 2019 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix a problem when long warnings reports in command line

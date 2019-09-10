@@ -12,6 +12,7 @@
 
 require "y2packager/licenses_handlers/libzypp"
 require "y2packager/licenses_handlers/rpm"
+require "y2packager/licenses_handlers/tarball"
 
 module Y2Packager
   # This module contains licenses handlers

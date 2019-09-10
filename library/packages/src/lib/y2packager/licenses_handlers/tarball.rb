@@ -13,12 +13,13 @@
 require "y2packager/licenses_handlers/base"
 
 Yast.import "Pkg"
+Yast.import "InstURL"
 
 module Y2Packager
   module LicensesHandlers
     # This class is responsible for interacting with an rpm in order to get/set
     # the license acceptance status for a given product
-    class Rpm < Base
+    class Tarball < Base
       # Set the license confirmation for the product
       #
       # @param confirmed [Boolean] true if it should be accepted; false otherwise
