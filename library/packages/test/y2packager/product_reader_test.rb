@@ -77,7 +77,7 @@ describe Y2Packager::ProductReader do
         end
       end
 
-      context "and more than 1 product exsits" do
+      context "and more than 1 product exists" do
         let(:products) { [prod1, prod2] }
 
         it "returns an empty array" do
