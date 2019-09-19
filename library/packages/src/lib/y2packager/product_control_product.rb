@@ -26,52 +26,49 @@ Yast.import "ProductFeatures"
 module Y2Packager
   # This class implements a base product read from the control.xml file.
   class ProductControlProduct
-    # initialize the selected base product
-    @selected = nil
-
-    class << self
-      attr_accessor :selected
-    end
-
     extend Yast::Logger
     include ProductLicenseMixin
 
     attr_reader :name, :version, :arch, :label, :license_url, :register_target
 
-    #
-    # Read the base products from the control.xml file. The products for the incompatible
-    # machine architecture and the hidden products are filtered out.
-    #
-    # @return [Array<Installation::ProductControlProduct>] List of the products
-    def self.products
-      return @products if @products
+    class << self
+      attr_accessor :selected
 
-      control_products = Yast::ProductFeatures.GetFeature("software", "base_products")
-      arch = Yast::Arch.architecture
-      linuxrc_products = (Yast::Linuxrc.InstallInf("specialproduct") || "").split(",").map(&:strip)
+      #
+      # Read the base products from the control.xml file. The products for the incompatible
+      # machine architecture and the hidden products are filtered out.
+      #
+      # @return [Array<Installation::ProductControlProduct>] List of the products
+      def products
+        return @products if @products
 
-      @products = control_products.each_with_object([]) do |p, array|
-        # a hidden product requested?
-        if p["special_product"] && !linuxrc_products.include?(p["name"])
-          log.info "Skipping special hidden product #{p["name"]}"
-          next
+        control_products = Yast::ProductFeatures.GetFeature("software", "base_products")
+        arch = Yast::Arch.architecture
+        linuxrc_products = (Yast::Linuxrc.InstallInf("specialproduct") || "").split(",").map(&:strip)
+
+        @products = control_products.each_with_object([]) do |p, array|
+          # a hidden product requested?
+          if p["special_product"] && !linuxrc_products.include?(p["name"])
+            log.info "Skipping special hidden product #{p["name"]}"
+            next
+          end
+
+          # compatible arch?
+          if p["archs"] && !p["archs"].split(",").map(&:strip).include?(arch)
+            log.info "Skipping product #{p["name"]} - not compatible with arch #{arch}"
+            next
+          end
+
+          array << new(
+            name:            p["name"],
+            version:         p["version"],
+            arch:            arch,
+            label:           p["label"],
+            license_url:     p["license_url"],
+            # expand the "$arch" placeholder
+            register_target: (p["register_target"] || "").gsub("$arch", arch)
+          )
         end
-
-        # compatible arch?
-        if p["archs"] && !p["archs"].split(",").map(&:strip).include?(arch)
-          log.info "Skipping product #{p["name"]} - not compatible with arch #{arch}"
-          next
-        end
-
-        array << new(
-          name:            p["name"],
-          version:         p["version"],
-          arch:            arch,
-          label:           p["label"],
-          license_url:     p["license_url"],
-          # expand the "$arch" placeholder
-          register_target: (p["register_target"] || "").gsub("$arch", arch)
-        )
       end
     end
 
