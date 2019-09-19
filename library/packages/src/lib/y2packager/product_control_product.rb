@@ -27,7 +27,11 @@ module Y2Packager
   # This class implements a base product read from the control.xml file.
   class ProductControlProduct
     # initialize the selected base product
-    @@selected = nil
+    @selected = nil
+
+    class << self
+      attr_accessor :selected
+    end
 
     extend Yast::Logger
     include ProductLicenseMixin
@@ -43,7 +47,6 @@ module Y2Packager
       return @products if @products
 
       control_products = Yast::ProductFeatures.GetFeature("software", "base_products")
-
       arch = Yast::Arch.architecture
       linuxrc_products = (Yast::Linuxrc.InstallInf("specialproduct") || "").split(",").map(&:strip)
 
@@ -70,20 +73,6 @@ module Y2Packager
           register_target: (p["register_target"] || "").gsub("$arch", arch)
         )
       end
-    end
-
-    # Remember the product as the selected base product
-    #
-    # @param product [Y2Packager::ProductControlProduct] the selected product
-    def self.selected=(product)
-      @@selected = product
-    end
-
-    # Return the selected base product
-    # @return [Y2Packager::ProductControlProduct,nil] the selected product or `nil`
-    #   if no product is selected
-    def self.selected
-      @@selected
     end
 
     # Constructor

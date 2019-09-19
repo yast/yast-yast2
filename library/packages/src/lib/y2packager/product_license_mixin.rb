@@ -13,6 +13,8 @@
 require "y2packager/product_license"
 
 module Y2Packager
+  # This module is used for sharing the license related methods
+  # for several types of products.
   module ProductLicenseMixin
     # Return the license to confirm
     #
