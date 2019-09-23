@@ -18,7 +18,7 @@ require "y2packager/product_control_product"
 describe Y2Packager::ProductControlProduct do
   let(:product_data) do
     {
-      "label"           => "SUSE Linux Enterprise Server 15 SP2",
+      "display_name"    => "SUSE Linux Enterprise Server 15 SP2",
       "name"            => "SLES",
       "version"         => "15.2",
       "register_target" => "sle-15-$arch"
