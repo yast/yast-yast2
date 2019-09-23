@@ -31,6 +31,14 @@ module Y2Packager
 
     attr_reader :name, :version, :arch, :label, :license_url, :register_target
 
+    # map the Arch.architecture to the arch expected by SCC
+    REG_ARCH = {
+      "s390_32" => "s390",
+      "s390_64" => "s390x",
+      # ppc64le is the only supported PPC arch, we do not have to distinguish the BE/LE variants
+      "ppc64"   => "ppc64le"
+    }.freeze
+
     class << self
       attr_accessor :selected
 
@@ -43,7 +51,7 @@ module Y2Packager
         return @products if @products
 
         control_products = Yast::ProductFeatures.GetFeature("software", "base_products")
-        arch = Yast::Arch.architecture
+        arch = REG_ARCH[Yast::Arch.architecture] || Yast::Arch.architecture
         linuxrc_products = (Yast::Linuxrc.InstallInf("specialproduct") || "").split(",").map(&:strip)
 
         @products = control_products.each_with_object([]) do |p, array|
@@ -63,7 +71,7 @@ module Y2Packager
             name:            p["name"],
             version:         p["version"],
             arch:            arch,
-            label:           p["label"],
+            label:           p["display_name"],
             license_url:     p["license_url"],
             # expand the "$arch" placeholder
             register_target: (p["register_target"] || "").gsub("$arch", arch)
