@@ -422,8 +422,11 @@ module Yast
         return
       end
 
-      # E.g. 'AddOn' to 'add-on'
-      name.gsub(/([[:lower:]])([[:upper:]]+)/, '\1-\2').downcase
+      # E.g. 'AddOn' to 'add-on', 'DNSServer' to 'dns-server' and so on.
+      name
+        .gsub(/([[:upper:]\d]*)([[:upper:]\d])([[:lower:]]+)/, '\1-\2\3')
+        .sub(/\A-/, "")
+        .downcase
     end
   end
 
