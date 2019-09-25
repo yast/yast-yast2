@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Sep 25 09:40:09 UTC 2019 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix module name inference when reading .desktop files
+  (bsc#1151954)
+- 4.2.24
+
+-------------------------------------------------------------------
 Mon Sep 23 07:27:27 UTC 2019 - Ladislav Slezák <lslezak@suse.cz>
 
 - Use "display_name" tag for the product label, "label" marks a

@@ -33,7 +33,9 @@ describe Yast::Desktop do
       expect(Yast::Desktop.Modules).to eq(
         "add-on"           => { "Name" => "YaST Add-On Products" },
         "lan"              => { "Name" => "YaST Network" },
-        "services-manager" => { "Name" => "YaST Services Manager" }
+        "services-manager" => { "Name" => "YaST Services Manager" },
+        "s390-extra"       => { "Name" => "YaST S390 Extra" },
+        "dns-server"       => { "Name" => "YaST DNS Server" }
       )
     end
   end
