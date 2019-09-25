@@ -35,7 +35,7 @@ describe Yast::Desktop do
         "lan"              => { "Name" => "YaST Network" },
         "services-manager" => { "Name" => "YaST Services Manager" },
         "s390-extra"       => { "Name" => "YaST S390 Extra" },
-        "dns-server"       => { "Name" => "YaST DNS Server"}
+        "dns-server"       => { "Name" => "YaST DNS Server" }
       )
     end
   end
