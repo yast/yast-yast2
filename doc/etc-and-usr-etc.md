@@ -17,7 +17,7 @@ configuration are:
 * If `/etc/example.conf` does exist, just ignore the configuration under `/usr/etc` and consider
   `/etc/example.conf` and `/etc/example.d/*.conf` only.
 
-    YaST will merge settings from those files.
+YaST will merge settings from those files.
 
 ## Impact in YaST
 
@@ -26,6 +26,24 @@ When it comes to reading or writing configuration files, YaST uses mainly two di
 * The new [config_files_api](https://github.com/config-files-api/config_files_api) (a.k.a. CFA) API.
 * The [good old agents](https://github.com/yast/yast-core/), which are spread through all YaST
   codebase (search for `.scr`) files.
+
+It means that we need to adapt CFA classes and agents to the new scenario. The next section proposes
+a simple solution which we have just implemented to handle modifications to `sysctl` settings and,
+the last one, proposes a complex but more general solution.
+
+## A Simple Solution for `sysctl.conf`
+
+In a nutshell, jsc#SLE-9077 states that `/etc/sysctl.conf` should not be modified.  So if you want
+to modify any `sysctl` setting, you should drop a file in `/etc/sysctl.d` containing the new values.
+
+As a first step, we have added a {Yast2::CFA::Sysctl} class which offers an API to sysctl settings.
+This new class uses `/etc/sysctl.d/50-yast.conf` instead of `/etc/sysctl.conf` to write the configuration.
+Moreover, it removes known keys from the original `/etc/sysctl.conf` to avoid confusion.
+
+The main limitation of this approach is that YaST will only read a set of known keys but, as it uses
+its own file to write them, it should not be a big problem at all.
+
+## An Elaborated Proposal
 
 ### Extending CFA
 
@@ -36,7 +54,7 @@ for `zypp.conf`, `chrony.conf`, `ifroute-*` and `ifcfg-*` files, etc. CFA is bui
   be replaced with other mechanisms to allow, e.g., accessing over the network. Actually, YaST uses
   a specific class,
   [TargetFile](https://github.com/yast/yast-yast2/blob/4efda93ac2221591965450570aa9a9dfad790132/library/system/src/lib/yast2/target_file.rb#L51),
-  which respects `Yast::Installation.destdir`. See the discussion about supporting agents to find
+  which respects {Yast::Installation.destdir}. See the discussion about supporting agents to find
   another use case.
 * *Parsers* analyze and extract configuration from files. Usually, CFA parsers use Augeas under the
   hood.
