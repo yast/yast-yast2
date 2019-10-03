@@ -32,9 +32,12 @@ When it comes to reading or writing configuration files, YaST uses mainly two di
 CFA offers an object-oriented way to read and write configuration files and, nowadays, it is used
 for `zypp.conf`, `chrony.conf`, `ifroute-*` and `ifcfg-*` files, etc. CFA is built around these abstractions:
 
-* **File handlers* provide access to files. By default, it simply uses the `File` class, but it can be replaced
-  with other mechanisms to allow, e.g., accessing over the network. See the discussion about supporting agents
-  to find another use case.
+* **File handlers* provide access to files. By default, it simply uses the `File` class, but it can
+  be replaced with other mechanisms to allow, e.g., accessing over the network. Actually, YaST uses
+  a specific class,
+  [TargetFile](https://github.com/yast/yast-yast2/blob/4efda93ac2221591965450570aa9a9dfad790132/library/system/src/lib/yast2/target_file.rb#L51),
+  which respects `Yast::Installation.destdir`. See the discussion about supporting agents to find
+  another use case.
 * *Parsers* analyze and extract configuration from files. Usually, CFA parsers use Augeas under the
   hood.
 * *Models* offer an object-oriented API to a access a configuration file.
@@ -44,7 +47,7 @@ is spread through several files, this approach could be pretty inconvenient. So,
 the new layout, we are introducing a new layer that abstracts the details of merging and building
 the model instance.
 
-The new `loader` classes offer and API to `#load` and `#save` the configuration files. On the one
+The new `loader` classes offer an API to `#load` and `#save` the configuration files. On the one
 hand, the default loader (`Loader` class) would read the information from a single file. On the
 other hand, an alternative loader (`VendorLoader`) would build the configuration model by reading
 vendor and user settings.
