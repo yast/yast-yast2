@@ -30,13 +30,17 @@ describe Yast2::CFA::Sysctl do
   let(:yast_conf_path) { "sysctl-yast.conf" }
   let(:file_handler) { File }
 
+  SYSCTL_CONF_VALUES = {
+    ".etc.sysctl_conf.\"net.ipv4.ip_forward\""          => "0",
+    ".etc.sysctl_conf.\"net.ipv6.conf.all.forwarding\"" => "0",
+    ".etc.sysctl_conf.\"kernel.sysrq\""                 => "0",
+    ".etc.sysctl_conf.\"net.ipv4.tcp_syncookies\""      => "0"
+  }.freeze
+
   before do
-    allow(Yast::SCR).to receive(:Read)
-      .with(Yast::Path.new(".etc.sysctl_conf.\"net.ipv4.ip_forward\""))
-      .and_return("0")
-    allow(Yast::SCR).to receive(:Read)
-      .with(Yast::Path.new(".etc.sysctl_conf.\"net.ipv6.conf.all.forwarding\""))
-      .and_return("0")
+    allow(Yast::SCR).to receive(:Read) do |path|
+      SYSCTL_CONF_VALUES[path.to_s] or raise("path not defined: #{path}")
+    end
     stub_const("Yast2::CFA::Sysctl::PATH", File.join(GENERAL_DATA_PATH, yast_conf_path))
     sysctl.load
   end
@@ -78,6 +82,26 @@ describe Yast2::CFA::Sysctl do
   describe "#forward_ipv6=" do
     it "sets the forward_ipv6 value" do
       expect { sysctl.forward_ipv6 = "0" }.to change { sysctl.forward_ipv6 }.from("1").to("0")
+    end
+  end
+
+  describe "#kernel_sysrq" do
+    it "returns kernel.sysrq value" do
+      expect(sysctl.kernel_sysrq).to eq("1")
+    end
+
+    context "when the value is not defined" do
+      let(:yast_conf_path) { "empty" }
+
+      it "returns the value from sysctl.conf" do
+        expect(sysctl.kernel_sysrq).to eq("0")
+      end
+    end
+  end
+
+  describe "#kernel_sysrq=" do
+    it "sets the kernel.sysrq value" do
+      expect { sysctl.kernel_sysrq = "0" }.to change { sysctl.kernel_sysrq }.from("1").to("0")
     end
   end
 

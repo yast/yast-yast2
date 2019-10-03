@@ -18,6 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "cfa/base_model"
+require "yast2/target_file"
 
 module Yast2
   module CFA
@@ -26,7 +27,13 @@ module Yast2
     # This class does not modify the running kernel configuration. It just writes
     # the desired values into the configuration file ({PATH}).
     #
-    # @example Setting IPv4 forwarding setting
+    # @example Setting a value using they +sysctl.conf+ key
+    #   sysctl = Sysctl.new
+    #   sysctl.load
+    #   sysctl["net.ipv4.ip_forward"] = "1"
+    #   sysctl.save
+    #
+    # @example Setting a value using an accessor
     #   sysctl = Sysctl.new
     #   sysctl.forward_ipv4 = "1"
     #   sysctl.save
@@ -34,31 +41,46 @@ module Yast2
       PARSER = ::CFA::AugeasParser.new("sysctl.lns")
       PATH = "/etc/50-yast.conf".freeze
 
-      # sysctl keys, used as *single* SCR path components below
-      IPV4_SYSCTL = "net.ipv4.ip_forward".freeze
-      IPV6_SYSCTL = "net.ipv6.conf.all.forwarding".freeze
-
-      private_constant :IPV4_SYSCTL
-      private_constant :IPV6_SYSCTL
-
       class << self
-        # Defines an accessor for a given value
+        # Defines a key
+        #
+        # Additionally, it adds an accessor that can be used to set the value.
         #
         # @param meth [Symbol] Accessor name
-        # @param key  [String] Value key (e.g., "net.ipv4.ip_forward")
-        def define_accessor(meth, key)
+        # @param key  [String] Name of the key used in sysctl configuration files
+        def define_key(meth, key)
+          add_key(key)
+
           define_method meth do
-            data[key]
+            self[key]
           end
 
           define_method "#{meth}=" do |value|
-            data[key] = value
+            self[key] = value
           end
+        end
+
+        # Returns the list of known keys
+        #
+        # Known keys are removed from the old +/etc/sysctl.conf+ when saving the changes.
+        def known_keys
+          @known_keys ||= []
+        end
+
+      private
+
+        # Adds a new key
+        #
+        # @param [String] Name of the key used in sysctl configuration files
+        def add_key(key)
+          known_keys.push(key)
         end
       end
 
-      define_accessor :forward_ipv4, IPV4_SYSCTL
-      define_accessor :forward_ipv6, IPV6_SYSCTL
+      define_key :kernel_sysrq, "kernel.sysrq"
+      define_key :forward_ipv4, "net.ipv4.ip_forward"
+      define_key :forward_ipv6, "net.ipv6.conf.all.forwarding"
+      define_key :tcp_syncookies, "net.ipv4.tcp_syncookies"
 
       def initialize(file_handler: nil)
         super(PARSER, PATH, file_handler: file_handler)
@@ -74,8 +96,13 @@ module Yast2
           self.data = @parser.empty
           @loaded = true
         end
-        self.forward_ipv4 = Yast::SCR.Read(Yast::Path.new(SYSCTL_IPV4_PATH)) if forward_ipv4.nil?
-        self.forward_ipv6 = Yast::SCR.Read(Yast::Path.new(SYSCTL_IPV6_PATH)) if forward_ipv6.nil?
+
+        self.class.known_keys.each do |key|
+          next if self[key]
+
+          self[key] = Yast::SCR.Read(key_path(key))
+        end
+        nil
       end
 
       # Writes sysctl configuration
@@ -87,18 +114,40 @@ module Yast2
         clean_old_values
       end
 
+      # Returns the value for a given key
+      #
+      # @param key [String] Name of the key to get the value
+      def [](key)
+        data[key]
+      end
+
+      # Sets the value for a given key
+      #
+      # @param key   [String] Name of the key to set the value
+      # @param value [Object] New value
+      def []=(key, value)
+        data[key] = value
+      end
+
     private
 
       # SCR paths IPv4 / IPv6 Forwarding
       SYSCTL_AGENT_PATH = ".etc.sysctl_conf".freeze
-      SYSCTL_IPV4_PATH = (SYSCTL_AGENT_PATH + ".\"#{IPV4_SYSCTL}\"").freeze
-      SYSCTL_IPV6_PATH = (SYSCTL_AGENT_PATH + ".\"#{IPV6_SYSCTL}\"").freeze
 
       # Remove values from `/etc/sysctl.conf` to reduce noise and confusion
       def clean_old_values
-        Yast::SCR.Write(Yast::Path.new(SYSCTL_IPV4_PATH), nil)
-        Yast::SCR.Write(Yast::Path.new(SYSCTL_IPV6_PATH), nil)
+        self.class.known_keys.each do |key|
+          Yast::SCR.Write(key_path(key), nil)
+        end
         Yast::SCR.Write(Yast::Path.new(SYSCTL_AGENT_PATH), nil)
+      end
+
+      # Returns the YaST::Path object for a given key
+      #
+      # @param key [String] Name of the key used in sysctl configuration files
+      # @return [Yast::Path] Path to use with the +.etc.sysctl_conf+ agent
+      def key_path(key)
+        Yast::Path.new(SYSCTL_AGENT_PATH + ".\"#{key}\"")
       end
     end
   end
