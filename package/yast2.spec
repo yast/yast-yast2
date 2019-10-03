@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.2.24
+Version:        4.2.25
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -38,6 +38,8 @@ BuildRequires:  perl-XML-Writer
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:cfa)
+# for used augeas lenses
+BuildRequires:  augeas-lenses
 # for running scripts
 BuildRequires:  update-desktop-files
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
@@ -72,6 +74,8 @@ Requires:       perl-XML-Simple
 Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
 Requires:       rubygem(%{rb_default_ruby_abi}:cfa)
+# for used augeas lenses
+Requires:       augeas-lenses
 # For converting to/from punycode strings
 Requires:       sysconfig >= 0.80.0
 Requires:       rubygem(%{rb_default_ruby_abi}:simpleidn)
