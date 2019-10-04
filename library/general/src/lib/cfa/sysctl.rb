@@ -26,16 +26,22 @@ module CFA
   # This class does not modify the running kernel configuration. It just writes
   # the desired values into the configuration file ({PATH}).
   #
-  # @example Setting a value using they +sysctl.conf+ key
+  # @example Enabling IPv4 forwarding
   #   sysctl = Sysctl.new
-  #   sysctl.load
-  #   sysctl["net.ipv4.ip_forward"] = "1"
+  #   sysctl.forward_ipv4 = true
   #   sysctl.save
   #
-  # @example Setting a value using an accessor
+  # Although in the previous example we enabled the IPv4 forwarding using by
+  # setting +forward_ipv4+ to true. However, under the hood, the kernel maps
+  # boolean values to "1" or "0". If you want to access to that raw value,
+  # you can prepend "raw_" to the method's name.
+  #
+  # @example Accessing the raw value of a setting
   #   sysctl = Sysctl.new
-  #   sysctl.forward_ipv4 = "1"
-  #   sysctl.save
+  #   sysctl.load
+  #   sysctl.raw_forward_ipv6 #=> "0"
+  #   sysctl.raw_forward_ipv6 = "1"
+  #   sysctl.forward_ipv6? #=> true
   class Sysctl < BaseModel
     PARSER = AugeasParser.new("sysctl.lns")
     PATH = "/etc/sysctl.d/50-yast.conf".freeze
