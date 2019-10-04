@@ -44,7 +44,11 @@ module Yast2
       class << self
         # Defines a key
         #
-        # Additionally, it adds an accessor that can be used to set the value.
+        # Defining a key implies that:
+        #
+        # * An accessor is added in order to set/get the value.
+        # * When writing the changes, any value for the key removed from the
+        #   +/etc/sysctl.conf+ file.
         #
         # @param meth [Symbol] Accessor name
         # @param key  [String] Name of the key used in sysctl configuration files
