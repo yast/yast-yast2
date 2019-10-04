@@ -19,10 +19,10 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "yast2/cfa/sysctl"
+require_relative "../test_helper"
+require "cfa/sysctl"
 
-describe Yast2::CFA::Sysctl do
+describe CFA::Sysctl do
   subject(:sysctl) { described_class.new(file_handler: file_handler) }
 
   let(:old_forward_ipv4) { "0" }
@@ -42,7 +42,7 @@ describe Yast2::CFA::Sysctl do
     allow(Yast::SCR).to receive(:Read) do |path|
       SYSCTL_CONF_VALUES[path.to_s] or raise("Path not defined in tests: #{path}")
     end
-    stub_const("Yast2::CFA::Sysctl::PATH", File.join(GENERAL_DATA_PATH, yast_conf_path))
+    stub_const("CFA::Sysctl::PATH", File.join(GENERAL_DATA_PATH, yast_conf_path))
     sysctl.load
   end
 
@@ -113,7 +113,7 @@ describe Yast2::CFA::Sysctl do
 
     it "writes changes to configuration file" do
       expect(file_handler).to receive(:write)
-        .with(Yast2::CFA::Sysctl::PATH, /.+ip_forward = 1.+forwarding = 1/m)
+        .with(CFA::Sysctl::PATH, /.+ip_forward = 1.+forwarding = 1/m)
       sysctl.save
     end
 
