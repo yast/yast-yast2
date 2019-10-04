@@ -100,7 +100,8 @@ module Yast2
         self.class.known_keys.each do |key|
           next if self[key]
 
-          self[key] = Yast::SCR.Read(key_path(key))
+          old_value = Yast::SCR.Read(key_path(key))
+          self[key] = old_value if old_value
         end
         nil
       end
