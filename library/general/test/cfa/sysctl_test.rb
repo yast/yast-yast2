@@ -40,7 +40,7 @@ describe CFA::Sysctl do
 
   before do
     allow(Yast::SCR).to receive(:Read) do |path|
-      SYSCTL_CONF_VALUES[path.to_s] or raise("Path not defined in tests: #{path}")
+      SYSCTL_CONF_VALUES[path.to_s]
     end
     stub_const("CFA::Sysctl::PATH", File.join(GENERAL_DATA_PATH, yast_conf_path))
     sysctl.load

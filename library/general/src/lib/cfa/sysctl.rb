@@ -73,16 +73,23 @@ module CFA
     end
 
     ATTRIBUTES = {
-      kernel_sysrq:   "kernel.sysrq",
-      forward_ipv4:   "net.ipv4.ip_forward",
-      forward_ipv6:   "net.ipv6.conf.all.forwarding",
-      tcp_syncookies: "net.ipv4.tcp_syncookies",
-      disable_ipv6:   "net.ipv6.conf.all.disable_ipv6"
+      kernel_sysrq:            "kernel.sysrq",
+      forward_ipv4:            "net.ipv4.ip_forward",
+      # FIXME: alias for ipv6_forwarding_all
+      forward_ipv6:            "net.ipv6.conf.all.forwarding",
+      ipv4_forwarding_default: "net.ipv4.conf.default.forwarding",
+      ipv4_forwarding_all:     "net.ipv4.conf.all.forwarding",
+      ipv6_forwarding_default: "net.ipv6.conf.default.forwarding",
+      ipv6_forwarding_all:     "net.ipv6.conf.all.forwarding",
+      tcp_syncookies:          "net.ipv4.tcp_syncookies",
+      disable_ipv6:            "net.ipv6.conf.all.disable_ipv6"
     }.freeze
 
     attributes(ATTRIBUTES)
 
-    boolean_attr :forward_ipv4, :forward_ipv6, :tcp_syncookies, :disable_ipv6
+    boolean_attr :forward_ipv4, :forward_ipv6, :tcp_syncookies, :disable_ipv6,
+      :ipv4_forwarding_default, :ipv4_forwarding_all, :ipv6_forwarding_default,
+      :ipv6_forwarding_all
 
     def initialize(file_handler: Yast::TargetFile)
       super(PARSER, PATH, file_handler: file_handler)
@@ -136,7 +143,7 @@ module CFA
     #
     # @return [String<Symbol>]
     def known_keys
-      @known_keys ||= ATTRIBUTES.values
+      @known_keys ||= ATTRIBUTES.values.uniq
     end
   end
 end
