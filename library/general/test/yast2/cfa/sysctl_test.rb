@@ -31,15 +31,16 @@ describe Yast2::CFA::Sysctl do
   let(:file_handler) { File }
 
   SYSCTL_CONF_VALUES = {
-    ".etc.sysctl_conf.\"net.ipv4.ip_forward\""          => "0",
-    ".etc.sysctl_conf.\"net.ipv6.conf.all.forwarding\"" => "0",
-    ".etc.sysctl_conf.\"kernel.sysrq\""                 => "0",
-    ".etc.sysctl_conf.\"net.ipv4.tcp_syncookies\""      => "0"
+    ".etc.sysctl_conf.\"net.ipv4.ip_forward\""            => "0",
+    ".etc.sysctl_conf.\"net.ipv6.conf.all.forwarding\""   => "0",
+    ".etc.sysctl_conf.\"kernel.sysrq\""                   => "0",
+    ".etc.sysctl_conf.\"net.ipv4.tcp_syncookies\""        => "0",
+    ".etc.sysctl_conf.\"net.ipv6.conf.all.disable_ipv6\"" => "0"
   }.freeze
 
   before do
     allow(Yast::SCR).to receive(:Read) do |path|
-      SYSCTL_CONF_VALUES[path.to_s] or raise("path not defined: #{path}")
+      SYSCTL_CONF_VALUES[path.to_s] or raise("Path not defined in tests: #{path}")
     end
     stub_const("Yast2::CFA::Sysctl::PATH", File.join(GENERAL_DATA_PATH, yast_conf_path))
     sysctl.load

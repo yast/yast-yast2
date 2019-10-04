@@ -41,51 +41,15 @@ module Yast2
       PARSER = ::CFA::AugeasParser.new("sysctl.lns")
       PATH = "/etc/sysctl.d/50-yast.conf".freeze
 
-      class << self
-        # Defines a key
-        #
-        # Defining a key implies that:
-        #
-        # * An accessor is added in order to set/get the value.
-        # * When writing the changes, any value for the key removed from the
-        #   +/etc/sysctl.conf+ file.
-        #
-        # @param meth [Symbol] Accessor name
-        # @param key  [String] Name of the key used in sysctl configuration files
-        def define_key(meth, key)
-          add_key(key)
+      ATTRIBUTES = {
+        kernel_sysrq:   "kernel.sysrq",
+        forward_ipv4:   "net.ipv4.ip_forward",
+        forward_ipv6:   "net.ipv6.conf.all.forwarding",
+        tcp_syncookies: "net.ipv4.tcp_syncookies",
+        disable_ipv6:   "net.ipv6.conf.all.disable_ipv6"
+      }.freeze
 
-          define_method meth do
-            self[key]
-          end
-
-          define_method "#{meth}=" do |value|
-            self[key] = value
-          end
-        end
-
-        # Returns the list of known keys
-        #
-        # Known keys are removed from the old +/etc/sysctl.conf+ when saving the changes.
-        def known_keys
-          @known_keys ||= []
-        end
-
-      private
-
-        # Adds a new key
-        #
-        # @param [String] Name of the key used in sysctl configuration files
-        def add_key(key)
-          known_keys.push(key)
-        end
-      end
-
-      define_key :kernel_sysrq, "kernel.sysrq"
-      define_key :forward_ipv4, "net.ipv4.ip_forward"
-      define_key :forward_ipv6, "net.ipv6.conf.all.forwarding"
-      define_key :tcp_syncookies, "net.ipv4.tcp_syncookies"
-      define_key :disable_ipv6, "net.ipv6.conf.all.disable_ipv6"
+      attributes(ATTRIBUTES)
 
       def initialize(file_handler: nil)
         super(PARSER, PATH, file_handler: file_handler)
@@ -102,11 +66,11 @@ module Yast2
           @loaded = true
         end
 
-        self.class.known_keys.each do |key|
-          next if self[key]
+        known_keys.each do |key|
+          next if data[key]
 
           old_value = Yast::SCR.Read(key_path(key))
-          self[key] = old_value if old_value
+          data[key] = old_value if old_value
         end
         nil
       end
@@ -120,21 +84,6 @@ module Yast2
         clean_old_values
       end
 
-      # Returns the value for a given key
-      #
-      # @param key [String] Name of the key to get the value
-      def [](key)
-        data[key]
-      end
-
-      # Sets the value for a given key
-      #
-      # @param key   [String] Name of the key to set the value
-      # @param value [Object] New value
-      def []=(key, value)
-        data[key] = value
-      end
-
     private
 
       # SCR paths IPv4 / IPv6 Forwarding
@@ -142,7 +91,7 @@ module Yast2
 
       # Remove values from `/etc/sysctl.conf` to reduce noise and confusion
       def clean_old_values
-        self.class.known_keys.each do |key|
+        known_keys.each do |key|
           Yast::SCR.Write(key_path(key), nil)
         end
         Yast::SCR.Write(Yast::Path.new(SYSCTL_AGENT_PATH), nil)
@@ -154,6 +103,15 @@ module Yast2
       # @return [Yast::Path] Path to use with the +.etc.sysctl_conf+ agent
       def key_path(key)
         Yast::Path.new(SYSCTL_AGENT_PATH + ".\"#{key}\"")
+      end
+
+      # Returns the list of known attributes
+      #
+      # Just a helper method to get the list of defined attributes
+      #
+      # @return [String<Symbol>]
+      def known_keys
+        @known_keys ||= ATTRIBUTES.values
       end
     end
   end
