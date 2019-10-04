@@ -39,7 +39,7 @@ module Yast2
     #   sysctl.save
     class Sysctl < ::CFA::BaseModel
       PARSER = ::CFA::AugeasParser.new("sysctl.lns")
-      PATH = "/etc/50-yast.conf".freeze
+      PATH = "/etc/sysctl.d/50-yast.conf".freeze
 
       class << self
         # Defines a key
