@@ -81,6 +81,7 @@ module Yast2
       define_key :forward_ipv4, "net.ipv4.ip_forward"
       define_key :forward_ipv6, "net.ipv6.conf.all.forwarding"
       define_key :tcp_syncookies, "net.ipv4.tcp_syncookies"
+      define_key :disable_ipv6, "net.ipv6.conf.all.disable_ipv6"
 
       def initialize(file_handler: nil)
         super(PARSER, PATH, file_handler: file_handler)
