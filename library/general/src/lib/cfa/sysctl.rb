@@ -36,8 +36,8 @@ module CFA
   #   sysctl = Sysctl.new
   #   sysctl.forward_ipv4 = "1"
   #   sysctl.save
-  class Sysctl < ::CFA::BaseModel
-    PARSER = ::CFA::AugeasParser.new("sysctl.lns")
+  class Sysctl < BaseModel
+    PARSER = AugeasParser.new("sysctl.lns")
     PATH = "/etc/sysctl.d/50-yast.conf".freeze
 
     class << self
