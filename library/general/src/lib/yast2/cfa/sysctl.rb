@@ -69,7 +69,7 @@ module Yast2
         known_keys.each do |key|
           next if data[key]
 
-          old_value = Yast::SCR.Read(key_path(key))
+          old_value = Yast::SCR.Read(SYSCTL_AGENT_PATH + key)
           data[key] = old_value if old_value
         end
         nil
@@ -86,23 +86,15 @@ module Yast2
 
     private
 
-      # SCR paths IPv4 / IPv6 Forwarding
-      SYSCTL_AGENT_PATH = ".etc.sysctl_conf".freeze
+      # Path to the agent to handle the +/etc/sysctl.conf+ file
+      SYSCTL_AGENT_PATH = Yast::Path.new(".etc.sysctl_conf")
 
       # Remove values from `/etc/sysctl.conf` to reduce noise and confusion
       def clean_old_values
         known_keys.each do |key|
-          Yast::SCR.Write(key_path(key), nil)
+          Yast::SCR.Write(SYSCTL_AGENT_PATH + key, nil)
         end
-        Yast::SCR.Write(Yast::Path.new(SYSCTL_AGENT_PATH), nil)
-      end
-
-      # Returns the YaST::Path object for a given key
-      #
-      # @param key [String] Name of the key used in sysctl configuration files
-      # @return [Yast::Path] Path to use with the +.etc.sysctl_conf+ agent
-      def key_path(key)
-        Yast::Path.new(SYSCTL_AGENT_PATH + ".\"#{key}\"")
+        Yast::SCR.Write(SYSCTL_AGENT_PATH, nil)
       end
 
       # Returns the list of known attributes
