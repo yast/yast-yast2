@@ -46,43 +46,43 @@ describe CFA::Sysctl do
     sysctl.load
   end
 
-  describe "#forward_ipv4" do
-    it "returns IPv4 forwarding value" do
-      expect(sysctl.forward_ipv4).to eq("1")
+  describe "#raw_forward_ipv4" do
+    it "returns IPv4 forwarding raw value" do
+      expect(sysctl.raw_forward_ipv4).to eq("1")
     end
 
     context "when the value is not defined" do
       let(:yast_conf_path) { "empty" }
 
       it "returns the value from sysctl.conf" do
-        expect(sysctl.forward_ipv4).to eq("0")
+        expect(sysctl.raw_forward_ipv4).to eq("0")
       end
     end
   end
 
-  describe "#forward_ipv6" do
-    it "returns IPv6 forwarding value" do
-      expect(sysctl.forward_ipv6).to eq("1")
+  describe "#raw_forward_ipv6" do
+    it "returns IPv6 forwarding raw value" do
+      expect(sysctl.raw_forward_ipv6).to eq("1")
     end
 
     context "when the value is not defined" do
       let(:yast_conf_path) { "empty" }
 
       it "returns the value from sysctl.conf" do
-        expect(sysctl.forward_ipv6).to eq("0")
+        expect(sysctl.raw_forward_ipv6).to eq("0")
       end
     end
   end
 
   describe "#forward_ipv4=" do
     it "sets the forward_ipv4 value" do
-      expect { sysctl.forward_ipv4 = "0" }.to change { sysctl.forward_ipv4 }.from("1").to("0")
+      expect { sysctl.forward_ipv4 = false }.to change { sysctl.forward_ipv4 }.from(true).to(false)
     end
   end
 
   describe "#forward_ipv6=" do
     it "sets the forward_ipv6 value" do
-      expect { sysctl.forward_ipv6 = "0" }.to change { sysctl.forward_ipv6 }.from("1").to("0")
+      expect { sysctl.forward_ipv6 = false }.to change { sysctl.forward_ipv6 }.from(true).to(false)
     end
   end
 
@@ -132,7 +132,7 @@ describe CFA::Sysctl do
     before { sysctl.forward_ipv4 = value }
 
     context "when forwarding for IPv4 is enabled" do
-      let(:value) { "1" }
+      let(:value) { true }
 
       it "returns true" do
         expect(sysctl.forward_ipv4?).to eq(true)
@@ -140,7 +140,7 @@ describe CFA::Sysctl do
     end
 
     context "when forwarding for IPv4 is disabled" do
-      let(:value) { "0" }
+      let(:value) { false }
 
       it "returns false" do
         expect(sysctl.forward_ipv4?).to eq(false)
@@ -152,7 +152,7 @@ describe CFA::Sysctl do
     before { sysctl.forward_ipv6 = value }
 
     context "when forwarding for IPv6 is enabled" do
-      let(:value) { "1" }
+      let(:value) { true }
 
       it "returns true" do
         expect(sysctl.forward_ipv6?).to eq(true)
@@ -160,7 +160,7 @@ describe CFA::Sysctl do
     end
 
     context "when forwarding for IPv6 is disabled" do
-      let(:value) { "0" }
+      let(:value) { false }
 
       it "returns false" do
         expect(sysctl.forward_ipv6?).to eq(false)
@@ -172,7 +172,7 @@ describe CFA::Sysctl do
     before { sysctl.tcp_syncookies = value }
 
     context "when TCP syncookies are enabled" do
-      let(:value) { "1" }
+      let(:value) { true }
 
       it "returns true" do
         expect(sysctl.tcp_syncookies?).to eq(true)
@@ -180,7 +180,7 @@ describe CFA::Sysctl do
     end
 
     context "when TCP syncookies are disabled" do
-      let(:value) { "0" }
+      let(:value) { false }
 
       it "returns false" do
         expect(sysctl.tcp_syncookies?).to eq(false)
@@ -192,7 +192,7 @@ describe CFA::Sysctl do
     before { sysctl.disable_ipv6 = value }
 
     context "when IPv6 is disabled" do
-      let(:value) { "1" }
+      let(:value) { true }
 
       it "returns true" do
         expect(sysctl.disable_ipv6?).to eq(true)
@@ -200,7 +200,7 @@ describe CFA::Sysctl do
     end
 
     context "when IPv6 is not disabled" do
-      let(:value) { "0" }
+      let(:value) { false }
 
       it "returns false" do
         expect(sysctl.disable_ipv6?).to eq(false)
