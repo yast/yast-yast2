@@ -127,4 +127,84 @@ describe CFA::Sysctl do
       sysctl.save
     end
   end
+
+  describe "#forward_ipv4?" do
+    before { sysctl.forward_ipv4 = value }
+
+    context "when forwarding for IPv4 is enabled" do
+      let(:value) { "1" }
+
+      it "returns true" do
+        expect(sysctl.forward_ipv4?).to eq(true)
+      end
+    end
+
+    context "when forwarding for IPv4 is disabled" do
+      let(:value) { "0" }
+
+      it "returns false" do
+        expect(sysctl.forward_ipv4?).to eq(false)
+      end
+    end
+  end
+
+  describe "#forward_ipv6?" do
+    before { sysctl.forward_ipv6 = value }
+
+    context "when forwarding for IPv6 is enabled" do
+      let(:value) { "1" }
+
+      it "returns true" do
+        expect(sysctl.forward_ipv6?).to eq(true)
+      end
+    end
+
+    context "when forwarding for IPv6 is disabled" do
+      let(:value) { "0" }
+
+      it "returns false" do
+        expect(sysctl.forward_ipv6?).to eq(false)
+      end
+    end
+  end
+
+  describe "#tcp_syncookies?" do
+    before { sysctl.tcp_syncookies = value }
+
+    context "when TCP syncookies are enabled" do
+      let(:value) { "1" }
+
+      it "returns true" do
+        expect(sysctl.tcp_syncookies?).to eq(true)
+      end
+    end
+
+    context "when TCP syncookies are disabled" do
+      let(:value) { "0" }
+
+      it "returns false" do
+        expect(sysctl.tcp_syncookies?).to eq(false)
+      end
+    end
+  end
+
+  describe "#disable_ipv6?" do
+    before { sysctl.disable_ipv6 = value }
+
+    context "when IPv6 is disabled" do
+      let(:value) { "1" }
+
+      it "returns true" do
+        expect(sysctl.disable_ipv6?).to eq(true)
+      end
+    end
+
+    context "when IPv6 is not disabled" do
+      let(:value) { "0" }
+
+      it "returns false" do
+        expect(sysctl.disable_ipv6?).to eq(false)
+      end
+    end
+  end
 end

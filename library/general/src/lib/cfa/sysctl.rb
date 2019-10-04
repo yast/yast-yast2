@@ -40,6 +40,19 @@ module CFA
     PARSER = ::CFA::AugeasParser.new("sysctl.lns")
     PATH = "/etc/sysctl.d/50-yast.conf".freeze
 
+    class << self
+      # Adds a helper method to get a boolean value from boolean-like attributes ("1" or "0")
+      #
+      # @param attr [Symbol] Attribute name
+      def boolean_attr(*attrs)
+        attrs.each do |attr|
+          define_method "#{attr}?" do
+            public_send(attr) == "1"
+          end
+        end
+      end
+    end
+
     ATTRIBUTES = {
       kernel_sysrq:   "kernel.sysrq",
       forward_ipv4:   "net.ipv4.ip_forward",
@@ -49,6 +62,8 @@ module CFA
     }.freeze
 
     attributes(ATTRIBUTES)
+
+    boolean_attr :forward_ipv4, :forward_ipv6, :tcp_syncookies, :disable_ipv6
 
     def initialize(file_handler: nil)
       super(PARSER, PATH, file_handler: file_handler)
