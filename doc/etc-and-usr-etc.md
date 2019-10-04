@@ -40,9 +40,6 @@ As a first step, we have added a {Yast2::CFA::Sysctl} class which offers an API 
 This new class uses `/etc/sysctl.d/50-yast.conf` instead of `/etc/sysctl.conf` to write the configuration.
 Moreover, it removes known keys from the original `/etc/sysctl.conf` to avoid confusion.
 
-The main limitation of this approach is that YaST will only read a set of known keys but, as it uses
-its own file to write them, it should not be a big problem at all.
-
 ## An Elaborated Proposal
 
 ### Extending CFA
