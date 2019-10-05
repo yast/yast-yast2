@@ -116,16 +116,6 @@ describe CFA::Sysctl do
         .with(CFA::Sysctl::PATH, /.+ip_forward = 1.+forwarding = 1/m)
       sysctl.save
     end
-
-    it "removes the old values from /etc/sysctl.conf" do
-      expect(Yast::SCR).to receive(:Write)
-        .with(Yast::Path.new(".etc.sysctl_conf.\"net.ipv4.ip_forward\""), nil)
-      expect(Yast::SCR).to receive(:Write)
-        .with(Yast::Path.new(".etc.sysctl_conf.\"net.ipv6.conf.all.forwarding\""), nil)
-      expect(Yast::SCR).to receive(:Write)
-        .with(Yast::Path.new(".etc.sysctl_conf"), nil)
-      sysctl.save
-    end
   end
 
   describe "#forward_ipv4?" do
