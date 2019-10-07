@@ -38,7 +38,6 @@ to modify any `sysctl` setting, you should drop a file in `/etc/sysctl.d` contai
 
 As a first step, we have added a {Yast2::CFA::Sysctl} class which offers an API to sysctl settings.
 This new class uses `/etc/sysctl.d/50-yast.conf` instead of `/etc/sysctl.conf` to write the configuration.
-Moreover, it removes known keys from the original `/etc/sysctl.conf` to avoid confusion.
 
 ## An Elaborated Proposal
 
