@@ -25,8 +25,6 @@ require "cfa/sysctl"
 describe CFA::Sysctl do
   subject(:sysctl) { described_class.new(file_handler: file_handler) }
 
-  let(:old_forward_ipv4) { "0" }
-  let(:old_forward_ipv6) { "0" }
   let(:yast_conf_path) { "sysctl-yast.conf" }
   let(:file_handler) { File }
 
