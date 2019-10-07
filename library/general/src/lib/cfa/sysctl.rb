@@ -88,6 +88,9 @@ module CFA
 
     attributes(ATTRIBUTES)
 
+    # Keys that are handled by this class
+    KNOWN_KEYS = ATTRIBUTES.values.uniq.freeze
+
     boolean_attr :forward_ipv4, :forward_ipv6, :tcp_syncookies, :disable_ipv6,
       :ipv4_forwarding_default, :ipv4_forwarding_all, :ipv6_forwarding_default,
       :ipv6_forwarding_all
@@ -98,7 +101,7 @@ module CFA
 
     # Loads sysctl content
     #
-    # This method reads {PATH} and uses `/etc/sysctl.conf` values as fallback.
+    # This method reads {PATH} and uses +/etc/sysctl.conf+ values as fallback.
     def load
       begin
         super
@@ -107,7 +110,7 @@ module CFA
         @loaded = true
       end
 
-      known_keys.each do |key|
+      KNOWN_KEYS.each do |key|
         next if data[key]
 
         old_value = Yast::SCR.Read(SYSCTL_AGENT_PATH + key)
@@ -118,11 +121,11 @@ module CFA
 
     # Writes sysctl configuration
     #
-    # Apart from writing the values to {PATH}, it updates the same entries in
-    # `/etc/sysctl.conf` to avoid confusion.
+    # Apart from writing the values to {PATH}, it cleans up the same entries in
+    # +/etc/sysctl.conf+ to avoid confusion.
     def save
       super
-      update_old_values
+      clean_old_values
     end
 
   private
@@ -130,27 +133,14 @@ module CFA
     # Path to the agent to handle the +/etc/sysctl.conf+ file
     SYSCTL_AGENT_PATH = Yast::Path.new(".etc.sysctl_conf")
 
-    # Updates present values in `/etc/sysctl.conf` to reduce confusion
-    #
-    # @note Those values should be removed. However, it may cause the main comment to be removed
-    # too. So, for the time being, just update any parameter which is present with its new value.
-    def update_old_values
-      known_keys.each do |key|
-        old_value = Yast::SCR.Read(SYSCTL_AGENT_PATH + key)
-        next if old_value.nil? || old_value == data[key]
-
-        Yast::SCR.Write(SYSCTL_AGENT_PATH + key, data[key])
-      end
-      Yast::SCR.Write(SYSCTL_AGENT_PATH, nil)
-    end
-
-    # Returns the list of known attributes
-    #
-    # Just a helper method to get the list of defined attributes
-    #
-    # @return [String<Symbol>]
-    def known_keys
-      @known_keys ||= ATTRIBUTES.values.uniq
+    MAIN_SYSCTL_CONF_PATH = "/etc/sysctl.conf".freeze
+    KNOWN_KEYS_REGEXP = /^(#{KNOWN_KEYS.join("|")})/
+    # Cleans up present values from +/etc/sysctl.conf+ to reduce confusion
+    def clean_old_values
+      sysctl_conf = Yast::TargetFile.read(MAIN_SYSCTL_CONF_PATH)
+      lines = sysctl_conf.lines.reject { |l| KNOWN_KEYS_REGEXP =~ l }
+      Yast::TargetFile.write(MAIN_SYSCTL_CONF_PATH, lines.join)
+    rescue Errno::ENOENT
     end
   end
 end

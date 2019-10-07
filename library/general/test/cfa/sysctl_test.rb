@@ -39,6 +39,7 @@ describe CFA::Sysctl do
     allow(Yast::SCR).to receive(:Read) do |path|
       SYSCTL_CONF_VALUES[path.to_s]
     end
+    allow(Yast::TargetFile).to receive(:write).with("/etc/sysctl.conf", anything)
     stub_const("CFA::Sysctl::PATH", File.join(GENERAL_DATA_PATH, yast_conf_path))
     sysctl.load
   end
@@ -106,6 +107,8 @@ describe CFA::Sysctl do
   describe "#save" do
     before do
       allow(Yast::SCR).to receive(:Write)
+      allow(Yast::TargetFile).to receive(:read).with("/etc/sysctl.conf")
+        .and_return("# Some comment\nkernel.sysrq=1")
     end
 
     it "writes changes to configuration file" do
@@ -114,13 +117,8 @@ describe CFA::Sysctl do
       sysctl.save
     end
 
-    it "updates the old values from /etc/sysctl.conf" do
-      expect(Yast::SCR).to receive(:Write)
-        .with(Yast::Path.new(".etc.sysctl_conf.\"net.ipv4.ip_forward\""), "1")
-      expect(Yast::SCR).to receive(:Write)
-        .with(Yast::Path.new(".etc.sysctl_conf.\"net.ipv6.conf.all.forwarding\""), "1")
-      expect(Yast::SCR).to receive(:Write)
-        .with(Yast::Path.new(".etc.sysctl_conf"), nil)
+    it "removes the old values from /etc/sysctl.conf" do
+      expect(Yast::TargetFile).to receive(:write).with("/etc/sysctl.conf", "# Some comment\n")
       sysctl.save
     end
 
