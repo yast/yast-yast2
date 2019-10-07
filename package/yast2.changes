@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct  7 16:00:09 UTC 2019 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Remove old values from /etc/sysctl.conf (jsc#SLE-9077).
+- 4.2.26
+
+-------------------------------------------------------------------
 Thu Oct  3 12:31:35 UTC 2019 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a CFA based class to adjust sysctl settings (jsc#SLE-9077).
