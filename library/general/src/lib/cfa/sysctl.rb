@@ -51,7 +51,8 @@ module CFA
       #
       # When getting or setting the value, a boolean value will be expected. Under the hood, it will
       # be translated into "1" or "0". Additionally, to access to the raw value ("1", "0" or +nil+),
-      # just prepend "raw_" to the name of the method.
+      # just prepend "raw_" to the name of the method. Bear in mind that if the raw value is +nil+,
+      # it will be considered +false+.
       #
       # @param attrs [Array<Symbol>] Attribute name
       def boolean_attr(*attrs)
