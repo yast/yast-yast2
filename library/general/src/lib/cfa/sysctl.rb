@@ -115,10 +115,33 @@ module CFA
       nil
     end
 
+    # Writes sysctl configuration
+    #
+    # Apart from writing the values to {PATH}, it updates the same entries in
+    # `/etc/sysctl.conf` to avoid confusion.
+    def save
+      super
+      update_old_values
+    end
+
   private
 
     # Path to the agent to handle the +/etc/sysctl.conf+ file
     SYSCTL_AGENT_PATH = Yast::Path.new(".etc.sysctl_conf")
+
+    # Updates present values in `/etc/sysctl.conf` to reduce confusion
+    #
+    # @note Those values should be removed. However, it may cause the main comment to be removed
+    # too. So, for the time being, just update any parameter which is present with its new value.
+    def update_old_values
+      known_keys.each do |key|
+        old_value = Yast::SCR.Read(SYSCTL_AGENT_PATH + key)
+        next if old_value.nil? || old_value == data[key]
+
+        Yast::SCR.Write(SYSCTL_AGENT_PATH + key, data[key])
+      end
+      Yast::SCR.Write(SYSCTL_AGENT_PATH, nil)
+    end
 
     # Returns the list of known attributes
     #

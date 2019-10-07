@@ -31,11 +31,10 @@ describe CFA::Sysctl do
   let(:file_handler) { File }
 
   SYSCTL_CONF_VALUES = {
-    ".etc.sysctl_conf.\"net.ipv4.ip_forward\""            => "0",
-    ".etc.sysctl_conf.\"net.ipv6.conf.all.forwarding\""   => "0",
-    ".etc.sysctl_conf.\"kernel.sysrq\""                   => "0",
-    ".etc.sysctl_conf.\"net.ipv4.tcp_syncookies\""        => "0",
-    ".etc.sysctl_conf.\"net.ipv6.conf.all.disable_ipv6\"" => "0"
+    ".etc.sysctl_conf.\"net.ipv4.ip_forward\""          => "0",
+    ".etc.sysctl_conf.\"net.ipv6.conf.all.forwarding\"" => "0",
+    ".etc.sysctl_conf.\"kernel.sysrq\""                 => "0",
+    ".etc.sysctl_conf.\"net.ipv4.tcp_syncookies\""      => "1"
   }.freeze
 
   before do
@@ -114,6 +113,28 @@ describe CFA::Sysctl do
     it "writes changes to configuration file" do
       expect(file_handler).to receive(:write)
         .with(CFA::Sysctl::PATH, /.+ip_forward = 1.+forwarding = 1/m)
+      sysctl.save
+    end
+
+    it "updates the old values from /etc/sysctl.conf" do
+      expect(Yast::SCR).to receive(:Write)
+        .with(Yast::Path.new(".etc.sysctl_conf.\"net.ipv4.ip_forward\""), "1")
+      expect(Yast::SCR).to receive(:Write)
+        .with(Yast::Path.new(".etc.sysctl_conf.\"net.ipv6.conf.all.forwarding\""), "1")
+      expect(Yast::SCR).to receive(:Write)
+        .with(Yast::Path.new(".etc.sysctl_conf"), nil)
+      sysctl.save
+    end
+
+    it "does not update missing values in /etc/sysctl.conf" do
+      expect(Yast::SCR).to_not receive(:Write)
+        .with(Yast::Path.new(".etc.sysctl_conf.\"net.ipv4.conf.all.forwarding\""), anything)
+      sysctl.save
+    end
+
+    it "does not try to update unchanged values in /etc/sysctl.conf" do
+      expect(Yast::SCR).to_not receive(:Write)
+        .with(Yast::Path.new(".etc.sysctl_conf.\"net.ipv4.tcp_syncookies\""), anything)
       sysctl.save
     end
   end
