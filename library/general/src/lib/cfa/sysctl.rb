@@ -17,6 +17,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
 require "cfa/base_model"
 require "yast2/target_file"
 
@@ -43,6 +44,8 @@ module CFA
   #   sysctl.raw_forward_ipv6 = "1"
   #   sysctl.forward_ipv6? #=> true
   class Sysctl < BaseModel
+    include Yast::Logger
+
     PARSER = AugeasParser.new("sysctl.lns")
     PATH = "/etc/sysctl.d/30-yast.conf".freeze
 
@@ -141,6 +144,7 @@ module CFA
       lines = sysctl_conf.lines.reject { |l| KNOWN_KEYS_REGEXP =~ l }
       Yast::TargetFile.write(MAIN_SYSCTL_CONF_PATH, lines.join)
     rescue Errno::ENOENT
+      log.info "File #{MAIN_SYSCTL_CONF_PATH} was not found"
     end
   end
 end

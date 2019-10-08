@@ -133,6 +133,18 @@ describe CFA::Sysctl do
         .with(Yast::Path.new(".etc.sysctl_conf.\"net.ipv4.tcp_syncookies\""), anything)
       sysctl.save
     end
+
+    context "when /etc/sysctl.conf does not exist" do
+      before do
+        allow(Yast::TargetFile).to receive(:read).with("/etc/sysctl.conf")
+          .and_raise(Errno::ENOENT)
+      end
+
+      it "logs an error" do
+        expect(sysctl.log).to receive(:info).with(/not found/)
+        sysctl.save
+      end
+    end
   end
 
   describe "#forward_ipv4?" do
