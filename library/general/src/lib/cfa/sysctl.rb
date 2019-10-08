@@ -137,7 +137,7 @@ module CFA
     SYSCTL_AGENT_PATH = Yast::Path.new(".etc.sysctl_conf")
 
     MAIN_SYSCTL_CONF_PATH = "/etc/sysctl.conf".freeze
-    KNOWN_KEYS_REGEXP = /^(#{KNOWN_KEYS.join("|")})/
+    KNOWN_KEYS_REGEXP = /^(#{KNOWN_KEYS.join("|")})/.freeze
     # Cleans up present values from +/etc/sysctl.conf+ to reduce confusion
     def clean_old_values
       sysctl_conf = Yast::TargetFile.read(MAIN_SYSCTL_CONF_PATH)
