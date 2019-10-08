@@ -17,6 +17,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
 require "cfa/base_model"
 require "yast2/target_file"
 
@@ -43,6 +44,8 @@ module CFA
   #   sysctl.raw_forward_ipv6 = "1"
   #   sysctl.forward_ipv6? #=> true
   class Sysctl < BaseModel
+    include Yast::Logger
+
     PARSER = AugeasParser.new("sysctl.lns")
     PATH = "/etc/sysctl.d/30-yast.conf".freeze
 
@@ -88,6 +91,9 @@ module CFA
 
     attributes(ATTRIBUTES)
 
+    # Keys that are handled by this class
+    KNOWN_KEYS = ATTRIBUTES.values.uniq.freeze
+
     boolean_attr :forward_ipv4, :forward_ipv6, :tcp_syncookies, :disable_ipv6,
       :ipv4_forwarding_default, :ipv4_forwarding_all, :ipv6_forwarding_default,
       :ipv6_forwarding_all
@@ -98,7 +104,7 @@ module CFA
 
     # Loads sysctl content
     #
-    # This method reads {PATH} and uses `/etc/sysctl.conf` values as fallback.
+    # This method reads {PATH} and uses +/etc/sysctl.conf+ values as fallback.
     def load
       begin
         super
@@ -107,7 +113,7 @@ module CFA
         @loaded = true
       end
 
-      known_keys.each do |key|
+      KNOWN_KEYS.each do |key|
         next if data[key]
 
         old_value = Yast::SCR.Read(SYSCTL_AGENT_PATH + key)
@@ -118,11 +124,11 @@ module CFA
 
     # Writes sysctl configuration
     #
-    # Apart from writing the values to {PATH}, it updates the same entries in
-    # `/etc/sysctl.conf` to avoid confusion.
+    # Apart from writing the values to {PATH}, it cleans up the same entries in
+    # +/etc/sysctl.conf+ to avoid confusion.
     def save
       super
-      update_old_values
+      clean_old_values
     end
 
   private
@@ -130,27 +136,19 @@ module CFA
     # Path to the agent to handle the +/etc/sysctl.conf+ file
     SYSCTL_AGENT_PATH = Yast::Path.new(".etc.sysctl_conf")
 
-    # Updates present values in `/etc/sysctl.conf` to reduce confusion
-    #
-    # @note Those values should be removed. However, it may cause the main comment to be removed
-    # too. So, for the time being, just update any parameter which is present with its new value.
-    def update_old_values
-      known_keys.each do |key|
-        old_value = Yast::SCR.Read(SYSCTL_AGENT_PATH + key)
-        next if old_value.nil? || old_value == data[key]
+    # Main sysctl configuration file
+    MAIN_SYSCTL_CONF_PATH = "/etc/sysctl.conf".freeze
 
-        Yast::SCR.Write(SYSCTL_AGENT_PATH + key, data[key])
-      end
-      Yast::SCR.Write(SYSCTL_AGENT_PATH, nil)
-    end
-
-    # Returns the list of known attributes
-    #
-    # Just a helper method to get the list of defined attributes
-    #
-    # @return [String<Symbol>]
-    def known_keys
-      @known_keys ||= ATTRIBUTES.values.uniq
+    # Cleans up present values from +/etc/sysctl.conf+ to reduce confusion
+    def clean_old_values
+      handler = BaseModel.default_file_handler
+      parser = AugeasParser.new("sysctl.lns")
+      parser.file_name = MAIN_SYSCTL_CONF_PATH
+      content = parser.parse(handler.read(MAIN_SYSCTL_CONF_PATH))
+      KNOWN_KEYS.each { |k| content.delete(k) }
+      handler.write(MAIN_SYSCTL_CONF_PATH, parser.serialize(content))
+    rescue Errno::ENOENT
+      log.info "File #{MAIN_SYSCTL_CONF_PATH} was not found"
     end
   end
 end
