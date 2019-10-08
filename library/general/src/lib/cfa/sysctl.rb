@@ -136,13 +136,17 @@ module CFA
     # Path to the agent to handle the +/etc/sysctl.conf+ file
     SYSCTL_AGENT_PATH = Yast::Path.new(".etc.sysctl_conf")
 
+    # Main sysctl configuration file
     MAIN_SYSCTL_CONF_PATH = "/etc/sysctl.conf".freeze
-    KNOWN_KEYS_REGEXP = /^(#{KNOWN_KEYS.join("|")})/.freeze
+
     # Cleans up present values from +/etc/sysctl.conf+ to reduce confusion
     def clean_old_values
-      sysctl_conf = Yast::TargetFile.read(MAIN_SYSCTL_CONF_PATH)
-      lines = sysctl_conf.lines.reject { |l| KNOWN_KEYS_REGEXP =~ l }
-      Yast::TargetFile.write(MAIN_SYSCTL_CONF_PATH, lines.join)
+      handler = BaseModel.default_file_handler
+      parser = AugeasParser.new("sysctl.lns")
+      parser.file_name = MAIN_SYSCTL_CONF_PATH
+      content = parser.parse(handler.read(MAIN_SYSCTL_CONF_PATH))
+      KNOWN_KEYS.each { |k| content.delete(k) }
+      handler.write(MAIN_SYSCTL_CONF_PATH, parser.serialize(content))
     rescue Errno::ENOENT
       log.info "File #{MAIN_SYSCTL_CONF_PATH} was not found"
     end
