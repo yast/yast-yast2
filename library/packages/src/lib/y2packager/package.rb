@@ -39,10 +39,12 @@ module Y2Packager
       # @return [Array<Package>,nil] Packages named like `name`. It returns `nil`
       #   if some problem occurs interacting with libzypp.
       def find(name)
-        props = Yast::Pkg.ResolvableProperties(name, :package, "")
-        return nil if props.nil?
+        resolvables = Yast::Pkg.Resolvables({ kind: :package, name: name },
+          [:name, :source, :version])
 
-        props.map { |i| new(i["name"], i["source"], i["version"]) }
+        return nil if resolvables.nil?
+
+        resolvables.map { |i| new(i["name"], i["source"], i["version"]) }
       end
 
       # Find the highest version of requested package with given statuses
@@ -78,9 +80,21 @@ module Y2Packager
     # Ask libzypp about package status.
     #
     # @return [Symbol] Package status (:installed, :available, etc.)
-    # @see Yast::Pkg.PkgProperties
+    # @see Yast::Pkg.Resolvables
     def status
-      Yast::Pkg.PkgProperties(name)["status"]
+      resolvables = Yast::Pkg.Resolvables({ kind: :package, name: name,
+        version: version, source: repo_id }, [:status])
+
+      log.warn "Found multiple resolvables: #{resolvables}" if resolvables.size > 1
+
+      resolvable = resolvables.first
+
+      if !resolvable
+        log.warn "Resolvable not found: #{name}-#{version} from repo #{repo_id}"
+        return nil
+      end
+
+      resolvable["status"]
     end
 
     # Download a package to the given path

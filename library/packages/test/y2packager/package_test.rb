@@ -14,7 +14,8 @@ describe Y2Packager::Package do
     let(:package) { instance_double(Y2Packager::Package) }
 
     it "returns packages with a given name" do
-      expect(Yast::Pkg).to receive(:ResolvableProperties).with(name, :package, "")
+      expect(Yast::Pkg).to receive(:Resolvables)
+        .with({ kind: :package, name: "yast2" }, [:name, :source, :version])
         .and_return([{ "name" => "yast2", "source" => 1, "version" => "12.3" }])
       expect(Y2Packager::Package).to receive(:new).with(name, 1, "12.3")
         .and_return(package)
@@ -24,15 +25,23 @@ describe Y2Packager::Package do
 
   describe ".last_version" do
     let(:name) { "yast2" }
-    let(:unknown_status) { { "status" => :unknown } }
-    let(:available_status) { { "status" => :available } }
-    let(:selected_status) { { "status" => :selected } }
+    let(:unknown_status) { [{ "status" => :unknown }] }
+    let(:available_status) { [{ "status" => :available }] }
+    let(:selected_status) { [{ "status" => :selected }] }
 
     before do
-      allow(Yast::Pkg).to receive(:PkgProperties).with(name)
-        .and_return(unknown_status, available_status, selected_status)
+      allow(Yast::Pkg).to receive(:Resolvables)
+        .with({ kind: :package, name: "yast2", version: "15.0", source: 0 }, [:status])
+        .and_return(unknown_status)
+      allow(Yast::Pkg).to receive(:Resolvables)
+        .with({ kind: :package, name: "yast2", version: "12.3", source: 1 }, [:status])
+        .and_return(selected_status)
+      allow(Yast::Pkg).to receive(:Resolvables)
+        .with({ kind: :package, name: "yast2", version: "12.0", source: 2 }, [:status])
+        .and_return(available_status)
 
-      allow(Yast::Pkg).to receive(:ResolvableProperties).with(name, :package, "")
+      allow(Yast::Pkg).to receive(:Resolvables)
+        .with({ kind: :package, name: "yast2" }, [:name, :source, :version])
         .and_return(
           [
             { "name" => "yast2", "source" => 0, "version" => "15.0" },
@@ -104,8 +113,9 @@ describe Y2Packager::Package do
 
   describe "#status" do
     it "returns package status" do
-      expect(Yast::Pkg).to receive(:PkgProperties)
-        .with(package.name).and_return("status" => :available)
+      expect(Yast::Pkg).to receive(:Resolvables)
+        .with({ kind: :package, name: "release-notes-dummy", version: "15.0", source: 1 }, [:status])
+        .and_return(["status" => :available])
       expect(package.status).to eq(:available)
     end
   end
