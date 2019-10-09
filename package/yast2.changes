@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct  9 08:02:32 UTC 2019 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed evaluating the available package versions, fixed crash
+  when trying to download a non-existing package (bsc#1151824)
+- 4.2.27
+
+-------------------------------------------------------------------
 Mon Oct  7 16:00:09 UTC 2019 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Remove old values from /etc/sysctl.conf (jsc#SLE-9077).
