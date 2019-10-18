@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 18 12:20:52 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix showing details for accessing media error (bsc#1153297)
+- 4.2.28
+
+-------------------------------------------------------------------
 Wed Oct  9 08:02:32 UTC 2019 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed evaluating the available package versions, fixed crash
