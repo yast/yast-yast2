@@ -3112,8 +3112,9 @@ module Yast
     end
 
     def show_log_info(message, buttonbox)
+      show_value = UI.QueryWidget(Id(:show), :Value)
       UI.CloseDialog
-      if UI.QueryWidget(Id(:show), :Value)
+      if show_value
         UI.OpenDialog(
           Opt(:decorated),
           layout_popup(message, buttonbox, true)
