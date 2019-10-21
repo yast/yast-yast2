@@ -76,6 +76,7 @@ module Yast
       Yast.import "Mode"
       Yast.import "Stage"
       Yast.import "PackageSystem"
+      Yast.import "Systemd"
 
       textdomain "base"
 
@@ -190,7 +191,7 @@ module Yast
     def Read
       return if @initialized
 
-      if Stage.initial
+      if Stage.initial && !Systemd.Running
         @current_name = DEFAULT_BACKEND
         log.info "Running in installer/AutoYaST, use default: #{@current_name}"
       else
