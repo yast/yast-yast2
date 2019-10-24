@@ -207,6 +207,12 @@ module Yast
       nil
     end
 
+    def reset!
+      @initialized = false
+      @current_name = nil
+      @cached_name = nil
+    end
+
     # Helper to apply a change of the network service
     def EnableDisableNow
       return if !Modified()
@@ -216,7 +222,7 @@ module Yast
         disable_service(current_name)
       end
 
-      RunSystemCtl(BACKENDS[cached_name], "enable", force: true) if cached_name
+      enable_service(cached_name) if cached_name
 
       @initialized = false
       Read()
@@ -431,6 +437,10 @@ module Yast
 
     def disable_service(service)
       RunSystemCtl(BACKENDS[service], "disable")
+    end
+
+    def enable_service(service)
+      RunSystemCtl(BACKENDS[service], "enable", force: true)
     end
 
     publish function: :Read, type: "void ()"
