@@ -72,49 +72,49 @@ module Y2Packager
     # Available products
     #
     # @return [Array<Product>] Available products
-    def all_products
+    def all_products(force_repos: false)
       linuxrc_special_products = if Yast::Linuxrc.InstallInf("specialproduct")
         linuxrc_string(Yast::Linuxrc.InstallInf("specialproduct")).split(",")
       else
         []
       end
 
-      return @all_products if @all_products
+      return @all_products if @all_products && !force_repos
 
-      @all_products = []
-
-      if Yast::Stage.initial && Y2Packager::MediumType.online?
-        Y2Packager::ProductControlProduct.products.each do |p|
-          @all_products << Y2Packager::Product.new(name: p.name, display_name: p.label,
+      if Yast::Stage.initial && Y2Packager::MediumType.online? && !force_repos
+        return Y2Packager::ProductControlProduct.products.each_with_object([]) do |p, result|
+          result << Y2Packager::Product.new(name: p.name, display_name: p.label,
             version: p.version,
             installation_package: "Test" # just hack as we do not know current package name yet
           )
         end
-      else
-        available_products.each do |prod|
-          prod_pkg = product_package(prod["product_package"])
+      end
 
-          if prod_pkg
-            # remove special products if they have not been defined in linuxrc
-            prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Aspecialproduct\(\s*(.*?)\s*\)\z/ }
-            special_product_tag = linuxrc_string(Regexp.last_match[1]) if Regexp.last_match
-            if special_product_tag && !linuxrc_special_products.include?(special_product_tag)
-              log.info "Special product #{prod["name"]} has not been defined via linuxrc. --> do not offer it"
-              next
-            end
+      @all_products = []
 
-            # Evaluating display order
-            prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Adisplayorder\(\s*([0-9]+)\s*\)\z/ }
-            displayorder = Regexp.last_match[1].to_i if Regexp.last_match
+      available_products.each do |prod|
+        prod_pkg = product_package(prod["product_package"])
+
+        if prod_pkg
+          # remove special products if they have not been defined in linuxrc
+          prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Aspecialproduct\(\s*(.*?)\s*\)\z/ }
+          special_product_tag = linuxrc_string(Regexp.last_match[1]) if Regexp.last_match
+          if special_product_tag && !linuxrc_special_products.include?(special_product_tag)
+            log.info "Special product #{prod["name"]} has not been defined via linuxrc. --> do not offer it"
+            next
           end
 
-          @all_products << Y2Packager::Product.new(
-            name: prod["name"], short_name: prod["short_name"], display_name: prod["display_name"],
-            version: prod["version"], arch: prod["arch"], category: prod["category"],
-            vendor: prod["vendor"], order: displayorder,
-            installation_package: installation_package_mapping[prod["name"]]
-          )
+          # Evaluating display order
+          prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Adisplayorder\(\s*([0-9]+)\s*\)\z/ }
+          displayorder = Regexp.last_match[1].to_i if Regexp.last_match
         end
+
+        @all_products << Y2Packager::Product.new(
+          name: prod["name"], short_name: prod["short_name"], display_name: prod["display_name"],
+          version: prod["version"], arch: prod["arch"], category: prod["category"],
+          vendor: prod["vendor"], order: displayorder,
+          installation_package: installation_package_mapping[prod["name"]]
+        )
       end
 
       @all_products
@@ -123,17 +123,18 @@ module Y2Packager
     # In installation Read the available libzypp base products for installation
     # @return [Array<Y2Packager::Product>] the found available base products,
     #   the products are sorted by the 'displayorder' provides value
-    def available_base_products
+    def available_base_products(force_repos: false)
       # If no product contains a 'system-installation()' tag but there is only 1 product,
       # we assume that it is the base one.
-      if all_products.size == 1 && installation_package_mapping.empty?
-        log.info "Assuming that #{all_products.inspect} is the base product."
-        return all_products
+      products = all_products(force_repos: force_repos)
+      if products.size == 1 && installation_package_mapping.empty?
+        log.info "Assuming that #{products.inspect} is the base product."
+        return products
       end
 
-      log.info "all products #{all_products}"
+      log.info "all products #{products}"
       # only installable products
-      products = all_products.select(&:installation_package).sort(&::Y2Packager::PRODUCT_SORTER)
+      products = products.select(&:installation_package).sort(&::Y2Packager::PRODUCT_SORTER)
       log.info "available base products #{products}"
       products
     end
