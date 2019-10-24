@@ -16,6 +16,7 @@ require "y2packager/product_sorter"
 
 Yast.import "Pkg"
 Yast.import "Linuxrc"
+Yast.import "Stage"
 
 module Y2Packager
   # Read the product information from libzypp
@@ -78,30 +79,45 @@ module Y2Packager
         []
       end
 
-      @all_products ||= available_products.each_with_object([]) do |prod, all_products|
-        prod_pkg = product_package(prod["product_package"])
+      return @all_products if @all_products
 
-        if prod_pkg
-          # remove special products if they have not been defined in linuxrc
-          prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Aspecialproduct\(\s*(.*?)\s*\)\z/ }
-          special_product_tag = linuxrc_string(Regexp.last_match[1]) if Regexp.last_match
-          if special_product_tag && !linuxrc_special_products.include?(special_product_tag)
-            log.info "Special product #{prod["name"]} has not been defined via linuxrc. --> do not offer it"
-            next
+      @all_products = []
+
+      if Yast::Stage.initial && Y2Packager::MediumType.online?
+        Y2Packager::ProductControlProduct.products.each do |p|
+          @all_products << Y2Packager::Product.new(name: p.name, display_name: p.label,
+            version: p.version,
+            installation_package: "Test" # just hack as we do not know current package name yet
+          )
+        end
+      else
+        available_products.each do |prod|
+          prod_pkg = product_package(prod["product_package"])
+
+          if prod_pkg
+            # remove special products if they have not been defined in linuxrc
+            prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Aspecialproduct\(\s*(.*?)\s*\)\z/ }
+            special_product_tag = linuxrc_string(Regexp.last_match[1]) if Regexp.last_match
+            if special_product_tag && !linuxrc_special_products.include?(special_product_tag)
+              log.info "Special product #{prod["name"]} has not been defined via linuxrc. --> do not offer it"
+              next
+            end
+
+            # Evaluating display order
+            prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Adisplayorder\(\s*([0-9]+)\s*\)\z/ }
+            displayorder = Regexp.last_match[1].to_i if Regexp.last_match
           end
 
-          # Evaluating display order
-          prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Adisplayorder\(\s*([0-9]+)\s*\)\z/ }
-          displayorder = Regexp.last_match[1].to_i if Regexp.last_match
+          @all_products << Y2Packager::Product.new(
+            name: prod["name"], short_name: prod["short_name"], display_name: prod["display_name"],
+            version: prod["version"], arch: prod["arch"], category: prod["category"],
+            vendor: prod["vendor"], order: displayorder,
+            installation_package: installation_package_mapping[prod["name"]]
+          )
         end
-
-        all_products << Y2Packager::Product.new(
-          name: prod["name"], short_name: prod["short_name"], display_name: prod["display_name"],
-          version: prod["version"], arch: prod["arch"], category: prod["category"],
-          vendor: prod["vendor"], order: displayorder,
-          installation_package: installation_package_mapping[prod["name"]]
-        )
       end
+
+      @all_products
     end
 
     # In installation Read the available libzypp base products for installation
@@ -115,6 +131,7 @@ module Y2Packager
         return all_products
       end
 
+      log.info "all products #{all_products}"
       # only installable products
       products = all_products.select(&:installation_package).sort(&::Y2Packager::PRODUCT_SORTER)
       log.info "available base products #{products}"
