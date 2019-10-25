@@ -32,7 +32,7 @@ describe Y2Packager::Product do
     let(:selected) { instance_double(Y2Packager::Product, selected?: true) }
 
     it "returns base selected packages" do
-      allow(described_class).to receive(:available_base_products)
+      allow(reader).to receive(:available_base_products)
         .and_return([not_selected, selected])
 
       expect(described_class.selected_base).to eq(selected)
@@ -115,7 +115,7 @@ describe Y2Packager::Product do
     let(:selected) { instance_double(Y2Packager::Product, selected?: true) }
 
     it "returns base selected packages" do
-      allow(described_class).to receive(:available_base_products)
+      allow(reader).to receive(:available_base_products)
         .and_return([not_selected, selected])
 
       expect(described_class.selected_base).to eq(selected)
