@@ -87,7 +87,7 @@ module Y2Packager
             version: p.version,
             arch: p.arch,
             installation_package: "Test" # just hack as we do not know current package name yet
-          )
+                                           )
         end
       end
 
