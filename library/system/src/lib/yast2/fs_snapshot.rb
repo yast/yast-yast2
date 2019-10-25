@@ -1,6 +1,6 @@
 # ***************************************************************************
 #
-# Copyright (c) 2015 SUSE LLC
+# Copyright (c) [2015-2019] SUSE LLC
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@ require "yast"
 require "date"
 require "yast2/execute"
 require "shellwords"
+require "csv"
 
 module Yast2
   # Represents the fact that Snapper is not configured for "/" (root).
@@ -70,16 +71,21 @@ module Yast2
     Yast.import "Linuxrc"
     Yast.import "Mode"
 
-    FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
-    CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description %{description}".freeze
-    LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list --disable-used-space".freeze
-    VALID_LINE_REGEX = /\A\s*\d+[-+*]?\s*\|\s*\w+/.freeze
+    FIND_CONFIG_CMD =
+      "/usr/bin/snapper --no-dbus --root=%{root} --csvout list-configs " \
+      "--columns config,subvolume | /usr/bin/grep \"^root,\" >/dev/null".freeze
+
+    CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} " \
+    "--snapshot-type %{snapshot_type} --description %{description}".freeze
+
+    LIST_SNAPSHOTS_CMD =
+      "/usr/bin/snapper --no-dbus --root=%{root} --utc --csvout list --disable-used-space " \
+      "--columns number,type,pre_number,date,user,cleanup,description".freeze
 
     # Predefined snapshot cleanup strategies (the user can define custom ones, too)
     CLEANUP_STRATEGY = { number: "number", timeline: "timeline" }.freeze
 
-    attr_reader :number, :snapshot_type, :previous_number, :timestamp, :user,
-      :cleanup_algo, :description
+    attr_reader :number, :snapshot_type, :previous_number, :timestamp, :user, :cleanup_algo, :description
 
     # FsSnapshot constructor
     #
@@ -88,11 +94,11 @@ module Yast2
     #
     # @param number          [Fixnum]        Snapshot's number.
     # @param snapshot_type   [Symbol]        Snapshot's type: :pre, :post or :single.
-    # @param previous_number [Fixnum]        Previous snapshot's number.
-    # @param timestamp       [DateTime]      Timestamp
-    # @param user            [String]        Snapshot's owner username.
-    # @param cleanup_algo    [String]        Clean-up algorithm.
-    # @param description     [String]        Snapshot's description.
+    # @param previous_number [Fixnum, nil]   Previous snapshot's number.
+    # @param timestamp       [DateTime, nil] Timestamp
+    # @param user            [String, nil]   Snapshot's owner username.
+    # @param cleanup_algo    [Symbol, nil]   Clean-up algorithm.
+    # @param description     [String, nil]   Snapshot's description.
     # @return [FsSnapshot] New FsSnapshot object.
     def initialize(number, snapshot_type, previous_number, timestamp, user, cleanup_algo, description)
       @number = number
@@ -120,7 +126,7 @@ module Yast2
     class << self
       # Determines whether snapper is configured or not
       #
-      # @return [true,false] true if it's configured; false otherwise.
+      # @return [Boolean] true if it's configured; false otherwise.
       def configured?
         return @configured unless @configured.nil?
 
@@ -256,21 +262,20 @@ module Yast2
           Yast::Path.new(".target.bash_output"),
           format(LIST_SNAPSHOTS_CMD, root: target_root.shellescape)
         )
-        lines = out["stdout"].lines.grep(VALID_LINE_REGEX) # relevant lines from output.
-        log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
-        lines.each_with_object([]) do |line, snapshots|
-          data = line.split("|").map(&:strip)
-          next if data[0] == "0" # Ignores 'current' snapshot (id = 0) because it's not a real snapshot
 
-          begin
-            timestamp = DateTime.parse(data[3])
-          rescue ArgumentError
-            log.warn("Error when parsing date/time: #{timestamp}")
-            timestamp = nil
-          end
-          previous_number = (data[2] == "") ? nil : data[2].to_i
-          snapshots << new(data[0].to_i, data[1].to_sym, previous_number, timestamp,
-            data[4], data[5].to_sym, data[6])
+        log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
+
+        csv = CSV.parse(out["stdout"], headers: true, converters: [:date_time, :numeric])
+
+        csv.each_with_object([]) do |row, snapshots|
+          next if row[0] == 0 # Ignores 'current' snapshot (id = 0) because it's not a real snapshot
+
+          fields = row.fields
+
+          fields[1] = fields[1].to_sym # type
+          fields[5] = fields[5].to_sym if fields[5] # cleanup
+
+          snapshots << new(*fields)
         end
       end
 
