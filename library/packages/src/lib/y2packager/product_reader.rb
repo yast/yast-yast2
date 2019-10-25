@@ -85,6 +85,7 @@ module Y2Packager
         return Y2Packager::ProductControlProduct.products.each_with_object([]) do |p, result|
           result << Y2Packager::Product.new(name: p.name, display_name: p.label,
             version: p.version,
+            arch: p.arch,
             installation_package: "Test" # just hack as we do not know current package name yet
           )
         end
