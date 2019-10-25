@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 05 14:15:16 UTC 2019 - José Iván López González <jlopez@suse.com>
+
+- Use new snapper machine-readable output to retrieve snapshots
+  information (related to bsc#1149322).
+- 4.2.33
+
+-------------------------------------------------------------------
 Tue Nov 05 13:24:40 UTC 2019 - Oliver Kurz <okurz@suse.com>
 
 - Add linuxrc option "reboot_timeout" to configure the timeout
