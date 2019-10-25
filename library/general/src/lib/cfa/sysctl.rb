@@ -50,6 +50,9 @@ module CFA
     PATH = "/etc/sysctl.d/30-yast.conf".freeze
 
     class << self
+      def known_attributes
+        ATTRIBUTES.keys
+      end
       # Modifies default CFA methods to handle boolean values
       #
       # When getting or setting the value, a boolean value will be expected. Under the hood, it will
@@ -91,6 +94,8 @@ module CFA
 
     attributes(ATTRIBUTES)
 
+    attr_reader :file_path
+
     # Keys that are handled by this class
     KNOWN_KEYS = ATTRIBUTES.values.uniq.freeze
 
@@ -98,8 +103,13 @@ module CFA
       :ipv4_forwarding_default, :ipv4_forwarding_all, :ipv6_forwarding_default,
       :ipv6_forwarding_all
 
-    def initialize(file_handler: Yast::TargetFile)
-      super(PARSER, PATH, file_handler: file_handler)
+    def initialize(file_handler: Yast::TargetFile, file_path: PATH)
+      super(PARSER, file_path, file_handler: file_handler)
+    end
+
+    def empty?
+      # FIXME: AugeasTree should implement #empty?
+      data.data.empty?
     end
 
     # Loads sysctl content
@@ -129,6 +139,16 @@ module CFA
     def save
       super
       clean_old_values
+    end
+
+    def present?(attr)
+      raw_method = "raw_#{attr}"
+      meth = respond_to?(raw_method) ? raw_method : attr
+      !send(meth).nil?
+    end
+
+    def present_attributes
+      KNOWN_KEYS.select { |k| present?(k) }
     end
 
   private
