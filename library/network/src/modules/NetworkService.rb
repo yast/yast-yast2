@@ -187,18 +187,30 @@ module Yast
       Read()
     end
 
+    # Determines which backend is in use based on the network service. In an
+    # (auto)installation it returns the default backend except if systemd is
+    # running (live) where the systemd service can be checked.
+    #
+    # @return [Symbol,nil] backend in use or nil
+    def backend_in_use
+      backend = nil
+
+      if Stage.initial && !Systemd.Running
+        backend = DEFAULT_BACKEND
+        log.info "Running in installer/AutoYaST, use default: #{backend}"
+      else
+        service = Yast2::Systemd::Service.find("network")
+        backend = BACKENDS.invert[service.name] if service
+      end
+
+      backend
+    end
+
     # Initialize module data
     def Read
       return if @initialized
 
-      if Stage.initial && !Systemd.Running
-        @current_name = DEFAULT_BACKEND
-        log.info "Running in installer/AutoYaST, use default: #{@current_name}"
-      else
-        service = Yast2::Systemd::Service.find("network")
-        @current_name = BACKENDS.invert[service.name] if service
-      end
-
+      @current_name = backend_in_use
       @cached_name = @current_name
 
       log.info "Current backend: #{@current_name}"
