@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Oct 29 07:22:13 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
+
+- fix showing release notes for online upgrade (bsc#1155134)
+- 4.2.30
+
+-------------------------------------------------------------------
 Fri Oct 25 12:57:30 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
 
 - Support for products on control file during upgrade
