@@ -210,8 +210,7 @@ module Yast
     def Read
       return if @initialized
 
-      @current_name = backend_in_use
-      @cached_name = @current_name
+      @cached_name = @current_name = backend_in_use
 
       log.info "Current backend: #{@current_name}"
       @initialized = true
