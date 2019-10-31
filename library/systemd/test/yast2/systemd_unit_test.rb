@@ -72,6 +72,11 @@ module Yast2
     end
 
     describe "#properties" do
+      let(:properties_methods) do
+        [:supported?, :not_found?, :static?, :error, :raw] + delegated_methods
+      end
+      let(:delegated_methods) { [:enabled?, :active?, :loaded?, :path, :can_reload?] }
+
       it "always returns struct including default properties" do
         unit = Systemd::Unit.new("iscsi.socket")
         expect(unit.properties.to_h.keys).to include(*Yast2::Systemd::UnitPropMap::DEFAULT.keys)
@@ -79,25 +84,12 @@ module Yast2
 
       it "provides status properties methods" do
         unit = Systemd::Unit.new("iscsid.socket")
-        expect(unit.properties[:enabled?]).not_to be_nil
-        expect(unit.properties[:active?]).not_to be_nil
-        expect(unit.properties[:loaded?]).not_to be_nil
-        expect(unit.properties[:supported?]).not_to be_nil
-        expect(unit.properties[:not_found?]).not_to be_nil
-        expect(unit.properties[:static?]).not_to be_nil
-        expect(unit.properties[:path]).not_to be_nil
-        expect(unit.properties[:error]).not_to be_nil
-        expect(unit.properties[:raw]).not_to be_nil
-        expect(unit.properties[:can_reload?]).not_to be_nil
+        properties_methods.each { |m| expect(unit.properties[m]).not_to be_nil }
       end
 
       it "delegates the status properties onto the unit object" do
         unit = Systemd::Unit.new("iscsid.socket")
-        expect(unit).to respond_to(:enabled?)
-        expect(unit).to respond_to(:active?)
-        expect(unit).to respond_to(:loaded?)
-        expect(unit).to respond_to(:path)
-        expect(unit).to respond_to(:can_reload?)
+        delegated_methods.each { |m| expect(unit).to respond_to(m) }
       end
     end
 
