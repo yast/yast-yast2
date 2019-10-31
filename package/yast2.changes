@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Mon Oct 21 06:59:33 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
+Thu Oct 31 12:59:33 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
 
 - Network: During an installation, check which backend is in use
   when Systemd is running. (bsc#1151291)
