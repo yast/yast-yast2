@@ -28,6 +28,8 @@
 # $Id$
 require "yast"
 require "y2packager/product_reader"
+require "y2packager/resolvable"
+
 
 module Yast
   class ProductClass < Module
@@ -93,13 +95,13 @@ module Yast
 
       log.info "Looking for base products"
 
-      products = Pkg.ResolvableProperties("", :product, "") || []
+      products = Y2Packager::Resolvable.find(kind: :product) || []
 
       # For all (not only base) products
       # FIXME: filling release notes is a nasty side effect of searching the base product,
       # it should be handled separately...
       required_status = use_installed_products? ? :installed : :selected
-      fill_up_relnotes(products.select { |p| p["status"] == required_status })
+      fill_up_relnotes(products.select { |p| p.status == required_status })
 
       # list of products defined by the "system-installation()" provides
       system_products = Y2Packager::ProductReader.installation_package_mapping.keys
@@ -110,18 +112,18 @@ module Yast
         # The category "base" is not set during installation yet, it is set
         # only for _installed_ base product (otherwise "addon" is reported).
         if use_installed_products?
-          p["category"] == "base"
+          p.category == "base"
         elsif system_products && !system_products.empty?
           # the base product is marked by "system-installation()" provides
           status = selected ? :selected : :available
-          system_products.include?(p["name"]) && p["status"] == status
+          system_products.include?(p.name) && p.status == status
         else
           # Use the product from the initial repository as a fallback
-          p["source"] == 0
+          p.source == 0
         end
       end
 
-      log.info "Found #{products.size} base product(s): #{products.map { |p| p["name"] }.inspect}"
+      log.info "Found #{products.size} base product(s): #{products.map { |p| p.name }.inspect}"
 
       if products.empty?
         log.error "No base product found"

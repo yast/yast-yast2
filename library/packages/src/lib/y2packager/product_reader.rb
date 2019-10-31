@@ -13,6 +13,7 @@
 require "yast"
 require "y2packager/product"
 require "y2packager/product_sorter"
+require "y2packager/resolvable"
 
 Yast.import "Pkg"
 Yast.import "Linuxrc"
@@ -140,8 +141,8 @@ module Y2Packager
       return nil unless name
 
       # find the highest version
-      Yast::Pkg.ResolvableDependencies(name, :package, "").reduce(nil) do |a, p|
-        (!a || (Yast::Pkg.CompareVersions(a["version"], p["version"]) < 0)) ? p : a
+      Y2Packager::Resolvable.find(kind: :package, name: name).reduce(nil) do |a, p|
+        (!a || (Yast::Pkg.CompareVersions(a.version, p.version) < 0)) ? p : a
       end
     end
 
@@ -150,14 +151,14 @@ module Y2Packager
     # read the available products, remove potential duplicates
     # @return [Array<Hash>] pkg-bindings data structure
     def zypp_products
-      products = Yast::Pkg.ResolvableProperties("", :product, "")
+      products = Y2Packager::Resolvable.find(kind: :product)
 
       # remove duplicates, there might be different flavors ("DVD"/"POOL")
       # or archs (x86_64/i586), when selecting the product to install later
       # libzypp will select the correct arch automatically,
       # keep products with different location, they are filtered out later
-      products.uniq! { |p| "#{p["name"]}__#{p["version"]}__#{resolvable_location(p)}" }
-      log.info "Found products: #{products.map { |p| p["name"] }}"
+      products.uniq! { |p| "#{p.name}__#{p.version}__#{resolvable_location(p)}" }
+      log.info "Found products: #{products.map { |p| p.name }}"
 
       products
     end
@@ -216,14 +217,14 @@ module Y2Packager
     # @return [Symbol] `:on_medium` or `:on_system`
     #
     def resolvable_location(res)
-      case res["status"]
+      case res.status
       when :available, :selected
         :on_medium
       when :installed, :removed
         :on_system
       else
         # just in case pkg-bindings add some new status...
-        raise "Unexpected resolvable status: #{res["status"]}"
+        raise "Unexpected resolvable status: #{res.status}"
       end
     end
   end

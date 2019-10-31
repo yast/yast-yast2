@@ -14,6 +14,7 @@ Yast.import "Pkg"
 require "y2packager/product_reader"
 require "y2packager/release_notes_reader"
 require "y2packager/product_license_mixin"
+require "y2packager/resolvable"
 
 module Y2Packager
   # Represent a product which is present in a repository. At this
@@ -257,8 +258,8 @@ module Y2Packager
     # @param statuses [Array<Symbol>] Status to compare with.
     # @return [Boolean] true if it is in the given status
     def status?(*statuses)
-      Yast::Pkg.ResolvableProperties(name, :product, "").any? do |res|
-        statuses.include?(res["status"])
+      Y2Packager::Resolvable.find(kind: :product, :name name).any? do |res|
+        statuses.include?(res.status)
       end
     end
 
@@ -270,8 +271,8 @@ module Y2Packager
     #
     # @return [Hash] properties
     def resolvable_properties
-      @resolvable_properties ||= Yast::Pkg.ResolvableProperties(name, :product, "").find do |data|
-        data["version"] == version
+      @resolvable_properties ||= Y2Packager::Resolvable.find(kind: :product, :name name).find do |data|
+        data.version == version
       end
     end
   end
