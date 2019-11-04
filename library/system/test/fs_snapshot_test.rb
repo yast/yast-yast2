@@ -449,7 +449,6 @@ describe Yast2::FsSnapshot do
 
     context "when snapper is configured" do
       let(:configured) { true }
-      let(:output) { File.read(output_path) }
 
       let(:command) { format(Yast2::FsSnapshot::LIST_SNAPSHOTS_CMD, root: "/") }
 
@@ -460,6 +459,7 @@ describe Yast2::FsSnapshot do
       end
 
       context "given some snapshots exist" do
+        let(:output) { File.read(output_path) }
         let(:output_path) { File.expand_path("fixtures/snapper-list.txt", __dir__) }
 
         it "should return the snapshots and log about how many were found" do
@@ -471,10 +471,24 @@ describe Yast2::FsSnapshot do
       end
 
       context "given no snapshots exist" do
+        let(:output) { File.read(output_path) }
         let(:output_path) { File.expand_path("fixtures/empty-snapper-list.txt", __dir__) }
 
         it "should return an empty array" do
           expect(described_class.all).to eq([])
+        end
+      end
+
+      context "when an snapshot contains a wrong date" do
+        let(:output) do
+          "number,type,pre-number,date,user,cleanup,description\n" \
+          "1,single,,bad-date,root,,\n"
+        end
+
+        it "sets timestamp to nil" do
+          snapshot = described_class.all.first
+
+          expect(snapshot.timestamp).to be_nil
         end
       end
     end

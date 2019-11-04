@@ -274,6 +274,11 @@ module Yast2
 
           fields = row.fields
 
+          if !fields[3].is_a?(DateTime)
+            log.warn("Error when parsing date/time: #{fields[3]}")
+            fields[3] = nil
+          end
+
           fields[1] = fields[1].to_sym # type
           fields[5] = fields[5].to_sym if fields[5] # cleanup
 
