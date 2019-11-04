@@ -94,11 +94,13 @@ module Yast2
     #
     # @param number          [Fixnum]        Snapshot's number.
     # @param snapshot_type   [Symbol]        Snapshot's type: :pre, :post or :single.
-    # @param previous_number [Fixnum, nil]   Previous snapshot's number.
-    # @param timestamp       [DateTime, nil] Timestamp
-    # @param user            [String, nil]   Snapshot's owner username.
-    # @param cleanup_algo    [Symbol, nil]   Clean-up algorithm.
-    # @param description     [String, nil]   Snapshot's description.
+    # @param previous_number [Fixnum, nil]   Previous snapshot's number; nil if the snapshot has no pre
+    #                                        snapshot associated to it.
+    # @param timestamp       [DateTime, nil] Timestamp; nil if the datetime is unknown.
+    # @param user            [String, nil]   Snapshot's owner username; nil if the owner is unknown.
+    # @param cleanup_algo    [Symbol, nil]   Clean-up algorithm; nil if the algorithm is unknown.
+    # @param description     [String, nil]   Snapshot's description; nil if the snapshot has no
+    #                                        description.
     # @return [FsSnapshot] New FsSnapshot object.
     def initialize(number, snapshot_type, previous_number, timestamp, user, cleanup_algo, description)
       @number = number
