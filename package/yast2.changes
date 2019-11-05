@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 05 13:24:40 UTC 2019 - Oliver Kurz <okurz@suse.com>
+
+- Add linuxrc option "reboot_timeout" to configure the timeout
+  before reboot (bsc#1122493)
+- 4.2.32
+
+-------------------------------------------------------------------
 Thu Oct 31 12:59:33 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
 
 - Network: During an installation, check which backend is in use
