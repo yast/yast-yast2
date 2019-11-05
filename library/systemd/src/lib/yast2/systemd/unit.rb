@@ -35,6 +35,7 @@ module Yast2
     #
     class Unit
       Yast.import "Stage"
+      Yast.import "Systemd"
       include Yast::Logger
 
       SUPPORTED_TYPES = %w[service socket target].freeze
@@ -105,7 +106,7 @@ module Yast2
       # @return [Yast2::Systemd::UnitProperties]
       def show(property_text = nil)
         # Using different handler during first stage (installation, update, ...)
-        if Yast::Stage.initial
+        if Yast::Stage.initial && !Yast::Systemd.Running
           UnitInstallationProperties.new(self)
         else
           UnitProperties.new(self, property_text)

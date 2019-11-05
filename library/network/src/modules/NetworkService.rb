@@ -76,6 +76,7 @@ module Yast
       Yast.import "Mode"
       Yast.import "Stage"
       Yast.import "PackageSystem"
+      Yast.import "Systemd"
 
       textdomain "base"
 
@@ -186,24 +187,41 @@ module Yast
       Read()
     end
 
+    # Determines which backend is in use based on the network service. In an
+    # (auto)installation it returns the default backend except if systemd is
+    # running (live) where the systemd service can be checked.
+    #
+    # @return [Symbol,nil] backend in use or nil
+    def backend_in_use
+      backend = nil
+
+      if Stage.initial && !Systemd.Running
+        backend = DEFAULT_BACKEND
+        log.info "Running in installer/AutoYaST, use default: #{backend}"
+      else
+        service = Yast2::Systemd::Service.find("network")
+        backend = BACKENDS.invert[service.name] if service
+      end
+
+      backend
+    end
+
     # Initialize module data
     def Read
       return if @initialized
 
-      if Stage.initial
-        @current_name = DEFAULT_BACKEND
-        log.info "Running in installer/AutoYaST, use default: #{@current_name}"
-      else
-        service = Yast2::Systemd::Service.find("network")
-        @current_name = BACKENDS.invert[service.name] if service
-      end
-
-      @cached_name = @current_name
+      @cached_name = @current_name = backend_in_use
 
       log.info "Current backend: #{@current_name}"
       @initialized = true
 
       nil
+    end
+
+    def reset!
+      @initialized = false
+      @current_name = nil
+      @cached_name = nil
     end
 
     # Helper to apply a change of the network service
@@ -215,7 +233,7 @@ module Yast
         disable_service(current_name)
       end
 
-      RunSystemCtl(BACKENDS[cached_name], "enable", force: true) if cached_name
+      enable_service(cached_name) if cached_name
 
       @initialized = false
       Read()
@@ -430,6 +448,10 @@ module Yast
 
     def disable_service(service)
       RunSystemCtl(BACKENDS[service], "disable")
+    end
+
+    def enable_service(service)
+      RunSystemCtl(BACKENDS[service], "enable", force: true)
     end
 
     publish function: :Read, type: "void ()"

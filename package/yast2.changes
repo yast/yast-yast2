@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct 31 12:59:33 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
+
+- Network: During an installation, check which backend is in use
+  when Systemd is running. (bsc#1151291)
+- 4.2.31
+
+-------------------------------------------------------------------
 Tue Oct 29 07:22:13 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
 
 - fix showing release notes for online upgrade (bsc#1155134)
