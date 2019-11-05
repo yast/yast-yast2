@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+- Add linuxrc option "reboot_timeout" to configure the timeout
+  before reboot (bsc#1122493)
+- 4.1.81
+
+-------------------------------------------------------------------
 Mon Dec 21 10:27:21 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not use the 'installation-helper' binary to create snapshots
