@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.2.32
+Version:        4.2.33
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -119,6 +119,8 @@ Conflicts:      yast2-installation < 4.2.9
 Conflicts:      yast2-mail < 3.1.7
 # Older packager use removed API
 Conflicts:      yast2-packager < 4.0.33
+# Older snapper does not provide machine-readable output
+Conflicts:	snapper < 0.8.6
 
 Obsoletes:      yast2-devel-doc
 

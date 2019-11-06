@@ -1,5 +1,24 @@
 #!/usr/bin/env rspec
 
+# Copyright (c) [2015-2019] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
 require_relative "test_helper"
 require "yast2/fs_snapshot"
 
@@ -7,10 +26,6 @@ describe Yast2::FsSnapshot do
   def logger
     described_class.log
   end
-
-  FIND_CONFIG = "/usr/bin/snapper --no-dbus --root=/ list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
-  FIND_IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
-  LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list --disable-used-space".freeze
 
   let(:dummy_snapshot) { double("snapshot") }
 
@@ -20,9 +35,11 @@ describe Yast2::FsSnapshot do
   end
 
   describe ".configured?" do
+    let(:command) { format(Yast2::FsSnapshot::FIND_CONFIG_CMD, root: "/") }
+
     before do
       allow(Yast::SCR).to receive(:Execute)
-        .with(path(".target.bash_output"), FIND_CONFIG)
+        .with(path(".target.bash_output"), command)
         .and_return("stdout" => "", "exit" => find_code)
     end
 
@@ -44,7 +61,10 @@ describe Yast2::FsSnapshot do
     end
 
     context "in initial stage before scr switched" do
+      let(:command) { format(Yast2::FsSnapshot::FIND_CONFIG_CMD, root: "/mnt") }
+
       let(:find_code) { 0 }
+
       before do
         Yast.import "Installation"
         Yast::Installation.destdir = "/mnt"
@@ -53,13 +73,13 @@ describe Yast2::FsSnapshot do
         allow(Yast::Stage).to receive(:initial).and_return true
 
         allow(Yast::SCR).to receive(:Execute)
-          .with(path(".target.bash_output"), FIND_IN_ROOT_CONFIG)
+          .with(path(".target.bash_output"), command)
           .and_return("stdout" => "", "exit" => 0)
       end
 
       it "detects snapper configuration in installation target dir" do
         expect(Yast::SCR).to receive(:Execute)
-          .with(path(".target.bash_output"), FIND_IN_ROOT_CONFIG)
+          .with(path(".target.bash_output"), command)
           .and_return("stdout" => "", "exit" => 0)
 
         expect(described_class.configured?).to eq(true)
@@ -429,15 +449,17 @@ describe Yast2::FsSnapshot do
 
     context "when snapper is configured" do
       let(:configured) { true }
-      let(:output) { File.read(output_path) }
+
+      let(:command) { format(Yast2::FsSnapshot::LIST_SNAPSHOTS_CMD, root: "/") }
 
       before do
         allow(Yast::SCR).to receive(:Execute)
-          .with(path(".target.bash_output"), LIST_SNAPSHOTS)
+          .with(path(".target.bash_output"), command)
           .and_return("stdout" => output, "exit" => 0)
       end
 
       context "given some snapshots exist" do
+        let(:output) { File.read(output_path) }
         let(:output_path) { File.expand_path("fixtures/snapper-list.txt", __dir__) }
 
         it "should return the snapshots and log about how many were found" do
@@ -449,10 +471,24 @@ describe Yast2::FsSnapshot do
       end
 
       context "given no snapshots exist" do
+        let(:output) { File.read(output_path) }
         let(:output_path) { File.expand_path("fixtures/empty-snapper-list.txt", __dir__) }
 
         it "should return an empty array" do
           expect(described_class.all).to eq([])
+        end
+      end
+
+      context "when an snapshot contains a wrong date" do
+        let(:output) do
+          "number,type,pre-number,date,user,cleanup,description\n" \
+          "1,single,,bad-date,root,,\n"
+        end
+
+        it "sets timestamp to nil" do
+          snapshot = described_class.all.first
+
+          expect(snapshot.timestamp).to be_nil
         end
       end
     end
@@ -477,9 +513,11 @@ describe Yast2::FsSnapshot do
       let(:output) { File.read(output_path) }
       let(:output_path) { File.expand_path("fixtures/snapper-list.txt", __dir__) }
 
+      let(:command) { format(Yast2::FsSnapshot::LIST_SNAPSHOTS_CMD, root: "/") }
+
       before do
         allow(Yast::SCR).to receive(:Execute)
-          .with(path(".target.bash_output"), LIST_SNAPSHOTS)
+          .with(path(".target.bash_output"), command)
           .and_return("stdout" => output, "exit" => 0)
       end
 
@@ -489,7 +527,7 @@ describe Yast2::FsSnapshot do
           expect(snapshot.number).to eq(4)
           expect(snapshot.snapshot_type).to eq(:post)
           expect(snapshot.previous_number).to eq(3)
-          expect(snapshot.timestamp).to eq(DateTime.parse("Wed 13 May 2015 05:03:13 PM WEST"))
+          expect(snapshot.timestamp).to eq(DateTime.parse("2015-05-13 05:03:13"))
           expect(snapshot.user).to eq("root")
           expect(snapshot.cleanup_algo).to eq(:number)
           expect(snapshot.description).to eq("zypp(zypper)")
@@ -517,10 +555,12 @@ describe Yast2::FsSnapshot do
     let(:output) { File.read(output_path) }
     let(:output_path) { File.expand_path("fixtures/snapper-list.txt", __dir__) }
 
+    let(:command) { format(Yast2::FsSnapshot::LIST_SNAPSHOTS_CMD, root: "/") }
+
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(true)
       allow(Yast::SCR).to receive(:Execute)
-        .with(path(".target.bash_output"), LIST_SNAPSHOTS)
+        .with(path(".target.bash_output"), command)
         .and_return("stdout" => output, "exit" => 0)
     end
 
