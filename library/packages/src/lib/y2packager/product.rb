@@ -245,7 +245,7 @@ module Y2Packager
     def relnotes_url
       return nil unless resolvable_properties
 
-      url = resolvable_properties["relnotes_url"]
+      url = resolvable_properties.relnotes_url
       url.empty? ? nil : url
     end
 
@@ -258,7 +258,7 @@ module Y2Packager
     # @param statuses [Array<Symbol>] Status to compare with.
     # @return [Boolean] true if it is in the given status
     def status?(*statuses)
-      Y2Packager::Resolvable.find(kind: :product, :name name).any? do |res|
+      Y2Packager::Resolvable.find(kind: :product, name: name).any? do |res|
         statuses.include?(res.status)
       end
     end
@@ -271,9 +271,7 @@ module Y2Packager
     #
     # @return [Hash] properties
     def resolvable_properties
-      @resolvable_properties ||= Y2Packager::Resolvable.find(kind: :product, :name name).find do |data|
-        data.version == version
-      end
+      @resolvable_properties ||= Y2Packager::Resolvable.find(kind: :product, name: name, version: version)
     end
   end
 end
