@@ -1666,7 +1666,7 @@ module Yast
         log.info("Using the latest package: #{latest_package}")
       end
 
-      latest_package["source"]
+      latest_package.source
     end
 
     # Download and extract a package from a repository.

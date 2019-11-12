@@ -286,19 +286,25 @@ describe Yast::WorkflowManager do
     # setup fake products and their packages
     let(:repo_id) { 42 }
     let(:product_package) { "foo-release" }
-    let(:product) { { "name" => "foo", "source" => repo_id, "product_package" => product_package } }
+    let(:product) do
+      Y2Packager::Resolvable.new("kind" => :product, "name" => "foo", "source" => repo_id,
+      "version" => "1.0", "arch" => "x86_64", "product_package" => product_package)
+    end
     let(:ext_package) { "foo-installation" }
-    let(:extension) { { "name" => ext_package, "source" => repo_id } }
+    let(:extension) do
+      Y2Packager::Resolvable.new("kind" => :package, "name" => ext_package, "source" => repo_id,
+        "version" => "1.0", "arch" => "x86_64", "deps" => [])
+    end
     let(:release) do
-      { "name" => product_package, "source" => repo_id,
-      "deps" => ["provides" => "installerextension(#{ext_package})"] }
+      Y2Packager::Resolvable.new("name" => product_package, "source" => repo_id, "version" => "1.0", "arch" => "x86_64",
+      "kind" => :package, "deps" => ["provides" => "installerextension(#{ext_package})"])
     end
 
     before do
       # generic mocks, can be are overriden in the tests
-      allow(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
-      allow(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
-      allow(Yast::Pkg).to receive(:ResolvableProperties).with(ext_package, :package, "").and_return([extension])
+      allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product).and_return([product])
+      allow(Y2Packager::Resolvable).to receive(:find).with(name: product_package, kind: :package).and_return([release])
+      allow(Y2Packager::Resolvable).to receive(:find).with(name: ext_package, kind: :package).and_return([extension])
       allow_any_instance_of(Packages::PackageDownloader).to receive(:download)
       allow_any_instance_of(Packages::PackageExtractor).to receive(:extract)
       # allow using it at other places
@@ -307,42 +313,46 @@ describe Yast::WorkflowManager do
 
     context "when repository id is passed" do
       it "returns nil if the repository does not provide any product" do
-        expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([])
+        expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product).and_return([])
         expect(subject.control_file(repo_id)).to be nil
       end
 
       it "returns nil if the product does not refer to a release package" do
-        product = { "name" => "foo", "source" => repo_id }
-        expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+        product = Y2Packager::Resolvable.new("kind" => :product, "name" => "foo", "source" => repo_id,
+          "version" => "1.0", "arch" => "x86_64", "product_package" => product_package)
+        expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product).and_return([product])
         expect(subject.control_file(repo_id)).to be nil
       end
 
       it "returns nil if the product belongs to a different repository" do
-        product = { "name" => "foo", "source" => repo_id + 1 }
-        expect(Yast::Pkg).to receive(:ResolvableDependencies).with("", :product, "").and_return([product])
+        product = Y2Packager::Resolvable.new("kind" => :product, "name" => "foo", "source" => repo_id + 1,
+          "version" => "1.0", "arch" => "x86_64", "product_package" => product_package)
+        expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product).and_return([product])
         expect(subject.control_file(repo_id)).to be nil
       end
 
       it "returns nil if the release package cannot be found" do
-        expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([])
+        expect(Y2Packager::Resolvable).to receive(:find).with(name: product_package, kind: :package).and_return([])
         expect(subject.control_file(repo_id)).to be nil
       end
 
       it "returns nil if the release package does not have any dependencies" do
-        release = { "name" => "foo", "source" => repo_id }
-        expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+        release = Y2Packager::Resolvable.new("kind" => :package, "name" => "foo", "source" => repo_id,
+          "version" => "1.0", "arch" => "x86_64", "deps" => [])
+        expect(Y2Packager::Resolvable).to receive(:find).with(name: product_package, kind: :package).and_return([release])
         expect(subject.control_file(repo_id)).to be nil
       end
 
       it "returns nil if the release package does not have any installerextension() provides" do
-        release = { "name" => "foo", "source" => repo_id, "deps" => ["provides" => "foo"] }
-        expect(Yast::Pkg).to receive(:ResolvableDependencies).with(product_package, :package, "").and_return([release])
+        release = Y2Packager::Resolvable.new("kind" => :package, "name" => "foo", "source" => repo_id,
+          "version" => "1.0", "arch" => "x86_64", "deps" => ["provides" => "foo"])
+        expect(Y2Packager::Resolvable).to receive(:find).with(name: product_package, kind: :package).and_return([release])
         expect(subject.control_file(repo_id)).to be nil
       end
     end
 
     it "returns nil if the installer extension package is not found" do
-      expect(Yast::Pkg).to receive(:ResolvableProperties).with(ext_package, :package, "").and_return([])
+      expect(Y2Packager::Resolvable).to receive(:find).with(name: ext_package, kind: :package).and_return([])
       expect(subject.control_file(repo_id)).to be nil
     end
 
