@@ -52,6 +52,7 @@ BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
 # Pkg.Resolvables()
 BuildRequires:  yast2-pkg-bindings >= 4.2.0
+BuildRequires:  yast2-packager
 BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
 # To have Yast::WFM.scr_root
 BuildRequires:  yast2-ruby-bindings >= 3.2.8
@@ -89,6 +90,7 @@ Requires:       yast2-hardware-detection
 Requires:       yast2-perl-bindings
 # Pkg.Resolvables()
 Requires:       yast2-pkg-bindings >= 4.2.0
+Requires:       yast2-packager
 # for y2start
 Requires:       yast2-ruby-bindings >= 3.2.10
 Requires:       yast2-xml
