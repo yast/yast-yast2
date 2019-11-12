@@ -133,15 +133,15 @@ module Yast
 
       # returns a hash in order to not change the interface
       products.map do |p|
-        { "name" => p.name,
-          "short_name" => p.short_name,
-          "display_name" => p.display_name,
-          "version" => p.version,
-          "arch" => p.arch,
-          "category" => p.category,
-          "vendor" => p.vendor,
-          "status" => p.status,
-          "relnotes_url" => p.relnotes_url,
+        { "name"            => p.name,
+          "short_name"      => p.short_name,
+          "display_name"    => p.display_name,
+          "version"         => p.version,
+          "arch"            => p.arch,
+          "category"        => p.category,
+          "vendor"          => p.vendor,
+          "status"          => p.status,
+          "relnotes_url"    => p.relnotes_url,
           "register_target" => p.register_target }
       end
     end
