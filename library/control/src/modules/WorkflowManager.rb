@@ -415,7 +415,7 @@ module Yast
       package = case source
       when ::Integer
         product = find_product(source)
-        return nil unless product && product.product_package
+        return nil unless product&.product_package
 
         product_package = product.product_package
 
@@ -1629,7 +1629,7 @@ module Yast
     # @param  [Y2Packager::Resolvable] release package
     # @return [String,nil] a package name or nil if not found
     def find_control_package(release_package)
-      return nil unless release_package && release_package.deps
+      return nil unless release_package&.deps
 
       release_package.deps.each do |dep|
         provide = dep["provides"]

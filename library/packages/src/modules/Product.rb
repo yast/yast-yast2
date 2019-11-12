@@ -30,7 +30,6 @@ require "yast"
 require "y2packager/product_reader"
 require "y2packager/resolvable"
 
-
 module Yast
   class ProductClass < Module
     include Yast::Logger
@@ -123,7 +122,7 @@ module Yast
         end
       end
 
-      log.info "Found #{products.size} base product(s): #{products.map { |p| p.name }.inspect}"
+      log.info "Found #{products.size} base product(s): #{products.map(&:name).inspect}"
 
       if products.empty?
         log.error "No base product found"

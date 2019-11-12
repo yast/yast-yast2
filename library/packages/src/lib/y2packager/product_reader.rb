@@ -158,7 +158,7 @@ module Y2Packager
       # libzypp will select the correct arch automatically,
       # keep products with different location, they are filtered out later
       products.uniq! { |p| "#{p.name}__#{p.version}__#{resolvable_location(p)}" }
-      log.info "Found products: #{products.map { |p| p.name }}"
+      log.info "Found products: #{products.map(&:name)}"
 
       products
     end
