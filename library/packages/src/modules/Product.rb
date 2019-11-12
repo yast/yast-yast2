@@ -131,7 +131,19 @@ module Yast
         log.warn "More than one base product found!"
       end
 
-      deep_copy(products)
+      # returns a hash in order to not change the interface
+      products.map do |p|
+        { "name" => p.name,
+          "short_name" => p.short_name,
+          "display_name" => p.display_name,
+          "version" => p.version,
+          "arch" => p.arch,
+          "category" => p.category,
+          "vendor" => p.vendor,
+          "status" => p.status,
+          "relnotes_url" => p.relnotes_url,
+          "register_target" => p.register_target }
+      end
     end
 
     # Reads products from libzypp and fills the internal products cache
@@ -212,11 +224,11 @@ module Yast
       release_notes_to_product = {}
 
       products.map do |p|
-        next if p["relnotes_url"] == ""
+        next if p.relnotes_url == ""
 
-        url = p["relnotes_url"]
+        url = p.relnotes_url
         all_release_notes << url
-        release_notes_to_product[url] = (p["display_name"] || "")
+        release_notes_to_product[url] = (p.display_name || "")
       end
 
       set_property(:relnotesurl_all, all_release_notes)
