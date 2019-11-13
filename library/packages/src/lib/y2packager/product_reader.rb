@@ -131,7 +131,8 @@ module Y2Packager
       Y2Packager::Product.new(
         name: base.name, short_name: base.short_name, display_name: base.display_name,
         version: base.version, arch: base.arch, category: base.category,
-        vendor: base.vendor, installation_package: installation_package_mapping[base.name])
+        vendor: base.vendor, installation_package: installation_package_mapping[base.name]
+      )
     end
 
     # All installed products
@@ -141,7 +142,8 @@ module Y2Packager
         Y2Packager::Product.new(
           name: p.name, short_name: p.short_name, display_name: p.display_name,
           version: p.version, arch: base.arch, category: p.category,
-          vendor: p.vendor, installation_package: installation_package_mapping[p.name])
+          vendor: p.vendor, installation_package: installation_package_mapping[p.name]
+        )
       end
     end
 

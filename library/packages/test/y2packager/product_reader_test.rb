@@ -17,7 +17,7 @@ require "y2packager/product_reader"
 
 describe Y2Packager::ProductReader do
   subject { Y2Packager::ProductReader.new }
-  let(:products_hash) { YAML.load(File.read(File.join(PACKAGES_FIXTURES_PATH, "products-sles15.yml"))) }  # rubocop:disable Security/YAMLLoad  
+  let(:products_hash) { YAML.load(File.read(File.join(PACKAGES_FIXTURES_PATH, "products-sles15.yml"))) } # rubocop:disable Security/YAMLLoad
   let(:products) do
     products_hash.map { |p| Y2Packager::Resolvable.new(p) }
   end
@@ -29,7 +29,7 @@ describe Y2Packager::ProductReader do
       # TODO: proper mocking of pkg methods
       allow(subject).to receive(:installation_package_mapping).and_return(installation_package_map)
       allow(Y2Packager::Resolvable).to receive(:find).with(kind: :package, name: //)
-        .and_return([])      
+        .and_return([])
     end
 
     it "returns empty list if there is no product" do
@@ -71,19 +71,19 @@ describe Y2Packager::ProductReader do
     context "when no product with system-installation() tag exists" do
       let(:installation_package_map) { {} }
       let(:prod1) do
-        Y2Packager::Resolvable.new("kind" => :product, 
+        Y2Packager::Resolvable.new("kind" => :product,
           "name" => "SLES", "status" => :available, "source" => 1, "short_name" => "short_name",
           "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
           "display_name" => "display_name", "category" => "addon",
-          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany" )
+          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")
       end
 
       let(:prod2) do
-        Y2Packager::Resolvable.new("kind" => :product, 
+        Y2Packager::Resolvable.new("kind" => :product,
           "name" => "SLED", "status" => :available, "source" => 2, "short_name" => "short_name",
           "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
           "display_name" => "display_name", "category" => "addon",
-          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany" )
+          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")
       end
 
       before do
@@ -146,10 +146,10 @@ describe Y2Packager::ProductReader do
       allow(subject).to receive(:product_package).with("sles-release")
         .and_return(nil)
       allow(subject).to receive(:product_package).with("SLES_BCL-release")
-        .and_return(Y2Packager::Resolvable.new( "name" => "product_package",
+        .and_return(Y2Packager::Resolvable.new("name" => "product_package",
         "source" => 1, "version" => "1.0", "arch" => "x86_64",
         "kind" => :package, "deps" => [{ "conflicts"=>"kernel < 4.4" },
-        { "provides"=>"specialproduct(SLES_BCL)" }]))
+                                       { "provides"=>"specialproduct(SLES_BCL)" }]))
       allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return(nil)
     end
 
