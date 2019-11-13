@@ -166,8 +166,13 @@ describe Y2Packager::Product do
 
   describe "#selected?" do
     before do
-      allow(Yast::Pkg).to receive(:ResolvableProperties).with(product.name, :product, "")
-        .and_return([{ "name" => product.name, "status" => status }])
+      allow(Y2Packager::Resolvable).to receive(:find).with(name: product.name, kind: :product)
+        .and_return([Y2Packager::Resolvable.new("kind" => :product,
+        "name" => product.name, "status" => status,
+        "source" => 1, "short_name" => "short_name",
+        "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
+        "display_name" => "display_name", "category" => "addon",
+        "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")])
     end
 
     context "if product was selected for installation" do
@@ -189,8 +194,13 @@ describe Y2Packager::Product do
 
   describe "#installed?" do
     before do
-      allow(Yast::Pkg).to receive(:ResolvableProperties).with(product.name, :product, "")
-        .and_return([{ "name" => product.name, "status" => status }])
+      allow(Y2Packager::Resolvable).to receive(:find).with(name: product.name, kind: :product)
+        .and_return([Y2Packager::Resolvable.new("kind" => :product,
+        "name" => product.name, "status" => status,
+        "source" => 1, "short_name" => "short_name",
+        "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
+        "display_name" => "display_name", "category" => "addon",
+        "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")])
     end
 
     context "if product is installed" do
@@ -421,14 +431,24 @@ describe Y2Packager::Product do
   describe "#status?" do
     let(:properties) do
       [
-        { "name" => "openSUSE", "status" => :removed },
-        { "name" => "openSUSE", "status" => :selected }
+        Y2Packager::Resolvable.new("kind" => :product,
+          "name" => "openSUSE", "status" => :removed,
+          "source" => 1, "short_name" => "short_name",
+          "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
+          "display_name" => "display_name", "category" => "addon",
+          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany"),
+        Y2Packager::Resolvable.new("kind" => :product,
+          "name" => "openSUSE", "status" => :selected,
+          "source" => 1, "short_name" => "short_name",
+          "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
+          "display_name" => "display_name", "category" => "addon",
+          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")
       ]
     end
 
     before do
-      allow(Yast::Pkg).to receive(:ResolvableProperties)
-        .with("openSUSE", :product, "").and_return(properties)
+      allow(Y2Packager::Resolvable).to receive(:find)
+        .with(name: "openSUSE", kind: :product).and_return(properties)
     end
 
     context "when given status is within product statuses" do
@@ -448,8 +468,15 @@ describe Y2Packager::Product do
     let(:relnotes_url) { "http://doc.opensuse.org/openSUSE/release-notes-openSUSE.rpm" }
 
     before do
-      allow(Yast::Pkg).to receive(:ResolvableProperties).with(product.name, :product, "")
-        .and_return([{ "version" => product.version, "relnotes_url" => relnotes_url }])
+      allow(Y2Packager::Resolvable).to receive(:find).with(name: product.name,
+        kind: :product, version: product.version)
+        .and_return([Y2Packager::Resolvable.new("kind" => :product,
+        "name" => "openSUSE", "status" => :selected,
+        "source" => 1, "short_name" => "short_name",
+        "version" => product.version, "relnotes_url" => relnotes_url,
+        "arch" => "x86_64", "product_package" => "testpackage",
+        "display_name" => "display_name", "category" => "addon",
+        "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")])
     end
 
     it "returns relnotes_url property" do
@@ -466,8 +493,8 @@ describe Y2Packager::Product do
 
     context "when product properties are not found" do
       before do
-        allow(Yast::Pkg).to receive(:ResolvableProperties).with(product.name, :product, "")
-          .and_return([])
+        allow(Y2Packager::Resolvable).to receive(:find).with(name: product.name,
+          kind: :product, version: product.version).and_return([])
       end
 
       it "returns nil" do

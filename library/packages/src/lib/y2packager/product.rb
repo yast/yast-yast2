@@ -271,7 +271,7 @@ module Y2Packager
     #
     # @return [Hash] properties
     def resolvable_properties
-      @resolvable_properties ||= Y2Packager::Resolvable.find(kind: :product, name: name, version: version)
+      @resolvable_properties ||= Y2Packager::Resolvable.find(kind: :product, name: name, version: version).first
     end
   end
 end
