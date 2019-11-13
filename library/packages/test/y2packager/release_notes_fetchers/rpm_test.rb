@@ -14,7 +14,7 @@ describe Y2Packager::ReleaseNotesFetchers::Rpm do
       Y2Packager::Resolvable.new("kind" => :package,
         "name" => "release-notes-dummy", "source" => 1,
         "version" => "1.0", "arch" => "x86_64", "status" => :selected,
-        "deps"   => [{ "provides" => "release-notes() = dummy" }])
+        "deps" => [{ "provides" => "release-notes() = dummy" }])
     ]
   end
 
