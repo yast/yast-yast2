@@ -141,7 +141,7 @@ module Y2Packager
       installed_products.map do |p|
         Y2Packager::Product.new(
           name: p.name, short_name: p.short_name, display_name: p.display_name,
-          version: p.version, arch: base.arch, category: p.category,
+          version: p.version, arch: p.arch, category: p.category,
           vendor: p.vendor, installation_package: installation_package_mapping[p.name]
         )
       end
