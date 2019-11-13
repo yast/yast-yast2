@@ -80,27 +80,27 @@ module Y2Packager
       end
 
       @all_products ||= available_products.each_with_object([]) do |prod, all_products|
-        prod_pkg = product_package(prod["product_package"])
+        prod_pkg = product_package(prod.product_package)
 
         if prod_pkg
           # remove special products if they have not been defined in linuxrc
-          prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Aspecialproduct\(\s*(.*?)\s*\)\z/ }
+          prod_pkg.deps.find { |dep| dep["provides"] =~ /\Aspecialproduct\(\s*(.*?)\s*\)\z/ }
           special_product_tag = linuxrc_string(Regexp.last_match[1]) if Regexp.last_match
           if special_product_tag && !linuxrc_special_products.include?(special_product_tag)
-            log.info "Special product #{prod["name"]} has not been defined via linuxrc. --> do not offer it"
+            log.info "Special product #{prod.name} has not been defined via linuxrc. --> do not offer it"
             next
           end
 
           # Evaluating display order
-          prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Adisplayorder\(\s*([0-9]+)\s*\)\z/ }
+          prod_pkg.deps.find { |dep| dep["provides"] =~ /\Adisplayorder\(\s*([0-9]+)\s*\)\z/ }
           displayorder = Regexp.last_match[1].to_i if Regexp.last_match
         end
 
         all_products << Y2Packager::Product.new(
-          name: prod["name"], short_name: prod["short_name"], display_name: prod["display_name"],
-          version: prod["version"], arch: prod["arch"], category: prod["category"],
-          vendor: prod["vendor"], order: displayorder,
-          installation_package: installation_package_mapping[prod["name"]]
+          name: prod.name, short_name: prod.short_name, display_name: prod.display_name,
+          version: prod.version, arch: prod.arch, category: prod.category,
+          vendor: prod.vendor, order: displayorder,
+          installation_package: installation_package_mapping[prod.name]
         )
       end
     end
@@ -128,13 +128,21 @@ module Y2Packager
       base = base_product
       return nil unless base
 
-      Y2Packager::Product.from_h(base)
+      Y2Packager::Product.new(
+        name: base.name, short_name: base.short_name, display_name: base.display_name,
+        version: base.version, arch: base.arch, category: base.category,
+        vendor: base.vendor, installation_package: installation_package_mapping[base.name])
     end
 
     # All installed products
     # @return [Array<Y2Packager::Product>] the product list
     def all_installed_products
-      installed_products.map { |p| Y2Packager::Product.from_h(p) }
+      installed_products.map do |p|
+        Y2Packager::Product.new(
+          name: p.name, short_name: p.short_name, display_name: p.display_name,
+          version: p.version, arch: base.arch, category: p.category,
+          vendor: p.vendor, installation_package: installation_package_mapping[p.name])
+      end
     end
 
     def product_package(name, _repo_id = nil)
@@ -167,14 +175,14 @@ module Y2Packager
     # @return [Array<Hash>] pkg-bindings data structures
     def available_products
       # select only the available or to be installed products
-      zypp_products.select { |p| p["status"] == :available || p["status"] == :selected }
+      zypp_products.select { |p| p.status == :available || p.status == :selected }
     end
 
     # read the installed products
     # @return [Array<Hash>] pkg-bindings data structures
     def installed_products
       # select only the installed or to be removed products
-      zypp_products.select { |p| p["status"] == :installed || p["status"] == :removed }
+      zypp_products.select { |p| p.status == :installed || p.status == :removed }
     end
 
     # find the installed base product
@@ -185,7 +193,7 @@ module Y2Packager
       # The "installed" condition is actually not required because that symlink is created
       # only for installed products. (Just make sure it still works in case the libzypp
       # internal implementation is changed.)
-      base = installed_products.find { |p| p["type"] == "base" }
+      base = installed_products.find { |p| p.type == "base" }
 
       log.info("Found installed base product: #{base}")
       base
