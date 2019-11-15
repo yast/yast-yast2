@@ -54,7 +54,7 @@ module Y2Packager
         log.info "Searching for a license for product #{product_name}"
         return cache[product_name] if cache[product_name]
 
-        fetcher = LicensesFetchers.for(product_name)
+        fetcher = LicensesFetchers.for(product_name) unless content
         handler = LicensesHandlers.for(fetcher, product_name) if fetcher
 
         license = License.new(product_name: product_name, fetcher: fetcher,
