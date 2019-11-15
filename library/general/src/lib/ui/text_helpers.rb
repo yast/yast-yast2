@@ -43,18 +43,20 @@ module UI
       end
 
       result = wrapped_text.join("\n")
-      result = excerpt(result, n_lines, omission: cut_text) if n_lines
+      result = head(result, n_lines, omission: cut_text) if n_lines
       result
     end
 
-    # Extract an excerpt of given text if it has more lines than the maximum allowed
+    # Returns only the first requested lines of the given text
+    #
+    # If the omission param is given, an extra line holding it will be included
     #
     # @param text [String]
     # @param max_lines [Integer]
     # @param omission [String] the text to be added
     #
-    # @return [String] an excerpt if given text had more lines than requested; full text otherwise
-    def excerpt(text, max_lines, omission: "")
+    # @return [String] the first requested lines if the text has more; full text otherwise
+    def head(text, max_lines, omission: "")
       lines = text.lines
 
       return text if lines.length <= max_lines

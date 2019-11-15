@@ -94,28 +94,28 @@ describe ::UI::TextHelpers do
     end
   end
 
-  describe "#excerpt" do
+  describe "#head" do
     let(:omission_text) { "read more" }
 
     context "when the text has less lines than requested" do
       it "returns the full text" do
-        expect(subject.excerpt(text, 10)).to eq(text)
+        expect(subject.head(text, 10)).to eq(text)
       end
 
       context "and the omision text is given" do
         it "does not include the omission text" do
-          expect(subject.excerpt(text, 10, omission: omission_text)).to_not include(omission_text)
+          expect(subject.head(text, 10, omission: omission_text)).to_not include(omission_text)
         end
       end
     end
 
     context "when the text has more lines than requested" do
       it "returns only the first requested lines" do
-        excerpt = subject.excerpt(text, 2)
+        head = subject.head(text, 2)
 
-        expect(excerpt.lines.size).to eq(2)
-        expect(excerpt).to match(/^This is/)
-        expect(excerpt).to match(/broken$/)
+        expect(head.lines.size).to eq(2)
+        expect(head).to match(/^This is/)
+        expect(head).to match(/broken$/)
       end
     end
   end
