@@ -99,7 +99,10 @@ module Y2Packager
       #
       # @return [Product] Selected base product
       def selected_base
-        available_base_products.find(&:selected?)
+        products = Y2Packager::ProductReader.new.available_base_products(force_repos: true)
+        selected = products.find(&:selected?)
+        selected ||= products.first
+        selected
       end
 
       # Return the products with a given status

@@ -91,4 +91,63 @@ describe Yast::NetworkService do
       end
     end
   end
+
+  describe "#backend_in_use" do
+    let(:initial_stage) { true }
+    let(:systemd_running) { true }
+    let(:service_name) { "NetworkManager" }
+    let(:service) { instance_double("Yast2::Systemd::Service", name: service_name) }
+    before do
+      allow(Yast::Stage).to receive(:initial).and_return(initial_stage)
+      allow(Yast::Systemd).to receive(:Running).and_return(systemd_running)
+      allow(Yast2::Systemd::Service).to receive(:find).and_return(service)
+    end
+
+    context "when running on the initial Stage" do
+      context "and systemd is not running" do
+        let(:systemd_running) { false }
+
+        it "returns the default backend symbol" do
+          expect(subject.backend_in_use).to eq(Yast::NetworkServiceClass::DEFAULT_BACKEND)
+        end
+      end
+
+      context "and systemd is running" do
+        context "and wicked is linked to the network service" do
+          let(:service_name) { "wicked" }
+
+          it "returns :wicked" do
+            expect(subject.backend_in_use).to eq(:wicked)
+          end
+        end
+
+        context "and NetworkManager is linked to the network service" do
+          it "returns :network_manager" do
+            expect(subject.backend_in_use).to eq(:network_manager)
+          end
+        end
+
+        context "and no service is linked to the network service" do
+          let(:service) { nil }
+
+          it "returns nil" do
+            expect(subject.backend_in_use).to be_nil
+          end
+        end
+      end
+    end
+  end
+
+  describe "#Read" do
+    before do
+      allow(subject).to receive(:backend_in_use).and_return(:wicked)
+      subject.reset!
+    end
+
+    it "reads the current state and caches it" do
+      expect(subject).to receive(:backend_in_use).once.and_return(:wicked)
+      expect(subject.wicked?).to eq(true)
+      expect(subject.wicked?).to eq(true)
+    end
+  end
 end

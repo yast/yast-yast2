@@ -1,8 +1,49 @@
 -------------------------------------------------------------------
-Thu Oct 31 17:31:02 CET 2019 - schubi@suse.de
+Fri Nov 15 09:31:20 UTC 2019 - schubi@suse.de
 
 - Using Y2Packager::Resolvable.any? and Y2Packager::Resolvable.find
   in order to decrease the required memory (bsc#1132650).
+- 4.2.35
+
+-------------------------------------------------------------------
+Fri Nov 15 09:30:20 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix crash in upgrade caused by wrong parameter to snapper
+  (bsc#1156819)
+- 4.2.34
+
+-------------------------------------------------------------------
+Tue Nov 05 14:15:16 UTC 2019 - José Iván López González <jlopez@suse.com>
+
+- Use new snapper machine-readable output to retrieve snapshots
+  information (related to bsc#1149322).
+- 4.2.33
+
+-------------------------------------------------------------------
+Tue Nov 05 13:24:40 UTC 2019 - Oliver Kurz <okurz@suse.com>
+
+- Add linuxrc option "reboot_timeout" to configure the timeout
+  before reboot (bsc#1122493)
+- 4.2.32
+
+-------------------------------------------------------------------
+Thu Oct 31 12:59:33 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
+
+- Network: During an installation, check which backend is in use
+  when Systemd is running. (bsc#1151291)
+- 4.2.31
+
+-------------------------------------------------------------------
+Tue Oct 29 07:22:13 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
+
+- fix showing release notes for online upgrade (bsc#1155134)
+- 4.2.30
+
+-------------------------------------------------------------------
+Fri Oct 25 12:57:30 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
+
+- Support for products on control file during upgrade
+  (jsc#SLE-7214)
 - 4.2.29
 
 -------------------------------------------------------------------
