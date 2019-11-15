@@ -80,7 +80,7 @@ module Yast2
 
     LIST_SNAPSHOTS_CMD =
       "/usr/bin/snapper --no-dbus --root=%{root} --utc --csvout list --disable-used-space " \
-      "--columns number,type,pre_number,date,user,cleanup,description".freeze
+      "--columns number,type,pre-number,date,user,cleanup,description".freeze
 
     # Predefined snapshot cleanup strategies (the user can define custom ones, too)
     CLEANUP_STRATEGY = { number: "number", timeline: "timeline" }.freeze
