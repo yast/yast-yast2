@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Nov 28 10:21:31 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
+
+- Network: drop support for obsolete network device types
+  (jsc#SLE-7753)
+- 4.2.42
+
+-------------------------------------------------------------------
 Wed Nov 27 10:24:28 UTC 2019 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use /etc/login.defs.d/70-yast.defs to write login.defs
