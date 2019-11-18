@@ -100,7 +100,7 @@ module Yast
       @CardRegex =
         # other: irlan|lo|plip|...
         {
-          "netcard" => "ath|ci|ctc|slc|dummy|bond|eth|ficon|hsi|qeth|lcs|iucv|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
+          "netcard" => "ath|ci|ctc|slc|dummy|bond|eth|ficon|hsi|qeth|lcs|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
           "modem"   => "ppp|modem",
           "isdn"    => "isdn|ippp",
           "dsl"     => "dsl"
@@ -1111,11 +1111,6 @@ module Yast
         "irda"  => [_("IrDA"), _("Infrared Device")],
         # Device type label
         "isdn"  => [_("ISDN"), _("ISDN Connection")],
-        # Device type label
-        "iucv"  => [
-          _("IUCV"),
-          _("Inter User Communication Vehicle (IUCV)")
-        ],
         # Device type label
         "lcs"   => [_("OSA LCS"), _("OSA LCS Network Card")],
         # Device type label
