@@ -27,17 +27,14 @@ module UI
     #
     # @param text [String] text to be wrapped
     # @param line_width [Integer] max line length
-    # @option preprend_text [String] the text to prepended
     # @param n_lines [Integer, nil] the maximum number of lines
     # @param cut_text [String] the omission text to be used when the text should be cut
     #
     # @return [String]
-    def wrap_text(text, line_width = 76, prepend_text: "", n_lines: nil, cut_text: "")
-      full_text = prepend_text + text
+    def wrap_text(text, line_width = 76, n_lines: nil, cut_text: "")
+      return text if line_width > text.length
 
-      return full_text if line_width > full_text.length
-
-      wrapped_text = full_text.lines.collect! do |line|
+      wrapped_text = text.lines.collect! do |line|
         l = (line.length > line_width) ? line.gsub(/(.{1,#{line_width}})(?:\s+|$)/, "\\1\n") : line
         l.strip
       end

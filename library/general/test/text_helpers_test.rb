@@ -24,22 +24,6 @@ describe ::UI::TextHelpers do
       it "returns the same text" do
         expect(subject.wrap_text(text)).to eq(text)
       end
-
-      context "but a prepend text is given" do
-        let(:prepend_text) { "This is: " }
-
-        it "includes the prepend text" do
-          expect(subject.wrap_text(text, prepend_text: prepend_text)).to match(/^This is/)
-        end
-
-        context "and both of them exceed the line width" do
-          it "returns wrapped text" do
-            wrapped_text = subject.wrap_text(text, 15, prepend_text: prepend_text)
-
-            expect(wrapped_text.lines.size).to eq(2)
-          end
-        end
-      end
     end
 
     context "when the text exceed the given line width" do
@@ -61,14 +45,6 @@ describe ::UI::TextHelpers do
 
         expect(wrapped_text).to match(/it\'s/)
         expect(wrapped_text).to match(/not_real_but_really_long_word/)
-      end
-
-      context "and a prepend text is given" do
-        let(:prepend_text) { "This is: " }
-
-        it "includes the prepend text" do
-          expect(subject.wrap_text(text, prepend_text: prepend_text)).to match(/^This is/)
-        end
       end
 
       context "and a max number of lines is set (n_lines)" do
