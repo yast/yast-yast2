@@ -100,7 +100,7 @@ module Yast
       @CardRegex =
         # other: irlan|lo|plip|...
         {
-          "netcard" => "ath|ci|ctc|slc|dummy|bond|eth|ficon|hsi|qeth|lcs|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
+          "netcard" => "ath|ci|ctc|slc|dummy|bond|eth|ficon|hsi|qeth|lcs|wlan|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
           "modem"   => "ppp|modem",
           "isdn"    => "isdn|ippp",
           "dsl"     => "dsl"
