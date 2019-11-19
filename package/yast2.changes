@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov 19 09:51:48 UTC 2019 - David Diaz <dgonzalez@suse.com>
+
+- Do not try to fetch the license text when it is already provided
+  (bsc#1153326).
+- 4.1.75
+
+-------------------------------------------------------------------
 Fri Sep  6 11:15:40 UTC 2019 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix a problem when long warnings reports in command line
