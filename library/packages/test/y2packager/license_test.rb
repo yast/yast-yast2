@@ -34,14 +34,16 @@ describe Y2Packager::License do
 
   describe ".find" do
     context "when some content is given" do
-      before do
-        allow(Y2Packager::License).to receive(:new)
-          .with(product_name: "SLES", fetcher: fetcher, handler: handler, content: content)
-          .and_return(license)
+      it "does not look for a license fetcher" do
+        expect(Y2Packager::LicensesFetchers).to_not receive(:for)
+
+        described_class.find("SLES", content: content)
       end
 
-      it "uses the content as license's content" do
-        expect(described_class.find("SLES", content: content)).to be(license)
+      it "uses the content as license's text" do
+        product_license = described_class.find("SLES", content: content)
+
+        expect(product_license.content_for).to eq(content)
       end
     end
 
