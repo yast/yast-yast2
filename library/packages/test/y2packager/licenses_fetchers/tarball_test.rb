@@ -37,7 +37,7 @@ describe Y2Packager::LicensesFetchers::Tarball do
     allow(Yast::Pkg).to receive(:RepositoryAdd)
       .and_return nil
 
-    allow(Yast::Pkg).to receive(:SourceProvideFile)
+    allow(Yast::Pkg).to receive(:SourceProvideOptionalFile)
       .and_return tar_path
   end
 
