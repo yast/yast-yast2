@@ -2,7 +2,8 @@
 Fri Nov 15 09:31:20 UTC 2019 - schubi@suse.de
 
 - Using Y2Packager::Resolvable.any? and Y2Packager::Resolvable.find
-  in order to decrease the required memory (bsc#1132650).
+  in order to decrease the required memory (bsc#1132650,
+  bsc#1140037).
 - 4.2.35
 
 -------------------------------------------------------------------
