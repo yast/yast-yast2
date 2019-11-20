@@ -29,8 +29,10 @@ describe Y2Packager::LicensesFetchers::Rpm do
   let(:lang) { "cz_CZ" }
   let(:product_name) { "SLES" }
   let(:package_name) { "sles-release" }
-  let(:package_properties) { [Y2Packager::Resolvable.new(kind: :product,
-    name: "SLE_RT", status: :available, source: 2, product_package: package_name )] }
+  let(:package_properties) do
+    [Y2Packager::Resolvable.new(kind: :product,
+    name: "SLE_RT", status: :available, source: 2, product_package: package_name)]
+  end
   let(:package_status) { :selected }
   let(:package_path) { rpm_path_for("licenses_test_package-0.1-0.noarch.rpm") }
   let(:package) do
