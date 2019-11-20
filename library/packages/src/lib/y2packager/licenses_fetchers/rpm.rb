@@ -68,7 +68,7 @@ module Y2Packager
         return @package_name if @package_name
 
         package_property = Y2Packager::Resolvable.find(kind: :product, name: product_name).first
-        @package_name = package_properties.product_package if package_property
+        @package_name = package_property.product_package if package_property
       end
     end
   end
