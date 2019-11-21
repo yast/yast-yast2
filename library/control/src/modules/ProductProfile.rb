@@ -84,10 +84,10 @@ module Yast
 
       # iterate all (or given) products and get the info about them
       Y2Packager::Resolvable.find(kind: :product).each do |product|
-        src_id = (product.source || -1)
+        src_id = product.source
         name = product.name
         if product_id.nil? &&
-            (product.status || :none) != :selected
+           product.status != :selected
           next
         end
         next if !product_id.nil? && src_id != product_id
@@ -110,7 +110,7 @@ module Yast
         end
         # generate product map:
         version_release = Builtins.splitstring(
-          (product.version || ""),
+          product.version,
           "-"
         )
         products = Builtins.add(
