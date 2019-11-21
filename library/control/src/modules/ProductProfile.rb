@@ -87,7 +87,7 @@ module Yast
         src_id = product.source
         name = product.name
         if product_id.nil? &&
-           product.status != :selected
+            product.status != :selected
           next
         end
         next if !product_id.nil? && src_id != product_id
