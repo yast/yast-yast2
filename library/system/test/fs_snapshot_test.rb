@@ -36,11 +36,13 @@ describe Yast2::FsSnapshot do
 
   describe ".configured?" do
     let(:command) { format(Yast2::FsSnapshot::FIND_CONFIG_CMD, root: "/") }
+    let(:chrooted) { true }
 
     before do
       allow(Yast::SCR).to receive(:Execute)
         .with(path(".target.bash_output"), command)
         .and_return("stdout" => "", "exit" => find_code)
+      allow(Yast::WFM).to receive(:scr_chrooted?).and_return chrooted
     end
 
     context "when snapper's configuration does not exist" do
@@ -62,6 +64,7 @@ describe Yast2::FsSnapshot do
 
     context "in initial stage before scr switched" do
       let(:command) { format(Yast2::FsSnapshot::FIND_CONFIG_CMD, root: "/mnt") }
+      let(:chrooted) { false }
 
       let(:find_code) { 0 }
 
