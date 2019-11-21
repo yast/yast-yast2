@@ -1,6 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 05 13:24:40 UTC 2019 - Oliver Kurz <okurz@suse.com>
+
 - Add linuxrc option "reboot_timeout" to configure the timeout
   before reboot (bsc#1122493)
+- Ensure /etc/install.inf is not read from the target system but
+  from the local one. (bsc#1122493, bsc#1157476)
 - 4.1.81
 
 -------------------------------------------------------------------
