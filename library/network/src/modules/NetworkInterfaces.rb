@@ -1016,7 +1016,7 @@ module Yast
       common_dev_types = ["eth", "vlan", "br", "tun", "tap", "bond"]
 
       # s390 specific device types
-      s390_dev_types = ["hsi", "ctc", "ficon", "iucv", "qeth", "lcs"]
+      s390_dev_types = ["hsi", "ctc", "ficon", "qeth", "lcs"]
 
       # device types which cannot be present on s390 arch
       s390_unknown_dev_types = [
