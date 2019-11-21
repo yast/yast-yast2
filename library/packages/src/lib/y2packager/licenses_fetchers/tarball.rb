@@ -58,7 +58,7 @@ module Y2Packager
         expanded_url = Yast::Pkg.ExpandedUrl(url)
 
         src = Yast::Pkg.RepositoryAdd("base_urls" => [expanded_url])
-        @archive_file_name = Yast::Pkg.SourceProvideFile(src, 1, archive_name)
+        @archive_file_name = Yast::Pkg.SourceProvideOptionalFile(src, 1, archive_name)
 
         system("tar -C #{archive_dir.shellescape} -x -f #{@archive_file_name.shellescape}") if @archive_file_name
 
