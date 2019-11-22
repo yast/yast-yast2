@@ -10,43 +10,88 @@ end
 
 describe ::UI::TextHelpers do
   subject { TestTextHelpers.new }
+  let(:text) do
+    "This is a long paragraph.
+    It contains a not_real_but_really_long_word which must not be broken
+    and the length of its longer lines is a little git greater than the default line width.
+    Let's see if it's work."
+  end
 
   describe "#wrap_text" do
-    let(:devices) { ["eth0", "eth1", "eth2", "eth3", "a_very_long_device_name"] }
-    let(:more_devices) do
-      [
-        "enp5s0", "enp5s1", "enp5s2", "enp5s3",
-        "enp5s4", "enp5s5", "enp5s6", "enp5s7"
-      ]
+    context "when the text does not exceed the line width" do
+      let(:text) { "A very short text." }
+
+      it "returns the same text" do
+        expect(subject.wrap_text(text)).to eq(text)
+      end
     end
 
-    context "given a text" do
-      it "returns same text if it does not exceed the wrap size" do
-        text = "eth0, eth1, eth2, eth3, a_very_long_device_name"
+    context "when the text exceed the given line width" do
+      it "produces a text with lines no longer than given line width" do
+        line_width = 60
+        wrapped_text = subject.wrap_text(text, line_width)
 
-        expect(subject.wrap_text(devices.join(", "))).to eql(text)
+        expect(wrapped_text.lines.map(&:length)).to all(be < line_width)
       end
 
-      context "and a line size" do
-        it "returns given text splitted in lines by given line size" do
-          text = "eth0, eth1, eth2,\n"     \
-                 "eth3,\n"                 \
-                 "a_very_long_device_name"
+      it "respect present carriage returns" do
+        current_lines = text.lines.size
 
-          expect(subject.wrap_text(devices.join(", "), 16)).to eql(text)
-        end
+        expect(subject.wrap_text(text).lines.size).to be > current_lines
       end
 
-      context "and a number of lines and '...' as cut text" do
-        it "returns wrapped text until given line's number adding '...' as a new line" do
-          devices_s = (devices + more_devices).join(", ")
-          text = "eth0, eth1, eth2,\n"        \
-                 "eth3,\n"                    \
-                 "a_very_long_device_name,\n" \
-                 "..."
+      it "does not break words" do
+        wrapped_text = subject.wrap_text(text)
 
-          expect(subject.wrap_text(devices_s, 20, n_lines: 3, cut_text: "...")).to eql(text)
+        expect(wrapped_text).to match(/it\'s/)
+        expect(wrapped_text).to match(/not_real_but_really_long_word/)
+      end
+
+      context "and a max number of lines is set (n_lines)" do
+        it "returns only the first n_lines" do
+          wrapped_text = subject.wrap_text(text, n_lines: 2)
+
+          expect(wrapped_text.lines.size).to eq(2)
+          expect(wrapped_text).to match(/^This is/)
+          expect(wrapped_text).to match(/broken$/)
         end
+
+        context "with an ommission text (cut_text)" do
+          it "includes an additional line with the cut_text" do
+            omission = "..."
+            wrapped_text = subject.wrap_text(text, n_lines: 2, cut_text: omission)
+
+            expect(wrapped_text.lines.size).to eq(3)
+            expect(wrapped_text).to match(/^This is/)
+            expect(wrapped_text.lines.last).to eq("...")
+          end
+        end
+      end
+    end
+  end
+
+  describe "#head" do
+    let(:omission_text) { "read more" }
+
+    context "when the text has less lines than requested" do
+      it "returns the full text" do
+        expect(subject.head(text, 10)).to eq(text)
+      end
+
+      context "and the omision text is given" do
+        it "does not include the omission text" do
+          expect(subject.head(text, 10, omission: omission_text)).to_not include(omission_text)
+        end
+      end
+    end
+
+    context "when the text has more lines than requested" do
+      it "returns only the first requested lines" do
+        head = subject.head(text, 2)
+
+        expect(head.lines.size).to eq(2)
+        expect(head).to match(/^This is/)
+        expect(head).to match(/broken$/)
       end
     end
   end

@@ -49,22 +49,33 @@ module Yast
     def ReadInstallInf
       return if !@install_inf.nil?
 
-      @install_inf = {}
-      # don't read anything if the file doesn't exist
-      if SCR.Read(path(".target.size"), "/etc/install.inf") == -1
-        Builtins.y2error("Reading install.inf, but file doesn't exist!!!")
-        return
-      end
-      entries = SCR.Dir(path(".etc.install_inf"))
-      if entries.nil?
-        Builtins.y2error("install.inf is empty")
-        return
-      end
-      Builtins.foreach(entries) do |e|
-        val = Convert.to_string(
-          SCR.Read(Builtins.add(path(".etc.install_inf"), e))
-        )
-        Ops.set(@install_inf, e, val)
+      # skip from chroot
+      old_SCR = WFM.SCRGetDefault
+      new_SCR = WFM.SCROpen("chroot=/:scr", false)
+      WFM.SCRSetDefault(new_SCR)
+
+      begin
+        @install_inf = {}
+        # don't read anything if the file doesn't exist
+        if SCR.Read(path(".target.size"), "/etc/install.inf") == -1
+          Builtins.y2error("Reading install.inf, but file doesn't exist!!!")
+          return
+        end
+        entries = SCR.Dir(path(".etc.install_inf"))
+        if entries.nil?
+          Builtins.y2error("install.inf is empty")
+          return
+        end
+        Builtins.foreach(entries) do |e|
+          val = Convert.to_string(
+            SCR.Read(Builtins.add(path(".etc.install_inf"), e))
+          )
+          Ops.set(@install_inf, e, val)
+        end
+      ensure
+        # close and chroot back
+        WFM.SCRSetDefault(old_SCR)
+        WFM.SCRClose(new_SCR)
       end
 
       nil

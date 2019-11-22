@@ -20,36 +20,47 @@
 module UI
   # Provides a set of methods to manipulate and transform UI text
   module TextHelpers
-    # Wrap given text breaking lines longer than given wrap size. It supports
-    # custom separator, max number of lines to split in and cut text to add
-    # as last line if cut was needed.
+    # Wrap text breaking lines in the first whitespace that does not exceed given line width
     #
-    # @param [String] text to be wrapped
-    # @param [String] wrap size
-    # @param [Hash <String>] optional parameters as separator and prepend_text.
-    # @return [String] wrap text
-    def wrap_text(text, wrap = 76, separator: " ", prepend_text: "",
-      n_lines: nil, cut_text: nil)
-      lines = []
-      message_line = prepend_text
-      text.split(/\s+/).each_with_index do |t, i|
-        if !message_line.empty? && "#{message_line}#{t}".size > wrap
-          lines << message_line
-          message_line = ""
-        end
+    # Additionally, it also allows retrieving only an excerpt of the wrapped text according to the
+    # maximum number of lines indicated, adding one more with the cut_text text when it is given.
+    #
+    # @param text [String] text to be wrapped
+    # @param line_width [Integer] max line length
+    # @param n_lines [Integer, nil] the maximum number of lines
+    # @param cut_text [String] the omission text to be used when the text should be cut
+    #
+    # @return [String]
+    def wrap_text(text, line_width = 76, n_lines: nil, cut_text: "")
+      return text if line_width > text.length
 
-        message_line << separator if !message_line.empty? && i != 0
-        message_line << t
+      wrapped_text = text.lines.collect! do |line|
+        l = (line.length > line_width) ? line.gsub(/(.{1,#{line_width}})(?:\s+|$)/, "\\1\n") : line
+        l.strip
       end
 
-      lines << message_line if !message_line.empty?
+      result = wrapped_text.join("\n")
+      result = head(result, n_lines, omission: cut_text) if n_lines
+      result
+    end
 
-      if n_lines && lines.size > n_lines
-        lines = lines[0..n_lines - 1]
-        lines << cut_text if cut_text
-      end
+    # Returns only the first requested lines of the given text
+    #
+    # If the omission param is given, an extra line holding it will be included
+    #
+    # @param text [String]
+    # @param max_lines [Integer]
+    # @param omission [String] the text to be added
+    #
+    # @return [String] the first requested lines if the text has more; full text otherwise
+    def head(text, max_lines, omission: "")
+      lines = text.lines
 
-      lines.join("\n")
+      return text if lines.length <= max_lines
+
+      result = text.lines[0...max_lines]
+      result << omission unless omission.empty?
+      result.join
     end
 
     # Wrap a given text in direction markers

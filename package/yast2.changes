@@ -1,9 +1,38 @@
 -------------------------------------------------------------------
-Fri Nov 15 09:31:20 UTC 2019 - schubi@suse.de
+Fri Nov 22 09:20:32 UTC 2019 - schubi@suse.de
 
 - Using Y2Packager::Resolvable.any? and Y2Packager::Resolvable.find
   in order to decrease the required memory (bsc#1132650,
   bsc#1140037).
+-4.2.39
+
+-------------------------------------------------------------------
+Fri Nov 22 09:19:32 UTC 2019 - Michal Filka <mfilka@suse.com>
+
+- bnc#1157532
+  - do not modify /etc/sysctl.conf in inst-sys as it is on r/o
+    filesystem
+-4.2.38
+
+-------------------------------------------------------------------
+Thu Nov 21 21:28:58 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
+
+- Linuxrc: Ensure the new opened SCR instace is closed when reading
+  the /etc/install.inf file (bsc#1122493, bsc#1157476)
+- 4.2.37
+
+-------------------------------------------------------------------
+Thu Nov 21 14:04:28 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
+
+- Ensure /etc/install.inf is not read from the target system but
+  from the local one. (bsc#1122493, bsc#1157476)
+- 4.2.36
+
+-------------------------------------------------------------------
+Wed Nov 20 08:32:01 UTC 2019 - David Diaz <dgonzalez@suse.com>
+
+- Do not try to find licenses in the installation medium when they
+  have been already downloaded from SCC (bsc#1153326).
 - 4.2.35
 
 -------------------------------------------------------------------
