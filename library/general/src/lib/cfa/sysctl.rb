@@ -46,6 +46,8 @@ module CFA
   class Sysctl < BaseModel
     include Yast::Logger
 
+    Yast.import "Stage"
+
     PARSER = AugeasParser.new("sysctl.lns")
     PATH = "/etc/sysctl.d/30-yast.conf".freeze
 
@@ -128,7 +130,12 @@ module CFA
     # +/etc/sysctl.conf+ to avoid confusion.
     def save
       super
-      clean_old_values
+
+      # we cannot update /etc/sysctl.conf in first stage as it is on ro filesystem
+      # we also cannot use File.stat("/etc/sysctl.conf").writable? as it only checks
+      # file attributes. However, attributes are fine in inst-sys but the file is on
+      # ro filesystem.
+      clean_old_values if !Yast::Stage.initial
     end
 
   private
