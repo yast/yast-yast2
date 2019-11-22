@@ -20,10 +20,13 @@ describe Yast2::FsSnapshot do
   end
 
   describe ".configured?" do
+    let(:chrooted) { true }
+
     before do
       allow(Yast::SCR).to receive(:Execute)
         .with(path(".target.bash_output"), FIND_CONFIG)
         .and_return("stdout" => "", "exit" => find_code)
+      allow(Yast::WFM).to receive(:scr_chrooted?).and_return chrooted
     end
 
     context "when snapper's configuration does not exist" do
@@ -44,6 +47,8 @@ describe Yast2::FsSnapshot do
     end
 
     context "in initial stage before scr switched" do
+      let(:chrooted) { false }
+
       let(:find_code) { 0 }
       before do
         Yast.import "Installation"
