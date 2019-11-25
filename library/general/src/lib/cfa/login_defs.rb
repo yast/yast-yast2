@@ -20,6 +20,9 @@
 require "yast"
 require "cfa/base_model"
 require "yast2/target_file"
+require "yast2/execute"
+
+Yast.import "FileUtils"
 
 module CFA
   # Model to handle login.defs configuration files
@@ -129,11 +132,24 @@ module CFA
     # Loads the file content
     #
     # If the file does not exist, consider the file as empty.
+    #
+    # @see CFA::BaseModel#load
     def load
       super
     rescue Errno::ENOENT # PATH does not exist yet
       self.data = @parser.empty
       @loaded = true
+    end
+
+    # Saves the file content
+    #
+    # It creates the directory if it does not exist.
+    #
+    # @see CFA::BaseModel#save
+    def save
+      directory = File.dirname(file_path)
+      Yast::Execute.on_target("/usr/bin/mkdir", "--parents", directory) if !Yast::FileUtils.IsDirectory(directory)
+      super
     end
   end
 end
