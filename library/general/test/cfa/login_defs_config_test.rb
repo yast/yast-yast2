@@ -108,11 +108,30 @@ describe CFA::LoginDefsConfig do
       allow(CFA::LoginDefs).to receive(:new)
         .with(file_path: "/etc/login.defs.d/70-yast.conf")
         .and_return(yast_config_file)
+      allow(yast_config_file).to receive(:save)
     end
 
     it "writes changes to /etc/login.defs.d/70-yast.conf" do
       expect(yast_config_file).to receive(:save)
       config.save
+    end
+
+    context "when no conflicts are detected" do
+      it "does not log anything" do
+        expect(config.log).to_not receive(:warn)
+        config.save
+      end
+    end
+
+    context "when a conflict is detected" do
+      before do
+        allow(config).to receive(:conflicts).and_return([:fail_delay, :useradd_cmd])
+      end
+
+      it "logs conflicting attributes" do
+        expect(config.log).to receive(:warn).with(/overridden: fail_delay, useradd_cmd/)
+        config.save
+      end
     end
   end
 

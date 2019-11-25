@@ -43,6 +43,8 @@ module CFA
   #
   # @see LoginDefsConfig
   class MultiFileConfig
+    include Yast::Logger
+
     class << self
       # Instantiates and loads configuration
       #
@@ -102,6 +104,7 @@ module CFA
 
     # Save changes to the YaST specific file
     def save
+      log_conflicts
       yast_config_file.save
     end
 
@@ -230,6 +233,14 @@ module CFA
     # @return [String]
     def yast_file_name
       self.class.yast_file_name
+    end
+
+    # Logs conflicts
+    def log_conflicts
+      conflicting_attrs = conflicts
+      return if conflicting_attrs.empty?
+
+      log.warn "These configuration values are overridden: #{conflicting_attrs.map(&:to_s).join(", ")}"
     end
   end
 end
