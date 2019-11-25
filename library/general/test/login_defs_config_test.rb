@@ -19,13 +19,11 @@
 
 require_relative "test_helper"
 
-Yast.import "LoginDefsConfig"
+Yast.import "ShadowConfig"
 
-describe Yast::LoginDefsConfig do
-  subject { Yast::LoginDefsConfig }
-  let(:config_path) do
-    File.join(GENERAL_DATA_PATH, "login.defs", "vendor")
-  end
+describe Yast::ShadowConfig do
+  subject { Yast::ShadowConfig }
+  let(:config_path) { File.join(GENERAL_DATA_PATH, "login.defs", "vendor") }
 
   before { subject.main }
 
@@ -43,7 +41,7 @@ describe Yast::LoginDefsConfig do
     context "when the value is unknown" do
       it "raises an exception" do
         expect { subject.fetch(:unknown) }
-          .to raise_error(Yast::LoginDefsConfigClass::UnknownAttributeError)
+          .to raise_error(Yast::ShadowConfigClass::UnknownAttributeError)
       end
     end
   end
@@ -60,22 +58,22 @@ describe Yast::LoginDefsConfig do
     context "when the value is unknown" do
       it "raises an exception" do
         expect { subject.set(:unknown, "unknown") }
-          .to raise_error(Yast::LoginDefsConfigClass::UnknownAttributeError)
+          .to raise_error(Yast::ShadowConfigClass::UnknownAttributeError)
       end
     end
   end
 
   describe "#write" do
-    let(:login_defs_config) { CFA::LoginDefsConfig.new }
+    let(:shadow_config) { CFA::ShadowConfig.new }
 
     before do
-      allow(CFA::LoginDefsConfig).to receive(:new)
-        .and_return(login_defs_config)
+      allow(CFA::ShadowConfig).to receive(:new)
+        .and_return(shadow_config)
       subject.reset
     end
 
     it "saves the changes" do
-      expect(login_defs_config).to receive(:save)
+      expect(shadow_config).to receive(:save)
       subject.write
     end
   end

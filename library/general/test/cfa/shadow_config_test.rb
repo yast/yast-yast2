@@ -18,9 +18,9 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "cfa/login_defs_config"
+require "cfa/shadow_config"
 
-describe CFA::LoginDefsConfig do
+describe CFA::ShadowConfig do
   subject(:config) { described_class.new }
   let(:scenario) { "custom" }
 

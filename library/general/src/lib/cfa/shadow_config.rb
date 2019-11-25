@@ -24,19 +24,19 @@ require "cfa/multi_file_config"
 Yast.import "FileUtils"
 
 module CFA
-  # This class allows to interact with the login.defs configuration files
+  # This class allows to interact with the shadow suite configuration files (login.defs)
   #
   # @example Reading a configuration parameter
-  #   config = LoginDefsConfig.new
+  #   config = ShadowConfig.new
   #   config.load
   #   config.encrypt_method #=> "SHA512"
   #
   # @example Setting a value
-  #   config = LoginDefsConfig.new
+  #   config = ShadowConfig.new
   #   config.load
   #   config.fail_delay = "5"
   #   config.save
-  class LoginDefsConfig < MultiFileConfig
+  class ShadowConfig < MultiFileConfig
     self.file_name = "login.defs"
     self.yast_file_name = "70-yast.conf"
     self.file_class = LoginDefs

@@ -18,14 +18,14 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "cfa/login_defs_config"
+require "cfa/shadow_config"
 
 module Yast
   # This class allows to access the API to handle login.defs attributes from Perl
   #
   # @see CFA::LoginDefs
-  # @see CFA::LoginDefsConfig
-  class LoginDefsConfigClass < Module
+  # @see CFA::ShadowConfig
+  class ShadowConfigClass < Module
     include Logger
 
     # The given attribute is unknown
@@ -47,10 +47,10 @@ module Yast
     # Returns an attribute from login.defs configuration
     #
     # @example Getting the encryption method
-    #   Yast::LoginDefsConfig.fetch(:encrypt_method) #=> "SHA512"
+    #   Yast::ShadowConfig.fetch(:encrypt_method) #=> "SHA512"
     #
     # @example Getting the encryption method using the variable name
-    #   Yast::LoginDefsConfig.fetch(ENCRYPT_METHOD) #=> "SHA512"
+    #   Yast::ShadowConfig.fetch(ENCRYPT_METHOD) #=> "SHA512"
     #
     # @param attr [String,Symbol] Attribute name
     # @return [String,nil] Attribute value
@@ -63,7 +63,7 @@ module Yast
     # Sets an attribute to login.defs
     #
     # @example Setting the encryption method
-    #   Yast::LoginDefsConfig.set(:encrypt_method, "SHA512")
+    #   Yast::ShadowConfig.set(:encrypt_method, "SHA512")
     #
     # @param attr [String,Symbol] Attribute name
     # @param value [String,nil] Attribute value
@@ -96,17 +96,17 @@ module Yast
 
     # Returns the current login.defs configuration
     #
-    # @return CFA::LoginDefsConfig
-    # @see CFA::LoginDefsConfig
+    # @return CFA::ShadowConfig
+    # @see CFA::ShadowConfig
     def config
       return @config if @config
 
-      @config = CFA::LoginDefsConfig.new
+      @config = CFA::ShadowConfig.new
       @config.load
       @config
     end
   end
 
-  LoginDefsConfig = LoginDefsConfigClass.new
-  LoginDefsConfig.main
+  ShadowConfig = ShadowConfigClass.new
+  ShadowConfig.main
 end
