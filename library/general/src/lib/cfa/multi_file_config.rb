@@ -206,7 +206,7 @@ module CFA
       return @higher_precedence_files if @higher_precedence_files
 
       yast_config_file_idx = files.find_index { |f| f == yast_config_file }
-      @higher_precedence_files ||= files[yast_config_file_idx + 1..]
+      @higher_precedence_files ||= files[yast_config_file_idx + 1..-1]
     end
 
     # Path to the YaST override file
