@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 26 12:02:18 UTC 2019 - Ludwig Nussel <lnussel@suse.de>
+
+- add is_wsl function to detect wsl (boo#1154962)
+- 4.2.40
+
+-------------------------------------------------------------------
 Mon Nov 25 11:07:11 UTC 2019 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - bsc#1155735, bsc#1157541:
@@ -12,7 +18,7 @@ Fri Nov 22 09:19:32 UTC 2019 - Michal Filka <mfilka@suse.com>
 - bnc#1157532
   - do not modify /etc/sysctl.conf in inst-sys as it is on r/o
     filesystem
--4.2.38
+- 4.2.38
 
 -------------------------------------------------------------------
 Thu Nov 21 21:28:58 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
