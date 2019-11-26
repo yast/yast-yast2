@@ -494,8 +494,11 @@ module Yast
       true
     end
 
+    # Determines whether the system is running on WSL
+    #
+    # @return [Boolean] true if runs on WSL; false otherwise
     def is_wsl
-      Builtins.regexpmatch(SCR.Read(path(".target.string"), "/proc/sys/kernel/osrelease"), "-Microsoft")
+      SCR.Read(path(".target.string"), "/proc/sys/kernel/osrelease").to_s.include?("-Microsoft")
     end
 
     publish function: :architecture, type: "string ()"
