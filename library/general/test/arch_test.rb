@@ -60,7 +60,7 @@ describe Yast::Arch do
       end
     end
 
-    context "when it does not run on a Microsoft" do
+    context "when it does not run on a Microsoft kernel" do
       let(:osrelease) { "5.3.11-default" }
 
       it "returns false" do
