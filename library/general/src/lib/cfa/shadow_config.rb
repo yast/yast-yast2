@@ -38,7 +38,7 @@ module CFA
   #   config.save
   class ShadowConfig < MultiFileConfig
     self.file_name = "login.defs"
-    self.yast_file_name = "70-yast.conf"
+    self.yast_file_name = "70-yast.defs"
     self.file_class = LoginDefs
   end
 end

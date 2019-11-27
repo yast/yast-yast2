@@ -33,12 +33,12 @@ module CFA
   #   file.encrypt_method #=> "SHA512"
   #
   # @example Writing a value
-  #   file = LoginDefs.new(file_path: "/etc/login.defs.d/70-yast.conf")
+  #   file = LoginDefs.new(file_path: "/etc/login.defs.d/70-yast.defs")
   #   file.encrypt_method = "DES"
   #   file.save
   #
   # @example Loading shortcut
-  #   file = LoginDefs.load(file_path: "/etc/login.defs.d/70-yast.conf")
+  #   file = LoginDefs.load(file_path: "/etc/login.defs.d/70-yast.defs")
   #   file.encrypt_method #=> "SHA512"
   class LoginDefs < BaseModel
     include Yast::Logger

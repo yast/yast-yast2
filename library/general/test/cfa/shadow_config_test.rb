@@ -57,7 +57,7 @@ describe CFA::ShadowConfig do
 
       it "reads /etc/login.defs.d directory" do
         expect(CFA::LoginDefs).to receive(:new)
-          .with(file_path: "/etc/login.defs.d/99-local.conf")
+          .with(file_path: "/etc/login.defs.d/99-local.defs")
           .and_call_original
         config.load
       end
@@ -79,21 +79,21 @@ describe CFA::ShadowConfig do
 
       it "reads /usr/etc/login.defs.d directory" do
         expect(CFA::LoginDefs).to receive(:new)
-          .with(file_path: "/usr/etc/login.defs.d/encrypt_method.conf")
+          .with(file_path: "/usr/etc/login.defs.d/encrypt_method.defs")
           .and_call_original
         config.load
       end
 
       it "reads /etc/login.defs.d directory" do
         expect(CFA::LoginDefs).to receive(:new)
-          .with(file_path: "/etc/login.defs.d/99-local.conf")
+          .with(file_path: "/etc/login.defs.d/99-local.defs")
           .and_call_original
         config.load
       end
 
       it "reads the YaST configuration file" do
         expect(CFA::LoginDefs).to receive(:new)
-          .with(file_path: "/etc/login.defs.d/70-yast.conf")
+          .with(file_path: "/etc/login.defs.d/70-yast.defs")
           .and_call_original
         config.load
       end
@@ -101,17 +101,17 @@ describe CFA::ShadowConfig do
   end
 
   describe "#save" do
-    let(:yast_config_file) { CFA::LoginDefs.new(file_path: "/etc/login.defs.d/70-yast.conf") }
+    let(:yast_config_file) { CFA::LoginDefs.new(file_path: "/etc/login.defs.d/70-yast.defs") }
 
     before do
       allow(CFA::LoginDefs).to receive(:new).and_call_original
       allow(CFA::LoginDefs).to receive(:new)
-        .with(file_path: "/etc/login.defs.d/70-yast.conf")
+        .with(file_path: "/etc/login.defs.d/70-yast.defs")
         .and_return(yast_config_file)
       allow(yast_config_file).to receive(:save)
     end
 
-    it "writes changes to /etc/login.defs.d/70-yast.conf" do
+    it "writes changes to /etc/login.defs.d/70-yast.defs" do
       expect(yast_config_file).to receive(:save)
       config.save
     end
