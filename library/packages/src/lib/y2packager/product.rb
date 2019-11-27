@@ -65,6 +65,19 @@ module Y2Packager
         Y2Packager::Product.new(params)
       end
 
+      # Create a product from Y2Packager::Resolvable
+      # @param product [Y2Packager::Resolvable] product
+      # @param installation_package [String] installation package name
+      # @return [Y2Packager::Product] converted product
+      def from_resolvable(_product, installation_package = "not defined")
+        Y2Packager::Product.new(
+          name: prod.name, short_name: prod.short_name, display_name: prod.display_name,
+          version: prod.version, arch: prod.arch, category: prod.category,
+          vendor: prod.vendor, order: displayorder,
+          installation_package: installation_package
+        )
+      end
+
       # Return all known available products
       #
       # @return [Array<Product>] Known available products

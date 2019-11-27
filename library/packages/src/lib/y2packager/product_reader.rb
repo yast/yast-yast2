@@ -84,10 +84,7 @@ module Y2Packager
 
       if Yast::Stage.initial && Y2Packager::MediumType.online? && !force_repos
         return Y2Packager::ProductControlProduct.products.each_with_object([]) do |p, result|
-          result << Y2Packager::Product.new(name: p.name, display_name: p.label,
-              version: p.version, arch: p.arch,
-              short_name: p.name, # TODO: verify that name and shortname are same for control products
-              installation_package: "Test") # just hack as we do not know current package name yet
+          result << Y2Packager::Product.from_resolvable(p)
         end
       end
 
@@ -110,11 +107,8 @@ module Y2Packager
           displayorder = Regexp.last_match[1].to_i if Regexp.last_match
         end
 
-        @all_products << Y2Packager::Product.new(
-          name: prod.name, short_name: prod.short_name, display_name: prod.display_name,
-          version: prod.version, arch: prod.arch, category: prod.category,
-          vendor: prod.vendor, order: displayorder,
-          installation_package: installation_package_mapping[prod.name]
+        @all_products << Y2Packager::Product.from_resolvable(
+          prod, installation_package_mapping[prod.name]
         )
       end
 
@@ -146,22 +140,14 @@ module Y2Packager
       base = base_product
       return nil unless base
 
-      Y2Packager::Product.new(
-        name: base.name, short_name: base.short_name, display_name: base.display_name,
-        version: base.version, arch: base.arch, category: base.category,
-        vendor: base.vendor, installation_package: installation_package_mapping[base.name]
-      )
+      Y2Packager::Product.from_resolvable(base.name, installation_package_mapping[base.name])
     end
 
     # All installed products
     # @return [Array<Y2Packager::Product>] the product list
     def all_installed_products
       installed_products.map do |p|
-        Y2Packager::Product.new(
-          name: p.name, short_name: p.short_name, display_name: p.display_name,
-          version: p.version, arch: p.arch, category: p.category,
-          vendor: p.vendor, installation_package: installation_package_mapping[p.name]
-        )
+        Y2Packager::Product.from_resolvable(p, installation_package_mapping[p.name])
       end
     end
 
@@ -192,14 +178,14 @@ module Y2Packager
     end
 
     # read the available products, remove potential duplicates
-    # @return [Array<Hash>] pkg-bindings data structures
+    # @return [Array<Y2Packager::Resolvable>] list of products
     def available_products
       # select only the available or to be installed products
       zypp_products.select { |p| p.status == :available || p.status == :selected }
     end
 
     # read the installed products
-    # @return [Array<Hash>] pkg-bindings data structures
+    # @return [Array<Y2Packager::Resolvable>] list of products
     def installed_products
       # select only the installed or to be removed products
       zypp_products.select { |p| p.status == :installed || p.status == :removed }

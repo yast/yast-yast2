@@ -228,7 +228,7 @@ module Yast
 
         url = p.relnotes_url
         all_release_notes << url
-        release_notes_to_product[url] = (p.display_name || "")
+        release_notes_to_product[url] = p.display_name
       end
 
       set_property(:relnotesurl_all, all_release_notes)
