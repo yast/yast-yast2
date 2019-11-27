@@ -36,7 +36,7 @@ describe CFA::LoginDefs do
   end
 
   describe "#save" do
-    let(:file_path) { File.join(tmpdir, "login.defs.d", "70-yast.conf") }
+    let(:file_path) { File.join(tmpdir, "login.defs.d", "70-yast.defs") }
     let(:tmpdir) { Dir.mktmpdir }
 
     after do
