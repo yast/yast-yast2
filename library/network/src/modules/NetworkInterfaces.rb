@@ -1009,6 +1009,7 @@ module Yast
       true
     end
 
+    # @deprecated Not longer needed
     # Return supported network device types (for type netcard)
     # for this hardware
     def GetDeviceTypes
@@ -1042,6 +1043,7 @@ module Yast
       deep_copy(dev_types)
     end
 
+    # @deprecated Not longer needed
     # Return textual device type
     # @param [String] type device type
     # @param [String] longdescr description type
