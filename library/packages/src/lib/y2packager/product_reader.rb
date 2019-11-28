@@ -140,7 +140,7 @@ module Y2Packager
       base = base_product
       return nil unless base
 
-      Y2Packager::Product.from_resolvable(base.name, installation_package_mapping[base.name])
+      Y2Packager::Product.from_resolvable(base, installation_package_mapping[base.name])
     end
 
     # All installed products
@@ -192,7 +192,7 @@ module Y2Packager
     end
 
     # find the installed base product
-    # @return[Hash,nil] the pkg-bindings product structure or nil if not found
+    # @return[Y2Packager::Resolvable,nil] the pkg-bindings product structure or nil if not found
     def base_product
       # The base product is identified by the /etc/products.d/baseproduct symlink
       # and because a symlink can point only to one file there can be only one base product.
@@ -201,7 +201,7 @@ module Y2Packager
       # internal implementation is changed.)
       base = installed_products.find { |p| p.type == "base" }
 
-      log.info("Found installed base product: #{base}")
+      log.info("Found installed base product: #{base.name}")
       base
     end
 
