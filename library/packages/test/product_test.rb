@@ -16,11 +16,8 @@ Yast.import "PackageLock"
 Yast.import "Mode"
 Yast.import "Stage"
 
-# Path to a test data - service file - mocking the default data path
-DATA_PATH = File.join(__dir__, "data")
-
 def load_zypp(file_name)
-  file_name = File.join(DATA_PATH, "zypp", file_name)
+  file_name = File.join(PACKAGES_FIXTURES_PATH, "zypp", file_name)
 
   raise "File not found: #{file_name}" unless File.exist?(file_name)
 
