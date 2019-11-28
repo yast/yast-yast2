@@ -1,0 +1,108 @@
+---
+- arch: x86_64
+  category: base
+  description: SUSE Linux Enterprise offers ...
+  display_name: SUSE Linux Enterprise Server 11 SP3
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: SUSE_SLES
+  on_system_by_user: false
+  product_file: "/mnt/etc/products.d/SUSE_SLES.prod"
+  product_line: sles
+  register_release: ''
+  register_target: sle-11-x86_64
+  register_urls:
+  - http://register.novell.com/
+  relnotes_url: https://www.suse.com/releasenotes/x86_64/SUSE-SLES/11-SP3/release-notes-sles.rpm
+  relnotes_urls:
+  - https://www.suse.com/releasenotes/x86_64/SUSE-SLES/11-SP3/release-notes-sles.rpm
+  short_name: SLES11_SP3
+  smolt_urls:
+  - http://smolt.novell.com/register.pl
+  source: -1
+  status: :removed
+  summary: SUSE Linux Enterprise Server 11 SP3
+  transact_by: :solver
+  type: base
+  update_urls: []
+  upgrades:
+  - name: SUSE_SLES-SP4-migration
+    notify: true
+    product: SUSE_SLES-SP4-migration
+    repository: ''
+    status: stable
+    summary: SUSE Linux Enterprise Server 11 SP4
+  vendor: SUSE LINUX Products GmbH, Nuernberg, Germany
+  version: 11.3-1.201
+  version_epoch: 
+  version_release: '1.201'
+  version_version: '11.3'
+- arch: x86_64
+  category: addon
+  description: Subscription Management Tool for SUSE Linux Enterprise 11 SP3.
+  display_name: Subscription Management Tool for SUSE Linux Enterprise 11 SP3
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: sle-smt
+  on_system_by_user: false
+  product_file: "/mnt/etc/products.d/sle-smt.prod"
+  product_line: smt
+  register_release: ''
+  register_target: sle-11-x86_64
+  relnotes_url: https://www.suse.com/releasenotes/x86_64/SLE-SMT/11-SP3/release-notes-smt.rpm
+  relnotes_urls:
+  - https://www.suse.com/releasenotes/x86_64/SLE-SMT/11-SP3/release-notes-smt.rpm
+  short_name: sle-smt
+  source: -1
+  status: :removed
+  summary: Subscription Management Tool for SUSE Linux Enterprise 11 SP3
+  transact_by: :user
+  type: addon
+  update_urls: []
+  upgrades: []
+  vendor: SUSE LINUX Products GmbH, Nuernberg, Germany
+  version: 11.3-1.7
+  version_epoch: 
+  version_release: '1.7'
+  version_version: '11.3'
+- arch: x86_64
+  category: addon
+  description: SUSE Linux Enterprise offers ...
+  display_name: SUSE Linux Enterprise Server 12 SP1 RC1
+  download_size: 0
+  eol: 1730332800
+  flags: []
+  flavor: DVD
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: SLES
+  on_system_by_user: false
+  product_file: SLES.prod
+  product_line: ''
+  product_package: sles-release
+  register_release: ''
+  register_target: sle-12-x86_64
+  relnotes_url: https://www.suse.com/releasenotes/x86_64/SUSE-SLES/12-SP1/release-notes-sles.rpm
+  relnotes_urls:
+  - https://www.suse.com/releasenotes/x86_64/SUSE-SLES/12-SP1/release-notes-sles.rpm
+  short_name: SLES12-SP1
+  source: 0
+  status: :selected
+  summary: SUSE Linux Enterprise Server 12 SP1 RC1
+  transact_by: :app_high
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 12.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '12.1'

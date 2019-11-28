@@ -13,11 +13,11 @@ describe Y2Packager::Resolvable do
     Yast::Pkg.TargetInitialize(@tmpdir)
 
     # import the repository GPG key
-    gpg_key = File.join(__dir__, "/data/zypp/test_repo/repodata/repomd.xml.key")
+    gpg_key = File.join(__dir__, "/zypp/test_repo/repodata/repomd.xml.key")
     Yast::Pkg.ImportGPGKey(gpg_key, true)
 
     # add the repository
-    test_repo = File.join(__dir__, "/data/zypp/test_repo")
+    test_repo = File.join(__dir__, "/zypp/test_repo")
     Yast::Pkg.SourceCreate("dir:#{test_repo}", "/")
   end
 

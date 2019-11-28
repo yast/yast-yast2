@@ -1,0 +1,717 @@
+---
+# these are the dumped products from the SLES12-SP3 + SUMA-Proxy-3.2
+# + SUMA-Retail-Branch-Server-3.2 upgrade to SLE15-SP1 (RC3)
+- arch: x86_64
+  category: addon
+  description: |-
+    <p>
+          The Development Tools Module helps you developing applications for
+          SUSE Linux Enterprise 15.
+      </p>
+      <p>
+          Access to the Development Tools Module is included in your SUSE Linux Enterprise
+          product subscription. The module has a different lifecycle than SUSE Linux
+          Enterprise itself.
+      </p>
+  display_name: Development Tools Module RC3
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: sle-module-development-tools
+  on_system_by_user: false
+  product_file: sle-module-development-tools.prod
+  product_line: ''
+  product_package: sle-module-development-tools-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: ''
+  short_name: Development-Tools-Module
+  source: 3
+  status: :selected
+  summary: Development Tools Module RC3
+  transact_by: :app_high
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 15.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15.1'
+- arch: x86_64
+  category: addon
+  description: "<p>\n\tThe SUSE Linux Enterprise Desktop Applications Module delivers
+    a\n\tbasic set of Desktop functionality.\n\t</p>\n\t<p>\n\tAccess to the Desktop
+    Applications Module is included in your SUSE Linux\n\tEnterprise product subscription.\n\t</p>"
+  display_name: Desktop Applications Module
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: sle-module-desktop-applications
+  on_system_by_user: false
+  product_file: sle-module-desktop-applications.prod
+  product_line: ''
+  product_package: sle-module-desktop-applications-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: ''
+  short_name: Desktop-Applications-Module
+  source: 2
+  status: :selected
+  summary: Desktop Applications Module
+  transact_by: :app_high
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 15.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15.1'
+- arch: x86_64
+  category: addon
+  description: "<p>\n\n\tThe SUSE Linux Enterprise  Web and Scripting Module should
+    contains\n\tadditional packages that are helpful when running a webserver.\n\t</p>\n\t<p>\n\tAccess
+    to the Web and Scripting Module is included in your SUSE Linux\n\tEnterprise Server
+    subscription. The module has a different lifecycle\n\tthan SUSE Linux Enterprise
+    Server itself: Package versions in this\n\tmodule are usually supported for at
+    most three years. We are planning\n\tto release more recent versions on a schedule
+    of approximately 18\n\tmonth; the exact dates may differ per package.\n\t</p>"
+  display_name: Web and Scripting Module
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: sle-module-web-scripting
+  on_system_by_user: false
+  product_file: sle-module-web-scripting.prod
+  product_line: ''
+  product_package: sle-module-web-scripting-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: ''
+  short_name: Web-Scripting-Module
+  source: 6
+  status: :selected
+  summary: Web and Scripting Module
+  transact_by: :app_high
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 15.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15.1'
+- arch: x86_64
+  category: addon
+  description: "<p>\n\tThe SUSE Linux Enterprise Server Applications Module delivers
+    a\n\tbasic set of Server functionality.\n\t</p>\n\t<p>\n\tAccess to the Server
+    Applications Module is included in your SUSE Linux\n\tEnterprise Server subscription.\n\t</p>"
+  display_name: Server Applications Module
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: sle-module-server-applications
+  on_system_by_user: false
+  product_file: sle-module-server-applications.prod
+  product_line: ''
+  product_package: sle-module-server-applications-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: ''
+  short_name: Server-Applications-Module
+  source: 5
+  status: :selected
+  summary: Server Applications Module
+  transact_by: :app_high
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 15.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15.1'
+- arch: x86_64
+  category: addon
+  description: |-
+    <p>
+      The SUSE Linux Enterprise Basesystem Module delivers the base system of
+      the product.
+      </p>
+  display_name: Basesystem Module RC3
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: sle-module-basesystem
+  on_system_by_user: false
+  product_file: sle-module-basesystem.prod
+  product_line: ''
+  product_package: sle-module-basesystem-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: ''
+  short_name: Basesystem-Module
+  source: 1
+  status: :selected
+  summary: Basesystem Module RC3
+  transact_by: :app_high
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 15.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15.1'
+- arch: x86_64
+  category: base
+  description: |-
+    SUSE Linux Enterprise offers a comprehensive
+            suite of products built on a single code base.
+            The platform addresses business needs from
+            the smallest thin-client devices to the world's
+            most powerful high-performance computing
+            and mainframe servers. SUSE Linux Enterprise
+            offers common management tools and technology
+            certifications across the platform, and
+            each product is enterprise-class.
+  display_name: SUSE Linux Enterprise Server 12 SP3
+  download_size: 0
+  eol: 1730332800
+  flags: []
+  flavor: DVD
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: SLES
+  on_system_by_user: true
+  product_file: "/mnt/etc/products.d/SLES.prod"
+  product_line: sles
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-12-x86_64
+  relnotes_url: https://www.suse.com/releasenotes/x86_64/SUSE-SLES/12-SP3/release-notes-sles.rpm
+  relnotes_urls:
+  - https://www.suse.com/releasenotes/x86_64/SUSE-SLES/12-SP3/release-notes-sles.rpm
+  short_name: SLES12-SP3
+  source: -1
+  status: :removed
+  summary: SUSE Linux Enterprise Server 12 SP3
+  transact_by: :app_high
+  type: base
+  update_urls: []
+  upgrades: []
+  vendor: SUSE
+  version: 12.3-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '12.3'
+- arch: x86_64
+  category: addon
+  description: |-
+    SUSE Linux Enterprise offers a comprehensive
+            suite of products built on a single code base.
+            The platform addresses business needs from
+            the smallest thin-client devices to the world's
+            most powerful high-performance computing
+            and mainframe servers. SUSE Linux Enterprise
+            offers common management tools and technology
+            certifications across the platform, and
+            each product is enterprise-class.
+  display_name: SUSE Linux Enterprise Server 15 SP1 RC3
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  license: "SUSE(R) End User License Agreement ..."
+  license_confirmed: false
+  locked: false
+  medium_nr: 0
+  name: SLES
+  on_system_by_user: false
+  product_file: SLES.prod
+  product_line: ''
+  product_package: sles-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: https://www.suse.com/releasenotes/x86_64/SUSE-SLES/15-SP1/release-notes-sles.rpm
+  relnotes_urls:
+  - https://www.suse.com/releasenotes/x86_64/SUSE-SLES/15-SP1/release-notes-sles.rpm
+  short_name: SLES15-SP1
+  source: 0
+  status: :available
+  summary: SUSE Linux Enterprise Server 15 SP1 RC3
+  transact_by: :solver
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 15.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15.1'
+- arch: x86_64
+  category: addon
+  description: |-
+    SUSE Linux Enterprise offers a comprehensive
+            suite of products built on a single code base.
+            The platform addresses business needs from
+            the smallest thin-client devices to the world's
+            most powerful high-performance computing
+            and mainframe servers. SUSE Linux Enterprise
+            offers common management tools and technology
+            certifications across the platform, and
+            each product is enterprise-class. SUSE Linux
+            Enterprise provides more than a cute desktop
+            product or a basic server offering. It is the
+            only Linux platform for enterprise computing,
+            and it is now replacing UNIX* and Windows*
+            as well.
+  display_name: SUSE Linux Enterprise Desktop 15 SP1 RC3
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  license: "SUSE(R) End User License Agreement ..."
+  license_confirmed: false
+  locked: false
+  medium_nr: 0
+  name: SLED
+  on_system_by_user: false
+  product_file: SLED.prod
+  product_line: ''
+  product_package: sled-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: https://www.suse.com/releasenotes/x86_64/SUSE-SLED/15-SP1/release-notes-sled.rpm
+  relnotes_urls:
+  - https://www.suse.com/releasenotes/x86_64/SUSE-SLED/15-SP1/release-notes-sled.rpm
+  short_name: SLED15-SP1
+  source: 0
+  status: :available
+  summary: SUSE Linux Enterprise Desktop 15 SP1 RC3
+  transact_by: :solver
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 15.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15.1'
+- arch: x86_64
+  category: addon
+  description: |-
+    SUSE Manager lets you efficiently manage physical, virtual,
+    and cloud-based Linux systems. It provides automated and cost-effective
+    configuration and software management, asset management, and system
+    provisioning.
+  display_name: SUSE Manager Server 4.0
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  license: "SUSE(R) End User License Agreement ..."
+  license_confirmed: false
+  locked: false
+  medium_nr: 0
+  name: SUSE-Manager-Server
+  on_system_by_user: false
+  product_file: SUSE-Manager-Server.prod
+  product_line: ''
+  product_package: SUSE-Manager-Server-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: http://www.suse.com/releasenotes/x86_64/SUSE-MANAGER/4.0/release-notes-susemanager.rpm
+  relnotes_urls:
+  - http://www.suse.com/releasenotes/x86_64/SUSE-MANAGER/4.0/release-notes-susemanager.rpm
+  replaces: []
+  short_name: SUSE Manager Server 4.0
+  source: 0
+  status: :available
+  summary: SUSE Manager Server 4.0
+  transact_by: :solver
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 4.0-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '4.0'
+- arch: x86_64
+  category: addon
+  description: |-
+    The SUSE Manager for Retail Branch Server supports large and/or
+    geographically dispersed SUSE Manager for Retail environments by reducing
+    the load on the SUSE Manager Server, lowering bandwidth needs,
+    and providing faster local updates.
+  display_name: SUSE Manager Retail Branch Server 3.2
+  download_size: 0
+  eol: 1635638400
+  flags: []
+  flavor: DVD
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: SUSE-Manager-Retail-Branch-Server
+  on_system_by_user: true
+  product_file: "/mnt/etc/products.d/SUSE-Manager-Retail-Branch-Server.prod"
+  product_line: manager-retail-branch-server
+  register_flavor: extension
+  register_release: ''
+  register_target: sle-12-x86_64
+  relnotes_url: http://www.novell.com/linux/releasenotes/x86_64/SUSE-MANAGER-PROXY/3.2/release-notes-susemanager-proxy.rpm
+  relnotes_urls:
+  - http://www.novell.com/linux/releasenotes/x86_64/SUSE-MANAGER-PROXY/3.2/release-notes-susemanager-proxy.rpm
+  short_name: SUSE Manager Retail Branch Server 3.2
+  source: -1
+  status: :removed
+  summary: SUSE Manager Retail Branch Server 3.2
+  transact_by: :solver
+  type: addon
+  update_urls: []
+  upgrades: []
+  vendor: SUSE
+  version: 3.2-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '3.2'
+- arch: x86_64
+  category: addon
+  description: |-
+    The SUSE Manager for Retail Branch Server supports large and/or
+    geographically dispersed SUSE Manager for Retail environments by reducing
+    the load on the SUSE Manager Server, lowering bandwidth needs,
+    and providing faster local updates.
+  display_name: SUSE Manager Retail Branch Server 4.0
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  license: "SUSE(R) End User License Agreement ..."
+  license_confirmed: false
+  locked: false
+  medium_nr: 0
+  name: SUSE-Manager-Retail-Branch-Server
+  on_system_by_user: false
+  product_file: SUSE-Manager-Retail-Branch-Server.prod
+  product_line: ''
+  product_package: SUSE-Manager-Retail-Branch-Server-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: http://www.suse.com/releasenotes/x86_64/SUSE-MANAGER-PROXY/4.0/release-notes-susemanager-proxy.rpm
+  relnotes_urls:
+  - http://www.suse.com/releasenotes/x86_64/SUSE-MANAGER-PROXY/4.0/release-notes-susemanager-proxy.rpm
+  replaces: []
+  short_name: SUSE Manager Retail Branch Server 4.0
+  source: 0
+  status: :selected
+  summary: SUSE Manager Retail Branch Server 4.0
+  transact_by: :app_high
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 4.0-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '4.0'
+- arch: x86_64
+  category: addon
+  description: |-
+    The SUSE Manager for Retail Branch Server supports large and/or
+    geographically dispersed SUSE Manager for Retail environments by reducing
+    the load on the SUSE Manager Server, lowering bandwidth needs,
+    and providing faster local updates.
+  display_name: SUSE Manager Retail Branch Server 4.0
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: SUSE-Manager-Retail-Branch-Server
+  on_system_by_user: false
+  product_file: SUSE-Manager-Retail-Branch-Server.prod
+  product_line: ''
+  product_package: SUSE-Manager-Retail-Branch-Server-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: http://www.suse.com/releasenotes/x86_64/SUSE-MANAGER-PROXY/4.0/release-notes-susemanager-proxy.rpm
+  relnotes_urls:
+  - http://www.suse.com/releasenotes/x86_64/SUSE-MANAGER-PROXY/4.0/release-notes-susemanager-proxy.rpm
+  replaces: []
+  short_name: SUSE Manager Retail Branch Server 4.0
+  source: 4
+  status: :available
+  summary: SUSE Manager Retail Branch Server 4.0
+  transact_by: :solver
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 4.0-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '4.0'
+- arch: x86_64
+  category: addon
+  description: |-
+    SUSE Manager Proxies extend large and/or geographically
+    dispersed SUSE Manager environments to reduce load on the SUSE Manager
+    Server, lower bandwidth needs, and provide faster local
+    updates.
+  display_name: SUSE Manager Proxy 3.2
+  download_size: 0
+  eol: 1590883200
+  flags: []
+  flavor: DVD
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: SUSE-Manager-Proxy
+  on_system_by_user: false
+  product_file: "/mnt/etc/products.d/SUSE-Manager-Proxy.prod"
+  product_line: manager-proxy
+  register_flavor: extension
+  register_release: ''
+  register_target: sle-12-x86_64
+  relnotes_url: http://www.novell.com/linux/releasenotes/x86_64/SUSE-MANAGER-PROXY/3.2/release-notes-susemanager-proxy.rpm
+  relnotes_urls:
+  - http://www.novell.com/linux/releasenotes/x86_64/SUSE-MANAGER-PROXY/3.2/release-notes-susemanager-proxy.rpm
+  short_name: SUSE Manager Proxy 3.2
+  source: -1
+  status: :removed
+  summary: SUSE Manager Proxy 3.2
+  transact_by: :app_high
+  type: addon
+  update_urls: []
+  upgrades: []
+  vendor: SUSE
+  version: 3.2-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '3.2'
+- arch: x86_64
+  category: addon
+  description: |-
+    SUSE Manager Proxies extend large and/or geographically
+    dispersed SUSE Manager environments to reduce load on the SUSE Manager
+    Server, lower bandwidth needs, and provide faster local
+    updates.
+  display_name: SUSE Manager Proxy 4.0
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  license: "SUSE(R) End User License Agreement ..."
+  license_confirmed: true
+  locked: false
+  medium_nr: 0
+  name: SUSE-Manager-Proxy
+  on_system_by_user: false
+  product_file: SUSE-Manager-Proxy.prod
+  product_line: ''
+  product_package: SUSE-Manager-Proxy-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: http://www.suse.com/releasenotes/x86_64/SUSE-MANAGER-PROXY/4.0/release-notes-susemanager-proxy.rpm
+  relnotes_urls:
+  - http://www.suse.com/releasenotes/x86_64/SUSE-MANAGER-PROXY/4.0/release-notes-susemanager-proxy.rpm
+  replaces: []
+  short_name: SUSE Manager Proxy 4.0
+  source: 0
+  status: :available
+  summary: SUSE Manager Proxy 4.0
+  transact_by: :solver
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 4.0-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '4.0'
+- arch: x86_64
+  category: addon
+  description: "<p>\n\tThe SUSE Linux Enterprise Real Time aims to reduce\n        the
+    latency and increase the predictability and reliability\n        of time-sensitive
+    mission-critical applications.\n\t</p>"
+  display_name: SUSE Linux Enterprise Real Time 15 SP1 RC3
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  license: "\uFEFFSUSE® End User License Agreement ..."
+  license_confirmed: false
+  locked: false
+  medium_nr: 0
+  name: SLE_RT
+  on_system_by_user: false
+  product_file: SLE_RT.prod
+  product_line: ''
+  product_package: SLE_RT-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: https://www.suse.com/releasenotes/x86_64/SLE-RT/15-SP1/release-notes-sle_rt.rpm
+  relnotes_urls:
+  - https://www.suse.com/releasenotes/x86_64/SLE-RT/15-SP1/release-notes-sle_rt.rpm
+  replaces: []
+  short_name: SLE-15-SP1-RT
+  source: 0
+  status: :available
+  summary: SUSE Linux Enterprise Real Time 15 SP1 RC3
+  transact_by: :solver
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 15.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15.1'
+- arch: x86_64
+  category: addon
+  description: "<p>\n\tSUSE Linux Enterprise High Performance Computing\n\tis a highly
+    scalable, high performance open source\n\toperating system designed to utilize
+    the power of\n\tparallel computing for modeling, simulation and\n\tadvanced analytics
+    workloads.\n\t</p>"
+  display_name: SUSE Linux Enterprise High Performance Computing 15 SP1 RC3
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  license: "SUSE(R) End User License Agreement ..."
+  license_confirmed: false
+  locked: false
+  medium_nr: 0
+  name: SLE_HPC
+  on_system_by_user: false
+  product_file: SLE_HPC.prod
+  product_line: ''
+  product_package: SLE_HPC-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: https://www.suse.com/releasenotes/x86_64/SLE-HPC/15-SP1/release-notes-sle_hpc.rpm
+  relnotes_urls:
+  - https://www.suse.com/releasenotes/x86_64/SLE-HPC/15-SP1/release-notes-sle_hpc.rpm
+  replaces: []
+  short_name: SLE-15-SP1-HPC
+  source: 0
+  status: :available
+  summary: SUSE Linux Enterprise High Performance Computing 15 SP1 RC3
+  transact_by: :solver
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 15.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15.1'
+- arch: x86_64
+  category: addon
+  description: |-
+    SUSE Linux Enterprise offers a comprehensive
+            suite of products built on a single code base.
+            The platform addresses business needs from
+            the smallest thin-client devices to the world's
+            most powerful high-performance computing
+            and mainframe servers. SUSE Linux Enterprise
+            offers common management tools and technology
+            certifications across the platform, and
+            each product is enterprise-class.
+  display_name: SUSE Linux Enterprise Server for SAP Applications 15 SP1 RC3
+  download_size: 0
+  flags: []
+  flavor: ''
+  inst_size: 0
+  license: "SUSE(R) End User License Agreement ..."
+  license_confirmed: false
+  locked: false
+  medium_nr: 0
+  name: SLES_SAP
+  on_system_by_user: false
+  product_file: SLES_SAP.prod
+  product_line: ''
+  product_package: SLES_SAP-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: https://www.suse.com/releasenotes/x86_64/SLE-SAP/15-SP1/release-notes-sles-for-sap.rpm
+  relnotes_urls:
+  - https://www.suse.com/releasenotes/x86_64/SLE-SAP/15-SP1/release-notes-sles-for-sap.rpm
+  replaces: []
+  short_name: SLE-15-SP1-SAP
+  source: 0
+  status: :available
+  summary: SUSE Linux Enterprise Server for SAP Applications 15 SP1 RC3
+  transact_by: :solver
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 15.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15.1'
+- arch: x86_64
+  category: addon
+  description: |-
+    SUSE Linux Enterprise offers a comprehensive
+            suite of products built on a single code base.
+            The platform addresses business needs from
+            the smallest thin-client devices to the world's
+            most powerful high-performance computing
+            and mainframe servers. SUSE Linux Enterprise
+            offers common management tools and technology
+            certifications across the platform, and
+            each product is enterprise-class.
+  display_name: SUSE Linux Enterprise Server 15 SP1 Business Critical Linux RC3
+  download_size: 0
+  eol: 1782864000
+  flags: []
+  flavor: ''
+  inst_size: 0
+  locked: false
+  medium_nr: 0
+  name: SLES_BCL
+  on_system_by_user: false
+  product_file: SLES_BCL.prod
+  product_line: ''
+  product_package: SLES_BCL-release
+  register_flavor: ''
+  register_release: ''
+  register_target: sle-15-x86_64
+  relnotes_url: https://www.suse.com/releasenotes/x86_64/SLES/15-SP1/release-notes-sles.rpm
+  relnotes_urls:
+  - https://www.suse.com/releasenotes/x86_64/SLES/15-SP1/release-notes-sles.rpm
+  replaces: []
+  short_name: SLE-15-SP1-BCL
+  source: 0
+  status: :available
+  summary: SUSE Linux Enterprise Server 15 SP1 Business Critical Linux RC3
+  transact_by: :solver
+  type: addon
+  update_urls: []
+  vendor: SUSE LLC <https://www.suse.com/>
+  version: 15.1-0
+  version_epoch: 
+  version_release: '0'
+  version_version: '15.1'
