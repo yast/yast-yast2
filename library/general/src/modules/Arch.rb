@@ -494,6 +494,13 @@ module Yast
       true
     end
 
+    # Determines whether the system is running on WSL
+    #
+    # @return [Boolean] true if runs on WSL; false otherwise
+    def is_wsl
+      SCR.Read(path(".target.string"), "/proc/sys/kernel/osrelease").to_s.include?("-Microsoft")
+    end
+
     publish function: :architecture, type: "string ()"
     publish function: :i386, type: "boolean ()"
     publish function: :sparc32, type: "boolean ()"
@@ -528,6 +535,7 @@ module Yast
     publish function: :is_zkvm, type: "boolean ()"
     publish function: :has_smp, type: "boolean ()"
     publish function: :x11_setup_needed, type: "boolean ()"
+    publish function: :is_wsl, type: "boolean ()"
   end
 
   Arch = ArchClass.new
