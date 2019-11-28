@@ -68,12 +68,15 @@ module Y2Packager
       # Create a product from Y2Packager::Resolvable
       # @param product [Y2Packager::Resolvable] product
       # @param installation_package [String] installation package name
+      # @param displayorder [Integer] display order from the package provides
       # @return [Y2Packager::Product] converted product
-      def from_resolvable(_product, installation_package = "not defined")
+      def from_resolvable(_product, installation_package = "not defined",
+                          displayorder = nil)
         Y2Packager::Product.new(
-          name: prod.name, short_name: prod.short_name, display_name: prod.display_name,
-          version: prod.version, arch: prod.arch, category: prod.category,
-          vendor: prod.vendor, order: displayorder,
+          name: product.name, short_name: product.short_name,
+          display_name: product.display_name, version: product.version,
+          arch: product.arch, category: product.category,
+          vendor: product.vendor, order: displayorder,
           installation_package: installation_package
         )
       end

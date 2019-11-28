@@ -108,7 +108,7 @@ module Y2Packager
         end
 
         @all_products << Y2Packager::Product.from_resolvable(
-          prod, installation_package_mapping[prod.name]
+          prod, installation_package_mapping[prod.name], displayorder
         )
       end
 
