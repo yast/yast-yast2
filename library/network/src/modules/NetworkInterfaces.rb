@@ -100,7 +100,7 @@ module Yast
       @CardRegex =
         # other: irlan|lo|plip|...
         {
-          "netcard" => "ath|bnep|ci|ctc|slc|dummy|bond|escon|eth|fddi|ficon|hsi|qeth|lcs|iucv|myri|tr|usb|wlan|xp|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
+          "netcard" => "ath|ci|ctc|slc|dummy|bond|eth|ficon|hsi|qeth|lcs|wlan|vlan|br|tun|tap|ib|em|p|p[0-9]+p",
           "modem"   => "ppp|modem",
           "isdn"    => "isdn|ippp",
           "dsl"     => "dsl"
@@ -1009,22 +1009,19 @@ module Yast
       true
     end
 
+    # @deprecated Not longer needed
     # Return supported network device types (for type netcard)
     # for this hardware
     def GetDeviceTypes
       # common linux device types available on all architectures
-      common_dev_types = ["eth", "tr", "vlan", "br", "tun", "tap", "bond"]
+      common_dev_types = ["eth", "vlan", "br", "tun", "tap", "bond"]
 
       # s390 specific device types
-      s390_dev_types = ["hsi", "ctc", "escon", "ficon", "iucv", "qeth", "lcs"]
+      s390_dev_types = ["hsi", "ctc", "ficon", "qeth", "lcs"]
 
       # device types which cannot be present on s390 arch
       s390_unknown_dev_types = [
-        "bnep",
         "dummy",
-        "fddi",
-        "myri",
-        "usb",
         "wlan",
         "ib"
       ]
@@ -1046,6 +1043,7 @@ module Yast
       deep_copy(dev_types)
     end
 
+    # @deprecated Not longer needed
     # Return textual device type
     # @param [String] type device type
     # @param [String] longdescr description type
@@ -1067,16 +1065,9 @@ module Yast
 
       device_types = {
         # Device type label
-        "arc"   => [_("ARCnet"), _("ARCnet Network Card")],
-        # Device type label
         "atm"   => [
           _("ATM"),
           _("Asynchronous Transfer Mode (ATM)")
-        ],
-        # Device type label
-        "bnep"  => [
-          _("Bluetooth"),
-          _("Bluetooth Connection")
         ],
         # Device type label
         "bond"  => [_("Bond"), _("Bond Network")],
@@ -1085,8 +1076,6 @@ module Yast
           _("CLAW"),
           _("Common Link Access for Workstation (CLAW)")
         ],
-        # Device type label
-        "contr" => [_("ISDN"), _("ISDN Card")],
         # Device type label
         "ctc"   => [
           _("CTC"),
@@ -1097,17 +1086,10 @@ module Yast
         # Device type label
         "dummy" => [_("Dummy"), _("Dummy Network Device")],
         # Device type label
-        "escon" => [
-          _("ESCON"),
-          _("Enterprise System Connector (ESCON)")
-        ],
-        # Device type label
         "eth"   => [
           _("Ethernet"),
           _("Ethernet Network Card")
         ],
-        # Device type label
-        "fddi"  => [_("FDDI"), _("FDDI Network Card")],
         # Device type label
         "ficon" => [
           _("FICON"),
@@ -1132,18 +1114,11 @@ module Yast
         # Device type label
         "isdn"  => [_("ISDN"), _("ISDN Connection")],
         # Device type label
-        "iucv"  => [
-          _("IUCV"),
-          _("Inter User Communication Vehicle (IUCV)")
-        ],
-        # Device type label
         "lcs"   => [_("OSA LCS"), _("OSA LCS Network Card")],
         # Device type label
         "lo"    => [_("Loopback"), _("Loopback Device")],
         # Device type label
         "modem" => [_("Modem"), _("Modem")],
-        # Device type label
-        "myri"  => [_("Myrinet"), _("Myrinet Network Card")],
         # Device type label
         "net"   => [_("ISDN"), _("ISDN Connection")],
         # Device type label
@@ -1169,21 +1144,12 @@ module Yast
           _("Serial Line Connection")
         ],
         # Device type label
-        "tr"    => [
-          _("Token Ring"),
-          _("Token Ring Network Card")
-        ],
-        # Device type label
-        "usb"   => [_("USB"), _("USB Network Device")],
-        # Device type label
         "vmnet" => [_("VMWare"), _("VMWare Network Device")],
         # Device type label
         "wlan"  => [
           _("Wireless"),
           _("Wireless Network Card")
         ],
-        # Device type label
-        "xp"    => [_("XPNET"), _("XP Network")],
         # Device type label
         "vlan"  => [_("VLAN"), _("Virtual LAN")],
         # Device type label
