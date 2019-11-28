@@ -96,9 +96,7 @@ module Y2Packager
       end
 
       # load a missing attribute
-      if !UNIQUE_ATTRIBUTES.all? { |a| instance_variable_defined?("@#{a}") }
-        raise "Missing attributes for identifying the resolvable."
-      end
+      raise "Missing attributes for identifying the resolvable." if !UNIQUE_ATTRIBUTES.all? { |a| instance_variable_defined?("@#{a}") }
 
       load_attribute(method)
       super unless instance_variable_defined?("@#{method}")
