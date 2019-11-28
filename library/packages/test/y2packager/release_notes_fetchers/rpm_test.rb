@@ -11,10 +11,10 @@ describe Y2Packager::ReleaseNotesFetchers::Rpm do
   let(:package) { Y2Packager::Package.new("release-notes-dummy", 2, "15.1") }
   let(:dependencies) do
     [
-      {
-        "status" => :selected,
-        "deps"   => [{ "provides" => "release-notes() = dummy" }]
-      }
+      Y2Packager::Resolvable.new("kind" => :package,
+        "name" => "release-notes-dummy", "source" => 1,
+        "version" => "1.0", "arch" => "x86_64", "status" => :selected,
+        "deps" => [{ "provides" => "release-notes() = dummy" }])
     ]
   end
 
@@ -31,8 +31,8 @@ describe Y2Packager::ReleaseNotesFetchers::Rpm do
   before do
     allow(Yast::Pkg).to receive(:PkgQueryProvides).with("release-notes()")
       .and_return(provides)
-    allow(Yast::Pkg).to receive(:ResolvableDependencies)
-      .with("release-notes-dummy", :package, "").and_return(dependencies)
+    allow(Y2Packager::Resolvable).to receive(:find)
+      .with(name: "release-notes-dummy", kind: :package).and_return(dependencies)
     allow(Y2Packager::Package).to receive(:find).with(package.name)
       .and_return(packages)
     allow(package).to receive(:download_to) do |path|

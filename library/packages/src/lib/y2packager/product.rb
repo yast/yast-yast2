@@ -14,6 +14,7 @@ Yast.import "Pkg"
 require "y2packager/product_reader"
 require "y2packager/release_notes_reader"
 require "y2packager/product_license_mixin"
+require "y2packager/resolvable"
 
 module Y2Packager
   # Represent a product which is present in a repository. At this
@@ -62,6 +63,22 @@ module Y2Packager
       def from_h(product)
         params = PKG_BINDINGS_ATTRS.each_with_object({}) { |a, h| h[a.to_sym] = product[a] }
         Y2Packager::Product.new(params)
+      end
+
+      # Create a product from Y2Packager::Resolvable
+      # @param product [Y2Packager::Resolvable] product
+      # @param installation_package [String] installation package name
+      # @param displayorder [Integer] display order from the package provides
+      # @return [Y2Packager::Product] converted product
+      def from_resolvable(product, installation_package = "",
+        displayorder = nil)
+        Y2Packager::Product.new(
+          name: product.name, short_name: product.short_name,
+          display_name: product.display_name, version: product.version,
+          arch: product.arch, category: product.category,
+          vendor: product.vendor, order: displayorder,
+          installation_package: installation_package
+        )
       end
 
       # Return all known available products
@@ -247,7 +264,7 @@ module Y2Packager
     def relnotes_url
       return nil unless resolvable_properties
 
-      url = resolvable_properties["relnotes_url"]
+      url = resolvable_properties.relnotes_url
       url.empty? ? nil : url
     end
 
@@ -260,8 +277,8 @@ module Y2Packager
     # @param statuses [Array<Symbol>] Status to compare with.
     # @return [Boolean] true if it is in the given status
     def status?(*statuses)
-      Yast::Pkg.ResolvableProperties(name, :product, "").any? do |res|
-        statuses.include?(res["status"])
+      Y2Packager::Resolvable.find(kind: :product, name: name).any? do |res|
+        statuses.include?(res.status)
       end
     end
 
@@ -273,9 +290,7 @@ module Y2Packager
     #
     # @return [Hash] properties
     def resolvable_properties
-      @resolvable_properties ||= Yast::Pkg.ResolvableProperties(name, :product, "").find do |data|
-        data["version"] == version
-      end
+      @resolvable_properties ||= Y2Packager::Resolvable.find(kind: :product, name: name, version: version).first
     end
   end
 end

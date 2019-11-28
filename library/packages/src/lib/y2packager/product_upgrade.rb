@@ -128,6 +128,7 @@ module Y2Packager
       # @return [<String>] Product names which should be uninstalled from the system
       def obsolete_upgrades
         system_installed = Y2Packager::Product.installed_products.map(&:name)
+
         UPGRADE_REMOVAL_MAPPING.each_with_object([]) do |(installed_products, obsolete_products), a|
           # all products from the mapping are installed and the obsolete one
           # is removed by the solver (i.e. not removed by YaST or user)
@@ -198,16 +199,16 @@ module Y2Packager
 
       # just a helper for logging the details for easier debugging
       def log_products
-        products = Yast::Pkg.ResolvableProperties("", :product, "")
-        log.debug("All products: #{products.inspect}")
-        names = products.select { |p| p["status"] == :selected }.map { |p| p["name"] }
+        products = Y2Packager::Resolvable.find(kind: :product)
+        log.debug("All products: #{products.map(&:name)}")
+        names = products.select { |p| p.status == :selected }.map(&:name)
         log.info("Selected products: #{names.inspect}")
       end
 
       def removed_by_solver?(product_name)
-        products = Yast::Pkg.ResolvableProperties(product_name, :product, "")
-        # any item removed by the solver?
-        products.any? { |p| p["status"] == :removed && p["transact_by"] == :solver }
+        Y2Packager::Resolvable.any?(
+          name: product_name, kind: :product, status: :removed, transact_by: :solver
+        )
       end
     end
   end

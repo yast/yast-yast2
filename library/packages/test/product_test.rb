@@ -28,7 +28,9 @@ def load_zypp(file_name)
   YAML.load_file(file_name)
 end
 
-PRODUCTS_FROM_ZYPP = load_zypp("products.yml").freeze
+def product_from_zypp
+  load_zypp("products.yml").map { |p| Y2Packager::Resolvable.new(p) }
+end
 
 def stub_defaults
   Yast.y2milestone "--------- Running test ---------"
@@ -37,7 +39,7 @@ def stub_defaults
   allow(Yast::PackageSystem).to receive(:EnsureSourceInit).and_return(true)
   allow(Yast::Pkg).to receive(:PkgSolve).and_return(true)
   allow(Yast::PackageLock).to receive(:Check).and_return(true)
-  allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "").and_return(PRODUCTS_FROM_ZYPP.dup)
+  allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product).and_return(product_from_zypp)
 end
 
 # Describes Product handling as a whole (due to lazy loading and internal caching),
@@ -284,7 +286,7 @@ describe Yast::Product do
   context "while called on a broken system (no os-release, no zypp information)" do
     before(:each) do
       allow(Yast::OSRelease).to receive(:os_release_exists?).and_return(false)
-      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "").and_return([])
+      allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product).and_return([])
     end
 
     context "in installation" do

@@ -6,6 +6,7 @@
 # $Id$
 require "yast"
 require "shellwords"
+require "y2packager/resolvable"
 
 module Yast
   class ProductProfileClass < Module
@@ -82,11 +83,11 @@ module Yast
       end
 
       # iterate all (or given) products and get the info about them
-      Builtins.foreach(Pkg.ResolvableProperties("", :product, "")) do |product|
-        src_id = Ops.get_integer(product, "source", -1)
-        name = Ops.get_string(product, "name", "")
+      Y2Packager::Resolvable.find(kind: :product).each do |product|
+        src_id = product.source
+        name = product.name
         if product_id.nil? &&
-            Ops.get_symbol(product, "status", :none) != :selected
+            product.status != :selected
           next
         end
         next if !product_id.nil? && src_id != product_id
@@ -109,16 +110,16 @@ module Yast
         end
         # generate product map:
         version_release = Builtins.splitstring(
-          Ops.get_string(product, "version", ""),
+          product.version,
           "-"
         )
         products = Builtins.add(
           products,
-          "arch"    => Ops.get_string(product, "arch", ""),
+          "arch"    => product.arch,
           "name"    => name,
           "version" => Ops.get(version_release, 0, ""),
           "release" => Ops.get(version_release, 1, ""),
-          "vendor"  => Ops.get_string(product, "vendor", "")
+          "vendor"  => product.vendor
         )
         sigkeys = Convert.convert(
           Builtins.union(sigkeys, GetSigKeysForProduct(src_id)),

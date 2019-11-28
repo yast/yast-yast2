@@ -17,29 +17,35 @@ require "y2packager/product_reader"
 
 describe Y2Packager::ProductReader do
   subject { Y2Packager::ProductReader.new }
-  let(:products) { YAML.load(File.read(File.join(PACKAGES_FIXTURES_PATH, "products-sles15.yml"))) } # rubocop:disable Security/YAMLLoad
+  let(:products_hash) { YAML.load(File.read(File.join(PACKAGES_FIXTURES_PATH, "products-sles15.yml"))) } # rubocop:disable Security/YAMLLoad
+  let(:products) do
+    products_hash.map { |p| Y2Packager::Resolvable.new(p) }
+  end
+
   let(:installation_package_map) { { "SLES" => "skelcd-SLES" } }
 
   describe "#available_base_products" do
     before do
       # TODO: proper mocking of pkg methods
       allow(subject).to receive(:installation_package_mapping).and_return(installation_package_map)
+      allow(Y2Packager::Resolvable).to receive(:find).with(kind: :package, name: //)
+        .and_return([])
     end
 
     it "returns empty list if there is no product" do
-      expect(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
         .and_return([])
       expect(subject.available_base_products).to eq([])
     end
 
     it "returns Installation::Product objects" do
-      expect(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
         .and_return(products)
       expect(subject.available_base_products.first).to be_a(Y2Packager::Product)
     end
 
     it "returns the correct product properties" do
-      expect(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
         .and_return(products)
       ret = subject.available_base_products.first
       expect(ret.name).to eq("SLES")
@@ -47,13 +53,16 @@ describe Y2Packager::ProductReader do
     end
 
     it "returns only the products from the initial repository" do
-      sp3 = products.first
-      addon1 = sp3.dup
-      addon1["source"] = 1
-      addon2 = sp3.dup
-      addon2["source"] = 2
+      sp3_hash = products_hash.first
+      addon1_hash = sp3_hash.dup
+      addon1_hash["source"] = 1
+      addon2_hash = sp3_hash.dup
+      addon2_hash["source"] = 2
+      sp3 = Y2Packager::Resolvable.new(sp3_hash)
+      addon1 = Y2Packager::Resolvable.new(addon1_hash)
+      addon2 = Y2Packager::Resolvable.new(addon2_hash)
 
-      expect(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
         .and_return([addon2, addon1, sp3])
 
       expect(subject.available_base_products.size).to eq(1)
@@ -61,11 +70,24 @@ describe Y2Packager::ProductReader do
 
     context "when no product with system-installation() tag exists" do
       let(:installation_package_map) { {} }
-      let(:prod1) { { "name" => "SLES", "status" => :available } }
-      let(:prod2) { { "name" => "SLED", "status" => :available } }
+      let(:prod1) do
+        Y2Packager::Resolvable.new("kind" => :product,
+          "name" => "SLES", "status" => :available, "source" => 1, "short_name" => "short_name",
+          "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
+          "display_name" => "display_name", "category" => "addon",
+          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")
+      end
+
+      let(:prod2) do
+        Y2Packager::Resolvable.new("kind" => :product,
+          "name" => "SLED", "status" => :available, "source" => 2, "short_name" => "short_name",
+          "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
+          "display_name" => "display_name", "category" => "addon",
+          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")
+      end
 
       before do
-        allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+        allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
           .and_return(products)
       end
 
@@ -90,15 +112,15 @@ describe Y2Packager::ProductReader do
   describe "#installed_base_product" do
     let(:base_prod) do
       # reuse the available SLES15 product, just change some attributes
-      base = products.first.dup
+      base = products_hash.first.dup
       base["name"] = "base_product"
       base["type"] = "base"
       base["status"] = :installed
-      base
+      Y2Packager::Resolvable.new(base)
     end
 
     it "returns the installed base product" do
-      expect(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
         .and_return(products + [base_prod])
       expect(subject.installed_base_product.name).to eq("base_product")
     end
@@ -107,25 +129,27 @@ describe Y2Packager::ProductReader do
   describe "#all_products" do
     let(:special_prod) do
       # reuse the available SLES15 product, just change some attributes
-      special = products.first.dup
+      special = products_hash.first.dup
       special["name"] = "SLES_BCL"
       special["status"] = :available
       special["product_package"] = "SLES_BCL-release"
       special["display_name"] = "SUSE Linux Enterprise Server 15 Business Critical Linux"
       special["short_name"] = "SLE-15-BCL"
-      special
+      Y2Packager::Resolvable.new(special)
     end
 
     before do
-      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+      allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
         .and_return(products + [special_prod])
       allow(Yast::Pkg).to receive(:PkgQueryProvides).with("system-installation()")
         .and_return([])
       allow(subject).to receive(:product_package).with("sles-release")
         .and_return(nil)
       allow(subject).to receive(:product_package).with("SLES_BCL-release")
-        .and_return("deps" => [{ "conflicts"=>"kernel < 4.4" },
-                               { "provides"=>"specialproduct(SLES_BCL)" }])
+        .and_return(Y2Packager::Resolvable.new("name" => "product_package",
+        "source" => 1, "version" => "1.0", "arch" => "x86_64",
+        "kind" => :package, "deps" => [{ "conflicts"=>"kernel < 4.4" },
+                                       { "provides"=>"specialproduct(SLES_BCL)" }]))
       allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return(nil)
     end
 
@@ -164,26 +188,30 @@ describe Y2Packager::ProductReader do
     end
 
     it "returns the available product also when an installed product is found" do
-      installed = products.first.dup
-      installed["status"] = :installed
-      available = products.first.dup
-      available["status"] = :available
+      installed_hash = products_hash.first.dup
+      installed_hash["status"] = :installed
+      available_hash = products_hash.first.dup
+      available_hash["status"] = :available
+      available = Y2Packager::Resolvable.new(available_hash)
+      installed = Y2Packager::Resolvable.new(installed_hash)
 
       # return the installed product first to ensure the following available duplicate is not lost
-      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+      allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
         .and_return([installed, available])
 
       expect(subject.all_products).to_not be_empty
     end
 
     it "treats the selected and available products as duplicates even with different arch" do
-      selected = products.first.dup
-      selected["status"] = :selected
-      available = products.first.dup
-      available["status"] = :available
-      available["arch"] = "i586"
+      selected_hash = products_hash.first.dup
+      selected_hash["status"] = :selected
+      available_hash = products_hash.first.dup
+      available_hash["status"] = :available
+      available_hash["arch"] = "i586"
+      selected = Y2Packager::Resolvable.new(selected_hash)
+      available = Y2Packager::Resolvable.new(available_hash)
 
-      allow(Yast::Pkg).to receive(:ResolvableProperties).with("", :product, "")
+      allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
         .and_return([selected, available])
 
       expect(subject.all_products.size).to eq(1)

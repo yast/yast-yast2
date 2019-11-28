@@ -37,6 +37,7 @@ require "yast2/control_log_dir_rotator"
 
 require "packages/package_downloader"
 require "packages/package_extractor"
+require "y2packager/resolvable"
 
 module Yast
   class WorkflowManagerClass < Module
@@ -414,12 +415,12 @@ module Yast
       package = case source
       when ::Integer
         product = find_product(source)
-        return nil unless product && product["product_package"]
+        return nil unless product&.product_package
 
-        product_package = product["product_package"]
+        product_package = product.product_package
 
         # the dependencies are bound to the product's -release package
-        release_package = Pkg.ResolvableDependencies(product_package, :package, "").first
+        release_package = Y2Packager::Resolvable.find(kind: :package, name: product_package).first
 
         # find the package name with installer update in its Provide dependencies
         control_file_package = find_control_package(release_package)
@@ -1609,14 +1610,14 @@ module Yast
     # @return [Hash,nil] pkg-bindings product hash or nil if not found
     def find_product(repo_id)
       # identify the product
-      products = Pkg.ResolvableDependencies("", :product, "")
+      products = Y2Packager::Resolvable.find(kind: :product)
       return nil unless products
 
-      products.select! { |p| p["source"] == repo_id }
+      products.select! { |p| p.source == repo_id }
 
       if products.size > 1
         log.warn("More than one product found in the repository: #{products}")
-        log.warn("Using the first one: #{products.first}")
+        log.warn("Using the first one: #{products.first.name}")
       end
 
       products.first
@@ -1625,11 +1626,12 @@ module Yast
     # Find the extension package name for the specified release package.
     # The extension package is defined by the "installerextension()"
     # RPM "Provides" dependency.
+    # @param  [Y2Packager::Resolvable] release package
     # @return [String,nil] a package name or nil if not found
     def find_control_package(release_package)
-      return nil unless release_package && release_package["deps"]
+      return nil unless release_package&.deps
 
-      release_package["deps"].each do |dep|
+      release_package.deps.each do |dep|
         provide = dep["provides"]
         next unless provide
 
@@ -1648,7 +1650,7 @@ module Yast
     # @return [Fixnum,nil] repository ID or nil if not found
     def package_repository(package_name)
       # Identify the installation repository with the package
-      pkgs = Pkg.ResolvableProperties(package_name, :package, "")
+      pkgs = Y2Packager::Resolvable.find(kind: :package, name: package_name)
 
       if pkgs.empty?
         log.warn("The installer extension package #{package_name} was not found")
@@ -1656,7 +1658,7 @@ module Yast
       end
 
       latest_package = pkgs.reduce(nil) do |a, p|
-        (!a || (Pkg.CompareVersions(a["version"], p["version"]) < 0)) ? p : a
+        (!a || (Pkg.CompareVersions(a.version, p.version) < 0)) ? p : a
       end
 
       if pkgs.size > 1
@@ -1664,7 +1666,7 @@ module Yast
         log.info("Using the latest package: #{latest_package}")
       end
 
-      latest_package["source"]
+      latest_package.source
     end
 
     # Download and extract a package from a repository.

@@ -11,6 +11,7 @@
 # ------------------------------------------------------------------------------
 
 require "y2packager/licenses_fetchers/archive"
+require "y2packager/resolvable"
 
 module Y2Packager
   module LicensesFetchers
@@ -66,11 +67,8 @@ module Y2Packager
       def package_name
         return @package_name if @package_name
 
-        package_properties = Yast::Pkg.ResolvableProperties(product_name, :product, "")
-        package_properties = package_properties.find { |props| props.key?("product_package") }
-        package_properties ||= {}
-
-        @package_name = package_properties.fetch("product_package", nil)
+        package_property = Y2Packager::Resolvable.find(kind: :product, name: product_name).first
+        @package_name = package_property.product_package if package_property
       end
     end
   end

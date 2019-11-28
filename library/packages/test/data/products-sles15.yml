@@ -1,5 +1,6 @@
 ---
 - arch: x86_64
+  kind: :product
   category: addon
   description: |-
     SUSE Linux Enterprise offers a comprehensive

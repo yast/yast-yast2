@@ -28,6 +28,7 @@
 # $Id$
 require "yast"
 require "y2packager/product_reader"
+require "y2packager/resolvable"
 
 module Yast
   class ProductClass < Module
@@ -93,13 +94,13 @@ module Yast
 
       log.info "Looking for base products"
 
-      products = Pkg.ResolvableProperties("", :product, "") || []
+      products = Y2Packager::Resolvable.find(kind: :product) || []
 
       # For all (not only base) products
       # FIXME: filling release notes is a nasty side effect of searching the base product,
       # it should be handled separately...
       required_status = use_installed_products? ? :installed : :selected
-      fill_up_relnotes(products.select { |p| p["status"] == required_status })
+      fill_up_relnotes(products.select { |p| p.status == required_status })
 
       # list of products defined by the "system-installation()" provides
       system_products = Y2Packager::ProductReader.installation_package_mapping.keys
@@ -110,18 +111,18 @@ module Yast
         # The category "base" is not set during installation yet, it is set
         # only for _installed_ base product (otherwise "addon" is reported).
         if use_installed_products?
-          p["category"] == "base"
+          p.category == "base"
         elsif system_products && !system_products.empty?
           # the base product is marked by "system-installation()" provides
           status = selected ? :selected : :available
-          system_products.include?(p["name"]) && p["status"] == status
+          system_products.include?(p.name) && p.status == status
         else
           # Use the product from the initial repository as a fallback
-          p["source"] == 0
+          p.source == 0
         end
       end
 
-      log.info "Found #{products.size} base product(s): #{products.map { |p| p["name"] }.inspect}"
+      log.info "Found #{products.size} base product(s): #{products.map(&:name).inspect}"
 
       if products.empty?
         log.error "No base product found"
@@ -130,7 +131,19 @@ module Yast
         log.warn "More than one base product found!"
       end
 
-      deep_copy(products)
+      # returns a hash in order to not change the interface
+      products.map do |p|
+        { "name"            => p.name,
+          "short_name"      => p.short_name,
+          "display_name"    => p.display_name,
+          "version"         => p.version,
+          "arch"            => p.arch,
+          "category"        => p.category,
+          "vendor"          => p.vendor,
+          "status"          => p.status,
+          "relnotes_url"    => p.relnotes_url,
+          "register_target" => p.register_target }
+      end
     end
 
     # Reads products from libzypp and fills the internal products cache
@@ -211,11 +224,11 @@ module Yast
       release_notes_to_product = {}
 
       products.map do |p|
-        next if p["relnotes_url"] == ""
+        next if p.relnotes_url == ""
 
-        url = p["relnotes_url"]
+        url = p.relnotes_url
         all_release_notes << url
-        release_notes_to_product[url] = (p["display_name"] || "")
+        release_notes_to_product[url] = p.display_name
       end
 
       set_property(:relnotesurl_all, all_release_notes)

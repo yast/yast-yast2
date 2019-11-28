@@ -1,5 +1,6 @@
 ---
 - arch: x86_64
+  kind: :product
   category: base
   description: openSUSE is a distribution by the openSUSE.org project.
   display_name: openSUSE (INSTALLED)
@@ -27,6 +28,7 @@
   vendor: openSUSE
   version: 13.1-1.10
 - arch: x86_64
+  kind: :product
   category: base
   description: openSUSE is a distribution by the openSUSE.org project.
   display_name: openSUSE (SELECTED)

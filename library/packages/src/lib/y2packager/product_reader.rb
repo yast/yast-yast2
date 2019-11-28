@@ -13,6 +13,7 @@
 require "yast"
 require "y2packager/product"
 require "y2packager/product_sorter"
+require "y2packager/resolvable"
 
 Yast.import "Pkg"
 Yast.import "Linuxrc"
@@ -83,37 +84,31 @@ module Y2Packager
 
       if Yast::Stage.initial && Y2Packager::MediumType.online? && !force_repos
         return Y2Packager::ProductControlProduct.products.each_with_object([]) do |p, result|
-          result << Y2Packager::Product.new(name: p.name, display_name: p.label,
-              version: p.version, arch: p.arch,
-              short_name: p.name, # TODO: verify that name and shortname are same for control products
-              installation_package: "Test") # just hack as we do not know current package name yet
+          result << Y2Packager::Product.from_resolvable(p)
         end
       end
 
       @all_products = []
 
       available_products.each do |prod|
-        prod_pkg = product_package(prod["product_package"])
+        prod_pkg = product_package(prod.product_package)
 
         if prod_pkg
           # remove special products if they have not been defined in linuxrc
-          prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Aspecialproduct\(\s*(.*?)\s*\)\z/ }
+          prod_pkg.deps.find { |dep| dep["provides"] =~ /\Aspecialproduct\(\s*(.*?)\s*\)\z/ }
           special_product_tag = linuxrc_string(Regexp.last_match[1]) if Regexp.last_match
           if special_product_tag && !linuxrc_special_products.include?(special_product_tag)
-            log.info "Special product #{prod["name"]} has not been defined via linuxrc. --> do not offer it"
+            log.info "Special product #{prod.name} has not been defined via linuxrc. --> do not offer it"
             next
           end
 
           # Evaluating display order
-          prod_pkg["deps"].find { |dep| dep["provides"] =~ /\Adisplayorder\(\s*([0-9]+)\s*\)\z/ }
+          prod_pkg.deps.find { |dep| dep["provides"] =~ /\Adisplayorder\(\s*([0-9]+)\s*\)\z/ }
           displayorder = Regexp.last_match[1].to_i if Regexp.last_match
         end
 
-        @all_products << Y2Packager::Product.new(
-          name: prod["name"], short_name: prod["short_name"], display_name: prod["display_name"],
-          version: prod["version"], arch: prod["arch"], category: prod["category"],
-          vendor: prod["vendor"], order: displayorder,
-          installation_package: installation_package_mapping[prod["name"]]
+        @all_products << Y2Packager::Product.from_resolvable(
+          prod, installation_package_mapping[prod.name], displayorder
         )
       end
 
@@ -145,21 +140,23 @@ module Y2Packager
       base = base_product
       return nil unless base
 
-      Y2Packager::Product.from_h(base)
+      Y2Packager::Product.from_resolvable(base, installation_package_mapping[base.name])
     end
 
     # All installed products
     # @return [Array<Y2Packager::Product>] the product list
     def all_installed_products
-      installed_products.map { |p| Y2Packager::Product.from_h(p) }
+      installed_products.map do |p|
+        Y2Packager::Product.from_resolvable(p, installation_package_mapping[p.name])
+      end
     end
 
     def product_package(name, _repo_id = nil)
       return nil unless name
 
       # find the highest version
-      Yast::Pkg.ResolvableDependencies(name, :package, "").reduce(nil) do |a, p|
-        (!a || (Yast::Pkg.CompareVersions(a["version"], p["version"]) < 0)) ? p : a
+      Y2Packager::Resolvable.find(kind: :package, name: name).reduce(nil) do |a, p|
+        (!a || (Yast::Pkg.CompareVersions(a.version, p.version) < 0)) ? p : a
       end
     end
 
@@ -168,43 +165,43 @@ module Y2Packager
     # read the available products, remove potential duplicates
     # @return [Array<Hash>] pkg-bindings data structure
     def zypp_products
-      products = Yast::Pkg.ResolvableProperties("", :product, "")
+      products = Y2Packager::Resolvable.find(kind: :product)
 
       # remove duplicates, there might be different flavors ("DVD"/"POOL")
       # or archs (x86_64/i586), when selecting the product to install later
       # libzypp will select the correct arch automatically,
       # keep products with different location, they are filtered out later
-      products.uniq! { |p| "#{p["name"]}__#{p["version"]}__#{resolvable_location(p)}" }
-      log.info "Found products: #{products.map { |p| p["name"] }}"
+      products.uniq! { |p| "#{p.name}__#{p.version}__#{resolvable_location(p)}" }
+      log.info "Found products: #{products.map(&:name)}"
 
       products
     end
 
     # read the available products, remove potential duplicates
-    # @return [Array<Hash>] pkg-bindings data structures
+    # @return [Array<Y2Packager::Resolvable>] list of products
     def available_products
       # select only the available or to be installed products
-      zypp_products.select { |p| p["status"] == :available || p["status"] == :selected }
+      zypp_products.select { |p| p.status == :available || p.status == :selected }
     end
 
     # read the installed products
-    # @return [Array<Hash>] pkg-bindings data structures
+    # @return [Array<Y2Packager::Resolvable>] list of products
     def installed_products
       # select only the installed or to be removed products
-      zypp_products.select { |p| p["status"] == :installed || p["status"] == :removed }
+      zypp_products.select { |p| p.status == :installed || p.status == :removed }
     end
 
     # find the installed base product
-    # @return[Hash,nil] the pkg-bindings product structure or nil if not found
+    # @return[Y2Packager::Resolvable,nil] the pkg-bindings product structure or nil if not found
     def base_product
       # The base product is identified by the /etc/products.d/baseproduct symlink
       # and because a symlink can point only to one file there can be only one base product.
       # The "installed" condition is actually not required because that symlink is created
       # only for installed products. (Just make sure it still works in case the libzypp
       # internal implementation is changed.)
-      base = installed_products.find { |p| p["type"] == "base" }
+      base = installed_products.find { |p| p.type == "base" }
 
-      log.info("Found installed base product: #{base}")
+      log.info("Found installed base product: #{base.name}")
       base
     end
 
@@ -234,14 +231,14 @@ module Y2Packager
     # @return [Symbol] `:on_medium` or `:on_system`
     #
     def resolvable_location(res)
-      case res["status"]
+      case res.status
       when :available, :selected
         :on_medium
       when :installed, :removed
         :on_system
       else
         # just in case pkg-bindings add some new status...
-        raise "Unexpected resolvable status: #{res["status"]}"
+        raise "Unexpected resolvable status: #{res.status}"
       end
     end
   end

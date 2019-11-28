@@ -16,6 +16,7 @@ require "y2packager/package"
 require "y2packager/release_notes"
 require "y2packager/release_notes_content_prefs"
 require "y2packager/release_notes_fetchers/base"
+require "y2packager/resolvable"
 require "packages/package_downloader"
 require "tmpdir"
 
@@ -95,14 +96,14 @@ module Y2Packager
         provides = Yast::Pkg.PkgQueryProvides("release-notes()")
         release_notes_packages = provides.map(&:first).uniq
         package_name = release_notes_packages.sort.find do |name|
-          package_list = Yast::Pkg.ResolvableDependencies(name, :package, "")
+          package_list = Y2Packager::Resolvable.find(kind: :package, name: name)
 
           log.debug "Evaluating #{name} provides: #{package_list}"
-          package = package_list.find { |p| p["status"] == :selected } || package_list.find { |p| p["status"] == :available }
+          package = package_list.find { |p| p.status == :selected } || package_list.find { |p| p.status == :available }
           log.debug "Checking package #{package}"
           next false unless package
 
-          dependencies = package["deps"]
+          dependencies = package.deps
           dependencies.any? do |dep|
             # mind $ at the end of the regexp, otherwise for SLES you may get RNs of any SLES.* product
             dep["provides"].to_s.match(/^\s*release-notes\(\)\s*=\s*#{Regexp.escape(product.name)}\s*$/)
