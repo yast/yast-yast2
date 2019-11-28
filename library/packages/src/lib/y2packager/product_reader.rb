@@ -201,7 +201,7 @@ module Y2Packager
       # internal implementation is changed.)
       base = installed_products.find { |p| p.type == "base" }
 
-      log.info("Found installed base product: #{base.name}")
+      log.info("Found installed base product: #{base&.name}")
       base
     end
 
