@@ -81,6 +81,18 @@ module Y2Packager
         )
       end
 
+      # Create a product from Y2Packager::ProductControlProduct
+      # @param product [Y2Packager::ProductControlProduct] product
+      # @return [Y2Packager::Product] converted product
+      def from_product_control_product(product)
+        Y2Packager::Product.new(
+          name: product.name, display_name: product.label,
+          version: product.version, arch: product.arch,
+          short_name: product.name,
+          installation_package: ""
+        )
+      end
+
       # Return all known available products
       #
       # @return [Array<Product>] Known available products
