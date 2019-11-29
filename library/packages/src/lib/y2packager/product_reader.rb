@@ -84,7 +84,7 @@ module Y2Packager
 
       if Yast::Stage.initial && Y2Packager::MediumType.online? && !force_repos
         return Y2Packager::ProductControlProduct.products.each_with_object([]) do |p, result|
-          result << Y2Packager::Product.from_resolvable(p)
+          result << Y2Packager::Product.from_product_control_product(p)
         end
       end
 
