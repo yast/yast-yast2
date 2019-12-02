@@ -177,6 +177,14 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 %post
 %{fillup_only -n yast2}
 
+if [ -f "/etc/sysctl.d/30-yast.conf" ]; then
+    if [ -f "/etc/sysctl.d/70-yast.conf" ]; then
+        rm /etc/sysctl.d/30-yast.conf
+    else
+        mv /etc/sysctl.d/30-yast.conf /etc/sysctl.d/70-yast.conf
+    fi
+fi
+
 %files
 
 # basic directory structure
