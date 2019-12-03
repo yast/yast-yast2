@@ -49,7 +49,7 @@ module CFA
     Yast.import "Stage"
 
     PARSER = AugeasParser.new("sysctl.lns")
-    PATH = "/etc/sysctl.d/30-yast.conf".freeze
+    PATH = "/etc/sysctl.d/70-yast.conf".freeze
 
     class << self
       # Modifies default CFA methods to handle boolean values
