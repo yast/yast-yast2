@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Dec  4 14:26:35 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
+
+- Add backward compatible hash accessors to Resolvable which solve
+  several crashes ( related to bsc#1132650 and bsc#1140037)
+- 4.2.47
+
+-------------------------------------------------------------------
 Mon Dec  2 16:27:25 UTC 2019 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use 70-yast.conf instead of 30-yast.conf to write YaST settings
