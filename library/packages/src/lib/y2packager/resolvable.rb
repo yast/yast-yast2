@@ -80,6 +80,17 @@ module Y2Packager
       from_hash(hash)
     end
 
+    # Backward compatibility method to access resolvable like hash.
+    def [](key)
+      log.info "Calling [] with #{key}. Deprecated. Use method name directly"
+
+      public_send(key.to_sym)
+    # key not found, so return nil to be compatible
+    rescue NameError
+      log.info "attribute #{key} not defined, returning nil."
+      nil
+    end
+
     #
     # Dynamically load the missing attributes from libzypp.
     #
