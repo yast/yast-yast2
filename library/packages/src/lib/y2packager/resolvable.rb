@@ -82,12 +82,13 @@ module Y2Packager
 
     # Backward compatibility method to access resolvable like hash.
     def [](key)
-      log.info "Calling [] with #{key}. Deprecated. Use method name directly"
+      log.info "Calling [] with #{key}. It is deprecated. Use method name " \
+        "directly. Called from #{caller(1).first}"
 
       public_send(key.to_sym)
     # key not found, so return nil to be compatible
     rescue NameError
-      log.info "attribute #{key} not defined, returning nil."
+      log.warn "attribute #{key} not defined, returning nil."
       nil
     end
 
