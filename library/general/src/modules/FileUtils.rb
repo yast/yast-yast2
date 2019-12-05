@@ -33,12 +33,32 @@ require "shellwords"
 
 module Yast
   class FileUtilsClass < Module
+    include Yast::Logger
+
     def main
       textdomain "base"
       Yast.import "Popup"
       Yast.import "String"
 
       @tmpfiles = []
+    end
+
+    def method_missing(method_name, *args, &block)
+      if ::FileUtils.respond_to?(method_name)
+        log.warn "#{caller(1).first} called the #{method_name} which is not defined in Yast::FileUtils"
+        log.warn "Falling back to the FileUtils Ruby module"
+
+        ::FileUtils.public_send(method_name, *args, &block)
+      else
+        super
+      end
+    end
+
+    def respond_to_missing?(method_name, include_all = false)
+      log.info "Yast::FileUtils does not respond to #{method_name}"
+      log.warn "Checking if the FileUtils Ruby module does it"
+
+      ::FileUtils.respond_to?(method_name) || super
     end
 
     # Function which determines if the requested file/directory exists.
