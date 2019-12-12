@@ -77,6 +77,7 @@ module Y2Packager
     #
     # @param hash [Hash<Symbol,Object>] A pkg-bindings resolvable hash.
     def initialize(hash)
+      @deps = []
       from_hash(hash)
     end
 

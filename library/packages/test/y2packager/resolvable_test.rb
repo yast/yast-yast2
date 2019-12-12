@@ -106,4 +106,26 @@ describe Y2Packager::Resolvable do
       expect { res.vendor("dummy") }.to raise_error(ArgumentError)
     end
   end
+
+  describe "#deps" do
+    subject(:resolvable) { Y2Packager::Resolvable.new(pkg_data) }
+
+    let(:pkg_data) do
+      { "name" => "foobar", "deps" => [{ "provides" => "foo" }] }
+    end
+
+    it "returns the dependencies" do
+      expect(resolvable.deps).to eq([{ "provides" => "foo" }])
+    end
+
+    context "when dependencies are missing" do
+      let(:pkg_data) do
+        { "name" => "foobar" }
+      end
+
+      it "returns an empty array" do
+        expect(resolvable.deps).to eq([])
+      end
+    end
+  end
 end
