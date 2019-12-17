@@ -69,6 +69,9 @@ module Yast2
     def initialize(service)
       textdomain "base"
       @service = service
+      # When the service is active, by default, propose to reload or restart
+      # it after writting the configuration (bsc#1158946)
+      init_default_action
     end
 
     # gets widget term
@@ -154,6 +157,12 @@ module Yast2
   private
 
     attr_reader :service
+
+    def init_default_action
+      return unless service.currently_active?
+
+      service.support_reload? ? service.reload : service.restart
+    end
 
     def store_action
       action = Yast::UI.QueryWidget(Id(:service_widget_action), :Value)
