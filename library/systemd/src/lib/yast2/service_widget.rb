@@ -64,6 +64,8 @@ module Yast2
     include Yast::Logger
     include Yast::UIShortcuts
 
+    attr_reader :default_action
+
     # creates new widget instance for given service
     # @param service [Yast2::SystemService,Yast2::CompoundService] service
     def initialize(service)
@@ -72,6 +74,11 @@ module Yast2
       # When the service is active, by default, propose to reload or restart
       # it after writting the configuration (bsc#1158946)
       init_default_action
+    end
+
+    def default_action=(value)
+      @default_action = value
+      service.public_send(default_action) if valid_action?(value)
     end
 
     # gets widget term
@@ -99,6 +106,7 @@ module Yast2
     #
     # @return [nil]
     def refresh
+      service.public_send(default_action) if valid_action?(default_action)
       Yast::UI.ChangeWidget(Id(:service_widget_status), :Value, status)
       Yast::UI.ChangeWidget(Id(:service_widget_action), :Items, action_items)
       Yast::UI.ChangeWidget(Id(:service_widget_autostart), :Items, autostart_items)
@@ -161,8 +169,10 @@ module Yast2
     def init_default_action
       return unless service.currently_active?
 
-      service.support_reload? ? service.reload : service.restart
+      default_action = service.support_reload? ? :reload : :restart
     end
+
+
 
     def store_action
       action = Yast::UI.QueryWidget(Id(:service_widget_action), :Value)
@@ -206,6 +216,12 @@ module Yast2
         _("After writing configuration:"),
         action_items
       )
+    end
+
+    def valid_action?(value)
+      actions = service.currently_active? ? [:stop, :restart] : [:start]
+      actions << :reload if service.currently_active? && service.support_reload?
+      actions.include?(value)
     end
 
     def action_items

@@ -30,6 +30,10 @@ module CWM
       self.handle_all_events = true
     end
 
+    def default_action=(value)
+      @service_widget.default_action=(value)
+    end
+
     def contents
       @service_widget.content
     end
