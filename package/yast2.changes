@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Dec 19 09:11:35 CET 2019 - aschnell@suse.com
+
+- Added helper to create UI sort-key term (bsc#1140018)
+- 4.2.48
+
+-------------------------------------------------------------------
 Wed Dec  4 14:26:35 UTC 2019 - Josef Reidinger <jreidinger@suse.com>
 
 - Add backward compatible hash accessors to Resolvable which solve
