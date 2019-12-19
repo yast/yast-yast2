@@ -86,9 +86,12 @@ module Yast2
       init_default_action
     end
 
-    # Set the given action as the current action selected by the widget
+    # Set the given action as the current action selected by the widget, when
+    # no action is given it will not touch the service unless modified in the
+    # selection list
     #
-    # @param value [Symbol, nil]
+    # @param value [Symbol, nil] uses :nothing in case of no action given
+    # @see Yast2::SystemService#action
     def default_action=(value)
       @current_action = value || :nothing
     end
@@ -197,6 +200,8 @@ module Yast2
       # option was :reload or :restart it will be the same after applying the
       # changes and refreshing
       @current_action = action
+      # We can return safely without modifying the service action as the
+      # service should be reset before calling this method
       return if action == :nothing
 
       service.public_send(action)
