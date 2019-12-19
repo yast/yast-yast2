@@ -91,6 +91,12 @@ module CWM
       Yast::Term.new(:icon, path)
     end
 
+    # helper to create sort-key term
+    # @param value [String] sort-key
+    def sort_key(value)
+      Yast::Term.new(:sortKey, value)
+    end
+
     # helper to create icon term
     # @param args content of cell, often used to combine icon and string
     # @note Please see difference between `Cell` and `cell`. The first one is
