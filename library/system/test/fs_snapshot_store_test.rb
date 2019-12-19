@@ -1,18 +1,28 @@
 #!/usr/bin/env rspec
 
 require_relative "test_helper"
+require "tmpdir"
+require "fileutils"
 require "yast2/fs_snapshot_store"
 
 describe Yast2::FsSnapshotStore do
   describe ".save" do
-    it "stores snapshot id to file identified by purpose" do
-      expect(Yast::SCR).to receive(:Write).with(
-        path(".target.string"),
-        "/var/lib/YaST2/pre_snapshot_test.id",
-        "42"
-      ).and_return(true)
+    let(:root_dir) { Dir.mktmpdir }
 
+    before do
+      allow(Yast::SCR).to receive(:Write).and_call_original
+    end
+
+    around do |example|
+      change_scr_root(root_dir, &example)
+    ensure
+      ::FileUtils.remove_entry(root_dir) if Dir.exist?(root_dir)
+    end
+
+    it "stores snapshot id to file identified by purpose" do
       described_class.save("test", 42)
+      snapshot_id_file = File.join(root_dir, "/var/lib/YaST2/pre_snapshot_test.id")
+      expect(File.read(snapshot_id_file)).to eq("42")
     end
 
     it "raises exception if writing failed" do
@@ -23,6 +33,11 @@ describe Yast2::FsSnapshotStore do
       ).and_return(nil)
 
       expect { described_class.save("test", 42) }.to raise_error(/Failed to write/)
+    end
+
+    it "ensures that the data directory exists" do
+      described_class.save("test", 42)
+      expect(Dir).to exist(File.join(root_dir, "/var/lib/YaST2"))
     end
   end
 

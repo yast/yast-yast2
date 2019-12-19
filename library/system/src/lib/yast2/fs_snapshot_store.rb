@@ -22,6 +22,8 @@
 
 require "yast"
 
+Yast.import "FileUtils"
+
 module Yast2
   # Goal of this module is to provide easy to use api to store id of pre
   # snapshots, so post snapshots can be then easy to make.
@@ -30,6 +32,7 @@ module Yast2
     # @param[String] purpose of snapshot like "upgrade"
     # @raise[RuntimeError] if writing to file failed
     def self.save(purpose, snapshot_id)
+      ensure_snapshot_store_path
       result = Yast::SCR.Write(
         Yast::Path.new(".target.string"),
         snapshot_path(purpose),
@@ -59,18 +62,31 @@ module Yast2
       Yast::SCR.Execute(Yast::Path.new(".target.remove"), snapshot_path(purpose))
     end
 
+    STORE_PATH = "/var/lib/YaST2".freeze
+    # Directory to save the snapshots IDs
+    #
+    # @return [String]
+    def self.snapshot_store_path
+      Yast.import "Stage"
+      return STORE_PATH unless Yast::Stage.initial || !Yast::WFM.scr_chrooted?
+
+      Yast.import "Installation"
+      ::File.join(Yast::Installation.destdir, STORE_PATH)
+    end
+    private_class_method :snapshot_store_path
+
     # Path where is stored given purpose
     def self.snapshot_path(purpose)
-      path = "/var/lib/YaST2/pre_snapshot_#{purpose}.id"
-
-      Yast.import "Stage"
-      if Yast::Stage.initial && !Yast::WFM.scr_chrooted?
-        Yast.import "Installation"
-        path = ::File.join(Yast::Installation.destdir, path)
-      end
-
-      path
+      File.join(snapshot_store_path, "pre_snapshot_#{purpose}.id")
     end
     private_class_method :snapshot_path
+
+    # Ensures that the snapshots base path exists
+    def self.ensure_snapshot_store_path
+      return if Yast::FileUtils.Exists(snapshot_store_path)
+
+      Yast::SCR.Execute(Yast::Path.new(".target.mkdir"), snapshot_store_path)
+    end
+    private_class_method :ensure_snapshot_store_path
   end
 end
