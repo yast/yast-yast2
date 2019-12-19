@@ -34,12 +34,17 @@ module Yast2
   #     end
   #
   #     def propose
-  #       @service.action = :restart
+  #       # The default service widget action can be proposed by the current
+  #       # service action
+  #       @service.restart
   #       @service.start_mode = :on_demand
   #     end
   #
   #     def show_dialog
   #       service_widget = ServiceWidget.new(@service)
+  #       # Or can be set by the service_widget
+  #       service_widget.default_action = :reload if service.running?
+  #
   #       content = VBox(
   #         ...,
   #         service_widget.content
@@ -60,11 +65,16 @@ module Yast2
   # @todo Allow to specify the widget ID. Currently, it uses always the same, so you can not use
   #   more than one instance of this class at the same time.
   class ServiceWidget
+    extend Yast::I18n
     include Yast::I18n
     include Yast::Logger
     include Yast::UIShortcuts
 
-    attr_reader :default_action
+    # It stores the selected service action
+    #
+    # @return [Symbol] service action (:nothing for no action)
+    # @see Yast2::SystemService#action
+    attr_reader :current_action
 
     # creates new widget instance for given service
     # @param service [Yast2::SystemService,Yast2::CompoundService] service
@@ -76,9 +86,11 @@ module Yast2
       init_default_action
     end
 
+    # Set the given action as the current action selected by the widget
+    #
+    # @param value [Symbol, nil]
     def default_action=(value)
-      @default_action = value
-      service.public_send(default_action) if valid_action?(value)
+      @current_action = value || :nothing
     end
 
     # gets widget term
@@ -106,7 +118,6 @@ module Yast2
     #
     # @return [nil]
     def refresh
-      service.public_send(default_action) if valid_action?(default_action)
       Yast::UI.ChangeWidget(Id(:service_widget_status), :Value, status)
       Yast::UI.ChangeWidget(Id(:service_widget_action), :Items, action_items)
       Yast::UI.ChangeWidget(Id(:service_widget_autostart), :Items, autostart_items)
@@ -166,19 +177,26 @@ module Yast2
 
     attr_reader :service
 
+    # Initialize the default option for the service widget. It tries to use the
+    # action from the service if set, if not, will propose :reload or :restart
+    # when the service is active or do nothing in case of inactive.
     def init_default_action
-      return unless service.currently_active?
+      # For being compatible with the default action proposed by the service
+      return self.default_action = service.action if service.action
+      return self.default_action = :nothing unless service.currently_active?
 
-      default_action = service.support_reload? ? :reload : :restart
+      self.default_action = service.support_reload? ? :reload : :restart
     end
-
-
 
     def store_action
       action = Yast::UI.QueryWidget(Id(:service_widget_action), :Value)
       return unless action
 
       action = action.to_s.sub(/^service_widget_action_/, "").to_sym
+      # Remember the selected option in case of refresh, specially if the
+      # option was :reload or :restart it will be the same after applying the
+      # changes and refreshing
+      @current_action = action
       return if action == :nothing
 
       service.public_send(action)
@@ -218,22 +236,64 @@ module Yast2
       )
     end
 
+    ACTION_LABEL =
+      {
+        start:   N_("Start"),
+        stop:    N_("Stop"),
+        reload:  N_("Reload"),
+        restart: N_("Restart"),
+        nothing: N_("Keep current state")
+      }.freeze
+
+    # Return whether the option given is supported and a valid one according
+    # to the service status.
+    #
+    # @param value [Symbol] the current_action selected
     def valid_action?(value)
-      actions = service.currently_active? ? [:stop, :restart] : [:start]
-      actions << :reload if service.currently_active? && service.support_reload?
       actions.include?(value)
     end
 
-    def action_items
-      current_action = service.action
-      res = []
-      res << Item(Id(:service_widget_action_start), _("Start"), current_action == :start) if service.currently_active? != true
-      res << Item(Id(:service_widget_action_stop), _("Stop"), current_action == :stop) if service.currently_active? != false
-      res << Item(Id(:service_widget_action_restart), _("Restart"), current_action == :restart) if service.currently_active? != false
-      res << Item(Id(:service_widget_action_reload), _("Reload"), current_action == :reload) if service.currently_active? != false && service.support_reload?
-      res << Item(Id(:service_widget_action_nothing), _("Keep current state"), current_action.nil?)
+    # Return the list of actions permitted and supported depending on the
+    # current service status.
+    def actions
+      actions = service.currently_active? ? [:stop, :restart] : [:start]
+      actions << :reload if service.currently_active? && service.support_reload?
+      actions << :nothing
+    end
 
-      res
+    # @param value [Symbol]
+    def action_item_id(value)
+      Id("service_widget_action_#{value}".to_sym)
+    end
+
+    # @param value [Symbol]
+    def action_label(value)
+      _(ACTION_LABEL[value])
+    end
+
+    # When the cached action is valid, it returns if the current action is the
+    # given action. If the cached option is invalid, then return true only if
+    # the given action is for not touching the service
+    #
+    # @see valid_action?
+    # @param value [Symbol]
+    def selected_item?(value)
+      if !valid_action?(current_action)
+        value == :nothing
+      else
+        current_action == value
+      end
+    end
+
+    # @param value [Symbol]
+    # @return [Yast::Term] action Item
+    def action_item(value)
+      Item(action_item_id(value), action_label(value), selected_item?(value))
+    end
+
+    # @return [Array<Yast::Term>] list of action items
+    def action_items
+      actions.map { |a| action_item(a) }
     end
 
     def autostart_widget
