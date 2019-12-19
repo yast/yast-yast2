@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Dec 19 14:51:23 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
+
+- Yast2::ServiceWidget: By default, propose to reload or restart
+  the service when it is active (bsc#1158946)
+- 4.2.49
+
+-------------------------------------------------------------------
 Thu Dec 19 09:11:35 CET 2019 - aschnell@suse.com
 
 - Added helper to create UI sort-key term (bsc#1140018)
