@@ -23,6 +23,8 @@ require "cwm/custom_widget"
 module CWM
   # CWM wrapper for Yast2::ServiceWidget
   class ServiceWidget < CustomWidget
+    extend Forwardable
+
     # creates new widget instance for given service
     # @param service [Yast2::SystemService,Yast2::CompoundService] service to be configured
     def initialize(service)
@@ -30,16 +32,10 @@ module CWM
       self.handle_all_events = true
     end
 
-    def default_action=(value)
-      @service_widget.default_action=(value)
-    end
+    def_delegators :@service_widget, :refresh, :store, :help, :default_action=
 
     def contents
       @service_widget.content
-    end
-
-    def refresh
-      @service_widget.refresh
     end
 
     def handle(event)
@@ -49,18 +45,10 @@ module CWM
       @service_widget.handle_input(event["ID"])
     end
 
-    def store
-      @service_widget.store
-    end
-
     # The widget needs to be refreshed each time it is rendered. Otherwise, cached
     # service values would not be selected (e.g., when switching in a DialogTree)
     def init
       refresh
-    end
-
-    def help
-      @service_widget.help
     end
   end
 end
