@@ -360,7 +360,7 @@ module Yast
         # translators: error message in command line interface
         Error(Builtins.sformat(_("Unknown Command: %1"), command))
 
-        return { "command" => command }
+        return {}
       end
 
       # build the list of options for the command
