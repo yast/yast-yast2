@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Mon Jan  6 15:03:45 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
-- Farsi is also an RTL language (related to bsc#1156437)
+- Persian is also an RTL language (related to bsc#1156437)
 - 4.2.50
 
 -------------------------------------------------------------------
