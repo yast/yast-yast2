@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan  6 15:03:45 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Persian is also an RTL language (related to bsc#1156437)
+- 4.2.50
+
+-------------------------------------------------------------------
 Thu Dec 19 14:51:23 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
 
 - Yast2::ServiceWidget: By default, propose to reload or restart
