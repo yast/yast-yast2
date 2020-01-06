@@ -72,7 +72,7 @@ module UI
     def div_with_direction(text, lang = nil)
       Yast.import "Language"
       lang ||= Yast::Language.language
-      # RTL languages: Arabic, Farsi, Hebrew
+      # RTL languages: Arabic, Persian, Hebrew
       direction = lang.start_with?("ar", "fa", "he") ? "rtl" : "ltr"
       "<div dir=\"#{direction}\">#{text}</div>"
     end
