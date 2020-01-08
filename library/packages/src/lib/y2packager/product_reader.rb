@@ -14,6 +14,7 @@ require "yast"
 require "y2packager/product"
 require "y2packager/product_sorter"
 require "y2packager/resolvable"
+require "y2packager/product_control_product"
 
 Yast.import "Pkg"
 Yast.import "Linuxrc"
