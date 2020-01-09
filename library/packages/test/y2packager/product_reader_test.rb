@@ -216,6 +216,41 @@ describe Y2Packager::ProductReader do
 
       expect(subject.all_products.size).to eq(1)
     end
+
+    # Smoke test. There was a missing "require" clause in one part of the code.
+    # This context ensures that part is executed in the tests, basically to
+    # make sure the "require" is not forgotten (bsc#1160362). But the tests on
+    # this context do not guarantee the code is working correctly in all cases.
+    # They only test a simplistic case with quite some mocking.
+    context "with the online media and no base product" do
+      # FIXME: needed because MediumType is wrongly located in yast2-packager
+      module Y2Packager
+        class MediumType
+          def self.online?
+            true
+          end
+        end
+      end
+
+      before do
+        allow(Yast::Stage).to receive(:initial).and_return true
+
+        # The tests at test/y2packager/product_control_product_test.rb mock
+        # this to always be an array. Let's copy the most simplistic of those
+        # mocks.
+        allow(Yast::ProductFeatures).to receive(:GetFeature)
+          .with("software", "base_products").and_return([])
+      end
+
+      after do
+        # the read products are cached, we need to reset them manually for the next test
+        Y2Packager::ProductControlProduct.instance_variable_set(:@products, nil)
+      end
+
+      it "does not crash" do
+        expect { subject.all_products }.to_not raise_error
+      end
+    end
   end
 
   describe ".installation_package_mapping" do
