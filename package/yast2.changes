@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jan  9 16:57:33 CET 2020 - schubi@suse.de
+
+- Do not refresh package installation overview if the medium has
+  been changed and the user has switched to the release notes tab.
+  (bsc#1129426, bsc#1159367)
+- 4.2.52
+
+-------------------------------------------------------------------
 Wed Jan  8 16:27:59 UTC 2020 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Fix an exception in the live installation caused by a missing

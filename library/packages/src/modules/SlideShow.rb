@@ -139,6 +139,7 @@ module Yast
       @language = "en"
       @widgets_created = false
       @user_switched_to_details = false
+      @user_switched_to_release_notes = false
       @opened_own_wizard = false
       @inst_log = ""
       @debug = false
@@ -658,6 +659,7 @@ module Yast
     #
     # @param [Boolean] show_release_notes release notes tab will be shown.
     def RebuildDialog(show_release_notes = false)
+      log.info "Rebuilding partitioning/RPM_installation progress"
       contents = Empty()
 
       show_slides = Slides.HaveSlideSupport && Slides.HaveSlides
@@ -778,18 +780,29 @@ module Yast
       button = deep_copy(button)
       if button == :showDetails && !ShowingDetails()
         Builtins.y2milestone("User asks to switch to details")
+        @user_switched_to_release_notes = false
         @user_switched_to_details = true
         SwitchToDetailsView()
       elsif button == :showSlide && !ShowingSlide()
         if Slides.HaveSlides
+          if @user_switched_to_release_notes
+            # The user is switching from realease notes to slide show.
+            # In order to not disturbe the user while reading the release notes
+            # we are not updatding the tabs although the slide show has been
+            # changed meanwhile. So we are updating it now before switching to
+            # slide show.
+            RebuildDialog(true) # true: showing the release tab
+          end
           @user_switched_to_details = false
           SwitchToSlideView()
           LoadSlide(@current_slide_no)
         else
           UI.ChangeWidget(:dumbTab, :CurrentItem, :showDetails)
         end
+        @user_switched_to_release_notes = false
       elsif @_rn_tabs.key?(button) && !ShowingRelNotes(button)
         @user_switched_to_details = false
+        @user_switched_to_release_notes = true
         SwitchToReleaseNotesView(button)
       elsif button == :debugHotkey
         @debug = !@debug
@@ -1029,6 +1042,7 @@ module Yast
     publish variable: :language, type: "string"
     publish variable: :widgets_created, type: "boolean"
     publish variable: :user_switched_to_details, type: "boolean"
+    publish variable: :user_switched_to_release_notes, type: "boolean"
     publish variable: :opened_own_wizard, type: "boolean"
     publish variable: :inst_log, type: "string"
     publish variable: :debug, type: "boolean"
