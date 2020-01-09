@@ -242,6 +242,11 @@ describe Y2Packager::ProductReader do
           .with("software", "base_products").and_return([])
       end
 
+      after do
+        # the read products are cached, we need to reset them manually for the next test
+        Y2Packager::ProductControlProduct.instance_variable_set(:@products, nil)
+      end
+
       it "does not crash" do
         expect { subject.all_products }.to_not raise_error
       end
