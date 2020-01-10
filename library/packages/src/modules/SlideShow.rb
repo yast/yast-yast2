@@ -138,12 +138,9 @@ module Yast
       @slide_interval = 30 # FIXME: constant
       @language = "en"
       @widgets_created = false
-      @user_switched_to_details = false
-      @user_switched_to_release_notes = false
+      @user_switched_to = :none
       @opened_own_wizard = false
       @inst_log = ""
-      @debug = false
-
       @user_abort = false
 
       # we need to remember the values for tab switching
@@ -728,6 +725,29 @@ module Yast
       nil
     end
 
+    # Redrawing the complete slide show if needed.
+    #
+    def Redraw
+      CheckForSlides()
+
+      # do not rebuild if the user reads the release notes
+      return if @user_switched_to == :release_notes
+
+      if Slides.HaveSlides && Slides.HaveSlideSupport
+        if !SlideShow.HaveSlideWidget
+          # (true) : Showing release tab if needed
+          RebuildDialog(true)
+          SwitchToDetailsView() if @user_switched_to == :details
+        end
+
+        # Don't override explicit user request!
+        SwitchToSlideView() if !@user_switched_to == :details
+      elsif !ShowingDetails()
+        # (true) : Showing release tab if needed
+        RebuildDialog(true)
+      end
+    end
+
     # Open the slide show base dialog with empty work area (placeholder for
     # the image) and CD statistics.
     #
@@ -780,12 +800,11 @@ module Yast
       button = deep_copy(button)
       if button == :showDetails && !ShowingDetails()
         Builtins.y2milestone("User asks to switch to details")
-        @user_switched_to_release_notes = false
-        @user_switched_to_details = true
+        @user_switched_to = :details
         SwitchToDetailsView()
       elsif button == :showSlide && !ShowingSlide()
         if Slides.HaveSlides
-          if @user_switched_to_release_notes
+          if @user_switched_to == :release_notes
             # The user is switching from realease notes to slide show.
             # In order to not disturbe the user while reading the release notes
             # we are not updatding the tabs although the slide show has been
@@ -793,20 +812,15 @@ module Yast
             # slide show.
             RebuildDialog(true) # true: showing the release tab
           end
-          @user_switched_to_details = false
           SwitchToSlideView()
           LoadSlide(@current_slide_no)
         else
           UI.ChangeWidget(:dumbTab, :CurrentItem, :showDetails)
         end
-        @user_switched_to_release_notes = false
+        @user_switched_to = :slides
       elsif @_rn_tabs.key?(button) && !ShowingRelNotes(button)
-        @user_switched_to_details = false
-        @user_switched_to_release_notes = true
+        @user_switched_to = :release_notes
         SwitchToReleaseNotesView(button)
-      elsif button == :debugHotkey
-        @debug = !@debug
-        Builtins.y2milestone("Debug mode: %1", @debug)
       end
       # note: `abort is handled in SlideShowCallbacks::HandleInput()
 
@@ -1041,11 +1055,8 @@ module Yast
     publish variable: :slide_interval, type: "integer"
     publish variable: :language, type: "string"
     publish variable: :widgets_created, type: "boolean"
-    publish variable: :user_switched_to_details, type: "boolean"
-    publish variable: :user_switched_to_release_notes, type: "boolean"
     publish variable: :opened_own_wizard, type: "boolean"
     publish variable: :inst_log, type: "string"
-    publish variable: :debug, type: "boolean"
     publish variable: :textmode, type: "boolean"
     publish variable: :display_width, type: "integer"
     publish variable: :relnotes, type: "string"
@@ -1067,11 +1078,8 @@ module Yast
     publish function: :SetGlobalProgressLabel, type: "void (string)"
     publish function: :AppendMessageToInstLog, type: "void (string)"
     publish function: :HaveSlideWidget, type: "boolean ()"
-    publish function: :CheckForSlides, type: "void ()"
     publish function: :SetLanguage, type: "void (string)"
     publish function: :TableItem, type: "term (string, string, string, string, string)"
-    publish function: :SwitchToSlideView, type: "void ()"
-    publish function: :SwitchToDetailsView, type: "void ()"
     publish function: :SwitchToReleaseNotesView, type: "void (symbol)"
     publish function: :RebuildDialog, type: "void ()"
     publish function: :Reset, type: "void ()"
