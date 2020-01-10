@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 10 09:04:16 UTC 2020 - Martin Vidner <mvidner@suse.com>
+
+- Propagate an error status when a CommandLine module gets an
+  unknown command (related to bsc#1144351).
+- 4.2.52
+
+-------------------------------------------------------------------
 Wed Jan  8 16:27:59 UTC 2020 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Fix an exception in the live installation caused by a missing

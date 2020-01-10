@@ -4,6 +4,10 @@ require_relative "test_helper"
 
 Yast.import "CommandLine"
 
+# If these test fail (or succeed) in mysterious ways then it may be
+# wfm.rb eagerly rescuing a RSpec::Mocks::MockExpectationError
+# (fixed meanwhile in ruby-bindings). In such cases see the y2log.
+
 describe Yast::CommandLine do
   # restore the original modes to not accidentally influence the other tests
   # (these tests change the UI mode to "commandline")
@@ -37,5 +41,12 @@ describe Yast::CommandLine do
     expect($stdout).to_not receive(:puts).with("Finish called")
 
     Yast::WFM.CallFunction("dummy_cmdline", ["crash"])
+  end
+
+  it "complains about unknown commands and returns false" do
+    expect(Yast::CommandLine).to receive(:Print).with(/Unknown Command:/)
+    expect(Yast::CommandLine).to receive(:Print).with(/Use.*help.*available commands/)
+
+    expect(Yast::WFM.CallFunction("dummy_cmdline", ["unknowncommand"])).to eq false
   end
 end
