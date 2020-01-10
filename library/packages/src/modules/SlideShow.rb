@@ -805,7 +805,7 @@ module Yast
       elsif button == :showSlide && !ShowingSlide()
         if Slides.HaveSlides
           if @user_switched_to == :release_notes
-            # The user is switching from realease notes to slide show.
+            # The user is switching from release notes to slide show.
             # In order to not disturbe the user while reading the release notes
             # we are not updatding the tabs although the slide show has been
             # changed meanwhile. So we are updating it now before switching to
