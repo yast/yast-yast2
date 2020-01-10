@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 10 13:43:20 UTC 2020 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed error during upgrade if Btrfs is used and '/var/lib/YaST2'
+  is missing (bsc#1159562)
+- 4.2.53
+
+-------------------------------------------------------------------
 Fri Jan 10 09:04:16 UTC 2020 - Martin Vidner <mvidner@suse.com>
 
 - Propagate an error status when a CommandLine module gets an
