@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.2.53
+Version:        4.2.54
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -117,8 +117,8 @@ Conflicts:      yast2-dns-server < 3.1.17
 Conflicts:      yast2-installation < 4.2.9
 # moved cfg_mail.scr
 Conflicts:      yast2-mail < 3.1.7
-# Older packager use removed API
-Conflicts:      yast2-packager < 4.0.33
+# Older packager use removed API e.g. user_switched_to_details
+Conflicts:      yast2-packager < 4.2.44
 # Older snapper does not provide machine-readable output
 Conflicts:	snapper < 0.8.6
 

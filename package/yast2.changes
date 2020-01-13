@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Jan 10 14:43:20 UTC 2020 - schubi@suse.de
+
+- Do not refresh package installation overview if the medium has
+  been changed and the user has switched to the release notes tab.
+  (bsc#1129426, bsc#1159367)
+- 4.2.54
+
+-------------------------------------------------------------------
 Fri Jan 10 13:43:20 UTC 2020 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Fixed error during upgrade if Btrfs is used and '/var/lib/YaST2'

@@ -3,6 +3,7 @@
 require_relative "test_helper"
 
 Yast.import "SlideShow"
+Yast.import "Slides"
 Yast.import "UI"
 
 describe "Yast::SlideShow" do
@@ -146,4 +147,107 @@ describe "Yast::SlideShow" do
       expect(total_size).to eq(100)
     end
   end
+
+  describe "#Redraw" do
+    before do
+      allow(Yast::SlideShow).to receive(:CheckForSlides)
+    end
+    context "user is reading release notes" do
+      it "does not redraw the page" do
+        Yast::SlideShow.user_switched_to = :release_notes
+        expect(Yast::SlideShow).not_to receive(:RebuildDialog)
+        Yast::SlideShow.Redraw()
+      end
+    end
+    context "no user input" do
+      before do
+        Yast::SlideShow.user_switched_to = :none
+      end
+      context "slideshow is available" do
+        before do
+          allow(Yast::Slides).to receive(:HaveSlides).and_return(true)
+          allow(Yast::Slides).to receive(:HaveSlideSupport).and_return(true)
+        end
+        it "shows slideshow" do
+          expect(Yast::SlideShow).to receive(:SwitchToSlideView)
+          Yast::SlideShow.Redraw()
+        end
+      end
+      context "slideshow is not available" do
+        it "redraws the page" do
+          expect(Yast::SlideShow).to receive(:RebuildDialog)
+          Yast::SlideShow.Redraw()
+        end
+      end
+    end
+  end
+
+  describe "#HandleInput" do
+    before do
+    end
+    context "switching to details" do
+      before do
+        allow(Yast::SlideShow).to receive(:ShowingDetails).and_return(false)
+      end
+      it "switches to detail view" do
+        expect(Yast::SlideShow).to receive(:SwitchToDetailsView)
+        Yast::SlideShow.HandleInput(:showDetails)
+      end
+      it "saves user selection" do
+        Yast::SlideShow.HandleInput(:showDetails)
+        expect(Yast::SlideShow.user_switched_to).to eq(:details)
+      end
+    end
+    context "switching to slide show" do
+      before do
+        allow(Yast::SlideShow).to receive(:ShowingSlide).and_return(false)
+        allow(Yast::Slides).to receive(:HaveSlides).and_return(true)
+      end
+      context "release notes have been selected before" do
+        before do
+          Yast::SlideShow.user_switched_to = :release_notes
+        end
+        it "redraws the page" do
+          expect(Yast::SlideShow).to receive(:RebuildDialog)
+          Yast::SlideShow.HandleInput(:showSlide)
+        end
+        it "switches to slide show" do
+          expect(Yast::SlideShow).to receive(:SwitchToSlideView)
+          Yast::SlideShow.HandleInput(:showSlide)
+        end
+      end
+      context "release notes have NOT been selected before" do
+        before do
+          Yast::SlideShow.user_switched_to = :none
+        end
+        it "does not redraw the page" do
+          expect(Yast::SlideShow).not_to receive(:RebuildDialog)
+          Yast::SlideShow.HandleInput(:showSlide)
+        end
+        it "switches to slide show" do
+          expect(Yast::SlideShow).to receive(:SwitchToSlideView)
+          Yast::SlideShow.HandleInput(:showSlide)
+        end
+      end
+      it "saves user selection" do
+        Yast::SlideShow.HandleInput(:showSlide)
+        expect(Yast::SlideShow.user_switched_to).to eq(:slides)
+      end
+    end
+    context "switching to release notes" do
+      before do
+        allow(Yast::SlideShow).to receive(:ShowingRelNotes).and_return(false)
+        Yast::SlideShow.add_relnotes_for_product("Foo", :releaseNotesFoo, [])
+      end
+      it "switches to realease notes view" do
+        expect(Yast::SlideShow).to receive(:SwitchToReleaseNotesView)
+        Yast::SlideShow.HandleInput(:rn_Foo)
+      end
+      it "saves user selection" do
+        Yast::SlideShow.HandleInput(:rn_Foo)
+        expect(Yast::SlideShow.user_switched_to).to eq(:release_notes)
+      end
+    end
+  end
+
 end
