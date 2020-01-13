@@ -6,6 +6,11 @@ require "yast2/fs_snapshot_store"
 describe Yast2::FsSnapshotStore do
   describe ".save" do
     it "stores snapshot id to file identified by purpose" do
+      expect(Yast::SCR).to receive(:Execute).with(
+        path(".target.bash"),
+        "/bin/mkdir -p /var/lib/YaST2"
+      )
+
       expect(Yast::SCR).to receive(:Write).with(
         path(".target.string"),
         "/var/lib/YaST2/pre_snapshot_test.id",
@@ -16,6 +21,8 @@ describe Yast2::FsSnapshotStore do
     end
 
     it "raises exception if writing failed" do
+      allow(Yast::SCR).to receive(:Execute).with(path(".target.bash"), anything)
+
       expect(Yast::SCR).to receive(:Write).with(
         path(".target.string"),
         "/var/lib/YaST2/pre_snapshot_test.id",

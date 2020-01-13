@@ -30,6 +30,12 @@ module Yast2
     # @param[String] purpose of snapshot like "upgrade"
     # @raise[RuntimeError] if writing to file failed
     def self.save(purpose, snapshot_id)
+      # Ensure the directory is there (bsc#1159562)
+      Yast::SCR.Execute(
+        Yast::Path.new(".target.bash"),
+        "/bin/mkdir -p #{snapshot_dir_path}"
+      )
+
       result = Yast::SCR.Write(
         Yast::Path.new(".target.string"),
         snapshot_path(purpose),
@@ -61,7 +67,13 @@ module Yast2
 
     # Path where is stored given purpose
     def self.snapshot_path(purpose)
-      path = "/var/lib/YaST2/pre_snapshot_#{purpose}.id"
+      ::File.join(snapshot_dir_path, "pre_snapshot_#{purpose}.id")
+    end
+    private_class_method :snapshot_path
+
+    # Path of the directory where the ids of the snapshots are stored
+    def self.snapshot_dir_path
+      path = "/var/lib/YaST2"
 
       Yast.import "Stage"
       if Yast::Stage.initial && !Yast::WFM.scr_chrooted?
@@ -71,6 +83,6 @@ module Yast2
 
       path
     end
-    private_class_method :snapshot_path
+    private_class_method :snapshot_dir_path
   end
 end
