@@ -110,6 +110,8 @@ module Yast
   class SlideShowClass < Module
     include Yast::Logger
 
+    attr_accessor :user_switched_to
+
     module UI_ID
       TOTAL_PROGRESS = :progressTotal
       CURRENT_PACKAGE = :progressCurrentPackage
@@ -741,7 +743,7 @@ module Yast
         end
 
         # Don't override explicit user request!
-        SwitchToSlideView() if !@user_switched_to == :details
+        SwitchToSlideView() if !(@user_switched_to == :details)
       elsif !ShowingDetails()
         # (true) : Showing release tab if needed
         RebuildDialog(true)

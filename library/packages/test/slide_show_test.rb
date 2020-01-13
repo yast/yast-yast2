@@ -3,6 +3,7 @@
 require_relative "test_helper"
 
 Yast.import "SlideShow"
+Yast.import "Slides"
 Yast.import "UI"
 
 describe "Yast::SlideShow" do
@@ -144,6 +145,40 @@ describe "Yast::SlideShow" do
       Yast::SlideShow.Setup(stages)
       total_size = Yast::SlideShow.GetSetup.values.reduce(0) { |a, e| a + e["size"] }
       expect(total_size).to eq(100)
+    end
+  end
+
+  describe "#Redraw" do
+    before do
+      allow(Yast::SlideShow).to receive(:CheckForSlides)
+    end
+    context "user is reading release notes" do
+      it "does not redraw the page" do
+        Yast::SlideShow.user_switched_to = :release_notes
+        expect(Yast::SlideShow).not_to receive(:RebuildDialog)
+        Yast::SlideShow.Redraw()
+      end
+    end
+    context "no user input" do
+      before do
+        Yast::SlideShow.user_switched_to = :none
+      end
+      context "slideshow is available" do
+        before do
+          allow(Yast::Slides).to receive(:HaveSlides).and_return(true)
+          allow(Yast::Slides).to receive(:HaveSlideSupport).and_return(true)
+        end
+        it "shows slideshow" do
+          expect(Yast::SlideShow).to receive(:SwitchToSlideView)
+          Yast::SlideShow.Redraw()
+        end
+      end
+      context "slideshow is not available" do
+        it "redraws the page" do
+          expect(Yast::SlideShow).to receive(:RebuildDialog)
+          Yast::SlideShow.Redraw()
+        end
+      end
     end
   end
 end
