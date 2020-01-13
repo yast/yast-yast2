@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 28 08:42:45 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Added classes for handling the old repository setup during
+  upgrade (related to bsc#1159433)
+- 4.2.60
+
+-------------------------------------------------------------------
 Thu Jan 23 14:29:49 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add an option to enable the online search in the package
