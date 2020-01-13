@@ -743,7 +743,7 @@ module Yast
         end
 
         # Don't override explicit user request!
-        SwitchToSlideView() if !(@user_switched_to == :details)
+        SwitchToSlideView() if @user_switched_to != :details
       elsif !ShowingDetails()
         # (true) : Showing release tab if needed
         RebuildDialog(true)
