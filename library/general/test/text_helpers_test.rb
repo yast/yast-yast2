@@ -147,4 +147,71 @@ describe ::UI::TextHelpers do
       end
     end
   end
+
+  describe "#plain_text" do
+    let(:text) { "<p>YaST:</p><p>a <b>powerful</b> installation and <em>configuration</em> tool.</p>" }
+
+    context "when neither tags: nor replacements: are given" do
+      it "replaces tags with default replacements" do
+        expect(subject.plain_text(text))
+          .to eq("YaST:\n\na powerful installation and configuration tool.")
+      end
+    end
+
+    context "when the tag list is given" do
+      let(:tags) { ["p", "em"] }
+
+      it "changes only the specified tags" do
+        expect(subject.plain_text(text, tags: tags))
+          .to eq("YaST:\n\na <b>powerful</b> installation and configuration tool.")
+      end
+
+      context "and a list of replacements is provided too" do
+        let(:replacements) do
+          { "<b>" => "*", "</b>" => "*", "<em>" => "_", "</em>" => "_" }
+        end
+
+        it "keeps unmatched tags" do
+          expect(subject.plain_text(text, tags: tags, replacements: replacements))
+            .to match(/a <b>powerful<\/b> installation/)
+        end
+
+        it "deletes matched tags without replacements" do
+          expect(subject.plain_text(text, tags: tags, replacements: replacements))
+            .to_not match(/<p>.*<\/p>/)
+        end
+
+        it "replaces matched tags with replacements" do
+          expect(subject.plain_text(text, tags: tags, replacements: replacements))
+            .to match(/and _configuration_ tool/)
+        end
+      end
+    end
+
+    context "when the list of replacements is given" do
+      let(:replacements) do
+        { "<b>" => "*", "</b>" => "*", "<em>" => "_", "</em>" => "_", "<p>" => "\n> " }
+      end
+
+      it "replaces matched tags using given replacements" do
+        expect(subject.plain_text(text, replacements: replacements))
+          .to eq("> YaST:\n> a *powerful* installation and _configuration_ tool.")
+      end
+
+      context "and a list of tags is provided too" do
+        let(:tags) { ["b"] }
+
+        it "keeps unmatched tags" do
+          expect(subject.plain_text(text, tags: tags, replacements: replacements))
+            .to match(/<p>.*and <em>configuration<\/em> tool.<\/p>/)
+        end
+
+        it "replaces matched tags with replacements" do
+          expect(subject.plain_text(text, tags: tags, replacements: replacements))
+            .to match(/a \*powerful\* installation/)
+        end
+      end
+    end
+  end
+
 end

@@ -20,6 +20,59 @@
 module UI
   # Provides a set of methods to manipulate and transform UI text
   module TextHelpers
+    # Default HTML tags replacements
+    #
+    # @see #plain_text
+    # @return [Hash<String, String>]
+    DEFAULT_HTML_TAGS_REPLACEMENTS = {
+      "<br>"  => "\n",
+      "<br/>" => "\n",
+      "<br >" => "\n",
+      "</li>" => "\n",
+      "<ol>"  => "\n\n",
+      "<ul>"  => "\n\n",
+      "</p>"  => "\n\n"
+    }.freeze
+
+    # Get a new text version after ridding of HTML tags
+    #
+    # By default, a fully plain text will be returned, since some tags (see
+    # {DEFAULT_HTML_TAGS_REPLACEMENTS}) are going to be replaced by line breaks while the rest of
+    # them will be removed.
+    #
+    # However, the _tags_ param allows specifying which tags should be replaced
+    # or removed.  Additionally, a collection of tag => replacement can be
+    # provided via the _replacements_ param.
+    #
+    # Note that all matched tags without a replacement are going to be replaced
+    # with `nil`. In other words, they will be deleted.
+    #
+    # @example Remove all HTML tags
+    #   text = "<p>YaST:</p><p>a <b>powerful</b> installation and configuration tool.</p>"
+    #   plain_text(text) #=> "YaST:\n\na powerful installation and configuration tool."
+    #
+    # @example Removing only the <p> tags
+    #   text = "<p>YaST:</p><p>a <b>powerful</b> installation and configuration tool.</p>"
+    #   plain_text(text, tags: ["p"])
+    #     #=> "YaST:\n\na <b>powerful</b> installation and configuration tool."
+    #
+    # @example Using custom replacements
+    #   text = "<p>YaST:</p><p>a <b>powerful</b> installation and configuration tool.</p>"
+    #   plain_text(text, replacements: { "<p>" => "\n- ", "<b>" => "*", "</b>" => "*" })
+    #     #=> "- YaST:\n- a *powerful* installation and configuration tool."
+    #
+    # @param text [String] text to be processed
+    # @param tags [Array<String>] specific tags to be replaced or deleted
+    # @param replacements [Hash<String, String>] the replacements collection, tag => replacement
+    #
+    # @return [String] the new version after ridding of undesired tags.
+    def plain_text(text, tags: nil, replacements: nil)
+      regex = tags ? Regexp.union(tags.map { |t| /<[^>]*#{t}[^>]*>/i }) : /<.+?>/
+      replacements ||= DEFAULT_HTML_TAGS_REPLACEMENTS
+
+      text.gsub(regex) { |match| replacements[match.to_s.downcase] }.strip
+    end
+
     # Wrap text breaking lines in the first whitespace that does not exceed given line width
     #
     # Additionally, it also allows retrieving only an excerpt of the wrapped text according to the
