@@ -150,7 +150,7 @@ describe "Yast::SlideShow" do
 
   describe "#Redraw" do
     before do
-      textdomain "base"
+      Yast::SlideShow.main
       allow(Yast::SlideShow).to receive(:CheckForSlides)
     end
     context "user is reading release notes" do
@@ -185,7 +185,7 @@ describe "Yast::SlideShow" do
 
   describe "#HandleInput" do
     before do
-      textdomain "base"
+      Yast::SlideShow.main
     end
     context "switching to details" do
       before do
