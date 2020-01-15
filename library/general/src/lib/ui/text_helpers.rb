@@ -40,12 +40,15 @@ module UI
     # {DEFAULT_HTML_TAGS_REPLACEMENTS}) are going to be replaced by line breaks while the rest of
     # them will be removed.
     #
-    # However, the _tags_ param allows specifying which tags should be replaced
-    # or removed.  Additionally, a collection of tag => replacement can be
-    # provided via the _replacements_ param.
+    # The _tags_ param allows specifying which tags should be replaced or removed (keeping the rest
+    # of them untouched).
     #
-    # Note that all matched tags without a replacement are going to be replaced
-    # with `nil`. In other words, they will be deleted.
+    # Replacements can be provided
+    #   * as  tag => replacement collection via _replacements_ param, or
+    #   * using a block to perform desired changes for each match (more flexible and powerful)
+    #
+    # Note that all matched tags without a replacement are going to be replaced with `nil`. In other
+    # words, they will be deleted.
     #
     # @example Remove all HTML tags
     #   text = "<p>YaST:</p><p>a <b>powerful</b> installation and configuration tool.</p>"
@@ -54,23 +57,63 @@ module UI
     # @example Removing only the <p> tags
     #   text = "<p>YaST:</p><p>a <b>powerful</b> installation and configuration tool.</p>"
     #   plain_text(text, tags: ["p"])
-    #     #=> "YaST:\n\na <b>powerful</b> installation and configuration tool."
+    #   #=> "YaST:\n\na <b>powerful</b> installation and configuration tool."
     #
-    # @example Using custom replacements
+    # @example Using custom replacements via _replacements_ param
     #   text = "<p>YaST:</p><p>a <b>powerful</b> installation and configuration tool.</p>"
     #   plain_text(text, replacements: { "<p>" => "\n- ", "<b>" => "*", "</b>" => "*" })
     #     #=> "- YaST:\n- a *powerful* installation and configuration tool."
     #
+    # @example Using custom replacements via block (will omit _replacements_ param)
+    #   text = "<p>YaST:</p><p>a <b>powerful</b> installation and configuration tool.</p>"
+    #   plain_text(text) do |tag|
+    #     case tag
+    #     when /<\/?p>/          then "\n"
+    #     when /<\/?em>/         then "_"
+    #     when /<\/?(b|strong)>/ then "*"
+    #     end
+    #   end
+    #   #=> "- YaST:\n\na *powerful* installation and _configuration_ tool."
+    #
+    #   text = "<p>YaST is both" \
+    #     "<ol>" \
+    #     "<li>an extremely flexible installer</li>" \
+    #     "<li>a powerful control center</li>" \
+    #     "</ol>" \
+    #     "</p>"
+    #   plain_text(text) do |tag|
+    #     case tag
+    #     when "<ol>"
+    #       @ordered = true
+    #       @index = 0
+    #       nil
+    #     when "<ul>"
+    #       @ordered = false
+    #       nil
+    #     when "<li>"
+    #       marker = @ordered ? "#{@index += 1}." : "•"
+    #       "\n  #{marker} "
+    #     end
+    #   end
+    #   #=> "YaST is both\n  1. an extremely flexible installer\n  2. a powerful control center"
+    #
     # @param text [String] text to be processed
     # @param tags [Array<String>] specific tags to be replaced or deleted
-    # @param replacements [Hash<String, String>] the replacements collection, tag => replacement
+    # @param replacements [Hash<String, String>] a replacements dictionary, tag => replacement
+    # @param block [Proc] a block in charge to perform the changes (alterntive to _replacements_)
     #
     # @return [String] the new version after ridding of undesired tags.
-    def plain_text(text, tags: nil, replacements: nil)
+    def plain_text(text, tags: nil, replacements: nil, &block)
       regex = tags ? Regexp.union(tags.map { |t| /<[^>]*#{t}[^>]*>/i }) : /<.+?>/
       replacements ||= DEFAULT_HTML_TAGS_REPLACEMENTS
 
-      text.gsub(regex) { |match| replacements[match.to_s.downcase] }.strip
+      result = text.gsub(regex) do |match|
+        tag = match.to_s.downcase
+
+        block ? block.call(tag) : replacements[tag]
+      end
+
+      result.strip
     end
 
     # Wrap text breaking lines in the first whitespace that does not exceed given line width

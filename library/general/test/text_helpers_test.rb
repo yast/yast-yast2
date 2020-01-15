@@ -156,6 +156,22 @@ describe ::UI::TextHelpers do
         expect(subject.plain_text(text))
           .to eq("YaST:\n\na powerful installation and configuration tool.")
       end
+
+      context "but is being used with a block" do
+        let(:result) do
+          subject.plain_text(text) do |tag|
+            case tag
+            when /<\/?b>/ then "*"
+            when /<\/?em>/ then "_"
+            when /<\/?p>/ then "\n"
+            end
+          end
+        end
+
+        it "replaces tags according to the block" do
+          expect(result).to eq("YaST:\n\na *powerful* installation and _configuration_ tool.")
+        end
+      end
     end
 
     context "when the tag list is given" do
@@ -186,6 +202,29 @@ describe ::UI::TextHelpers do
             .to match(/and _configuration_ tool/)
         end
       end
+
+      context "and is being used with a block" do
+        let(:result) do
+          subject.plain_text(text, tags: tags) do |tag|
+            case tag
+            when /<\/?(b|strong)>/ then "*"
+            when /<\/?em>/ then "_"
+            end
+          end
+        end
+
+        it "keeps unmatched tags" do
+          expect(result).to match(/<b>powerful<\/b>/)
+        end
+
+        it "deletes matched tags without replacements" do
+          expect(result).to_not match(/<p>.*<\/p>/)
+        end
+
+        it "replaces matched tags according to the block" do
+          expect(result).to eq("YaST:a <b>powerful</b> installation and _configuration_ tool.")
+        end
+      end
     end
 
     context "when the list of replacements is given" do
@@ -196,6 +235,42 @@ describe ::UI::TextHelpers do
       it "replaces matched tags using given replacements" do
         expect(subject.plain_text(text, replacements: replacements))
           .to eq("> YaST:\n> a *powerful* installation and _configuration_ tool.")
+      end
+
+      context "but a block is given too" do
+        let(:text) do
+          "<p>YaST is both" \
+            "<ol>" \
+              "<li>an extremely flexible installer</li>" \
+              "<li>a powerful control center</li>" \
+            "</ol>" \
+          "</p>"
+        end
+
+        let(:result) do
+          subject.plain_text(text) do |tag|
+            case tag
+            when "<ol>"
+              @ordered = true
+              @index = 0
+              nil
+            when "<ul>"
+              @ordered = false
+              nil
+            when "<li>"
+              marker = @ordered ? "#{@index += 1}." : "•"
+              "\n  #{marker} "
+            end
+          end
+        end
+
+        let(:expected) do
+          "YaST is both\n  1. an extremely flexible installer\n  2. a powerful control center"
+        end
+
+        it "replaces tags according to the block" do
+          expect(result).to eq(expected)
+        end
       end
 
       context "and a list of tags is provided too" do
@@ -213,5 +288,4 @@ describe ::UI::TextHelpers do
       end
     end
   end
-
 end
