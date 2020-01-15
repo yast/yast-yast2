@@ -108,7 +108,8 @@ module Yast2
         #
         # @param tags [Array<String>] specific tags to be replaced or deleted
         # @param replacements [Hash<String, String>] a replacements dictionary, tag => replacement
-        # @param block [Proc] a block in charge to perform the changes (alterntive to _replacements_)
+        # @param block [Proc] a block in charge to perform the changes. When given, it does not make
+        #   sense to specify _replacements_ param since the block has precedence over it.
         #
         # @return [String] the new version after ridding of undesired tags.
         def plain_text(tags: nil, replacements: nil, &block)
