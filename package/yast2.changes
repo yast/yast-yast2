@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jan 14 16:38:43 UTC 2020 - David Diaz <dgonzalez@suse.com>
+
+- Add a text helper to strip HTML tags (related bsc#1157780)
+- Moves text helpers to String refinements, keeping backward
+  compatibility.
+- 4.2.55
+
+-------------------------------------------------------------------
 Fri Jan 10 14:43:20 UTC 2020 - schubi@suse.de
 
 - Do not refresh package installation overview if the medium has

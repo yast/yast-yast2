@@ -17,64 +17,31 @@
 # current contact information at www.novell.com.
 # ------------------------------------------------------------------------------
 
+require "yast2/refinements/string_manipulations"
+
 module UI
   # Provides a set of methods to manipulate and transform UI text
   module TextHelpers
-    # Wrap text breaking lines in the first whitespace that does not exceed given line width
-    #
-    # Additionally, it also allows retrieving only an excerpt of the wrapped text according to the
-    # maximum number of lines indicated, adding one more with the cut_text text when it is given.
-    #
-    # @param text [String] text to be wrapped
-    # @param line_width [Integer] max line length
-    # @param n_lines [Integer, nil] the maximum number of lines
-    # @param cut_text [String] the omission text to be used when the text should be cut
-    #
-    # @return [String]
-    def wrap_text(text, line_width = 76, n_lines: nil, cut_text: "")
-      return text if line_width > text.length
+    using ::Yast2::Refinements::StringManipulations
 
-      wrapped_text = text.lines.collect! do |line|
-        l = (line.length > line_width) ? line.gsub(/(.{1,#{line_width}})(?:\s+|$)/, "\\1\n") : line
-        l.strip
-      end
-
-      result = wrapped_text.join("\n")
-      result = head(result, n_lines, omission: cut_text) if n_lines
-      result
+    # (see StringRefinements#plain_text)
+    def plain_text(text, *args, &block)
+      text.plain_text(*args, &block)
     end
 
-    # Returns only the first requested lines of the given text
-    #
-    # If the omission param is given, an extra line holding it will be included
-    #
-    # @param text [String]
-    # @param max_lines [Integer]
-    # @param omission [String] the text to be added
-    #
-    # @return [String] the first requested lines if the text has more; full text otherwise
-    def head(text, max_lines, omission: "")
-      lines = text.lines
-
-      return text if lines.length <= max_lines
-
-      result = text.lines[0...max_lines]
-      result << omission unless omission.empty?
-      result.join
+    # (see StringRefinements#wrap_text)
+    def wrap_text(text, *args)
+      text.wrap_text(*args)
     end
 
-    # Wrap a given text in direction markers
-    #
-    # @param [String] text to be wrapped. This text may contain tags and they
-    #   will not be escaped
-    # @param [String] language code (it gets the current one by default)
-    # @return [String] wrapped text
+    # (see StringRefinements#head)
+    def head(text, *args)
+      text.head(*args)
+    end
+
+    # (see StringRefinements#head)
     def div_with_direction(text, lang = nil)
-      Yast.import "Language"
-      lang ||= Yast::Language.language
-      # RTL languages: Arabic, Persian, Hebrew
-      direction = lang.start_with?("ar", "fa", "he") ? "rtl" : "ltr"
-      "<div dir=\"#{direction}\">#{text}</div>"
+      text.div_with_direction(lang)
     end
   end
 end
