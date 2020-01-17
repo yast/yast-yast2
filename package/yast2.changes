@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 23 11:51:43 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add an option to enable the online search in the package
+  selector (jsc#SLE-9109).
+- 4.2.58
+
+-------------------------------------------------------------------
 Wed Jan 22 15:27:15 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - CommandLine: Add ability to actions to skip writing.
