@@ -21,6 +21,20 @@ require "yast"
 
 module Yast2
   module Refinements
+    # Default HTML tags replacements
+    #
+    # @see #plain_text
+    # @return [Hash<String, String>]
+    DEFAULT_HTML_TAGS_REPLACEMENTS = {
+      "<br>"  => "\n",
+      "<br/>" => "\n",
+      "<br >" => "\n",
+      "</li>" => "\n",
+      "<ol>"  => "\n\n",
+      "<ul>"  => "\n\n",
+      "</p>"  => "\n\n"
+    }.freeze
+
     # Refinements to make easier some string manipulations
     #
     # By using
@@ -29,25 +43,11 @@ module Yast2
     #   wrap_text(plain_text("<p>Just an <b>HTML</b> example to be formatted"))
     module StringManipulations
       refine String do
-        # Default HTML tags replacements
-        #
-        # @see #plain_text
-        # @return [Hash<String, String>]
-        DEFAULT_HTML_TAGS_REPLACEMENTS = {
-          "<br>"  => "\n",
-          "<br/>" => "\n",
-          "<br >" => "\n",
-          "</li>" => "\n",
-          "<ol>"  => "\n\n",
-          "<ul>"  => "\n\n",
-          "</p>"  => "\n\n"
-        }.freeze
-
         # Get a new text version after ridding of HTML tags
         #
         # By default, a fully plain text will be returned, since some tags (see
-        # {DEFAULT_HTML_TAGS_REPLACEMENTS}) are going to be replaced by line breaks while the rest of
-        # them will be removed.
+        # {Yast2::Refinements::DEFAULT_HTML_TAGS_REPLACEMENTS}) are going to be replaced by line
+        # breaks while the rest of them will be removed.
         #
         # The _tags_ param allows specifying which tags should be replaced or removed (keeping the rest
         # of them untouched).
@@ -114,7 +114,7 @@ module Yast2
         # @return [String] the new version after ridding of undesired tags.
         def plain_text(tags: nil, replacements: nil, &block)
           regex = tags ? Regexp.union(tags.map { |t| /<[^>]*#{t}[^>]*>/i }) : /<.+?>/
-          replacements ||= DEFAULT_HTML_TAGS_REPLACEMENTS
+          replacements ||= Refinements::DEFAULT_HTML_TAGS_REPLACEMENTS
 
           result = gsub(regex) do |match|
             tag = match.to_s.downcase

@@ -24,22 +24,22 @@ module UI
   module TextHelpers
     using ::Yast2::Refinements::StringManipulations
 
-    # (see StringRefinements#plain_text)
+    # (see Yast2::Refinements::StringManipulations#plain_text)
     def plain_text(text, *args, &block)
       text.plain_text(*args, &block)
     end
 
-    # (see StringRefinements#wrap_text)
+    # (see Yast2::Refinements::StringManipulations#wrap_text)
     def wrap_text(text, *args)
       text.wrap_text(*args)
     end
 
-    # (see StringRefinements#head)
+    # (see Yast2::Refinements::StringManipulations#head)
     def head(text, *args)
       text.head(*args)
     end
 
-    # (see StringRefinements#head)
+    # (see Yast2::Refinements::StringManipulations#div_with_direction)
     def div_with_direction(text, lang = nil)
       text.div_with_direction(lang)
     end
