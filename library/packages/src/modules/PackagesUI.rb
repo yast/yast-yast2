@@ -254,6 +254,7 @@ module Yast
     # if an option is missing or is nil the default value will be used. All options:
     # $[ "enable_repo_mgr" : boolean // display the repository management menu,
     #      // default: false (disabled)
+    #    "enable_online_search": boolean // enable the online search feature
     #    "display_support_status" : boolean // display the support status summary dialog,
     #      // default: depends on the Product Feature "software", "display_support_status"
     #    "mode" : symbol // package selector mode, no default value, supported values:
@@ -298,6 +299,8 @@ module Yast
       widget_options = Builtins.add(widget_options, :repoMgr) if !enable_repo_mgr.nil? && enable_repo_mgr
 
       widget_options = Builtins.add(widget_options, :confirmUnsupported) if !display_support_status.nil? && display_support_status
+
+      widget_options = Builtins.add(widget_options, :onlineSearch) if options.fetch("enable_online_search", false)
 
       Builtins.y2milestone(
         "Options for the package selector widget: %1",
