@@ -51,31 +51,36 @@ module Yast
             # translators: help for 'help' option on command line
             "help" => _(
               "Print the help for this module"
-            )
+            ),
+            "readonly" => true
           },
           "longhelp"    => {
             # translators: help for 'longhelp' option on command line
             "help" => _(
               "Print a long version of help for this module"
-            )
+            ),
+            "readonly" => true
           },
           "xmlhelp"     => {
             # translators: help for 'xmlhelp' option on command line
             "help" => _(
               "Print a long version of help for this module in XML format"
-            )
+            ),
+            "readonly" => true
           },
           "interactive" => {
             # translators: help for 'interactive' option on command line
             "help" => _(
               "Start interactive shell to control the module"
-            )
+            ),
+            "readonly" => true
           },
           "exit"        => {
             # translators: help for 'exit' command line interactive mode
             "help" => _(
               "Exit interactive mode and save the changes"
-            )
+            ),
+            "readonly" => true
           },
           "abort"       => {
             # translators: help for 'abort' command line interactive mode
@@ -1469,6 +1474,7 @@ module Yast
       return !Aborted() if !Init(commandline, WFM.Args)
 
       ret = true
+      read_only = true # do finish action only if module is not read only
 
       initialized = false
       if Ops.get(commandline, "initialize").nil?
@@ -1548,6 +1554,7 @@ module Yast
           # there is a handler, execute the action
           if !exec.nil?
             res = exec.call(options)
+            read_only = false unless commandline["actions"][command]["readonly"]
 
             # if it is not interactive, abort on errors
             Abort() if !Interactive() && res == false
@@ -1560,7 +1567,7 @@ module Yast
         ret = !Aborted()
       end
 
-      if ret && Ops.get(commandline, "finish") && initialized
+      if ret && Ops.get(commandline, "finish") && initialized && !read_only
         # translators: Progress message - the command line interface is about to finish
         PrintVerbose(_("Finishing"))
         ret = commandline["finish"].call
