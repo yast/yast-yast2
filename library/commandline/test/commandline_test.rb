@@ -22,6 +22,7 @@ describe Yast::CommandLine do
   subject { Yast::CommandLine }
 
   before do
+    subject.main # reset
     allow(Yast::Debugger).to receive(:installed?).and_return(false)
   end
 
@@ -62,6 +63,48 @@ OUTPUT
       )
 
       subject.PrintHead
+    end
+  end
+
+  describe ".UniqueOption" do
+    context "in options is only one of the options mentioned in unique_options" do
+      it "returns string" do
+        expect(subject.UniqueOption(["a", "b", "c"], ["c", "d", "e"])).to eq "c"
+      end
+    end
+
+    context "in options is none of the options mentioned in unique_options" do
+      it "returns nil" do
+        expect(subject.UniqueOption(["a", "b"], ["c", "d", "e"])).to eq nil
+      end
+
+      it "reports error mentioning to specify one of the option if there are more in unique options" do
+        # FIXME: it looks bad that chaining
+        # FIXME: do not print command that is not used in options
+        expect(Yast::Report).to receive(:Error).with("Specify one of the commands: 'c', 'd', or 'e'.")
+
+        subject.UniqueOption(["a", "b"], ["c", "d", "e"])
+      end
+
+      it "reports error mentioning to specify one the option if there is only one in unique options" do
+        expect(Yast::Report).to receive(:Error).with("Specify the command 'c'.")
+
+        subject.UniqueOption(["a", "b"], ["c"])
+      end
+    end
+
+    context "in options is more then one of the options mentioned in unique_options" do
+      it "returns nil" do
+        expect(subject.UniqueOption(["a", "b"], ["a", "b", "e"])).to eq nil
+      end
+
+      it "reports error" do
+        # FIXME: it looks bad that chaining
+        # FIXME: do not print command that is not used in options
+        expect(Yast::Report).to receive(:Error).with("Specify only one of the commands: 'a', 'b', or 'e'.")
+
+        subject.UniqueOption(["a", "b"], ["a", "b", "e"])
+      end
     end
   end
 end
