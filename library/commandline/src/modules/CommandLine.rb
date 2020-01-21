@@ -150,6 +150,7 @@ module Yast
     #  Suppress printing if there are no commands to be handled (starting GUI)
     #
     #  @param [String] string to be printed
+    #  @param [Boolean] newline if newline character should be added or not
     def PrintInternal(string, newline)
       return if !Mode.commandline
 
@@ -337,14 +338,12 @@ module Yast
     #  @return [Hash{String => Object}]  containing the command and it's option. In case of
     #        error it is an empty map.
     def Parse(arguments)
-      arguments = deep_copy(arguments)
       args = deep_copy(arguments)
       return {} if Ops.less_than(Builtins.size(args), 1)
 
       # Parse command
-      command = Ops.get_string(args, 0, "")
+      command = args.shift
       Builtins.y2debug("command=%1", command)
-      args = Builtins.remove(args, 0)
       Builtins.y2debug("args=%1", args)
 
       if command == ""
@@ -557,17 +556,10 @@ module Yast
         _("YaST Configuration Module %1\n"),
         Ops.get_string(@modulecommands, "id", "YaST")
       )
-      headlen = Builtins.size(head)
-      i = 0
-      while Ops.less_than(i, headlen)
-        head = Ops.add(head, "-")
-        i = Ops.add(i, 1)
-      end
+      head += "-" * (head.size - 1) # -1 to remove newline char from count
       head = Ops.add(Ops.add("\n", head), "\n")
 
       Print(head)
-
-      nil
     end
 
     # Print a help text for a given action.

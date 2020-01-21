@@ -19,6 +19,8 @@ describe Yast::CommandLine do
     Yast::Mode.SetUI(orig_ui)
   end
 
+  subject { Yast::CommandLine }
+
   before do
     allow(Yast::Debugger).to receive(:installed?).and_return(false)
   end
@@ -37,16 +39,29 @@ describe Yast::CommandLine do
 
   it "displays errors and aborts" do
     expect($stdout).to receive(:puts).with("Initialize called").ordered
-    expect(Yast::CommandLine).to receive(:Print).with(/I crashed/).ordered
+    expect(subject).to receive(:Print).with(/I crashed/).ordered
     expect($stdout).to_not receive(:puts).with("Finish called")
 
     Yast::WFM.CallFunction("dummy_cmdline", ["crash"])
   end
 
   it "complains about unknown commands and returns false" do
-    expect(Yast::CommandLine).to receive(:Print).with(/Unknown Command:/)
-    expect(Yast::CommandLine).to receive(:Print).with(/Use.*help.*available commands/)
+    expect(subject).to receive(:Print).with(/Unknown Command:/)
+    expect(subject).to receive(:Print).with(/Use.*help.*available commands/)
 
     expect(Yast::WFM.CallFunction("dummy_cmdline", ["unknowncommand"])).to eq false
+  end
+
+  describe ".PrintHead" do
+    it "prints header with underscore" do
+      expect(subject).to receive(:Print).with( <<-OUTPUT
+
+YaST Configuration Module YaST
+------------------------------
+OUTPUT
+      )
+
+      subject.PrintHead
+    end
   end
 end
