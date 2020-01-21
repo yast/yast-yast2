@@ -29,6 +29,8 @@ require "yast"
 
 module Yast
   class CommandLineClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "Directory"
       Yast.import "Mode"
@@ -1388,69 +1390,47 @@ module Yast
     # @param [Array] unique_options  list of mutually exclusive options to check against
     # @return  nil if there is a problem, otherwise the unique option found
     def UniqueOption(options, unique_options)
-      options = deep_copy(options)
-      unique_options = deep_copy(unique_options)
+      return nil if options.nil? || unique_options.nil?
       # sanity check
-      if Builtins.size(unique_options) == 0
-        Builtins.y2error(
-          "Unique test of options required, but the list of the possible options is empty"
-        )
+      if unique_options.empty?
+        log.error "Unique test of options required, but the list of the possible options is empty"
         return nil
       end
 
       # first do a filtering, then convert to a list of keys
-      cmds = Builtins.maplist(Builtins.filter(options) do |opt, _value|
-        Builtins.contains(unique_options, opt)
-      end) { |key, _value| key }
+      cmds = unique_options & options.keys
 
       # if it is OK, quickly return
-      return Ops.get_string(cmds, 0) if Builtins.size(cmds) == 1
+      return cmds.first if cmds.size == 1
 
-      # something is wrong, prepare the error report
-      i = 0
-      opt_list = ""
-      while Ops.less_than(i, Ops.subtract(Builtins.size(unique_options), 1))
-        opt_list = Ops.add(
-          opt_list,
-          Builtins.sformat("'%1', ", Ops.get(unique_options, i))
-        )
-        i = Ops.add(i, 1)
-      end
-
-      # translators: the last command %1 in a list of unique commands
-      opt_list = Ops.add(
-        opt_list,
-        Builtins.sformat(_("or '%1'"), Ops.get(unique_options, i))
-      )
-
-      if Builtins.size(cmds) == 0
-        if Builtins.size(unique_options) == 1
+      if cmds.empty?
+        if unique_options.size == 1
           # translators: error message - missing unique command for command line execution
           Report.Error(
             Builtins.sformat(
               _("Specify the command '%1'."),
-              Ops.get(unique_options, 0)
+              unique_options.first
             )
           )
         else
           # translators: error message - missing unique command for command line execution
           Report.Error(
-            Builtins.sformat(_("Specify one of the commands: %1."), opt_list)
+            Builtins.sformat(
+              _("Specify one of the commands: %1."),
+              format_list(unique_options)
+            )
           )
         end
         return nil
       end
 
-      if Builtins.size(cmds) != 1
-        # size( unique_options ) == 1 here does not make sense
-
-        Report.Error(
-          Builtins.sformat(_("Specify only one of the commands: %1."), opt_list)
+      Report.Error(
+        Builtins.sformat(
+          _("Specify only one of the commands: %1."),
+          format_list(cmds)
         )
-        return nil
-      end
-
-      Ops.get_string(cmds, 0)
+      )
+      return nil
     end
 
     # Parse the Command Line
@@ -1652,6 +1632,14 @@ module Yast
     publish function: :Run, type: "any (map)"
     publish function: :YesNo, type: "boolean ()"
     publish function: :Verbose, type: "boolean ()"
+
+  private
+
+    def format_list(list)
+      # translators: the last entry in output of list
+      list[0..-2].map { |l| "'#{l}'" }.join(", ") + " " +
+        Builtins.sformat(_("or '%1'"), list[-1])
+    end
   end
 
   CommandLine = CommandLineClass.new
