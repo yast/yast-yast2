@@ -51,35 +51,35 @@ module Yast
         "actions"  => {
           "help"        => {
             # translators: help for 'help' option on command line
-            "help" => _(
+            "help"     => _(
               "Print the help for this module"
             ),
             "readonly" => true
           },
           "longhelp"    => {
             # translators: help for 'longhelp' option on command line
-            "help" => _(
+            "help"     => _(
               "Print a long version of help for this module"
             ),
             "readonly" => true
           },
           "xmlhelp"     => {
             # translators: help for 'xmlhelp' option on command line
-            "help" => _(
+            "help"     => _(
               "Print a long version of help for this module in XML format"
             ),
             "readonly" => true
           },
           "interactive" => {
             # translators: help for 'interactive' option on command line
-            "help" => _(
+            "help"     => _(
               "Start interactive shell to control the module"
             ),
             "readonly" => true
           },
           "exit"        => {
             # translators: help for 'exit' command line interactive mode
-            "help" => _(
+            "help"     => _(
               "Exit interactive mode and save the changes"
             ),
             "readonly" => true
@@ -1391,6 +1391,7 @@ module Yast
     # @return  nil if there is a problem, otherwise the unique option found
     def UniqueOption(options, unique_options)
       return nil if options.nil? || unique_options.nil?
+
       # sanity check
       if unique_options.empty?
         log.error "Unique test of options required, but the list of the possible options is empty"
@@ -1403,34 +1404,20 @@ module Yast
       # if it is OK, quickly return
       return cmds.first if cmds.size == 1
 
-      if cmds.empty?
+      msg = if cmds.empty?
         if unique_options.size == 1
           # translators: error message - missing unique command for command line execution
-          Report.Error(
-            Builtins.sformat(
-              _("Specify the command '%1'."),
-              unique_options.first
-            )
-          )
+          Builtins.sformat(_("Specify the command '%1'."), unique_options.first)
         else
           # translators: error message - missing unique command for command line execution
-          Report.Error(
-            Builtins.sformat(
-              _("Specify one of the commands: %1."),
-              format_list(unique_options)
-            )
-          )
+          Builtins.sformat(_("Specify one of the commands: %1."), format_list(unique_options))
         end
-        return nil
+      else
+        Builtins.sformat(_("Specify only one of the commands: %1."), format_list(cmds))
       end
 
-      Report.Error(
-        Builtins.sformat(
-          _("Specify only one of the commands: %1."),
-          format_list(cmds)
-        )
-      )
-      return nil
+      Report.Error(msg)
+      nil
     end
 
     # Parse the Command Line

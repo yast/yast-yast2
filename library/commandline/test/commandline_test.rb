@@ -55,12 +55,12 @@ describe Yast::CommandLine do
 
   describe ".PrintHead" do
     it "prints header with underscore" do
-      expect(subject).to receive(:Print).with( <<-OUTPUT
-
-YaST Configuration Module YaST
-------------------------------
-OUTPUT
-      )
+      # \n is needed due to autocorrect from rubocop in heredoc
+      expect(subject).to receive(:Print).with("\n" + <<~OUTPUT
+        YaST Configuration Module YaST
+        ------------------------------
+      OUTPUT
+                                             )
 
       subject.PrintHead
     end
@@ -69,7 +69,7 @@ OUTPUT
   describe ".UniqueOption" do
     context "in options is only one of the options mentioned in unique_options" do
       it "returns string" do
-        expect(subject.UniqueOption({"c" => "v"}, ["c", "d", "e"])).to eq "c"
+        expect(subject.UniqueOption({ "c" => "v" }, ["c", "d", "e"])).to eq "c"
       end
     end
 
@@ -93,19 +93,19 @@ OUTPUT
 
     context "in options is more then one of the options mentioned in unique_options" do
       it "returns nil" do
-        expect(subject.UniqueOption({"a" => "v", "b" => "v2"}, ["a", "b", "e"])).to eq nil
+        expect(subject.UniqueOption({ "a" => "v", "b" => "v2" }, ["a", "b", "e"])).to eq nil
       end
 
       it "reports error" do
         expect(Yast::Report).to receive(:Error).with("Specify only one of the commands: 'a' or 'b'.")
 
-        subject.UniqueOption({"a" => "v", "b" => "v2"}, ["a", "b", "e"])
+        subject.UniqueOption({ "a" => "v", "b" => "v2" }, ["a", "b", "e"])
       end
     end
 
     context "unique_options is empty" do
       it "returns nil" do
-        expect(subject.UniqueOption({"a" => "v"}, [])).to eq nil
+        expect(subject.UniqueOption({ "a" => "v" }, [])).to eq nil
       end
     end
   end
