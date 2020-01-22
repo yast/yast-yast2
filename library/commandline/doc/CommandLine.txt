@@ -22,76 +22,28 @@ sessions, the YaST module needs to provide command-handling loop
 similar to concept of event-handling in GUIs.
 
 If the module does not need to do any special handling of the actions,
-it can use the "commandline" include (a wrapper for CommandLine). The
-include defines a single function "CommandLineRun()", which implements
-a standard event-loop and returns true on success. The module just
+it can use the Run method of CommandLine module. The module just
 needs to specify handlers for actions, user-interface, initialization
 and finishing.
 
-Example:
-
-{
-
-define void deleteHandler( map options ) ``{
-    string dev = options["device"]:"";
-    CommandLine::Print("Deleting: "+dev);
-
-    if(Lan::Delete(dev) && Lan::Commit())
-	CommandLine::Print("Success");
-    else
-	CommandLine::Print("Error");
-}
-
-...
-
-map cmdline = $[
-    "help"	: "Configuration of network cards",
-    "id"	: "lan",
-    "guihandler": ``(LanSequence()),
-    "initialize": ``(Lan::Read()),
-    "finish"	: ``(Lan::Finish()),
-
-    "actions"	: $[
-	"list" : $[
-	    "help"	: "display configuration summary",
-	    "example"	: "lan list configured",
-	    "handler"	: ``(listHandler())
-	],
-	"add" : $[
-	    "help"	: "add a network card",
-	    "handler"	: ``(addHandler())
-	],
-	"delete" : $[
-	    "help"	: "delete a network card",
-	    "handler"	: ``(deleteHandler())
-	]
-    ],
-    ...
-];
-
-import "Lan";
-include "commandline/commandline.ycp";
-
-CommandLineRun(cmdline);
-
-/* EOF */
-}
+For example see yardoc for {CommandLineClass#Run}
 
 The UI handler is specified in the "guihandler" key of the command
 line description map. It must take no arguments and return boolean,
 true on success.
 The initialize resp. finish handler is specified by the
 "initialize" resp. "finish" key of the description map. They
-do not take any arguments and must return boolean, true on success. Notice 
+do not take any arguments and must return boolean, true on success. Notice
 that "initialize" and "finish" handlers are not used if a user
 asked for GUI (guihandler is used instead and therefore it must
-do initializing and finishing on its own).
+do initializing and finishing on its own). Also finish is skipped if all
+actions that user perform is read only.
 The handler for an action is specified in the "handler" key of the
 action description map. Each handler must take a single argument
 containing the options entered by the user and return a boolean, true on
-success. If the handler returns "false", the command line 
+success. If the handler returns "false", the command line
 will abort for non-interactive handling. This is useful for
-handling error states. However, a handler must use CommandLine::Abort() 
+handling error states. However, a handler must use CommandLine::Abort()
 to stop event-handling in the interactive mode.
 
 The CommandLine module is stateful, i.e., it contains a current state
@@ -114,12 +66,14 @@ Internally handled commands
 "interactive"    starts interactive session without UI
 "<command> help" shows the command-specific help
 "<command> quiet" option to supress the progress messages
+"<command> verbose" option to print additional output
 
 These are available in interactive mode only:
 
 "quit"           quits interactive session, sets
-CommandLine::Aborted() flag to true"exit"           exits interactive
-session, sets CommandLine::Aborted() flag to false
+                 CommandLine::Aborted() flag to true
+"exit"           exits interactive
+                 session, sets CommandLine::Aborted() flag to false
 
 Specification of the supported commands in YaST module
 ======================================================
@@ -129,24 +83,26 @@ will be emitted into log.
 
 The map describing the command line interface of a module must contain
 "id" entry containing the name of the module. The map can contain
-global help text, a list of actions, a list of options and a list for 
-mapping of options to actions (which optionscan be used for which 
+global help text, a list of actions, a list of options and a list for
+mapping of options to actions (which optionscan be used for which
 actions). Each action and option must have its help text.
 
 Actions is a map with the action name as a key. For each
 action, it isnecessary to provide the help text. Optionally, action
-can have defined an example of usage.
+can have defined an example of usage. Optionally, action can be also
+defined as readonly.
 A list of flags can be specified to change the default behavior of
 the parameter checker. It is a list with key "options". Currently known flags:
 - non_strict - for unknown parameters, do not check their validity
                can be used for passing unknown options into the handler
 
-Example:	"actions"	: $[
-			"list"	: $[
-				// help can be single string or list of strings
-				"help": "display configuration summary",
-				"example": "lan list configured",
-				"options": [ "non_strict" ]
+Example:	"actions"	=> {
+			"list"	=> {
+				# help can be single string or list of strings
+				"help" => "display configuration summary",
+				"example" => "lan list configured",
+				"readonly" => true,
+				"options" => [ "non_strict" ]
 			],
 			"add"	: $[
 				"help": "add a network card" ],

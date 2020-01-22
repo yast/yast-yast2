@@ -75,6 +75,8 @@ module Yast
             "help"     => _(
               "Start interactive shell to control the module"
             ),
+            # interactive mode itself does not mean that write is needed.
+            # The first action that is not readonly will switch flag.
             "readonly" => true
           },
           "exit"        => {
@@ -88,7 +90,8 @@ module Yast
             # translators: help for 'abort' command line interactive mode
             "help" => _(
               "Abort interactive mode without saving the changes"
-            )
+            ),
+            "readonly" => true
           }
         },
         "options"  => {
@@ -1427,9 +1430,53 @@ module Yast
     #
     # @param [Hash] commandline  a map used in the CommandLine module with information
     #                      about the handlers for GUI and commands.
-    # @return [Object]    false if there was an error or no changes to be written (for example "help").
+    # @option commandline [String] "help" global help text.
+    #   Help for options and actions are separated. Mandatory if module support command line.
+    # @option commandline [String] "id" module id. Mandatory if module support command line.
+    # @option commandline [Yast::FunRef("symbol ()")|Yast::FunRef("boolean ()")] "guihandler"
+    #   function to be called when gui requested. Mandatory for modules with GUI.
+    # @option commandline [Yast::FunRef("boolean ()")] "initialize" function that is called before
+    #   any action handler is called. Usually module initialization happens there.
+    # @option commandline [Yast::FunRef("boolean ()")] "finish" function that is called after
+    #   all action handlers are called. Usually writing of changes happens there. NOTE: calling
+    #   is skipped if all called handlers are readonly.
+    # @option commandline [Hash<String, Object>] "actions" definition of actions. Hash has action
+    #   name as key and value is hash with following keys:
+    #
+    #      - **"help"** _String|Array<String>_ mandatory action specific help text.
+    #        Options help text is defined separately. If array is passed it will be
+    #        printed indended on multiple lines.
+    #      - **"handler"** _Yast::FunRef("boolean (map <string, string>)")_ handler when action is
+    #        specified. Parameter is passed options. Mandatory.
+    #      - **"example"** _String_ optional example of action invocation.
+    #        By default no example is provided.
+    #      - **"options"** _Array<String>_ optional list of flags. So far only `"non_strict"`
+    #        supported. Useful when action arguments is not well defined, so unknown option does
+    #        not finish with error. By default it is empty array.
+    #      - **"readonly"** _Boolean_ optional flag that if it is set to true then
+    #        invoking action is not reason to run finish handler, but if another
+    #        action without readonly is called, it will run finish handler.
+    #        Default value is `false`.
+    #
+    # @option commandline [Hash<String, Object>] "options" definition of options. Hash has action
+    #   name as key and value is hash with following keys:
+    #
+    #      - **"help"** _String|Array<String>_ mandatory action specific help text.
+    #        If array is passed it will be printed indended on multiple lines.
+    #      - **"type"** _String_ optional type check for option parameter. By default no
+    #        type checking is done. It abort if no checking is done and value is passed on CLI.
+    #        Possible values are ycp types and additionally enum and regex. For enum additional
+    #        key **"typespec"** with array of values have to be specified. For regex additional
+    #        key **"typespec"** with string containing ycp regexp is required. For integer it
+    #        do conversion of string value to integer value.
+    #      - **"typespec"** _Object_ additional type specification. See **"type"** for details.
+    #
+    # @option commandline [Hash<String, Array<String>>] "mappings" defines connection between
+    #   **"actions"** and its **"options"**. Key is action and value is list of options it
+    #   supports.
+    # @return [Object] false if there was an error or no changes to be written (for example "help").
     #      true if the changes should be written, or a value returned by the
-    #      handler
+    #      handler. Actions that are read-only returns also true if succeed even if nothing to be written.
     def Run(commandline)
       commandline = deep_copy(commandline)
       # The main ()
@@ -1441,7 +1488,8 @@ module Yast
       return !Aborted() if !Init(commandline, WFM.Args)
 
       ret = true
-      read_only = true # do finish action only if module is not read only
+      # no action is readonly. But first module without readonly switch flag to false
+      read_only = true
 
       initialized = false
       if Ops.get(commandline, "initialize").nil?
@@ -1521,6 +1569,7 @@ module Yast
           # there is a handler, execute the action
           if !exec.nil?
             res = exec.call(options)
+            # unless action explicitelly mention that it is readonly run finish handler.
             read_only = false unless commandline["actions"][command]["readonly"]
 
             # if it is not interactive, abort on errors
