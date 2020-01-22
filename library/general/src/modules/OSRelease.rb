@@ -71,11 +71,18 @@ module Yast
       Misc.CustomSysconfigRead("NAME", "SUSE Linux", File.join(directory, OS_RELEASE_PATH))
     end
 
-    # Get information about the OS version
+    # Get information about the OS version (technical). E.g. 15.2
     # Is limited for the currently running product
     # @return [String] the release information
     def ReleaseVersion(directory = "/")
       Misc.CustomSysconfigRead("VERSION_ID", "", File.join(directory, OS_RELEASE_PATH))
+    end
+
+    # Get information about the OS version (human readable). E.g. 15-SP2
+    # Is limited for the currently running product
+    # @return [String] the release information
+    def ReleaseVersionHumanReadable(directory = "/")
+      Misc.CustomSysconfigRead("VERSION", "", File.join(directory, OS_RELEASE_PATH))
     end
 
     # Get information about OS ID
@@ -98,6 +105,7 @@ module Yast
     publish function: :ReleaseInformation, type: "string (string)"
     publish function: :ReleaseName, type: "string ()"
     publish function: :ReleaseVersion, type: "string ()"
+    publish function: :ReleaseVersionHumanReadable, type: "string ()"
 
   private
 

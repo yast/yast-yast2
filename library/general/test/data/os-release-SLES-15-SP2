@@ -1,0 +1,8 @@
+NAME="SLE"
+VERSION="15-SP2"
+VERSION_ID="15.2"
+PRETTY_NAME="SUSE Linux Enterprise 15 SP2"
+ID="sle"
+ID_LIKE="suse"
+ANSI_COLOR="0;32"
+CPE_NAME="cpe:/o:suse:sle:15:sp2"

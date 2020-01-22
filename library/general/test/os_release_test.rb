@@ -59,6 +59,13 @@ describe Yast::OSRelease do
     end
   end
 
+  describe "#ReleaseVersionHumanReadable" do
+    it "returns a release version in a human readable format" do
+      stub_const("Yast::OSReleaseClass::OS_RELEASE_PATH", "os-release-SLES-15-SP2")
+      expect(Yast::OSRelease.ReleaseVersionHumanReadable(DATA_DIR)).to eq("15-SP2")
+    end
+  end
+
   describe "#id" do
     it "returns an OS identifier" do
       stub_const("Yast::OSReleaseClass::OS_RELEASE_PATH", "os-release_SLES_12_Beta5")
