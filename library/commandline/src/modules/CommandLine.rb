@@ -1464,19 +1464,19 @@ module Yast
     #      - **"help"** _String|Array<String>_ mandatory action specific help text.
     #        If array is passed it will be printed indended on multiple lines.
     #      - **"type"** _String_ optional type check for option parameter. By default no
-    #        type checking is done. It abort if no checking is done and value is passed on CLI.
+    #        type checking is done. It aborts if no checking is done and a value is passed on CLI.
     #        Possible values are ycp types and additionally enum and regex. For enum additional
     #        key **"typespec"** with array of values have to be specified. For regex additional
     #        key **"typespec"** with string containing ycp regexp is required. For integer it
-    #        do conversion of string value to integer value.
+    #        does conversion of a string value to an integer value.
     #      - **"typespec"** _Object_ additional type specification. See **"type"** for details.
     #
     # @option commandline [Hash<String, Array<String>>] "mappings" defines connection between
-    #   **"actions"** and its **"options"**. Key is action and value is list of options it
+    #   **"actions"** and its **"options"**. The key is action and the value is a list of options it
     #   supports.
-    # @return [Object] false if there was an error or no changes to be written (for example "help").
+    # @return [Object] false if there was an error or there are no changes to be written (for example "help").
     #      true if the changes should be written, or a value returned by the
-    #      handler. Actions that are read-only returns also true if succeed even if nothing to be written.
+    #      handler. Actions that are read-only return also true on success even if there is nothing to write.
     def Run(commandline)
       commandline = deep_copy(commandline)
       # The main ()
@@ -1488,7 +1488,7 @@ module Yast
       return !Aborted() if !Init(commandline, WFM.Args)
 
       ret = true
-      # no action is readonly. But first module without readonly switch flag to false
+      # no action is readonly, but the first module without "readonly" will switch the flag to `false`
       read_only = true
 
       initialized = false
@@ -1569,7 +1569,7 @@ module Yast
           # there is a handler, execute the action
           if !exec.nil?
             res = exec.call(options)
-            # unless action explicitelly mention that it is readonly run finish handler.
+            # unless an action explicitly mentions that it is read-only it will run the finish handler
             read_only = false unless commandline["actions"][command]["readonly"]
 
             # if it is not interactive, abort on errors
