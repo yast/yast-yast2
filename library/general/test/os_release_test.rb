@@ -64,7 +64,7 @@ describe Yast::OSRelease do
       stub_const("Yast::OSReleaseClass::OS_RELEASE_PATH", "os-release-SLES-15-SP2")
       expect(Yast::OSRelease.ReleaseVersionHumanReadable(DATA_DIR)).to eq("15-SP2")
     end
-  end  
+  end
 
   describe "#id" do
     it "returns an OS identifier" do
