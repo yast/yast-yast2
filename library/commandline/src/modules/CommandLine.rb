@@ -29,6 +29,8 @@ require "yast"
 
 module Yast
   class CommandLineClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "Directory"
       Yast.import "Mode"
@@ -49,39 +51,47 @@ module Yast
         "actions"  => {
           "help"        => {
             # translators: help for 'help' option on command line
-            "help" => _(
+            "help"     => _(
               "Print the help for this module"
-            )
+            ),
+            "readonly" => true
           },
           "longhelp"    => {
             # translators: help for 'longhelp' option on command line
-            "help" => _(
+            "help"     => _(
               "Print a long version of help for this module"
-            )
+            ),
+            "readonly" => true
           },
           "xmlhelp"     => {
             # translators: help for 'xmlhelp' option on command line
-            "help" => _(
+            "help"     => _(
               "Print a long version of help for this module in XML format"
-            )
+            ),
+            "readonly" => true
           },
           "interactive" => {
             # translators: help for 'interactive' option on command line
-            "help" => _(
+            "help"     => _(
               "Start interactive shell to control the module"
-            )
+            ),
+            # interactive mode itself does not mean that write is needed.
+            # The first action that is not readonly will switch flag.
+            "readonly" => true
           },
           "exit"        => {
             # translators: help for 'exit' command line interactive mode
-            "help" => _(
+            "help"     => _(
               "Exit interactive mode and save the changes"
-            )
+            ),
+            "readonly" => true
           },
           "abort"       => {
             # translators: help for 'abort' command line interactive mode
-            "help" => _(
+            "help"     => _(
               "Abort interactive mode without saving the changes"
-            )
+            ),
+            "readonly" => true
           }
         },
         "options"  => {
@@ -150,6 +160,7 @@ module Yast
     #  Suppress printing if there are no commands to be handled (starting GUI)
     #
     #  @param [String] string to be printed
+    #  @param [Boolean] newline if newline character should be added or not
     def PrintInternal(string, newline)
       return if !Mode.commandline
 
@@ -337,14 +348,12 @@ module Yast
     #  @return [Hash{String => Object}]  containing the command and it's option. In case of
     #        error it is an empty map.
     def Parse(arguments)
-      arguments = deep_copy(arguments)
       args = deep_copy(arguments)
       return {} if Ops.less_than(Builtins.size(args), 1)
 
       # Parse command
-      command = Ops.get_string(args, 0, "")
+      command = args.shift
       Builtins.y2debug("command=%1", command)
-      args = Builtins.remove(args, 0)
       Builtins.y2debug("args=%1", args)
 
       if command == ""
@@ -557,17 +566,10 @@ module Yast
         _("YaST Configuration Module %1\n"),
         Ops.get_string(@modulecommands, "id", "YaST")
       )
-      headlen = Builtins.size(head)
-      i = 0
-      while Ops.less_than(i, headlen)
-        head = Ops.add(head, "-")
-        i = Ops.add(i, 1)
-      end
+      head += "-" * (head.size - 1) # -1 to remove newline char from count
       head = Ops.add(Ops.add("\n", head), "\n")
 
       Print(head)
-
-      nil
     end
 
     # Print a help text for a given action.
@@ -1391,69 +1393,34 @@ module Yast
     # @param [Array] unique_options  list of mutually exclusive options to check against
     # @return  nil if there is a problem, otherwise the unique option found
     def UniqueOption(options, unique_options)
-      options = deep_copy(options)
-      unique_options = deep_copy(unique_options)
+      return nil if options.nil? || unique_options.nil?
+
       # sanity check
-      if Builtins.size(unique_options) == 0
-        Builtins.y2error(
-          "Unique test of options required, but the list of the possible options is empty"
-        )
+      if unique_options.empty?
+        log.error "Unique list of options required, but the list of the possible options is empty"
         return nil
       end
 
       # first do a filtering, then convert to a list of keys
-      cmds = Builtins.maplist(Builtins.filter(options) do |opt, _value|
-        Builtins.contains(unique_options, opt)
-      end) { |key, _value| key }
+      cmds = unique_options & options.keys
 
       # if it is OK, quickly return
-      return Ops.get_string(cmds, 0) if Builtins.size(cmds) == 1
+      return cmds.first if cmds.size == 1
 
-      # something is wrong, prepare the error report
-      i = 0
-      opt_list = ""
-      while Ops.less_than(i, Ops.subtract(Builtins.size(unique_options), 1))
-        opt_list = Ops.add(
-          opt_list,
-          Builtins.sformat("'%1', ", Ops.get(unique_options, i))
-        )
-        i = Ops.add(i, 1)
-      end
-
-      # translators: the last command %1 in a list of unique commands
-      opt_list = Ops.add(
-        opt_list,
-        Builtins.sformat(_("or '%1'"), Ops.get(unique_options, i))
-      )
-
-      if Builtins.size(cmds) == 0
-        if Builtins.size(unique_options) == 1
+      msg = if cmds.empty?
+        if unique_options.size == 1
           # translators: error message - missing unique command for command line execution
-          Report.Error(
-            Builtins.sformat(
-              _("Specify the command '%1'."),
-              Ops.get(unique_options, 0)
-            )
-          )
+          Builtins.sformat(_("Specify the command '%1'."), unique_options.first)
         else
           # translators: error message - missing unique command for command line execution
-          Report.Error(
-            Builtins.sformat(_("Specify one of the commands: %1."), opt_list)
-          )
+          Builtins.sformat(_("Specify one of the commands: %1."), format_list(unique_options))
         end
-        return nil
+      else
+        Builtins.sformat(_("Specify only one of the commands: %1."), format_list(cmds))
       end
 
-      if Builtins.size(cmds) != 1
-        # size( unique_options ) == 1 here does not make sense
-
-        Report.Error(
-          Builtins.sformat(_("Specify only one of the commands: %1."), opt_list)
-        )
-        return nil
-      end
-
-      Ops.get_string(cmds, 0)
+      Report.Error(msg)
+      nil
     end
 
     # Parse the Command Line
@@ -1463,9 +1430,90 @@ module Yast
     #
     # @param [Hash] commandline  a map used in the CommandLine module with information
     #                      about the handlers for GUI and commands.
-    # @return [Object]    false if there was an error or no changes to be written (for example "help").
+    # @option commandline [String] "help" global help text.
+    #   Help for options and actions are separated. Mandatory if module support command line.
+    # @option commandline [String] "id" module id. Mandatory if module support command line.
+    # @option commandline [Yast::FunRef("symbol ()")|Yast::FunRef("boolean ()")] "guihandler"
+    #   function to be called when gui requested. Mandatory for modules with GUI.
+    # @option commandline [Yast::FunRef("boolean ()")] "initialize" function that is called before
+    #   any action handler is called. Usually module initialization happens there.
+    # @option commandline [Yast::FunRef("boolean ()")] "finish" function that is called after
+    #   all action handlers are called. Usually writing of changes happens there. NOTE: calling
+    #   is skipped if all called handlers are readonly.
+    # @option commandline [Hash<String, Object>] "actions" definition of actions. Hash has action
+    #   name as key and value is hash with following keys:
+    #
+    #      - **"help"** _String|Array<String>_ mandatory action specific help text.
+    #        Options help text is defined separately. If array is passed it will be
+    #        printed indended on multiple lines.
+    #      - **"handler"** _Yast::FunRef("boolean (map <string, string>)")_ handler when action is
+    #        specified. Parameter is passed options. Mandatory.
+    #      - **"example"** _String_ optional example of action invocation.
+    #        By default no example is provided.
+    #      - **"options"** _Array<String>_ optional list of flags. So far only `"non_strict"`
+    #        supported. Useful when action arguments is not well defined, so unknown option does
+    #        not finish with error. By default it is empty array.
+    #      - **"readonly"** _Boolean_ optional flag that if it is set to true then
+    #        invoking action is not reason to run finish handler, but if another
+    #        action without readonly is called, it will run finish handler.
+    #        Default value is `false`.
+    #
+    # @option commandline [Hash<String, Object>] "options" definition of options. Hash has action
+    #   name as key and value is hash with following keys:
+    #
+    #      - **"help"** _String|Array<String>_ mandatory action specific help text.
+    #        If array is passed it will be printed indended on multiple lines.
+    #      - **"type"** _String_ optional type check for option parameter. By default no
+    #        type checking is done. It aborts if no checking is done and a value is passed on CLI.
+    #        Possible values are ycp types and additionally enum and regex. For enum additional
+    #        key **"typespec"** with array of values have to be specified. For regex additional
+    #        key **"typespec"** with string containing ycp regexp is required. For integer it
+    #        does conversion of a string value to an integer value.
+    #      - **"typespec"** _Object_ additional type specification. See **"type"** for details.
+    #
+    # @option commandline [Hash<String, Array<String>>] "mappings" defines connection between
+    #   **"actions"** and its **"options"**. The key is action and the value is a list of options it
+    #   supports.
+    # @return [Object] false if there was an error or there are no changes to be written (for example "help").
     #      true if the changes should be written, or a value returned by the
-    #      handler
+    #      handler. Actions that are read-only return also true on success even if there is nothing to write.
+    #
+    # @example Complete CLI support. Methods definition are skipped for simplicity.
+    #   Yast::CommandLine.Run(
+    #     "help"       => _("Foo Configuration"),
+    #     "id"         => "foo",
+    #     "guihandler" => fun_ref(method(:FooSequence), "symbol ()"),
+    #     "initialize" => fun_ref(Foo.method(:ReadNoGUI), "boolean ()"),
+    #     "finish"     => fun_ref(Foo.method(:WriteNoGUI), "boolean ()"),
+    #     "actions"    => {
+    #       "list"   => {
+    #         "help"     => _(
+    #           "Display configuration summary"
+    #           ),
+    #         "example"  => "foo list configured",
+    #         "readonly" => true,
+    #         "handler"  => fun_ref(
+    #           method(:ListHandler),
+    #           "boolean (map <string, string>)"
+    #         )
+    #       },
+    #       "edit"   => {
+    #         "help"    => _("Change existing configuration"),
+    #         "handler" => fun_ref(
+    #           method(:EditHandler),
+    #           "boolean (map <string, string>)"
+    #         )
+    #       },
+    #     },
+    #     "options"    => {
+    #       "configured"   => {
+    #         "help" => _("List only configured foo fighters")
+    #       }
+    #     },
+    #     "mappings"   => {
+    #       "list"   => ["configured"]
+    #     }
+    #   )
     def Run(commandline)
       commandline = deep_copy(commandline)
       # The main ()
@@ -1477,6 +1525,8 @@ module Yast
       return !Aborted() if !Init(commandline, WFM.Args)
 
       ret = true
+      # no action is readonly, but the first module without "readonly" will switch the flag to `false`
+      read_only = true
 
       initialized = false
       if Ops.get(commandline, "initialize").nil?
@@ -1556,6 +1606,8 @@ module Yast
           # there is a handler, execute the action
           if !exec.nil?
             res = exec.call(options)
+            # unless an action explicitly mentions that it is read-only it will run the finish handler
+            read_only = false unless commandline["actions"][command]["readonly"]
 
             # if it is not interactive, abort on errors
             Abort() if !Interactive() && res == false
@@ -1568,7 +1620,7 @@ module Yast
         ret = !Aborted()
       end
 
-      if ret && Ops.get(commandline, "finish") && initialized
+      if ret && Ops.get(commandline, "finish") && initialized && !read_only
         # translators: Progress message - the command line interface is about to finish
         PrintVerbose(_("Finishing"))
         ret = commandline["finish"].call
@@ -1653,6 +1705,14 @@ module Yast
     publish function: :Run, type: "any (map)"
     publish function: :YesNo, type: "boolean ()"
     publish function: :Verbose, type: "boolean ()"
+
+  private
+
+    def format_list(list)
+      # translators: the last entry in output of list
+      list[0..-2].map { |l| "'#{l}'" }.join(", ") + " " +
+        Builtins.sformat(_("or '%1'"), list[-1])
+    end
   end
 
   CommandLine = CommandLineClass.new
