@@ -1477,6 +1477,43 @@ module Yast
     # @return [Object] false if there was an error or there are no changes to be written (for example "help").
     #      true if the changes should be written, or a value returned by the
     #      handler. Actions that are read-only return also true on success even if there is nothing to write.
+    #
+    # @example Complete CLI support. Methods definition are skipped for simplicity.
+    #   Yast::CommandLine.Run(
+    #     "help"       => _("Foo Configuration"),
+    #     "id"         => "foo",
+    #     "guihandler" => fun_ref(method(:FooSequence), "symbol ()"),
+    #     "initialize" => fun_ref(Foo.method(:ReadNoGUI), "boolean ()"),
+    #     "finish"     => fun_ref(Foo.method(:WriteNoGUI), "boolean ()"),
+    #     "actions"    => {
+    #       "list"   => {
+    #         "help"     => _(
+    #           "Display configuration summary"
+    #           ),
+    #         "example"  => "foo list configured",
+    #         "readonly" => true,
+    #         "handler"  => fun_ref(
+    #           method(:ListHandler),
+    #           "boolean (map <string, string>)"
+    #         )
+    #       },
+    #       "edit"   => {
+    #         "help"    => _("Change existing configuration"),
+    #         "handler" => fun_ref(
+    #           method(:EditHandler),
+    #           "boolean (map <string, string>)"
+    #         )
+    #       },
+    #     },
+    #     "options"    => {
+    #       "configured"   => {
+    #         "help" => _("List only configured foo fighters")
+    #       }
+    #     },
+    #     "mappings"   => {
+    #       "list"   => ["configured"]
+    #     }
+    #   )
     def Run(commandline)
       commandline = deep_copy(commandline)
       # The main ()
