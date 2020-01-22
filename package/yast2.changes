@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 22 15:27:15 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+
+- CommandLine: Add ability to actions to skip writing.
+  Useful for more CLI bug fixes e.g. bsc#1160928
+- 4.2.57
+
+-------------------------------------------------------------------
 Wed Jan 22 11:44:01 CET 2020 - schubi@suse.de
 
 - Evaluating system release/version in an more understandable form
