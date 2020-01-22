@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 22 11:44:01 CET 2020 - schubi@suse.de
+
+- Evaluating system release/version in an more understandable form
+  for the user e.g. "15-SP2" (improvement for fate#325834).
+- 4.2.56
+
+-------------------------------------------------------------------
 Tue Jan 14 16:38:43 UTC 2020 - David Diaz <dgonzalez@suse.com>
 
 - Add a text helper to strip HTML tags (related bsc#1157780)
