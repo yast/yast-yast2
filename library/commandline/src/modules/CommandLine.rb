@@ -1394,7 +1394,7 @@ module Yast
 
       # sanity check
       if unique_options.empty?
-        log.error "Unique test of options required, but the list of the possible options is empty"
+        log.error "Unique list of options required, but the list of the possible options is empty"
         return nil
       end
 
