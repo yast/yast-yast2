@@ -88,7 +88,7 @@ module Yast
           },
           "abort"       => {
             # translators: help for 'abort' command line interactive mode
-            "help" => _(
+            "help"     => _(
               "Abort interactive mode without saving the changes"
             ),
             "readonly" => true
