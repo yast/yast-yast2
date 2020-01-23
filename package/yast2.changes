@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 23 13:22:10 UTC 2020 - Steffen Winterfeldt <snwint@suse.com>
+
+- don't use /bin/systemd compat symlink (bsc#1160890)
+- 4.2.58
+
+-------------------------------------------------------------------
 Wed Jan 22 15:27:15 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - CommandLine: Add ability to actions to skip writing.
