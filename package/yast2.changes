@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
-Thu Jan 23 11:51:43 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Thu Jan 23 14:29:49 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add an option to enable the online search in the package
   selector (jsc#SLE-9109).
+- 4.2.59
+
+-------------------------------------------------------------------
+Thu Jan 23 13:22:10 UTC 2020 - Steffen Winterfeldt <snwint@suse.com>
+
+- don't use /bin/systemd compat symlink (bsc#1160890)
 - 4.2.58
 
 -------------------------------------------------------------------

@@ -35,7 +35,7 @@ module Yast
     def main
       Yast.import "FileUtils"
 
-      @systemd_path = "/bin/systemd"
+      @systemd_path = "/usr/lib/systemd/systemd"
       @default_target_symlink = "/etc/systemd/system/default.target"
       @systemd_targets_dir = "/usr/lib/systemd/system"
       @systemd_mountdir = "/sys/fs/cgroup/systemd"
