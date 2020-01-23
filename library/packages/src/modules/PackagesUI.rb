@@ -300,7 +300,7 @@ module Yast
 
       widget_options = Builtins.add(widget_options, :confirmUnsupported) if !display_support_status.nil? && display_support_status
 
-      widget_options = Builtins.add(widget_options, :onlineSearch) if options.fetch("enable_online_search", false)
+      widget_options = Builtins.add(widget_options, :onlineSearch) if options["enable_online_search"]
 
       Builtins.y2milestone(
         "Options for the package selector widget: %1",
