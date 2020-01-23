@@ -304,5 +304,12 @@ module Y2Packager
     def resolvable_properties
       @resolvable_properties ||= Y2Packager::Resolvable.find(kind: :product, name: name, version: version).first
     end
+
+    # Returns the version number (without the release part)
+    #
+    # @return [String] Version number
+    def version_version
+      version.split("-").first
+    end
   end
 end

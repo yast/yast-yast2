@@ -502,4 +502,12 @@ describe Y2Packager::Product do
       end
     end
   end
+
+  describe "#version_version" do
+    subject(:product) { Y2Packager::Product.new(name: "SLES", version: "15.2-0", arch: "x86_64") }
+
+    it "returns the version omitting the release part" do
+      expect(product.version_version).to eq("15.2")
+    end
+  end
 end
