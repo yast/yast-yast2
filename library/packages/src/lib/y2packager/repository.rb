@@ -211,6 +211,7 @@ module Y2Packager
     # @see Yast::Pkg.SourceSaveAll
     def enable!
       return false unless Yast::Pkg.SourceSetEnabled(repo_id, true)
+
       self.enabled = true
       true
     end
@@ -226,6 +227,7 @@ module Y2Packager
     # @see Yast::Pkg.SourceSaveAll
     def disable!
       return false unless Yast::Pkg.SourceSetEnabled(repo_id, false)
+
       self.enabled = false
       true
     end
@@ -241,6 +243,7 @@ module Y2Packager
     # @see Yast::Pkg.SourceSaveAll
     def delete!
       return false unless Yast::Pkg.SourceDelete(repo_id)
+
       @repo_id = nil
       true
     end
