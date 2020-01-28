@@ -147,7 +147,7 @@ module Y2Packager
     #
     # The scheme is determined using the URL
     #
-    # @return [Symbol,nil] URL scheme
+    # @return [Symbol,nil] URL scheme, nil if the URL is not defined
     def scheme
       url.scheme ? url.scheme.to_sym : nil
     end
@@ -158,7 +158,7 @@ module Y2Packager
     #
     # @see Y2Packager::Product
     def products
-      return @products unless @products.nil?
+      return @products if @products
 
       # Filter products from this repository
       candidates = Y2Packager::Resolvable.find(kind: :product, source: repo_id)
@@ -205,11 +205,14 @@ module Y2Packager
     # The repository status will be stored only in memory. Calling to
     # Yast::Pkg.SourceSaveAll will make it persistent.
     #
+    # @return [Boolean] true on success, false otherwise
+    #
     # @see Yast::Pkg.SourceSetEnabled
     # @see Yast::Pkg.SourceSaveAll
     def enable!
-      success = Yast::Pkg.SourceSetEnabled(repo_id, true)
-      success && self.enabled = true
+      return false unless Yast::Pkg.SourceSetEnabled(repo_id, true)
+      self.enabled = true
+      true
     end
 
     # Disable the repository
@@ -217,22 +220,29 @@ module Y2Packager
     # The repository status will be stored only in memory. Calling to
     # Yast::Pkg.SourceSaveAll will make it persistent.
     #
+    # @return [Boolean] true on success, false otherwise
+    #
     # @see Yast::Pkg.SourceSetEnabled
     # @see Yast::Pkg.SourceSaveAll
     def disable!
-      success = Yast::Pkg.SourceSetEnabled(repo_id, false)
-      success && self.enabled = false
+      return false unless Yast::Pkg.SourceSetEnabled(repo_id, false)
+      self.enabled = false
+      true
     end
 
-    # Remove the repository
+    # Remove the repository, the repo_id is set to `nil` after removal.
     #
     # The repository will be removed only in memory. Calling to
     # Yast::Pkg.SourceSaveAll will make the removal persistent.
     #
+    # @return [Boolean] true on success, false otherwise
+    #
     # @see Yast::Pkg.SourceDelete
     # @see Yast::Pkg.SourceSaveAll
     def delete!
-      @repo_id = nil if Yast::Pkg.SourceDelete(repo_id)
+      return false unless Yast::Pkg.SourceDelete(repo_id)
+      @repo_id = nil
+      true
     end
 
     # Change the repository URL
