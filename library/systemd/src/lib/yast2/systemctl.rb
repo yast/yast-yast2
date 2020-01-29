@@ -2,6 +2,8 @@ require "ostruct"
 require "timeout"
 require "shellwords"
 
+require "yast"
+
 Yast.import "Systemd"
 
 module Yast2
@@ -84,7 +86,10 @@ module Yast2
     private
 
       def list_unit_files(type: nil)
-        return "" unless Yast::Systemd.Running
+        if !Yast::Systemd.Running
+          log.info "systemd not running. Returning empty list"
+          return ""
+        end
 
         command = " list-unit-files "
         command << " --type=#{type.to_s.shellescape} " if type
@@ -92,7 +97,10 @@ module Yast2
       end
 
       def list_units(type: nil, all: true)
-        return "" unless Yast::Systemd.Running
+        if !Yast::Systemd.Running
+          log.info "systemd not running. Returning empty list"
+          return ""
+        end
 
         command = " list-units "
         command << " --all " if all
