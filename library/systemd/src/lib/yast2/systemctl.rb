@@ -2,6 +2,10 @@ require "ostruct"
 require "timeout"
 require "shellwords"
 
+require "yast"
+
+Yast.import "Systemd"
+
 module Yast2
   # Wrapper around `systemctl` command.
   # - uses non-interactive flags
@@ -82,12 +86,22 @@ module Yast2
     private
 
       def list_unit_files(type: nil)
+        if !Yast::Systemd.Running
+          log.info "systemd not running. Returning empty list"
+          return ""
+        end
+
         command = " list-unit-files "
         command << " --type=#{type.to_s.shellescape} " if type
         execute(command).stdout
       end
 
       def list_units(type: nil, all: true)
+        if !Yast::Systemd.Running
+          log.info "systemd not running. Returning empty list"
+          return ""
+        end
+
         command = " list-units "
         command << " --all " if all
         command << " --type=#{type.to_s.shellescape} " if type

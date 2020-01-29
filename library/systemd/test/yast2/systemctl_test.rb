@@ -7,6 +7,10 @@ module Yast2
   describe Systemctl do
     include SystemctlStubs
 
+    before do
+      allow(Yast::Systemd).to receive(:Running).and_return(true)
+    end
+
     describe ".execute" do
       it "returns a struct with command results" do
         expect(Yast::SCR).to receive(:Execute).and_return(

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 29 13:22:50 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+
+- Speed up run on WSL (bsc#1157575)
+- 4.2.61
+
+-------------------------------------------------------------------
 Tue Jan 28 08:42:45 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Added classes for handling the old repository setup during
