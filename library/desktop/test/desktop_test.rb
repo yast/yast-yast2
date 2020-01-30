@@ -34,9 +34,59 @@ describe Yast::Desktop do
         "add-on"           => { "Name" => "YaST Add-On Products" },
         "lan"              => { "Name" => "YaST Network" },
         "services-manager" => { "Name" => "YaST Services Manager" },
+        "sw-single" => {"Name"=>"YaST Software Management"},
         "s390-extra"       => { "Name" => "YaST S390 Extra" },
         "dns-server"       => { "Name" => "YaST DNS Server" }
       )
+    end
+  end
+
+  describe ".ModuleList" do
+    around { |e| change_scr_root(DESKTOP_DATA_PATH, &e) }
+
+    let(:read_values) do
+      # TODO: really MEH API, copy of menu.rb list
+      [
+        "GenericName",
+        # not required: "Comment",
+        "X-SuSE-YaST-Argument",
+        "X-SuSE-YaST-Call",
+        "X-SuSE-YaST-Group",
+        "X-SuSE-YaST-SortKey",
+        "X-SuSE-YaST-RootOnly",
+        "X-SuSE-YaST-WSL",
+        "Hidden"
+      ]
+    end
+
+    before do
+      Yast::Desktop.Read(read_values)
+      # as changed scr does not have groups desktop, define it manually here
+      Yast::Desktop.Groups = { "Software" => { "modules" => ["add-on", "sw-single"] }}
+    end
+
+
+    context "on WSL" do
+      before do
+        allow(Yast::Arch).to receive(:is_wsl).and_return(true)
+      end
+
+      it "returns only whitelisted modules" do
+        expect(Yast::Desktop.ModuleList("Software")).to eq [Yast::Term.new(:item, Yast::Term.new(:id, "sw-single"), "Software Management")]
+      end
+    end
+
+    context "outside of WSL" do
+      before do
+        allow(Yast::Arch).to receive(:is_wsl).and_return(false)
+      end
+
+      it "ignores WSL whitelisting" do
+        expect(Yast::Desktop.ModuleList("Software")).to eq [
+          Yast::Term.new(:item, Yast::Term.new(:id, "sw-single"), "Software Management"),
+          Yast::Term.new(:item, Yast::Term.new(:id, "add-on"), "Add-On Products")
+        ]
+      end
     end
   end
 end
