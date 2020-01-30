@@ -51,6 +51,13 @@ module Y2Packager
         return @products if @products
 
         control_products = Yast::ProductFeatures.GetFeature("software", "base_products")
+
+        if !control_products.is_a?(Array)
+          log.warn("Invalid or missing 'software/base_products' value: #{control_products.inspect}")
+          @products = []
+          return @products
+        end
+
         arch = REG_ARCH[Yast::Arch.architecture] || Yast::Arch.architecture
         linuxrc_products = (Yast::Linuxrc.InstallInf("specialproduct") || "").split(",").map(&:strip)
 
