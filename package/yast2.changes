@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jan 30 11:19:00 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Do not crash when the "software/base_products" is not defined
+  in the control.xml (bsc#1161956)
+- 4.2.62
+
+-------------------------------------------------------------------
 Wed Jan 29 13:22:50 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - Speed up run on WSL (bsc#1157575)

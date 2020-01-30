@@ -73,6 +73,15 @@ describe Y2Packager::ProductControlProduct do
       product = Y2Packager::ProductControlProduct.products.first
       expect(product.register_target).to eq("sle-15-x86_64")
     end
+
+    it "returns empty list if the control file value is missing" do
+      # when the value is not found ProductFeatures return empty string!
+      expect(Yast::ProductFeatures).to receive(:GetFeature)
+        .with("software", "base_products").and_return("")
+
+      products = Y2Packager::ProductControlProduct.products
+      expect(products).to be_empty
+    end
   end
 
   describe ".selected" do
