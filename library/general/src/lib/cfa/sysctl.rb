@@ -52,6 +52,11 @@ module CFA
     PATH = "/etc/sysctl.d/70-yast.conf".freeze
 
     class << self
+
+      def known_attributes
+        ATTRIBUTES.keys
+      end
+
       # Modifies default CFA methods to handle boolean values
       #
       # When getting or setting the value, a boolean value will be expected. Under the hood, it will
@@ -93,6 +98,8 @@ module CFA
 
     attributes(ATTRIBUTES)
 
+    attr_reader :file_path
+
     # Keys that are handled by this class
     KNOWN_KEYS = ATTRIBUTES.values.uniq.freeze
 
@@ -100,8 +107,13 @@ module CFA
       :ipv4_forwarding_default, :ipv4_forwarding_all, :ipv6_forwarding_default,
       :ipv6_forwarding_all
 
-    def initialize(file_handler: Yast::TargetFile)
-      super(PARSER, PATH, file_handler: file_handler)
+    def initialize(file_handler: Yast::TargetFile, file_path: YAST_CONFIG_PATH)
+      super(PARSER, file_path, file_handler: file_handler)
+    end
+
+    def empty?
+      # FIXME: AugeasTree should implement #empty?
+      data.data.empty?
     end
 
     # Loads sysctl content
@@ -136,6 +148,16 @@ module CFA
       # file attributes. However, attributes are fine in inst-sys but the file is on
       # ro filesystem.
       clean_old_values if !Yast::Stage.initial
+    end
+
+    def present?(attr)
+      raw_method = "raw_#{attr}"
+      meth = respond_to?(raw_method) ? raw_method : attr
+      !send(meth).nil?
+    end
+
+    def present_attributes
+      ATTRIBUTES.keys.uniq.select { |k| present?(k) }
     end
 
   private
