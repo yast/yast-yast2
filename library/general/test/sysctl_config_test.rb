@@ -32,18 +32,18 @@ describe CFA::SysctlConfig do
 
   describe "#load" do
     let(:execute_object) { Yast::Execute.new }
-    
+
     before do
       allow(Yast::Execute).to receive(:locally).and_return(execute_object)
       allow(execute_object).to receive(:stdout).with("/usr/bin/uname", "-r").and_return("5.3.7-1-default")
-    end    
-    
+    end
+
     it "reads settings from files in all directories" do
       files = [
         "/boot/sysctl.conf-5.3.7-1-default",
         "/run/sysctl.d/05-syn_cookies.conf",
         "/etc/sysctl.d/50-overriden.conf",
-        "/etc/sysctl.d/70-yast.conf",        
+        "/etc/sysctl.d/70-yast.conf",
         "/usr/local/lib/sysctl.d/10-lib.conf",
         "/usr/lib/sysctl.d/15-lib.conf",
         "/lib/sysctl.d/20-lib.conf",
@@ -89,10 +89,10 @@ describe CFA::SysctlConfig do
 
       it "includes the other configuration files lexicographically ordered" do
         expect(config.files[1..-1].map(&:file_path)).to eq([
-          "/run/sysctl.d/05-syn_cookies.conf", "/usr/local/lib/sysctl.d/10-lib.conf",
-          "/usr/lib/sysctl.d/15-lib.conf", "/lib/sysctl.d/20-lib.conf",
-          "/etc/sysctl.d/50-overriden.conf", "/etc/sysctl.d/70-yast.conf", "/etc/sysctl.conf"
-        ])
+                                                             "/run/sysctl.d/05-syn_cookies.conf", "/usr/local/lib/sysctl.d/10-lib.conf",
+                                                             "/usr/lib/sysctl.d/15-lib.conf", "/lib/sysctl.d/20-lib.conf",
+                                                             "/etc/sysctl.d/50-overriden.conf", "/etc/sysctl.d/70-yast.conf", "/etc/sysctl.conf"
+                                                           ])
       end
     end
 
@@ -108,10 +108,10 @@ describe CFA::SysctlConfig do
 
       it "includes configuration files lexicographically ordered" do
         expect(config.files.map(&:file_path)).to eq([
-          "/run/sysctl.d/05-syn_cookies.conf", "/usr/local/lib/sysctl.d/10-lib.conf",
-          "/usr/lib/sysctl.d/15-lib.conf", "/lib/sysctl.d/20-lib.conf",
-          "/etc/sysctl.d/50-overriden.conf", "/etc/sysctl.d/70-yast.conf", "/etc/sysctl.conf"
-        ])
+                                                      "/run/sysctl.d/05-syn_cookies.conf", "/usr/local/lib/sysctl.d/10-lib.conf",
+                                                      "/usr/lib/sysctl.d/15-lib.conf", "/lib/sysctl.d/20-lib.conf",
+                                                      "/etc/sysctl.d/50-overriden.conf", "/etc/sysctl.d/70-yast.conf", "/etc/sysctl.conf"
+                                                    ])
       end
     end
 
@@ -159,7 +159,7 @@ describe CFA::SysctlConfig do
         file.tcp_syncookies = tcp_syncookies
       end
 
-      let(:file) { config.files.find { |f| f.file_path == CFA::Sysctl::PATH }}
+      let(:file) { config.files.find { |f| f.file_path == CFA::Sysctl::PATH } }
       let(:tcp_syncookies) { true }
 
       context "and no specific attributes are given" do

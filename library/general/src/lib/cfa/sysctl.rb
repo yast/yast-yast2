@@ -52,7 +52,6 @@ module CFA
     PATH = "/etc/sysctl.d/70-yast.conf".freeze
 
     class << self
-
       def known_attributes
         ATTRIBUTES.keys
       end
@@ -151,7 +150,7 @@ module CFA
     end
 
     def present?(attr)
-       !send(method(attr)).nil?
+      !send(method(attr)).nil?
     end
 
     # Returning value if the attribute is available

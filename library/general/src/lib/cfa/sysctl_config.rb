@@ -43,9 +43,11 @@ module CFA
     class << self
       def define_attr(attr)
         define_method attr do
-          file = files.reverse.find { |f|
-            f.present?(attr) }
+          file = files.reverse.find do |f|
+            f.present?(attr)
+          end
           return file.public_send(attr) if file
+
           yast_config_file.public_send(attr)
         end
 
@@ -83,7 +85,7 @@ module CFA
         # Checking all "higher" files if their values overrule the current
         # YAST settings.
         higher_attr = file.present_attributes
-        conflicting_attrs.any? { |k,v| !higher_attr[k].nil? && v != higher_attr[k] }
+        conflicting_attrs.any? { |k, v| !higher_attr[k].nil? && v != higher_attr[k] }
       end
     end
 
@@ -134,10 +136,11 @@ module CFA
 
     def boot_config_path
       return @boot_config_path if @boot_config_path
-      if !kernel_version.empty?
-        @boot_config_path = "/boot/sysctl.conf-#{kernel_version}"
+
+      @boot_config_path = if !kernel_version.empty?
+        "/boot/sysctl.conf-#{kernel_version}"
       else
-        @boot_config_path = ""
+        ""
       end
     end
 
