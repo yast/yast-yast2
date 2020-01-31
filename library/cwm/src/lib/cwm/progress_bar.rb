@@ -58,14 +58,14 @@ module CWM
       refresh
     end
 
-  private
-
     # @!method steps
     #
     #   Steps for the progress bar
     #
     #   @return [Array<String>]
     abstract_method :steps
+
+  private
 
     # Index to the current step
     #
@@ -87,6 +87,8 @@ module CWM
     end
 
     # Label to use for the current step
+    #
+    # @see {#show_steps?}
     #
     # @return [String]
     def current_label

@@ -21,7 +21,10 @@ require "abstract_method"
 require "cwm/progress_bar"
 
 module CWM
-  # Widget for a dynamic progress bar, where the label can be set for every step
+  # Widget for a dynamic progress bar, where the label can be set for every step.
+  #
+  # This progress bar is useful when steps are not known in advance or part of them are dynamically
+  # generated.
   #
   # @example
   #
@@ -50,8 +53,6 @@ module CWM
       super()
     end
 
-  private
-
     # @!method label
     #
     #   Label for the progress bar when no step is given, see {#forward}.
@@ -65,6 +66,8 @@ module CWM
     #
     #   @return [Integer]
     abstract_method :steps_count
+
+  private
 
     # @see ProgressBar#steps
     def steps
