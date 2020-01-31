@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 31 16:07:35 UTC 2020 - José Iván López González <jlopez@suse.com>
+
+- Add new widgets CWM::ProgressBar and CWM::DynamicProgressBar.
+- Needed for bsc#1135366.
+- 4.2.63
+
+-------------------------------------------------------------------
 Thu Jan 30 11:19:00 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Do not crash when the "software/base_products" is not defined
