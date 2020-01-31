@@ -151,16 +151,35 @@ module CFA
     end
 
     def present?(attr)
-      raw_method = "raw_#{attr}"
-      meth = respond_to?(raw_method) ? raw_method : attr
-      !send(meth).nil?
+       !send(method(attr)).nil?
     end
 
+    # Returning value if the attribute is available
+    #
+    # @param attr [String] Attribute name
+    # @return [String] Attribute value; nil if the attribute has not found
+    def attr_value(attr)
+      send(method(attr))
+    end
+
+    # Returning hash of attributes together with there values.
+    #
+    # @return [Hash<String,String>] Hash of attribute values
     def present_attributes
-      ATTRIBUTES.keys.uniq.select { |k| present?(k) }
+      attributes = {}
+      ATTRIBUTES.keys.uniq.each do |k|
+        value = attr_value(k)
+        attributes[k] = value if value
+      end
+      attributes
     end
 
   private
+
+    def method(attr)
+      raw_method = "raw_#{attr}"
+      respond_to?(raw_method) ? raw_method : attr
+    end
 
     # Path to the agent to handle the +/etc/sysctl.conf+ file
     SYSCTL_AGENT_PATH = Yast::Path.new(".etc.sysctl_conf")

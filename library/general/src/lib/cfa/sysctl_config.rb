@@ -73,10 +73,17 @@ module CFA
       return false if yast_config_file.empty?
 
       conflicting_attrs = yast_config_file.present_attributes
-      conflicting_attrs &= only unless only.empty?
-puts "hhhhhhhhhhhhhhhh #{conflicting_attrs}"
+      if !only.empty?
+        # Dropping all not needed values
+        conflicting_attrs.each_key do |key|
+          conflicting_attrs.delete(key) unless only.include?(key)
+        end
+      end
       higher_precedence_files.any? do |file|
-        !(file.present_attributes & conflicting_attrs).empty?
+        # Checking all "higher" files if their values overrule the current
+        # YAST settings.
+        higher_attr = file.present_attributes
+        conflicting_attrs.any? { |k,v| !higher_attr[k].nil? && v != higher_attr[k] }
       end
     end
 

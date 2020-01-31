@@ -160,17 +160,17 @@ describe CFA::SysctlConfig do
       end
 
       let(:file) { config.files.find { |f| f.file_path == CFA::Sysctl::PATH }}
-      let(:tcp_syncookies) { "0" }
-      
+      let(:tcp_syncookies) { true }
+
       context "and no specific attributes are given" do
         it "checks all known attributes" do
-          expect(file).to receive(:present?).exactly(CFA::Sysctl.known_attributes.count).times
+          expect(file).to receive(:attr_value).exactly(CFA::Sysctl.known_attributes.count).times
           config.conflict?
         end
       end
 
       context "when some main file value is overriden" do
-        let(:tcp_syncookies) { "0" }
+        let(:tcp_syncookies) { false }
 
         it "returns true" do
           expect(config.conflict?).to eq(true)
@@ -178,10 +178,9 @@ describe CFA::SysctlConfig do
       end
 
       context "when no value is overriden" do
-        let(:tcp_syncookies) { nil }
+        let(:tcp_syncookies) { true }
 
         it "returns false" do
-puts "----- #{tcp_syncookies} ... #{file.tcp_syncookies} #{file.raw_tcp_syncookies} xxxx"   
           expect(config.conflict?).to eq(false)
         end
       end
