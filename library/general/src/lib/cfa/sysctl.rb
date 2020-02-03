@@ -111,7 +111,7 @@ module CFA
       :ipv4_forwarding_default, :ipv4_forwarding_all, :ipv6_forwarding_default,
       :ipv6_forwarding_all
 
-    def initialize(file_handler: Yast::TargetFile, file_path: YAST_CONFIG_PATH)
+    def initialize(file_handler: Yast::TargetFile, file_path: PATH)
       super(PARSER, file_path, file_handler: file_handler)
     end
 
