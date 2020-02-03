@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb  3 15:10:12 CET 2020 - schubi@suse.de
+
+- SysctlConfig class: Handle sysctl entries in different
+  directories (bsc#1151649).
+- 4.2.64
+
+-------------------------------------------------------------------
 Fri Jan 31 16:07:35 UTC 2020 - José Iván López González <jlopez@suse.com>
 
 - Add new widgets CWM::ProgressBar and CWM::DynamicProgressBar.
