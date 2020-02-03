@@ -43,6 +43,11 @@ module CFA
   #   sysctl.raw_forward_ipv6 #=> "0"
   #   sysctl.raw_forward_ipv6 = "1"
   #   sysctl.forward_ipv6? #=> true
+  #
+  # NOTE: This class only handles "/etc/sysctl.d/70-yast.conf" and /etc/sysctl.conf.
+  #       But sysctl values will also be handled by other files/directories. This will be
+  #       managed by class SysctlConfig. So please use SysctlConfig in order to read/write
+  #       sysctl values.
   class Sysctl < BaseModel
     include Yast::Logger
 

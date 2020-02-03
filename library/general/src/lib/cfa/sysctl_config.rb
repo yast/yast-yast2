@@ -24,6 +24,36 @@ require "cfa/sysctl"
 Yast.import "FileUtils"
 
 module CFA
+  # CFA based API to adjust the sysctl tool configuration
+  #
+  # This class does not modify the running kernel configuration. It just writes
+  # the desired values into the configuration file ({PATH}).
+  # Despite the class Sysctl this class also takes care about entries in
+  #   /run/sysctl.d,
+  #   /etc/sysctl.d
+  #   /usr/local/lib/sysctl.d
+  #   /usr/lib/sysctl.d
+  #   /lib/sysctl.d
+  #   /etc/sysctl.conf
+  # and inform the user if his settings will be overruled by setting in
+  # other files.
+  #
+  # @example Enabling IPv4 forwarding
+  #   sysctl = SysctlConfig.new
+  #   sysctl.forward_ipv4 = true
+  #   sysctl.save
+  #
+  # Although in the previous example we enabled the IPv4 forwarding using by
+  # setting +forward_ipv4+ to true. However, under the hood, the kernel maps
+  # boolean values to "1" or "0". If you want to access to that raw value,
+  # you can prepend "raw_" to the method's name.
+  #
+  # @example Accessing the raw value of a setting
+  #   sysctl = SysctlConfig.new
+  #   sysctl.load
+  #   sysctl.raw_forward_ipv6 #=> "0"
+  #   sysctl.raw_forward_ipv6 = "1"
+  #   sysctl.forward_ipv6? #=> true
   class SysctlConfig
     include Yast::Logger
 
