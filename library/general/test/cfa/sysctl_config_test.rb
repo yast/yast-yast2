@@ -146,10 +146,10 @@ describe CFA::SysctlConfig do
     end
   end
 
-  describe "#conflict?" do
+  describe "#conflict_files" do
     context "when YaST configuration file is empty" do
-      it "returns false" do
-        expect(config.conflict?).to eq(false)
+      it "returns empty list" do
+        expect(config.conflict_files).to be_empty
       end
     end
 
@@ -165,23 +165,23 @@ describe CFA::SysctlConfig do
       context "and no specific attributes are given" do
         it "checks all known attributes" do
           expect(file).to receive(:attr_value).exactly(CFA::Sysctl.known_attributes.count).times
-          config.conflict?
+          config.conflict_files
         end
       end
 
       context "when some main file value is overriden" do
         let(:tcp_syncookies) { false }
 
-        it "returns true" do
-          expect(config.conflict?).to eq(true)
+        it "returns file array" do
+          expect(config.conflict_files).to eq(["/etc/sysctl.conf"])
         end
       end
 
       context "when no value is overriden" do
         let(:tcp_syncookies) { true }
 
-        it "returns false" do
-          expect(config.conflict?).to eq(false)
+        it "returns empty list" do
+          expect(config.conflict_files).to be_empty
         end
       end
     end

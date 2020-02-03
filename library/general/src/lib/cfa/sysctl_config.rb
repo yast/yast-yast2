@@ -1,4 +1,4 @@
-# Copyright (c) [2019] SUSE LLC
+# Copyright (c) [2020] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -100,9 +100,9 @@ module CFA
     # Whether there is a conflict with given attributes
     #
     # @param only [Array<String,Symbol>] attributes to check
-    # @return [Boolean] true if any conflict is found; false otherwise
-    def conflict?(only: [])
-      return false if yast_config_file.empty?
+    # @return [Array<String>] list of conflicting files
+    def conflict_files(only: [])
+      return [] if yast_config_file.empty?
 
       conflicting_attrs = yast_config_file.present_attributes
       if !only.empty?
@@ -111,12 +111,16 @@ module CFA
           conflicting_attrs.delete(key) unless only.include?(key)
         end
       end
-      higher_precedence_files.any? do |file|
+      file_list = []
+      higher_precedence_files.each do |file|
         # Checking all "higher" files if their values overrule the current
         # YAST settings.
         higher_attr = file.present_attributes
-        conflicting_attrs.any? { |k, v| !higher_attr[k].nil? && v != higher_attr[k] }
+        if conflicting_attrs.any? { |k, v| !higher_attr[k].nil? && v != higher_attr[k] }
+          file_list << file.file_path
+        end
       end
+      file_list
     end
 
     def files
