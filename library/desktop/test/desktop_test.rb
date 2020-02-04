@@ -34,7 +34,7 @@ describe Yast::Desktop do
         "add-on"           => { "Name" => "YaST Add-On Products" },
         "lan"              => { "Name" => "YaST Network" },
         "services-manager" => { "Name" => "YaST Services Manager" },
-        "sw-single" => {"Name"=>"YaST Software Management"},
+        "sw-single"        => { "Name"=>"YaST Software Management" },
         "s390-extra"       => { "Name" => "YaST S390 Extra" },
         "dns-server"       => { "Name" => "YaST DNS Server" }
       )
@@ -62,9 +62,8 @@ describe Yast::Desktop do
     before do
       Yast::Desktop.Read(read_values)
       # as changed scr does not have groups desktop, define it manually here
-      Yast::Desktop.Groups = { "Software" => { "modules" => ["add-on", "sw-single"] }}
+      Yast::Desktop.Groups = { "Software" => { "modules" => ["add-on", "sw-single"] } }
     end
-
 
     context "on WSL" do
       before do

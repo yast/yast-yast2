@@ -262,7 +262,7 @@ module Yast
         if @Modules[m].is_a?(::Hash) &&
             @Modules[m]["Hidden"] != "true" &&
             # wsl specific whitelisting of modules
-            ( !Arch.is_wsl || @Modules[m]["X-SuSE-YaST-WSL"] == "true" )
+            (!Arch.is_wsl || @Modules[m]["X-SuSE-YaST-WSL"] == "true")
           l << Item(Id(m), Ops.get_string(@Modules, [m, "GenericName"], "???"))
         end
       end
