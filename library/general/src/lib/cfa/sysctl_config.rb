@@ -22,6 +22,7 @@ require "yast2/execute"
 require "cfa/sysctl"
 
 Yast.import "FileUtils"
+Yast.import "Report"
 
 module CFA
   # CFA based API to adjust the sysctl tool configuration
@@ -56,6 +57,10 @@ module CFA
   #   sysctl.forward_ipv6? #=> true
   class SysctlConfig
     include Yast::Logger
+    include Yast::I18n
+    extend Yast::I18n
+
+    textdomain "base"
 
     PATHS = [
       "/run/sysctl.d",
@@ -93,7 +98,18 @@ module CFA
       files.each(&:load)
     end
 
-    def save
+    # Saving all sysctl settings
+    #
+    # @param check_conflicts [Boolean] checking if the settings are overruled
+    def save(check_conflicts: true)
+      if check_conflicts
+        conflict_files = conflict_files()
+        if !conflict_files.empty?
+          Yast::Report.Warning(_("The settings have been written to %{yast_file_name}.\n"\
+            "But they will be overruled be manual setting described in %{file_list}") %
+            { 'yast_file_name' => YAST_CONFIG_PATH, 'file_list' => conflict_files.join(", ") })
+        end
+      end
       yast_config_file&.save
     end
 
