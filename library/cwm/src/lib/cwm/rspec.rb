@@ -1,3 +1,22 @@
+# Copyright (c) [2017-2020] SUSE LLC
+#
+# All Rights Reserved.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
+#
+# To contact SUSE LLC about this file by physical or electronic mail, you may
+# find current contact information at www.suse.com.
+
 # in your specs:
 #   require "cwm/rspec"
 
@@ -222,6 +241,33 @@ RSpec.shared_examples "CWM::Dialog" do
   describe "#skip_store_for" do
     it "produces an Array" do
       expect(subject.skip_store_for).to be_an Array
+    end
+  end
+end
+
+RSpec.shared_examples "CWM::ProgressBar" do
+  include_examples "CWM::CustomWidget"
+
+  describe "#steps" do
+    it "produces an Array of String" do
+      expect(subject.send(:steps)).to be_an Array
+      expect(subject.send(:steps)).to all(be_a(String))
+    end
+  end
+end
+
+RSpec.shared_examples "CWM::DynamicProgressBar" do
+  include_examples "CWM::ProgressBar"
+
+  describe "#label" do
+    it "produces an String or nil" do
+      expect(subject.send(:label)).to be_a(String).or(be_nil)
+    end
+  end
+
+  describe "#steps_count" do
+    it "produces an Integer" do
+      expect(subject.send(:steps_count)).to be_a(Integer)
     end
   end
 end
