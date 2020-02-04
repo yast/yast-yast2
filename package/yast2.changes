@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Feb  4 14:15:37 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+
+- Show on WSL only WSL capable modules in control center
+  (bsc#1162650)
+- 4.2.64
+
+-------------------------------------------------------------------
 Fri Jan 31 16:07:35 UTC 2020 - José Iván López González <jlopez@suse.com>
 
 - Add new widgets CWM::ProgressBar and CWM::DynamicProgressBar.

@@ -32,6 +32,7 @@ module Yast
     def main
       Yast.import "UI"
       textdomain "base"
+      Yast.import "Arch"
       Yast.import "Map"
       Yast.import "Directory"
 
@@ -111,7 +112,7 @@ module Yast
     end
 
     # Read module and group data from desktop files
-    # @param [Array<String>] Values list of values to be parsed (empty to read all)
+    # @param [Array<String>] Values list of values to be parsed (empty or nil reads nothing)
     def Read(values_to_parse)
       values_to_parse = deep_copy(values_to_parse)
       extract_desktop_filename = lambda do |fullpath|
@@ -258,12 +259,11 @@ module Yast
       end
 
       Builtins.foreach(mods) do |m|
-        if Builtins.haskey(@Modules, m) &&
-            Ops.get_string(@Modules, [m, "Hidden"], "false") != "true"
-          l = Builtins.add(
-            l,
-            Item(Id(m), Ops.get_string(@Modules, [m, "GenericName"], "???"))
-          )
+        if @Modules[m].is_a?(::Hash) &&
+            @Modules[m]["Hidden"] != "true" &&
+            # wsl specific whitelisting of modules
+            (!Arch.is_wsl || @Modules[m]["X-SuSE-YaST-WSL"] == "true")
+          l << Item(Id(m), Ops.get_string(@Modules, [m, "GenericName"], "???"))
         end
       end
 
