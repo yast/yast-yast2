@@ -169,6 +169,34 @@ describe CFA::SysctlConfig do
         end
       end
 
+      context "and specific attributes is given" do
+        context "attribute will be not found" do
+          it "returns empty list" do
+            expect(config.conflict_files(only: [:not_valid])).to be_empty
+          end
+        end
+
+        context "attribute is valid" do
+          context "when some main file value is overriden" do
+            let(:tcp_syncookies) { false }
+
+            it "returns file array" do
+              expect(config.conflict_files(only: [:tcp_syncookies]))
+                .to eq(["/etc/sysctl.conf"])
+            end
+          end
+
+          context "when no value is overriden" do
+            let(:tcp_syncookies) { true }
+
+            it "returns empty list" do
+              expect(config.conflict_files(only: [:tcp_syncookies]))
+                .to be_empty
+            end
+          end
+        end
+      end
+
       context "when some main file value is overriden" do
         let(:tcp_syncookies) { false }
 

@@ -99,7 +99,7 @@ module CFA
 
     # Whether there is a conflict with given attributes
     #
-    # @param only [Array<String,Symbol>] attributes to check
+    # @param only [Array<Symbol>] attributes to check
     # @return [Array<String>] list of conflicting files
     def conflict_files(only: [])
       return [] if yast_config_file.empty?
@@ -116,9 +116,7 @@ module CFA
         # Checking all "higher" files if their values overrule the current
         # YAST settings.
         higher_attr = file.present_attributes
-        if conflicting_attrs.any? { |k, v| !higher_attr[k].nil? && v != higher_attr[k] }
-          file_list << file.file_path
-        end
+        file_list << file.file_path if conflicting_attrs.any? { |k, v| !higher_attr[k].nil? && v != higher_attr[k] }
       end
       file_list
     end
