@@ -34,7 +34,7 @@ describe CFA::SysctlConfig do
     let(:execute_object) { Yast::Execute.new }
 
     before do
-      allow(Yast::Execute).to receive(:locally).and_return(execute_object)
+      allow(Yast::Execute).to receive(:on_target).and_return(execute_object)
       allow(execute_object).to receive(:stdout).with("/usr/bin/uname", "-r").and_return("5.3.7-1-default")
     end
 
@@ -75,7 +75,7 @@ describe CFA::SysctlConfig do
 
     context "when a specific kernel flavor configuration is found" do
       before do
-        allow(Yast::Execute).to receive(:locally).and_return(execute_object)
+        allow(Yast::Execute).to receive(:on_target).and_return(execute_object)
         allow(execute_object).to receive(:stdout).with("/usr/bin/uname", "-r").and_return("5.3.7-1-default")
       end
 
@@ -98,7 +98,7 @@ describe CFA::SysctlConfig do
 
     context "when no specific kernel configurations are found" do
       before do
-        allow(Yast::Execute).to receive(:locally).and_return(execute_object)
+        allow(Yast::Execute).to receive(:on_target).and_return(execute_object)
         allow(execute_object).to receive(:stdout).with("/usr/bin/uname", "-r").and_return("")
       end
 
@@ -164,7 +164,7 @@ describe CFA::SysctlConfig do
 
       context "and no specific attributes are given" do
         it "checks all known attributes" do
-          expect(file).to receive(:attr_value).exactly(CFA::Sysctl.known_attributes.count).times
+          expect(file).to receive(:attr_value).exactly(9).times
           config.conflict_files
         end
       end

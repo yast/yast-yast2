@@ -195,10 +195,8 @@ module CFA
       @boot_config_file ||= files.find { |f| f.file_path == boot_config_path }
     end
 
-    # FIXME: Move to a better place (?)
     def kernel_version
-      # TODO: on_target
-      @kernel_version ||= Yast::Execute.locally.stdout("/usr/bin/uname", "-r").to_s.chomp
+      @kernel_version ||= Yast::Execute.on_target.stdout("/usr/bin/uname", "-r").to_s.chomp
     end
 
     def yast_config_file_idx
