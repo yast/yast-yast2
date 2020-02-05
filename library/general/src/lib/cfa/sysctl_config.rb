@@ -54,7 +54,6 @@ module CFA
   #   sysctl.load
   #   sysctl.raw_forward_ipv6 #=> "0"
   #   sysctl.raw_forward_ipv6 = "1"
-  #   sysctl.forward_ipv6? #=> true
   class SysctlConfig
     include Yast::Logger
     include Yast::I18n
