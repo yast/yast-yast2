@@ -106,8 +106,8 @@ module CFA
         conflict_files = conflict_files()
         if !conflict_files.empty?
           Yast::Report.Warning(_("The settings have been written to %{yast_file_name}.\n"\
-            "But they will be overruled be manual setting described in %{file_list}") %
-            { 'yast_file_name' => YAST_CONFIG_PATH, 'file_list' => conflict_files.join(", ") })
+            "But they will be overruled be manual setting described in %{file_list}.") % {
+            :yast_file_name => YAST_CONFIG_PATH, :file_list => conflict_files.join(", ") })
         end
       end
       yast_config_file&.save
