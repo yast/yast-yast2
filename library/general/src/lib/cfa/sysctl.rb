@@ -58,7 +58,11 @@ module CFA
 
     class << self
       def known_attributes
-        ATTRIBUTES.keys
+        # Returning all attributes together with all raw_* attributes
+        # for boolean attributes.
+        ret = ATTRIBUTES.keys
+        BOOLEAN_ATTRIBUTES.each { |attr| ret << "raw_#{attr.to_s}".to_sym }
+        ret
       end
 
       # Modifies default CFA methods to handle boolean values
@@ -100,6 +104,11 @@ module CFA
       disable_ipv6:            "net.ipv6.conf.all.disable_ipv6"
     }.freeze
 
+    BOOLEAN_ATTRIBUTES = [
+      :forward_ipv4, :forward_ipv6, :tcp_syncookies, :disable_ipv6,
+      :ipv4_forwarding_default, :ipv4_forwarding_all, :ipv6_forwarding_default,
+      :ipv6_forwarding_all ].freeze
+
     attributes(ATTRIBUTES)
 
     attr_reader :file_path
@@ -107,9 +116,7 @@ module CFA
     # Keys that are handled by this class
     KNOWN_KEYS = ATTRIBUTES.values.uniq.freeze
 
-    boolean_attr :forward_ipv4, :forward_ipv6, :tcp_syncookies, :disable_ipv6,
-      :ipv4_forwarding_default, :ipv4_forwarding_all, :ipv6_forwarding_default,
-      :ipv6_forwarding_all
+    boolean_attr *BOOLEAN_ATTRIBUTES
 
     def initialize(file_handler: Yast::TargetFile, file_path: PATH)
       super(PARSER, file_path, file_handler: file_handler)
