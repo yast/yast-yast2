@@ -62,6 +62,7 @@ module Yast
         "X-SuSE-YaST-Group",
         "X-SuSE-YaST-SortKey",
         "X-SuSE-YaST-RootOnly",
+        "X-SuSE-YaST-WSL",
         "Hidden"
       ]
 

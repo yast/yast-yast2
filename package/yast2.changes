@@ -1,8 +1,15 @@
 -------------------------------------------------------------------
-Mon Feb  3 15:10:12 CET 2020 - schubi@suse.de
+Tue Feb  4 15:15:37 UTC 2020 - schubi@suse.de
 
 - SysctlConfig class: Handle sysctl entries in different
   directories (bsc#1151649).
+- 4.2.65
+
+-------------------------------------------------------------------
+Tue Feb  4 14:15:37 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+
+- Show on WSL only WSL capable modules in control center
+  (bsc#1162650)
 - 4.2.64
 
 -------------------------------------------------------------------
