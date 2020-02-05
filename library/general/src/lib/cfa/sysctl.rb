@@ -117,7 +117,7 @@ module CFA
     # Keys that are handled by this class
     KNOWN_KEYS = ATTRIBUTES.values.uniq.freeze
 
-    boolean_attr *BOOLEAN_ATTRIBUTES
+    boolean_attr(*BOOLEAN_ATTRIBUTES)
 
     def initialize(file_handler: Yast::TargetFile, file_path: PATH)
       super(PARSER, file_path, file_handler: file_handler)
