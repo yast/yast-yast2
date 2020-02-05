@@ -61,7 +61,7 @@ module CFA
         # Returning all attributes together with all raw_* attributes
         # for boolean attributes.
         ret = ATTRIBUTES.keys
-        BOOLEAN_ATTRIBUTES.each { |attr| ret << "raw_#{attr.to_s}".to_sym }
+        BOOLEAN_ATTRIBUTES.each { |attr| ret << "raw_#{attr}".to_sym }
         ret
       end
 
@@ -107,7 +107,8 @@ module CFA
     BOOLEAN_ATTRIBUTES = [
       :forward_ipv4, :forward_ipv6, :tcp_syncookies, :disable_ipv6,
       :ipv4_forwarding_default, :ipv4_forwarding_all, :ipv6_forwarding_default,
-      :ipv6_forwarding_all ].freeze
+      :ipv6_forwarding_all
+    ].freeze
 
     attributes(ATTRIBUTES)
 
