@@ -162,7 +162,7 @@ module CFA
     end
 
     def present?(attr)
-      !send(method(attr)).nil?
+      !send(method_name(attr)).nil?
     end
 
     # Returning value if the attribute is available
@@ -170,7 +170,7 @@ module CFA
     # @param attr [String] Attribute name
     # @return [String] Attribute value; nil if the attribute has not found
     def attr_value(attr)
-      send(method(attr))
+      send(method_name(attr))
     end
 
     # Returning hash of attributes together with there values.
@@ -187,7 +187,7 @@ module CFA
 
   private
 
-    def method(attr)
+    def method_name(attr)
       raw_method = "raw_#{attr}"
       respond_to?(raw_method) ? raw_method : attr
     end
