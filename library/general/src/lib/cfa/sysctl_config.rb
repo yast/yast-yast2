@@ -201,11 +201,5 @@ module CFA
     def yast_config_file_idx
       @yast_config_file_idx ||= files.find_index { |f| f == yast_config_file }
     end
-
-    def yast_defined_attrs(attrs)
-      # FIXME: what about having a Sysctl#defined_attrs ?
-      defined_attrs = Sysctl.known_attributes.select { |a| yast_config_file.present?(a) }
-      attrs.map(&:to_sym) & defined_attrs
-    end
   end
 end
