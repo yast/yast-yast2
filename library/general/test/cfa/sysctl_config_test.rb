@@ -196,13 +196,15 @@ describe CFA::SysctlConfig do
           end
         end
       end
-      #       context "when some main file value is overriden" do
-      #         let(:tcp_syncookies) { false }
-      #
-      #         it "returns true" do
-      #           expect(config.conflict?).to eq(true)
-      #         end
-      #       end
+
+      context "when some main file value is overriden" do
+        let(:tcp_syncookies) { false }
+
+        it "returns true" do
+          expect(config.conflict?).to eq(true)
+        end
+      end
+
       context "when no value is overriden" do
         let(:tcp_syncookies) { true }
 
@@ -210,7 +212,6 @@ describe CFA::SysctlConfig do
           expect(config.conflict?).to be(false)
         end
       end
-
     end
   end
 end
