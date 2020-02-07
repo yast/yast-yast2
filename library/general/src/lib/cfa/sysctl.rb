@@ -165,7 +165,7 @@ module CFA
       !send(method_name(attr)).nil?
     end
 
-    # Returns the list of attributes with a value
+    # Returns the list of attributes
     #
     # @return [Array<Symbol>] List of attribute names
     # @see #present?

@@ -59,8 +59,6 @@ module CFA
     include Yast::I18n
     extend Yast::I18n
 
-    textdomain "base"
-
     PATHS = [
       "/run/sysctl.d",
       "/etc/sysctl.d",
@@ -99,40 +97,52 @@ module CFA
 
     # Saving all sysctl settings
     #
-    # @param check_conflicts [Boolean] checking if the settings are overruled
-    def save(check_conflicts: true)
-      if check_conflicts
-        conflict_files = conflict_files()
-        if !conflict_files.empty?
-          Yast::Report.Warning(format(_("The settings have been written to %{yast_file_name}.\n"\
-            "But they will be overruled be manual setting described in %{file_list}."), yast_file_name: YAST_CONFIG_PATH, file_list: conflict_files.join(", ")))
-        end
-      end
+    def save
       yast_config_file&.save
     end
 
     # Whether there is a conflict with given attributes
     #
     # @param only [Array<Symbol>] attributes to check
-    # @return [Array<String>] list of conflicting files
-    def conflict_files(only: [])
-      return [] if yast_config_file.empty?
+    # @param show_information [Boolean] showing a popup if it is conflicting
+    # @return [Boolean] true if any conflict is found; false otherwise
+    def conflict?(only: [], show_information: true)
+      textdomain "base"
+      return false if yast_config_file.empty?
 
-      conflicting_attrs = yast_config_file.present_attributes
+      conflicting_attrs = Sysctl::ATTRIBUTES.keys
       if !only.empty?
         # Dropping all not needed values
         conflicting_attrs.each_key do |key|
           conflicting_attrs.delete(key) unless only.include?(key)
         end
       end
-      file_list = []
+
+      conflicts = {}
       higher_precedence_files.each do |file|
         # Checking all "higher" files if their values overrule the current
         # YAST settings.
-        conflicts = yast_config_file.conflicts(file) & conflicting_attrs
-        file_list << file.file_path unless conflicts.empty?
+        conflict_values = yast_config_file.conflicts(file) & conflicting_attrs
+        conflicts[file.file_path] = conflict_values unless conflict_values.empty?
       end
-      file_list
+
+      if !conflicts.empty?
+        log.warn("There are conflicts in sysctl files: #{conflicts}.")
+        log.warn("It could be that #{YAST_CONFIG_PATH} will not be written.")
+        if show_information
+          text = ""
+          text << _("Changed values have conflicts with:<br><br>")
+          conflicts.each do |filename, conflict|
+            text << _("File: %s<br>") % filename
+            text << _("Conflicting entries: %s<br>") % conflict.join(", ")
+          end
+          text << "<br>"
+          text << _("You will have to adapt these entries manually in order to set your changes.")
+          Yast::Report.LongWarning(text)
+        end
+      end
+
+      !conflicts.empty?
     end
 
     def files
