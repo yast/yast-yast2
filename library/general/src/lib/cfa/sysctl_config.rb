@@ -110,14 +110,7 @@ module CFA
       textdomain "base"
       return false if yast_config_file.empty?
 
-      conflicting_attrs = Sysctl::ATTRIBUTES.keys
-      if !only.empty?
-        # Dropping all not needed values
-        conflicting_attrs.each_key do |key|
-          conflicting_attrs.delete(key) unless only.include?(key)
-        end
-      end
-
+      conflicting_attrs = Sysctl::ATTRIBUTES.keys & only
       conflicts = {}
       higher_precedence_files.each do |file|
         # Checking all "higher" files if their values overrule the current

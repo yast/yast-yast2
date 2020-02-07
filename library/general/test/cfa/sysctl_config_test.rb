@@ -148,8 +148,8 @@ describe CFA::SysctlConfig do
 
   describe "#conflict_files" do
     context "when YaST configuration file is empty" do
-      it "returns empty list" do
-        expect(config.conflict_files).to be_empty
+      it "returns false" do
+        expect(config.conflict?).to eq(false)
       end
     end
 
@@ -164,15 +164,15 @@ describe CFA::SysctlConfig do
 
       context "and no specific attributes are given" do
         it "checks all known attributes" do
-          expect(file).to receive(:attr_value).exactly(9).times
-          config.conflict_files
+          expect(file).to receive(:present?).exactly(CFA::Sysctl.known_attributes.count).times
+          config.conflict?
         end
       end
 
       context "and specific attributes is given" do
         context "attribute will be not found" do
-          it "returns empty list" do
-            expect(config.conflict_files(only: [:not_valid])).to be_empty
+          it "returns false" do
+            expect(config.conflict?(only: [:not_valid])).to eq(false)
           end
         end
 
@@ -180,38 +180,37 @@ describe CFA::SysctlConfig do
           context "when some main file value is overriden" do
             let(:tcp_syncookies) { false }
 
-            it "returns file array" do
-              expect(config.conflict_files(only: [:tcp_syncookies]))
-                .to eq(["/etc/sysctl.conf"])
+            it "returns true" do
+              expect(config.conflict?(only: [:tcp_syncookies]))
+                .to eq(true)
             end
           end
 
           context "when no value is overriden" do
             let(:tcp_syncookies) { true }
 
-            it "returns empty list" do
-              expect(config.conflict_files(only: [:tcp_syncookies]))
-                .to be_empty
+            it "returns false" do
+              expect(config.conflict?(only: [:tcp_syncookies]))
+                .to eq(false)
             end
           end
         end
       end
-
-      context "when some main file value is overriden" do
-        let(:tcp_syncookies) { false }
-
-        it "returns file array" do
-          expect(config.conflict_files).to eq(["/etc/sysctl.conf"])
-        end
-      end
-
+      #       context "when some main file value is overriden" do
+      #         let(:tcp_syncookies) { false }
+      #
+      #         it "returns true" do
+      #           expect(config.conflict?).to eq(true)
+      #         end
+      #       end
       context "when no value is overriden" do
         let(:tcp_syncookies) { true }
 
-        it "returns empty list" do
-          expect(config.conflict_files).to be_empty
+        it "returns false" do
+          expect(config.conflict?).to be(false)
         end
       end
+
     end
   end
 end
