@@ -135,8 +135,8 @@ module CFA
           conflicts.each do |filename, conflict|
             text << _("File: %s<br>") % filename
             text << _("Conflicting entries: %s<br>") % conflict.join(", ")
+            text << "<br>"
           end
-          text << "<br>"
           text << _("You will have to adapt these entries manually in order to set your changes.")
           Yast::Report.LongWarning(text)
         end
