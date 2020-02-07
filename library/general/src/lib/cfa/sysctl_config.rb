@@ -129,8 +129,8 @@ module CFA
       higher_precedence_files.each do |file|
         # Checking all "higher" files if their values overrule the current
         # YAST settings.
-        higher_attr = file.present_attributes
-        file_list << file.file_path if conflicting_attrs.any? { |k, v| !higher_attr[k].nil? && v != higher_attr[k] }
+        conflicts = yast_config_file.conflicts(file) & conflicting_attrs
+        file_list << file.file_path unless conflicts.empty?
       end
       file_list
     end

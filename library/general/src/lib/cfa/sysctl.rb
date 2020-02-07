@@ -165,24 +165,24 @@ module CFA
       !send(method_name(attr)).nil?
     end
 
-    # Returning value if the attribute is available
+    # Returns the list of attributes with a value
     #
-    # @param attr [String] Attribute name
-    # @return [String] Attribute value; nil if the attribute has not found
-    def attr_value(attr)
-      send(method_name(attr))
+    # @return [Array<Symbol>] List of attribute names
+    # @see #present?
+    def present_attributes
+      self.class.known_attributes.select { |a| present?(a) }
     end
 
-    # Returning hash of attributes together with there values.
+    # Determines the list of conflicting attributes for two files
     #
-    # @return [Hash<String,String>] Hash of attribute values
-    def present_attributes
-      attributes = {}
-      ATTRIBUTES.keys.uniq.each do |k|
-        value = attr_value(k)
-        attributes[k] = value if value
-      end
-      attributes
+    # Two attributes are conflicting when both of them are defined with
+    # different values.
+    #
+    # @param other [BaseModel] The file to compare with
+    # @return [Array<Symbol>] List of conflicting attributes
+    def conflicts(other)
+      conflicting_attrs = present_attributes & other.present_attributes
+      conflicting_attrs.reject { |a| public_send(a) == other.public_send(a) }
     end
 
   private
