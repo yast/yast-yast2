@@ -209,7 +209,7 @@ describe CFA::SysctlConfig do
         let(:tcp_syncookies) { true }
 
         it "returns false" do
-          expect(config.conflict?).to be(false)
+          expect(config.conflict?).to eq(false)
         end
       end
     end
