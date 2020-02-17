@@ -1,3 +1,4 @@
+# coding: utf-8
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -203,7 +204,7 @@ module Yast
           "void (string, map)"
         ),
         "help"          => _(
-          "<p><big><b>GPG Private Key</b></big><br>\nThe table contains list of the private GPG keys.</p>"
+          "<p><big><b>GPG Private Key</b></big><br>\nThe table contains a list of private GPG keys.</p>"
         )
       }
     end
@@ -235,7 +236,7 @@ module Yast
           "void (string, map)"
         ),
         "help"          => _(
-          "<p><big><b>GPG Public Key</b></big><br>\nThe table contains list of the public GPG keys.</p>"
+          "<p><big><b>GPG Public Key</b></big><br>\nThe table contains a list of public GPG keys.</p>"
         )
       }
     end
@@ -282,7 +283,7 @@ module Yast
         "handle"        => fun_ref(method(:GpgNewKey), "symbol (string, map)"),
         "help"          => _(
           "<p><big><b>Create a new GPG key</b></big><br>\n" \
-            "<tt>gpg --gen-key</tt> is started, see <tt>gpg</tt> manual pager for more information.\n" \
+            "<tt>gpg --gen-key</tt> is started, see the <tt>gpg</tt> manual page for more information.\n" \
             "Press Ctrl+C to cancel.\n" \
             "</p>"
         )
@@ -327,7 +328,7 @@ module Yast
           ),
           # help text
           "help"          => _(
-            "<p><big><b>Passphrase</b></big><br>\nEnter passphrase to unlock the GPG key."
+            "<p><big><b>Passphrase</b></big><br>\nEnter the passphrase to unlock the GPG key."
           )
         }
       }
