@@ -20,9 +20,9 @@
 require "yast"
 require "yast2/execute"
 require "cfa/sysctl"
+require "cfa/conflict_report"
 
 Yast.import "FileUtils"
-Yast.import "Report"
 
 module CFA
   # CFA based API to adjust the sysctl tool configuration
@@ -56,8 +56,6 @@ module CFA
   #   sysctl.raw_forward_ipv6 = "1"
   class SysctlConfig
     include Yast::Logger
-    include Yast::I18n
-    extend Yast::I18n
 
     PATHS = [
       "/run/sysctl.d",
@@ -107,7 +105,6 @@ module CFA
     # @param show_information [Boolean] showing a popup if it is conflicting
     # @return [Boolean] true if any conflict is found; false otherwise
     def conflict?(only: [], show_information: true)
-      textdomain "base"
       return false if yast_config_file.empty?
 
       conflicting_attrs = Sysctl::ATTRIBUTES.keys
@@ -121,19 +118,9 @@ module CFA
       end
 
       if !conflicts.empty?
-        log.warn("There are conflicts in sysctl files: #{conflicts}.")
         log.warn("It could be that #{YAST_CONFIG_PATH} will not be written.")
-        if show_information
-          text = ""
-          text << _("Changed values have conflicts with:<br><br>")
-          conflicts.each do |filename, conflict|
-            text << _("File: %s<br>") % filename
-            text << _("Conflicting entries: %s<br>") % conflict.join(", ")
-            text << "<br>"
-          end
-          text << _("You will have to adapt these entries manually in order to set your changes.")
-          Yast::Report.LongWarning(text)
-        end
+        log.warn("There are conflicts in sysctl files: #{conflicts}.")
+        ConfictReport.report(conflicts) if show_information
       end
 
       !conflicts.empty?
