@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb 17 16:59:07 UTC 2020 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Fixed user-visible messages (bsc#1084015)
+- 4.2.65
+
+-------------------------------------------------------------------
 Tue Feb  4 14:15:37 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - Show on WSL only WSL capable modules in control center

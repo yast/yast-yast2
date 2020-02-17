@@ -539,7 +539,7 @@ module Yast
         # TRANSLATORS: Proposal informative text
         output = "<ul>" +
           _(
-            "SuSEfirewall2 package is not installed, firewall will be disabled."
+            "The SuSEfirewall2 package is not installed. The firewall will be disabled."
           ) + "</ul>"
 
         return { "output" => output, "warning" => warning }
