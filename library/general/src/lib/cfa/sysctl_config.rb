@@ -117,6 +117,11 @@ module CFA
         conflicts[file.file_path] = conflict_values unless conflict_values.empty?
       end
 
+      # Transform into real tags
+      conflicts.each do |file, tags|
+        conflicts[file] = tags.map { |t| Sysctl::ATTRIBUTES[t.to_sym] }
+      end
+
       if !conflicts.empty?
         log.warn("It could be that #{YAST_CONFIG_PATH} will not be written.")
         log.warn("There are conflicts in sysctl files: #{conflicts}.")
