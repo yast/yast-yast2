@@ -283,7 +283,7 @@ module Yast
             # TRANSLATORS: popup question (with continue / cancel buttons)
             # %1 is the filesystem path
             _(
-              "Although the path %1 exists, it is not a directory.\nContinue or cancel the operation?\n"
+              "Although the path %1 exists, it is not a directory.\nContinue or cancel the operation?"
             ),
             pathvalue
           )
@@ -295,7 +295,7 @@ module Yast
           Builtins.sformat(
             # TRANSLATORS: question popup (with yes / no buttons). A user entered non-existent path
             # for a share, %1 is entered path
-            _("The path %1 does not exist.\nCreate it now?\n"),
+            _("The path %1 does not exist.\nCreate it now?"),
             pathvalue
           )
         )
@@ -315,7 +315,7 @@ module Yast
                 # TRANSLATORS: popup question (with continue / cancel buttons)
                 # %1 is the name (path) of the directory
                 _(
-                  "Failed to create the directory %1.\nContinue or cancel the current operation?\n"
+                  "Failed to create the directory %1.\nContinue or cancel the current operation?"
                 ),
                 pathvalue
               )
