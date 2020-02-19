@@ -1,4 +1,4 @@
-# Copyright (c) [2019] SUSE LLC
+# Copyright (c) [2019-2020] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -42,7 +42,11 @@ module CFA
   #   sysctl.load
   #   sysctl.raw_forward_ipv6 #=> "0"
   #   sysctl.raw_forward_ipv6 = "1"
-  #   sysctl.forward_ipv6? #=> true
+  #
+  # NOTE: This class only handles "/etc/sysctl.d/70-yast.conf" and /etc/sysctl.conf.
+  #       But sysctl values will also be handled by other files/directories. This will be
+  #       managed by class SysctlConfig. So please use SysctlConfig in order to read/write
+  #       sysctl values.
   class Sysctl < BaseModel
     include Yast::Logger
 
@@ -52,6 +56,11 @@ module CFA
     PATH = "/etc/sysctl.d/70-yast.conf".freeze
 
     class << self
+      def known_attributes
+        # Returning all attributes
+        ATTRIBUTES.keys
+      end
+
       # Modifies default CFA methods to handle boolean values
       #
       # When getting or setting the value, a boolean value will be expected. Under the hood, it will
@@ -91,17 +100,28 @@ module CFA
       disable_ipv6:            "net.ipv6.conf.all.disable_ipv6"
     }.freeze
 
+    BOOLEAN_ATTRIBUTES = [
+      :forward_ipv4, :forward_ipv6, :tcp_syncookies, :disable_ipv6,
+      :ipv4_forwarding_default, :ipv4_forwarding_all, :ipv6_forwarding_default,
+      :ipv6_forwarding_all
+    ].freeze
+
     attributes(ATTRIBUTES)
+
+    attr_reader :file_path
 
     # Keys that are handled by this class
     KNOWN_KEYS = ATTRIBUTES.values.uniq.freeze
 
-    boolean_attr :forward_ipv4, :forward_ipv6, :tcp_syncookies, :disable_ipv6,
-      :ipv4_forwarding_default, :ipv4_forwarding_all, :ipv6_forwarding_default,
-      :ipv6_forwarding_all
+    boolean_attr(*BOOLEAN_ATTRIBUTES)
 
-    def initialize(file_handler: Yast::TargetFile)
-      super(PARSER, PATH, file_handler: file_handler)
+    def initialize(file_handler: Yast::TargetFile, file_path: PATH)
+      super(PARSER, file_path, file_handler: file_handler)
+    end
+
+    def empty?
+      # FIXME: AugeasTree should implement #empty?
+      data.data.empty?
     end
 
     # Loads sysctl content
@@ -138,7 +158,36 @@ module CFA
       clean_old_values if !Yast::Stage.initial
     end
 
+    def present?(attr)
+      !send(method_name(attr)).nil?
+    end
+
+    # Returns the list of attributes
+    #
+    # @return [Array<Symbol>] List of attribute names
+    # @see #present?
+    def present_attributes
+      self.class.known_attributes.select { |a| present?(a) }
+    end
+
+    # Determines the list of conflicting attributes for two files
+    #
+    # Two attributes are conflicting when both of them are defined with
+    # different values.
+    #
+    # @param other [BaseModel] The file to compare with
+    # @return [Array<Symbol>] List of conflicting attributes
+    def conflicts(other)
+      conflicting_attrs = present_attributes & other.present_attributes
+      conflicting_attrs.reject { |a| public_send(a) == other.public_send(a) }
+    end
+
   private
+
+    def method_name(attr)
+      raw_method = "raw_#{attr}"
+      respond_to?(raw_method) ? raw_method : attr
+    end
 
     # Path to the agent to handle the +/etc/sysctl.conf+ file
     SYSCTL_AGENT_PATH = Yast::Path.new(".etc.sysctl_conf")

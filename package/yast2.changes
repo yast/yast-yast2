@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 17 17:59:07 UTC 2020 - schubi@suse.de
+
+- SysctlConfig class: Handle sysctl entries in different
+  directories (bsc#1151649).
+- 4.2.66  
+
+-------------------------------------------------------------------
 Mon Feb 17 16:59:07 UTC 2020 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Fixed user-visible messages (bsc#1084015)
