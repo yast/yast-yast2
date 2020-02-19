@@ -57,11 +57,8 @@ module CFA
 
     class << self
       def known_attributes
-        # Returning all attributes together with all raw_* attributes
-        # for boolean attributes.
-        ret = ATTRIBUTES.keys
-        BOOLEAN_ATTRIBUTES.each { |attr| ret << "raw_#{attr}".to_sym }
-        ret
+        # Returning all attributes
+        ATTRIBUTES.keys
       end
 
       # Modifies default CFA methods to handle boolean values
