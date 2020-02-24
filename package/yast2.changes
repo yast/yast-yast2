@@ -3,7 +3,7 @@ Mon Feb 24 15:02:15 CET 2020 - schubi@suse.de
 
 - Reinitializing Augeas parser again before writing data to
   /etc/sysctl.d/70-yast.conf (bsc#1151649).
-- 4.2.27
+- 4.2.67
 
 -------------------------------------------------------------------
 Mon Feb 17 17:59:07 UTC 2020 - schubi@suse.de
