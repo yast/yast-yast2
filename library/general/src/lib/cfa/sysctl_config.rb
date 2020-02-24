@@ -91,6 +91,11 @@ module CFA
 
     def load
       files.each(&:load)
+      # It seems that Augeas caches the data structure of last loaded
+      # file (/etc/sysctl.conf) which will not fit together with the
+      # data structure of /etc/sysctl.d/70-yast.conf which will be written
+      # in the save call. Therefore we are loading this data structure again:
+      yast_config_file&.load
     end
 
     # Saving all sysctl settings
