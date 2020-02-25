@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 24 15:02:15 CET 2020 - schubi@suse.de
+
+- Creating an own Augeas instance for each parsed sysctl file
+  (bsc#1151649).
+- 4.2.67
+
+-------------------------------------------------------------------
 Mon Feb 17 17:59:07 UTC 2020 - schubi@suse.de
 
 - SysctlConfig class: Handle sysctl entries in different

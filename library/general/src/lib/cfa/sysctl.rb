@@ -52,7 +52,6 @@ module CFA
 
     Yast.import "Stage"
 
-    PARSER = AugeasParser.new("sysctl.lns")
     PATH = "/etc/sysctl.d/70-yast.conf".freeze
 
     class << self
@@ -116,7 +115,7 @@ module CFA
     boolean_attr(*BOOLEAN_ATTRIBUTES)
 
     def initialize(file_handler: Yast::TargetFile, file_path: PATH)
-      super(PARSER, file_path, file_handler: file_handler)
+      super(AugeasParser.new("sysctl.lns"), file_path, file_handler: file_handler)
     end
 
     def empty?
