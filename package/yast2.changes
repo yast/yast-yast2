@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Mon Feb 24 15:02:15 CET 2020 - schubi@suse.de
 
-- Reinitializing Augeas parser again before writing data to
-  /etc/sysctl.d/70-yast.conf (bsc#1151649).
+- Creating an own Augeas instance for each parsed sysctl file
+  (bsc#1151649).
 - 4.2.67
 
 -------------------------------------------------------------------
