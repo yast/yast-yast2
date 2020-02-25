@@ -44,6 +44,13 @@ describe CFA::Sysctl do
     sysctl.load
   end
 
+  describe "#initialize" do
+    it "creates an own Augeas instance" do
+      expect(::CFA::AugeasParser).to receive(:new).with("sysctl.lns").and_call_original
+      CFA::Sysctl.new(file_handler: file_handler)
+    end
+  end
+
   describe "#raw_forward_ipv4" do
     it "returns IPv4 forwarding raw value" do
       expect(sysctl.raw_forward_ipv4).to eq("1")
