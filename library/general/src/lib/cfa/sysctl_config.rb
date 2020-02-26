@@ -43,7 +43,6 @@ module CFA
   #   sysctl = SysctlConfig.new
   #   sysctl.forward_ipv4 = true
   #   sysctl.save
-
   class SysctlConfig
     include Yast::Logger
 
