@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 26 10:42:42 CET 2020 - schubi@suse.de
+
+- Updated docu for SysctlConfig class (bsc#1151649).
+- 4.2.68
+
+-------------------------------------------------------------------
 Mon Feb 24 15:02:15 CET 2020 - schubi@suse.de
 
 - Creating an own Augeas instance for each parsed sysctl file

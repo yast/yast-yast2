@@ -43,17 +43,7 @@ module CFA
   #   sysctl = SysctlConfig.new
   #   sysctl.forward_ipv4 = true
   #   sysctl.save
-  #
-  # Although in the previous example we enabled the IPv4 forwarding using by
-  # setting +forward_ipv4+ to true. However, under the hood, the kernel maps
-  # boolean values to "1" or "0". If you want to access to that raw value,
-  # you can prepend "raw_" to the method's name.
-  #
-  # @example Accessing the raw value of a setting
-  #   sysctl = SysctlConfig.new
-  #   sysctl.load
-  #   sysctl.raw_forward_ipv6 #=> "0"
-  #   sysctl.raw_forward_ipv6 = "1"
+
   class SysctlConfig
     include Yast::Logger
 
