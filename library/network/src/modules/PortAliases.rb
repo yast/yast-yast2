@@ -32,77 +32,45 @@
 # aliases like "http", "www" and "www-http" for port 80).
 # Results are cached, so repeated requests are answered faster.
 require "yast"
+require "yast2/execute"
 require "shellwords"
 
 module Yast
   class PortAliasesClass < Module
     include Yast::Logger
 
+    KNOWN_SERVICES = {
+      22   => ["ssh"],
+      25   => ["smtp"],
+      53   => ["domain"],
+      67   => ["bootps"],
+      68   => ["bootpc"],
+      69   => ["tftp"],
+      80   => ["http", "www", "www-http"],
+      110  => ["pop3"],
+      111  => ["sunrpc"],
+      123  => ["ntp"],
+      137  => ["netbios-ns"],
+      138  => ["netbios-dgm"],
+      139  => ["netbios-ssn"],
+      143  => ["imap"],
+      389  => ["ldap"],
+      443  => ["https"],
+      445  => ["microsoft-ds"],
+      500  => ["isakmp"],
+      631  => ["ipp"],
+      636  => ["ldaps"],
+      873  => ["rsync"],
+      993  => ["imaps"],
+      995  => ["pop3s"],
+      3128 => ["ndl-aas"],
+      4500 => ["ipsec-nat-t"],
+      8080 => ["http-alt"]
+    }.freeze
+    private_constant :KNOWN_SERVICES
+
     def main
       textdomain "base"
-
-      # an internal service aliases map for port-numbers pointing to port-names,
-      #   aliases are separated by space
-      @SERVICE_PORT_TO_NAME = {
-        22   => "ssh",
-        25   => "smtp",
-        53   => "domain",
-        67   => "bootps",
-        68   => "bootpc",
-        69   => "tftp",
-        80   => "http www www-http",
-        110  => "pop3",
-        111  => "sunrpc",
-        123  => "ntp",
-        137  => "netbios-ns",
-        138  => "netbios-dgm",
-        139  => "netbios-ssn",
-        143  => "imap",
-        389  => "ldap",
-        443  => "https",
-        445  => "microsoft-ds",
-        500  => "isakmp",
-        631  => "ipp",
-        636  => "ldaps",
-        873  => "rsync",
-        993  => "imaps",
-        995  => "pop3s",
-        3128 => "ndl-aas",
-        4500 => "ipsec-nat-t",
-        8080 => "http-alt"
-      }
-
-      # an internal service aliases map for port-names pointing to port-numbers
-      @SERVICE_NAME_TO_PORT = {
-        "ssh"          => 22,
-        "smtp"         => 25,
-        "domain"       => 53,
-        "bootps"       => 67,
-        "bootpc"       => 68,
-        "tftp"         => 69,
-        "http"         => 80,
-        "www"          => 80,
-        "www-http"     => 80,
-        "pop3"         => 110,
-        "sunrpc"       => 111,
-        "ntp"          => 123,
-        "netbios-ns"   => 137,
-        "netbios-dgm"  => 138,
-        "netbios-ssn"  => 139,
-        "imap"         => 143,
-        "ldap"         => 389,
-        "https"        => 443,
-        "microsoft-ds" => 445,
-        "isakmp"       => 500,
-        "ipp"          => 631,
-        "ldaps"        => 636,
-        "rsync"        => 873,
-        "imaps"        => 993,
-        "pop3s"        => 995,
-        "ndl-aas"      => 3128,
-        "ipsec-nat-t"  => 4500,
-        "http-alt"     => 8080
-      }
 
       # This variable contains characters allowed in port-names, backslashed for regexpmatch()
       @allowed_service_regexp = "^[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789*/+._-]*$"
@@ -141,72 +109,6 @@ module Yast
       )
     end
 
-    # Internal function for loading unknown ports into memory and returning them as list[string]
-    def LoadAndReturnPortToName(port_number)
-      command = "/usr/bin/grep \"^[^#].*[ \\t]#{port_number}/\" /etc/services " \
-        "| /usr/bin/sed \"s/\\([^ \\t]*\\)[ \\t]*.*/\\1/\""
-      found = Convert.to_map(SCR.Execute(path(".target.bash_output"), command))
-      aliases = []
-
-      if found["exit"] == 0
-        found["stdout"].split("\n").each do |alias_|
-          next if alias_.empty?
-
-          aliases = Builtins.add(aliases, alias_)
-        end
-      else
-        Builtins.y2error(
-          "Services Command: %1 -> %2",
-          command,
-          Ops.get_string(found, "stderr", "")
-        )
-        return nil
-      end
-
-      # store results for later requests
-      Ops.set(
-        @SERVICE_PORT_TO_NAME,
-        port_number,
-        Builtins.mergestring(Builtins.toset(aliases), " ")
-      )
-
-      Ops.get(@SERVICE_PORT_TO_NAME, port_number, "")
-    end
-
-    # Internal function for loading unknown ports into memory and returning them as integer
-    def LoadAndReturnNameToPort(port_name)
-      if !IsAllowedPortName(port_name)
-        Builtins.y2error("Disallowed port-name '%1'", port_name)
-        return nil
-      end
-
-      path = File.join(WFM.scr_root, "etc/services")
-      content = ::File.read(path)
-      # find line with given port_name. Line looks like:
-      #   http               80/tcp       # World Wide Web HTTP
-      matching_lines = content.lines.grep(/^#{Regexp.escape(port_name)}\s/)
-      if matching_lines.empty?
-        log.error "service name not found. File.content #{content}"
-        return nil
-      end
-
-      # lets use the first found entry, as often there are two entries for tcp and udp
-      port = matching_lines.first[/^\S+\s+(\d+)/, 1]
-      if port.nil?
-        log.error "wrong line in /etc/services: #{matching_lines.first}"
-        return nil
-      end
-
-      alias_found = port.to_i
-
-      # store results for later requests
-      Ops.set(@SERVICE_NAME_TO_PORT, port_name, alias_found)
-
-      alias_found
-    rescue Errno, IOError => e
-      log.error "failed to read /etc/services #{e.inspect}"
-    end
-
     # Function returns list of aliases (port-names and port-numbers) for
     # requested port-number or port-name. Also the requested name or port is returned.
     #
@@ -214,66 +116,31 @@ module Yast
     # @return  [Array] [string] of aliases
     def GetListOfServiceAliases(port)
       service_aliases = [port]
-      port_number = nil
 
       # service is a port number
       if Builtins.regexpmatch(port, "^[0123456789]+$")
-        port_number = Builtins.tointeger(port)
+        port_number = port.to_i
 
-        sport_name = Ops.get(@SERVICE_PORT_TO_NAME, port_number) do
-          LoadAndReturnPortToName(port_number)
-        end
-
-        if !sport_name.nil?
-          service_aliases = Convert.convert(
-            Builtins.union(
-              service_aliases,
-              Builtins.splitstring(sport_name, " ")
-            ),
-            from: "list",
-            to:   "list <string>"
-          )
-        end
-        # service is a port name, any space isn't allowed
+        service_aliases << services[port_number]
+      # service is a port name, any space isn't allowed
       elsif IsAllowedPortName(port)
-        found_alias_port = Ops.get(@SERVICE_NAME_TO_PORT, port) do
-          LoadAndReturnNameToPort(port)
-        end
-        if !found_alias_port.nil?
-          service_aliases = Builtins.add(
-            service_aliases,
-            Builtins.tostring(found_alias_port)
-          )
+        aliases = services.select { |_, v| v.include?(port) }
 
-          # search for another port-name aliases when port-number found
-          service_aliases = Convert.convert(
-            Builtins.union(
-              service_aliases,
-              Builtins.splitstring(
-                Ops.get(@SERVICE_PORT_TO_NAME, found_alias_port) do
-                  LoadAndReturnPortToName(found_alias_port)
-                end,
-                " "
-              )
-            ),
-            from: "list",
-            to:   "list <string>"
-          )
+        if aliases
+          service_aliases.unshift(aliases.keys.map(&:to_s))
+          service_aliases << aliases.values
         end
+      elsif !Builtins.contains(@cache_not_allowed_ports, port)
+        @cache_not_allowed_ports = Builtins.add(
+          @cache_not_allowed_ports,
+          port
+        )
+        Builtins.y2error("Port name '%1' is not allowed", port)
       else
-        if !Builtins.contains(@cache_not_allowed_ports, port)
-          @cache_not_allowed_ports = Builtins.add(
-            @cache_not_allowed_ports,
-            port
-          )
-          Builtins.y2error("Port name '%1' is not allowed", port)
-        else
-          Builtins.y2debug("Port name '%1' is not allowed", port)
-        end
-        return [port]
+        Builtins.y2debug("Port name '%1' is not allowed", port)
       end
 
-      Builtins.toset(service_aliases)
+      service_aliases.compact.flatten.uniq
     end
 
     # Function returns if the requested port-name is known port.
@@ -295,14 +162,40 @@ module Yast
     def GetPortNumber(port_name)
       return Builtins.tointeger(port_name) if Builtins.regexpmatch(port_name, "^[0123456789]+$")
 
-      port_number = Ops.get(@SERVICE_NAME_TO_PORT, port_name) do
-        LoadAndReturnNameToPort(port_name)
+      service = services.select { |_, v| v.include?(port_name) }
+
+      service.keys.first
+    end
+
+    # Returns the collection of port => service aliases
+    #
+    # @see #load_services_database
+    #
+    # @return [Hash<Integer => Array<String>]
+    def services
+      return @services if @services
+
+      @services = KNOWN_SERVICES.dup
+
+      load_services_database.each do |service|
+        # Each service line contains the name, port, protocol and optionally aliases as follow
+        # service-name    port/protocol    service-aliases
+        name, port, _protocol, aliases = service.chomp.gsub(/\s+/, " ").split(/[\s,\|]/)
+
+        key = port.to_i
+        aliases = [@services[key], name, aliases&.split].flatten.compact.sort.uniq
+
+        @services[key] = aliases
       end
 
-      # not a known port
-      return nil if port_number.nil?
+      @services
+    end
 
-      Builtins.tointeger(port_number)
+    # Returns the services enumerated in the system database
+    #
+    # @return [Array<String>]
+    def load_services_database
+      Yast::Execute.stdout.on_target!("/usr/bin/getent", "services").lines
     end
 
     publish function: :IsAllowedPortName, type: "boolean (string)"
