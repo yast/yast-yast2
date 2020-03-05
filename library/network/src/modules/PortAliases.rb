@@ -69,6 +69,12 @@ module Yast
     }.freeze
     private_constant :KNOWN_SERVICES
 
+    Service = Struct.new(:port, :aliases) do
+      def to_a
+        [port, aliases].flatten.map(&:to_s)
+      end
+    end
+
     def main
       textdomain "base"
 
@@ -115,21 +121,16 @@ module Yast
     # @param [String] port-number or port-name
     # @return  [Array] [string] of aliases
     def GetListOfServiceAliases(port)
-      service_aliases = [port]
-
       # service is a port number
       if Builtins.regexpmatch(port, "^[0123456789]+$")
-        port_number = port.to_i
+        service = find_by_port(port)
 
-        service_aliases << services[port_number]
+        return service.to_a if service
       # service is a port name, any space isn't allowed
       elsif IsAllowedPortName(port)
-        aliases = services.select { |_, v| v.include?(port) }
+        service = find_by_alias(port)
 
-        if aliases
-          service_aliases.unshift(aliases.keys.map(&:to_s))
-          service_aliases << aliases.values
-        end
+        return service.to_a if service
       elsif !Builtins.contains(@cache_not_allowed_ports, port)
         @cache_not_allowed_ports = Builtins.add(
           @cache_not_allowed_ports,
@@ -140,7 +141,7 @@ module Yast
         Builtins.y2debug("Port name '%1' is not allowed", port)
       end
 
-      service_aliases.compact.flatten.uniq
+      [port]
     end
 
     # Function returns if the requested port-name is known port.
@@ -162,10 +163,17 @@ module Yast
     def GetPortNumber(port_name)
       return Builtins.tointeger(port_name) if Builtins.regexpmatch(port_name, "^[0123456789]+$")
 
-      service = services.select { |_, v| v.include?(port_name) }
-
-      service.keys.first
+      service = services.find { |s| s.aliases.include?(port_name) }
+      service&.port
     end
+
+    publish function: :IsAllowedPortName, type: "boolean (string)"
+    publish function: :AllowedPortNameOrNumber, type: "string ()"
+    publish function: :GetListOfServiceAliases, type: "list <string> (string)"
+    publish function: :IsKnownPortName, type: "boolean (string)"
+    publish function: :GetPortNumber, type: "integer (string)"
+
+  private
 
     # Returns the collection of port => service aliases
     #
@@ -175,17 +183,23 @@ module Yast
     def services
       return @services if @services
 
-      @services = KNOWN_SERVICES.dup
+      # First, register known services
+      @services = KNOWN_SERVICES.map { |port, aliases| Service.new(port, aliases) }
 
+      # Then, process those returned by `getent servies`
       load_services_database.each do |service|
-        # Each service line contains the name, port, and optionally aliases as follow
-        # service-name port service-aliases
         name, port, aliases = service.chomp.split(" ")
 
-        key = port.to_i
-        aliases = [@services[key], name, aliases&.split].flatten.compact.sort.uniq
+        port = port.to_i
+        aliases = [name, aliases&.split].flatten.compact
+        service = find_by_port(port)
 
-        @services[key] = aliases
+        if service
+          service.aliases |= aliases
+        else
+          service = Service.new(port, aliases)
+          @services << service
+        end
       end
 
       @services
@@ -193,7 +207,14 @@ module Yast
 
     # Returns services database after performing some cleanup
     #
-    # Basically, it discards duplicated lines after removing the protocol from the `getent` output.
+    # Basically, it manipulates the `getent services` output to discard duplicated lines after
+    # removing the protocol.
+    #
+    # Returned lines will look like
+    #
+    # EtherNet/IP-1         2222
+    # EtherNet-IP-2         44818
+    # rfb                   5900 vnc-server
     #
     # @return [Array<String>]
     def load_services_database
@@ -207,11 +228,21 @@ module Yast
       ).lines
     end
 
-    publish function: :IsAllowedPortName, type: "boolean (string)"
-    publish function: :AllowedPortNameOrNumber, type: "string ()"
-    publish function: :GetListOfServiceAliases, type: "list <string> (string)"
-    publish function: :IsKnownPortName, type: "boolean (string)"
-    publish function: :GetPortNumber, type: "integer (string)"
+    # Convenience method to easily find a loaded service by its port number
+    #
+    # @param port [Integer, String] the port number
+    # @return [Service, nil]
+    def find_by_port(port_number)
+      services.find { |s| s.port == port_number.to_i }
+    end
+
+    # Convenience method to easily find a loaded service by alias
+    #
+    # @param port [Integer, String] the port number
+    # @return [Service, nil]
+    def find_by_alias(service_alias)
+      services.find { |s| s.aliases.include?(service_alias) }
+    end
   end
 
   PortAliases = PortAliasesClass.new
