@@ -20,15 +20,15 @@ Yast.import "PortAliases"
 # MOS-upper          10541/udp    # MOS Running Order Port  [Eric_Thorniley]
 
 GETENT_OUTPUT = <<~GETENT_OUTPUT.freeze
-  blocks             10288/tcp
-  blocks             10288/udp
-  cosir              10321/tcp
-  bngsync            10439/udp
-  hip-nat-t          10500/udp
-  MOS-lower          10540/tcp
-  MOS-lower          10540/udp
-  MOS-upper          10541/tcp
-  MOS-upper          10541/udp
+  blocks             10288
+  blocks             10288
+  cosir              10321
+  bngsync            10439
+  hip-nat-t          10500
+  MOS-lower          10540
+  MOS-lower          10540
+  MOS-upper          10541
+  MOS-upper          10541
 GETENT_OUTPUT
 
 describe Yast::PortAliases do

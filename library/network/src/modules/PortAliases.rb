@@ -178,9 +178,9 @@ module Yast
       @services = KNOWN_SERVICES.dup
 
       load_services_database.each do |service|
-        # Each service line contains the name, port, protocol and optionally aliases as follow
-        # service-name    port/protocol    service-aliases
-        name, port, _protocol, aliases = service.chomp.gsub(/\s+/, " ").split(/[\s,\|]/)
+        # Each service line contains the name, port, and optionally aliases as follow
+        # service-name port service-aliases
+        name, port, aliases = service.chomp.split(" ")
 
         key = port.to_i
         aliases = [@services[key], name, aliases&.split].flatten.compact.sort.uniq
@@ -191,11 +191,20 @@ module Yast
       @services
     end
 
-    # Returns the services enumerated in the system database
+    # Returns services database after performing some cleanup
+    #
+    # Basically, it discards duplicated lines after removing the protocol from the `getent` output.
     #
     # @return [Array<String>]
     def load_services_database
-      Yast::Execute.stdout.on_target!("/usr/bin/getent", "services").lines
+      Yast::Execute.stdout.on_target!(
+        ["/usr/bin/getent", "services"],
+        # remove the protocol from the output
+        ["/usr/bin/sed", "-r", "s/(\\S)(\\/\\S+)(.*)?/\\1\\3/"],
+        # get rid of duplicated lines
+        ["/usr/bin/sort"],
+        ["/usr/bin/uniq"]
+      ).lines
     end
 
     publish function: :IsAllowedPortName, type: "boolean (string)"
