@@ -32,8 +32,6 @@ module Yast
 
     def main
       textdomain "base"
-
-      @cache_not_allowed_ports = []
     end
 
     # Whether the given argument is an allowed service name, alias or port
@@ -83,25 +81,17 @@ module Yast
     # @param needle [String] the name, alias or port to look for a service
     # @return [Array<String>] list of aliases, including the port number
     def GetListOfServiceAliases(needle)
-      # service is a port number
       if numeric?(needle)
+        # service is a port number
         service = services[needle.to_i]
-
-        return service.to_a if service
-      # service is a port name, any space isn't allowed
       elsif IsAllowedPortName(needle)
+        # service is an allowed port name
         service = find_by_alias(needle)
-
-        return service.to_a if service
-      elsif !@cache_not_allowed_ports.include?(needle)
-        @cache_not_allowed_ports << needle
-
-        log.error(format("Port name '%s' is not allowed", needle))
       else
-        log.debug(format("Port name '%s' is not allowed", needle))
+        log.error(format("Port name '%s' is not allowed", needle))
       end
 
-      [needle]
+      service&.to_a || [needle]
     end
 
     # Whether the requested argument is a known service
