@@ -23,36 +23,6 @@ module Yast
   class PortAliasesClass < Module
     include Yast::Logger
 
-    KNOWN_SERVICES = {
-      22   => ["ssh"],
-      25   => ["smtp"],
-      53   => ["domain"],
-      67   => ["bootps"],
-      68   => ["bootpc"],
-      69   => ["tftp"],
-      80   => ["http", "www", "www-http"],
-      110  => ["pop3"],
-      111  => ["sunrpc"],
-      123  => ["ntp"],
-      137  => ["netbios-ns"],
-      138  => ["netbios-dgm"],
-      139  => ["netbios-ssn"],
-      143  => ["imap"],
-      389  => ["ldap"],
-      443  => ["https"],
-      445  => ["microsoft-ds"],
-      500  => ["isakmp"],
-      631  => ["ipp"],
-      636  => ["ldaps"],
-      873  => ["rsync"],
-      993  => ["imaps"],
-      995  => ["pop3s"],
-      3128 => ["ndl-aas"],
-      4500 => ["ipsec-nat-t"],
-      8080 => ["http-alt"]
-    }.freeze
-    private_constant :KNOWN_SERVICES
-
     # Internal representation of a service
     Service = Struct.new(:port, :aliases) do
       def to_a
@@ -115,7 +85,7 @@ module Yast
     def GetListOfServiceAliases(needle)
       # service is a port number
       if numeric?(needle)
-        service = find_by_port(needle)
+        service = services[needle.to_i]
 
         return service.to_a if service
       # service is a port name, any space isn't allowed
@@ -153,7 +123,7 @@ module Yast
     def GetPortNumber(needle)
       return needle.to_i if numeric?(needle)
 
-      service = services.find { |s| s.aliases.include?(needle) }
+      service = find_by_alias(needle)
       service&.port
     end
 
@@ -169,32 +139,22 @@ module Yast
     #
     # Results are cached, so repeated requests are answered faster.
     #
-    # @see #load_services_database
+    # @see #services_database
     #
-    # @return [Array<Service>] a list of services
+    # @return [Hash<Integer => Service>] a list of services indexed by the port
     def services
-      return @services if @services
-
-      # First, register known services
-      @services = KNOWN_SERVICES.map { |port, aliases| Service.new(port, aliases) }
-
-      # Then, process those returned by `getent servies`
-      services_database.each do |service|
+      @services ||= services_database.each_with_object({}) do |service, result|
+        # Extract values splitting the line by spaces or `/`
         name, port, _protocol, aliases = service.split(/\s+|\//)
 
         port = port.to_i
         aliases = [name, aliases&.split].flatten.compact
-        service = find_by_port(port)
 
-        if service
-          service.aliases |= aliases
-        else
-          service = Service.new(port, aliases)
-          @services << service
-        end
+        result[port] ||= Service.new(port, [])
+        result[port].aliases |= aliases
+
+        result
       end
-
-      @services
     end
 
     # Returns content from services database
@@ -208,20 +168,12 @@ module Yast
       Yast::Execute.stdout.on_target!("/usr/bin/getent", "services").lines
     end
 
-    # Convenience method to easily find a loaded service by its port number
-    #
-    # @param port [Integer, String] the port number
-    # @return [Service, nil] found service; nil if none
-    def find_by_port(port_number)
-      services.find { |s| s.port == port_number.to_i }
-    end
-
     # Convenience method to easily find a loaded service by alias
     #
     # @param port [Integer, String] the port number
     # @return [Service, nil] found service; nil if none
     def find_by_alias(service_alias)
-      services.find { |s| s.aliases.include?(service_alias) }
+      services.values.find { |s| s.aliases.include?(service_alias) }
     end
 
     # Convenience method to test if given string can be an integer
