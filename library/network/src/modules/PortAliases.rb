@@ -72,7 +72,7 @@ module Yast
     # @return  [Boolean] if allowed
     def IsAllowedPortName(needle)
       if needle.nil?
-        log.error("Invalid port name: %s" % needle)
+        log.error(format("Invalid port name: %s", needle))
         false
       elsif numeric?(needle)
         # port is number
@@ -117,9 +117,9 @@ module Yast
       elsif !@cache_not_allowed_ports.include?(needle)
         @cache_not_allowed_ports << needle
 
-        log.error("Port name '%s' is not allowed" % needle)
+        log.error(format("Port name '%s' is not allowed", needle))
       else
-        log.debug("Port name '%s' is not allowed" % needle)
+        log.debug(format("Port name '%s' is not allowed", needle))
       end
 
       [needle]
