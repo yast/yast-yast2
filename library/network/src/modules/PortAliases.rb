@@ -63,9 +63,6 @@ module Yast
     def main
       textdomain "base"
 
-      # This variable contains characters allowed in port-names, backslashed for regexpmatch()
-      @allowed_service_regexp = "^[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789*/+._-]*$"
-
       @cache_not_allowed_ports = []
     end
 
@@ -75,17 +72,16 @@ module Yast
     # @return  [Boolean] if allowed
     def IsAllowedPortName(needle)
       if needle.nil?
-        Builtins.y2error("Invalid port name: %1", needle)
+        log.error("Invalid port name: %s" % needle)
         false
+      elsif numeric?(needle)
         # port is number
-      elsif Builtins.regexpmatch(needle, "^[0123456789]+$")
-        port_number = Builtins.tointeger(needle)
-        # checking range
-        Ops.greater_or_equal(port_number, 0) &&
-          Ops.less_or_equal(port_number, 65_535)
-        # port is name
+        port_number = needle.to_i
+
+        port_number > 0 && port_number <= 65_535
       else
-        Builtins.regexpmatch(needle, @allowed_service_regexp)
+        # port is name
+        needle.match?(/^\S+$/)
       end
     end
 
@@ -109,7 +105,7 @@ module Yast
     # @return [Array<String>]
     def GetListOfServiceAliases(needle)
       # service is a port number
-      if Builtins.regexpmatch(needle, "^[0123456789]+$")
+      if numeric?(needle)
         service = find_by_port(needle)
 
         return service.to_a if service
@@ -118,14 +114,12 @@ module Yast
         service = find_by_alias(needle)
 
         return service.to_a if service
-      elsif !Builtins.contains(@cache_not_allowed_ports, needle)
-        @cache_not_allowed_ports = Builtins.add(
-          @cache_not_allowed_ports,
-          needle
-        )
-        Builtins.y2error("Port name '%1' is not allowed", needle)
+      elsif !@cache_not_allowed_ports.include?(needle)
+        @cache_not_allowed_ports << needle
+
+        log.error("Port name '%s' is not allowed" % needle)
       else
-        Builtins.y2debug("Port name '%1' is not allowed", needle)
+        log.debug("Port name '%s' is not allowed" % needle)
       end
 
       [needle]
@@ -136,7 +130,7 @@ module Yast
     # @param needle [String] service name, alias or port number
     # @return [Boolean] true is found a service; false otherwise
     def IsKnownPortName(needle)
-      return true if Ops.greater_than(Builtins.size(GetListOfServiceAliases(needle)), 1)
+      return true if GetListOfServiceAliases(needle).size > 1
 
       false
     end
@@ -147,10 +141,10 @@ module Yast
     #
     # @param needle [String] the name or alias of the service
     # @return [Integer, nil] a port number if any
-    def GetPortNumber(port_name)
-      return Builtins.tointeger(port_name) if Builtins.regexpmatch(port_name, "^[0123456789]+$")
+    def GetPortNumber(needle)
+      return needle.to_i if numeric?(needle)
 
-      service = services.find { |s| s.aliases.include?(port_name) }
+      service = services.find { |s| s.aliases.include?(needle) }
       service&.port
     end
 
@@ -231,6 +225,14 @@ module Yast
     # @return [Service, nil]
     def find_by_alias(service_alias)
       services.find { |s| s.aliases.include?(service_alias) }
+    end
+
+    # Convenience method to test if given string can be an integer
+    #
+    # @param value [String]
+    # @return [Boolean]
+    def numeric?(value)
+      value.match?(/^-?\d+$/)
     end
   end
 

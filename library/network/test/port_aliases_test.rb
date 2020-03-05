@@ -75,7 +75,7 @@ describe Yast::PortAliases do
   describe ".IsAllowedPortName" do
     context "when nil is given" do
       it "logs an error" do
-        expect(Yast::Builtins).to receive(:y2error).with(/Invalid/, nil)
+        expect(subject.log).to receive(:error).with(/Invalid/)
 
         subject.IsAllowedPortName(nil)
       end
@@ -98,9 +98,7 @@ describe Yast::PortAliases do
         end
       end
       context "below the lower limit" do
-        # FIXME: regexp avoid having negative numbers, which are going to be considered as port name
-        # instead a port number.
-        xit "returns false" do
+        it "returns false" do
           expect(subject.IsAllowedPortName("-1")).to eq(false)
         end
       end
@@ -174,7 +172,7 @@ describe Yast::PortAliases do
           let(:port_name) { "Something Not Allowed" }
 
           it "logs an error" do
-            expect(Yast::Builtins).to receive(:y2error).with(/not allowed/, port_name)
+            expect(subject.log).to receive(:error).with(/not allowed/)
 
             subject.GetListOfServiceAliases(port_name)
           end
