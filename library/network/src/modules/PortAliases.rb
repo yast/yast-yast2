@@ -1,41 +1,25 @@
-# ***************************************************************************
+# Copyright (c) [2013-2020] SUSE LLC
 #
-# Copyright (c) 2002 - 2012 Novell, Inc.
 # All Rights Reserved.
 #
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of version 2 of the GNU General Public License as
-# published by the Free Software Foundation.
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of version 2 of the GNU General Public License as published
+# by the Free Software Foundation.
 #
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.   See the
-# GNU General Public License for more details.
+# This program is distributed in the hope that it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, contact Novell, Inc.
-#
-# To contact Novell about this file by physical or electronic mail,
-# you may find current contact information at www.novell.com
-#
-# ***************************************************************************
-# File:  modules/PortAliases.ycp
-# Package:  Ports Aliases.
-# Summary:  Definition of Port Aliases.
-# Authors:  Lukas Ocilka <locilka@suse.cz>
-#
-# $Id$
-#
-# Global Definition of Port Aliases for services taken from /etc/services.
-# /etc/services are defined by IANA http://www.iana.org/assignments/port-numbers.
-# This module provides full listing of port aliases (supporting also multiple
-# aliases like "http", "www" and "www-http" for port 80).
-# Results are cached, so repeated requests are answered faster.
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, contact SUSE LLC.
 require "yast"
 require "yast2/execute"
 require "shellwords"
 
 module Yast
+  # Module providing full listing of port aliases for services, supporting also multiple aliases for
+  # the same port (like "http", "www", "www-http" for port 80)
   class PortAliasesClass < Module
     include Yast::Logger
 
@@ -69,6 +53,7 @@ module Yast
     }.freeze
     private_constant :KNOWN_SERVICES
 
+    # Internal representation of a service
     Service = Struct.new(:port, :aliases) do
       def to_a
         [port, aliases].flatten.map(&:to_s)
@@ -84,28 +69,29 @@ module Yast
       @cache_not_allowed_ports = []
     end
 
-    # Function returns if the port name is allowed port name (or number).
+    # Whether the given argument is an allowed service name, alias or port
     #
+    # @param needle [Integer, String] a service name, alias or port
     # @return  [Boolean] if allowed
-    def IsAllowedPortName(port_name)
-      if port_name.nil?
-        Builtins.y2error("Invalid port name: %1", port_name)
+    def IsAllowedPortName(needle)
+      if needle.nil?
+        Builtins.y2error("Invalid port name: %1", needle)
         false
         # port is number
-      elsif Builtins.regexpmatch(port_name, "^[0123456789]+$")
-        port_number = Builtins.tointeger(port_name)
+      elsif Builtins.regexpmatch(needle, "^[0123456789]+$")
+        port_number = Builtins.tointeger(needle)
         # checking range
         Ops.greater_or_equal(port_number, 0) &&
           Ops.less_or_equal(port_number, 65_535)
         # port is name
       else
-        Builtins.regexpmatch(port_name, @allowed_service_regexp)
+        Builtins.regexpmatch(needle, @allowed_service_regexp)
       end
     end
 
-    # Function returns string describing allowed port name or number.
+    # Returns an string describing allowed service names and port numbers
     #
-    # @return  [String] with description
+    # @return [String]
     def AllowedPortNameOrNumber
       # TRANSLATORS: popup informing message, allowed characters for port-names
       _(
@@ -115,51 +101,52 @@ module Yast
       )
     end
 
-    # Function returns list of aliases (port-names and port-numbers) for
-    # requested port-number or port-name. Also the requested name or port is returned.
+    # Returns list of aliases (including the port number) for service.
     #
-    # @param [String] port-number or port-name
-    # @return  [Array] [string] of aliases
-    def GetListOfServiceAliases(port)
+    # NOTE: given argument will be also included
+    #
+    # @param needle [String] the name, alias or port to look for a service
+    # @return [Array<String>]
+    def GetListOfServiceAliases(needle)
       # service is a port number
-      if Builtins.regexpmatch(port, "^[0123456789]+$")
-        service = find_by_port(port)
+      if Builtins.regexpmatch(needle, "^[0123456789]+$")
+        service = find_by_port(needle)
 
         return service.to_a if service
       # service is a port name, any space isn't allowed
-      elsif IsAllowedPortName(port)
-        service = find_by_alias(port)
+      elsif IsAllowedPortName(needle)
+        service = find_by_alias(needle)
 
         return service.to_a if service
-      elsif !Builtins.contains(@cache_not_allowed_ports, port)
+      elsif !Builtins.contains(@cache_not_allowed_ports, needle)
         @cache_not_allowed_ports = Builtins.add(
           @cache_not_allowed_ports,
-          port
+          needle
         )
-        Builtins.y2error("Port name '%1' is not allowed", port)
+        Builtins.y2error("Port name '%1' is not allowed", needle)
       else
-        Builtins.y2debug("Port name '%1' is not allowed", port)
+        Builtins.y2debug("Port name '%1' is not allowed", needle)
       end
 
-      [port]
+      [needle]
     end
 
-    # Function returns if the requested port-name is known port.
-    # Known port have an IANA alias.
+    # Whether the requested argument is a known service
     #
-    # @param  string port-name
-    # @return  [Boolean] if is known
-    def IsKnownPortName(port_name)
-      # function returns the requested port and aliases if exists
-      return true if Ops.greater_than(Builtins.size(GetListOfServiceAliases(port_name)), 1)
+    # @param needle [String] service name, alias or port number
+    # @return [Boolean] true is found a service; false otherwise
+    def IsKnownPortName(needle)
+      return true if Ops.greater_than(Builtins.size(GetListOfServiceAliases(needle)), 1)
 
       false
     end
 
-    # Function returns a port number for the port name alias
+    # Returns the port for requested service (if any)
     #
-    # @param port_name_or_number
-    # @param port_number or nil when not found
+    # NOTE: when given argument looks like a digit, it will be returned after a proper conversion
+    #
+    # @param needle [String] the name or alias of the service
+    # @return [Integer, nil] a port number if any
     def GetPortNumber(port_name)
       return Builtins.tointeger(port_name) if Builtins.regexpmatch(port_name, "^[0123456789]+$")
 
@@ -175,11 +162,13 @@ module Yast
 
   private
 
-    # Returns the collection of port => service aliases
+    # Returns the collection of services
+    #
+    # Results are cached, so repeated requests are answered faster.
     #
     # @see #load_services_database
     #
-    # @return [Hash<Integer => Array<String>]
+    # @return [Array<Service>]
     def services
       return @services if @services
 
