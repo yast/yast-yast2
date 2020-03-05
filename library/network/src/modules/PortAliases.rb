@@ -179,8 +179,8 @@ module Yast
       @services = KNOWN_SERVICES.map { |port, aliases| Service.new(port, aliases) }
 
       # Then, process those returned by `getent servies`
-      load_services_database.each do |service|
-        name, port, aliases = service.chomp.split(" ")
+      services_database.each do |service|
+        name, port, _protocol, aliases = service.split(/\s+|\//)
 
         port = port.to_i
         aliases = [name, aliases&.split].flatten.compact
@@ -197,27 +197,15 @@ module Yast
       @services
     end
 
-    # Returns services database after performing some cleanup
+    # Returns content from services database
     #
-    # Basically, it manipulates the `getent services` output to discard duplicated lines after
-    # removing the protocol.
+    # Each returned line describes one service, and is of the form:
     #
-    # Returned lines will look like
+    #     service-name   port/protocol   [aliases ...]
     #
-    # EtherNet/IP-1         2222
-    # EtherNet-IP-2         44818
-    # rfb                   5900 vnc-server
-    #
-    # @return [Array<String>] list of services with the "name  port  aliases" format
-    def load_services_database
-      Yast::Execute.stdout.on_target!(
-        ["/usr/bin/getent", "services"],
-        # remove the protocol from the output
-        ["/usr/bin/sed", "-r", "s/(\\S)(\\/\\S+)(.*)?/\\1\\3/"],
-        # get rid of duplicated lines
-        ["/usr/bin/sort"],
-        ["/usr/bin/uniq"]
-      ).lines
+    # @return [Array<String>] list of available services
+    def services_database
+      Yast::Execute.stdout.on_target!("/usr/bin/getent", "services").lines
     end
 
     # Convenience method to easily find a loaded service by its port number
