@@ -69,7 +69,7 @@ module Yast
     # Whether the given argument is an allowed service name, alias or port
     #
     # @param needle [Integer, String] a service name, alias or port
-    # @return  [Boolean] if allowed
+    # @return [Boolean] true if given value is allowed; false otherwise
     def IsAllowedPortName(needle)
       if needle.nil?
         log.error(format("Invalid port name: %s", needle))
@@ -85,9 +85,9 @@ module Yast
       end
     end
 
-    # Returns an string describing allowed service names and port numbers
+    # Returns a string describing allowed service names and port numbers
     #
-    # @return [String]
+    # @return [String] an informative message
     def AllowedPortNameOrNumber
       # TRANSLATORS: popup informing message, allowed characters for port-names
       _(
@@ -99,10 +99,19 @@ module Yast
 
     # Returns list of aliases (including the port number) for service.
     #
-    # NOTE: given argument will be also included
+    # @note given argument will be also included
+    #
+    # @example when number is given
+    #   GetListOfServicesAliases("22") #=> ["22", "ssh"]
+    #
+    # @example when name or alias is given
+    #   GetListOfServicesAliases("ssh") #=> ["22", "ssh"]
+    #
+    # @example when there is not service for given information
+    #   GetListOfServicesAliases("not-exist-yet") => ["not-exist-yet"]
     #
     # @param needle [String] the name, alias or port to look for a service
-    # @return [Array<String>]
+    # @return [Array<String>] list of aliases, including the port number
     def GetListOfServiceAliases(needle)
       # service is a port number
       if numeric?(needle)
@@ -137,7 +146,7 @@ module Yast
 
     # Returns the port for requested service (if any)
     #
-    # NOTE: when given argument looks like a digit, it will be returned after a proper conversion
+    # @note when given argument looks like a digit, it will be returned after a proper conversion
     #
     # @param needle [String] the name or alias of the service
     # @return [Integer, nil] a port number if any
@@ -162,7 +171,7 @@ module Yast
     #
     # @see #load_services_database
     #
-    # @return [Array<Service>]
+    # @return [Array<Service>] a list of services
     def services
       return @services if @services
 
@@ -199,7 +208,7 @@ module Yast
     # EtherNet-IP-2         44818
     # rfb                   5900 vnc-server
     #
-    # @return [Array<String>]
+    # @return [Array<String>] list of services with the "name  port  aliases" format
     def load_services_database
       Yast::Execute.stdout.on_target!(
         ["/usr/bin/getent", "services"],
@@ -214,7 +223,7 @@ module Yast
     # Convenience method to easily find a loaded service by its port number
     #
     # @param port [Integer, String] the port number
-    # @return [Service, nil]
+    # @return [Service, nil] found service; nil if none
     def find_by_port(port_number)
       services.find { |s| s.port == port_number.to_i }
     end
@@ -222,7 +231,7 @@ module Yast
     # Convenience method to easily find a loaded service by alias
     #
     # @param port [Integer, String] the port number
-    # @return [Service, nil]
+    # @return [Service, nil] found service; nil if none
     def find_by_alias(service_alias)
       services.find { |s| s.aliases.include?(service_alias) }
     end
@@ -230,7 +239,7 @@ module Yast
     # Convenience method to test if given string can be an integer
     #
     # @param value [String]
-    # @return [Boolean]
+    # @return [Boolean] true if the value looks like an integer; false otherwise
     def numeric?(value)
       value.match?(/^-?\d+$/)
     end
