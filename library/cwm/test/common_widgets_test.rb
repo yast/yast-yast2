@@ -6,7 +6,6 @@ require "cwm/common_widgets"
 require "cwm/rspec"
 
 describe CWM::RadioButtons do
-
   class TestRadioButtons < CWM::RadioButtons
     def label
       "Choose a number"
@@ -55,6 +54,50 @@ describe CWM::RadioButtons do
       it "sets hspacing based on the method result" do
         expect(subject.cwm_definition.keys).to include("hspacing")
         expect(subject.cwm_definition["hspacing"]).to eq 3
+      end
+    end
+  end
+end
+
+describe CWM::RichText do
+  subject { described_class.new }
+  let(:widget_id) { Id(subject.widget_id) }
+
+  describe "#value=" do
+    before do
+      allow(subject).to receive(:keep_scroll?).and_return(keep_scroll)
+      allow(Yast::UI).to receive(:ChangeWidget)
+    end
+
+    context "when set to restore the scroll" do
+      let(:keep_scroll) { true }
+
+      it "saves the scroll position" do
+        expect(Yast::UI).to receive(:QueryWidget).with(widget_id, :VScrollValue)
+
+        subject.value = "Test"
+      end
+
+      it "restores the scroll" do
+        expect(Yast::UI).to receive(:ChangeWidget).with(widget_id, :VScrollValue, anything)
+
+        subject.value = "Test"
+      end
+    end
+
+    context "when set to not restore the scroll" do
+      let(:keep_scroll) { false }
+
+      it "saves the scroll position" do
+        expect(Yast::UI).to receive(:QueryWidget).with(widget_id, :VScrollValue)
+
+        subject.value = "Test"
+      end
+
+      it "does not restore the scroll" do
+        expect(Yast::UI).to_not receive(:ChangeWidget).with(widget_id, :VScrollValue, anything)
+
+        subject.value = "Test"
       end
     end
   end

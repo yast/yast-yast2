@@ -365,6 +365,40 @@ module CWM
     self.widget_type = :richtext
 
     include ValueBasedWidget
+
+    # Determines if the scroll should be restored after updating the content
+    #
+    # @return [Boolean] true if the scroll should be restored; false otherwise
+    def keep_scroll?
+      false
+    end
+
+    # Updates the content
+    #
+    # Depending on #keep_scroll?, the scroll will be saved and restored.
+    #
+    # @param val [String] the new content for the widget
+    def value=(val)
+      current_vscroll = vscroll
+      super
+      self.vscroll = current_vscroll if keep_scroll?
+    end
+
+  private
+
+    # Saves the current vertical scroll
+    #
+    # @return [String] current vertical scroll value
+    def vscroll
+      Yast::UI.QueryWidget(Id(widget_id), :VScrollValue)
+    end
+
+    # Sets vertical scroll
+    #
+    # @param value [String] the new vertical scroll value
+    def vscroll=(value)
+      Yast::UI.ChangeWidget(Id(widget_id), :VScrollValue, value)
+    end
   end
 
   # Time field widget
