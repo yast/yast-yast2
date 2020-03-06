@@ -198,7 +198,7 @@ module Yast
       if use_installed_products?
         PackageSystem.EnsureTargetInit
       else
-        PackageSystem.EnsureSourceInit
+        PackageSystem.EnsureSourceInit unless Stage.initial
       end
 
       Pkg.PkgSolve(true)
