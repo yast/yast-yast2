@@ -155,7 +155,8 @@ module Yast
     #
     # @return [Array<String>] list of available services
     def services_database
-      Yast::Execute.stdout.on_target!("/usr/bin/getent", "services").lines
+      # Log nothing from this command because its long output (logger: nil)
+      Yast::Execute.stdout.on_target!("/usr/bin/getent", "services", logger: nil).lines
     end
 
     # Convenience method to easily find a loaded service by alias
