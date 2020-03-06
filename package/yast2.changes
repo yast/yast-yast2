@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar  6 12:00:43 UTC 2020 - David Diaz <dgonzalez@suse.com>
+
+- Read the list of network service properly, no matter where
+  it is stored (bsc#1162853).
+- 4.2.69
+
+-------------------------------------------------------------------
 Fri Mar  6 08:58:24 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Skip repository reloading at installation to avoid unselecting
