@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar  6 13:26:57 UTC 2020 - David Diaz <dgonzalez@suse.com>
+
+- Allow to restore the vertical scroll of a CWM::RichText
+  (related to bsc#1049965)
+- 4.2.70
+
+-------------------------------------------------------------------
 Fri Mar  6 12:00:43 UTC 2020 - David Diaz <dgonzalez@suse.com>
 
 - Read the list of network service properly, no matter where
