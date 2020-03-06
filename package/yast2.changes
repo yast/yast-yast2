@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Mar  6 08:58:24 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Skip repository reloading at installation to avoid unselecting
+  products to install (bsc#1165501)
+- 4.2.68
+
+-------------------------------------------------------------------
 Wed Feb 26 10:42:42 CET 2020 - schubi@suse.de
 
 - Updated docu for SysctlConfig class (bsc#1151649).
