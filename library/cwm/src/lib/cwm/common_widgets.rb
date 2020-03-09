@@ -365,6 +365,47 @@ module CWM
     self.widget_type = :richtext
 
     include ValueBasedWidget
+
+    # Determines if the vertical scroll must be kept after updating the content
+    #
+    # @note Useful only to keep the sense of continuity when redrawing basically with the same text
+    #
+    # Keeping the vertical scroll after changing the value is mostly intended to be used after a
+    # redraw because of a user action. However, using it after changing the content noticeably
+    # (e.g., displaying different product descriptions), will look like a randomly positioned
+    # vertical scroll.
+    #
+    # @return [Boolean] true if the vertical scroll must be kept; false otherwise
+    def keep_scroll?
+      false
+    end
+
+    # Updates the content
+    #
+    # Depending on #keep_scroll?, the vertical scroll will be saved and restored.
+    #
+    # @param val [String] the new content for the widget
+    def value=(val)
+      current_vscroll = vscroll
+      super
+      self.vscroll = current_vscroll if keep_scroll?
+    end
+
+  private
+
+    # Saves the current vertical scroll
+    #
+    # @return [String] current vertical scroll value
+    def vscroll
+      Yast::UI.QueryWidget(Id(widget_id), :VScrollValue)
+    end
+
+    # Sets vertical scroll
+    #
+    # @param value [String] the new vertical scroll value
+    def vscroll=(value)
+      Yast::UI.ChangeWidget(Id(widget_id), :VScrollValue, value)
+    end
   end
 
   # Time field widget

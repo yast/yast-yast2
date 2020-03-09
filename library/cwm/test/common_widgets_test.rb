@@ -6,7 +6,6 @@ require "cwm/common_widgets"
 require "cwm/rspec"
 
 describe CWM::RadioButtons do
-
   class TestRadioButtons < CWM::RadioButtons
     def label
       "Choose a number"
@@ -55,6 +54,58 @@ describe CWM::RadioButtons do
       it "sets hspacing based on the method result" do
         expect(subject.cwm_definition.keys).to include("hspacing")
         expect(subject.cwm_definition["hspacing"]).to eq 3
+      end
+    end
+  end
+end
+
+describe CWM::RichText do
+  subject { described_class.new }
+  let(:widget_id) { Id(subject.widget_id) }
+  let(:new_content) { "Updated content" }
+  let(:vscroll) { "40" }
+
+  describe "#value=" do
+    before do
+      allow(Yast::UI).to receive(:QueryWidget).with(widget_id, :VScrollValue).and_return(vscroll)
+      allow(Yast::UI).to receive(:ChangeWidget)
+    end
+
+    context "when set to keep the scroll" do
+      before do
+        allow(subject).to receive(:keep_scroll?).and_return(true)
+      end
+
+      it "changes the widget value" do
+        expect(Yast::UI).to receive(:ChangeWidget).with(widget_id, :Value, new_content)
+
+        subject.value = new_content
+      end
+
+      it "saves vertical scroll position" do
+        expect(Yast::UI).to receive(:QueryWidget).with(widget_id, :VScrollValue)
+
+        subject.value = new_content
+      end
+
+      it "restores vertical scroll" do
+        expect(Yast::UI).to receive(:ChangeWidget).with(widget_id, :VScrollValue, vscroll)
+
+        subject.value = new_content
+      end
+    end
+
+    context "when set to not keep the scroll" do
+      it "changes the widget value" do
+        expect(Yast::UI).to receive(:ChangeWidget).with(widget_id, :Value, new_content)
+
+        subject.value = new_content
+      end
+
+      it "does not restore the scroll" do
+        expect(Yast::UI).to_not receive(:ChangeWidget).with(widget_id, :VScrollValue, anything)
+
+        subject.value = new_content
       end
     end
   end
