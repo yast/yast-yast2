@@ -368,6 +368,13 @@ module CWM
 
     # Determines if the vertical scroll must be kept after updating the content
     #
+    # @note Useful only to keep the sense of continuity when redrawing basically with the same text
+    #
+    # Keeping the vertical scroll after changing the value is mostly intended to be used after a
+    # redraw because of a user action. However, using it after changing the content noticeably
+    # (e.g., displaying different product descriptions), will look like a randomly positioned
+    # vertical scroll.
+    #
     # @return [Boolean] true if the vertical scroll must be kept; false otherwise
     def keep_scroll?
       false
