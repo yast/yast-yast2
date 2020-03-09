@@ -62,42 +62,50 @@ end
 describe CWM::RichText do
   subject { described_class.new }
   let(:widget_id) { Id(subject.widget_id) }
+  let(:new_content) { "Updated content" }
+  let(:vscroll) { "40" }
 
   describe "#value=" do
     before do
-      allow(subject).to receive(:keep_scroll?).and_return(keep_scroll)
+      allow(Yast::UI).to receive(:QueryWidget).with(widget_id, :VScrollValue).and_return(vscroll)
       allow(Yast::UI).to receive(:ChangeWidget)
     end
 
-    context "when set to restore the scroll" do
-      let(:keep_scroll) { true }
-
-      it "saves the scroll position" do
-        expect(Yast::UI).to receive(:QueryWidget).with(widget_id, :VScrollValue)
-
-        subject.value = "Test"
+    context "when set to keep the scroll" do
+      before do
+        allow(subject).to receive(:keep_scroll?).and_return(true)
       end
 
-      it "restores the scroll" do
-        expect(Yast::UI).to receive(:ChangeWidget).with(widget_id, :VScrollValue, anything)
+      it "changes the widget value" do
+        expect(Yast::UI).to receive(:ChangeWidget).with(widget_id, :Value, new_content)
 
-        subject.value = "Test"
+        subject.value = new_content
+      end
+
+      it "saves vertical scroll position" do
+        expect(Yast::UI).to receive(:QueryWidget).with(widget_id, :VScrollValue)
+
+        subject.value = new_content
+      end
+
+      it "restores vertical scroll" do
+        expect(Yast::UI).to receive(:ChangeWidget).with(widget_id, :VScrollValue, vscroll)
+
+        subject.value = new_content
       end
     end
 
-    context "when set to not restore the scroll" do
-      let(:keep_scroll) { false }
+    context "when set to not keep the scroll" do
+      it "changes the widget value" do
+        expect(Yast::UI).to receive(:ChangeWidget).with(widget_id, :Value, new_content)
 
-      it "saves the scroll position" do
-        expect(Yast::UI).to receive(:QueryWidget).with(widget_id, :VScrollValue)
-
-        subject.value = "Test"
+        subject.value = new_content
       end
 
       it "does not restore the scroll" do
         expect(Yast::UI).to_not receive(:ChangeWidget).with(widget_id, :VScrollValue, anything)
 
-        subject.value = "Test"
+        subject.value = new_content
       end
     end
   end

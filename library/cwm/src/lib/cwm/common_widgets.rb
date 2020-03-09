@@ -366,16 +366,16 @@ module CWM
 
     include ValueBasedWidget
 
-    # Determines if the scroll should be restored after updating the content
+    # Determines if the vertical scroll must be kept after updating the content
     #
-    # @return [Boolean] true if the scroll should be restored; false otherwise
+    # @return [Boolean] true if the vertical scroll must be kept; false otherwise
     def keep_scroll?
       false
     end
 
     # Updates the content
     #
-    # Depending on #keep_scroll?, the scroll will be saved and restored.
+    # Depending on #keep_scroll?, the vertical scroll will be saved and restored.
     #
     # @param val [String] the new content for the widget
     def value=(val)
