@@ -229,18 +229,18 @@ describe CWM::MultiStatusSelector::Item do
     end
   end
 
-  describe "#to_s" do
+  describe "#to_richtext" do
     it "returns a string" do
-      expect(subject.to_s).to be_a(String)
+      expect(subject.to_richtext).to be_a(String)
     end
 
     context "when the item is enabled" do
       it "includes a link for the input" do
-        expect(subject.to_s).to match(regexp_input_link)
+        expect(subject.to_richtext).to match(regexp_input_link)
       end
 
       it "includes a link for the label" do
-        expect(subject.to_s).to match(regexp_label_link)
+        expect(subject.to_richtext).to match(regexp_label_link)
       end
     end
 
@@ -248,19 +248,19 @@ describe CWM::MultiStatusSelector::Item do
       let(:enabled) { false }
 
       it "uses a grey color" do
-        expect(subject.to_s).to match(/.*color: grey.*/)
+        expect(subject.to_richtext).to match(/.*color: grey.*/)
       end
 
       it "includes the item label" do
-        expect(subject.to_s).to include(subject.label)
+        expect(subject.to_richtext).to include(subject.label)
       end
 
       it "does not include a link for the input" do
-        expect(subject.to_s).to_not match(regexp_input_link)
+        expect(subject.to_richtext).to_not match(regexp_input_link)
       end
 
       it "does not include a link for the label" do
-        expect(subject.to_s).to_not match(regexp_label_link)
+        expect(subject.to_richtext).to_not match(regexp_label_link)
       end
     end
 
@@ -271,7 +271,7 @@ describe CWM::MultiStatusSelector::Item do
         let(:status) { :selected }
 
         it "displays `[x]` as icon" do
-          expect(subject.to_s).to include("[x]")
+          expect(subject.to_richtext).to include("[x]")
         end
       end
 
@@ -279,7 +279,7 @@ describe CWM::MultiStatusSelector::Item do
         let(:status) { :auto_selected }
 
         it "displays `[a]` as icon" do
-          expect(subject.to_s).to include("[a]")
+          expect(subject.to_richtext).to include("[a]")
         end
       end
 
@@ -287,7 +287,7 @@ describe CWM::MultiStatusSelector::Item do
         let(:status) { :unselected }
 
         it "displays `[ ]` as icon" do
-          expect(subject.to_s).to include("[ ]")
+          expect(subject.to_richtext).to include("[ ]")
         end
       end
 
@@ -295,7 +295,7 @@ describe CWM::MultiStatusSelector::Item do
         let(:status) { :unknown }
 
         it "displays `[ ]` as icon" do
-          expect(subject.to_s).to include("[ ]")
+          expect(subject.to_richtext).to include("[ ]")
         end
       end
     end
@@ -306,32 +306,32 @@ describe CWM::MultiStatusSelector::Item do
       context "and the item is selected" do
         let(:status) { :selected }
 
-        it "displays the proper icon" do
-          expect(subject.to_s).to include("checkbox-on.svg")
+        it "displays the selected icon" do
+          expect(subject.to_richtext).to include("checkbox-on.svg")
         end
       end
 
       context "and the item is auto selected" do
         let(:status) { :auto_selected }
 
-        it "displays the proper icon" do
-          expect(subject.to_s).to include("auto-selected.svg")
+        it "displays the auto-selected icon" do
+          expect(subject.to_richtext).to include("auto-selected.svg")
         end
       end
 
       context "and the item is not selected" do
         let(:status) { :unselected }
 
-        it "displays the proper ion" do
-          expect(subject.to_s).to include("checkbox-off.svg")
+        it "displays the unselected icon" do
+          expect(subject.to_richtext).to include("checkbox-off.svg")
         end
       end
 
       context "and the item has an unknown status" do
         let(:status) { :unknown }
 
-        it "displays the proper ion" do
-          expect(subject.to_s).to include("checkbox-off.svg")
+        it "displays the unselected icon" do
+          expect(subject.to_richtext).to include("checkbox-off.svg")
         end
       end
     end

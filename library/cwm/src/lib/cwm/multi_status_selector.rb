@@ -119,13 +119,10 @@ module CWM
 
     # @macro seeAbstractWidget
     def handle(event)
-      if event["ID"].to_s.match?(Item.event_id)
+      if event["ID"].to_s.include?(Item.event_id)
         id, fired_by = event["ID"].split(Item.event_id)
 
         item = find_item(id)
-
-        return unless item
-
         send("#{fired_by}_event_handler", item)
       end
 
@@ -166,10 +163,10 @@ module CWM
 
     # Returns the item with given id
     #
-    # @param id [String] the id of the searched item
-    # @return [Item, nil] the item matching with given id
-    def find_item(id)
-      items.find { |i| i.id.to_s == id }
+    # @param needle [#to_s] any object that responds to `#to_s`
+    # @return [Item, nil] the item which id matches with given object#to_s
+    def find_item(needle)
+      items.find { |i| i.id.to_s == needle.to_s }
     end
 
     # Updates the content based on items list
@@ -390,7 +387,7 @@ module CWM
       # One for the check box input and another for the label.
       #
       # @return [String] the item richtext representation
-      def to_s
+      def to_richtext
         "#{checkbox_input} #{checkbox_label}"
       end
 
