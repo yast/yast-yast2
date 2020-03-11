@@ -64,6 +64,59 @@ describe CWM::MultiStatusSelector do
   let(:items) { [first_item, second_item] }
 
   include_examples "CWM::CustomWidget"
+
+  describe "#handle" do
+    let(:item) { subject.items.first }
+    let(:event) { { "ID" => event_id } }
+
+    context "when handling an event triggered by the check box label" do
+      let(:event_id) { "#{item.id}#checkbox#label" }
+
+      it "executes the label event handler" do
+        expect(subject).to receive(:label_event_handler).with(item)
+
+        subject.handle(event)
+      end
+
+      it "does not execute the input event handler" do
+        expect(subject).to_not receive(:input_event_handler)
+
+        subject.handle(event)
+      end
+    end
+
+    context "when handling an event triggered by the check box input" do
+      let(:event_id) { "#{item.id}#checkbox#input" }
+
+      it "executes the input event handler" do
+        expect(subject).to receive(:input_event_handler).with(item)
+
+        subject.handle(event)
+      end
+
+      it "does not execute the label event handler" do
+        expect(subject).to_not receive(:label_event_handler)
+
+        subject.handle(event)
+      end
+    end
+
+    context "when handling an event not triggered by the item" do
+      let(:event) { { "ID" => :whatever } }
+
+      it "does not execute the input event handler" do
+        expect(subject).to_not receive(:input_event_handler)
+
+        subject.handle(event)
+      end
+
+      it "does not execute the label event handler" do
+        expect(subject).to_not receive(:label_event_handler)
+
+        subject.handle(event)
+      end
+    end
+  end
 end
 
 describe CWM::MultiStatusSelector::Item do

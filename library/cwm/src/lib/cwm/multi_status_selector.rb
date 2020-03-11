@@ -34,6 +34,10 @@ module CWM
   #
   # If you want to see it in action, have a look at yast2-registration or yast2-packager modules.
   #
+  # TODO: make possible to use it more than once in the same dialog, maybe by using the parent
+  # widget_id as a prefix for the event_id. See {CWM::MultiStatusSelector#handle} and
+  # {CWM::MultiStatusSelector::Item.event_id}.
+  #
   # @example Defining a MultiStatusSelector to manage products selection (with dependencies)
   #
   #     require "cwm/multi_status_selector"
