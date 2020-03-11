@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar 12 09:14:16 UTC 2020 - David Diaz <dgonzalez@suse.com>
+
+- Add the new CWM::MultiStatusSelector custom widget (related to
+  bsc#1157780, bsc#1161308, bsc#1161200).
+- 4.2.72
+
+-------------------------------------------------------------------
 Thu Mar 12 08:26:12 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Do not remove the installation repositories in the "Previously
