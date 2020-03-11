@@ -175,7 +175,7 @@ module CWM
 
     # Updates the content based on items list
     def refresh
-      content.value = items.map(&:to_s).join("<br>")
+      content.value = items.map(&:to_richtext).join("<br>")
     end
 
     # Convenience widget to keep the content updated

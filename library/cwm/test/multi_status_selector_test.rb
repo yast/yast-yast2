@@ -65,6 +65,14 @@ describe CWM::MultiStatusSelector do
 
   include_examples "CWM::CustomWidget"
 
+  describe "#init" do
+    it "renders all items" do
+      expect(subject.items).to all(receive(:to_richtext))
+
+      subject.init
+    end
+  end
+
   describe "#handle" do
     let(:item) { subject.items.first }
     let(:event) { { "ID" => event_id } }
