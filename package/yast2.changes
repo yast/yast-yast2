@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar 12 08:26:12 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Do not remove the installation repositories in the "Previously
+  Used Repositories" step (bsc#1163081)
+- 4.2.71
+
+-------------------------------------------------------------------
 Fri Mar  6 13:26:57 UTC 2020 - David Diaz <dgonzalez@suse.com>
 
 - Allow to restore the vertical scroll of a CWM::RichText
