@@ -38,8 +38,11 @@ module Y2Packager
     end
 
     # Read and store the current repository/service setup.
-    def read
-      @repositories = Repository.all
+    # @param installation_repositories [Array<Y2Packager::Repository>]
+    def read(installation_repositories = [])
+      # skip the installation repositories, we need to keep them
+      aliases = installation_repositories.map(&:repo_alias)
+      @repositories = Repository.all.reject { |r| aliases.include?(r.repo_alias) }
       @services = Service.all
       log.info("Found #{repositories.size} repositories and #{services.size} services")
     end
