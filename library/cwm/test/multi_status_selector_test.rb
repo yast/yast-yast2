@@ -62,8 +62,47 @@ describe CWM::MultiStatusSelector do
   let(:first_item) { { id: 1, status: :selected, enabled: false } }
   let(:second_item) { { id: 2, status: :unselected, enabled: true } }
   let(:items) { [first_item, second_item] }
+  let(:content) { subject.contents.nested_find { |i| i.is_a?(CWM::RichText) } }
 
   include_examples "CWM::CustomWidget"
+
+  describe "#refresh" do
+    before do
+      allow(Yast::UI).to receive(:TextMode).and_return(text_mode)
+    end
+
+    context "when running in text mode" do
+      let(:text_mode) { true }
+
+      it "includes <br> tags" do
+        expect(content).to receive(:value=).with(/<br>/)
+
+        subject.refresh
+      end
+
+      it "does not include <p> tags" do
+        expect(content).to_not receive(:value=).with(/<p>/)
+
+        subject.refresh
+      end
+    end
+
+    context "when not running in text mode" do
+      let(:text_mode) { false }
+
+      it "includes <p> tags" do
+        expect(content).to receive(:value=).with(/<p>/)
+
+        subject.refresh
+      end
+
+      it "does not include <br> tags" do
+        expect(content).to_not receive(:value=).with(/<br>/)
+
+        subject.refresh
+      end
+    end
+  end
 
   describe "#init" do
     it "renders all items" do

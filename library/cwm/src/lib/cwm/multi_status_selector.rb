@@ -121,6 +121,21 @@ module CWM
       HBox(content)
     end
 
+    # Updates the content based on items list
+    def refresh
+      new_value = items.map do |item|
+        item_content = item.to_richtext
+
+        if Yast::UI.TextMode
+          "#{item_content}<br>"
+        else
+          "<p>#{item_content}</p>"
+        end
+      end
+
+      content.value = new_value.join
+    end
+
     # @macro seeAbstractWidget
     def handle(event)
       if event["ID"].to_s.include?(Item.event_id)
@@ -173,11 +188,6 @@ module CWM
       items.find { |i| i.id.to_s == needle.to_s }
     end
 
-    # Updates the content based on items list
-    def refresh
-      content.value = items.map(&:to_richtext).join("<br>")
-    end
-
     # Convenience widget to keep the content updated
     #
     # @return [ContentArea]
@@ -209,6 +219,8 @@ module CWM
     # See the {MultiStatusSelector} example.
     class Item
       extend Yast::I18n
+
+      textdomain "base"
 
       # Map to icons used in GUI to represent all the known statuses in both scenarios, during
       # installation (`inst` mode) and in a running system (`normal` mode).
@@ -260,8 +272,6 @@ module CWM
       # Id to identify an event fired by the check box label
       LABEL_EVENT_ID = "#{EVENT_ID}label".freeze
       private_constant :LABEL_EVENT_ID
-
-      textdomain "cwm"
 
       # @!method id
       #   The item id
