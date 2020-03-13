@@ -175,7 +175,17 @@ module CWM
 
     # Updates the content based on items list
     def refresh
-      content.value = items.map(&:to_richtext).join("<br>")
+      new_value = items.map do |item|
+        item_content = item.to_richtext
+
+        if Yast::UI.TextMode
+          "#{item_content}<br>"
+        else
+          "<p>#{item_content}</p>"
+        end
+      end
+
+      content.value = new_value.join
     end
 
     # Convenience widget to keep the content updated
