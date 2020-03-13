@@ -210,6 +210,8 @@ module CWM
     class Item
       extend Yast::I18n
 
+      textdomain "base"
+
       # Map to icons used in GUI to represent all the known statuses in both scenarios, during
       # installation (`inst` mode) and in a running system (`normal` mode).
       #
@@ -260,8 +262,6 @@ module CWM
       # Id to identify an event fired by the check box label
       LABEL_EVENT_ID = "#{EVENT_ID}label".freeze
       private_constant :LABEL_EVENT_ID
-
-      textdomain "cwm"
 
       # @!method id
       #   The item id
