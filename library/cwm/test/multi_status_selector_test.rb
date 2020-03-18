@@ -436,4 +436,28 @@ describe CWM::MultiStatusSelector::Item do
       end
     end
   end
+
+  describe ".help" do
+    context "in installation" do
+      before do
+        allow(Yast::Mode).to receive(:installation).and_return(true)
+        allow(Yast::Mode).to receive(:update).and_return(false)
+      end
+
+      it "uses the installation icon" do
+        expect(subject.class.help).to include("inst_checkbox-on.svg")
+      end
+    end
+
+    context "in installed system" do
+      before do
+        allow(Yast::Mode).to receive(:installation).and_return(false)
+        allow(Yast::Mode).to receive(:update).and_return(false)
+      end
+
+      it "uses the standard icon" do
+        expect(subject.class.help).to include("checkbox-on.svg")
+      end
+    end
+  end
 end

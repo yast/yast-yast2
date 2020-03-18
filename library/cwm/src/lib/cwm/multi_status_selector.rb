@@ -299,12 +299,12 @@ module CWM
       def self.help
         help_text = "<p>"
         # TRANSLATORS: help text for a not selected check box
-        help_text << "#{icon_for(UNSELECTED)} = #{_("Not selected")}<br />"
+        help_text << "#{icon_for(UNSELECTED, mode: mode)} = #{_("Not selected")}<br />"
         # TRANSLATORS: help text for a selected check box
-        help_text << "#{icon_for(SELECTED)} = #{_("Selected")}<br />"
+        help_text << "#{icon_for(SELECTED, mode: mode)} = #{_("Selected")}<br />"
         # TRANSLATORS: help text for an automatically selected check box
         # (it has a different look that a user selected check box)
-        help_text << "#{icon_for(AUTO_SELECTED)} = #{_("Auto selected")}"
+        help_text << "#{icon_for(AUTO_SELECTED, mode: mode)} = #{_("Auto selected")}"
         help_text << "</p>"
         help_text
       end
@@ -405,11 +405,28 @@ module CWM
         "#{checkbox_input} #{checkbox_label}"
       end
 
+      # Determines whether running in installation mode
+      #
+      # We do not use Stage.initial because of firstboot, which runs in 'installation' mode
+      # but in 'firstboot' stage.
+      #
+      # @return [Boolean] Boolean if running in installation or update mode
+      def self.installation?
+        Yast::Mode.installation || Yast::Mode.update
+      end
+
+      # Returns the current mode
+      #
+      # @return [String] "normal" in a running system; "inst" during the installation
+      def self.mode
+        installation? ? "inst" : "normal"
+      end
+
     private
 
       # @see .icon_for
       def icon
-        self.class.icon_for(status, mode: mode, state: state)
+        self.class.icon_for(status, mode: self.class.mode, state: state)
       end
 
       # Builds the check box input representation
@@ -434,13 +451,6 @@ module CWM
         end
       end
 
-      # Returns the current mode
-      #
-      # @return [String] "normal" in a running system; "inst" during the installation
-      def mode
-        installation? ? "inst" : "normal"
-      end
-
       # Returns the current input state
       #
       # @return [String] "enabled" when item must be enabled; "disabled" otherwise
@@ -462,19 +472,9 @@ module CWM
       #                  "black" otherwise
       def color
         return "grey" unless enabled?
-        return "white" if installation?
+        return "white" if self.class.installation?
 
         "black"
-      end
-
-      # Determines whether running in installation mode
-      #
-      # We do not use Stage.initial because of firstboot, which runs in 'installation' mode
-      # but in 'firstboot' stage.
-      #
-      # @return [Boolean] Boolean if running in installation or update mode
-      def installation?
-        Yast::Mode.installation || Yast::Mode.update
       end
     end
   end

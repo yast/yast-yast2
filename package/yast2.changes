@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 17 15:46:35 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed CWM::MultiStatusSelector help text icons displayed during
+  installation (related to bsc#1157780, bsc#1161308, bsc#1161200)
+- 4.2.74
+
+-------------------------------------------------------------------
 Fri Mar 13 01:54:58 UTC 2020 - David Diaz <dgonzalez@suse.com>
 
 - CWM::MultiStatusSelector minor improvements (related to
