@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sat Mar 21 11:56:41 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Force a reset of the firewalld API instance before reading the
+  firewalld configuration (bsc#1166698)
+- 4.2.75
+
+-------------------------------------------------------------------
 Tue Mar 17 15:46:35 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed CWM::MultiStatusSelector help text icons displayed during

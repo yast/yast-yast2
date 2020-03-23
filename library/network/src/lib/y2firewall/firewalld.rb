@@ -91,6 +91,9 @@ module Y2Firewall
     def read(minimal: false)
       return false unless installed?
 
+      # Force a reset of the API instance when reading the first time (bsc#1166698)
+      @api = nil
+
       @current_zone_names = api.zones
       @current_service_names = api.services
       if minimal
@@ -266,6 +269,7 @@ module Y2Firewall
     def reset
       load_defaults
       untouched!
+      @api = nil
       @read = false
     end
 
