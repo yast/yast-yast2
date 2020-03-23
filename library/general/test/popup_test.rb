@@ -43,6 +43,35 @@ describe Yast::Popup do
     end
   end
 
+  describe ".SuppressFeedback" do
+      before do
+        allow(ui).to receive(:BusyCursor)
+        allow(ui).to receive(:GetDisplayInfo).and_return({})
+      end
+
+      it "closes a popup dialog and opens it at the end when feedback is shown" do
+        # twice as first is done by Feedback and second by SuppressFeedback
+        expect(ui).to receive(:OpenDialog).twice
+        expect(ui).to receive(:CloseDialog).twice
+        subject.Feedback("test", "test") do
+          subject.SuppressFeedback {}
+        end
+      end
+
+      it "just call block if no feedback is given" do
+        expect(ui).to_not receive(:OpenDialog)
+        expect(ui).to_not receive(:CloseDialog)
+        subject.SuppressFeedback {}
+      end
+
+    context "when block is missing" do
+      it "raises exception" do
+        # no block passed
+        expect { subject.SuppressFeedback }.to raise_error(ArgumentError, /block must be supplied/)
+      end
+    end
+  end
+
   describe ".Message" do
     before { allow(ui).to receive(:OpenDialog) }
 
