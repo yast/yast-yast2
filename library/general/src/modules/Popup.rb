@@ -1035,7 +1035,7 @@ module Yast
 
     # Hides feedback during block execution.
     # After block it is shown again. When exception is raised, then it is
-    # shown again.
+    # NOT shown again.
     # @see {Feedback}, {ShowFeedback} and {ClearFeedback} for details
     # @param block block to execute
     def SuppressFeedback(&block)
