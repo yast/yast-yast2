@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar 23 11:15:56 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+
+- Add Popup#SuppressFeedback to allow to hide feedback for certain
+  actions (needed for bsc#1165705)
+- 4.2.75
+
+-------------------------------------------------------------------
 Tue Mar 17 15:46:35 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed CWM::MultiStatusSelector help text icons displayed during
