@@ -18,18 +18,20 @@ describe Yast::Popup do
   describe ".Feedback" do
     context "when arguments are good" do
       before do
-        expect(ui).to receive(:OpenDialog)
-        expect(ui).to receive(:CloseDialog)
         allow(ui).to receive(:BusyCursor)
         allow(ui).to receive(:GetDisplayInfo).and_return({})
       end
 
       it "opens a popup dialog and closes it at the end" do
+        expect(ui).to receive(:OpenDialog).ordered
+        expect(ui).to receive(:CloseDialog).ordered
         # just pass an empty block
         subject.Feedback("Label", "Message") {}
       end
 
       it "closes the popup even when an exception occurs in the block" do
+        expect(ui).to receive(:OpenDialog).ordered
+        expect(ui).to receive(:CloseDialog).ordered
         # raise an exception in the block
         expect { subject.Feedback("Label", "Message") { raise "TEST" } }.to raise_error(RuntimeError, "TEST")
       end
@@ -39,6 +41,37 @@ describe Yast::Popup do
       it "raises exception when the block parameter is missing" do
         # no block passed
         expect { subject.Feedback("Label", "Message") }.to raise_error(ArgumentError, /block must be supplied/)
+      end
+    end
+  end
+
+  describe ".SuppressFeedback" do
+    before do
+      allow(ui).to receive(:BusyCursor)
+      allow(ui).to receive(:GetDisplayInfo).and_return({})
+    end
+
+    it "closes a popup dialog and opens it at the end when feedback is shown" do
+      # check the correct Open/Close sequence
+      expect(ui).to receive(:OpenDialog).ordered
+      expect(ui).to receive(:CloseDialog).ordered
+      expect(ui).to receive(:OpenDialog).ordered
+      expect(ui).to receive(:CloseDialog).ordered
+      subject.Feedback("test", "test") do
+        subject.SuppressFeedback {}
+      end
+    end
+
+    it "just call block if no feedback is given" do
+      expect(ui).to_not receive(:OpenDialog)
+      expect(ui).to_not receive(:CloseDialog)
+      subject.SuppressFeedback {}
+    end
+
+    context "when block is missing" do
+      it "raises exception" do
+        # no block passed
+        expect { subject.SuppressFeedback }.to raise_error(ArgumentError, /block must be supplied/)
       end
     end
   end

@@ -1009,6 +1009,8 @@ module Yast
       )
 
       @feedback_open = true
+      @feedback_headline = headline
+      @feedback_message = message
 
       nil
     end
@@ -1017,6 +1019,8 @@ module Yast
     # The popup is automatically closed at the end
     # (even when an exception is raised)
     # @see {ShowFeedback} and {ClearFeedback} for details
+    # To suppress temporary feedback see {SuppressFeedback}
+    #
     # @param headline [String] popup headline (displayed in bold)
     # @param message [String] message with details, displayed below the headline
     # @param block block to execute
@@ -1027,6 +1031,21 @@ module Yast
       block.call
     ensure
       ClearFeedback()
+    end
+
+    # Hides feedback during block execution.
+    # After block it is shown again. When exception is raised, then it is
+    # NOT shown again.
+    # @see {Feedback}, {ShowFeedback} and {ClearFeedback} for details
+    # @param block block to execute
+    def SuppressFeedback(&block)
+      raise ArgumentError, "block must be supplied" unless block
+
+      return block.call unless @feedback_open # just call block if feedback is not open
+
+      ClearFeedback()
+      block.call
+      ShowFeedback(@feedback_headline, @feedback_message)
     end
 
     # Show a simple message and wait until user clicked "OK".
