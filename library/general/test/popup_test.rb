@@ -52,7 +52,7 @@ describe Yast::Popup do
     end
 
     it "closes a popup dialog and opens it at the end when feedback is shown" do
-      # twice as first is done by Feedback and second by SuppressFeedback
+      # check the correct Open/Close sequence
       expect(ui).to receive(:OpenDialog).ordered
       expect(ui).to receive(:CloseDialog).ordered
       expect(ui).to receive(:OpenDialog).ordered
