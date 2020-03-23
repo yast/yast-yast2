@@ -244,13 +244,20 @@ describe Y2Firewall::Firewalld do
     end
 
     before do
-      allow(firewalld).to receive("api").and_return api
+      allow(Y2Firewall::Firewalld::Api).to receive(:new).and_return(api)
     end
 
     it "returns false if firewalld is not installed" do
       allow(firewalld).to receive(:installed?).and_return(false)
 
       expect(firewalld.read).to eq(false)
+    end
+
+    it "resets the firewalld api instance" do
+      expect(Y2Firewall::Firewalld::Api).to receive(:new).twice.and_return(:first, api)
+      api = firewalld.api
+      firewalld.read
+      expect(firewalld.api).to_not eq(api)
     end
 
     it "stores the list of available zone names" do

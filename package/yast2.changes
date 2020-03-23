@@ -3,6 +3,13 @@ Mon Mar 23 11:15:56 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - Add Popup#SuppressFeedback to allow to hide feedback for certain
   actions (needed for bsc#1165705)
+- 4.2.76
+
+-------------------------------------------------------------------
+Sat Mar 21 11:56:41 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Force a reset of the firewalld API instance before reading the
+  firewalld configuration (bsc#1166698)
 - 4.2.75
 
 -------------------------------------------------------------------
