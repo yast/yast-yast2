@@ -125,15 +125,13 @@ module CWM
     def refresh
       new_value = items.map do |item|
         item_content = item.to_richtext
-
-        if Yast::UI.TextMode
-          "#{item_content}<br>"
-        else
-          "<p>#{item_content}</p>"
-        end
+        # HACK: tables rows are displayed side-by-side in text mode (ugh?),
+        # add an extra line break in that case
+        item_content << "<br>" if Yast::UI.TextMode
+        item_content
       end
 
-      content.value = new_value.join
+      content.value = "<table>#{new_value.join}</table>"
     end
 
     # @macro seeAbstractWidget
@@ -397,12 +395,15 @@ module CWM
 
       # Returns richtext representation for the item
       #
-      # Basically, an string containing two <a> or <span> tags, depending on the #enabled? method.
+      # Basically a string containing a table row with two <a> or <span> tags,
+      # depending on the #enabled? method.
       # One for the check box input and another for the label.
       #
       # @return [String] the item richtext representation
       def to_richtext
-        "#{checkbox_input} #{checkbox_label}"
+        # add extra space in graphical mode
+        space = Yast::UI.TextMode ? "" : " "
+        "<tr><td>#{checkbox_input}#{space}</td><td> #{checkbox_label}</td></tr>"
       end
 
       # Determines whether running in installation mode
@@ -436,7 +437,7 @@ module CWM
         if enabled?
           "<a href=\"#{id}#{INPUT_EVENT_ID}\" style=\"#{text_style}\">#{icon}</a>"
         else
-          "<span style\"#{text_style}\">#{icon}</a>"
+          "<span style=\"#{text_style}\">#{icon}</a>"
         end
       end
 
@@ -447,7 +448,7 @@ module CWM
         if enabled?
           "<a href=\"#{id}#{LABEL_EVENT_ID}\" style=\"#{text_style}\">#{label}</a>"
         else
-          "<span style\"#{text_style}\">#{label}</a>"
+          "<span style=\"#{text_style}\">#{label}</a>"
         end
       end
 
