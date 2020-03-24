@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Mar 24 16:40:09 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed alignment in the multi selection CWM widget
+  (part of bsc#1167523)
+- 4.2.77
+
+-------------------------------------------------------------------
 Mon Mar 23 11:15:56 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - Add Popup#SuppressFeedback to allow to hide feedback for certain
