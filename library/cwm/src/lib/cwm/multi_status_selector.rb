@@ -437,7 +437,7 @@ module CWM
         if enabled?
           "<a href=\"#{id}#{INPUT_EVENT_ID}\" style=\"#{text_style}\">#{icon}</a>"
         else
-          "<span style=\"#{text_style}\">#{icon}</a>"
+          "<span style=\"#{text_style}\">#{icon}</span>"
         end
       end
 
