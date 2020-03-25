@@ -401,9 +401,8 @@ module CWM
       #
       # @return [String] the item richtext representation
       def to_richtext
-        # add extra space in graphical mode
-        space = Yast::UI.TextMode ? "" : " "
-        "<tr><td>#{checkbox_input}#{space}</td><td> #{checkbox_label}</td></tr>"
+        # add some small space (&nbsp;) between the icon and the label
+        "<tr><td>#{checkbox_input}&nbsp;</td><td>#{checkbox_label}</td></tr>"
       end
 
       # Determines whether running in installation mode
@@ -448,7 +447,7 @@ module CWM
         if enabled?
           "<a href=\"#{id}#{LABEL_EVENT_ID}\" style=\"#{text_style}\">#{label}</a>"
         else
-          "<span style=\"#{text_style}\">#{label}</a>"
+          "<span style=\"#{text_style}\">#{label}</span>"
         end
       end
 

@@ -79,19 +79,13 @@ describe CWM::MultiStatusSelector do
 
         subject.refresh
       end
-
-      it "does not include <p> tags" do
-        expect(content).to_not receive(:value=).with(/<p>/)
-
-        subject.refresh
-      end
     end
 
     context "when not running in text mode" do
       let(:text_mode) { false }
 
-      it "includes <p> tags" do
-        expect(content).to receive(:value=).with(/<p>/)
+      it "includes <table> tags" do
+        expect(content).to receive(:value=).with(/<table>/)
 
         subject.refresh
       end
