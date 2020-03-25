@@ -954,6 +954,7 @@ module Yast
 
       # Finish him
       SCR.Write(path(".network"), nil)
+      CleanCacheRead()
 
       true
     end
