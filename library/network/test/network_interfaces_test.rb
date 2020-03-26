@@ -52,6 +52,9 @@ describe Yast::NetworkInterfaces do
 
   describe "#Read" do
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+    let(:network_path) { File.join(data_dir, "etc/sysconfig/network") }
+    let(:single_template) { File.join(network_path, "single_quote.test") }
+    let(:single_file) { File.join(network_path, "ifcfg-single") }
     # Defined in test/data/etc/sysconfig/ifcfg-*
     let(:devices) { ["arc5", "bond0", "br1", "cold", "em1", "eth0", "eth1", "eth2", "ppp0", "vlan3"] }
 
@@ -89,6 +92,12 @@ describe Yast::NetworkInterfaces do
       expect(subject.GetValue("eth0", "NETMASK")).to eql("255.255.255.0")
     end
 
+    it "reads the ifcfg files with single quote removed" do
+      ::FileUtils.cp(single_template, single_file)
+      subject.Read
+      expect(subject.GetValue("single", "NAME")).to eql("single quoted name")
+      ::FileUtils.rm(single_file)
+    end
   end
 
   describe "adapt_old_config!" do
@@ -304,6 +313,42 @@ describe Yast::NetworkInterfaces do
       expect(subject.Devices).to have_key(device_type)
       expect(subject.Change2("eth1", {}, false)).to be true
       expect(subject.Devices[device_type]).to include(device => device_map, "eth1" => {})
+    end
+  end
+
+  describe "#Write" do
+    let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+    let(:network_path) { File.join(data_dir, "etc/sysconfig/network") }
+    let(:ifcfg_copy) { File.join(network_path, "ifcfg-copy") }
+    let(:ifcfg_file) { File.join(network_path, "ifcfg-eth1") }
+
+    before do
+      Yast::NetworkInterfaces.CleanCacheRead()
+    end
+
+    around do |example|
+      ::FileUtils.cp(ifcfg_file, ifcfg_copy)
+      change_scr_root(data_dir, &example)
+      ::FileUtils.rm(ifcfg_copy)
+    end
+
+    it "writes interfaces configuration changes to ifcfg files" do
+      devmap = Yast::NetworkInterfaces.devmap("eth1")
+      devmap["DHCLIENT_SET_HOSTNAME"] = "yes"
+      Yast::NetworkInterfaces.Write("")
+      devmap = Yast::NetworkInterfaces.devmap("eth1")
+      expect(devmap["DHCLIENT_SET_HOSTNAME"]).to eq("yes")
+      devmap["DHCLIENT_SET_HOSTNAME"] = nil
+      Yast::NetworkInterfaces.Write("")
+      expect(::FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(true)
+    end
+
+    it "deletes removed interfaces" do
+      size = Yast::NetworkInterfaces.List("").size
+      Yast::NetworkInterfaces.Delete("copy")
+      Yast::NetworkInterfaces.Commit()
+      Yast::NetworkInterfaces.Write("")
+      expect(Yast::NetworkInterfaces.List("").size).to eq(size - 1)
     end
   end
 end
