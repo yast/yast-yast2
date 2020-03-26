@@ -324,7 +324,7 @@ describe Yast::NetworkInterfaces do
     let(:ifcfg_file) { File.join(network_path, "ifcfg-eth1") }
 
     before do
-      Yast::NetworkInterfaces.CleanCacheRead()
+      subject.CleanCacheRead()
     end
 
     around do |example|
@@ -333,23 +333,37 @@ describe Yast::NetworkInterfaces do
       ::FileUtils.rm(ifcfg_copy)
     end
 
-    it "writes interfaces configuration changes to ifcfg files" do
-      devmap = Yast::NetworkInterfaces.devmap("eth1")
-      devmap["DHCLIENT_SET_HOSTNAME"] = "yes"
-      Yast::NetworkInterfaces.Write("")
-      devmap = Yast::NetworkInterfaces.devmap("eth1")
-      expect(devmap["DHCLIENT_SET_HOSTNAME"]).to eq("yes")
-      devmap["DHCLIENT_SET_HOSTNAME"] = nil
-      Yast::NetworkInterfaces.Write("")
-      expect(::FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(true)
-    end
+    context "when the configuration has changed" do
+      it "writes interfaces configuration changes to ifcfg files" do
+        devmap = subject.devmap("eth1")
+        devmap["SOME_VALUE"] = "yes"
+        subject.Write("")
+        expect(::FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(false)
+        devmap = subject.devmap("eth1")
+        devmap["SOME_VALUE"] = nil
+        subject.Write("")
+        expect(::FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(true)
+      end
 
-    it "deletes removed interfaces" do
-      size = Yast::NetworkInterfaces.List("").size
-      Yast::NetworkInterfaces.Delete("copy")
-      Yast::NetworkInterfaces.Commit()
-      Yast::NetworkInterfaces.Write("")
-      expect(Yast::NetworkInterfaces.List("").size).to eq(size - 1)
+      it "cleans the cache and read again the configuration after writing" do
+        expect(subject).to receive(:CleanCacheRead).twice.and_call_original
+        devmap = subject.devmap("eth1")
+        devmap["DHCLIENT_SET_HOSTNAME"] = "yes"
+        subject.Write("")
+        devmap = subject.devmap("eth1")
+        expect(devmap["DHCLIENT_SET_HOSTNAME"]).to eq("yes")
+        devmap["DHCLIENT_SET_HOSTNAME"] = nil
+        subject.Write("")
+        expect(::FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(true)
+      end
+
+      it "deletes removed interfaces" do
+        size = subject.List("").size
+        subject.Delete("copy")
+        subject.Commit()
+        subject.Write("")
+        expect(subject.List("").size).to eq(size - 1)
+      end
     end
   end
 end
