@@ -92,6 +92,7 @@ describe Yast::NetworkInterfaces do
       expect(subject.GetValue("eth0", "NETMASK")).to eql("255.255.255.0")
     end
 
+    # bsc#72164
     it "reads the ifcfg files with single quote removed" do
       ::FileUtils.cp(single_template, single_file)
       subject.Read

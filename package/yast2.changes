@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
 Wed Mar 25 12:12:00 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
-- Force a cache clean and read of the current network interfaces
-  configuration after writing it (bsc#1166778)
+- Reread network interfaces configuration after writing it avoiding
+  wrong values when reopen network configuration dialog during an
+  installation (bsc#1166778)
 - 4.1.76
 
 -------------------------------------------------------------------

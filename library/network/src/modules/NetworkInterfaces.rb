@@ -954,6 +954,8 @@ module Yast
 
       # Finish him
       SCR.Write(path(".network"), nil)
+      # Reread all settings to avoid wrong values when reopen the network
+      # dialog during installation (bsc#1166778)
       CleanCacheRead()
 
       true
