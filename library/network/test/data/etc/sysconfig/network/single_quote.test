@@ -1,0 +1,5 @@
+DEVICE='single'
+BOOTPROTO='dhcp'
+STARTMODE='auto'
+DHCLIENT_SET_HOSTNAME='yes'
+NAME='single 'quoted' name'

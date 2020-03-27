@@ -52,6 +52,9 @@ describe Yast::NetworkInterfaces do
 
   describe "#Read" do
     let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+    let(:network_path) { File.join(data_dir, "etc/sysconfig/network") }
+    let(:single_template) { File.join(network_path, "single_quote.test") }
+    let(:single_file) { File.join(network_path, "ifcfg-single") }
     # Defined in test/data/etc/sysconfig/ifcfg-*
     let(:devices) { ["arc5", "bond0", "br1", "cold", "em1", "eth0", "eth1", "eth2", "ppp0", "vlan3"] }
 
@@ -89,6 +92,13 @@ describe Yast::NetworkInterfaces do
       expect(subject.GetValue("eth0", "NETMASK")).to eql("255.255.255.0")
     end
 
+    # bsc#72164
+    it "reads the ifcfg files with single quote removed" do
+      ::FileUtils.cp(single_template, single_file)
+      subject.Read
+      expect(subject.GetValue("single", "NAME")).to eql("single quoted name")
+      ::FileUtils.rm(single_file)
+    end
   end
 
   describe "adapt_old_config!" do
@@ -304,6 +314,56 @@ describe Yast::NetworkInterfaces do
       expect(subject.Devices).to have_key(device_type)
       expect(subject.Change2("eth1", {}, false)).to be true
       expect(subject.Devices[device_type]).to include(device => device_map, "eth1" => {})
+    end
+  end
+
+  describe "#Write" do
+    let(:data_dir) { File.join(File.dirname(__FILE__), "data") }
+    let(:network_path) { File.join(data_dir, "etc/sysconfig/network") }
+    let(:ifcfg_copy) { File.join(network_path, "ifcfg-copy") }
+    let(:ifcfg_file) { File.join(network_path, "ifcfg-eth1") }
+
+    before do
+      subject.CleanCacheRead()
+    end
+
+    around do |example|
+      ::FileUtils.cp(ifcfg_file, ifcfg_copy)
+      change_scr_root(data_dir, &example)
+      ::FileUtils.rm(ifcfg_copy)
+    end
+
+    context "when the configuration has changed" do
+      it "writes interfaces configuration changes to ifcfg files" do
+        devmap = subject.devmap("eth1")
+        devmap["SOME_VALUE"] = "yes"
+        subject.Write("")
+        expect(::FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(false)
+        devmap = subject.devmap("eth1")
+        devmap["SOME_VALUE"] = nil
+        subject.Write("")
+        expect(::FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(true)
+      end
+
+      it "cleans the cache and read again the configuration after writing" do
+        expect(subject).to receive(:CleanCacheRead).twice.and_call_original
+        devmap = subject.devmap("eth1")
+        devmap["DHCLIENT_SET_HOSTNAME"] = "yes"
+        subject.Write("")
+        devmap = subject.devmap("eth1")
+        expect(devmap["DHCLIENT_SET_HOSTNAME"]).to eq("yes")
+        devmap["DHCLIENT_SET_HOSTNAME"] = nil
+        subject.Write("")
+        expect(::FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(true)
+      end
+
+      it "deletes removed interfaces" do
+        size = subject.List("").size
+        subject.Delete("copy")
+        subject.Commit()
+        subject.Write("")
+        expect(subject.List("").size).to eq(size - 1)
+      end
     end
   end
 end
