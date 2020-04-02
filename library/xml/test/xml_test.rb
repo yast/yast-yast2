@@ -192,4 +192,131 @@ describe "Yast::XML" do
       end
     end
   end
+
+  describe ".XMLToYCPString" do
+    # XXX: not so obvious limitation of xml parser
+    context "when namespace for config is \"http://www.suse.com/1.0/configns\" and type attribute is in config namespace" do
+      it "returns integer for xml element with type=\"integer\"" do
+        input = "<?xml version=\"1.0\"?>\n" \
+          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+          "  <test config:type=\"integer\">5</test>\n" \
+          "  <lest config:type=\"integer\">-5</lest>\n" \
+          "  <invalid config:type=\"integer\">invalid</invalid>\n" \
+          "</test>\n"
+        expected = { "test" => 5, "lest" => -5, "invalid" => 0 }
+
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
+
+      it "returns symbol for xml element with type=\"symbol\"" do
+        input = "<?xml version=\"1.0\"?>\n" \
+          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+          "  <test config:type=\"symbol\">5</test>\n" \
+          "  <lest config:type=\"symbol\">test</lest>\n" \
+          "</test>\n"
+        expected = { "test" => :"5", "lest" => :test }
+
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
+
+      it "returns boolean for xml element with type=\"boolean\"" do
+        input = "<?xml version=\"1.0\"?>\n" \
+          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+          "  <test config:type=\"boolean\">true</test>\n" \
+          "  <lest config:type=\"boolean\">false</lest>\n" \
+          "  <invalid config:type=\"boolean\">invalid</invalid>\n" \
+          "</test>\n"
+        expected = { "test" => true, "lest" => false, "invalid" => false }
+
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
+
+      it "returns array for xml element with type=\"list\"" do
+        input = "<?xml version=\"1.0\"?>\n" \
+          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+          "  <test config:type=\"list\">\n" \
+          "    <lest config:type=\"boolean\">false</lest>\n" \
+          "    <int config:type=\"integer\">5</int>\n" \
+          "  </test>\n" \
+          "</test>\n"
+        expected = { "test" => [false, 5] }
+
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
+
+      it "returns list for xml element with type=\"list\" if contain value" do
+        input = "<?xml version=\"1.0\"?>\n" \
+          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+          "  <test config:type=\"list\">\n" \
+          "    <lest config:type=\"boolean\">false</lest>\n" \
+          "    <int config:type=\"integer\">5</int>\n" \
+          "    test value \n" \
+          "  </test>\n" \
+          "</test>\n"
+        expected = { "test" => [false, 5] }
+
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
+    end
+
+    it "returns hash for xml element that contain only sub elements" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <test>\n" \
+        "    <lest config:type=\"boolean\">false</lest>\n" \
+        "    <int config:type=\"integer\">5</int>\n" \
+        "  </test>\n" \
+        "</test>\n"
+      expected = { "test" => { "lest" => false, "int" => 5} }
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
+
+    # XXX: cause many bug reports when user accidentally add value as e.g. typo
+    it "returns string for xml element that contain sub elements and value" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <test>\n" \
+        "    <lest config:type=\"boolean\">false</lest>\n" \
+        "    <int config:type=\"integer\">5</int>\n" \
+        "    test value \n" \
+        "  </test>\n" \
+        "</test>\n"
+      expected = { "test" => "\n    test value \n  " }
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
+
+    # XXX: also cause some headaches
+    it "skips elements with empty value" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <lest config:type=\"boolean\">false</lest>\n" \
+        "  <int></int>\n" \
+        "</test>\n"
+      expected = { "lest" => false }
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
+
+    # for cdata see global before
+    it "returns cdata section as string" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <cdata1>false</cdata1>\n" \
+        "</test>\n"
+      expected = { "cdata1" => "false" }
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
+  end
 end
