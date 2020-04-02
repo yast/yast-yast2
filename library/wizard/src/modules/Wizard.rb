@@ -1351,19 +1351,20 @@ module Yast
     # Retranslate the wizard buttons.
     #
     # This will revert button labels and IDs
-    # to the default that were used upon Wizard::CreateDialog(),
+    # to the defaults that were used upon Wizard::CreateDialog(),
     # Wizard::OpenNextBackDialog(), or Wizard::OpenAcceptDialog().
     #
     def RetranslateButtons
-      if UI.WidgetExists(Id(:WizardDialog)) == true
+      if UI.WidgetExists(Id(:WizardDialog)) == true # NCurses wizard
+        UI.ChangeWidget(Id(:help), :Label, Label.HelpButton) if UI.WidgetExists(Id(:help))
         ReplaceButtonBox(
           if UI.WidgetExists(Id(:accept))
             AbortAcceptButtonBox()
           else
             BackAbortNextButtonBox()
           end
-        ) # Qt wizard
-      else
+        )
+      else # Qt wizard
         UI.WizardCommand(term(:RetranslateInternalButtons))
 
         if UI.WidgetExists(:accept)
