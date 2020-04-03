@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr  3 09:55:17 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Modify the way YaST detects whether systemd is running or not
+  (bsc#1168307)
+- 4.2.80
+
+-------------------------------------------------------------------
 Fri Mar 27 13:12:00 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - Reread network interfaces configuration after writing it avoiding
