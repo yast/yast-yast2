@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Mar 27 13:12:00 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Reread network interfaces configuration after writing it avoiding
+  wrong values when reopen network configuration dialog during an
+  installation (bsc#1166778)
+- 4.2.79
+
+-------------------------------------------------------------------
 Thu Mar 26 12:57:33 UTC 2020 - David Diaz <dgonzalez@suse.com>
 
 - Remove no longer needed multi status selector since it

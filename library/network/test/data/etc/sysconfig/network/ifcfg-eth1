@@ -1,4 +1,4 @@
-DEVICE=eth1
+DEVICE='eth1'
 BOOTPROTO='static'
 STARTMODE='auto'
-SLAVE=YES
+SLAVE='YES'
