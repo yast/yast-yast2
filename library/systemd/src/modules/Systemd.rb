@@ -38,7 +38,6 @@ module Yast
       @systemd_path = "/usr/lib/systemd/systemd"
       @default_target_symlink = "/etc/systemd/system/default.target"
       @systemd_targets_dir = "/usr/lib/systemd/system"
-      @systemd_mountdir = "/sys/fs/cgroup/systemd"
 
       textdomain "base"
     end
@@ -52,7 +51,7 @@ module Yast
     # Check whether systemd init is currently running
     # @return boolean true if systemd init is running
     def Running
-      FileUtils.IsDirectory(@systemd_mountdir) == true
+      SCR.Read(path(".target.string"), "/proc/1/comm")&.chomp == "systemd"
     end
 
     # Set default runlevel for systemd (assumes systemd is installed)
