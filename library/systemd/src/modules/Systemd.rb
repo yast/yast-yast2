@@ -51,7 +51,7 @@ module Yast
     # Check whether systemd init is currently running
     # @return boolean true if systemd init is running
     def Running
-      SCR.Read(path(".local.string"), "/proc/1/comm")&.chomp == "systemd"
+      WFM.Read(path(".local.string"), "/proc/1/comm")&.chomp == "systemd"
     end
 
     # Set default runlevel for systemd (assumes systemd is installed)
