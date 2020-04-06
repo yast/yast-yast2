@@ -1,6 +1,6 @@
 # ***************************************************************************
 #
-# Copyright (c) 2002 - 2012 Novell, Inc.
+# Copyright (c) 2002 - 2020 Novell, Inc.
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -19,16 +19,15 @@
 # you may find current contact information at www.novell.com
 #
 # ***************************************************************************
-# File:  modules/XML.ycp
-# Package:  XML
-# Summary:  XML routines
-# Authors:  Anas Nashif <nashif@suse.de>
-#
-# $Id$
+
 require "yast"
+
+require "nokogiri"
 
 module Yast
   class XMLClass < Module
+    include Yast::Logger
+
     def main
       # Sections in XML file that should be treated as CDATA when saving
       @cdataSections = []
@@ -125,45 +124,34 @@ module Yast
       Ops.is_string?(ret) ? Convert.to_string(ret) : ""
     end
 
-    # Read XML file into YCP
+    # Reads XML file
     # @param [String] xml_file XML file name to read
-    # @return Map with YCP data
+    # @return [Hash] parsed content
     def XMLToYCPFile(xml_file)
-      if Ops.greater_than(SCR.Read(path(".target.size"), xml_file), 0)
-        Builtins.y2milestone("Reading %1", xml_file)
-        out = Convert.convert(
-          SCR.Read(path(".xml"), xml_file),
-          from: "any",
-          to:   "map <string, any>"
-        )
-        Builtins.y2debug("XML Agent output: %1", out)
-        deep_copy(out)
-      else
-        Builtins.y2warning(
-          "XML file %1 (%2) not found",
-          xml_file,
-          SCR.Read(path(".target.size"), xml_file)
-        )
-        {}
+      if SCR.Read(path(".target.size"), xml_file) <= 0
+        log.warn "XML file #{xml_file} not found"
+        return {}
       end
+
+      log.info "Reading #{xml_file}"
+      XMLToYCPString(SCR.Read(path(".target.string"), xml_file))
     end
 
-    # Read XML string into YCP
-    # @param xml_string string to read
-    # @return Map with YCP data
+    # Reads XML string
+    # @param [String] xml_string to read
+    # @return [Hash] parsed content
     def XMLToYCPString(xml_string)
-      if Ops.greater_than(Builtins.size(xml_string), 0)
-        out = Convert.convert(
-          SCR.Read(path(".xml.string"), xml_string),
-          from: "any",
-          to:   "map <string, any>"
-        )
-        Builtins.y2debug("XML Agent output: %1", out)
-        deep_copy(out)
-      else
-        Builtins.y2warning("can't convert empty XML string")
-        {}
+      result = {}
+      if !xml_string || xml_string.empty?
+        log.warn "can't convert empty XML string"
+        return result
       end
+
+      doc = Nokogiri::XML(xml_string)
+      doc.remove_namespaces! # remove fancy namespaces to make user life easier
+      doc.root.children.each { |n| parse_node(n, result) }
+
+      result
     end
 
     # The error string from the xml parser.
@@ -180,6 +168,65 @@ module Yast
     publish function: :XMLToYCPFile, type: "map <string, any> (string)"
     publish function: :XMLToYCPString, type: "map <string, any> (string)"
     publish function: :XMLError, type: "string ()"
+
+  private
+
+    BOOLEAN_MAP = {
+      "true" => true,
+      "false" => false
+    }
+
+    def parse_node(node, result)
+      children = node.children
+      # we need just direct text under node. Can be splitted with another elements
+      # but remove whitespace only text
+      text = node.xpath('text()').text.sub(/\A\s+\z/, "")
+      name = node.name
+      type = node["type"]
+      if !type
+        if text.empty? && children.empty? # empty node. Skip element according to backward compatibility
+          return result
+        elsif text.empty? && !children.empty?
+          type = "map"
+        elsif !text.empty? && children.empty?
+          type = "string"
+        else
+          log.error "xml #{node.name} contain both text #{text} and children #{children.size}."
+          type = "string"
+        end
+      end
+
+      case type
+      when "string" then value = text
+      when "symbol" then value = text.to_sym
+      when "integer" then value = text.to_i
+      when "boolean"
+        value = BOOLEAN_MAP[text]
+        if value.nil?
+          log.warn "invalid value '#{text}' for boolean #{node.name}"
+          value = false
+        end
+      when "list"
+        value = []
+        children.each do |node|
+          # always pass new hash to prevent overwrite for list with same elements
+          r = {}
+          parse_node(node, r)
+          value.concat(r.values)
+        end
+      when "map"
+        value = {}
+        children.each do |node|
+          parse_node(node, value)
+        end
+      else
+        raise "Unexpected type '#{type.inspect}'"
+      end
+
+      result[name] = value
+
+      result
+    end
   end
 
   XML = XMLClass.new

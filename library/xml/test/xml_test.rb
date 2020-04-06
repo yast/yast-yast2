@@ -318,5 +318,16 @@ describe "Yast::XML" do
 
       expect(subject.XMLToYCPString(input)).to eq expected
     end
+
+    xit "returns nil if xml is malformed" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <not_closed>false</invalid\n" \
+        "</test>\n"
+      expected = nil
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
   end
 end
