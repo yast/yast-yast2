@@ -1355,6 +1355,7 @@ module Yast
     # Wizard::OpenNextBackDialog(), or Wizard::OpenAcceptDialog().
     #
     def RetranslateButtons
+      textdomain "base" # Reload translations
       if UI.WidgetExists(Id(:WizardDialog)) == true # NCurses wizard
         UI.ChangeWidget(Id(:help), :Label, Label.HelpButton) if UI.WidgetExists(Id(:help))
         ReplaceButtonBox(
