@@ -225,7 +225,6 @@ fi
 # documentation (not included in devel subpackage)
 %doc %dir %{yast_docdir}
 %license %{yast_docdir}/COPYING
-%doc %{yast_docdir}/CONTRIBUTING.md
 %doc %{yast_docdir}/README.md
 
 %{_mandir}/*/*
