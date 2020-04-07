@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr  7 08:33:55 UTC 2020 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Retranslate wizard help button in NCurses UI (bsc#1167224)
+- 4.2.81
+
+-------------------------------------------------------------------
 Fri Apr  3 09:55:17 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - Modify the way YaST detects whether systemd is running or not
