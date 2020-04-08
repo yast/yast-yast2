@@ -201,9 +201,9 @@ module Yast
       name = node.name
       type = node["type"]
       if !type
-        if text.empty? && children.empty? # empty node. Skip element according to backward compatibility
-          return result
-        elsif text.empty? && !children.empty?
+        return result if text.empty? && children.empty? # empty node. Skip element according to backward compatibility
+
+        if text.empty? && !children.empty?
           type = "map"
         elsif !text.empty? && children.empty?
           type = "string"
@@ -225,16 +225,16 @@ module Yast
         end
       when "list"
         value = []
-        children.each do |node|
+        children.each do |kid|
           # always pass new hash to prevent overwrite for list with same elements
           r = {}
-          parse_node(node, r)
+          parse_node(kid, r)
           value.concat(r.values)
         end
       when "map"
         value = {}
-        children.each do |node|
-          parse_node(node, value)
+        children.each do |kid|
+          parse_node(kid, value)
         end
       else
         raise "Unexpected type '#{type.inspect}'"
@@ -279,6 +279,7 @@ module Yast
           value.each do |list_value|
             # backward compatibility. Nil in array stop array processing
             break unless list_value
+
             add_element(doc, metadata, element, element_name => list_value)
           end
         when ::Hash
