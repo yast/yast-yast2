@@ -141,17 +141,22 @@ module Yast
     # @param [String] xml_string to read
     # @return [Hash] parsed content
     def XMLToYCPString(xml_string)
+      @xml_error = ""
       result = {}
       if !xml_string || xml_string.empty?
         log.warn "can't convert empty XML string"
         return result
       end
 
-      doc = Nokogiri::XML(xml_string)
+      doc = Nokogiri::XML(xml_string) { |config| config.strict }
       doc.remove_namespaces! # remove fancy namespaces to make user life easier
       doc.root.children.each { |n| parse_node(n, result) }
 
       result
+    rescue Nokogiri::XML::SyntaxError => e
+      @xml_error = e.message
+
+      return nil
     end
 
     # The error string from the xml parser.
@@ -159,7 +164,7 @@ module Yast
     # A reset happens before a new XML parsing starts.
     # @return parser error
     def XMLError
-      Convert.to_string(SCR.Read(path(".xml.error_message")))
+      @xml_error
     end
 
     publish function: :xmlCreateDoc, type: "void (symbol, map)"

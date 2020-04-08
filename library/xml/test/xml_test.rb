@@ -319,7 +319,7 @@ describe "Yast::XML" do
       expect(subject.XMLToYCPString(input)).to eq expected
     end
 
-    xit "returns nil if xml is malformed" do
+    it "returns nil if xml is malformed" do
       input = "<?xml version=\"1.0\"?>\n" \
         "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
@@ -328,6 +328,27 @@ describe "Yast::XML" do
       expected = nil
 
       expect(subject.XMLToYCPString(input)).to eq expected
+    end
+  end
+
+  describe ".XMLError" do
+    it "returns the last error whe parsing XML" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <not_closed>false</invalid\n" \
+        "</test>\n"
+      subject.XMLToYCPString(input)
+
+      expect(subject.XMLError).to_not be_empty
+    end
+
+    it "returns empty string if there is no error" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<test>false</test>"
+      subject.XMLToYCPString(input)
+
+      expect(subject.XMLError).to eq ""
     end
   end
 end
