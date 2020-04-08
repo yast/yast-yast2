@@ -97,31 +97,42 @@ module Yast
     # @param [String] output_path the path of the XML file
     # @return [Boolean] true on sucess
     def YCPToXMLFile(doc_type, contents, output_path)
-      contents = deep_copy(contents)
-      if !Builtins.haskey(@docs, doc_type)
-        Builtins.y2error("doc type %1 undeclared...", doc_type)
-        return false
-      end
-      docSettings = Ops.get_map(@docs, doc_type, {})
-      Ops.set(docSettings, "fileName", output_path)
-      Builtins.y2debug("Write(.xml, %1, %2)", docSettings, contents)
-      ret = Convert.to_boolean(SCR.Execute(path(".xml"), docSettings, contents))
-      ret
+      xml = YCPToXMLString(doc_type, contents)
+      return false unless xml
+
+      SCR.Write(path(".target.string"), output_path, xml)
     end
 
     # Write YCP data into formated XML string
     # @param [Symbol] doc_type Document type identifier
     # @param [Hash] contents  a map with YCP data
-    # @return [String] String with XML data
+    # @return [String, nil] String with XML data or nil if error happen
     def YCPToXMLString(doc_type, contents)
       contents = deep_copy(contents)
-      return nil if !Builtins.haskey(@docs, doc_type)
+      metadata = @docs[doc_type]
+      if !metadata
+        log.error "Calling YCPToXML with unknown doc_type #{doc_type.inspect}. " \
+          "Known types #{@docs.keys.inspect}"
+        return nil
+      end
 
-      docSettings = Ops.get_map(@docs, doc_type, {})
-      Ops.set(docSettings, "fileName", "dummy")
-      ret = SCR.Execute(path(".xml.string"), docSettings, contents)
+      doc = Nokogiri::XML::Document.new("1.0")
+      root_name = metadata["rootElement"]
+      if !root_name || root_name.empty?
+        log.warn "root element missing in docs #{metadata.inspect}"
+        return nil
+      end
 
-      Ops.is_string?(ret) ? Convert.to_string(ret) : ""
+      doc.create_internal_subset(root_name, nil, metadata["systemID"])
+
+      root = doc.create_element root_name
+      root.default_namespace = metadata["nameSpace"] if metadata["nameSpace"]
+      root.add_namespace("config", metadata["typeNamespace"]) if metadata["typeNamespace"]
+
+      add_element(doc, metadata, root, contents)
+
+      doc.root = root
+      doc.to_xml
     end
 
     # Reads XML file
@@ -139,7 +150,8 @@ module Yast
 
     # Reads XML string
     # @param [String] xml_string to read
-    # @return [Hash] parsed content
+    # @return [Hash, nil] parsed content or nil if error happen and in such case
+    #   error reason is in {#XMLError}
     def XMLToYCPString(xml_string)
       @xml_error = ""
       result = {}
@@ -148,7 +160,7 @@ module Yast
         return result
       end
 
-      doc = Nokogiri::XML(xml_string) { |config| config.strict }
+      doc = Nokogiri::XML(xml_string, &:strict)
       doc.remove_namespaces! # remove fancy namespaces to make user life easier
       doc.root.children.each { |n| parse_node(n, result) }
 
@@ -156,7 +168,7 @@ module Yast
     rescue Nokogiri::XML::SyntaxError => e
       @xml_error = e.message
 
-      return nil
+      nil
     end
 
     # The error string from the xml parser.
@@ -177,15 +189,15 @@ module Yast
   private
 
     BOOLEAN_MAP = {
-      "true" => true,
+      "true"  => true,
       "false" => false
-    }
+    }.freeze
 
     def parse_node(node, result)
       children = node.children
       # we need just direct text under node. Can be splitted with another elements
       # but remove whitespace only text
-      text = node.xpath('text()').text.sub(/\A\s+\z/, "")
+      text = node.xpath("text()").text.sub(/\A\s+\z/, "")
       name = node.name
       type = node["type"]
       if !type
@@ -231,6 +243,56 @@ module Yast
       result[name] = value
 
       result
+    end
+
+    # @param [Nokogiri::XML::Document] doc
+    # @param [Hash] metadata for current doc
+    # @param [Nokogiri::XML::Node] parent
+    # @param [Hash] content to write
+    # @return [void]
+    def add_element(doc, metadata, parent, contents)
+      # backward compatibility. Keys are sorted and needs old ycp sort to be able to compare also classes
+      Builtins.sort(contents.keys).each do |key|
+        # backward compatibility. Ignore non string keys
+        next unless key.is_a?(::String)
+
+        value = contents[key]
+        type_attr = metadata["typeNamespace"] ? (metadata["typeNamespace"] + ":") : ""
+        type_attr << "type"
+        element = Nokogiri::XML::Node.new(key, doc)
+        case value
+        when ::String
+          element.content = value
+        when ::Integer
+          element[type_attr] = "integer"
+          element.content = value.to_s
+        when ::Symbol
+          element[type_attr] = "symbol"
+          element.content = value.to_s
+        when true, false
+          element[type_attr] = "boolean"
+          element.content = value.to_s
+        when ::Array
+          element[type_attr] = "list"
+          special_names = metadata["listEntries"] || {}
+          element_name = special_names[key] || "listentry"
+          value.each do |list_value|
+            # backward compatibility. Nil in array stop array processing
+            break unless list_value
+            add_element(doc, metadata, element, element_name => list_value)
+          end
+        when ::Hash
+          add_element(doc, metadata, element, value)
+        when nil
+          # backward compatibility. Nil in hash stop hash processing
+          log.warn "nil found in hash. Stopping hash processing. #{contents}"
+          break
+        else
+          raise "Unsupported element #{value.inspect} class #{value.class.inspect}"
+        end
+
+        parent << element
+      end
     end
   end
 
