@@ -171,6 +171,26 @@ module Yast
       nil
     end
 
+    # Validates given schema
+    #
+    # @param xml [String] path or content of XML
+    # @param schema [String] path or content of relax ng schema
+    # @return [String] string with errors or empty string
+    def XMLValidation(xml, schema)
+      xml = SCR.Read(path(".target.string"), xml) unless xml.include?("\n")
+      if schema.include?("\n") # content, not path
+        validator = Nokogiri::XML::RelaxNG(schema)
+      else
+        schema_content = SCR.Read(path(".target.string"), schema)
+        schema_path = File.dirname(schema)
+        # change directory so relative include works
+        Dir.chdir(schema_path) { validator = Nokogiri::XML::RelaxNG(schema_content) }
+      end
+
+      doc = Nokogiri::XML(xml)
+      validator.validate(doc).map(&:message).join("\n")
+    end
+
     # The error string from the xml parser.
     # It should be used when the agent did not return content.
     # A reset happens before a new XML parsing starts.

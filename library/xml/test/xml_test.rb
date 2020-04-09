@@ -352,4 +352,50 @@ describe "Yast::XML" do
       expect(subject.XMLError).to eq ""
     end
   end
+
+  describe "XMLValidation" do
+    let(:schema) do
+      '<element name="test" xmlns="http://relaxng.org/ns/structure/1.0">
+         <zeroOrMore>
+           <element name="person">
+             <element name="name">
+               <text/>
+             </element>
+             <element name="voice">
+               <text/>
+             </element>
+           </element>
+         </zeroOrMore>
+       </element>'
+    end
+
+    it "returns empty string for valid xml" do
+      xml = '<?xml version="1.0"?>
+             <test>
+               <person>
+                 <name>
+                   clark
+                 </name>
+                 <voice>
+                   nice
+                 </voice>
+               </person>
+             </test>'
+
+      expect(Yast::XML.XMLValidation(xml, schema)).to be_empty
+    end
+
+    it "returns error when xml is not valid for given schema" do
+      xml = '<?xml version="1.0"?>
+             <test>
+               <person>
+                 <name>
+                   clark
+                 </name>
+               </person>
+             </test>'
+
+      expect(Yast::XML.XMLValidation(xml, schema)).to_not be_empty
+    end
+  end
 end
