@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr 13 12:36:58 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove ip aliases that were marked to be deleted from the
+  interface configuration files (bsc#1146020)
+- 4.1.77
+
+-------------------------------------------------------------------
 Wed Mar 25 12:12:00 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - Reread network interfaces configuration after writing it avoiding
