@@ -187,10 +187,14 @@ module CWM
 
     alias_method :orig_value=, :value=
     def value=(val)
-      if opt.include?(:editable) && !items.map(&:first).include?(val)
-        change_items([[val, val]] + items)
-      end
+      change_items([[val, val]] + items) if editable? && !items.map(&:first).include?(val)
       self.orig_value = val
+    end
+
+  private
+
+    def editable?
+      opt.include?(:editable)
     end
   end
 
