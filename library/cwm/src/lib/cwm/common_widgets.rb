@@ -357,6 +357,14 @@ module CWM
 
     include ItemsSelection
     abstract_method :label
+
+    # @see AbstractWidget#cwm_definition
+    # @return [WidgetHash]
+    def cwm_definition
+      res = super
+      res["handle_events"] = items.map(&:first) unless handle_all_events
+      res
+    end
   end
 
   # Multiline text widget
