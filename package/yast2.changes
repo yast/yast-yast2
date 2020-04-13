@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr 13 12:36:58 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove ip aliases that were marked to be deleted from the
+  interface configuration files (bsc#1146020)
+- 4.2.82
+
+-------------------------------------------------------------------
 Tue Apr  7 08:33:55 UTC 2020 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Retranslate wizard help button in NCurses UI (bsc#1167224)
