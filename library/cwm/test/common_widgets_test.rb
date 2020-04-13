@@ -110,3 +110,30 @@ describe CWM::RichText do
     end
   end
 end
+
+describe CWM::ComboBox do
+  class MountPointSelector < CWM::ComboBox
+    def label
+      ""
+    end
+
+    def opt
+      [:editable]
+    end
+
+    def items
+      [["/", "/ (root)"]]
+    end
+  end
+
+  subject { MountPointSelector.new }
+
+  describe "#value=" do
+    describe "when the widget is editable" do
+      it "adds the given value to the list of items" do
+        expect(subject).to receive(:change_items).with([["/srv", "/srv"], ["/", "/ (root)"]])
+        subject.value = "/srv"
+      end
+    end
+  end
+end

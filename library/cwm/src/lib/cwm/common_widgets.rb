@@ -184,6 +184,14 @@ module CWM
     include ValueBasedWidget
     include ItemsSelection
     abstract_method :label
+
+    alias_method :orig_value=, :value=
+    def value=(val)
+      if opt.include?(:editable) && !items.map(&:first).include?(val)
+        change_items([[val, val]] + items)
+      end
+      self.orig_value = val
+    end
   end
 
   # Widget representing selection box to select value.
