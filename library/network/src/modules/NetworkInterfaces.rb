@@ -1609,7 +1609,7 @@ module Yast
     #   removed
     # @param alias_num [String] index num of the alias that needs to be removed
     def delete_alias(devices, iface, alias_num)
-      dev_map = devices.values.find { |d| d.keys.include? (iface) } || {}
+      dev_map = devices.values.find { |d| d.keys.include?(iface) } || {}
       dev_aliases = dev_map.fetch(iface, {}).fetch("_aliases", {})
 
       base = path(".network.value") + iface
