@@ -1594,7 +1594,6 @@ module Yast
     #
     # @param iface [String] interface name of the config file to be deleted
     def delete_device(iface)
-      # delete config file
       p = path(".network.section") + iface
       log.debug("deleting: #{p}")
       SCR.Write(p, nil)
