@@ -322,6 +322,8 @@ describe Yast::NetworkInterfaces do
     let(:network_path) { File.join(data_dir, "etc/sysconfig/network") }
     let(:ifcfg_copy) { File.join(network_path, "ifcfg-copy") }
     let(:ifcfg_file) { File.join(network_path, "ifcfg-eth1") }
+    let(:eth0_back) { File.join(network_path, "ifcfg-eth0.backup") }
+    let(:eth0) { File.join(network_path, "ifcfg-eth0") }
 
     before do
       subject.CleanCacheRead()
@@ -329,8 +331,11 @@ describe Yast::NetworkInterfaces do
 
     around do |example|
       ::FileUtils.cp(ifcfg_file, ifcfg_copy)
+      ::FileUtils.cp(eth0, eth0_back)
       change_scr_root(data_dir, &example)
+      ::FileUtils.cp(eth0_back, eth0)
       ::FileUtils.rm(ifcfg_copy)
+      ::FileUtils.rm(eth0_back)
     end
 
     context "when the configuration has changed" do
@@ -363,6 +368,18 @@ describe Yast::NetworkInterfaces do
         subject.Commit()
         subject.Write("")
         expect(subject.List("").size).to eq(size - 1)
+      end
+
+      it "deletes removed aliases" do
+        devmap = subject.devmap("eth0")
+        expect(devmap["_aliases"].size).to eq(1)
+        subject.Edit("eth0")
+        subject.Current["_aliases"] = {}
+        subject.Commit()
+        subject.DeleteAlias("eth0", "0")
+        subject.Write("")
+        devmap = subject.devmap("eth0")
+        expect(devmap["_aliases"]).to be(nil)
       end
     end
   end
