@@ -109,7 +109,7 @@ module Yast
     # @param [String] details (displayed as a plain text, can contain multiple lines)
     def ShowErrorPopUp(heading, error_text, details)
       bugzilla_url = "http://bugzilla.suse.com/"
-      bugzilla_url = "http://bugzilla.opensuse.org" if OSRelease.ReleaseName.include? 'openSUSE'
+      bugzilla_url = "http://bugzilla.opensuse.org" if OSRelease.ReleaseName.include? "openSUSE"
       success = UI.OpenDialog(
         Opt(:decorated, :warncolor),
         VBox(
