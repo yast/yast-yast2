@@ -295,8 +295,30 @@ describe "Yast::XML" do
       expect(subject.XMLToYCPString(input)).to eq expected
     end
 
+    it "returns empty string for empty element with type string" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <test type=\"string\" />\n" \
+        "</test>\n"
+      expected = { "test" => "" }
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
+
+    it "returns empty hash for empty element with type map" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <test type=\"map\" />\n" \
+        "</test>\n"
+      expected = { "test" => {} }
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
+
     # XXX: also cause some headaches
-    it "skips elements with empty value" do
+    it "skips elements with empty value without type attribute" do
       input = "<?xml version=\"1.0\"?>\n" \
         "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
