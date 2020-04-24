@@ -224,7 +224,8 @@ module Yast
         return result if text.empty? && children.empty? # empty node. Skip element according to backward compatibility
 
         if text.empty? && !children.empty?
-          type = "map"
+          # keep cdata trick to create empty string
+          type = children.all? { |c| c.is_a?(Nokogiri::XML::CDATA) } ? "string" : "map"
         elsif !text.empty? && children.empty?
           type = "string"
         else

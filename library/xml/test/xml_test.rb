@@ -308,6 +308,17 @@ describe "Yast::XML" do
       expect(subject.XMLToYCPString(input)).to eq expected
     end
 
+    it "workaround with empty cdata still works" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <lest><![CDATA[]]></lest>\n" \
+        "</test>\n"
+      expected = { "lest" => "" }
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
+
     # for cdata see global before
     it "returns cdata section as string" do
       input = "<?xml version=\"1.0\"?>\n" \
