@@ -25,6 +25,42 @@ require "yast"
 require "nokogiri"
 
 module Yast
+  # Exception used when serializing ruby object that contain invalid object like nil,
+  # not supported object or non string hash key.
+  class XMLInvalidObject < RuntimeError
+  end
+
+  # Specialed exception used when serializing ruby object that contain nil.
+  class XMLNilObject < XMLInvalidObject
+    attr_reader :object
+
+    def initialize(object)
+      @object = object
+      super("Nil passed to XML serializer in #{object.inspect}.")
+    end
+  end
+
+  # Specialed exception used when serializing ruby hash that that contain non string key.
+  class XMLInvalidKey < XMLInvalidObject
+    attr_reader :key
+
+    def initialize(key)
+      @key = key
+      super("Non string key '#{key.inspect}' passed to XML serializer.")
+    end
+  end
+
+  # Exception used when parsing xml string either syntax error or invalid values in element.
+  class XMLInvalidContent < RuntimeError
+  end
+
+  # Specialized exception used when syntax error in XML is found
+  class XMLParseError < XMLInvalidContent
+    def initialize(error)
+      super(error)
+    end
+  end
+
   class XMLClass < Module
     include Yast::Logger
 
@@ -96,6 +132,7 @@ module Yast
     # @param [Hash] contents  a map with YCP data
     # @param [String] output_path the path of the XML file
     # @return [Boolean] true on sucess
+    # @raise [XMLInvalidObject] when non supported contents is passed
     def YCPToXMLFile(doc_type, contents, output_path)
       xml = YCPToXMLString(doc_type, contents)
       return false unless xml
@@ -107,6 +144,7 @@ module Yast
     # @param [Symbol] doc_type Document type identifier
     # @param [Hash] contents  a map with YCP data
     # @return [String, nil] String with XML data or nil if error happen
+    # @raise [XMLInvalidObject] when non supported contents is passed
     def YCPToXMLString(doc_type, contents)
       contents = deep_copy(contents)
       metadata = @docs[doc_type]
@@ -138,11 +176,9 @@ module Yast
     # Reads XML file
     # @param [String] xml_file XML file name to read
     # @return [Hash] parsed content
+    # @raise [XMLInvalidContent] when non supported xml is passed
     def XMLToYCPFile(xml_file)
-      if SCR.Read(path(".target.size"), xml_file) <= 0
-        log.warn "XML file #{xml_file} not found"
-        return {}
-      end
+      raise XMLInvalidContent, "Cannot find XML file" if SCR.Read(path(".target.size"), xml_file) <= 0
 
       log.info "Reading #{xml_file}"
       XMLToYCPString(SCR.Read(path(".target.string"), xml_file))
@@ -150,25 +186,21 @@ module Yast
 
     # Reads XML string
     # @param [String] xml_string to read
-    # @return [Hash, nil] parsed content or nil if error happen and in such case
+    # @return [Hash] parsed content or nil if error happen and in such case
     #   error reason is in {#XMLError}
+    # @raise [XMLInvalidContent] when non supported xml is passed
     def XMLToYCPString(xml_string)
-      @xml_error = ""
       result = {}
-      if !xml_string || xml_string.empty?
-        log.warn "can't convert empty XML string"
-        return result
-      end
+      raise XMLInvalidContent, "Cannot convert empty XML string" if !xml_string || xml_string.empty?
 
       doc = Nokogiri::XML(xml_string, &:strict)
       doc.remove_namespaces! # remove fancy namespaces to make user life easier
-      doc.root.children.each { |n| parse_node(n, result) }
+      # ignore text in top element
+      doc.root.children.reject { |c| c.is_a?(::Nokogiri::XML::Text) }.each { |n| parse_node(n, result) }
 
       result
     rescue Nokogiri::XML::SyntaxError => e
-      @xml_error = e.message
-
-      nil
+      raise XMLParseError, e.message
     end
 
     # Validates given schema
@@ -194,9 +226,10 @@ module Yast
     # The error string from the xml parser.
     # It should be used when the agent did not return content.
     # A reset happens before a new XML parsing starts.
-    # @return parser error
+    # @return nil
+    # @deprecated Exception is used instead
     def XMLError
-      @xml_error
+      nil
     end
 
     publish function: :xmlCreateDoc, type: "void (symbol, map)"
@@ -214,36 +247,40 @@ module Yast
     }.freeze
 
     def parse_node(node, result)
+      text = node.xpath("text()").text.sub(/\A\s+\z/, "")
       children = node.children
+      # do not add as children text
+      children = children.reject { |c| c.class == Nokogiri::XML::Text }
       # we need just direct text under node. Can be splitted with another elements
       # but remove whitespace only text
-      text = node.xpath("text()").text.sub(/\A\s+\z/, "")
       name = node.name
       type = node["type"]
       if !type
-        return result if text.empty? && children.empty? # empty node. Skip element according to backward compatibility
+        raise XMLInvalidContent, "xml #{node.name} is empty without type specified" if text.empty? && children.empty?
 
         if text.empty? && !children.empty?
           # keep cdata trick to create empty string
-          type = children.all? { |c| c.is_a?(Nokogiri::XML::CDATA) } ? "string" : "map"
+          type = (children.all? { |c| c.is_a?(Nokogiri::XML::CDATA) }) ? "string" : "map"
         elsif !text.empty? && children.empty?
           type = "string"
         else
-          log.error "xml #{node.name} contain both text #{text} and children #{children.size}."
-          type = "string"
+          raise XMLInvalidContent, "xml #{node.name} contain both text #{text} and children #{children.inspect}."
         end
       end
 
       case type
       when "string" then value = text
-      when "symbol" then value = text.to_sym
-      when "integer" then value = text.to_i
+      when "symbol"
+        raise XMLInvalidContent, "xml node '#{node.name}' is empty. Forbidden for symbol." if text.empty?
+
+        value = text.to_sym
+      when "integer"
+        raise XMLInvalidContent, "xml node '#{node.name}' is empty. Forbidden for integer." if text.empty?
+
+        value = text.to_i
       when "boolean"
         value = BOOLEAN_MAP[text]
-        if value.nil?
-          log.warn "invalid value '#{text}' for boolean #{node.name}"
-          value = false
-        end
+        raise XMLInvalidContent, "xml node '#{node.name}' is invalid. Only true and false is allowed for boolean." if value.nil?
       when "list"
         value = []
         children.each do |kid|
@@ -258,7 +295,7 @@ module Yast
           parse_node(kid, value)
         end
       else
-        raise "Unexpected type '#{type.inspect}'"
+        raise XMLInvalidContent, "XML node #{node.name} contain invalid type #{type.inspect}"
       end
 
       result[name] = value
@@ -274,8 +311,7 @@ module Yast
     def add_element(doc, metadata, parent, contents)
       # backward compatibility. Keys are sorted and needs old ycp sort to be able to compare also classes
       Builtins.sort(contents.keys).each do |key|
-        # backward compatibility. Ignore non string keys
-        next unless key.is_a?(::String)
+        raise XMLInvalidKey, key unless key.is_a?(::String)
 
         value = contents[key]
         type_attr = metadata["typeNamespace"] ? (metadata["typeNamespace"] + ":") : ""
@@ -299,20 +335,15 @@ module Yast
           special_names = metadata["listEntries"] || {}
           element_name = special_names[key] || "listentry"
           value.each do |list_value|
-            # backward compatibility. Nil in array stop array processing
-            break unless list_value
-
             add_element(doc, metadata, element, element_name => list_value)
           end
         when ::Hash
           element[type_attr] = "map"
           add_element(doc, metadata, element, value)
         when nil
-          # backward compatibility. Nil in hash stop hash processing
-          log.warn "nil found in hash. Stopping hash processing. #{contents}"
-          break
+          raise XMLNilObject, contents
         else
-          raise "Unsupported element #{value.inspect} class #{value.class.inspect}"
+          raise XMLInvalidObject, "Unsupported element #{value.inspect} class #{value.class.inspect}"
         end
 
         parent << element
