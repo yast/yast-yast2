@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 24 14:53:03 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Avoid using systemctl calls when already started with the
+  installation and thus, running inside the chroot (bsc#1168849)
+- 4.2.83
+
+-------------------------------------------------------------------
 Mon Apr 13 12:36:58 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - Remove ip aliases that were marked to be deleted from the
