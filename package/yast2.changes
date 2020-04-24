@@ -2,7 +2,14 @@
 Wed May  6 17:43:51 CEST 2020 - schubi@suse.de
 
 - AutoYaST: Cleanup issue handling.
-- 4.2.83 
+- 4.2.84 
+
+-------------------------------------------------------------------
+Fri Apr 24 14:53:03 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Avoid using systemctl calls when already started with the
+  installation and thus, running inside the chroot (bsc#1168849)
+- 4.2.83
 
 -------------------------------------------------------------------
 Mon Apr 13 12:36:58 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
