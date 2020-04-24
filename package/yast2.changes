@@ -1,4 +1,32 @@
 -------------------------------------------------------------------
+Mon Apr 13 12:36:58 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Remove ip aliases that were marked to be deleted from the
+  interface configuration files (bsc#1146020)
+- 4.2.82
+
+-------------------------------------------------------------------
+Tue Apr  7 08:33:55 UTC 2020 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Retranslate wizard help button in NCurses UI (bsc#1167224)
+- 4.2.81
+
+-------------------------------------------------------------------
+Fri Apr  3 09:55:17 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Modify the way YaST detects whether systemd is running or not
+  (bsc#1168307)
+- 4.2.80
+
+-------------------------------------------------------------------
+Fri Mar 27 13:12:00 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Reread network interfaces configuration after writing it avoiding
+  wrong values when reopen network configuration dialog during an
+  installation (bsc#1166778)
+- 4.2.79
+
+-------------------------------------------------------------------
 Thu Mar 26 12:57:33 UTC 2020 - David Diaz <dgonzalez@suse.com>
 
 - Remove no longer needed multi status selector since it

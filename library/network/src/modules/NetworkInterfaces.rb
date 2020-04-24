@@ -801,12 +801,11 @@ module Yast
 
       # remove deleted devices
       log.info("Deleted=#{@Deleted}")
-      Builtins.foreach(@Deleted) do |d|
-        # delete config file
-        p = Builtins.add(path(".network.section"), d)
-        log.debug("deleting: #{p}")
-        SCR.Write(p, nil)
+      @Deleted.each do |d|
+        iface, alias_num = d.split("#")
+        alias_num ? delete_alias(original_devs, iface, alias_num) : delete_device(iface)
       end
+
       @Deleted = []
 
       # write all devices
@@ -954,6 +953,9 @@ module Yast
 
       # Finish him
       SCR.Write(path(".network"), nil)
+      # Reread all settings to avoid wrong values when reopen the network
+      # dialog during installation (bsc#1166778)
+      CleanCacheRead()
 
       true
     end
@@ -1532,6 +1534,38 @@ module Yast
 
       log.debug "devices=#{devices}"
       devices
+    end
+
+    # Convenience method to delete an interface config file from the system
+    #
+    # @param iface [String] interface name of the config file to be deleted
+    def delete_device(iface)
+      p = path(".network.section") + iface
+      log.debug("deleting: #{p}")
+      SCR.Write(p, nil)
+    end
+
+    # Convenience method to delete an specific ip alias from an interface
+    # config file
+    #
+    # @param devices [Hash<String, Hash<String, Object>>] hash with the devices
+    #   to remove the aliases from
+    # @param iface [String] interface name of the alias which alias need to be
+    #   removed
+    # @param alias_num [String] index num of the alias that needs to be removed
+    def delete_alias(devices, iface, alias_num)
+      dev_map = devices.values.find { |d| d.keys.include?(iface) } || {}
+      dev_aliases = dev_map.fetch(iface, {}).fetch("_aliases", {})
+
+      base = path(".network.value") + iface
+      # look in OriginalDevs because we need to catch all variables
+      # of the alias
+
+      dev_aliases.fetch(alias_num, {}).keys.each do |key|
+        p = base + "#{key}_#{alias_num}"
+        log.debug("deleting: #{p}")
+        SCR.Write(p, nil)
+      end
     end
 
     publish variable: :Name, type: "string"

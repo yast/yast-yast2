@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.2.78
+Version:        4.2.82
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -225,7 +225,6 @@ fi
 # documentation (not included in devel subpackage)
 %doc %dir %{yast_docdir}
 %license %{yast_docdir}/COPYING
-%doc %{yast_docdir}/CONTRIBUTING.md
 %doc %{yast_docdir}/README.md
 
 %{_mandir}/*/*
