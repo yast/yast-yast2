@@ -283,6 +283,7 @@ module Yast
         element = Nokogiri::XML::Node.new(key, doc)
         case value
         when ::String
+          element[type_attr] = "string"
           element.content = value
         when ::Integer
           element[type_attr] = "integer"
@@ -304,6 +305,7 @@ module Yast
             add_element(doc, metadata, element, element_name => list_value)
           end
         when ::Hash
+          element[type_attr] = "map"
           add_element(doc, metadata, element, value)
         when nil
           # backward compatibility. Nil in hash stop hash processing

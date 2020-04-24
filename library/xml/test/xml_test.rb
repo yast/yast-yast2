@@ -72,14 +72,14 @@ describe "Yast::XML" do
       end
     end
 
-    context "for symbols" do
-      it "creates xml element with type=symbol attribute" do
-        input = { "test" => :test, "lest" => :lest }
+    context "for string" do
+      it "creates xml element with type=string attribute" do
+        input = { "test" => "test", "lest" => "lest" }
         expected = "<?xml version=\"1.0\"?>\n" \
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
-          "  <lest type=\"symbol\">lest</lest>\n" \
-          "  <test type=\"symbol\">test</test>\n" \
+          "  <lest type=\"string\">lest</lest>\n" \
+          "  <test type=\"string\">test</test>\n" \
           "</test>\n"
 
         expect(subject.YCPToXMLString("test", input)).to eq expected
@@ -87,13 +87,13 @@ describe "Yast::XML" do
     end
 
     context "for hash" do
-      it "create xml elements for its keys and values" do
+      it "create xml elements for its keys and values and type=hash attribute" do
         input = { "test" => { "a" => "b", "lest" => :lest } }
         expected = "<?xml version=\"1.0\"?>\n" \
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
-          "  <test>\n" \
-          "    <a>b</a>\n" \
+          "  <test type=\"map\">\n" \
+          "    <a type=\"string\">b</a>\n" \
           "    <lest type=\"symbol\">lest</lest>\n" \
           "  </test>\n" \
           "</test>\n"
@@ -106,8 +106,8 @@ describe "Yast::XML" do
         expected = "<?xml version=\"1.0\"?>\n" \
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
-          "  <test>\n" \
-          "    <a>b</a>\n" \
+          "  <test type=\"map\">\n" \
+          "    <a type=\"string\">b</a>\n" \
           "    <lest type=\"symbol\">lest</lest>\n" \
           "  </test>\n" \
           "</test>\n"
@@ -120,9 +120,9 @@ describe "Yast::XML" do
         expected = "<?xml version=\"1.0\"?>\n" \
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
-          "  <test>\n" \
-          "    <a>b</a>\n" \
-          "    <b>c</b>\n" \
+          "  <test type=\"map\">\n" \
+          "    <a type=\"string\">b</a>\n" \
+          "    <b type=\"string\">c</b>\n" \
           "    <lest type=\"symbol\">lest</lest>\n" \
           "  </test>\n" \
           "</test>\n"
@@ -136,9 +136,9 @@ describe "Yast::XML" do
         expected = "<?xml version=\"1.0\"?>\n" \
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
-          "  <test>\n" \
-          "    <a>b</a>\n" \
-          "    <b>c</b>\n" \
+          "  <test type=\"map\">\n" \
+          "    <a type=\"string\">b</a>\n" \
+          "    <b type=\"string\">c</b>\n" \
           "  </test>\n" \
           "</test>\n"
 
@@ -153,7 +153,7 @@ describe "Yast::XML" do
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
           "  <test type=\"list\">\n" \
-          "    <listentry>b</listentry>\n" \
+          "    <listentry type=\"string\">b</listentry>\n" \
           "    <listentry type=\"symbol\">lest</listentry>\n" \
           "  </test>\n" \
           "</test>\n"
@@ -168,7 +168,7 @@ describe "Yast::XML" do
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
           "  <list1 type=\"list\">\n" \
-          "    <list1_element>b</list1_element>\n" \
+          "    <list1_element type=\"string\">b</list1_element>\n" \
           "    <list1_element type=\"symbol\">lest</list1_element>\n" \
           "  </list1>\n" \
           "</test>\n"
@@ -183,8 +183,8 @@ describe "Yast::XML" do
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
           "  <test type=\"list\">\n" \
-          "    <listentry>a</listentry>\n" \
-          "    <listentry>b</listentry>\n" \
+          "    <listentry type=\"string\">a</listentry>\n" \
+          "    <listentry type=\"string\">b</listentry>\n" \
           "  </test>\n" \
           "</test>\n"
 
