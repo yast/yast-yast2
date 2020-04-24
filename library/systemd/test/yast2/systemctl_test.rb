@@ -9,6 +9,7 @@ module Yast2
 
     before do
       allow(Yast::Systemd).to receive(:Running).and_return(true)
+      allow(Yast::WFM).to receive(:scr_chrooted?).and_return(false)
     end
 
     describe ".execute" do
