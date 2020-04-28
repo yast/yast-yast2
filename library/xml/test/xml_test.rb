@@ -168,7 +168,48 @@ describe "Yast::XML" do
   end
 
   describe ".XMLToYCPString" do
+    it "returns string for xml element with type=\"string\"" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <test config:type=\"string\">5</test>\n" \
+        "  <lest config:type=\"string\"> \n" \
+        "    -5 \n" \
+        "  </lest>\n" \
+        "</test>\n"
+      expected = { "test" => "5", "lest" => "-5"}
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
+
+    it "returns string for xml element without type and with text" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <test>5</test>\n" \
+        "  <lest>\n" \
+        "    -5 \n" \
+        "  </lest>\n" \
+        "</test>\n"
+      expected = { "test" => "5", "lest" => "-5"}
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
+
     it "returns integer for xml element with type=\"integer\"" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <test config:type=\"integer\">5</test>\n" \
+        "  <lest config:type=\"integer\">-5</lest>\n" \
+        "</test>\n"
+      expected = { "test" => 5, "lest" => -5 }
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
+
+
+    it "raises XMLInvalidContent for invalid integers" do
       input = "<?xml version=\"1.0\"?>\n" \
         "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
@@ -176,9 +217,8 @@ describe "Yast::XML" do
         "  <lest config:type=\"integer\">-5</lest>\n" \
         "  <invalid config:type=\"integer\">invalid</invalid>\n" \
         "</test>\n"
-      expected = { "test" => 5, "lest" => -5, "invalid" => 0 }
 
-      expect(subject.XMLToYCPString(input)).to eq expected
+      expect{subject.XMLToYCPString(input)}.to raise_error(Yast::XMLInvalidContent)
     end
 
     it "returns symbol for xml element with type=\"symbol\"" do

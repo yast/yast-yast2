@@ -247,7 +247,7 @@ module Yast
     }.freeze
 
     def parse_node(node, result)
-      text = node.xpath("text()").text.sub(/\A\s+\z/, "")
+      text = node.xpath("text()").text.strip
       # use only element children
       children = node.children
       children = children.select(&:element?)
@@ -278,6 +278,7 @@ module Yast
         value = text.to_sym
       when "integer"
         raise XMLInvalidContent, "xml node '#{node.name}' is empty. Forbidden for integer." if text.empty?
+        raise XMLInvalidContent, "xml node '#{node.name}' is invalid integer." if text !~ /-?\d+/
 
         value = text.to_i
       when "boolean"
