@@ -380,6 +380,18 @@ describe "Yast::XML" do
 
       expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLParseError)
     end
+
+    it "ignores xml comments" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <!-- we need empty list -->\n" \
+        "  <test type=\"list\" />\n" \
+        "</test>\n"
+      expected = { "test" => [] }
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
   end
 
   describe "XMLValidation" do

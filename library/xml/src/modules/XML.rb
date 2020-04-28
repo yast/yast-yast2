@@ -195,8 +195,8 @@ module Yast
 
       doc = Nokogiri::XML(xml_string, &:strict)
       doc.remove_namespaces! # remove fancy namespaces to make user life easier
-      # ignore text in top element
-      doc.root.children.reject { |c| c.is_a?(::Nokogiri::XML::Text) }.each { |n| parse_node(n, result) }
+      # inspect only element nodes
+      doc.root.children.select(&:element?).each { |n| parse_node(n, result) }
 
       result
     rescue Nokogiri::XML::SyntaxError => e
@@ -248,21 +248,23 @@ module Yast
 
     def parse_node(node, result)
       text = node.xpath("text()").text.sub(/\A\s+\z/, "")
+      # use only element children
       children = node.children
-      # do not add as children text
-      children = children.reject { |c| c.class == Nokogiri::XML::Text }
+      children = children.select(&:element?)
       # we need just direct text under node. Can be splitted with another elements
       # but remove whitespace only text
       name = node.name
       type = node["type"]
       if !type
-        raise XMLInvalidContent, "xml #{node.name} is empty without type specified" if text.empty? && children.empty?
-
         if text.empty? && !children.empty?
-          # keep cdata trick to create empty string
-          type = (children.all? { |c| c.is_a?(Nokogiri::XML::CDATA) }) ? "string" : "map"
+          type = "map"
         elsif !text.empty? && children.empty?
           type = "string"
+        # keep cdata trick to create empty string
+        elsif !node.children.reject(&:text?).select(&:cdata?).empty?
+          type = "string"
+        elsif text.empty? && children.empty?
+          raise XMLInvalidContent, "xml #{node.name} is empty without type specified"
         else
           raise XMLInvalidContent, "xml #{node.name} contain both text #{text} and children #{children.inspect}."
         end
