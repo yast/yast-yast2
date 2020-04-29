@@ -165,6 +165,25 @@ describe "Yast::XML" do
         expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLNilObject)
       end
     end
+
+    it "creates properly specified namespaces" do
+      subject.xmlCreateDoc("testns",
+        "cdataSections" => ["cdata1", "cdata2"],
+        "systemID"      => "Testing system",
+        "rootElement"   => "test",
+        "nameSpace"     => "http://www.suse.com/1.0/yast2ns",
+        "typeNamespace" => "http://www.suse.com/1.0/configns")
+
+      input = { "test" => :abc, "lest" => 15 }
+      expected = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <lest config:type=\"integer\">15</lest>\n" \
+        "  <test config:type=\"symbol\">abc</test>\n" \
+        "</test>\n"
+
+      expect(subject.YCPToXMLString("testns", input)).to eq expected
+    end
   end
 
   describe ".XMLToYCPString" do
