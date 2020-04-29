@@ -1,6 +1,6 @@
 # ***************************************************************************
 #
-# Copyright (c) 2002 - 2020 Novell, Inc.
+# Copyright (c) 2002 - 2020 SUSE LLC
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -13,10 +13,10 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, contact Novell, Inc.
+# along with this program; if not, contact SUSE LCC.
 #
 # To contact Novell about this file by physical or electronic mail,
-# you may find current contact information at www.novell.com
+# you may find current contact information at www.suse.com
 #
 # ***************************************************************************
 
@@ -30,7 +30,7 @@ module Yast
   class XMLInvalidObject < RuntimeError
   end
 
-  # Specialed exception used when serializing ruby object that contain nil.
+  # Specialized exception used when serializing ruby object that contains nil.
   class XMLNilObject < XMLInvalidObject
     attr_reader :object
 
@@ -40,7 +40,7 @@ module Yast
     end
   end
 
-  # Specialed exception used when serializing ruby hash that that contain non string key.
+  # Specialized exception used when serializing ruby hash that that contains non string key.
   class XMLInvalidKey < XMLInvalidObject
     attr_reader :key
 
@@ -144,9 +144,8 @@ module Yast
     # @param [Symbol] doc_type Document type identifier
     # @param [Hash] contents  a map with YCP data
     # @return [String, nil] String with XML data or nil if error happen
-    # @raise [XMLInvalidObject] when non supported contents is passed
+    # @raise [XMLInvalidObject] when non supported content is passed
     def YCPToXMLString(doc_type, contents)
-      contents = deep_copy(contents)
       metadata = @docs[doc_type]
       if !metadata
         log.error "Calling YCPToXML with unknown doc_type #{doc_type.inspect}. " \
@@ -186,15 +185,15 @@ module Yast
 
     # Reads XML string
     # @param [String] xml_string to read
-    # @return [Hash] parsed content or nil if error happen and in such case
-    #   error reason is in {#XMLError}
+    # @return [Hash] parsed content
     # @raise [XMLInvalidContent] when non supported xml is passed
     def XMLToYCPString(xml_string)
-      result = {}
       raise XMLInvalidContent, "Cannot convert empty XML string" if !xml_string || xml_string.empty?
 
       doc = Nokogiri::XML(xml_string, &:strict)
       doc.remove_namespaces! # remove fancy namespaces to make user life easier
+
+      result = {}
       # inspect only element nodes
       doc.root.children.select(&:element?).each { |n| parse_node(n, result) }
 
@@ -207,8 +206,8 @@ module Yast
     #
     # @param xml [String] path or content of XML
     # @param schema [String] path or content of relax ng schema
-    # @return [String] string with errors or empty string
-    def XMLValidation(xml, schema)
+    # @return [Array<String>] array of strings with error or empty array if valid
+    def validate(xml, schema)
       xml = SCR.Read(path(".target.string"), xml) unless xml.include?("\n")
       if schema.include?("\n") # content, not path
         validator = Nokogiri::XML::RelaxNG(schema)
@@ -220,7 +219,7 @@ module Yast
       end
 
       doc = Nokogiri::XML(xml)
-      validator.validate(doc).map(&:message).join("\n")
+      validator.validate(doc).map(&:message)
     end
 
     # The error string from the xml parser.
@@ -254,54 +253,38 @@ module Yast
       # we need just direct text under node. Can be splitted with another elements
       # but remove whitespace only text
       name = node.name
-      type = node["type"]
-      if !type
-        if text.empty? && !children.empty?
-          type = "map"
-        elsif !text.empty? && children.empty?
-          type = "string"
-        # keep cdata trick to create empty string
-        elsif !node.children.reject(&:text?).select(&:cdata?).empty?
-          type = "string"
-        elsif text.empty? && children.empty?
-          raise XMLInvalidContent, "xml #{node.name} is empty without type specified"
-        else
-          raise XMLInvalidContent, "xml #{node.name} contain both text #{text} and children #{children.inspect}."
-        end
-      end
+      type = node["type"] || detect_type(text, children, node)
 
-      case type
-      when "string" then value = text
+      result[name] = case type
+      when "string" then text
       when "symbol"
         raise XMLInvalidContent, "xml node '#{node.name}' is empty. Forbidden for symbol." if text.empty?
 
-        value = text.to_sym
+        text.to_sym
       when "integer"
         raise XMLInvalidContent, "xml node '#{node.name}' is empty. Forbidden for integer." if text.empty?
         raise XMLInvalidContent, "xml node '#{node.name}' is invalid integer." if text !~ /-?\d+/
 
-        value = text.to_i
+        text.to_i
       when "boolean"
-        value = BOOLEAN_MAP[text]
-        raise XMLInvalidContent, "xml node '#{node.name}' is invalid. Only true and false is allowed for boolean." if value.nil?
+        v = BOOLEAN_MAP[text]
+        raise XMLInvalidContent, "xml node '#{node.name}' is invalid. Only true and false is allowed for boolean." if v.nil?
+
+        v
       when "list"
-        value = []
-        children.each do |kid|
+        children.map do |kid|
           # always pass new hash to prevent overwrite for list with same elements
           r = {}
           parse_node(kid, r)
-          value.concat(r.values)
+          r.values.first
         end
       when "map"
-        value = {}
-        children.each do |kid|
-          parse_node(kid, value)
-        end
+        v = {}
+        children.each { |kid| parse_node(kid, v) }
+        v
       else
         raise XMLInvalidContent, "XML node #{node.name} contain invalid type #{type.inspect}"
       end
-
-      result[name] = value
 
       result
     end
@@ -317,7 +300,7 @@ module Yast
         raise XMLInvalidKey, key unless key.is_a?(::String)
 
         value = contents[key]
-        type_attr = metadata["typeNamespace"] ? ("config:") : ""
+        type_attr = metadata["typeNamespace"] ? "config:" : ""
         type_attr << "type"
         element = Nokogiri::XML::Node.new(key, doc)
         case value
@@ -350,6 +333,21 @@ module Yast
         end
 
         parent << element
+      end
+    end
+
+    def detect_type(text, children, node)
+      if text.empty? && !children.empty?
+        "map"
+      elsif !text.empty? && children.empty?
+        "string"
+      # keep cdata trick to create empty string
+      elsif !node.children.reject(&:text?).select(&:cdata?).empty?
+        "string"
+      elsif text.empty? && children.empty?
+        raise XMLInvalidContent, "xml #{node.name} is empty without type specified"
+      else
+        raise XMLInvalidContent, "xml #{node.name} contain both text #{text} and children #{children.inspect}."
       end
     end
   end

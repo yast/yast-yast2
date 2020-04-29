@@ -196,7 +196,7 @@ describe "Yast::XML" do
         "    -5 \n" \
         "  </lest>\n" \
         "</test>\n"
-      expected = { "test" => "5", "lest" => "-5"}
+      expected = { "test" => "5", "lest" => "-5" }
 
       expect(subject.XMLToYCPString(input)).to eq expected
     end
@@ -210,7 +210,7 @@ describe "Yast::XML" do
         "    -5 \n" \
         "  </lest>\n" \
         "</test>\n"
-      expected = { "test" => "5", "lest" => "-5"}
+      expected = { "test" => "5", "lest" => "-5" }
 
       expect(subject.XMLToYCPString(input)).to eq expected
     end
@@ -227,7 +227,6 @@ describe "Yast::XML" do
       expect(subject.XMLToYCPString(input)).to eq expected
     end
 
-
     it "raises XMLInvalidContent for invalid integers" do
       input = "<?xml version=\"1.0\"?>\n" \
         "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
@@ -237,7 +236,7 @@ describe "Yast::XML" do
         "  <invalid config:type=\"integer\">invalid</invalid>\n" \
         "</test>\n"
 
-      expect{subject.XMLToYCPString(input)}.to raise_error(Yast::XMLInvalidContent)
+      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
     end
 
     it "returns symbol for xml element with type=\"symbol\"" do
@@ -289,17 +288,19 @@ describe "Yast::XML" do
       expect(subject.XMLToYCPString(input)).to eq expected
     end
 
-    it "returns list for xml element with type=\"list\" if contain value" do
+    it "works also on nested arrays" do
       input = "<?xml version=\"1.0\"?>\n" \
         "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"list\">\n" \
-        "    <lest config:type=\"boolean\">false</lest>\n" \
+        "    <lest config:type=\"list\">\n" \
+        "      <a config:type=\"boolean\">false</a>\n" \
+        "      <b config:type=\"boolean\">true</b>\n" \
+        "    </lest>\n" \
         "    <int config:type=\"integer\">5</int>\n" \
-        "    test value \n" \
         "  </test>\n" \
         "</test>\n"
-      expected = { "test" => [false, 5] }
+      expected = { "test" => [[false, true], 5] }
 
       expect(subject.XMLToYCPString(input)).to eq expected
     end
@@ -453,7 +454,7 @@ describe "Yast::XML" do
     end
   end
 
-  describe "XMLValidation" do
+  describe "validate" do
     let(:schema) do
       '<element name="test" xmlns="http://relaxng.org/ns/structure/1.0">
          <zeroOrMore>
@@ -469,7 +470,7 @@ describe "Yast::XML" do
        </element>'
     end
 
-    it "returns empty string for valid xml" do
+    it "returns array for valid xml" do
       xml = '<?xml version="1.0"?>
              <test>
                <person>
@@ -482,10 +483,10 @@ describe "Yast::XML" do
                </person>
              </test>'
 
-      expect(Yast::XML.XMLValidation(xml, schema)).to be_empty
+      expect(Yast::XML.validate(xml, schema)).to be_empty
     end
 
-    it "returns error when xml is not valid for given schema" do
+    it "returns error string in array when xml is not valid for given schema" do
       xml = '<?xml version="1.0"?>
              <test>
                <person>
@@ -495,7 +496,7 @@ describe "Yast::XML" do
                </person>
              </test>'
 
-      expect(Yast::XML.XMLValidation(xml, schema)).to_not be_empty
+      expect(Yast::XML.validate(xml, schema)).to_not be_empty
     end
   end
 end
