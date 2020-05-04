@@ -256,7 +256,7 @@ module Yast
       type = node["type"] || detect_type(text, children, node)
 
       result[name] = case type
-      when "string" then text
+      when "string", "disksize" then text
       when "symbol"
         raise XMLInvalidContent, "xml node '#{node.name}' is empty. Forbidden for symbol." if text.empty?
 
@@ -305,7 +305,6 @@ module Yast
         element = Nokogiri::XML::Node.new(key, doc)
         case value
         when ::String
-          element[type_attr] = "string"
           element.content = value
         when ::Integer
           element[type_attr] = "integer"
@@ -337,6 +336,7 @@ module Yast
     end
 
     def detect_type(text, children, node)
+      # backward compatibility. Newly maps should have its type
       if text.empty? && !children.empty?
         "map"
       elsif !text.empty? && children.empty?
@@ -345,7 +345,8 @@ module Yast
       elsif !node.children.reject(&:text?).select(&:cdata?).empty?
         "string"
       elsif text.empty? && children.empty?
-        raise XMLInvalidContent, "xml #{node.name} is empty without type specified"
+        # default type is text if nothing is specified and cannot interfere
+        "string"
       else
         raise XMLInvalidContent, "xml #{node.name} contain both text #{text} and children #{children.inspect}."
       end

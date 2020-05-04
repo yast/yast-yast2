@@ -73,13 +73,13 @@ describe "Yast::XML" do
     end
 
     context "for string" do
-      it "creates xml element with type=string attribute" do
+      it "creates xml element with no type attribute" do
         input = { "test" => "test", "lest" => "lest" }
         expected = "<?xml version=\"1.0\"?>\n" \
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
-          "  <lest type=\"string\">lest</lest>\n" \
-          "  <test type=\"string\">test</test>\n" \
+          "  <lest>lest</lest>\n" \
+          "  <test>test</test>\n" \
           "</test>\n"
 
         expect(subject.YCPToXMLString("test", input)).to eq expected
@@ -93,7 +93,7 @@ describe "Yast::XML" do
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
           "  <test type=\"map\">\n" \
-          "    <a type=\"string\">b</a>\n" \
+          "    <a>b</a>\n" \
           "    <lest type=\"symbol\">lest</lest>\n" \
           "  </test>\n" \
           "</test>\n"
@@ -113,8 +113,8 @@ describe "Yast::XML" do
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
           "  <test type=\"map\">\n" \
-          "    <a type=\"string\">b</a>\n" \
-          "    <b type=\"string\">c</b>\n" \
+          "    <a>b</a>\n" \
+          "    <b>c</b>\n" \
           "    <lest type=\"symbol\">lest</lest>\n" \
           "  </test>\n" \
           "</test>\n"
@@ -136,7 +136,7 @@ describe "Yast::XML" do
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
           "  <test type=\"list\">\n" \
-          "    <listentry type=\"string\">b</listentry>\n" \
+          "    <listentry>b</listentry>\n" \
           "    <listentry type=\"symbol\">lest</listentry>\n" \
           "  </test>\n" \
           "</test>\n"
@@ -151,7 +151,7 @@ describe "Yast::XML" do
           "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
           "<test>\n" \
           "  <list1 type=\"list\">\n" \
-          "    <list1_element type=\"string\">b</list1_element>\n" \
+          "    <list1_element>b</list1_element>\n" \
           "    <list1_element type=\"symbol\">lest</list1_element>\n" \
           "  </list1>\n" \
           "</test>\n"
@@ -193,6 +193,21 @@ describe "Yast::XML" do
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"string\">5</test>\n" \
         "  <lest config:type=\"string\"> \n" \
+        "    -5 \n" \
+        "  </lest>\n" \
+        "</test>\n"
+      expected = { "test" => "5", "lest" => "-5" }
+
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
+
+    # backward compatibility
+    it "returns string for xml element with type=\"disksize\"" do
+      input = "<?xml version=\"1.0\"?>\n" \
+        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+        "  <test config:type=\"disksize\">5</test>\n" \
+        "  <lest config:type=\"disksize\"> \n" \
         "    -5 \n" \
         "  </lest>\n" \
         "</test>\n"
@@ -335,14 +350,15 @@ describe "Yast::XML" do
   end
 
   context "element with empty value" do
-    it "raises XMLInvalidContent if no type is specified" do
+    it "return empty string if no type is specified" do
       input = "<?xml version=\"1.0\"?>\n" \
         "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <lest></lest>\n" \
+        "  <test></test>\n" \
         "</test>\n"
 
-      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+      expected = { "test" => "" }
+      expect(subject.XMLToYCPString(input)).to eq expected
     end
 
     it "returns empty string with type string" do
