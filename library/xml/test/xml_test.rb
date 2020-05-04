@@ -187,6 +187,50 @@ describe "Yast::XML" do
   end
 
   describe ".XMLToYCPString" do
+    context "regarding 'config:type' and 't' attributes:" do
+      it "recognizes the 't' attribute" do
+        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+          "  <foo t=\"symbol\">sym</foo>\n" \
+          "</test>\n"
+        expected = { "foo" => :sym }
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
+
+      it "recognizes the 'type' attribute (unnamespaced)" do
+        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+          "  <foo type=\"symbol\">sym</foo>\n" \
+          "</test>\n"
+        expected = { "foo" => :sym }
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
+
+      it "recognizes the 'config:type' attribute" do
+        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+          "  <foo config:type=\"symbol\">sym</foo>\n" \
+          "</test>\n"
+        expected = { "foo" => :sym }
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
+
+      it "recognizes the 'config:type' attribute even with a different prefix" do
+        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:c=\"http://www.suse.com/1.0/configns\">\n" \
+          "  <foo c:type=\"symbol\">sym</foo>\n" \
+          "</test>\n"
+        expected = { "foo" => :sym }
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
+
+      it "in case of conflict, the shortest attribute wins (t over type over config:type)" do
+        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+          "  <foo t=\"string\" type=\"symbol\">str</foo>\n" \
+          "  <bar t=\"string\" config:type=\"symbol\">str</bar>\n" \
+          "  <baz config:type=\"integer\" type=\"string\">42</baz>\n" \
+          "</test>\n"
+        expected = { "foo" => "str", "bar" => "str", "baz" => "42" }
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
+    end
+
     it "returns string for xml element with type=\"string\"" do
       input = "<?xml version=\"1.0\"?>\n" \
         "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
