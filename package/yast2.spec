@@ -185,13 +185,6 @@ if [ -f "/etc/sysctl.d/30-yast.conf" ]; then
     fi
 fi
 
-# fix xlm problems in older control.xml to prevent xml parser failures
-if [ -f "/etc/YaST2/control.xml" ]; then
-  # first s fix invalid type disksize
-  # the second and third one fix empty element without type specified
-  sed -i 's/ config:type="disksize"/ config:type="string"/g; s,<\([a-zA-Z_-]*\)></,<\1 config:type="string"></,g; s,<\([a-zA-Z_-]*\)/>,<\1 config:type="string" />,g' /etc/YaST2/control.xml
-fi
-
 %files
 
 # basic directory structure
