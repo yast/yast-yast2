@@ -253,7 +253,7 @@ module Yast
       # we need just direct text under node. Can be splitted with another elements
       # but remove whitespace only text
       name = node.name
-      type = node["type"] || detect_type(text, children, node)
+      type = node["t"] || node["type"] || detect_type(text, children, node)
 
       result[name] = case type
       when "string", "disksize" then text
