@@ -8,7 +8,7 @@ describe "Yast::XML" do
   before do
     subject.xmlCreateDoc("test",
       "cdataSections" => ["cdata1", "cdata2"],
-      "systemID"      => "Testing system",
+      "systemID"      => "just_testing.dtd",
       "rootElement"   => "test",
       "listEntries"   => { "list1" => "list1_element", "list2" => "list2_element" })
   end
@@ -21,7 +21,7 @@ describe "Yast::XML" do
     it "returns converted xml for known doc type and passed object" do
       input = { "test" => :abc, "lest" => 15 }
       expected = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
         "<test>\n" \
         "  <lest type=\"integer\">15</lest>\n" \
         "  <test type=\"symbol\">abc</test>\n" \
@@ -34,7 +34,7 @@ describe "Yast::XML" do
       it "creates xml element with type=boolean attribute" do
         input = { "test" => true, "lest" => false }
         expected = "<?xml version=\"1.0\"?>\n" \
-          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
           "<test>\n" \
           "  <lest type=\"boolean\">false</lest>\n" \
           "  <test type=\"boolean\">true</test>\n" \
@@ -48,7 +48,7 @@ describe "Yast::XML" do
       it "creates xml element with type=integer attribute" do
         input = { "test" => 5, "lest" => -5 }
         expected = "<?xml version=\"1.0\"?>\n" \
-          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
           "<test>\n" \
           "  <lest type=\"integer\">-5</lest>\n" \
           "  <test type=\"integer\">5</test>\n" \
@@ -62,7 +62,7 @@ describe "Yast::XML" do
       it "creates xml element with type=symbol attribute" do
         input = { "test" => :test, "lest" => :lest }
         expected = "<?xml version=\"1.0\"?>\n" \
-          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
           "<test>\n" \
           "  <lest type=\"symbol\">lest</lest>\n" \
           "  <test type=\"symbol\">test</test>\n" \
@@ -76,7 +76,7 @@ describe "Yast::XML" do
       it "creates xml element with no type attribute" do
         input = { "test" => "test", "lest" => "lest" }
         expected = "<?xml version=\"1.0\"?>\n" \
-          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
           "<test>\n" \
           "  <lest>lest</lest>\n" \
           "  <test>test</test>\n" \
@@ -90,7 +90,7 @@ describe "Yast::XML" do
       it "create xml elements for its keys and values and type=hash attribute" do
         input = { "test" => { "a" => "b", "lest" => :lest } }
         expected = "<?xml version=\"1.0\"?>\n" \
-          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
           "<test>\n" \
           "  <test type=\"map\">\n" \
           "    <a>b</a>\n" \
@@ -110,7 +110,7 @@ describe "Yast::XML" do
       it "places keys in alphabetic sorting" do
         input = { "test" => { "a" => "b", "lest" => :lest, "b" => "c" } }
         expected = "<?xml version=\"1.0\"?>\n" \
-          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
           "<test>\n" \
           "  <test type=\"map\">\n" \
           "    <a>b</a>\n" \
@@ -133,7 +133,7 @@ describe "Yast::XML" do
       it "create xml elements for values and specify type=list" do
         input = { "test" => ["b", :lest] }
         expected = "<?xml version=\"1.0\"?>\n" \
-          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
           "<test>\n" \
           "  <test type=\"list\">\n" \
           "    <listentry>b</listentry>\n" \
@@ -148,7 +148,7 @@ describe "Yast::XML" do
       it "creates xml elements with name passed to listEntries if found" do
         input = { "list1" => ["b", :lest] }
         expected = "<?xml version=\"1.0\"?>\n" \
-          "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+          "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
           "<test>\n" \
           "  <list1 type=\"list\">\n" \
           "    <list1_element>b</list1_element>\n" \
@@ -169,14 +169,14 @@ describe "Yast::XML" do
     it "creates properly specified namespaces" do
       subject.xmlCreateDoc("testns",
         "cdataSections" => ["cdata1", "cdata2"],
-        "systemID"      => "Testing system",
+        "systemID"      => "just_testing.dtd",
         "rootElement"   => "test",
         "nameSpace"     => "http://www.suse.com/1.0/yast2ns",
         "typeNamespace" => "http://www.suse.com/1.0/configns")
 
       input = { "test" => :abc, "lest" => 15 }
       expected = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <lest config:type=\"integer\">15</lest>\n" \
         "  <test config:type=\"symbol\">abc</test>\n" \
@@ -233,7 +233,7 @@ describe "Yast::XML" do
 
     it "returns string for xml element with type=\"string\"" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
+        "<!DOCTYPE test SYSTEM \"whatever.dtd\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"string\">5</test>\n" \
         "  <lest config:type=\"string\"> \n" \
@@ -248,7 +248,6 @@ describe "Yast::XML" do
     # backward compatibility
     it "returns string for xml element with type=\"disksize\"" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"disksize\">5</test>\n" \
         "  <lest config:type=\"disksize\"> \n" \
@@ -262,7 +261,6 @@ describe "Yast::XML" do
 
     it "returns string for xml element without type and with text" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test>5</test>\n" \
         "  <lest>\n" \
@@ -276,7 +274,6 @@ describe "Yast::XML" do
 
     it "returns integer for xml element with type=\"integer\"" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"integer\">5</test>\n" \
         "  <lest config:type=\"integer\">-5</lest>\n" \
@@ -288,7 +285,6 @@ describe "Yast::XML" do
 
     it "raises XMLInvalidContent for invalid integers" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"integer\">5</test>\n" \
         "  <lest config:type=\"integer\">-5</lest>\n" \
@@ -300,7 +296,6 @@ describe "Yast::XML" do
 
     it "returns symbol for xml element with type=\"symbol\"" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"symbol\">5</test>\n" \
         "  <lest config:type=\"symbol\">test</lest>\n" \
@@ -312,7 +307,6 @@ describe "Yast::XML" do
 
     it "returns boolean for xml element with type=\"boolean\"" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"boolean\">true</test>\n" \
         "  <lest config:type=\"boolean\">false</lest>\n" \
@@ -324,7 +318,6 @@ describe "Yast::XML" do
 
     it "raises XMLInvalidContent xml element with type=\"boolean\" and unknown value" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"boolean\">true</test>\n" \
         "  <lest config:type=\"boolean\">invalid</lest>\n" \
@@ -335,7 +328,6 @@ describe "Yast::XML" do
 
     it "returns array for xml element with type=\"list\"" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"list\">\n" \
         "    <lest config:type=\"boolean\">false</lest>\n" \
@@ -349,7 +341,6 @@ describe "Yast::XML" do
 
     it "works also on nested arrays" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"list\">\n" \
         "    <lest config:type=\"list\">\n" \
@@ -367,7 +358,6 @@ describe "Yast::XML" do
 
   it "returns hash for xml element that contain only sub elements" do
     input = "<?xml version=\"1.0\"?>\n" \
-      "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
       "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
       "  <test>\n" \
       "    <lest config:type=\"boolean\">false</lest>\n" \
@@ -381,7 +371,6 @@ describe "Yast::XML" do
 
   it "raise Yast::XMLInvalidContent for xml element that contain sub elements and value" do
     input = "<?xml version=\"1.0\"?>\n" \
-      "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
       "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
       "  <test>\n" \
       "    <lest config:type=\"boolean\">false</lest>\n" \
@@ -396,7 +385,6 @@ describe "Yast::XML" do
   context "element with empty value" do
     it "return empty string if no type is specified" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test></test>\n" \
         "</test>\n"
@@ -407,7 +395,6 @@ describe "Yast::XML" do
 
     it "returns empty string with type string" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test type=\"string\" />\n" \
         "</test>\n"
@@ -418,7 +405,6 @@ describe "Yast::XML" do
 
     it "returns empty hash with type map" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test type=\"map\" />\n" \
         "</test>\n"
@@ -429,7 +415,6 @@ describe "Yast::XML" do
 
     it "returns empty array with type list" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test type=\"list\" />\n" \
         "</test>\n"
@@ -440,7 +425,6 @@ describe "Yast::XML" do
 
     it "raises XMLInvalidContent with type symbol" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <lest type=\"symbol\"></lest>\n" \
         "</test>\n"
@@ -450,7 +434,6 @@ describe "Yast::XML" do
 
     it "raises XMLInvalidContent with type integer" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <lest type=\"integer\"></lest>\n" \
         "</test>\n"
@@ -460,7 +443,6 @@ describe "Yast::XML" do
 
     it "raises XMLInvalidContent with type boolean" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <lest type=\"boolean\"></lest>\n" \
         "</test>\n"
@@ -470,7 +452,6 @@ describe "Yast::XML" do
 
     it "workaround with empty cdata still works" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <lest><![CDATA[]]></lest>\n" \
         "</test>\n"
@@ -482,7 +463,6 @@ describe "Yast::XML" do
     # for cdata see global before
     it "returns cdata section as string" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <cdata1>false</cdata1>\n" \
         "</test>\n"
@@ -493,7 +473,6 @@ describe "Yast::XML" do
 
     it "raises Yast::XMLParseError if xml is malformed" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <not_closed>false</invalid\n" \
         "</test>\n"
@@ -503,7 +482,6 @@ describe "Yast::XML" do
 
     it "ignores xml comments" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<!DOCTYPE test SYSTEM \"Testing system\">\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <!-- we need empty list -->\n" \
         "  <test type=\"list\" />\n" \
