@@ -354,32 +354,32 @@ describe "Yast::XML" do
 
       expect(subject.XMLToYCPString(input)).to eq expected
     end
-  end
 
-  it "returns hash for xml element that contain only sub elements" do
-    input = "<?xml version=\"1.0\"?>\n" \
-      "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-      "  <test>\n" \
-      "    <lest config:type=\"boolean\">false</lest>\n" \
-      "    <int config:type=\"integer\">5</int>\n" \
-      "  </test>\n" \
-      "</test>\n"
-    expected = { "test" => { "lest" => false, "int" => 5 } }
+    it "returns hash for xml element that contain only sub elements" do
+      input = "<?xml version=\"1.0\"?>\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "  <test>\n" \
+              "    <lest config:type=\"boolean\">false</lest>\n" \
+              "    <int config:type=\"integer\">5</int>\n" \
+              "  </test>\n" \
+              "</test>\n"
+      expected = { "test" => { "lest" => false, "int" => 5 } }
 
-    expect(subject.XMLToYCPString(input)).to eq expected
-  end
+      expect(subject.XMLToYCPString(input)).to eq expected
+    end
 
-  it "raise Yast::XMLInvalidContent for xml element that contain sub elements and value" do
-    input = "<?xml version=\"1.0\"?>\n" \
-      "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-      "  <test>\n" \
-      "    <lest config:type=\"boolean\">false</lest>\n" \
-      "    <int config:type=\"integer\">5</int>\n" \
-      "    test value \n" \
-      "  </test>\n" \
-      "</test>\n"
+    it "raise Yast::XMLInvalidContent for xml element that contain sub elements and value" do
+      input = "<?xml version=\"1.0\"?>\n" \
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "  <test>\n" \
+              "    <lest config:type=\"boolean\">false</lest>\n" \
+              "    <int config:type=\"integer\">5</int>\n" \
+              "    test value \n" \
+              "  </test>\n" \
+              "</test>\n"
 
-    expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+    end
   end
 
   context "element with empty value" do
