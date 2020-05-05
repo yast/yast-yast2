@@ -220,13 +220,12 @@ describe "Yast::XML" do
         expect(subject.XMLToYCPString(input)).to eq expected
       end
 
-      it "in case of conflict, the shortest attribute wins (t over type over config:type)" do
+      it "in case of conflict, t wins over typ)" do
         input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
           "  <foo t=\"string\" type=\"symbol\">str</foo>\n" \
           "  <bar t=\"string\" config:type=\"symbol\">str</bar>\n" \
-          "  <baz config:type=\"integer\" type=\"string\">42</baz>\n" \
           "</test>\n"
-        expected = { "foo" => "str", "bar" => "str", "baz" => "42" }
+        expected = { "foo" => "str", "bar" => "str" }
         expect(subject.XMLToYCPString(input)).to eq expected
       end
     end
