@@ -300,8 +300,7 @@ module Yast
         raise XMLInvalidKey, key unless key.is_a?(::String)
 
         value = contents[key]
-        type_attr = metadata["typeNamespace"] ? "config:" : ""
-        type_attr << "type"
+        type_attr = "t"
         element = Nokogiri::XML::Node.new(key, doc)
         case value
         when ::String
