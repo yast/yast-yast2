@@ -22,12 +22,12 @@ Yast.import "RichText"
 
 module Installation
   module AutoinstIssues
-   # This class converts a list of issues into a message to be shown to users
-   #
-   # The message will summarize the list of issues, separating them into non-fatal
-   # and fatal issues.
-   class IssuesPresenter
-     include Yast::I18n
+    # This class converts a list of issues into a message to be shown to users
+    #
+    # The message will summarize the list of issues, separating them into non-fatal
+    # and fatal issues.
+    class IssuesPresenter
+      include Yast::I18n
 
       # @return [Installation::AutoinstIssues::List] List of issues
       attr_reader :issues_list

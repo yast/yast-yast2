@@ -60,7 +60,7 @@ module Installation
       # @example Adding a problem with additional arguments
       #   list = List.new
       #   list.add(:ay_invalid_value, "firewall", "FW_DEV_INT", "1",
-      #     _("Is not supported anymore."))      
+      #     _("Is not supported anymore."))
       #   list.empty? #=> false
       #
       # @param type       [Symbol] Issue type

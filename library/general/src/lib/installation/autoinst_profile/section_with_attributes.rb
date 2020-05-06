@@ -56,7 +56,7 @@ module Installation
           result
         end
 
-        protected
+      protected
 
         # Macro used in the subclasses to define accessors for all the
         # attributes defined by {.attributes}
@@ -123,7 +123,7 @@ module Installation
           .chomp("_section")
       end
 
-      protected
+    protected
 
       def attributes
         self.class.attributes

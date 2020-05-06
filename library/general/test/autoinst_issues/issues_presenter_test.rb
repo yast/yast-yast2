@@ -26,7 +26,6 @@ require "installation/autoinst_issues/issues_presenter"
 
 module Installation
   module AutoinstIssues
-    
     class MissingSection < ::Installation::AutoinstIssues::Issue
       def initialize(*args)
         super
@@ -58,12 +57,11 @@ module Installation
       def message
         format(
           "Invalid value '%{value}' for attribute '%{attr}'.",
-          value:             value,
-          attr:              attr
+          value: value,
+          attr:  attr
         )
       end
     end
-    
   end
 end
 
