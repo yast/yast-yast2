@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May  6 17:43:51 CEST 2020 - schubi@suse.de
+
+- AutoYaST: Cleanup issue handling.
+- 4.2.83 
+
+-------------------------------------------------------------------
 Mon Apr 13 12:36:58 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - Remove ip aliases that were marked to be deleted from the
