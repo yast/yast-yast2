@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed May  6 17:43:51 CEST 2020 - schubi@suse.de
+
+- AutoYaST: Cleanup/improve issue handling (bsc#1171335).
+- 4.2.84 
+
+-------------------------------------------------------------------
 Fri Apr 24 14:53:03 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - Avoid using systemctl calls when already started with the
