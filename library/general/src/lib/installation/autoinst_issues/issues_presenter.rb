@@ -36,7 +36,7 @@ module Installation
       #
       # @param issues_list [Installation::AutoinstIssues::List] List of issues
       def initialize(issues_list)
-        textdomain "autoinst"
+        textdomain "base"
         @issues_list = issues_list
       end
 
