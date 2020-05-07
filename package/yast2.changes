@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Wed May  6 17:43:51 CEST 2020 - schubi@suse.de
 
-- AutoYaST: Cleanup issue handling.
+- AutoYaST: Cleanup/improve issue handling (bsc#1171335).
 - 4.2.84 
 
 -------------------------------------------------------------------
