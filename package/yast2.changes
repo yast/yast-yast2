@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu May 14 07:32:16 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+
+- Re-implement XML parser (bsc#1170886):
+-- use as backend nokogiri instead of hand written libxml2 wrapper
+-- Use exceptions instead of silently ignoring issues
+-- export map as type to xml
+-- add new method #validate to validate against relax-ng schema
+- 4.3.0
+
+-------------------------------------------------------------------
 Mon Apr 13 12:36:58 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - Remove ip aliases that were marked to be deleted from the
