@@ -25,28 +25,17 @@ require "yast"
 require "nokogiri"
 
 module Yast
-  # Exception used when serializing ruby object that contain invalid object like nil,
-  # not supported object or non string hash key.
-  class XMLInvalidObject < RuntimeError
-  end
-
-  # Specialized exception used when serializing ruby object that contains nil.
-  class XMLNilObject < XMLInvalidObject
+  # Exception used when trying to serialize a Ruby object that we cannot
+  # represent in XML:
+  # - non-String Hash key
+  # - a special object, like a Regexp
+  # - nil
+  class XMLSerializationError < RuntimeError
     attr_reader :object
 
-    def initialize(object)
+    def initialize(message, object)
       @object = object
-      super("Nil passed to XML serializer in #{object.inspect}.")
-    end
-  end
-
-  # Specialized exception used when serializing ruby hash that that contains non string key.
-  class XMLInvalidKey < XMLInvalidObject
-    attr_reader :key
-
-    def initialize(key)
-      @key = key
-      super("Non string key '#{key.inspect}' passed to XML serializer.")
+      super(message)
     end
   end
 
@@ -132,7 +121,7 @@ module Yast
     # @param [Hash] contents  a map with YCP data
     # @param [String] output_path the path of the XML file
     # @return [Boolean] true on sucess
-    # @raise [XMLInvalidObject] when non supported contents is passed
+    # @raise [XMLSerializationError] when non supported contents is passed
     def YCPToXMLFile(doc_type, contents, output_path)
       xml = YCPToXMLString(doc_type, contents)
       return false unless xml
@@ -144,7 +133,7 @@ module Yast
     # @param [Symbol] doc_type Document type identifier
     # @param [Hash] contents  a map with YCP data
     # @return [String, nil] String with XML data or nil if error happen
-    # @raise [XMLInvalidObject] when non supported content is passed
+    # @raise [XMLSerializationError] when non supported content is passed
     def YCPToXMLString(doc_type, contents)
       metadata = @docs[doc_type]
       if !metadata
@@ -293,12 +282,13 @@ module Yast
     # @param [Nokogiri::XML::Document] doc
     # @param [Hash] metadata for current doc
     # @param [Nokogiri::XML::Node] parent
-    # @param [Hash] content to write
+    # @param [Hash] contents content to write
+    # @param [Array] parent_array (for better error reporting)
     # @return [void]
-    def add_element(doc, metadata, parent, contents)
+    def add_element(doc, metadata, parent, contents, parent_array = nil)
       # backward compatibility. Keys are sorted and needs old ycp sort to be able to compare also classes
       Builtins.sort(contents.keys).each do |key|
-        raise XMLInvalidKey, key unless key.is_a?(::String)
+        raise XMLSerializationError.new("Cannot represent non-string key '#{key.inspect}', part of #{contents.inspect}", contents) unless key.is_a?(::String)
 
         value = contents[key]
         type_attr = "t"
@@ -320,15 +310,16 @@ module Yast
           special_names = metadata["listEntries"] || {}
           element_name = special_names[key] || "listentry"
           value.each do |list_value|
-            add_element(doc, metadata, element, element_name => list_value)
+            add_element(doc, metadata, element, { element_name => list_value }, value)
           end
         when ::Hash
           element[type_attr] = "map"
           add_element(doc, metadata, element, value)
-        when nil
-          raise XMLNilObject, contents
-        else
-          raise XMLInvalidObject, "Unsupported element #{value.inspect} class #{value.class.inspect}"
+        else # including nil
+          # without parent_array, a ["foo", nil, "bar"] would always
+          # unhelpfully report {"listentry"=> nil} as the parent object
+          o = parent_array || contents
+          raise XMLSerializationError.new("Cannot represent #{value.inspect}, part of #{o.inspect}", o)
         end
 
         parent << element

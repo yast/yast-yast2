@@ -15,7 +15,7 @@ describe "Yast::XML" do
 
   describe "YCPToXMLString" do
     it "return nil for not defined doc_type" do
-      expect(subject.YCPToXMLString("not-exist", "test")).to eq nil
+      expect(subject.YCPToXMLString("not-exist", "test" => 1)).to eq nil
     end
 
     it "returns converted xml for known doc type and passed object" do
@@ -101,10 +101,10 @@ describe "Yast::XML" do
         expect(subject.YCPToXMLString("test", input)).to eq expected
       end
 
-      it "raises XMLInvalidKey when key is not string" do
+      it "raises XMLSerializationError when key is not string" do
         input = { "test" => { "a" => "b", "lest" => :lest, 1 => 2, nil => "t", :symbol => "symbol" } }
 
-        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLInvalidKey)
+        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError, /non-string key.*nil=>"t"/)
       end
 
       it "places keys in alphabetic sorting" do
@@ -122,10 +122,16 @@ describe "Yast::XML" do
         expect(subject.YCPToXMLString("test", input)).to eq expected
       end
 
-      it "raises XMLNilObject when entry has nil as value" do
+      it "raises XMLSerializationError when entry has nil as value" do
         input = { "test" => { "a" => "b", "b" => "c", "c" => nil, "d" => "e", "e" => "f" } }
 
-        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLNilObject)
+        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError, /represent nil, part of .*"c"=>nil/)
+      end
+
+      it "raises XMLSerializationError when entry has a weird value" do
+        input = { "test" => /I am a Regexp/ }
+
+        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError, /represent .*Regexp\//)
       end
     end
 
@@ -159,10 +165,10 @@ describe "Yast::XML" do
         expect(subject.YCPToXMLString("test", input)).to eq expected
       end
 
-      it "raises XMLNilObject when list contains nil" do
+      it "raises XMLSerializationError when list contains nil" do
         input = { "test" => ["a", "b", nil, "d", "e", "f"] }
 
-        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLNilObject)
+        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError, /represent nil, part of .*"b", nil/)
       end
     end
 
