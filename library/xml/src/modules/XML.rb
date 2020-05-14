@@ -246,13 +246,14 @@ module Yast
     }.freeze
 
     def parse_node(node, result)
-      text = node.xpath("text()").text.strip
+      name = node.name
       # use only element children
       children = node.children
       children = children.select(&:element?)
       # we need just direct text under node. Can be splitted with another elements
       # but remove whitespace only text
-      name = node.name
+      text = node.xpath("text()").text.strip
+
       type = fetch_type(text, children, node)
 
       result[name] = case type
