@@ -39,14 +39,12 @@ module Yast
     end
   end
 
-  # Exception used when parsing xml string either syntax error or invalid values in element.
-  class XMLInvalidContent < RuntimeError
-  end
-
-  # Specialized exception used when syntax error in XML is found
-  class XMLParseError < XMLInvalidContent
-    def initialize(error)
-      super(error)
+  # Exception used when parsing a XML string:
+  # - syntax error (Nokogiri::XML::SyntaxError is reraised as this)
+  # - cannot be represented as Ruby data
+  class XMLDeserializationError < RuntimeError
+    def self.for_node(node, message)
+      new("Element <#{node.name}> at line #{node.line}: #{message}")
     end
   end
 
@@ -164,9 +162,9 @@ module Yast
     # Reads XML file
     # @param [String] xml_file XML file name to read
     # @return [Hash] parsed content
-    # @raise [XMLInvalidContent] when non supported xml is passed
+    # @raise [XMLDeserializationError] when non supported XML is passed
     def XMLToYCPFile(xml_file)
-      raise XMLInvalidContent, "Cannot find XML file" if SCR.Read(path(".target.size"), xml_file) <= 0
+      raise XMLDeserializationError, "Cannot find XML file" if SCR.Read(path(".target.size"), xml_file) <= 0
 
       log.info "Reading #{xml_file}"
       XMLToYCPString(SCR.Read(path(".target.string"), xml_file))
@@ -175,9 +173,9 @@ module Yast
     # Reads XML string
     # @param [String] xml_string to read
     # @return [Hash] parsed content
-    # @raise [XMLInvalidContent] when non supported xml is passed
+    # @raise [XMLDeserializationError] when non supported xml is passed
     def XMLToYCPString(xml_string)
-      raise XMLInvalidContent, "Cannot convert empty XML string" if !xml_string || xml_string.empty?
+      raise XMLDeserializationError, "Cannot convert empty XML string" if !xml_string || xml_string.empty?
 
       doc = Nokogiri::XML(xml_string, &:strict)
       doc.remove_namespaces! # remove fancy namespaces to make user life easier
@@ -188,7 +186,7 @@ module Yast
 
       result
     rescue Nokogiri::XML::SyntaxError => e
-      raise XMLParseError, e.message
+      raise XMLDeserializationError, e.message
     end
 
     # Validates given schema
@@ -211,7 +209,7 @@ module Yast
       validator.validate(doc).map(&:message)
     end
 
-    # The error string from the xml parser.
+    # The error string from the XML parser.
     # It should be used when the agent did not return content.
     # A reset happens before a new XML parsing starts.
     # @return nil
@@ -246,19 +244,19 @@ module Yast
       type = fetch_type(text, children, node)
 
       result[name] = case type
+      # disksize is our own design mistake. deprecated.
       when "string", "disksize" then text
       when "symbol"
-        raise XMLInvalidContent, "xml node '#{node.name}' is empty. Forbidden for symbol." if text.empty?
+        raise XMLDeserializationError.for_node(node, "empty symbols are invalid") if text.empty?
 
         text.to_sym
       when "integer"
-        raise XMLInvalidContent, "xml node '#{node.name}' is empty. Forbidden for integer." if text.empty?
-        raise XMLInvalidContent, "xml node '#{node.name}' is invalid integer." if text !~ /-?\d+/
+        raise XMLDeserializationError.for_node(node, "cannot be parsed as an integer") if text !~ /-?\d+/
 
         text.to_i
       when "boolean"
         v = BOOLEAN_MAP[text]
-        raise XMLInvalidContent, "xml node '#{node.name}' is invalid. Only true and false is allowed for boolean." if v.nil?
+        raise XMLDeserializationError.for_node(node, "booleans can only be 'true' or 'false'") if v.nil?
 
         v
       when "list"
@@ -273,7 +271,7 @@ module Yast
         children.each { |kid| parse_node(kid, v) }
         v
       else
-        raise XMLInvalidContent, "XML node #{node.name} contain invalid type #{type.inspect}"
+        raise XMLDeserializationError.for_node(node, "invalid type #{type.inspect}")
       end
 
       result
@@ -329,7 +327,7 @@ module Yast
     # @return [String] the 't' or 'type' attribute, or inferred
     # @raise if there is conflicting type information
     def fetch_type(text, children, node)
-      raise XMLInvalidContent, "Element <#{node.name}> at line #{node.line} contains both 't' and 'type' attributes" if node["t"] && node["type"]
+      raise XMLDeserializationError.for_node(node, "contains both 't' and 'type' attributes") if node["t"] && node["type"]
 
       type = node["t"] || node["type"] || detect_type(text, children, node)
       type
@@ -348,7 +346,7 @@ module Yast
         # default type is text if nothing is specified and cannot interfere
         "string"
       else
-        raise XMLInvalidContent, "xml #{node.name} contain both text #{text} and children #{children.inspect}."
+        raise XMLDeserializationError.for_node(node, "contains both text #{text.inspect} and elements #{children.inspect}.")
       end
     end
   end

@@ -231,7 +231,14 @@ describe "Yast::XML" do
           "  <foo t=\"string\" type=\"symbol\">str</foo>\n" \
           "  <bar t=\"string\" config:type=\"symbol\">str</bar>\n" \
           "</test>\n"
-        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError, /both 't' and 'type'/)
+      end
+
+      it "in raises when the type is invalid" do
+        input = "<test xmlns=\"http://www.suse.com/1.0/yast2ns\">\n" \
+          "  <foo t=\"typewriter\">old</foo>\n" \
+          "</test>\n"
+        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError, /invalid type "typewriter"/)
       end
     end
 
@@ -287,7 +294,7 @@ describe "Yast::XML" do
       expect(subject.XMLToYCPString(input)).to eq expected
     end
 
-    it "raises XMLInvalidContent for invalid integers" do
+    it "raises XMLDeserializationError (with line info) for invalid integers" do
       input = "<?xml version=\"1.0\"?>\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"integer\">5</test>\n" \
@@ -295,7 +302,7 @@ describe "Yast::XML" do
         "  <invalid config:type=\"integer\">invalid</invalid>\n" \
         "</test>\n"
 
-      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError, /at line 5: cannot be parsed as an integer/)
     end
 
     it "returns symbol for xml element with type=\"symbol\"" do
@@ -320,14 +327,14 @@ describe "Yast::XML" do
       expect(subject.XMLToYCPString(input)).to eq expected
     end
 
-    it "raises XMLInvalidContent xml element with type=\"boolean\" and unknown value" do
+    it "raises XMLDeserializationError xml element with type=\"boolean\" and unknown value" do
       input = "<?xml version=\"1.0\"?>\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test config:type=\"boolean\">true</test>\n" \
         "  <lest config:type=\"boolean\">invalid</lest>\n" \
         "</test>\n"
 
-      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError)
     end
 
     it "returns array for xml element with type=\"list\"" do
@@ -372,7 +379,7 @@ describe "Yast::XML" do
       expect(subject.XMLToYCPString(input)).to eq expected
     end
 
-    it "raise Yast::XMLInvalidContent for xml element that contain sub elements and value" do
+    it "raise Yast::XMLDeserializationError for xml element that contain sub elements and value" do
       input = "<?xml version=\"1.0\"?>\n" \
               "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
               "  <test>\n" \
@@ -382,7 +389,7 @@ describe "Yast::XML" do
               "  </test>\n" \
               "</test>\n"
 
-      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError, /both text.*and elements/)
     end
 
     context "element with empty value" do
@@ -426,31 +433,31 @@ describe "Yast::XML" do
         expect(subject.XMLToYCPString(input)).to eq expected
       end
 
-      it "raises XMLInvalidContent with type symbol" do
+      it "raises XMLDeserializationError with type symbol" do
         input = "<?xml version=\"1.0\"?>\n" \
                 "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <lest type=\"symbol\"></lest>\n" \
                 "</test>\n"
 
-        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError)
       end
 
-      it "raises XMLInvalidContent with type integer" do
+      it "raises XMLDeserializationError with type integer" do
         input = "<?xml version=\"1.0\"?>\n" \
                 "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <lest type=\"integer\"></lest>\n" \
                 "</test>\n"
 
-        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError)
       end
 
-      it "raises XMLInvalidContent with type boolean" do
+      it "raises XMLDeserializationError with type boolean" do
         input = "<?xml version=\"1.0\"?>\n" \
                 "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
                 "  <lest type=\"boolean\"></lest>\n" \
                 "</test>\n"
 
-        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError)
       end
 
       it "workaround with empty cdata still works" do
@@ -475,13 +482,18 @@ describe "Yast::XML" do
       expect(subject.XMLToYCPString(input)).to eq expected
     end
 
-    it "raises Yast::XMLParseError if xml is malformed" do
+    it "raises XMLDeserializationError if xml is malformed" do
       input = "<?xml version=\"1.0\"?>\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <not_closed>false</invalid\n" \
+        "  <okoze>blabla</ovoze>\n" \
         "</test>\n"
 
-      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLParseError)
+      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError, /mismatch/)
+    end
+
+    it "raises XMLDeserializationError if xml is empty" do
+      input = ""
+      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLDeserializationError)
     end
 
     it "ignores xml comments" do
