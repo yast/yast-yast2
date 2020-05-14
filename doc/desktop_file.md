@@ -112,3 +112,8 @@ Auto prefix:
 * *X-SuSE-YaST-AutoLogResource* Specifies whether data in profile can be logged.
   Useful if data contains sensitive information. Possible values are `true` and
   `false`. By default `true`.
+
+## Miscellaneous Keys
+
+* *X-SuSE-DocTeamID* Specifies the identifier to be used when translating
+  the module's name. To be used by `Yast::Builtins.dpgettext`.

@@ -22,7 +22,8 @@ module Yast2
     context "Installation system without full support of systemd" do
       before do
         allow(Yast::Stage).to receive(:initial).and_return(true)
-        allow(Yast::Systemd).to receive(:Running).and_return(false)
+        allow(Yast::WFM).to receive(:scr_chrooted?).and_return(true)
+        allow(Yast::Systemd).to receive(:Running).and_return(true)
       end
 
       describe "#properties" do
