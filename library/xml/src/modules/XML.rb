@@ -283,7 +283,7 @@ module Yast
     # @param [Hash] contents content to write
     # @param [Array] parent_array (for better error reporting)
     # @return [void]
-    def add_element(doc, metadata, parent, contents, parent_array = nil)
+    def add_element(doc, metadata, parent, contents, parent_array: nil)
       # backward compatibility. Keys are sorted and needs old ycp sort to be able to compare also classes
       Builtins.sort(contents.keys).each do |key|
         raise XMLSerializationError.new("Cannot represent non-string key '#{key.inspect}', part of #{contents.inspect}", contents) unless key.is_a?(::String)
@@ -308,7 +308,7 @@ module Yast
           special_names = metadata["listEntries"] || {}
           element_name = special_names[key] || "listentry"
           value.each do |list_value|
-            add_element(doc, metadata, element, { element_name => list_value }, value)
+            add_element(doc, metadata, element, { element_name => list_value }, parent_array: value)
           end
         when ::Hash
           element[type_attr] = "map"
