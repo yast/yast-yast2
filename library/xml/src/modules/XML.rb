@@ -253,7 +253,7 @@ module Yast
       # we need just direct text under node. Can be splitted with another elements
       # but remove whitespace only text
       name = node.name
-      type = node["t"] || node["type"] || detect_type(text, children, node)
+      type = fetch_type(text, children, node)
 
       result[name] = case type
       when "string", "disksize" then text
@@ -332,6 +332,15 @@ module Yast
 
         parent << element
       end
+    end
+
+    # @return [String] the 't' or 'type' attribute, or inferred
+    # @raise if there is conflicting type information
+    def fetch_type(text, children, node)
+      raise XMLInvalidContent, "Element <#{node.name}> at line #{node.line} contains both 't' and 'type' attributes" if node["t"] && node["type"]
+
+      type = node["t"] || node["type"] || detect_type(text, children, node)
+      type
     end
 
     def detect_type(text, children, node)
