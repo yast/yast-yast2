@@ -384,84 +384,84 @@ describe "Yast::XML" do
 
       expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
     end
-  end
 
-  context "element with empty value" do
-    it "return empty string if no type is specified" do
-      input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <test></test>\n" \
-        "</test>\n"
+    context "element with empty value" do
+      it "return empty string if no type is specified" do
+        input = "<?xml version=\"1.0\"?>\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "  <test></test>\n" \
+                "</test>\n"
 
-      expected = { "test" => "" }
-      expect(subject.XMLToYCPString(input)).to eq expected
-    end
+        expected = { "test" => "" }
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
 
-    it "returns empty string with type string" do
-      input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <test type=\"string\" />\n" \
-        "</test>\n"
-      expected = { "test" => "" }
+      it "returns empty string with type string" do
+        input = "<?xml version=\"1.0\"?>\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "  <test type=\"string\" />\n" \
+                "</test>\n"
+        expected = { "test" => "" }
 
-      expect(subject.XMLToYCPString(input)).to eq expected
-    end
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
 
-    it "returns empty hash with type map" do
-      input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <test type=\"map\" />\n" \
-        "</test>\n"
-      expected = { "test" => {} }
+      it "returns empty hash with type map" do
+        input = "<?xml version=\"1.0\"?>\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "  <test type=\"map\" />\n" \
+                "</test>\n"
+        expected = { "test" => {} }
 
-      expect(subject.XMLToYCPString(input)).to eq expected
-    end
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
 
-    it "returns empty array with type list" do
-      input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <test type=\"list\" />\n" \
-        "</test>\n"
-      expected = { "test" => [] }
+      it "returns empty array with type list" do
+        input = "<?xml version=\"1.0\"?>\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "  <test type=\"list\" />\n" \
+                "</test>\n"
+        expected = { "test" => [] }
 
-      expect(subject.XMLToYCPString(input)).to eq expected
-    end
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
 
-    it "raises XMLInvalidContent with type symbol" do
-      input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <lest type=\"symbol\"></lest>\n" \
-        "</test>\n"
+      it "raises XMLInvalidContent with type symbol" do
+        input = "<?xml version=\"1.0\"?>\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "  <lest type=\"symbol\"></lest>\n" \
+                "</test>\n"
 
-      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
-    end
+        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+      end
 
-    it "raises XMLInvalidContent with type integer" do
-      input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <lest type=\"integer\"></lest>\n" \
-        "</test>\n"
+      it "raises XMLInvalidContent with type integer" do
+        input = "<?xml version=\"1.0\"?>\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "  <lest type=\"integer\"></lest>\n" \
+                "</test>\n"
 
-      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
-    end
+        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+      end
 
-    it "raises XMLInvalidContent with type boolean" do
-      input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <lest type=\"boolean\"></lest>\n" \
-        "</test>\n"
+      it "raises XMLInvalidContent with type boolean" do
+        input = "<?xml version=\"1.0\"?>\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "  <lest type=\"boolean\"></lest>\n" \
+                "</test>\n"
 
-      expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
-    end
+        expect { subject.XMLToYCPString(input) }.to raise_error(Yast::XMLInvalidContent)
+      end
 
-    it "workaround with empty cdata still works" do
-      input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <lest><![CDATA[]]></lest>\n" \
-        "</test>\n"
-      expected = { "lest" => "" }
+      it "workaround with empty cdata still works" do
+        input = "<?xml version=\"1.0\"?>\n" \
+                "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+                "  <lest><![CDATA[]]></lest>\n" \
+                "</test>\n"
+        expected = { "lest" => "" }
 
-      expect(subject.XMLToYCPString(input)).to eq expected
+        expect(subject.XMLToYCPString(input)).to eq expected
+      end
     end
 
     # for cdata see global before
