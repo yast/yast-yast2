@@ -1,6 +1,6 @@
 # ***************************************************************************
 #
-# Copyright (c) 2002 - 2012 Novell, Inc.
+# Copyright (c) 2002 - 2020 SUSE LLC
 # All Rights Reserved.
 #
 # This program is free software; you can redistribute it and/or
@@ -13,22 +13,44 @@
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with this program; if not, contact Novell, Inc.
+# along with this program; if not, contact SUSE LCC.
 #
 # To contact Novell about this file by physical or electronic mail,
-# you may find current contact information at www.novell.com
+# you may find current contact information at www.suse.com
 #
 # ***************************************************************************
-# File:  modules/XML.ycp
-# Package:  XML
-# Summary:  XML routines
-# Authors:  Anas Nashif <nashif@suse.de>
-#
-# $Id$
+
 require "yast"
 
+require "nokogiri"
+
 module Yast
+  # Exception used when trying to serialize a Ruby object that we cannot
+  # represent in XML:
+  # - non-String Hash key
+  # - a special object, like a Regexp
+  # - nil
+  class XMLSerializationError < RuntimeError
+    attr_reader :object
+
+    def initialize(message, object)
+      @object = object
+      super(message)
+    end
+  end
+
+  # Exception used when parsing a XML string:
+  # - syntax error (Nokogiri::XML::SyntaxError is reraised as this)
+  # - cannot be represented as Ruby data
+  class XMLDeserializationError < RuntimeError
+    def self.for_node(node, message)
+      new("Element <#{node.name}> at line #{node.line}: #{message}")
+    end
+  end
+
   class XMLClass < Module
+    include Yast::Logger
+
     def main
       # Sections in XML file that should be treated as CDATA when saving
       @cdataSections = []
@@ -97,96 +119,236 @@ module Yast
     # @param [Hash] contents  a map with YCP data
     # @param [String] output_path the path of the XML file
     # @return [Boolean] true on sucess
+    # @raise [XMLSerializationError] when non supported contents is passed
     def YCPToXMLFile(doc_type, contents, output_path)
-      contents = deep_copy(contents)
-      if !Builtins.haskey(@docs, doc_type)
-        Builtins.y2error("doc type %1 undeclared...", doc_type)
-        return false
-      end
-      docSettings = Ops.get_map(@docs, doc_type, {})
-      Ops.set(docSettings, "fileName", output_path)
-      Builtins.y2debug("Write(.xml, %1, %2)", docSettings, contents)
-      ret = Convert.to_boolean(SCR.Execute(path(".xml"), docSettings, contents))
-      ret
+      xml = YCPToXMLString(doc_type, contents)
+      return false unless xml
+
+      SCR.Write(path(".target.string"), output_path, xml)
     end
 
     # Write YCP data into formated XML string
     # @param [Symbol] doc_type Document type identifier
     # @param [Hash] contents  a map with YCP data
-    # @return [String] String with XML data
+    # @return [String, nil] String with XML data or nil if error happen
+    # @raise [XMLSerializationError] when non supported content is passed
     def YCPToXMLString(doc_type, contents)
-      contents = deep_copy(contents)
-      return nil if !Builtins.haskey(@docs, doc_type)
+      metadata = @docs[doc_type]
+      if !metadata
+        log.error "Calling YCPToXML with unknown doc_type #{doc_type.inspect}. " \
+          "Known types #{@docs.keys.inspect}"
+        return nil
+      end
 
-      docSettings = Ops.get_map(@docs, doc_type, {})
-      Ops.set(docSettings, "fileName", "dummy")
-      ret = SCR.Execute(path(".xml.string"), docSettings, contents)
+      doc = Nokogiri::XML::Document.new("1.0")
+      root_name = metadata["rootElement"]
+      if !root_name || root_name.empty?
+        log.warn "root element missing in docs #{metadata.inspect}"
+        return nil
+      end
 
-      Ops.is_string?(ret) ? Convert.to_string(ret) : ""
+      doc.create_internal_subset(root_name, nil, metadata["systemID"])
+
+      root = doc.create_element root_name
+      root.default_namespace = metadata["nameSpace"] if metadata["nameSpace"]
+      root.add_namespace("config", metadata["typeNamespace"]) if metadata["typeNamespace"]
+
+      add_element(doc, metadata, root, contents)
+
+      doc.root = root
+      doc.to_xml
     end
 
-    # Read XML file into YCP
+    # Reads XML file
     # @param [String] xml_file XML file name to read
-    # @return Map with YCP data
+    # @return [Hash] parsed content
+    # @raise [XMLDeserializationError] when non supported XML is passed
     def XMLToYCPFile(xml_file)
-      if Ops.greater_than(SCR.Read(path(".target.size"), xml_file), 0)
-        Builtins.y2milestone("Reading %1", xml_file)
-        out = Convert.convert(
-          SCR.Read(path(".xml"), xml_file),
-          from: "any",
-          to:   "map <string, any>"
-        )
-        Builtins.y2debug("XML Agent output: %1", out)
-        deep_copy(out)
-      else
-        Builtins.y2warning(
-          "XML file %1 (%2) not found",
-          xml_file,
-          SCR.Read(path(".target.size"), xml_file)
-        )
-        {}
-      end
+      raise XMLDeserializationError, "Cannot find XML file" if SCR.Read(path(".target.size"), xml_file) <= 0
+
+      log.info "Reading #{xml_file}"
+      XMLToYCPString(SCR.Read(path(".target.string"), xml_file))
     end
 
-    # Read XML string into YCP
-    # @param xml_string string to read
-    # @return Map with YCP data
+    # Reads XML string
+    # @param [String] xml_string to read
+    # @return [Hash] parsed content
+    # @raise [XMLDeserializationError] when non supported xml is passed
     def XMLToYCPString(xml_string)
-      if Ops.greater_than(Builtins.size(xml_string), 0)
-        out = Convert.convert(
-          SCR.Read(path(".xml.string"), xml_string),
-          from: "any",
-          to:   "map <string, any>"
-        )
-        Builtins.y2debug("XML Agent output: %1", out)
-        deep_copy(out)
-      else
-        Builtins.y2warning("can't convert empty XML string")
-        {}
-      end
+      raise XMLDeserializationError, "Cannot convert empty XML string" if !xml_string || xml_string.empty?
+
+      doc = Nokogiri::XML(xml_string, &:strict)
+      doc.remove_namespaces! # remove fancy namespaces to make user life easier
+
+      result = {}
+      # inspect only element nodes
+      doc.root.children.select(&:element?).each { |n| parse_node(n, result) }
+
+      result
+    rescue Nokogiri::XML::SyntaxError => e
+      raise XMLDeserializationError, e.message
     end
 
-    # The error string from the xml parser.
+    # Validates given schema
+    #
+    # @param xml [String] path or content of XML
+    # @param schema [String] path or content of relax ng schema
+    # @return [Array<String>] array of strings with error or empty array if valid
+    def validate(xml, schema)
+      xml = SCR.Read(path(".target.string"), xml) unless xml.include?("\n")
+      if schema.include?("\n") # content, not path
+        validator = Nokogiri::XML::RelaxNG(schema)
+      else
+        schema_content = SCR.Read(path(".target.string"), schema)
+        schema_path = File.dirname(schema)
+        # change directory so relative include works
+        Dir.chdir(schema_path) { validator = Nokogiri::XML::RelaxNG(schema_content) }
+      end
+
+      doc = Nokogiri::XML(xml)
+      validator.validate(doc).map(&:message)
+    end
+
+    # The error string from the XML parser.
     # It should be used when the agent did not return content.
     # A reset happens before a new XML parsing starts.
-    # @return parser error
+    # @return nil
+    # @deprecated Exception is used instead
     def XMLError
-      Convert.to_string(SCR.Read(path(".xml.error_message")))
+      nil
     end
 
-    publish variable: :cdataSections, type: "list"
-    publish variable: :listEntries, type: "map"
-    publish variable: :systemID, type: "string"
-    publish variable: :rootElement, type: "string"
-    publish variable: :nameSpace, type: "string"
-    publish variable: :typeNamespace, type: "string"
-    publish variable: :docs, type: "map"
     publish function: :xmlCreateDoc, type: "void (symbol, map)"
     publish function: :YCPToXMLFile, type: "boolean (symbol, map, string)"
     publish function: :YCPToXMLString, type: "string (symbol, map)"
     publish function: :XMLToYCPFile, type: "map <string, any> (string)"
     publish function: :XMLToYCPString, type: "map <string, any> (string)"
     publish function: :XMLError, type: "string ()"
+
+  private
+
+    BOOLEAN_MAP = {
+      "true"  => true,
+      "false" => false
+    }.freeze
+
+    def parse_node(node, result)
+      name = node.name
+      # use only element children
+      children = node.children
+      children = children.select(&:element?)
+      # we need just direct text under node. Can be splitted with another elements
+      # but remove whitespace only text
+      text = node.xpath("text()").text.strip
+
+      type = fetch_type(text, children, node)
+
+      result[name] = case type
+      # disksize is our own design mistake. deprecated.
+      when "string", "disksize" then text
+      when "symbol"
+        raise XMLDeserializationError.for_node(node, "empty symbols are invalid") if text.empty?
+
+        text.to_sym
+      when "integer"
+        raise XMLDeserializationError.for_node(node, "cannot be parsed as an integer") if text !~ /-?\d+/
+
+        text.to_i
+      when "boolean"
+        v = BOOLEAN_MAP[text]
+        raise XMLDeserializationError.for_node(node, "booleans can only be 'true' or 'false'") if v.nil?
+
+        v
+      when "list"
+        children.map do |kid|
+          # always pass new hash to prevent overwrite for list with same elements
+          r = {}
+          parse_node(kid, r)
+          r.values.first
+        end
+      when "map"
+        v = {}
+        children.each { |kid| parse_node(kid, v) }
+        v
+      else
+        raise XMLDeserializationError.for_node(node, "invalid type #{type.inspect}")
+      end
+
+      result
+    end
+
+    # @param [Nokogiri::XML::Document] doc
+    # @param [Hash] metadata for current doc
+    # @param [Nokogiri::XML::Node] parent
+    # @param [Hash] contents content to write
+    # @param [Array] parent_array (for better error reporting)
+    # @return [void]
+    def add_element(doc, metadata, parent, contents, parent_array: nil)
+      # backward compatibility. Keys are sorted and needs old ycp sort to be able to compare also classes
+      Builtins.sort(contents.keys).each do |key|
+        raise XMLSerializationError.new("Cannot represent non-string key '#{key.inspect}', part of #{contents.inspect}", contents) unless key.is_a?(::String)
+
+        value = contents[key]
+        type_attr = "t"
+        element = Nokogiri::XML::Node.new(key, doc)
+        case value
+        when ::String
+          element.content = value
+        when ::Integer
+          element[type_attr] = "integer"
+          element.content = value.to_s
+        when ::Symbol
+          element[type_attr] = "symbol"
+          element.content = value.to_s
+        when true, false
+          element[type_attr] = "boolean"
+          element.content = value.to_s
+        when ::Array
+          element[type_attr] = "list"
+          special_names = metadata["listEntries"] || {}
+          element_name = special_names[key] || "listentry"
+          value.each do |list_value|
+            add_element(doc, metadata, element, { element_name => list_value }, parent_array: value)
+          end
+        when ::Hash
+          element[type_attr] = "map"
+          add_element(doc, metadata, element, value)
+        else # including nil
+          # without parent_array, a ["foo", nil, "bar"] would always
+          # unhelpfully report {"listentry"=> nil} as the parent object
+          o = parent_array || contents
+          raise XMLSerializationError.new("Cannot represent #{value.inspect}, part of #{o.inspect}", o)
+        end
+
+        parent << element
+      end
+    end
+
+    # @return [String] the 't' or 'type' attribute, or inferred
+    # @raise if there is conflicting type information
+    def fetch_type(text, children, node)
+      raise XMLDeserializationError.for_node(node, "contains both 't' and 'type' attributes") if node["t"] && node["type"]
+
+      type = node["t"] || node["type"] || detect_type(text, children, node)
+      type
+    end
+
+    def detect_type(text, children, node)
+      # backward compatibility. Newly maps should have its type
+      if text.empty? && !children.empty?
+        "map"
+      elsif !text.empty? && children.empty?
+        "string"
+      # keep cdata trick to create empty string
+      elsif !node.children.reject(&:text?).select(&:cdata?).empty?
+        "string"
+      elsif text.empty? && children.empty?
+        # default type is text if nothing is specified and cannot interfere
+        "string"
+      else
+        raise XMLDeserializationError.for_node(node, "contains both text #{text.inspect} and elements #{children.inspect}.")
+      end
+    end
   end
 
   XML = XMLClass.new

@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.2.84
+Version:        4.3.0
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -33,7 +33,6 @@ BuildRequires:  fdupes
 BuildRequires:  grep
 # for some system directories
 BuildRequires:  filesystem
-BuildRequires:  perl-XML-Writer
 # for defining abstract methods in libraries
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
@@ -53,6 +52,8 @@ BuildRequires:  yast2-devtools >= 3.1.10
 # Pkg.Resolvables()
 BuildRequires:  yast2-pkg-bindings >= 4.2.0
 BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
+# for XML module
+BuildRequires:  rubygem(%rb_default_ruby_abi:nokogiri)
 # To have Yast::WFM.scr_root
 BuildRequires:  yast2-ruby-bindings >= 3.2.8
 BuildRequires:  yast2-testsuite
@@ -68,8 +69,6 @@ BuildRequires:  rpm
 Requires:       coreutils
 # for GPG.ycp
 Requires:       gpg2
-# for ag_anyxml
-Requires:       perl-XML-Simple
 # for defining abstract methods in libraries
 Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
@@ -81,6 +80,8 @@ Requires:       sysconfig >= 0.80.0
 Requires:       rubygem(%{rb_default_ruby_abi}:simpleidn)
 # for running scripts
 Requires:       rubygem(%{rb_default_ruby_abi}:cheetah)
+# for XML module
+Requires:       rubygem(%rb_default_ruby_abi:nokogiri)
 # ag_ini section_private
 # ag_ini with (un)quoting support
 Requires:       yast2-core >= 2.23.0
@@ -91,7 +92,6 @@ Requires:       yast2-perl-bindings
 Requires:       yast2-pkg-bindings >= 4.2.0
 # for y2start
 Requires:       yast2-ruby-bindings >= 3.2.10
-Requires:       yast2-xml
 # new UI::SetApplicationTitle
 Requires:       yast2-ycp-ui-bindings >= 3.2.0
 Requires:       yui_backend

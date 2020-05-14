@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Thu May 14 07:32:16 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+
+- Re-implement XML parser (bsc#1170886):
+-- use as backend nokogiri instead of hand written libxml2 wrapper
+-- Use exceptions instead of silently ignoring issues
+-- export map as type to xml
+-- add new method #validate to validate against relax-ng schema
+- 4.3.0
+
+-------------------------------------------------------------------
 Wed May  6 17:43:51 CEST 2020 - schubi@suse.de
 
 - AutoYaST: Cleanup/improve issue handling (bsc#1171335).
