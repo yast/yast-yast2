@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 18 08:21:09 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Restore back the perl-XML-Simple dependency, it is needed for
+  ag_anyxml (related to bsc#1170886)
+- 4.3.1
+
+-------------------------------------------------------------------
 Thu May 14 07:32:16 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - Re-implement XML parser (bsc#1170886):
