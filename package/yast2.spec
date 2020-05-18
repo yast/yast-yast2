@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.3.0
+Version:        4.3.1
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -69,6 +69,8 @@ BuildRequires:  rpm
 Requires:       coreutils
 # for GPG.ycp
 Requires:       gpg2
+# for ag_anyxml
+Requires:       perl-XML-Simple
 # for defining abstract methods in libraries
 Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
