@@ -156,7 +156,7 @@ module Yast2
       # TRANSLATORS: helptext for the service current status
       helptext += _(
         "<h3>Current status</h3>" \
-        "Displays the curren status of the service."
+        "Displays the current status of the service."
       )
 
       # TRANSLATORS: helptext for the "After writting configuration" service widget option
