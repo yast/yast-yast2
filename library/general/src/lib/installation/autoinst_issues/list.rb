@@ -26,12 +26,14 @@ module Installation
     # @example Registering some partition problems
     #   section = PartitionSection.new({})
     #   list = List.new
-    #   list.add(:missing_root)
-    #   list.add(:invalid_value, section, :size, "auto")
+    #   list.add(Y2Storage::AutoinstIssues::MissingRoot)
+    #   list.add(Y2Storage::AutoinstIssues::InvalidValue,
+    #             section, :size, "auto")
     #
     # @example Adding a problem with additional arguments
     #   list = List.new
-    #   list.add(:ay_invalid_value, "firewall", "FW_DEV_INT", "1",
+    #   list.add(Installation::AutoinstIssues::AyInvalidValue,
+    #     "firewall", "FW_DEV_INT", "1",
     #     _("Is not supported anymore."))
     #   list.empty? #=> false
     #
@@ -50,25 +52,23 @@ module Installation
 
       # Add a problem to the list
       #
-      # The type of the problem is identified as a symbol which name is the
-      # underscore version of the class which implements it. For instance,
-      # `MissingRoot` would be referred as `:missing_root`.
+      # The type of the problem is class of the regarding issue
+      # e.g.: `MissingRoot`
       #
       # If a given type of problem requires some additional arguments, they
       # should be added when calling this method. See the next example.
       #
       # @example Adding a problem with additional arguments
       #   list = List.new
-      #   list.add(:ay_invalid_value, "firewall", "FW_DEV_INT", "1",
+      #   list.add(Installation::AutoinstIssues::AyInvalidValue
+      #     "firewall", "FW_DEV_INT", "1",
       #     _("Is not supported anymore."))
       #   list.empty? #=> false
       #
-      # @param type       [Symbol] Issue type
+      # @param klass      [Class] Issue class
       # @param extra_args [Array] Additional arguments for the given problem
       # @return [Array<Issue>] List of problems
-      def add(type, *extra_args)
-        class_name = type.to_s.split("_").map(&:capitalize).join
-        klass = Installation::AutoinstIssues.const_get(class_name)
+      def add(klass, *extra_args)
         self << klass.new(*extra_args)
       end
 
