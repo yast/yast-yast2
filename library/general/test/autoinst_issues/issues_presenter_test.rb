@@ -92,7 +92,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
     context "when a non fatal issue was found" do
       before do
         list.add(::Y2Autoinstallation::AutoinstIssues::InvalidValue,
-                 section, "foo", "bar")
+          section, "foo", "bar")
       end
 
       it "includes issues messages" do
