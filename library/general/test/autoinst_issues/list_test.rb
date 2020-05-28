@@ -22,7 +22,7 @@ require_relative "../test_helper"
 require "installation/autoinst_issues/issue"
 require "installation/autoinst_issues/list"
 
-module Installation
+module Test
   module AutoinstIssues
     # Represents a problem that occurs when an exception is raised.
     class Exception < ::Installation::AutoinstIssues::Issue
@@ -59,12 +59,12 @@ end
 describe Installation::AutoinstIssues::List do
   subject(:list) { described_class.new }
 
-  let(:issue) { instance_double(Installation::AutoinstIssues::Exception) }
+  let(:issue) { instance_double(Test::AutoinstIssues::Exception) }
 
   describe "#add" do
     it "adds a new issue to the list" do
-      list.add(:exception, StandardError.new)
-      expect(list.to_a).to all(be_an(Installation::AutoinstIssues::Exception))
+      list.add(Test::AutoinstIssues::Exception, StandardError.new)
+      expect(list.to_a).to all(be_an(Test::AutoinstIssues::Exception))
     end
   end
 
@@ -77,11 +77,11 @@ describe Installation::AutoinstIssues::List do
 
     context "when some issue was added" do
       before do
-        2.times { list.add(:exception, StandardError.new) }
+        2.times { list.add(Test::AutoinstIssues::Exception, StandardError.new) }
       end
 
       it "returns an array containing added issues" do
-        expect(list.to_a).to all(be_a(Installation::AutoinstIssues::Exception))
+        expect(list.to_a).to all(be_a(Test::AutoinstIssues::Exception))
         expect(list.to_a.size).to eq(2)
       end
     end
@@ -95,7 +95,7 @@ describe Installation::AutoinstIssues::List do
     end
 
     context "when some issue was added" do
-      before { list.add(:exception, StandardError.new) }
+      before { list.add(Test::AutoinstIssues::Exception, StandardError.new) }
 
       it "returns false" do
         expect(list).to_not be_empty
@@ -105,7 +105,7 @@ describe Installation::AutoinstIssues::List do
 
   describe "#fatal?" do
     context "when contains some fatal error" do
-      before { list.add(:exception, StandardError.new) }
+      before { list.add(Test::AutoinstIssues::Exception, StandardError.new) }
 
       it "returns true" do
         expect(list).to be_fatal
