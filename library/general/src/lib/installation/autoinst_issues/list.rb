@@ -32,7 +32,7 @@ module Installation
     #
     # @example Adding a problem with additional arguments
     #   list = List.new
-    #   list.add(Installation::AutoinstIssues::AyInvalidValue,
+    #   list.add(::Y2Autoinstallation::AutoinstIssues::AyInvalidValue,
     #     "firewall", "FW_DEV_INT", "1",
     #     _("Is not supported anymore."))
     #   list.empty? #=> false
@@ -60,7 +60,7 @@ module Installation
       #
       # @example Adding a problem with additional arguments
       #   list = List.new
-      #   list.add(Installation::AutoinstIssues::AyInvalidValue
+      #   list.add(::Y2Autoinstallation::AutoinstIssues::AyInvalidValue
       #     "firewall", "FW_DEV_INT", "1",
       #     _("Is not supported anymore."))
       #   list.empty? #=> false
