@@ -24,7 +24,7 @@ require "installation/autoinst_issues/issue"
 require "installation/autoinst_issues/list"
 require "installation/autoinst_issues/issues_presenter"
 
-module Y2Autoinstallation
+module Test
   module AutoinstIssues
     class MissingSection < ::Installation::AutoinstIssues::Issue
       def initialize(*args)
@@ -76,7 +76,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
   describe "#to_html" do
     context "when a fatal issue was found" do
       before do
-        list.add(::Y2Autoinstallation::AutoinstIssues::MissingSection)
+        list.add(::Test::AutoinstIssues::MissingSection)
       end
 
       it "includes issues messages" do
@@ -91,7 +91,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
 
     context "when a non fatal issue was found" do
       before do
-        list.add(::Y2Autoinstallation::AutoinstIssues::InvalidValue,
+        list.add(::Test::AutoinstIssues::InvalidValue,
           section, "foo", "bar")
       end
 
@@ -111,7 +111,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
 
     context "when a non located issue was found" do
       before do
-        list.add(::Y2Autoinstallation::AutoinstIssues::MissingSection)
+        list.add(::Test::AutoinstIssues::MissingSection)
       end
 
       it "includes issues messages" do
@@ -124,7 +124,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
   describe "#to_plain" do
     context "when a fatal issue was found" do
       before do
-        list.add(::Y2Autoinstallation::AutoinstIssues::MissingSection)
+        list.add(::Test::AutoinstIssues::MissingSection)
       end
 
       it "includes issues messages" do
@@ -139,7 +139,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
 
     context "when a non fatal issue was found" do
       before do
-        list.add(::Y2Autoinstallation::AutoinstIssues::InvalidValue,
+        list.add(::Test::AutoinstIssues::InvalidValue,
           section, "foo", "bar")
       end
 
@@ -159,7 +159,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
 
     context "when a non located issue was found" do
       before do
-        list.add(::Y2Autoinstallation::AutoinstIssues::MissingSection)
+        list.add(::Test::AutoinstIssues::MissingSection)
       end
 
       it "includes issues messages" do
