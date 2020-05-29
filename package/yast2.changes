@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 29 05:21:09 UTC 2020 - schubi@suse.de
+
+- autoinst_issues/list.add : Fixed documentation.
+  (bsc#1171335).
+
+-------------------------------------------------------------------
 Mon May 18 10:21:09 UTC 2020 - schubi@suse.de
 
 - autoinst_issues/list.add : Changed first parameter from tag to
