@@ -29,16 +29,17 @@ module Installation
     #   list.add(Y2Storage::AutoinstIssues::MissingRoot)
     #   list.add(Y2Storage::AutoinstIssues::InvalidValue,
     #             section, :size, "auto")
-    #
-    # @example Adding a problem with additional arguments
-    #   list = List.new
-    #   list.add(::Installation::AutoinstIssues::InvalidValue,
-    #     "firewall", "FW_DEV_INT", "1",
-    #     _("Is not supported anymore."))
     #   list.empty? #=> false
-    #
     # @example Iterating through the list of problems
     #   list.map(&:severity) #=> [:warn]
+    #
+    # @example Adding a problem with additional arguments
+    #   fd_section = Y2Firewall::AutoinstProfile::FirewallSection.new()
+    #   AutoInstall.issues_list.add(
+    #     ::Installation::AutoinstIssues::InvalidValue,
+    #     fd_section, "FW_DEV_INT", "1",
+    #     _("Is not supported anymore."))
+    #
     class List
       include Enumerable
       extend Forwardable
@@ -59,11 +60,11 @@ module Installation
       # should be added when calling this method. See the next example.
       #
       # @example Adding a problem with additional arguments
-      #   list = List.new
-      #   list.add(::Installation::AutoinstIssues::InvalidValue
-      #     "firewall", "FW_DEV_INT", "1",
+      #   fd_section = Y2Firewall::AutoinstProfile::FirewallSection.new()
+      #   AutoInstall.issues_list.add(
+      #     ::Installation::AutoinstIssues::InvalidValue,
+      #     fd_section, "FW_DEV_INT", "1",
       #     _("Is not supported anymore."))
-      #   list.empty? #=> false
       #
       # @param klass      [Class] Issue class
       # @param extra_args [Array] Additional arguments for the given problem
