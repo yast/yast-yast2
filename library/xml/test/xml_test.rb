@@ -524,7 +524,7 @@ describe "Yast::XML" do
        </element>'
     end
 
-    it "returns array for valid xml" do
+    it "returns empty array for valid xml" do
       xml = '<?xml version="1.0"?>
              <test>
                <person>
@@ -551,6 +551,23 @@ describe "Yast::XML" do
              </test>'
 
       expect(Yast::XML.validate(xml, schema)).to_not be_empty
+    end
+
+    it "raises XMLDeserializationError for a not well formed XML" do
+      # make the document invalid by commenting out a closing tag
+      xml = '<?xml version="1.0"?>
+             <test>
+               <person>
+                 <name>
+                   clark
+                 </name>
+                 <voice>
+                   nice
+                 </voice>
+               <!-- </person> -->
+             </test>'
+
+      expect { Yast::XML.validate(xml, schema) }.to raise_error(Yast::XMLDeserializationError)
     end
   end
 end

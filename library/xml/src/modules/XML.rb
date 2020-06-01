@@ -189,11 +189,15 @@ module Yast
       raise XMLDeserializationError, e.message
     end
 
-    # Validates given schema
+    # Validates a XML document against a given schema.
     #
-    # @param xml [String] path or content of XML
+    # @param xml [String] path or content of XML (if the string contains a new
+    #  line character it is considered as a XML string, otherwise as a file name)
     # @param schema [String] path or content of relax ng schema
-    # @return [Array<String>] array of strings with error or empty array if valid
+    # @return [Array<String>] array of strings with errors or empty array if
+    #   well formed and valid
+    # @raise [Yast::XMLDeserializationError] if the document is not well formed
+    #   (there are syntax errors)
     def validate(xml, schema)
       xml = SCR.Read(path(".target.string"), xml) unless xml.include?("\n")
       if schema.include?("\n") # content, not path
@@ -205,8 +209,10 @@ module Yast
         Dir.chdir(schema_path) { validator = Nokogiri::XML::RelaxNG(schema_content) }
       end
 
-      doc = Nokogiri::XML(xml)
+      doc = Nokogiri::XML(xml, &:strict)
       validator.validate(doc).map(&:message)
+    rescue Nokogiri::XML::SyntaxError => e
+      raise XMLDeserializationError, e.message
     end
 
     # The error string from the XML parser.

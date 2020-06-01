@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun  1 08:45:51 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Improved XML validation, raise exception for not well formed
+  documents (related to bsc#1170886)
+- 4.3.3
+
+-------------------------------------------------------------------
 Fri May 29 05:21:09 UTC 2020 - schubi@suse.de
 
 - autoinst_issues/list.add : Fixed documentation.
