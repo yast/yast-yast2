@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jun  4 13:16:21 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+
+- Drop anyxml agent to unify used xml parsers. All usage replaced
+  by rubygem-nokogiri
+  (related to bsc#1170886)
+- 4.3.4
+
+-------------------------------------------------------------------
 Mon Jun  1 08:45:51 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Improved XML validation, raise exception for not well formed
