@@ -69,8 +69,6 @@ BuildRequires:  rpm
 Requires:       coreutils
 # for GPG.ycp
 Requires:       gpg2
-# for ag_anyxml
-Requires:       perl-XML-Simple
 # for defining abstract methods in libraries
 Requires:       rubygem(%{rb_default_ruby_abi}:abstract_method)
 # for file access using augeas
@@ -119,8 +117,10 @@ Conflicts:      yast2-dns-server < 3.1.17
 Conflicts:      yast2-installation < 4.2.9
 # moved cfg_mail.scr
 Conflicts:      yast2-mail < 3.1.7
-# y2packager/repository.rb has been moved here
-Conflicts:      yast2-packager < 4.2.46
+# anyxml droppped
+Conflicts:      yast2-packager < 4.3.2
+# anyxml droppped
+Conflicts:      yast2-update < 4.3.0
 # Older snapper does not provide machine-readable output
 Conflicts:	snapper < 0.8.6
 
