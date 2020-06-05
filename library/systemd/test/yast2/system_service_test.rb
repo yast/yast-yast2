@@ -1,7 +1,5 @@
 #!/usr/bin/env rspec
-# encoding: utf-8
-
-# Copyright (c) [2018] SUSE LLC
+# Copyright (c) [2018-2020] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -744,64 +742,35 @@ describe Yast2::SystemService do
       context "and the action is start" do
         let(:action) { :start }
 
-        context "and neither the service nor the socket are active" do
-          let(:service_active) { false }
-          let(:socket_active) { false }
+        context "and the start mode is set to :on_demand" do
+          let(:start_mode) { :on_demand }
 
-          context "and the start mode is set to :on_demand" do
-            let(:start_mode) { :on_demand }
+          it "tries to start the socket" do
+            expect(socket).to receive(:start).and_return(true)
 
-            it "tries to start the socket" do
-              expect(socket).to receive(:start).and_return(true)
-
-              system_service.save
-            end
-
-            it "does not try to start the service" do
-              allow(socket).to receive(:start).and_return(true)
-              expect(service).to_not receive(:start)
-
-              system_service.save
-            end
+            system_service.save
           end
 
-          context "and the start mode is set to :on_boot or :manual" do
-            let(:start_mode) { :manual }
-
-            it "tries to start the service" do
-              expect(service).to receive(:start).and_return(true)
-
-              system_service.save
-            end
-
-            it "does not try to start the socket" do
-              allow(service).to receive(:start).and_return(true)
-              expect(socket).to_not receive(:start)
-
-              system_service.save
-            end
-          end
-        end
-
-        context "and the service is active" do
-          let(:service_active) { true }
-          let(:socket_active) { false }
-
-          it "does not try to start neither the socket nor the service" do
-            expect(socket).to_not receive(:start)
+          it "does not try to start the service" do
+            allow(socket).to receive(:start).and_return(true)
             expect(service).to_not receive(:start)
 
             system_service.save
           end
         end
 
-        context "and the socket is active" do
-          let(:socket_active) { true }
-          let(:service_active) { true }
+        context "and the start mode is set to :on_boot or :manual" do
+          let(:start_mode) { :manual }
 
-          it "does not try to start neither the socket nor the service" do
+          it "tries to start the service" do
+            expect(service).to receive(:start).and_return(true)
+
+            system_service.save
+          end
+
+          it "does not try to start the socket" do
+            allow(service).to receive(:start).and_return(true)
             expect(socket).to_not receive(:start)
-            expect(service).to_not receive(:start)
 
             system_service.save
           end
@@ -816,61 +785,51 @@ describe Yast2::SystemService do
           allow(socket).to receive(:stop).and_return(true)
         end
 
-        context "and the service is active" do
-          let(:service_active) { true }
+        it "tries to stop the service" do
+          expect(service).to receive(:stop).and_return(true)
 
-          it "tries to stop the service" do
-            expect(service).to receive(:stop).and_return(true)
-
-            system_service.save
-          end
+          system_service.save
         end
 
-        context "and the socket is active" do
-          let(:socket_active) { true }
+        it "tries to stop the socket" do
+          expect(socket).to receive(:stop).and_return(true)
 
-          it "tries to stop the socket" do
-            expect(socket).to receive(:stop).and_return(true)
-
-            system_service.save
-          end
-        end
-
-        context "and the service is not active" do
-          let(:service_active) { false }
-
-          it "does not try to stop the service again" do
-            expect(service).to_not receive(:stop)
-            system_service.save
-          end
-        end
-
-        context "and the socket is not active" do
-          let(:socket_active) { false }
-
-          it "does not try to stop the socket again" do
-            expect(socket).to_not receive(:stop)
-            system_service.save
-          end
+          system_service.save
         end
       end
 
       context "and the action is restart" do
         let(:action) { :restart }
 
+        before do
+          allow(system_service).to receive(:perform_stop).and_return(stop_success)
+
+          allow(system_service).to receive(:perform_start).and_return(true)
+        end
+
+        let(:stop_success) { true }
+
         it "performs the stop action (see above)" do
-          expect(system_service).to receive(:perform_stop).and_return(true)
+          expect(system_service).to receive(:perform_stop)
 
           system_service.save
         end
 
         context "and the system service is correctly stopped" do
-          before do
-            allow(system_service).to receive(:perform_stop).and_return(true)
-          end
+          let(:stop_success) { true }
 
           it "performs the start action (see above)" do
-            expect(system_service).to receive(:perform_start).and_return(true)
+            expect(system_service).to receive(:perform_start)
+
+            system_service.save
+          end
+        end
+
+        context "and the system service is not correctly stopped" do
+          let(:stop_success) { false }
+
+          it "does not try to perform the start action" do
+            expect(system_service).to_not receive(:perform_start)
 
             system_service.save
           end
