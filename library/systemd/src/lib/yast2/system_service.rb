@@ -1,6 +1,4 @@
-# encoding: utf-8
-
-# Copyright (c) [2018] SUSE LLC
+# Copyright (c) [2018-2020] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -181,7 +179,7 @@ module Yast2
     #
     # @return [String] all possible active_state values of systemd
     def state
-      return socket.active_state if socket_active? && !service.active?
+      return socket.active_state if socket? && socket.active? && !service.active?
 
       service.active_state
     end
@@ -192,7 +190,7 @@ module Yast2
     #
     # @return [String] all possible sub_state values of systemd
     def substate
-      return socket.sub_state if socket_active? && !service.active?
+      return socket.sub_state if socket? && socket.active? && !service.active?
 
       service.sub_state
     end
@@ -220,7 +218,7 @@ module Yast2
     #
     # @return [Boolean]
     def currently_active?
-      service.active? || socket_active?
+      service.active? || (socket? && socket.active?)
     end
 
     # Returns the list of supported start modes for this service (if a socket
@@ -476,15 +474,7 @@ module Yast2
     #
     # @return [Boolean] true if the service was correctly started
     def perform_start
-      result = true
-
-      if socket && start_mode == :on_demand
-        result &&= socket.start unless socket_active?
-      else
-        result &&= service.start unless service.active?
-      end
-
-      result
+      (socket? && start_mode == :on_demand) ? socket.start : service.start
     end
 
     # Stops the service in the underlying system
@@ -495,8 +485,8 @@ module Yast2
     def perform_stop
       result = true
 
-      result &&= service.stop if service.active?
-      result &&= socket.stop if socket_active?
+      result &&= socket.stop if socket?
+      result &&= service.stop
 
       result
     end
@@ -522,7 +512,7 @@ module Yast2
 
       result = true
 
-      result &&= socket.stop if socket_active? && start_mode != :on_demand
+      result &&= socket.stop if socket? && start_mode != :on_demand
       result &&= service.active? ? service.reload : perform_start
 
       result
@@ -542,20 +532,18 @@ module Yast2
       @errors.clear
     end
 
-    # Returns the associated socket
-    #
-    # @return [Yast2::Systemd::Socket]
-    def socket
-      service && service.socket
-    end
-
-    # Whether the associated socket (if any) is actived
+    # Whether there is a socket associated to the service
     #
     # @return [Boolean]
-    def socket_active?
-      return false unless socket
+    def socket?
+      !socket.nil?
+    end
 
-      socket.active?
+    # Returns the associated socket
+    #
+    # @return [Yast2::Systemd::Socket, nil]
+    def socket
+      service.socket
     end
 
     # Registers change for a given key
