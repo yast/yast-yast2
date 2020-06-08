@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun  5 15:13:42 UTC 2020 - José Iván López González <jlopez@suse.com>
+
+- Improve actions to stop and start a system service.
+- Related to bsc#1162514.
+- 4.3.5
+
+-------------------------------------------------------------------
 Thu Jun  4 13:16:21 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - Drop anyxml agent to unify used xml parsers. All usage replaced
@@ -48,7 +55,7 @@ Thu May 14 07:32:16 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 Wed May  6 17:43:51 CEST 2020 - schubi@suse.de
 
 - AutoYaST: Cleanup/improve issue handling (bsc#1171335).
-- 4.2.84 
+- 4.2.84
 
 -------------------------------------------------------------------
 Fri Apr 24 14:53:03 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
@@ -179,7 +186,7 @@ Mon Feb 17 17:59:07 UTC 2020 - schubi@suse.de
 
 - SysctlConfig class: Handle sysctl entries in different
   directories (bsc#1151649).
-- 4.2.66  
+- 4.2.66
 
 -------------------------------------------------------------------
 Mon Feb 17 16:59:07 UTC 2020 - Stefan Hundhammer <shundhammer@suse.com>
