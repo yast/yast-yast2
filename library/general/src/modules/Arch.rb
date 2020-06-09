@@ -353,71 +353,54 @@ module Yast
       @_is_uml = Convert.to_boolean(SCR.Read(path(".probe.is_uml"))) if @_is_uml.nil?
       @_is_uml
     end
+
     # ************************************************************
     # XEN stuff
 
-    # true if Xen kernel is running (dom0 or domU)
-    # @return true if the Xen kernel is running
+    # Whether the Xen kernel is running
+    #
+    # @see https://wiki.xen.org/wiki/Xen_Project_Software_Overview
+    #
+    # @return [Boolean] true if the Xen kernel is running; false otherwise
     def is_xen
       if @_is_xen.nil?
-        # XEN kernel has /proc/xen directory
-        stat = Convert.to_map(SCR.Read(path(".target.stat"), "/proc/xen"))
-        Builtins.y2milestone("stat /proc/xen: %1", stat)
-
-        @_is_xen = Ops.greater_than(Builtins.size(stat), 0)
-
-        if @_is_xen
-          Builtins.y2milestone("/proc/xen exists")
-
-          # check also the running kernel
-          # a FV machine has also /proc/xen, but the kernel is kernel-default
-          out = Convert.to_map(
-            SCR.Execute(path(".target.bash_output"), "/usr/bin/uname -r", {})
-          )
-
-          kernel_ver = Ops.get_string(out, "stdout", "")
-          l = Builtins.splitstring(kernel_ver, "\n")
-          kernel_ver = Ops.get(l, 0, "")
-          Builtins.y2milestone("Kernel version: %1", kernel_ver)
-
-          if !Builtins.regexpmatch(kernel_ver, "-xen$") &&
-              !Builtins.regexpmatch(kernel_ver, "-xenpae$")
-            # kernel default is running
-            @_is_xen = false
-          end
-
-          Builtins.y2milestone("kernel-xen is running: %1", @_is_xen)
-        end
+        @_is_xen = SCR.Read(path(".target.stat"), "/proc/xen")["isdir"] || false
       end
 
       @_is_xen
     end
 
-    # true if dom0 Xen kernel is running
-    # @see #is_xenU
+    # Whether it is a Xen host (dom0)
+    #
     # @see #is_xen
-    # @return true if the Xen kernel is running in dom0
+    # @see #is_xenU
+    # @see https://wiki.xen.org/wiki/Dom0
+    #
+    # @return [Boolean] true if it is a Xen dom0; false otherwise
     def is_xen0
       if @_is_xen0.nil?
-        # dom0 Xen kernel has /proc/xen/xsd_port file
-        stat = Convert.to_map(
-          SCR.Read(path(".target.stat"), "/proc/xen/xsd_port")
-        )
-        Builtins.y2milestone("stat /proc/xen/xsd_port: %1", stat)
-
-        @_is_xen0 = Ops.greater_than(Builtins.size(stat), 0)
+        @_is_xen0 = is_xen && xen_capabilities.include?("control_d")
       end
 
       @_is_xen0
     end
 
-    # true if domU Xen kernel is running
+    # Whether it is a Xen guest (domU)
     #
-    # @see #is_xen0
     # @see #is_xen
-    # @return true if the Xen kernel is running in another domain than dom0
+    # @see #is_xen0
+    # @see https://wiki.xen.org/wiki/DomU
+    #
+    # @return [Boolean] true if it is a Xen domU; false otherwise
     def is_xenU
       is_xen && !is_xen0
+    end
+
+    # Convenience method to retrieve the /proc/xen/capabilities content
+    #
+    # @return [String]
+    def xen_capabilities
+      SCR.Read(path(".target.string"), "/proc/xen/capabilities").to_s
     end
 
     # ************************************************************
