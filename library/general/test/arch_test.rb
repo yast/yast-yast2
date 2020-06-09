@@ -23,7 +23,7 @@ describe Yast::Arch do
     end
 
     context "when running the XEN hypervisor" do
-      let(:scenario) { "xen_dom0"}
+      let(:scenario) { "xen_dom0" }
 
       it "returns true" do
         expect(Yast::Arch.is_xen).to eq(true)
@@ -31,7 +31,7 @@ describe Yast::Arch do
     end
 
     context "when not running the XEN hypervisor" do
-      let(:scenario) { "default"}
+      let(:scenario) { "default" }
 
       it "returns false" do
         expect(Yast::Arch.is_xen).to eq(false)
@@ -45,7 +45,7 @@ describe Yast::Arch do
     end
 
     context "when not running in a XEN hypervisor" do
-      let(:scenario) { "default"}
+      let(:scenario) { "default" }
 
       it "returns false" do
         expect(Yast::Arch.is_xen0).to eq(false)
@@ -53,7 +53,7 @@ describe Yast::Arch do
     end
 
     context "when running in a XEN dom0" do
-      let(:scenario) { "xen_dom0"}
+      let(:scenario) { "xen_dom0" }
 
       it "returns true" do
         expect(Yast::Arch.is_xen0).to eq(true)
@@ -61,7 +61,7 @@ describe Yast::Arch do
     end
 
     context "when running in a XEN domU" do
-      let(:scenario) { "xen_domU"}
+      let(:scenario) { "xen_domU" }
 
       it "returns false" do
         expect(Yast::Arch.is_xen0).to eq(false)
@@ -75,7 +75,7 @@ describe Yast::Arch do
     end
 
     context "when not running in a XEN hypervisor" do
-      let(:scenario) { "default"}
+      let(:scenario) { "default" }
 
       it "returns false" do
         expect(Yast::Arch.is_xenU).to eq(false)
@@ -83,7 +83,7 @@ describe Yast::Arch do
     end
 
     context "when running in a XEN dom0" do
-      let(:scenario) { "xen_dom0"}
+      let(:scenario) { "xen_dom0" }
 
       it "returns false" do
         expect(Yast::Arch.is_xenU).to eq(false)
@@ -91,7 +91,7 @@ describe Yast::Arch do
     end
 
     context "when running in a XEN domU" do
-      let(:scenario) { "xen_domU"}
+      let(:scenario) { "xen_domU" }
 
       it "returns true" do
         expect(Yast::Arch.is_xenU).to eq(true)

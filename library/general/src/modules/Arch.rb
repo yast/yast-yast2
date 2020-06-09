@@ -363,11 +363,9 @@ module Yast
     #
     # @return [Boolean] true if the Xen kernel is running; false otherwise
     def is_xen
-      if @_is_xen.nil?
-        @_is_xen = SCR.Read(path(".target.stat"), "/proc/xen")["isdir"] || false
-      end
+      return @_is_xen unless @_is_xen.nil?
 
-      @_is_xen
+      @_is_xen = SCR.Read(path(".target.stat"), "/proc/xen")["isdir"] || false
     end
 
     # Whether it is a Xen host (dom0)
@@ -378,11 +376,9 @@ module Yast
     #
     # @return [Boolean] true if it is a Xen dom0; false otherwise
     def is_xen0
-      if @_is_xen0.nil?
-        @_is_xen0 = is_xen && xen_capabilities.include?("control_d")
-      end
+      return @_is_xen0 unless @_is_xen0.nil?
 
-      @_is_xen0
+      @_is_xen0 = is_xen && xen_capabilities.include?("control_d")
     end
 
     # Whether it is a Xen guest (domU)
