@@ -7,16 +7,99 @@ Yast.import "Arch"
 require "yast"
 
 describe Yast::Arch do
+  subject { described_class }
 
-  describe ".is_zkvm" do
-    before do
-      # need to reset all initializeation of the module for individual
-      # test cases which mock different hardware
-      # otherwise values in Arch.rb remain cached
-      module_path = File.expand_path("../src/modules/Arch.rb", __dir__)
-      load module_path
+  before do
+    # need to reset all initialization of the module for individual
+    # test cases which mock different hardware
+    # otherwise values in Arch.rb remain cached
+    module_path = File.expand_path("../src/modules/Arch.rb", __dir__)
+    load module_path
+  end
+
+  describe ".is_xen" do
+    around do |example|
+      change_scr_root(File.join(GENERAL_DATA_PATH, "arch", scenario), &example)
     end
 
+    context "when running the XEN hypervisor" do
+      let(:scenario) { "xen_dom0" }
+
+      it "returns true" do
+        expect(Yast::Arch.is_xen).to eq(true)
+      end
+    end
+
+    context "when not running the XEN hypervisor" do
+      let(:scenario) { "default" }
+
+      it "returns false" do
+        expect(Yast::Arch.is_xen).to eq(false)
+      end
+    end
+  end
+
+  describe ".is_xen0" do
+    around do |example|
+      change_scr_root(File.join(GENERAL_DATA_PATH, "arch", scenario), &example)
+    end
+
+    context "when not running in a XEN hypervisor" do
+      let(:scenario) { "default" }
+
+      it "returns false" do
+        expect(Yast::Arch.is_xen0).to eq(false)
+      end
+    end
+
+    context "when running in a XEN dom0" do
+      let(:scenario) { "xen_dom0" }
+
+      it "returns true" do
+        expect(Yast::Arch.is_xen0).to eq(true)
+      end
+    end
+
+    context "when running in a XEN domU" do
+      let(:scenario) { "xen_domU" }
+
+      it "returns false" do
+        expect(Yast::Arch.is_xen0).to eq(false)
+      end
+    end
+  end
+
+  describe ".is_xenU" do
+    around do |example|
+      change_scr_root(File.join(GENERAL_DATA_PATH, "arch", scenario), &example)
+    end
+
+    context "when not running in a XEN hypervisor" do
+      let(:scenario) { "default" }
+
+      it "returns false" do
+        expect(Yast::Arch.is_xenU).to eq(false)
+      end
+    end
+
+    context "when running in a XEN dom0" do
+      let(:scenario) { "xen_dom0" }
+
+      it "returns false" do
+        expect(Yast::Arch.is_xenU).to eq(false)
+      end
+    end
+
+    context "when running in a XEN domU" do
+      let(:scenario) { "xen_domU" }
+
+      it "returns true" do
+        expect(Yast::Arch.is_xenU).to eq(true)
+      end
+    end
+  end
+
+  describe ".is_zkvm" do
     it "returns true if on s390 and in the zKVM environment" do
       allow(Yast::WFM).to receive(:Execute).and_return 0
       allow(Yast::SCR).to receive(:Read).and_return "s390_64"
