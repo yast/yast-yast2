@@ -188,7 +188,6 @@ module Yast
 
     # Ensures that we can load data from libzypp
     # @return [Boolean] false if libzypp lock cannot be obtained, otherwise true
-    #                   (solver errors are ignored, see bnc#886588)
     def load_zypp
       if !PackageLock.Check
         Builtins.y2error("Packager is locked, can't read product info!")
@@ -201,9 +200,6 @@ module Yast
         PackageSystem.EnsureSourceInit unless Stage.initial
       end
 
-      Pkg.PkgSolve(true)
-
-      # ignore solver errors
       true
     end
 
