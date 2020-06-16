@@ -31,6 +31,7 @@ describe Yast2::SystemService do
       active?:    service_active,
       not_found?: !service_found,
       static?:    service_static,
+      preset_enabled?: service_preset_enabled,
       refresh!:   true)
   end
 
@@ -38,13 +39,18 @@ describe Yast2::SystemService do
   let(:service_active) { true }
   let(:service_found) { true }
   let(:service_static) { false }
+  let(:service_preset_enabled) { true }
 
   let(:service_socket) do
-    instance_double(Yast2::Systemd::Socket, enabled?: socket_enabled, active?: socket_active)
+    instance_double(
+      Yast2::Systemd::Socket, enabled?: socket_enabled, active?: socket_active,
+      preset_enabled?: socket_preset_enabled
+    )
   end
 
   let(:socket_enabled) { true }
   let(:socket_active) { true }
+  let(:socket_preset_enabled) { true }
 
   let(:socket) { service_socket }
 
@@ -360,6 +366,69 @@ describe Yast2::SystemService do
     context "when an invalid value is given" do
       it "raises an error" do
         expect { system_service.start_mode = :other }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
+
+  describe "#default_start_mode" do
+    let(:socket_preset_enabled) { true }
+    let(:service_preset_enabled) { true }
+
+    context "when service should be enabled by default" do
+      it "returns :on_boot" do
+        expect(system_service.default_start_mode).to eq(:on_boot)
+      end
+    end
+
+    context "when the service should not be enabled" do
+      let(:service_preset_enabled) { false }
+
+      context "but the socket should be enabled" do
+        it "returns :on_demand" do
+          expect(system_service.default_start_mode).to eq(:on_demand)
+        end
+      end
+
+      context "and the socket should not be disabled" do
+        let(:socket_preset_enabled) { false }
+
+        it "returns :manual" do
+          expect(system_service.default_start_mode).to eq(:manual)
+        end
+      end
+
+      context "and there is not socket" do
+        let(:socket) { nil }
+
+        it "returns :manual" do
+          expect(system_service.default_start_mode).to eq(:manual)
+        end
+      end
+    end
+  end
+
+  describe "#default_start_mode?" do
+    let(:start_mode) { :on_boot }
+
+    before do
+      allow(system_service).to receive(:default_start_mode).and_return(:on_boot)
+      allow(system_service).to receive(:start_mode).and_return(start_mode)
+    end
+
+    context "when the start mode is the same than the default one" do
+      let(:start_mode) { :on_boot }
+
+      it "returns true" do
+        expect(system_service.default_start_mode?).to eq(true)
+      end
+    end
+
+    context "when the start mode is not the default one" do
+      let(:start_mode) { :manual }
+
+      it "returns false" do
+        expect(system_service.default_start_mode?).to eq(false)
       end
     end
   end

@@ -12,6 +12,7 @@ ActiveState=active
 SubState=running
 FragmentPath=/usr/lib/systemd/system/sshd.service
 UnitFileState=enabled
+UnitFileState=disabled
 InactiveExitTimestamp=St 2014-02-12 15:22:46 CET
 InactiveExitTimestampMonotonic=22172625
 ActiveEnterTimestamp=St 2014-02-12 15:22:46 CET
