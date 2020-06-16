@@ -7,7 +7,7 @@ cups.socket).
 
 When a service is configured by using YaST (e.g., with the Services Manager), all units related to
 each service must be taken into account. For example, when a service is stopped, the socket
-associated to such service should be also stopped. Otherwise, the sevice could be automatically
+associated to such service should be also stopped. Otherwise, the service could be automatically
 activated again via its socket.
 
 This file extends the {Yast2::SystemService} class documentation describing how it works with the
@@ -24,8 +24,8 @@ to:
   on demand or manually)
 * apply all changes in the "real system"
 
-One goal in this class is to offer an agnostic API. At this moment it uses Systemd in low levels
-layers, but in future this could change and the API should remain as much as possible.
+One of the goals of this class is to offer an agnostic API. At this moment it uses Systemd in low
+levels layers, but in future this could change and the API should remain as much as possible.
 
 ## Actions over Systemd units
 
@@ -41,7 +41,7 @@ socket (if any) when we try to start, stop, restart or reload a `SystemService`.
 
 ## Detailed actions
 
-Here each `SystemService` action is decribed in a more detailed way.
+Here each `SystemService` action is described in a more detailed way.
 
 First of all, we are going to consider that a `SystemService` is stopped/running as follows:
 
