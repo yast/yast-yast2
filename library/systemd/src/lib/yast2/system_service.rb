@@ -208,13 +208,13 @@ module Yast2
       @current_start_mode = start_mode_from(service, socket, :enabled?)
     end
 
-    # Determines whether the start mode is set to the default values
+    # Determines the default start mode for this service
     #
-    # @return [Boolean]
+    # @return [Symbol] :on_boot, :on_demand, :manual
     def default_start_mode
       return @default_start_mode unless @default_start_mode.nil?
 
-      @default_start = start_mode_from(service, socket, :preset_enabled?)
+      @default_start_mode = start_mode_from(service, socket, :preset_enabled?)
     end
 
     # Whether the service is currently active in the system
