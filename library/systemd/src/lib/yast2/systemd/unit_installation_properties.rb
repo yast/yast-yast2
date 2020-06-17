@@ -2,7 +2,7 @@ require "yast"
 
 module Yast2
   module Systemd
-    # A replacement for {Yast2::Systemd::UnitPropertie} during installation
+    # A replacement for {Yast2::Systemd::UnitProperties} during installation
     #
     # Systemd `show` command (systemctl show) is not available during
     # installation and will return error "Running in chroot, ignoring request."

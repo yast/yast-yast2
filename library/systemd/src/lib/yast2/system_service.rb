@@ -205,14 +205,16 @@ module Yast2
     def current_start_mode
       return @current_start_mode unless @current_start_mode.nil?
 
-      @current_start_mode =
-        if service.enabled?
-          :on_boot
-        elsif socket&.enabled?
-          :on_demand
-        else
-          :manual
-        end
+      @current_start_mode = start_mode_from(service, socket, :enabled?)
+    end
+
+    # Determines the default start mode for this service
+    #
+    # @return [Symbol] :on_boot, :on_demand, :manual
+    def default_start_mode
+      return @default_start_mode unless @default_start_mode.nil?
+
+      @default_start_mode = start_mode_from(service, socket, :preset_enabled?)
     end
 
     # Whether the service is currently active in the system
@@ -255,6 +257,14 @@ module Yast2
     # @return [Symbol] :on_boot, :on_demand, :manual
     def start_mode
       new_value_for(:start_mode) || current_start_mode
+    end
+
+    # Determines whether the start mode has been changed from system's default
+    #
+    # @see #start_mode
+    # @see #default_start_mode
+    def default_start_mode?
+      default_start_mode == start_mode
     end
 
     # Sets the service start mode
@@ -600,6 +610,25 @@ module Yast2
       return true if service.static?
 
       service.disable
+    end
+
+    # Helper method to calculate the start mode using a given method
+    #
+    # This method offers a mechanism to get the current and the
+    # default start_modes.
+    #
+    # @param service [Service] Systemd service
+    # @param socket [Socket,nil] Systemd socket
+    # @param enabled_method [Symbol] Method to use to determine whether service and socket
+    #   are enabled or not.
+    def start_mode_from(service, socket, enabled_method)
+      if service.public_send(enabled_method)
+        :on_boot
+      elsif socket&.public_send(enabled_method)
+        :on_demand
+      else
+        :manual
+      end
     end
   end
 end

@@ -52,7 +52,8 @@ module Yast2
         :active_state,
         :sub_state,
         :can_reload?,
-        :not_found?
+        :not_found?,
+        :preset_enabled?
       ].freeze
 
       private_constant :FORWARDED_METHODS

@@ -47,14 +47,15 @@ module Yast2
         end
 
         extract_properties
-        self[:active?]     = ACTIVE_STATES.include?(active_state)
-        self[:running?]    = sub_state  == "running"
-        self[:loaded?]     = load_state == "loaded"
-        self[:not_found?]  = load_state == "not-found"
-        self[:static?]     = unit_file_state == "static"
-        self[:enabled?]    = read_enabled_state
-        self[:supported?]  = SUPPORTED_STATES.include?(unit_file_state)
-        self[:can_reload?] = can_reload == "yes"
+        self[:active?]         = ACTIVE_STATES.include?(active_state)
+        self[:running?]        = sub_state  == "running"
+        self[:loaded?]         = load_state == "loaded"
+        self[:not_found?]      = load_state == "not-found"
+        self[:static?]         = unit_file_state == "static"
+        self[:preset_enabled?] = read_preset_enabled_state
+        self[:enabled?]        = read_enabled_state
+        self[:supported?]      = SUPPORTED_STATES.include?(unit_file_state)
+        self[:can_reload?]     = can_reload == "yes"
       end
 
     private
@@ -74,6 +75,14 @@ module Yast2
           status = systemd_unit.command("is-enabled")
           status.exit.zero? && state_name_enabled?(status.stdout)
         end
+      end
+
+      # Determines whether the unit should be enabled by default (preset)
+      # @return [Boolean] True if enabled by default, false otherwise.
+      def read_preset_enabled_state
+        return false unless unit_file_preset
+
+        state_name_enabled?(unit_file_preset.strip)
       end
 
       # Systemd service unit can have various states like enabled, enabled-runtime,

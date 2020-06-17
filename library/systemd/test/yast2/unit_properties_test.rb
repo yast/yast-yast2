@@ -47,4 +47,37 @@ describe Yast2::Systemd::UnitProperties do
       end
     end
   end
+
+  describe "#preset_enabled?" do
+    subject(:properties) { described_class.new(service, nil) }
+    let(:service) { Yast2::Systemd::Service.build(service_name) }
+
+    before do
+      stub_services(service: service_name)
+    end
+
+    context "when the service should be enabled by default" do
+      let(:service_name) { "cups" }
+
+      it "returns true" do
+        expect(properties.preset_enabled?).to eq(true)
+      end
+    end
+
+    context "when the service should be disabled by default" do
+      let(:service_name) { "sshd" }
+
+      it "returns false" do
+        expect(properties.preset_enabled?).to eq(false)
+      end
+    end
+
+    context "when the service is static" do
+      let(:service_name) { "tftp" }
+
+      it "returns false" do
+        expect(properties.preset_enabled?).to eq(false)
+      end
+    end
+  end
 end

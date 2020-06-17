@@ -8,15 +8,16 @@ module Yast2
     class UnitPropMap < Hash
       # @return [Yast2::Systemd::UniPropMap]
       DEFAULT = UnitPropMap[{
-        id:              "Id",
-        pid:             "MainPID",
-        description:     "Description",
-        load_state:      "LoadState",
-        active_state:    "ActiveState",
-        sub_state:       "SubState",
-        unit_file_state: "UnitFileState",
-        path:            "FragmentPath",
-        can_reload:      "CanReload"
+        id:               "Id",
+        pid:              "MainPID",
+        description:      "Description",
+        load_state:       "LoadState",
+        active_state:     "ActiveState",
+        sub_state:        "SubState",
+        unit_file_state:  "UnitFileState",
+        unit_file_preset: "UnitFilePreset",
+        path:             "FragmentPath",
+        can_reload:       "CanReload"
       }].freeze
     end
   end

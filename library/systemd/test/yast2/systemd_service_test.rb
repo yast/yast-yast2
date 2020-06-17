@@ -78,8 +78,8 @@ module Yast2
 
       before do
         allow(Yast2::Systemctl).to receive(:execute).with(
-          "show  --property=Id,MainPID,Description,LoadState,ActiveState,SubState,UnitFileState," \
-          "FragmentPath,CanReload apparmor.service cups.service"
+          "show  --property=Id,MainPID,Description,LoadState,ActiveState,SubState," \
+          "UnitFileState,UnitFilePreset,FragmentPath,CanReload apparmor.service cups.service"
         ).and_return(systemctl_show)
         allow(Systemd::Service).to receive(:find).with("apparmor", {}).and_return(apparmor_double)
         allow(Systemd::Service).to receive(:find).with("cups", {}).and_return(cups_double)
