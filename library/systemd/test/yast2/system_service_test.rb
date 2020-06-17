@@ -26,13 +26,13 @@ describe Yast2::SystemService do
 
   let(:service) do
     instance_double(Yast2::Systemd::Service,
-      name:       "cups",
-      enabled?:   service_enabled,
-      active?:    service_active,
-      not_found?: !service_found,
-      static?:    service_static,
+      name:            "cups",
+      enabled?:        service_enabled,
+      active?:         service_active,
+      not_found?:      !service_found,
+      static?:         service_static,
       preset_enabled?: service_preset_enabled,
-      refresh!:   true)
+      refresh!:        true)
   end
 
   let(:service_enabled) { true }
@@ -369,7 +369,6 @@ describe Yast2::SystemService do
       end
     end
   end
-
 
   describe "#default_start_mode" do
     let(:socket_preset_enabled) { true }
