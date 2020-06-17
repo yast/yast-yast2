@@ -30,6 +30,8 @@ Metrics/ParameterLists:
 # ExcludedMethods: refine
 Metrics/BlockLength:
   Max: 877
+  Exclude:
+    - "library/*/test/**/*_test.rb"
 
 Metrics/PerceivedComplexity:
   Max: 65
