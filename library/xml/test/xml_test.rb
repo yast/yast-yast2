@@ -1,4 +1,5 @@
 require_relative "test_helper"
+require "tempfile"
 
 Yast.import "XML"
 
@@ -524,20 +525,22 @@ describe "Yast::XML" do
        </element>'
     end
 
-    it "returns empty array for valid xml" do
-      xml = '<?xml version="1.0"?>
-             <test>
-               <person>
-                 <name>
-                   clark
-                 </name>
-                 <voice>
-                   nice
-                 </voice>
-               </person>
-             </test>'
+    let(:valid_xml) do
+      '<?xml version="1.0"?>
+        <test>
+          <person>
+            <name>
+              clark
+            </name>
+            <voice>
+              nice
+            </voice>
+          </person>
+        </test>'
+    end
 
-      expect(Yast::XML.validate(xml, schema)).to be_empty
+    it "returns empty array for valid xml" do
+      expect(Yast::XML.validate(valid_xml, schema)).to be_empty
     end
 
     it "returns error string in array when xml is not valid for given schema" do
@@ -568,6 +571,24 @@ describe "Yast::XML" do
              </test>'
 
       expect { Yast::XML.validate(xml, schema) }.to raise_error(Yast::XMLDeserializationError)
+    end
+
+    it "can read the input from files" do
+      # create temporary files with the testing content
+      xml_file = Tempfile.new
+      schema_file = Tempfile.new
+      begin
+        xml_file.write(valid_xml)
+        xml_file.close
+        schema_file.write(schema)
+        schema_file.close
+
+        errors = Yast::XML.validate(Pathname.new(xml_file.path), Pathname.new(schema_file.path))
+        expect(errors).to be_empty
+      ensure
+        xml_file.unlink
+        schema_file.unlink
+      end
     end
   end
 end
