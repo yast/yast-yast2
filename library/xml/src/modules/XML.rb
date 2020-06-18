@@ -23,6 +23,7 @@
 require "yast"
 
 require "nokogiri"
+require "pathname"
 
 module Yast
   # Exception used when trying to serialize a Ruby object that we cannot
@@ -191,19 +192,19 @@ module Yast
 
     # Validates a XML document against a given schema.
     #
-    # @param xml [String] path or content of XML (if the string contains a new
+    # @param xml [Pathname, String] path or content of XML (if the string contains a new
     #  line character it is considered as a XML string, otherwise as a file name)
-    # @param schema [String] path or content of relax ng schema
+    # @param schema [Pathname, String] path or content of relax ng schema
     # @return [Array<String>] array of strings with errors or empty array if
     #   well formed and valid
     # @raise [Yast::XMLDeserializationError] if the document is not well formed
     #   (there are syntax errors)
     def validate(xml, schema)
-      xml = SCR.Read(path(".target.string"), xml) unless xml.include?("\n")
-      if schema.include?("\n") # content, not path
+      xml = SCR.Read(path(".target.string"), xml.to_s) if xml.is_a?(Pathname)
+      if schema.is_a?(::String)
         validator = Nokogiri::XML::RelaxNG(schema)
       else
-        schema_content = SCR.Read(path(".target.string"), schema)
+        schema_content = SCR.Read(path(".target.string"), schema.to_s)
         schema_path = File.dirname(schema)
         # change directory so relative include works
         Dir.chdir(schema_path) { validator = Nokogiri::XML::RelaxNG(schema_content) }
