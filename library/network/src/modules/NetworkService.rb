@@ -157,6 +157,19 @@ module Yast
 
     alias_method :is_disabled, :disabled?
 
+    # Choose the given backend as the one to be used
+    #
+    # @param name [Symbol] backend name
+    # @param [Boolean] return whether the given backend was selected or not
+    def use(name)
+      return false unless BACKENDS.key?(name)
+
+      Read()
+      @cached_name = name
+
+      true
+    end
+
     def use_network_manager
       Read()
       @cached_name = :network_manager
