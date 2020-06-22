@@ -150,4 +150,44 @@ describe Yast::NetworkService do
       expect(subject.wicked?).to eq(true)
     end
   end
+
+  describe "#use" do
+    before do
+      allow(subject).to receive(:backend_in_use).and_return(:wicked)
+      subject.reset!
+    end
+
+    context "when the given backend is supported" do
+      it "ensures that the config is read before modifying it" do
+        expect(subject).to receive(:Read).and_call_original
+        subject.use(:network_manager)
+      end
+
+      it "changes the backend to the one given" do
+        expect { subject.use(:network_manager) }
+          .to change { subject.cached_name }.from(:wicked).to(:network_manager)
+      end
+
+      it "returns true" do
+        expect(subject.use(:wicked)).to eql(true)
+      end
+    end
+
+    context "when the given backend is not supported" do
+      it "does not try to read the current config" do
+        expect(subject).to_not receive(:Read)
+        subject.use(:not_supported)
+      end
+
+      it "does not modify the cached name" do
+        value = subject.cached_name
+        subject.use(:not_supported)
+        expect(subject.cached_name).to eql(value)
+      end
+
+      it "returns false" do
+        expect(subject.use(:not_supported)).to eql(false)
+      end
+    end
+  end
 end

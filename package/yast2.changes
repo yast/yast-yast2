@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sun Jun 21 20:01:42 UTC 2020 - Knut Anderssen <kandersen@suse.com>
+
+- Add a method to change the selection of the network backend to be
+  used (related to bsc#1172749)
+- 4.3.9
+
+-------------------------------------------------------------------
 Thu Jun 18 15:23:54 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Updated Yast::XML.validate arguments
