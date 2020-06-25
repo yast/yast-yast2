@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Jun 21 20:01:42 UTC 2020 - schubi@suse.de
+
+- New mode: Mode.autoyast_clone_system (needed for bsc#1172749)
+- 4.3.10
+
+-------------------------------------------------------------------
 Sun Jun 21 20:01:42 UTC 2020 - Knut Anderssen <kandersen@suse.com>
 
 - Add a method to change the selection of the network backend to be

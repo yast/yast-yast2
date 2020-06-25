@@ -293,6 +293,12 @@ module Yast
       mode == "autoinst_config"
     end
 
+    # AutoYaST is running in the clone_system mode
+    # which is called by "yast clone_system"
+    def autoyast_clone_system
+      ARGV[0] == "clone_system"
+    end
+
     # test mode wrappers
 
     # Synonym of {#testsuite}.

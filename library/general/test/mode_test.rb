@@ -383,4 +383,15 @@ describe Yast::Mode do
       end
     end
   end
+
+  describe "#autoyast_clone_system" do
+    context "when -yast clone_system- has been called" do
+      before do
+        ARGV.replace(["clone_system"])
+      end
+      it "returns true" do
+        expect(Yast::Mode.autoyast_clone_system).to eq(true)
+      end
+    end
+  end
 end
