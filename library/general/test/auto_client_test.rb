@@ -55,11 +55,21 @@ describe ::Installation::AutoClient do
 
     context "first client argument is Export" do
       before do
-        allow(Yast::WFM).to receive(:Args).and_return(["Export", { "target" => "default" }])
+        allow(Yast::WFM).to receive(:Args).and_return(["Export"])
       end
 
       it "dispatch call to abstract method export" do
         expect(subject.run).to eq(:default)
+      end
+
+      context "when 'target' argument is given an accepted by export method" do
+        before do
+          allow(Yast::WFM).to receive(:Args).and_return(["Export", { "target" => "compact" }])
+        end
+
+        it "dispatch call to abstract method export with 'target' argument" do
+          expect(subject.run).to eq(:compact)
+        end
       end
 
       context "when #export does not receive any argument" do
