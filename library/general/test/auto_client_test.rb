@@ -9,8 +9,8 @@ class TestAuto < ::Installation::AutoClient
     args.empty? ? "import" : args
   end
 
-  def export(args)
-    args
+  def export(target:)
+    target
   end
 
   ["summary", "reset", "change", "write", "packages", "read", "modified?", "modified"].each do |m|
@@ -59,7 +59,7 @@ describe ::Installation::AutoClient do
       end
 
       it "dispatch call to abstract method export" do
-        expect(subject.run).to eq("target" => "default")
+        expect(subject.run).to eq(:default)
       end
 
       context "when #export does not receive any argument" do
