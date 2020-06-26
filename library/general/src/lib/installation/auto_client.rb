@@ -61,7 +61,8 @@ module Installation
       when "Import"
         import(param)
       when "Export"
-        export
+        m = method(:export)
+        m.arity.zero? ? export : export(param)
       when "Summary"
         summary
       when "Reset"
@@ -99,8 +100,9 @@ module Installation
     #
     # The profile is a Hash or an Array according to the configuration item
     # `X-SuSE-YaST-AutoInstDataType`
+    # @param _params [Hash<String,Object>] Additional parameters
     # @return [Hash, Array] profile data
-    def export
+    def export(_params)
       raise NotImplementedError, "Calling abstract method 'export'"
     end
 
