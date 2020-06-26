@@ -101,6 +101,8 @@ module Installation
     # The profile is a Hash or an Array according to the configuration item
     # `X-SuSE-YaST-AutoInstDataType`
     # @param _params [Hash<String,Object>] Additional parameters
+    # @option [String] "target" Control how much information should be exported
+    #   (e.g., "default", "compact")
     # @return [Hash, Array] profile data
     def export(_params)
       raise NotImplementedError, "Calling abstract method 'export'"
