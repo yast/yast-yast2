@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun 29 14:26:44 UTC 2020 - José Iván López González <jlopez@suse.com>
+
+- Avoid failure when downloading release notes from an inoperative
+  proxy (bsc#1173447).
+- 4.3.11
+
+-------------------------------------------------------------------
 Fri Jun 26 15:00:17 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - AutoClient#export method can receive a hash as an argument

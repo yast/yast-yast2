@@ -226,36 +226,57 @@ describe Y2Packager::ReleaseNotesFetchers::Url do
         allow(Yast::Proxy).to receive(:http).twice.and_return("http://proxy.example.com")
         allow(Yast::Proxy).to receive(:user).and_return(proxy_user)
         allow(Yast::Proxy).to receive(:pass).and_return(proxy_pass)
-        test = {
-          "HTTP" => {
-            "tested" => true,
-            "exit"   => 0
-          }
-        }
-        allow(Yast::Proxy).to receive(:RunTestProxy).and_return(test)
+        allow(Yast::Proxy).to receive(:RunTestProxy).and_return(test_result)
       end
 
-      context "and no user or password are specified" do
-        let(:proxy_user) { "" }
-        let(:proxy_pass) { "" }
+      let(:proxy_user) { "" }
+      let(:proxy_pass) { "" }
 
-        it "uses an unauthenticated proxy" do
-          expect(Yast::SCR).to receive(:Execute) do |_path, cmd|
-            expect(cmd).to include("--proxy http://proxy.example.com")
-            expect(cmd).to_not include("--proxy-user")
+      context "and the proxy is working" do
+        let(:test_result) do
+          {
+            "HTTP" => {
+              "tested" => true,
+              "exit"   => 0
+            }
+          }
+        end
+
+        context "and no user or password are specified" do
+          let(:proxy_user) { "" }
+          let(:proxy_pass) { "" }
+
+          it "uses an unauthenticated proxy" do
+            expect(Yast::SCR).to receive(:Execute) do |_path, cmd|
+              expect(cmd).to include("--proxy http://proxy.example.com")
+              expect(cmd).to_not include("--proxy-user")
+            end
+
+            fetcher.release_notes(prefs)
           end
+        end
 
-          fetcher.release_notes(prefs)
+        context "and user and password are specified" do
+          let(:proxy_user) { "baggins" }
+          let(:proxy_pass) { "thief" }
+
+          it "uses an authenticated proxy" do
+            expect(Yast::SCR).to receive(:Execute) do |_path, cmd|
+              expect(cmd).to include("--proxy http://proxy.example.com --proxy-user 'baggins:thief'")
+            end
+
+            fetcher.release_notes(prefs)
+          end
         end
       end
 
-      context "and user and password are specified" do
-        let(:proxy_user) { "baggins" }
-        let(:proxy_pass) { "thief" }
+      context "when the proxy is not working" do
+        let(:test_result) { {} }
 
-        it "uses an authenticated proxy" do
+        it "does not use any specific proxy" do
           expect(Yast::SCR).to receive(:Execute) do |_path, cmd|
-            expect(cmd).to include("--proxy http://proxy.example.com --proxy-user 'baggins:thief'")
+            expect(cmd).to_not match(/--proxy/)
+            expect(cmd).to_not match(/--proxy-user/)
           end
 
           fetcher.release_notes(prefs)
