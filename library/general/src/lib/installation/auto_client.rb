@@ -61,7 +61,10 @@ module Installation
       when "Import"
         import(param)
       when "Export"
-        export
+        target = param["target"] if param.is_a?(Hash)
+        target ||= "default"
+        m = method(:export)
+        m.arity.zero? ? export : export(target: target.to_sym)
       when "Summary"
         summary
       when "Reset"
@@ -99,9 +102,11 @@ module Installation
     #
     # The profile is a Hash or an Array according to the configuration item
     # `X-SuSE-YaST-AutoInstDataType`
+    # @param target [Symbol] Control how much information should be exported
+    #   (e.g., :default or :compact).
     # @return [Hash, Array] profile data
-    def export
-      raise NotImplementedError, "Calling abstract method 'export'"
+    def export(target:)
+      raise NotImplementedError, "Calling abstract method 'export' with target '#{target}'"
     end
 
     # Provide a brief summary of configuration.

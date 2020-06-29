@@ -9,8 +9,18 @@ class TestAuto < ::Installation::AutoClient
     args.empty? ? "import" : args
   end
 
-  ["export", "summary", "reset", "change", "write", "packages", "read", "modified?", "modified"].each do |m|
+  def export(target:)
+    target
+  end
+
+  ["summary", "reset", "change", "write", "packages", "read", "modified?", "modified"].each do |m|
     define_method(m.to_sym) { m }
+  end
+end
+
+class ExportTestAuto < ::Installation::AutoClient
+  def export
+    "export"
   end
 end
 
@@ -45,11 +55,29 @@ describe ::Installation::AutoClient do
 
     context "first client argument is Export" do
       before do
-        allow(Yast::WFM).to receive(:Args).and_return(["Export", {}])
+        allow(Yast::WFM).to receive(:Args).and_return(["Export"])
       end
 
       it "dispatch call to abstract method export" do
-        expect(subject.run).to eq "export"
+        expect(subject.run).to eq(:default)
+      end
+
+      context "when 'target' argument is given an accepted by export method" do
+        before do
+          allow(Yast::WFM).to receive(:Args).and_return(["Export", { "target" => "compact" }])
+        end
+
+        it "dispatch call to abstract method export with 'target' argument" do
+          expect(subject.run).to eq(:compact)
+        end
+      end
+
+      context "when #export does not receive any argument" do
+        subject { ::ExportTestAuto }
+
+        it "dispatch call to abstract method export with no arguments" do
+          expect(subject.run).to eq "export"
+        end
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
