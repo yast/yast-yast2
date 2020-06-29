@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun 29 14:26:44 UTC 2020 - José Iván López González <jlopez@suse.com>
+
+- Avoid failure when downloading release notes from an inoperative
+  proxy (bsc#1173447).
+- 4.2.85
+
+-------------------------------------------------------------------
 Fri Jun  5 15:13:42 UTC 2020 - José Iván López González <jlopez@suse.com>
 
 - Improve actions to stop and start a system service.

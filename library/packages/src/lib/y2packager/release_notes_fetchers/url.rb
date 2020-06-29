@@ -256,13 +256,15 @@ module Y2Packager
         return @curl_proxy_args if @curl_proxy_args
 
         @curl_proxy_args = ""
-        # proxy should be set by inst_install_inf if set via Linuxrc
+
+        # Proxy should be set by inst_install_inf if set via Linuxrc
         Yast::Proxy.Read
-        # Test if proxy works
 
         return @curl_proxy_args unless Yast::Proxy.enabled
 
-        # it is enough to test http proxy, release notes are downloaded via http
+        # Test if proxy works
+        #
+        # It is enough to test http proxy, release notes are downloaded via http
         proxy_ret = Yast::Proxy.RunTestProxy(
           Yast::Proxy.http,
           "",
@@ -272,13 +274,15 @@ module Y2Packager
         )
 
         http_ret = proxy_ret.fetch("HTTP", {})
-        if http_ret.fetch("tested", true) == true && http_ret.fetch("exit", 1) == 0
-          user_pass = (Yast::Proxy.user != "") ? "#{Yast::Proxy.user}:#{Yast::Proxy.pass}" : ""
-          proxy = "--proxy #{Yast::Proxy.http}"
-          proxy << " --proxy-user '#{user_pass}'" unless user_pass.empty?
-        end
+        proxy_ok = http_ret.fetch("tested", true) == true && http_ret.fetch("exit", 1) == 0
 
-        @curl_proxy_args = proxy
+        return @curl_proxy_args unless proxy_ok
+
+        user_pass = (Yast::Proxy.user != "") ? "#{Yast::Proxy.user}:#{Yast::Proxy.pass}" : ""
+        @curl_proxy_args = "--proxy #{Yast::Proxy.http}"
+        @curl_proxy_args << " --proxy-user '#{user_pass}'" unless user_pass.empty?
+
+        @curl_proxy_args
       end
 
       # Release notes index for the given product
