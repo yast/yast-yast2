@@ -182,7 +182,7 @@ describe Y2Packager::Repository do
 
   describe "#local" do
     before do
-      allow(repo).to receive(:scheme).and_return(scheme)
+      allow(repo.raw_url).to receive(:scheme).and_return(scheme)
     end
 
     context "when scheme is :cd" do
@@ -334,6 +334,12 @@ describe Y2Packager::Repository do
 
     it "allows using an URI class parameter" do
       new_url = URI("https://example.com/new_repo")
+      expect(Yast::Pkg).to receive(:SourceChangeUrl).with(repo.repo_id, new_url.to_s).and_return(true)
+      expect { repo.url = new_url }.to change { repo.url.to_s }.from(repo.url.to_s).to(new_url.to_s)
+    end
+
+    it "allows using an ZyppUrl class parameter" do
+      new_url = Y2Packager::ZyppUrl.new("https://example.com/new_repo")
       expect(Yast::Pkg).to receive(:SourceChangeUrl).with(repo.repo_id, new_url.to_s).and_return(true)
       expect { repo.url = new_url }.to change { repo.url }.from(repo.url).to(new_url)
     end
