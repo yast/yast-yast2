@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 29 15:26:44 UTC 2020 - schubi@suse.de
+- Products: Do not solve dependencies while checking libzypp
+  connection (bsc#1170322).
+- 4.3.12
+
+-------------------------------------------------------------------
 Mon Jun 29 14:26:44 UTC 2020 - José Iván López González <jlopez@suse.com>
 
 - Avoid failure when downloading release notes from an inoperative
