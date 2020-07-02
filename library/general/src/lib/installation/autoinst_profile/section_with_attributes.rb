@@ -36,7 +36,7 @@ module Installation
     # This class offers a starting point for a better API when working with
     # AutoYaST profiles, abstracting some details. The idea is that by creating
     # a derived class and specifying the known profile elements (attributes)
-    # you get with a basic class that you can extend to offer a convenient API.
+    # you get a basic class that you can extend to offer a convenient API.
     #
     # These classes would be responsible for:
     #
