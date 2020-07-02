@@ -42,18 +42,24 @@ module Installation
     #
     # * Converting profile related information from/to hash objects. It includes
     #   logic to support old-style profiles (renaming attributes and so on).
+    #
     # * Generating a section from the running system. See
-    #   [PartitioningSection](https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/partitioning_section.rb#L81)
-    #   or
-    #   [NetworkingSection#new_from_network](https://github.com/yast/yast-network/blob/1441831ff9edb3cff1dd5c76ceb27c99d9280e19/src/lib/y2network/autoinst_profile/networking_section.rb#L88)
-    #   to take some inspiration. Bear in mind that the former does not inherit
-    #   from {SectionWithAttributes}, but relies on other classes that do so.
+    #   [PartitioningSection#new_from_storage] or
+    #   [NetworkingSection#new_from_network] to take some inspiration. Bear in
+    #   mind that the former does not inherit from {SectionWithAttributes}, but
+    #   relies on other classes that do so.
+    #
     # * Offering convenient query methods when needed. See
-    #   [PartitioningSection#disk_drives](https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/partitioning_section.rb#L102)
-    #   or [PartitionSection](https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/drive_section.rb#L594)
-    #   as examples.
+    #   [PartitioningSection#disk_drives] or [PartitionSection#used?] as
+    #   examples.
+    #
     # * Interpreting some values like the dash (-) in [networking route
     #   sections](https://github.com/yast/yast-network/blob/1441831ff9edb3cff1dd5c76ceb27c99d9280e19/src/lib/y2network/autoinst_profile/route_section.rb#L133).
+    #
+    # [PartitioningSection#new_from_storage]: https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/partitioning_section.rb#L81
+    # [NetworkingSection#new_from_network]: https://github.com/yast/yast-network/blob/1441831ff9edb3cff1dd5c76ceb27c99d9280e19/src/lib/y2network/autoinst_profile/networking_section.rb#L88
+    # [PartitioningSection#disk_drives]: https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/partitioning_section.rb#L102
+    # [PartitionSection#used?]: https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/drive_section.rb#L594
     #
     # ## Scope
     #
@@ -65,13 +71,13 @@ module Installation
     #
     # This class only handles scalar data types. If you need to deal with
     # arrays, you must extend your derived class. The reason is that, usually,
-    # those arrays are composed of other sections like
-    # [partitions](https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/drive_section.rb#L139),
-    # [network
-    # interfaces](https://github.com/yast/yast-network/blob/1441831ff9edb3cff1dd5c76ceb27c99d9280e19/src/lib/y2network/autoinst_profile/networking_section.rb#L112),
-    # etc. Take into account that you will need to write code import and export
-    # those structures. Check the partitions and network interfaces examples to
-    # find out the details.
+    # those arrays are composed of other sections like [partitions], [network
+    # interfaces], etc. Take into account that you will need to write code
+    # import and export those structures. Check the partitions and network
+    # interfaces examples to find out the details.
+    #
+    # [partitions]: https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/drive_section.rb#L139
+    # [network interfaces]: https://github.com/yast/yast-network/blob/1441831ff9edb3cff1dd5c76ceb27c99d9280e19/src/lib/y2network/autoinst_profile/networking_section.rb#L112
     #
     # ## Examples
     #
