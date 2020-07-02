@@ -21,7 +21,101 @@ require "yast"
 
 module Installation
   module AutoinstProfile
-    # Abstract base class for some AutoYaST profile sections
+    # Abstract base class to be used when dealing with AutoYaST profiles
+    #
+    # ## Motivation
+    #
+    # Historically, AutoYaST has used hash objects to handle the profile data.
+    # The import method expects to receive a hash with the profile content while
+    # the export method returns a hash. For simple cases, it is just fine.
+    # However, for complex scenarios (like storage or networking settings),
+    # using a hash can be somewhat limiting.
+    #
+    # ## Features
+    #
+    # This class offers a starting point for a better API when working with
+    # AutoYaST profiles, abstracting some details. The idea is that by creating
+    # a derived class and specifying the known profile elements (attributes)
+    # you get a basic class that you can extend to offer a convenient API.
+    #
+    # These classes would be responsible for:
+    #
+    # * Converting profile related information from/to hash objects. It includes
+    #   logic to support old-style profiles (renaming attributes and so on).
+    #
+    # * Generating a section from the running system. See
+    #   [PartitioningSection#new_from_storage] or
+    #   [NetworkingSection#new_from_network] to take some inspiration. Bear in
+    #   mind that the former does not inherit from {SectionWithAttributes}, but
+    #   relies on other classes that do so.
+    #
+    # * Offering convenient query methods when needed. See
+    #   [PartitioningSection#disk_drives] or [PartitionSection#used?] as
+    #   examples.
+    #
+    # * Interpreting some values like the dash (-) in [networking route
+    #   sections](https://github.com/yast/yast-network/blob/1441831ff9edb3cff1dd5c76ceb27c99d9280e19/src/lib/y2network/autoinst_profile/route_section.rb#L133).
+    #
+    # [PartitioningSection#new_from_storage]: https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/partitioning_section.rb#L81
+    # [NetworkingSection#new_from_network]: https://github.com/yast/yast-network/blob/1441831ff9edb3cff1dd5c76ceb27c99d9280e19/src/lib/y2network/autoinst_profile/networking_section.rb#L88
+    # [PartitioningSection#disk_drives]: https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/partitioning_section.rb#L102
+    # [PartitionSection#used?]: https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/drive_section.rb#L594
+    #
+    # ## Scope
+    #
+    # Validation or setting default values is out of the scope of these classes,
+    # as it belongs to the code which imports the profile data. However, nothing
+    # is set in stone and we could change this decision in the future if needed.
+    #
+    # ## Limitations
+    #
+    # This class only handles scalar data types. If you need to deal with
+    # arrays, you must extend your derived class. The reason is that, usually,
+    # those arrays are composed of other sections like [partitions], [network
+    # interfaces], etc. Take into account that you will need to write code
+    # import and export those structures. Check the partitions and network
+    # interfaces examples to find out the details.
+    #
+    # [partitions]: https://github.com/yast/yast-storage-ng/blob/e2e714a990bed5b9e21d5967e6e3454a8de37778/src/lib/y2storage/autoinst_profile/drive_section.rb#L139
+    # [network interfaces]: https://github.com/yast/yast-network/blob/1441831ff9edb3cff1dd5c76ceb27c99d9280e19/src/lib/y2network/autoinst_profile/networking_section.rb#L112
+    #
+    # ## Examples
+    #
+    # @example Custom section definition
+    #   class SignatureHandlingSection < SectionWithAttributes
+    #     class << self
+    #       def attributes
+    #        [
+    #          { name: :accept_file_without_checksum },
+    #          { name: :accept_usigned_file }
+    #        ]
+    #       end
+    #     end
+    #   end
+    #
+    # @example Importing a section from the profile
+    #   def import(settings)
+    #     section = SignatureHandlingSection.new_from_hashes(settings)
+    #     # Do whatever you need to do with the section content.
+    #   end
+    #
+    # @example Exporting the values from the system
+    #   def export
+    #     section = SignatureHandlingSection.new_from_system(signature_handling)
+    #     section.to_hashes
+    #   end
+    #
+    # @example Adding a query API method
+    #   class SignatureHandlingSection < SectionWithAttributes
+    #     # Omiting attributes definition for simplicity reasons.
+    #
+    #     # Determines whether the signature checking is completely disabled
+    #     #
+    #     # @return [Boolean]
+    #     def disabled?
+    #       accept_file_without_checksum && accept_unsigned_file
+    #     end
+    #   end
     class SectionWithAttributes
       include Yast::Logger
 
