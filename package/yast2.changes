@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul  7 09:48:04 CEST 2020 - schubi@suse.de
+
+- Command line interface: Do not start an UI while evaluating
+  current language settings (bsc#1173133).
+- 4.1.79
+
+-------------------------------------------------------------------
 Fri Jun  5 15:13:42 UTC 2020 - José Iván López González <jlopez@suse.com>
 
 - Improve actions to stop and start a system service.
