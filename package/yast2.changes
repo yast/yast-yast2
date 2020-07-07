@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul  7 09:48:04 CEST 2020 - schubi@suse.de
+
+- Command line interface: Do not start an UI while evaluating
+  current language settings (bsc#1173133).
+- 4.3.13
+
+-------------------------------------------------------------------
 Mon Jun 29 15:26:44 UTC 2020 - schubi@suse.de
 - Products: Do not solve dependencies while checking libzypp
   connection (bsc#1170322).
