@@ -39,7 +39,7 @@ module Yast
     ALPHA_NUM_CHARS = ALPHA_CHARS + DIGIT_CHARS
     PUNCT_CHARS = "!\"\#$%&'()*+,-./:;<=>?@[\\]^_`{|}~".freeze
     GRAPHICAL_CHARS = ALPHA_NUM_CHARS + PUNCT_CHARS
-    SPACE_CHARS = "\f\r\n\t\v".freeze
+    SPACE_CHARS = " \f\r\n\t\v".freeze
     PRINTABLE_CHARS = SPACE_CHARS + GRAPHICAL_CHARS
 
     def main
