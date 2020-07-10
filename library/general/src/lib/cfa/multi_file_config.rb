@@ -124,10 +124,10 @@ module CFA
 
     # Return the involved configuration files
     #
-    # @return [Array<LoginDefs>] Configuration files
+    # @return [Array<Class>] Configuration files
     # @see #paths
     def files
-      @files ||= paths.map { |p| LoginDefs.new(file_path: p) }
+      @files ||= paths.map { |p| self.class.file_class.new(file_path: p) }
     end
 
     # Return the paths to the configuration files
@@ -194,14 +194,14 @@ module CFA
 
     # Returns the YaST specific configuration file
     #
-    # @return [LoginDefs]
+    # @return [Class]
     def yast_config_file
       @yast_config_file ||= files.find { |f| f.file_path == yast_file_path }
     end
 
     # Returns the files with higher precedence that the YaST one
     #
-    # @return [Array<LoginDefs>] List of files
+    # @return [Array<Class>] List of files
     def higher_precedence_files
       return @higher_precedence_files if @higher_precedence_files
 
