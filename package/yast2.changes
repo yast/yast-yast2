@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 10 14:15:30 UTC 2020 - David Diaz <dgonzalez@suse.com>
+
+- Make CFA::MultiFileConfig fully reusable (related to bsc#1155735,
+  and bsc#1157541).
+
+-------------------------------------------------------------------
 Thu Jul  9 14:35:43 UTC 2020 - Steffen Winterfeldt <snwint@suse.com>
 
 - add space to SPACE_CHARS (bsc#1173907)
