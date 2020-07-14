@@ -19,8 +19,11 @@ module Y2Packager
   #
   # Libzypp URLs do not conform to rfc3986 because they can include the so-called
   # Repository Variables. Those vars can have several formats like $variable,
-  # ${variable}, ${variable-word} or ${variable+word}. They can appear in any
-  # component of the URL (host, path, port...) except in scheme, user or password.
+  # ${variable}, ${variable-word} or ${variable+word}. According to libzypp's
+  # documentation, the variables can appear in any component of the URL (host, path,
+  # port...) except in scheme, user or password. But, at the time of writing, zypper
+  # throws an "invalid port component" error when trying to use variables as part of
+  # the port, even with the most recent available version of libzypp.
   #
   # See https://doc.opensuse.org/projects/libzypp/HEAD/zypp-repovars.html
   #
@@ -85,6 +88,9 @@ module Y2Packager
     #    suggests and may affect the reliability of the parsing.
     # 2) Extract the port section before parsing the URL if it contains repovars, storing
     #    its value in a separate instance variable and restoring it on demand.
+    #
+    # Anyways, using variables in the port of an URL doesn't seem to really work in libzypp,
+    # although it's documented to be valid.
     #
     # @return [String]
     def port
