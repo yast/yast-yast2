@@ -151,6 +151,17 @@ describe Y2Packager::Repository do
           expect(repo.product_dir).to eq("/product")
         end
       end
+
+      context "if the raw url cannot be parsed" do
+        let(:repo_raw_url) { "http://download.opensuse.org:80$releasever/update/leap/15.2/oss" }
+
+        it "returns a repository with an empty url" do
+          repo = described_class.find(repo_id)
+          expect(repo.repo_id).to eq(repo_id)
+          expect(repo.raw_url.to_s).to eq ""
+          expect(repo.url.to_s).to eq ""
+        end
+      end
     end
 
     context "when an invalid repo_id is given" do

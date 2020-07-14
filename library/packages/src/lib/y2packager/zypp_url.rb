@@ -30,6 +30,7 @@ module Y2Packager
   #
   class ZyppUrl < SimpleDelegator
     Yast.import "Pkg"
+    include Yast::Logger
 
     # Repository schemes considered local (see #local?)
     # https://github.com/openSUSE/libzypp/blob/a7a038aeda1ad6d9e441e7d3755612aa83320dce/zypp/Url.cc#L458
@@ -37,9 +38,19 @@ module Y2Packager
 
     # Constructor
     #
+    # If the argument is a string with an invalid URL, an empty URL is created
+    #
     # @param url [String, ZyppUrl, URI::Generic]
     def initialize(url)
-      __setobj__(URI(repovars_escape(url.to_s)))
+      uri =
+        begin
+          URI(repovars_escape(url.to_s))
+        rescue URI::InvalidURIError => e
+          log.error "Failed to parse URL, considered as empty: #{e.inspect}"
+          URI("")
+        end
+
+      __setobj__(uri)
     end
 
     # @return [URI::Generic]
