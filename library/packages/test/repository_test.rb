@@ -12,6 +12,7 @@ describe Y2Packager::Repository do
   let(:enabled) { true }
   let(:autorefresh) { true }
   let(:repo_url) { URI("http://download.opensuse.org/update/leap/42.1/oss") }
+  let(:repo_raw_url) { repo_url }
 
   subject(:repo) do
     Y2Packager::Repository.new(repo_id: repo_id, name: "repo-oss", enabled: enabled,
@@ -88,16 +89,78 @@ describe Y2Packager::Repository do
 
     context "when a valid repo_id is given" do
       let(:repo_data) do
-        { "enabled" => true, "autorefresh" => true, "url" => repo_url, "raw_url" => repo_url,
+        { "enabled" => true, "autorefresh" => true, "url" => repo_url, "raw_url" => repo_raw_url,
           "name" => "Repo #1", "product_dir" => "/product", "repo_alias" => "alias" }
       end
 
-      it "returns a repository with the given repo_id" do
+      it "returns the repository with the given repo_id" do
         repo = described_class.find(repo_id)
         expect(repo.repo_id).to eq(repo_id)
         expect(repo.enabled?).to eq(repo_data["enabled"])
         expect(repo.url).to eq(URI(repo_data["url"]))
         expect(repo.product_dir).to eq("/product")
+      end
+
+      context "if the raw url contains a repo var like $releasever" do
+        let(:repo_raw_url) { "http://download.opensuse.org/update/leap/$releasever/oss" }
+
+        it "returns the repository with the given repo_id" do
+          repo = described_class.find(repo_id)
+          expect(repo.repo_id).to eq(repo_id)
+          expect(repo.enabled?).to eq(repo_data["enabled"])
+          expect(repo.raw_url.to_s).to eq(repo_data["raw_url"].to_s)
+          expect(repo.product_dir).to eq("/product")
+        end
+      end
+
+      # Regression test for bug#1172867, using ${var_name} used to cause an exception
+      context "if the raw url contains a repo var like ${releasever}" do
+        let(:repo_raw_url) { "http://download.opensuse.org/update/leap/${releasever}/oss" }
+
+        it "returns the repository with the given repo_id" do
+          repo = described_class.find(repo_id)
+          expect(repo.repo_id).to eq(repo_id)
+          expect(repo.enabled?).to eq(repo_data["enabled"])
+          expect(repo.raw_url.to_s).to eq(repo_data["raw_url"].to_s)
+          expect(repo.product_dir).to eq("/product")
+        end
+      end
+
+      # Regression test for bug#1172867, part 2
+      context "if the raw url contains a repo var like ${var-word}" do
+        let(:repo_raw_url) { "http://download.opensuse.org/update/leap/${var-word}/oss" }
+
+        it "returns the repository with the given repo_id" do
+          repo = described_class.find(repo_id)
+          expect(repo.repo_id).to eq(repo_id)
+          expect(repo.enabled?).to eq(repo_data["enabled"])
+          expect(repo.raw_url.to_s).to eq(repo_data["raw_url"].to_s)
+          expect(repo.product_dir).to eq("/product")
+        end
+      end
+
+      # Regression test for bug#1172867, part 3
+      context "if the raw url contains a repo var like ${var+word}" do
+        let(:repo_raw_url) { "http://download.opensuse.org/update/leap/${var+word}/oss" }
+
+        it "returns the repository with the given repo_id" do
+          repo = described_class.find(repo_id)
+          expect(repo.repo_id).to eq(repo_id)
+          expect(repo.enabled?).to eq(repo_data["enabled"])
+          expect(repo.raw_url.to_s).to eq(repo_data["raw_url"].to_s)
+          expect(repo.product_dir).to eq("/product")
+        end
+      end
+
+      context "if the raw url cannot be parsed" do
+        let(:repo_raw_url) { "http://download.opensuse.org:80$releasever/update/leap/15.2/oss" }
+
+        it "returns a repository with an empty url" do
+          repo = described_class.find(repo_id)
+          expect(repo.repo_id).to eq(repo_id)
+          expect(repo.raw_url.to_s).to eq ""
+          expect(repo.url.to_s).to eq ""
+        end
       end
     end
 
@@ -130,7 +193,7 @@ describe Y2Packager::Repository do
 
   describe "#local" do
     before do
-      allow(repo).to receive(:scheme).and_return(scheme)
+      allow(repo.raw_url).to receive(:scheme).and_return(scheme)
     end
 
     context "when scheme is :cd" do
@@ -282,6 +345,12 @@ describe Y2Packager::Repository do
 
     it "allows using an URI class parameter" do
       new_url = URI("https://example.com/new_repo")
+      expect(Yast::Pkg).to receive(:SourceChangeUrl).with(repo.repo_id, new_url.to_s).and_return(true)
+      expect { repo.url = new_url }.to change { repo.url.to_s }.from(repo.url.to_s).to(new_url.to_s)
+    end
+
+    it "allows using an ZyppUrl class parameter" do
+      new_url = Y2Packager::ZyppUrl.new("https://example.com/new_repo")
       expect(Yast::Pkg).to receive(:SourceChangeUrl).with(repo.repo_id, new_url.to_s).and_return(true)
       expect { repo.url = new_url }.to change { repo.url }.from(repo.url).to(new_url)
     end

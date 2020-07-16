@@ -10,7 +10,7 @@
 # FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 # ------------------------------------------------------------------------------
 
-require "uri"
+require "y2packager/zypp_url"
 require "y2packager/product"
 require "y2packager/resolvable"
 
@@ -37,17 +37,11 @@ module Y2Packager
   class Repository
     Yast.import "Pkg"
 
-    # Repository schemes considered local (see #local?)
-    # https://github.com/openSUSE/libzypp/blob/a7a038aeda1ad6d9e441e7d3755612aa83320dce/zypp/Url.cc#L458
-    LOCAL_SCHEMES = [:cd, :dvd, :dir, :hd, :iso, :file].freeze
-
     # @return [Fixnum] Repository ID
     attr_reader :repo_id
     # @return [String] Repository name
     attr_reader :name
-    # @return [URI::Generic] Repository URL (expanded)
-    attr_reader :url
-    # @return [URI::Generic] Raw repository URL (unexpanded)
+    # @return [ZyppUrl] Repository URL
     attr_reader :raw_url
     # @return [String] Product directory
     attr_reader :product_dir
@@ -100,22 +94,21 @@ module Y2Packager
 
         new(repo_id: repo_id, repo_alias: repo_data["alias"], enabled: repo_data["enabled"],
           name: repo_data["name"], autorefresh: repo_data["autorefresh"],
-          url: URI(repo_data["url"]), raw_url: URI(repo_data["raw_url"]),
-          product_dir: repo_data["product_dir"])
+          url: repo_data["raw_url"], product_dir: repo_data["product_dir"])
       end
 
       # Add a repository
       #
       # @param name        [String]       Name
-      # @param url         [URI::Generic] Repository URL
+      # @param url         [URI::Generic, ZyppUrl] Repository URL
       # @param product_dir [String]       Product directory
       # @param enabled     [Boolean]      Is the repository enabled?
       # @param autorefresh [Boolean]      Is auto-refresh enabled for this repository?
       # @return [Y2Packager::Repository,nil] New repository or nil if creation failed
       def create(name:, url:, product_dir: "", enabled: true, autorefresh: true)
         repo_id = Yast::Pkg.RepositoryAdd(
-          "name" => name, "base_urls" => [url], "enabled" => enabled, "autorefresh" => autorefresh,
-          "prod_dir" => product_dir
+          "name" => name, "base_urls" => [url.to_s], "enabled" => enabled,
+          "autorefresh" => autorefresh, "prod_dir" => product_dir
         )
 
         repo_id ? find(repo_id) : nil
@@ -124,11 +117,16 @@ module Y2Packager
 
     # Constructor
     #
+    # @note This class calculates the expanded URL ({#url}) out of the unexpanded version
+    # ({#raw_url}), so there is no need to provide both versions in the constructor. Still,
+    # both `:url` and `:raw_url` are accepted for backwards compatibility. If `:raw_url`
+    # is provided, `:url` will be ignored (it can be calculated at any point).
+    #
     # @param repo_alias  [String]       Repository alias (unique identifier)
     # @param repo_id     [Fixnum]       Repository ID
     # @param name        [String]       Name
-    # @param url         [URI::Generic] Repository URL (expanded)
-    # @param raw_url     [URI::Generic] Optional raw repository URL (unexpanded)
+    # @param url         [URI::Generic, ZyppUrl] Repository URL
+    # @param raw_url     [URI::Generic, ZyppUrl] Optional raw repository URL
     # @param product_dir [String]       Product directory
     # @param enabled     [Boolean]      Is the repository enabled?
     # @param autorefresh [Boolean]      Is auto-refresh enabled for this repository?
@@ -138,8 +136,7 @@ module Y2Packager
       @name    = name
       @enabled = enabled
       @autorefresh = autorefresh
-      @url = url
-      @raw_url = raw_url || url
+      @raw_url = ZyppUrl.new(raw_url || url)
       @product_dir = product_dir
     end
 
@@ -149,7 +146,7 @@ module Y2Packager
     #
     # @return [Symbol,nil] URL scheme, nil if the URL is not defined
     def scheme
-      url.scheme ? url.scheme.to_sym : nil
+      raw_url&.scheme&.to_sym
     end
 
     # Return products contained in the repository
@@ -174,7 +171,15 @@ module Y2Packager
     #
     # @return [Boolean] true if the repository is considered local; false otherwise
     def local?
-      LOCAL_SCHEMES.include?(scheme)
+      raw_url.local?
+    end
+
+    # Repository URL, expanded version (ie. with the repository variables already
+    # replaced by their values)
+    #
+    # @return [ZyppUrl]
+    def url
+      raw_url.expanded
     end
 
     # Determine if the repository is enabled
@@ -251,20 +256,15 @@ module Y2Packager
     # Change the repository URL
     #
     # The URL will be changed only in memory. Calling to
-    # Yast::Pkg.SourceSaveAll will make the removal persistent.
+    # Yast::Pkg.SourceSaveAll will make the change persistent.
     #
-    # @param new_url [String,URI] the new URL (with unexpanded variables,
-    #   it sets the `raw_url` value, the `url` attribute will
-    #   be evaluated automatically)
-    #
-    # @see Yast::Pkg.SourceDelete
-    # @see Yast::Pkg.SourceSaveAll
-    def url=(new_url)
+    # @param new_url [String,ZyppUrl] the new URL (with unexpanded variables)
+    def raw_url=(new_url)
       return unless Yast::Pkg.SourceChangeUrl(repo_id, new_url.to_s)
 
-      # its safe to call URI() on URI object
-      @raw_url = URI(new_url)
-      @url = URI(Yast::Pkg.ExpandedUrl(new_url.to_s))
+      @raw_url = ZyppUrl.new(new_url)
     end
+
+    alias_method :url=, :raw_url=
   end
 end
