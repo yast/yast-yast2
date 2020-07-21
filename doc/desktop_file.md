@@ -81,7 +81,7 @@ Auto prefix:
   values are `list` and `map`. Default value is `map`.
 
 * *X-SuSE-YaST-AutoInstResource* Specifies top level XML node under which is located
-  module specific configuration in AutoYaST profile.
+  module specific configuration in AutoYaST profile. By default it is {module_name}.
 
 * *X-SuSE-YaST-AutoInstResourceAliases* Specifies a list of alternative names
   for the top level XML node. It is used to keep backward compatibility: for
