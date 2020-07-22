@@ -1,5 +1,5 @@
 #! /usr/bin/env rspec
-require_relative "test_helper"
+require_relative "../test_helper"
 require "ui/greasemonkey"
 
 describe "UI::Greasemonkey" do
