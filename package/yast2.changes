@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 22 16:08:16 UTC 2020 - David Diaz <dgonzalez@suse.com>
+
+- Add a CFA based class to manage nsswitch.conf (bsc#1173119).
+- 4.3.16
+
+-------------------------------------------------------------------
 Thu Jul 16 12:48:24 UTC 2020 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Better management of libzypp repovars (eg. those enclosed in
