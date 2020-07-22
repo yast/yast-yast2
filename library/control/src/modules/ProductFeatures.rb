@@ -188,10 +188,14 @@ module Yast
     end
 
     # Initialize the features structure if needed
+    #
+    # Note that the values are normally read from a control file or set to default values. But, in normal
+    # mode, the values are taken from /etc/YaST2/ProductFeatures. Also note that for firstboot mode, the
+    # values are taken from the firstboot.xml control file.
+    #
     # @note This is a stable API function
-    # Either read from /etc/YaST2/ProductFeatures or set default values
     def InitIfNeeded
-      if Stage.normal || Stage.firstboot
+      if Stage.normal
         Restore()
       else
         InitFeatures(false)
