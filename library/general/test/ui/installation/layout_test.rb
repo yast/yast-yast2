@@ -21,14 +21,14 @@
 
 require_relative "../../test_helper"
 
-require "ui/installation/layout"
+require "ui/wizards/layout"
 
-describe UI::Installation::Layout do
+describe UI::Wizards::Layout do
   describe ".with_steps" do
     it "creates a layout with steps sidebar" do
       layout = described_class.with_steps
 
-      expect(layout.with_steps?).to eq(true)
+      expect(layout.mode.steps?).to eq(true)
     end
 
     it "creates a layout with banner disabled" do
@@ -42,7 +42,7 @@ describe UI::Installation::Layout do
     it "creates a layout with dialog title on left" do
       layout = described_class.with_title_on_left
 
-      expect(layout.with_title_on_left?).to eq(true)
+      expect(layout.mode.title_on_left?).to eq(true)
     end
 
     it "creates a layout with banner disabled" do
@@ -56,7 +56,7 @@ describe UI::Installation::Layout do
     it "creates a layout with dialog title on top" do
       layout = described_class.with_title_on_top
 
-      expect(layout.with_title_on_top?).to eq(true)
+      expect(layout.mode.title_on_top?).to eq(true)
     end
 
     it "creates a layout with banner disabled" do
@@ -68,81 +68,145 @@ describe UI::Installation::Layout do
 
   describe ".from_product_features" do
     before do
-      allow(UI::Installation::LayoutConfig).to receive(:from_product_features).and_return(config)
+      Yast.import "ProductFeatures"
+
+      Yast::ProductFeatures.Import(product_features)
     end
 
-    let(:config) do
-      instance_double(UI::Installation::LayoutConfig,
-        mode: UI::Installation::LayoutConfig::Mode::STEPS, banner: true)
+    let(:product_features) do
+      {
+        "globals" => {
+          "installation_ui"     => installation_ui,
+          "installation_layout" => installation_layout
+        }
+      }
     end
 
-    it "creates a layout according to the product features" do
-      layout = described_class.from_product_features
+    shared_examples "installation_ui option" do
+      context "and installation_ui option is not set either" do
+        let(:installation_ui) { nil }
 
-      expect(layout.with_steps?).to eq(true)
-      expect(layout.banner?).to eq(true)
+        it "sets title-on-left mode" do
+          layout = described_class.from_product_features
+
+          expect(layout.mode.title_on_left?).to eq(true)
+        end
+
+        it "enables the banner" do
+          layout = described_class.from_product_features
+
+          expect(layout.banner?).to eq(true)
+        end
+      end
+
+      context "and installation_ui option is set to an unknown value" do
+        let(:installation_ui) { "foo" }
+
+        it "sets title-on-left mode" do
+          layout = described_class.from_product_features
+
+          expect(layout.mode.title_on_left?).to eq(true)
+        end
+
+        it "enables the banner" do
+          layout = described_class.from_product_features
+
+          expect(layout.banner?).to eq(true)
+        end
+      end
+
+      context "and installation_ui option is set to sidebar value" do
+        let(:installation_ui) { "sidebar" }
+
+        it "sets steps mode" do
+          layout = described_class.from_product_features
+
+          expect(layout.mode.steps?).to eq(true)
+        end
+
+        it "disables the banner" do
+          layout = described_class.from_product_features
+
+          expect(layout.banner?).to eq(false)
+        end
+      end
+    end
+
+    context "when installation_layout option is not set in the product features" do
+      let(:installation_layout) { nil }
+
+      include_examples "installation_ui option"
+    end
+
+    context "when installation_layout option is set in the product features" do
+      let(:installation_layout) do
+        {
+          "mode"   => "steps",
+          "banner" => true
+        }
+      end
+
+      let(:installation_ui) { nil }
+
+      it "sets the mode according to the mode option" do
+        layout = described_class.from_product_features
+
+        expect(layout.mode.steps?).to eq(true)
+      end
+
+      it "sets the banner according to the banner option" do
+        layout = described_class.from_product_features
+
+        expect(layout.banner?).to eq(true)
+      end
+
+      context "and the mode option is not set in the product features" do
+        let(:installation_layout) do
+          {
+            "banner" => true
+          }
+        end
+
+        it "keeps the default mode" do
+          layout = described_class.from_product_features
+
+          expect(layout.mode.title_on_top?).to eq(true)
+        end
+      end
+
+      context "and the banner option is not set in the product features" do
+        let(:installation_layout) do
+          {
+            "mode" => "steps"
+          }
+        end
+
+        it "keeps the default banner value" do
+          layout = described_class.from_product_features
+
+          expect(layout.banner?).to eq(false)
+        end
+      end
+
+      context "and neither the mode nor the banner options are set" do
+        let(:installation_layout) { "" }
+
+        include_examples "installation_ui option"
+      end
     end
   end
 
   describe "#open_wizard" do
     before do
-      allow(Yast::Wizard).to receive(:OpenNextBackStepsDialog)
+      allow(Yast::Wizard).to receive(:OpenWithLayout)
     end
 
     subject { described_class.with_steps }
 
-    context "when the banner is enabled" do
-      before do
-        subject.show_banner
-      end
+    it "opens the wizard with the configured layout" do
+      expect(Yast::Wizard).to receive(:OpenWithLayout).with(subject)
 
-      it "shows the banner" do
-        expect(Yast::UI).to receive(:SetProductLogo).with(true)
-
-        subject.open_wizard
-      end
-    end
-
-    context "when the banner is disabled" do
-      before do
-        subject.hide_banner
-      end
-
-      it "hides the banner" do
-        expect(Yast::UI).to receive(:SetProductLogo).with(false)
-
-        subject.open_wizard
-      end
-    end
-
-    context "when the layout was created with steps" do
-      subject { described_class.with_steps }
-
-      it "opens a wizard with steps" do
-        expect(Yast::Wizard).to receive(:OpenNextBackStepsDialog)
-
-        subject.open_wizard
-      end
-    end
-
-    context "when the layout was created with title on left" do
-      subject { described_class.with_title_on_left }
-
-      it "opens a wizard with title on left" do
-        expect(Yast::Wizard).to receive(:OpenLeftTitleNextBackDialog)
-
-        subject.open_wizard
-      end
-    end
-
-    context "when the layout was created with title on top" do
-      subject { described_class.with_title_on_top }
-
-      it "opens a wizard with title on top" do
-        expect(Yast::Wizard).to receive(:OpenNextBackDialog)
-
-        subject.open_wizard
-      end
+      subject.open_wizard
     end
 
     context "when a block is given" do
@@ -160,6 +224,5 @@ describe UI::Installation::Layout do
         subject.open_wizard {}
       end
     end
-
   end
 end

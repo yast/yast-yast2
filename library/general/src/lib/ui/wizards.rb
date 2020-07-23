@@ -18,9 +18,9 @@
 # find current contact information at www.suse.com.
 
 module UI
-  # Module with UI stuff for installation
-  module Installation
+  # Module with UI stuff for wizards
+  module Wizards
   end
 end
 
-require "ui/installation/layout"
+require "ui/wizards/layout"
