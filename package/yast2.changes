@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jul 23 14:03:42 UTC 2020 - José Iván López González <jlopez@suse.com>
+
+- Add Layout class to configure a Wizard layout.
+- Related to jsc#PM-1998.
+- 4.3.16
+
+-------------------------------------------------------------------
 Thu Jul 16 12:48:24 UTC 2020 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Better management of libzypp repovars (eg. those enclosed in
