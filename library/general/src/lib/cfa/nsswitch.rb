@@ -107,7 +107,8 @@ module CFA
     #
     # @param db_name [String] the database name, e.g., "passwd" or "hosts"
     #
-    # @return [Array<String>] database service specifications
+    # @return [Array<String>, nil] database service specifications or nil if db_name is not found
+    # otherwise
     def services_for(db_name)
       databases[db_name]&.services
     end
@@ -138,15 +139,11 @@ module CFA
     #
     # @see CFA::BaseModel#save
     def save
-      return false unless modified?
-
-      new_content = @parser.serialize(data)
+      return unless modified?
 
       @parser.file_name = write_path if @parser.respond_to?(:file_name=)
-      @file_handler.write(write_path, new_content)
-      @current_content = new_content
-
-      true
+      @current_content = @parser.serialize(data)
+      @file_handler.write(write_path, @current_content)
     end
 
     # Whether the content has changed

@@ -76,10 +76,6 @@ describe CFA::Nsswitch do
         subject.update_entry("hosts", ["dns", "nis"])
       end
 
-      it "returns true" do
-        expect(subject.save).to eq(true)
-      end
-
       it "writes to /etc/nsswitch.conf file" do
         expect(file_handler).to receive(:write)
           .with("/etc/nsswitch.conf", anything)
@@ -94,10 +90,6 @@ describe CFA::Nsswitch do
     end
 
     context "when it has not changed" do
-      it "returns false" do
-        expect(subject.save).to eq(false)
-      end
-
       it "does nothing" do
         expect(file_handler).to_not receive(:write)
         subject.save
