@@ -19,12 +19,12 @@
 
 require_relative "../test_helper"
 require "cfa/nsswitch"
+require "cfa/memory_file"
 
 describe CFA::Nsswitch do
   subject { described_class.new(file_handler: file_handler) }
 
   let(:file_handler) { Yast::TargetFile }
-
   let(:scenario) { "custom" }
 
   around do |example|
@@ -64,16 +64,35 @@ describe CFA::Nsswitch do
   end
 
   describe "#save" do
-    before do
-      subject.load
+    before { subject.load }
 
-      # Avoid writing data example files
-      allow(file_handler).to receive(:write)
+    let(:file_handler) { CFA::MemoryFile.new(file_content) }
+    let(:file_content) do
+      <<~CONTENT
+        # An custom Name Service Switch config file.
+        #
+        # Valid databases are: aliases, ethers, group, gshadow, hosts,
+        # initgroups, netgroup, networks, passwd, protocols, publickey,
+        # rpc, services, and shadow.
+
+        passwd: compat
+        group:  compat
+        shadow: compat
+
+        hosts:  db files
+      CONTENT
     end
 
     context "when it has changed" do
       before do
         subject.update_entry("hosts", ["dns", "nis"])
+      end
+
+      it "writes requested changes" do
+        subject.save
+
+        expect(file_handler.content).to match(/hosts:\s+dns nis/)
+        expect(file_handler.content).to_not match(/hosts:  db files/)
       end
 
       it "writes to /etc/nsswitch.conf file" do
@@ -92,7 +111,10 @@ describe CFA::Nsswitch do
     context "when it has not changed" do
       it "does nothing" do
         expect(file_handler).to_not receive(:write)
+
         subject.save
+
+        expect(file_handler.content).to eq(file_content)
       end
     end
   end
