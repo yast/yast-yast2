@@ -48,40 +48,33 @@ module UI
 
       # Class to represent a layout mode
       class Mode
-        STEPS = :steps
-        TREE = :tree
-        TITLE_ON_LEFT = :title_on_left
-        TITLE_ON_TOP = :title_on_top
-
-        private_constant :STEPS, :TREE, :TITLE_ON_LEFT, :TITLE_ON_TOP
-
         class << self
           # Mode for a layout with a left sidebar
           #
           # @return [Mode]
           def steps
-            new(STEPS)
+            @steps ||= new(:steps)
           end
 
           # Mode for a layout with a left tree
           #
           # @return [Mode]
           def tree
-            new(TREE)
+            @tree ||= new(:tree)
           end
 
           # Mode for a layout without a sidebar/tree and with the title of the dialogs on the left
           #
           # @return [Mode]
           def title_on_left
-            new(TITLE_ON_LEFT)
+            @title_on_left ||= new(:title_on_left)
           end
 
           # Mode for a layout without a sidebar/tree and with the title of the dialogs on top
           #
           # @return [Mode]
           def title_on_top
-            new(TITLE_ON_TOP)
+            @title_on_top ||= new(:title_on_top)
           end
         end
 
@@ -89,28 +82,28 @@ module UI
         #
         # @return [Boolean]
         def steps?
-          @mode == STEPS
+          self == self.class.steps
         end
 
         # Whether the layout mode is for a tree
         #
         # @return [Boolean]
         def tree?
-          @mode == TREE
+          self == self.class.tree
         end
 
-        # Whether the layout mode for title on left
+        # Whether the layout mode is for title on left
         #
         # @return [Boolean]
         def title_on_left?
-          @mode == TITLE_ON_LEFT
+          self == self.class.title_on_left
         end
 
         # Whether the layout mode is for title on top
         #
         # @return [Boolean]
         def title_on_top?
-          @mode == TITLE_ON_TOP
+          self == self.class.title_on_top
         end
 
       private
