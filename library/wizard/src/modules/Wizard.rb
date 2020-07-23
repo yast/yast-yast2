@@ -606,17 +606,20 @@ module Yast
       nil
     end
 
+    # Open a new wizard according to the layout configuration
+    #
+    # @param layout [::UI::Wizards::Layout]
     def OpenWithLayout(layout)
       UI.SetProductLogo(layout.banner?)
 
       if layout.mode.steps?
-        public_send(:OpenNextBackStepsDialog)
+        self.OpenNextBackStepsDialog
       elsif layout.mode.tree?
-        public_send(:OpenTreeNextBackDialog)
+        self.OpenTreeNextBackDialog
       elsif layout.mode.title_on_left?
-        public_send(:OpenLeftTitleNextBackDialog)
+        self.OpenLeftTitleNextBackDialog
       elsif layout.mode.title_on_top?
-        public_send(:OpenNextBackDialog)
+        self.OpenNextBackDialog
       else
         raise "Unknown layout mode: #{layout}"
       end
