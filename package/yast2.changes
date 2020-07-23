@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jul 24 08:53:31 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Provide a way to determine which resources (zones, services...)
+  have been modified from the default values (bsc#1171356)
+- 4.3.17
+
+-------------------------------------------------------------------
 Fri Jul 24 08:06:27 UTC 2020 - Jeff Kowalczyk <jkowalczyk@suse.com>
 
 - update is_wsl function to match wsl1 and wsl2 osrelease spellings
