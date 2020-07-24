@@ -135,8 +135,16 @@ describe Yast::Arch do
         .and_return(osrelease)
     end
 
-    context "when it runs on a Microsoft kernel" do
-      let(:osrelease) { "5.3.11-Microsoft" }
+    context "when it runs on a Microsoft kernel under WSL1" do
+      let(:osrelease) { "4.4.0-19041-Microsoft" }
+
+      it "returns true" do
+        expect(Yast::Arch.is_wsl).to eq(true)
+      end
+    end
+
+    context "when it runs on a Microsoft kernel under WSL2" do
+      let(:osrelease) { "4.19.104-microsoft-standard" }
 
       it "returns true" do
         expect(Yast::Arch.is_wsl).to eq(true)
