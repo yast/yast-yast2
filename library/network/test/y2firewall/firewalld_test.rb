@@ -403,4 +403,16 @@ describe Y2Firewall::Firewalld do
       firewalld.write
     end
   end
+
+  describe "#modified_from_default" do
+    context "when the given resource directoy does not exist" do
+      it "returns an empty array" do
+        expect(firewalld.modified_from_default("not_existent")).to eq([])
+      end
+    end
+
+    it "returns a list of the modified items" do
+      expect(firewalld.modified_from_default("zones", target_root: DATA_PATH)).to eq(["internal"])
+    end
+  end
 end

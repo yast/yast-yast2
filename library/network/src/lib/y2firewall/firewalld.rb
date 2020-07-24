@@ -69,6 +69,8 @@ module Y2Firewall
     SERVICE = "firewalld".freeze
     DEFAULT_ZONE = "public".freeze
     DEFAULT_LOG = "off".freeze
+    DEFAULTS_DIR = "/usr/lib/firewalld".freeze
+    CUSTOM_DIR = "/etc/firewalld".freeze
 
     def_delegators :api, :enable!, :disable!, :reload, :running?
     has_attributes :log_denied_packets, :default_zone, cache: true
@@ -160,7 +162,7 @@ module Y2Firewall
       service
     end
 
-    # Return true if the logging config or any of the zones where modified
+    # Return true if the logging config or any of the zones were modified
     # since read
     #
     # @return [Boolean] true if the config was modified; false otherwise
@@ -271,6 +273,25 @@ module Y2Firewall
       untouched!
       @api = nil
       @read = false
+    end
+
+    # Return the item names modified from the defaults of the given resource
+    #
+    # @example Obtain modified zones
+    #
+    #   f.modified_from_default("zones") #=> ["internal", "public"]
+    #
+    # @param resource [String]
+    # @return [Array<String>]
+    def modified_from_default(resource, target_root: "/")
+      return if resource.to_s.empty?
+
+      resource_dir = File.join(target_root, CUSTOM_DIR, resource)
+      return [] unless Dir.exist?(resource_dir)
+
+      Dir.chdir(resource_dir) do
+        Dir.glob("*.xml").map { |file| File.basename(file, ".xml") }
+      end
     end
 
   private
