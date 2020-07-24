@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 24 08:06:27 UTC 2020 - Jeff Kowalczyk <jkowalczyk@suse.com>
+
+- update is_wsl function to match wsl1 and wsl2 osrelease spellings
+  (boo#1174183)
+
+-------------------------------------------------------------------
 Thu Jul 23 14:03:42 UTC 2020 - José Iván López González <jlopez@suse.com>
 
 - Add Layout class to configure a Wizard layout.
