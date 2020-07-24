@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jul 24 08:06:27 UTC 2020 - Jeff Kowalczyk <jkowalczyk@suse.com>
+
+- update is_wsl function to match wsl1 and wsl2 osrelease spellings
+  (boo#1174183)
+
+-------------------------------------------------------------------
 Tue Jul  7 09:48:04 CEST 2020 - schubi@suse.de
 
 - Command line interface: Do not start an UI while evaluating

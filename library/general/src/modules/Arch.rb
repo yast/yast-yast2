@@ -498,7 +498,11 @@ module Yast
     #
     # @return [Boolean] true if runs on WSL; false otherwise
     def is_wsl
-      SCR.Read(path(".target.string"), "/proc/sys/kernel/osrelease").to_s.include?("-Microsoft")
+      # As of 2020-07-24 /proc/sys/kernel/osrelease contains
+      # "4.4.0-19041-Microsoft" on wsl1 and
+      # "4.19.104-microsoft-standard" on wsl2.
+      # Match on lowercase  "-microsoft"
+      SCR.Read(path(".target.string"), "/proc/sys/kernel/osrelease").to_s.downcase.include?("-microsoft")
     end
 
     publish function: :architecture, type: "string ()"
