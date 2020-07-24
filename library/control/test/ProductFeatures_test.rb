@@ -233,8 +233,8 @@ describe Yast::ProductFeatures do
     context "in firstboot stage" do
       let(:firstboot_stage) { true }
 
-      it "restores the available values in the running system" do
-        expect(subject).to receive(:Restore)
+      it "does not restore the available values in the running system" do
+        expect(subject).to_not receive(:Restore)
 
         subject.InitIfNeeded
       end
