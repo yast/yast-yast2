@@ -1032,7 +1032,6 @@ module Yast
           return false
         end
 
-
         Builtins.y2milestone("exported XML map: %1", exportmap)
         return true
       end
