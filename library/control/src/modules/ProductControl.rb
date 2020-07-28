@@ -288,9 +288,12 @@ module Yast
     # @param string control file
     # @return [Boolean]
     def ReadControlFile(controlfile)
-      @productControl = XML.XMLToYCPFile(controlfile)
-
-      return false if @productControl.nil?
+      begin
+        @productControl = XML.XMLToYCPFile(controlfile)
+      rescue RuntimeError => e
+        log.error "Failed to read control file: #{e.inspect}"
+        return false
+      end
 
       # log the read control.xml
 

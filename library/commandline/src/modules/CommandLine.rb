@@ -1021,7 +1021,17 @@ module Yast
         Ops.set(exportmap, "commands", commands)
         Ops.set(exportmap, "module", Ops.get_string(@cmdlinespec, "id", ""))
 
-        XML.YCPToXMLFile(:xmlhelp, exportmap, xmlfilename)
+        begin
+          XML.YCPToXMLFile(:xmlhelp, exportmap, xmlfilename)
+        rescue XMLSerializationError => e
+          # error message - creation of xml failed
+          Print(
+            _("Failed to create XML file.")
+          )
+          Builtins.y2error("Failed to serialize xml help: #{e.inspect}")
+          return false
+        end
+
         Builtins.y2milestone("exported XML map: %1", exportmap)
         return true
       end

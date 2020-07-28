@@ -1231,9 +1231,10 @@ module Yast
     end
 
     def IncorporateControlFileOptions(filename)
-      update_file = XML.XMLToYCPFile(filename)
-      if update_file.nil?
-        Builtins.y2error("Unable to read the %1 control file", filename)
+      begin
+        update_file = XML.XMLToYCPFile(filename)
+      rescue RuntimeError => e
+        log.error "Unable to read the #{filename} control file: #{e.inspect}"
         return false
       end
 
@@ -1345,7 +1346,13 @@ module Yast
     def IntegrateWorkflow(filename)
       Builtins.y2milestone("IntegrateWorkflow %1", filename)
 
-      update_file = XML.XMLToYCPFile(filename)
+      begin
+        update_file = XML.XMLToYCPFile(filename)
+      rescue RuntimeError => e
+        log.error "Failed to parse #{update_file}: #{e.inspect}"
+        return false
+      end
+
       name = Ops.get_string(update_file, "display_name", "")
 
       if !UpdateInstallation(

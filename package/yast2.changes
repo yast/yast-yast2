@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 28 09:07:05 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+
+- Handle exceptions when parsing xml file (related to bsc#1170886)
+- 4.3.18
+
+-------------------------------------------------------------------
 Fri Jul 24 08:53:31 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - Provide a way to determine which resources (zones, services...)
