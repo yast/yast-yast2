@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul 28 14:27:40 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- XML: do not export the system ID if it is not defined
+  (boo#1174424).
+- 4.3.19
+
+-------------------------------------------------------------------
 Tue Jul 28 09:07:05 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - Handle exceptions when parsing xml file (related to bsc#1170886)
