@@ -166,6 +166,17 @@ describe Yast::WorkflowManager do
         expect(subject.IntegrateWorkflow(filename)).to eq(false)
       end
     end
+
+    context "when fails to parse file" do
+      before do
+        allow(Yast::XML).to receive(:XMLToYCPFile).and_raise(Yast::XMLDeserializationError)
+      end
+
+      it "returns false" do
+        expect(subject.IntegrateWorkflow(filename)).to eq(false)
+      end
+    end
+
   end
 
   describe "#UpdateInstallation" do
