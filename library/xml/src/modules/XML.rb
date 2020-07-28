@@ -60,7 +60,7 @@ module Yast
       @listEntries = {}
 
       # The system ID, or the DTD URI
-      @systemID = ""
+      @systemID = nil
 
       # root element of the XML file
       @rootElement = ""
@@ -87,7 +87,7 @@ module Yast
           "cdataSections",
           @cdataSections
         ),
-        "systemID"      => Ops.get_string(doc_settings, "systemID", @systemID),
+        "systemID"      => doc_settings["systemID"],
         "rootElement"   => Ops.get_string(
           doc_settings,
           "rootElement",
