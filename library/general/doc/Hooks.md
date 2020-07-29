@@ -237,7 +237,6 @@ those above from 2 to 13. Instead there are these:
 * autoinit
 * autosetup
 * initial_autoinstallation_proposal
-* autoimage
 
 Those entries might vary due to different entries in you xml profile which drives
 the autoinstallation workflow. The rest of the checkpoints listed above should not much differ.
