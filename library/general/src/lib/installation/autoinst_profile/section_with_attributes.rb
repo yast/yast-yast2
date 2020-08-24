@@ -18,6 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "installation/autoinst_profile/element_path"
 
 module Installation
   module AutoinstProfile
@@ -215,6 +216,20 @@ module Installation
         klass_name
           .gsub(/([a-z])([A-Z])/, "\\1_\\2").downcase
           .chomp("_section")
+      end
+
+      # Returns the section's path
+      #
+      # @return [ElementPath] Section path
+      def section_path
+        return ElementPath.new(section_name) if parent.nil?
+
+        path = parent.section_path.join(section_name)
+        value = parent.send(section_name)
+        return path unless value.is_a?(Array)
+
+        index = value.index(self)
+        path.join(index)
       end
 
     protected
