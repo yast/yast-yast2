@@ -23,33 +23,10 @@ require "installation/autoinst_profile/element_path"
 describe Installation::AutoinstProfile::ElementPath do
   subject { described_class.new }
 
-  describe ".from_generic_path" do
-    it "returns a path with the given paths" do
-      expect(described_class.from_generic_path("users,1,username"))
-        .to eq(described_class.new("users", 1, "username"))
-    end
-  end
-
-  describe ".from_simple_xpath" do
-    it "returns a path with the given paths" do
-      expect(described_class.from_simple_xpath("//users[1]/username"))
-        .to eq(described_class.new("users", 1, "username"))
-    end
-  end
-
   describe ".from_string" do
-    context "when an XPath-like string is given" do
-      it "returns the corresponding profile path" do
-        expect(described_class.from_string("//users[1]/username"))
-          .to eq(described_class.new("users", 1, "username"))
-      end
-    end
-
-    context "when a generic path is given" do
-      it "returns the corresponding profile path" do
-        expect(described_class.from_string("users,1,username"))
-          .to eq(described_class.new("users", 1, "username"))
-      end
+    it "returns a path composed by the given parts" do
+      expect(described_class.from_string("users,1,username"))
+        .to eq(described_class.new("users", 1, "username"))
     end
   end
 
@@ -70,19 +47,11 @@ describe Installation::AutoinstProfile::ElementPath do
     end
   end
 
-  describe "#to_generic_path" do
+  describe "#to_s" do
     subject(:path) { described_class.new("users", 1, "username") }
 
     it "returns an string representing the path" do
-      expect(path.to_generic_path).to eq("users,1,username")
-    end
-  end
-
-  describe "#to_simple_xpath" do
-    subject(:path) { described_class.new("users", 1, "username") }
-
-    it "returns an string representing the path" do
-      expect(path.to_simple_xpath).to eq("//users[1]/username")
+      expect(path.to_s).to eq("users,1,username")
     end
   end
 end

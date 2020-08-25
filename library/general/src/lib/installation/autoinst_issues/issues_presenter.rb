@@ -107,8 +107,7 @@ module Installation
 
         issues_map.each do |section, items|
           messages = Yast::HTML.List(items.map(&:message))
-          xpath = section.section_path.to_simple_xpath
-          all_issues << "#{xpath}:#{messages}"
+          all_issues << "#{section.section_path}:#{messages}"
         end
 
         Yast::HTML.List(all_issues)

@@ -21,58 +21,29 @@ module Installation
   module AutoinstProfile
     # This class represents an element path in a profile
     #
-    # @example Create a new path
-    #   ProfilePath.
+    # @example Create a path
+    #   ElementPath.new("groups", 0, "groupname")
+    #
+    # @example Join a path and a string
+    #   first = ElementPath.new("users", 1)
+    #   first.join("username").to_s #=> "users,1,username"
     class ElementPath
       extend Forwardable
 
       def_delegators :@parts, :first, :last
 
       class << self
-        # Returns a ProfilePath from a string
-        #
-        # It uses {from_generic_path} or {from_simple_path} as needed.
-        #
-        # @param str [String] String to parse
-        # @return [ProfilePath] Profile path
-        def from_string(str)
-          str.start_with?("//") ? from_simple_xpath(str) : from_generic_path(str)
-        end
-
-        # Returns a ProfilePath from an ask-list path style
+        # Returns an ElementPath object from a string
         #
         # @example Path to the username of the first user
-        #   ProfilePath.from_generic_path("users,0,username")
+        #   ElementPath.from_string("users,0,username")
         #
-        # @param str [String] Path string
-        # @return [ProfilePath] Profile path
-        def from_generic_path(str)
+        # @param str [String] String to parse
+        # @return [ElementPath] Profile path
+        def from_string(str)
           parts = str.split(",").each_with_object([]) do |part, all|
             element = (part =~ /\A\d+\Z/) ? part.to_i : part
             all.push(element)
-          end
-          new(*parts)
-        end
-
-        SIMPLE_XPATH_FRAGMENT = /(\w+)\[(\d+)\]/.freeze
-        private_constant :SIMPLE_XPATH_FRAGMENT
-
-        # Returns a ProfilePath from an ask-list path style
-        #
-        # @example Path to the username of the first user
-        #   ProfilePath.from_simple_xpath("//users[0]/username")
-        #
-        # @param str [String] Path string
-        # @return [ProfilePath] Profile path
-        def from_simple_xpath(str)
-          xpath = str.delete_prefix("//")
-          parts = xpath.split("/").each_with_object([]) do |part, path|
-            match = SIMPLE_XPATH_FRAGMENT.match(part)
-            if match
-              path.push(match[1], match[2].to_i)
-            else
-              path.push(part)
-            end
           end
           new(*parts)
         end
@@ -104,7 +75,7 @@ module Installation
       #   path.join(suffix, "confirm") #=> ProfilePath.new("general", "mode", "confirm")
       #
       # @param parts_or_path [Array<String,ProfilePath>] Parts or paths to join
-      # @return [ProfilePath] New profile path
+      # @return [ElementPath] New element path
       def join(*parts_or_path)
         new_parts = parts_or_path.reduce([]) do |all, element|
           new_elements = element.respond_to?(:to_a) ? element.to_a : [element]
@@ -118,22 +89,20 @@ module Installation
       #
       # Two paths are considered to be equivalent if they have the same parts.
       #
-      # @param other [ProfilePath] Profile path to compare with
+      # @param other [ElementPath] Element path to compare with
       # @return [Boolean] true if they are equal; false otherwise
       def ==(other)
         @parts == other.to_a
       end
 
-      def to_simple_xpath
-        xpath = @parts.each_with_object("") do |e, str|
-          fragment = e.is_a?(::String) ? "/#{e}" : "[#{e}]"
-          str << fragment
-        end
-
-        "/#{xpath}"
-      end
-
-      def to_generic_path
+      # Returns a generic path (old AutoYaST path used in ask-lists)
+      #
+      # @example Path to the first user in the list
+      #   path = ElementPath.new("users", 1, "username")
+      #   path.to_s #=> "users,1,username"
+      #
+      # @return [String]
+      def to_s
         @parts.join(",")
       end
     end

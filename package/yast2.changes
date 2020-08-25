@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Tue Aug 25 09:46:20 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Support simplified XPath-like paths in ask-lists (bsc#1175680).
+- Unify profile element paths (bsc#1175680).
 - 4.3.20
 
 -------------------------------------------------------------------
