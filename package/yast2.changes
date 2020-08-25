@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Aug 25 09:46:20 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Support simplified XPath-like paths in ask-lists (bsc#1175680).
+- 4.3.20
+
+-------------------------------------------------------------------
+<<<<<<< HEAD
 Tue Jul 28 14:27:40 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - XML: do not export the system ID if it is not defined
