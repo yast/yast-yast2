@@ -18,6 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "installation/autoinst_profile/element_path"
 
 module Installation
   module AutoinstProfile
@@ -215,6 +216,39 @@ module Installation
         klass_name
           .gsub(/([a-z])([A-Z])/, "\\1_\\2").downcase
           .chomp("_section")
+      end
+
+      # Returns the collection name
+      #
+      # If the section belongs to a collection, returns its name.
+      # Otherwise, it returns nil.
+      #
+      # @return [String,nil] Collection name
+      def collection_name
+        nil
+      end
+
+      # Returns the position within the collection
+      #
+      # @return [Integer,nil] Index or nil if it does not belong to a collection
+      #   or the parent is not set.
+      def index
+        return nil unless collection_name && parent
+
+        parent.send(collection_name).index(self)
+      end
+
+      # Returns the section's path
+      #
+      # @return [ElementPath] Section path
+      def section_path
+        return ElementPath.new(section_name) if parent.nil?
+
+        if collection_name
+          parent.section_path.join(collection_name, index)
+        else
+          parent.section_path.join(section_name)
+        end
       end
 
     protected

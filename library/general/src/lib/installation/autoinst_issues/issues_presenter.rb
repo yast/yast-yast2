@@ -107,7 +107,7 @@ module Installation
 
         issues_map.each do |section, items|
           messages = Yast::HTML.List(items.map(&:message))
-          all_issues << "#{location(section)}:#{messages}"
+          all_issues << "#{section.section_path}:#{messages}"
         end
 
         Yast::HTML.List(all_issues)
@@ -123,31 +123,6 @@ module Installation
           all[section] ||= []
           all[section] << issue
         end
-      end
-
-      # Return a human string identifying in which section was detected
-      #
-      # For instance: "drive[0] > partitions[2] > raid_options"
-      #
-      # @param section [#parent,#section_name] Section where the problem was detected
-      # @return [String]
-      #
-      # @see Y2Storage::AutoinstProfile
-      def location(section)
-        return section.section_name if section.parent.nil?
-
-        value = section.parent.send(section.section_name)
-        text =
-          if value.is_a?(Array)
-            index = value.index(section)
-            "#{section.section_name}[#{index + 1}]"
-          else
-            section.section_name
-          end
-
-        prefix = location(section.parent)
-        prefix << " > " unless prefix.empty?
-        prefix + text
       end
     end
   end
