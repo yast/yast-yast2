@@ -55,10 +55,19 @@ module Y2Packager
     #    you might ask to preload the attributes right at the beginning and avoid
     #    querying libzypp again later.
     # @return [Array<Y2Packager::Resolvable>] Found resolvables or empty array if nothing found
+    # @raise [ArgumentError] Raises ArgumentError when the passed regular expression is invalid
+    # @note The regular expressions used in the RPM dependency filters (e.g. "provides_regexp",
+    #    "supplements_regexp") are POSIX extended regular expressions, not Ruby regular expressions!
     # @see https://yast-pkg-bindings.surge.sh/ Yast::Pkg.Resolvables
     def self.find(params, preload = [])
       attrs = (preload + UNIQUE_ATTRIBUTES).uniq
-      Yast::Pkg.Resolvables(params, attrs).map { |r| new(r) }
+      resolvables = Yast::Pkg.Resolvables(params, attrs)
+
+      # currently nil is returned only when an invalid regular expression
+      # is passed in a RPM dependency filter (like supplements_regexp: "autoyast(")
+      raise ArgumentError, Yast::Pkg.LastError if resolvables.nil?
+
+      resolvables.map { |r| new(r) }
     end
 
     #
