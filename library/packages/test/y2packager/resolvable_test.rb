@@ -43,6 +43,31 @@ describe Y2Packager::Resolvable do
       expect(res).to_not be_empty
       expect(res.all? { |r| r.kind == :package && r.name == "yast2-add-on" }).to be true
     end
+
+    it "finds packages via an RPM dependency filter" do
+      res = Y2Packager::Resolvable.find(kind: :package, provides: "application()")
+      expect(res.size).to eq(73)
+      # it is enough to check just one of them
+      expect(res).to include(an_object_having_attributes(name: "yast2-packager"))
+    end
+
+    it "finds packages via an RPM dependency regexp filter" do
+      res = Y2Packager::Resolvable.find(kind: :package, obsoletes_regexp: "^yast2-config-")
+      expect(res.size).to eq(10)
+      # it is enough to check just one of them
+      expect(res).to include(an_object_having_attributes(name: "yast2-firewall"))
+    end
+
+    it "returns an empty list if the RPM dependency filter does not match" do
+      res = Y2Packager::Resolvable.find(kind: :package, provides: "missing_provides")
+      expect(res).to be_empty
+    end
+
+    it "raises ArgumentError when the RPM dependency regexp filter is invalid" do
+      # the "(" character is a grouping meta character, the closing ")" is missing
+      expect { Y2Packager::Resolvable.find(kind: :package, provides_regexp: "foo(") }
+        .to raise_error(ArgumentError, /Invalid regular expression/)
+    end
   end
 
   describe ".any?" do

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Aug 26 08:22:45 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Y2Packager::Resolvable.find(): improved error handling,
+  added more unit tests (related to bsc#1175317)
+- 4.3.21
+
+-------------------------------------------------------------------
 Tue Aug 25 09:46:20 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Unify profile element paths (bsc#1175680).
