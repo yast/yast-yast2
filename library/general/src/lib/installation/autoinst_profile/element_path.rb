@@ -51,14 +51,14 @@ module Installation
 
       # Constructor
       #
-      # @param parts [Array<String>] Profile path parts
+      # @param parts [Array<Integer,String>] Profile path parts
       def initialize(*parts)
         @parts = parts
       end
 
       # Returns the path parts
       #
-      # @return [Array<String>] An array containing the path parts
+      # @return [Array<Integer,String>] An array containing the path parts
       def to_a
         @parts
       end

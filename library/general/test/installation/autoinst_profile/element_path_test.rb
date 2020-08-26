@@ -37,7 +37,7 @@ describe Installation::AutoinstProfile::ElementPath do
       expect(subject.join("username")).to eq(described_class.new("users", 1, "username"))
     end
 
-    context "when strings are paths are given" do
+    context "when strings and paths are given" do
       let(:path) { described_class.new("general") }
 
       it "returns a new profile path including all parts" do
