@@ -21,6 +21,16 @@ require_relative "../../test_helper"
 require "installation/autoinst_profile/section_with_attributes"
 
 describe Installation::AutoinstProfile::SectionWithAttributes do
+  # <root>
+  #   <foo>sample</foo>
+  #   <children t="list">
+  #     <child><name>Child 1</name></child>
+  #     <child><name>Child 1</name></child>
+  #   </children>
+  #   <group>
+  #     <name>Some group</name>
+  #   </group>
+  # </root>
   class RootSection < described_class
     class << self
       def attributes
@@ -36,7 +46,7 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
         result.init_from_hashes(hash)
         if hash["children"]
           result.children = hash["children"].map do |c|
-            ChildrenSection.new_from_hashes(c, result)
+            ChildSection.new_from_hashes(c, result)
           end
         end
         result.group = GroupSection.new_from_hashes(hash["group"], result) if hash["group"]
@@ -52,7 +62,7 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
     end
   end
 
-  class ChildrenSection < described_class
+  class ChildSection < described_class
     class << self
       def attributes
         [
@@ -68,6 +78,10 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
     end
 
     define_attr_accessors
+
+    def collection_name
+      "children"
+    end
   end
 
   class GroupSection < described_class
