@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 27 10:37:14 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed accidentaly broken dependencies (related to bsc#1175317)
+- 4.3.24
+
+-------------------------------------------------------------------
 Thu Aug 27 09:20:42 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Yet another unit test architecture fix :-(
