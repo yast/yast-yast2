@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug 27 08:30:07 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fix for the previous change: fixed unit test failure on non
+  x86_64 archs (related to bsc#1175317)
+- 4.3.22
+
+-------------------------------------------------------------------
 Wed Aug 26 08:22:45 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Y2Packager::Resolvable.find(): improved error handling,

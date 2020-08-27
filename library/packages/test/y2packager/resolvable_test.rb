@@ -46,14 +46,12 @@ describe Y2Packager::Resolvable do
 
     it "finds packages via an RPM dependency filter" do
       res = Y2Packager::Resolvable.find(kind: :package, provides: "application()")
-      expect(res.size).to eq(73)
       # it is enough to check just one of them
       expect(res).to include(an_object_having_attributes(name: "yast2-packager"))
     end
 
     it "finds packages via an RPM dependency regexp filter" do
       res = Y2Packager::Resolvable.find(kind: :package, obsoletes_regexp: "^yast2-config-")
-      expect(res.size).to eq(10)
       # it is enough to check just one of them
       expect(res).to include(an_object_having_attributes(name: "yast2-firewall"))
     end
