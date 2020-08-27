@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Aug 27 09:20:42 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Yet another unit test architecture fix :-(
+  (related to bsc#1175317)
+- 4.3.23
+
+-------------------------------------------------------------------
 Thu Aug 27 08:30:07 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fix for the previous change: fixed unit test failure on non

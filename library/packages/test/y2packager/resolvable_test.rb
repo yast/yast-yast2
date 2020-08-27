@@ -4,6 +4,15 @@ require_relative "../test_helper"
 require "y2packager/resolvable"
 require "tmpdir"
 
+################################################################################
+#
+# WARNING: The testing repository in the y2packager/zypp/test_repo directory
+#   contains only the "noarch" and "x86_64" packages.
+#   Be careful when writing tests here, on the other archs than x86_64 only
+#   the "noarch" packages will be visible!
+#
+################################################################################
+
 # This is rather an integration test because it actually
 # reads a real repository metadata using libzypp.
 describe Y2Packager::Resolvable do
@@ -46,12 +55,14 @@ describe Y2Packager::Resolvable do
 
     it "finds packages via an RPM dependency filter" do
       res = Y2Packager::Resolvable.find(kind: :package, provides: "application()")
+      # use some noarch package here, the testing data covers only the x86_64 arch
       # it is enough to check just one of them
-      expect(res).to include(an_object_having_attributes(name: "yast2-packager"))
+      expect(res).to include(an_object_having_attributes(name: "yast2-registration"))
     end
 
     it "finds packages via an RPM dependency regexp filter" do
       res = Y2Packager::Resolvable.find(kind: :package, obsoletes_regexp: "^yast2-config-")
+      # use some noarch package here, the testing data covers only the x86_64 arch
       # it is enough to check just one of them
       expect(res).to include(an_object_having_attributes(name: "yast2-firewall"))
     end
