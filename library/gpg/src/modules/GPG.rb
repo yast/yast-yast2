@@ -419,6 +419,20 @@ module Yast
       File.readlines(file).first&.strip == "-----BEGIN PGP MESSAGE-----"
     end
 
+    # Encrypts file with symmetric cipher.
+    # @param [String] input_file file to encrypt
+    # @param [String] output_file where result is written
+    # @param [String] password to use
+    # @return [void]
+    # @note exception is raised even if file exist
+    # @raise [GPGFailed] when encryption failed
+    def encrypt_symmetric(input_file, output_file, password)
+      out = callGPG("--armor --batch --symmetric --passphrase '#{String.Quote(password)}' " \
+        "--output '#{String.Quote(output_file)}' '#{String.Quote(input_file)}'")
+
+      raise GPGFailed, out["stderr"] if out["exit"] != 0
+    end
+
     publish function: :Init, type: "boolean (string, boolean)"
     publish function: :PublicKeys, type: "list <map> ()"
     publish function: :PrivateKeys, type: "list <map> ()"

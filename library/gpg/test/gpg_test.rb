@@ -86,4 +86,18 @@ describe Yast::GPG do
       end
     end
   end
+
+  describe "#encrypted_symmetric" do
+    let(:file_content) { "test\n" }
+
+    it "will create output file that is encrypted" do
+      Tempfile.open do |f|
+        path = f.path
+        f.close
+        f.unlink
+        described_class.encrypt_symmetric(@path, path, "test")
+        expect(described_class.encrypted_symmetric?(path)).to eq true
+      end
+    end
+  end
 end
