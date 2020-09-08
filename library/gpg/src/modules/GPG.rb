@@ -401,6 +401,24 @@ module Yast
       Ops.get_integer(out, "exit", -1) == 0
     end
 
+    # Decrypts file with symmetric cipher.
+    # @param [String] file encrypted file
+    # @param [String] password to use
+    # @return [String] decrypted content of file
+    # @raise [GPGFailed] when decryption failed
+    def decrypt_symmetric(file, password)
+      out = callGPG("--decrypt --batch --passphrase '#{String.Quote(password)}' '#{String.Quote(file)}'")
+
+      raise GPGFailed, out["stderr"] if out["exit"] != 0
+
+      out["stdout"]
+    end
+
+    # @return [Boolean] if file is gpg symmetric encrypted with --armor
+    def encrypted_symmetric?(file)
+      File.readlines(file).first&.strip == "-----BEGIN PGP MESSAGE-----"
+    end
+
     publish function: :Init, type: "boolean (string, boolean)"
     publish function: :PublicKeys, type: "list <map> ()"
     publish function: :PrivateKeys, type: "list <map> ()"
@@ -410,6 +428,11 @@ module Yast
     publish function: :VerifyFile, type: "boolean (string, string)"
     publish function: :ExportAsciiPublicKey, type: "boolean (string, string)"
     publish function: :ExportPublicKey, type: "boolean (string, string)"
+  end
+
+  # Exception raised when GPG failed
+  # @note not all methods in GPG module use this exception
+  class GPGFailed < RuntimeError
   end
 
   GPG = GPGClass.new
