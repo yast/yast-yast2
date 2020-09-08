@@ -58,7 +58,7 @@ describe Yast::GPG do
       end
 
       it "raises Yast::GPGFailed expcetion if password is not correct" do
-        expect{described_class.decrypt_symmetric(@path, "wrong")}.to raise_error(Yast::GPGFailed)
+        expect { described_class.decrypt_symmetric(@path, "wrong") }.to raise_error(Yast::GPGFailed)
       end
     end
 
@@ -66,7 +66,7 @@ describe Yast::GPG do
       let(:file_content) { "test\n" }
 
       it "raises Yast::GPGFailed exception" do
-        expect{described_class.decrypt_symmetric(@path, "test")}.to raise_error(Yast::GPGFailed)
+        expect { described_class.decrypt_symmetric(@path, "test") }.to raise_error(Yast::GPGFailed)
       end
     end
   end
