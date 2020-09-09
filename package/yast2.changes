@@ -1,9 +1,8 @@
 -------------------------------------------------------------------
-Thu Sep 10 07:30:52 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+Wed Sep  9 07:45:39 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
-- Enhance GPG module with symmetric encryption
-  (related to bsc#1176336)
-- add new shared password dialog
+- Clear the download progres for the previous file when displaying
+  an error popup (bsc#1175926)
 - 4.3.25
 
 -------------------------------------------------------------------
