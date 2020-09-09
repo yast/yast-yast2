@@ -596,6 +596,12 @@ module Yast
         current_device
       )
 
+      if full_screen
+        # make sure the old subprogress is cleared when displaying a popup (bsc#1175926)
+        Progress.SubprogressValue(0)
+        Progress.SubprogressTitle("")
+      end
+
       url_scheme = Ops.get_string(URL.Parse(url), "scheme", "").downcase
 
       # true if it makes sense to offer an eject button (for cd/dvd only ...)
