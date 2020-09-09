@@ -46,16 +46,19 @@ module UI
 
     def dialog_content
       res = VBox(
-        Heading(@label),
-        Label(
-          _("Password:")
-        ),
-        Password(Id(:password), "")
+        Left(Heading(@label)),
+        HBox(
+          MinWidth(18, Label(_("Password:"))),
+          Password(Id(:password), "")
+        )
       )
       if @confirm
-        res << Label(_("Confirm password:"))
-        res << Password(Id(:password2), "")
+        res << HBox(
+          MinWidth(18, Label(_("Confirm password:"))),
+          Password(Id(:password2), "")
+        )
       end
+
       res << HBox(
         PushButton(Id(:ok), Yast::Label.OKButton),
         PushButton(Id(:abort), Yast::Label.AbortButton)
