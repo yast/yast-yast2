@@ -47,16 +47,10 @@ module UI
     def dialog_content
       res = VBox(
         Left(Heading(@label)),
-        HBox(
-          MinWidth(18, Label(_("Password:"))),
-          Password(Id(:password), "")
-        )
+        Password(Id(:password), Yast::Label.Password, "")
       )
       if @confirm
-        res << HBox(
-          MinWidth(18, Label(_("Confirm password:"))),
-          Password(Id(:password2), "")
-        )
+        res << Password(Id(:password2), Yast::Label.ConfirmPassword, "")
       end
 
       res << HBox(

@@ -1,4 +1,4 @@
-$LOAD_PATH << File.expand_path("../src/lib", __dir__)
+$LOAD_PATH.unshift File.expand_path("../src/lib", __dir__)
 
 require "yast"
 require "yast2/popup"
