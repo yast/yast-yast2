@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Sep 10 07:30:52 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+
+- Enhance GPG module with symmetric encryption
+  (related to bsc#1176336)
+- add new shared password dialog
+- 4.3.25
+
+-------------------------------------------------------------------
 Thu Aug 27 10:37:14 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed accidentaly broken dependencies (related to bsc#1175317)
