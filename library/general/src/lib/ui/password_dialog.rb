@@ -49,9 +49,7 @@ module UI
         Left(Heading(@label)),
         Password(Id(:password), Yast::Label.Password, "")
       )
-      if @confirm
-        res << Password(Id(:password2), Yast::Label.ConfirmPassword, "")
-      end
+      res << Password(Id(:password2), Yast::Label.ConfirmPassword, "") if @confirm
 
       res << HBox(
         PushButton(Id(:ok), Yast::Label.OKButton),
