@@ -86,6 +86,9 @@ describe Yast::GPG do
         path = f.path
         f.close
         f.unlink
+        # this can lead to potential race condition if someone observe tmp file and create new
+        # one after unlink, but it is just in test here and gpg will complain and does not
+        # overwrite it
         described_class.encrypt_symmetric(@path, path, "test")
         expect(described_class.encrypted_symmetric?(path)).to eq true
         f.unlink
