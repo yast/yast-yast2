@@ -20,6 +20,7 @@
 
 require_relative "test_helper"
 require "tempfile"
+require "tmpdir"
 require "fileutils"
 
 Yast.import "GPG"
@@ -83,17 +84,10 @@ describe Yast::GPG do
     let(:file_content) { "test\n" }
 
     it "will create output file that is encrypted" do
-      Tempfile.open do |f|
-        path = f.path
-        f.close
-        f.unlink
-        # this can lead to potential race condition if someone observe tmp file and create new
-        # one after unlink, but it is just in test here and gpg will complain and does not
-        # overwrite it
+      Dir.mktmpdir do |dir|
+        path = File.join(dir, "encrypted")
         described_class.encrypt_symmetric(@path, path, "test")
         expect(described_class.encrypted_symmetric?(path)).to eq true
-        # and remove again. f.unlink does not work now
-        ::FileUtils.rm path
       end
     end
   end
