@@ -88,6 +88,7 @@ describe Yast::GPG do
         f.unlink
         described_class.encrypt_symmetric(@path, path, "test")
         expect(described_class.encrypted_symmetric?(path)).to eq true
+        f.unlink
       end
     end
   end
