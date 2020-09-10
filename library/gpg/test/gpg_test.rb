@@ -20,6 +20,7 @@
 
 require_relative "test_helper"
 require "tempfile"
+require "fileutils"
 
 Yast.import "GPG"
 
@@ -91,7 +92,8 @@ describe Yast::GPG do
         # overwrite it
         described_class.encrypt_symmetric(@path, path, "test")
         expect(described_class.encrypted_symmetric?(path)).to eq true
-        f.unlink
+        # and remove again. f.unlink does not work now
+        ::FileUtils.rm path
       end
     end
   end
