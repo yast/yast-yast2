@@ -141,7 +141,6 @@ module Yast
     # at start of file providal
     #
     def StartProvide(name, archivesize, remote)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("StartProvide: name: %1, remote: %2", name, remote)
       if remote
         sz = String.FormatSizeWithPrecision(archivesize, 2, false)
@@ -172,7 +171,6 @@ module Yast
     # during file providal
     #
     def ProgressProvide(percent)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("ProgressProvide: %1", percent)
       if @_provide_popup
         UI.ChangeWidget(Id(:progress), :Value, percent)
@@ -187,7 +185,6 @@ module Yast
 
     # redirect ProgressDeltaApply callback (a different signature is required)
     def ProgressDeltaApply(percent)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       ProgressProvide(percent)
 
       nil
@@ -199,7 +196,6 @@ module Yast
     #  // return "R" for retry
     #  // return "C" for abort
     def DoneProvide(error, reason, name)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("DoneProvide: %1, %2, %3", error, reason, name)
 
       if @_provide_popup
@@ -364,7 +360,6 @@ module Yast
 
     #  At start of package install.
     def StartPackage(name, _location, _summary, installsize, is_delete)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       return if !@enable_asterix_package
 
       @_package_name = name
@@ -400,7 +395,6 @@ module Yast
 
     #  During package install.
     def ProgressPackage(percent)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       if @_package_popup
         UI.ChangeWidget(Id(:progress), :Value, percent)
         return UI.PollInput != :abort
@@ -444,7 +438,6 @@ module Yast
     #  return "R" for retry
     #  return "C" for abort (not implemented !)
     def DonePackage(error, reason)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       # remove invalid characters (bnc#876459)
       if !reason.valid_encoding?
         reason.encode!("UTF-16", undef: :replace, invalid: :replace, replace: "?")
@@ -576,7 +569,6 @@ module Yast
     # return url to change media URL
 
     def MediaChange(error_code, error, url, product, current, current_label, wanted, wanted_label, double_sided, devices, current_device)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       devices = deep_copy(devices)
       if @autorefreshing && @autorefreshing_aborted
         Builtins.y2milestone("Refresh aborted")
@@ -963,7 +955,6 @@ module Yast
 
     # dummy repository change callback, see SlideShowCallbacks for the real one
     def SourceChange(source, medianr)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("SourceChange (%1, %2)", source, medianr)
       @_current_source = source
 
@@ -1056,7 +1047,6 @@ module Yast
     end
 
     def SourceCreateInit
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("SourceCreateInit")
 
       OpenSourcePopup()
@@ -1065,7 +1055,6 @@ module Yast
     end
 
     def SourceCreateDestroy
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("SourceCreateDestroy")
 
       CloseSourcePopup()
@@ -1074,7 +1063,6 @@ module Yast
     end
 
     def SourceCreateStart(url)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("SourceCreateStart: %1", url)
 
       # popup label (%1 is repository URL)
@@ -1096,7 +1084,6 @@ module Yast
     end
 
     def SourceCreateProgress(percent)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       ret = SourcePopupSetProgress(percent)
       Builtins.y2milestone("SourceCreateProgress(%1) = %2", percent, ret)
 
@@ -1104,7 +1091,6 @@ module Yast
     end
 
     def SourceCreateError(url, error, description)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone(
         "Source create: error: url: %1, error: %2, description: %3",
         URL.HidePassword(url),
@@ -1168,7 +1154,6 @@ module Yast
     end
 
     def SourceCreateEnd(url, error, description)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       # set 100% progress
       SourcePopupSetProgress(100)
 
@@ -1183,7 +1168,6 @@ module Yast
     end
 
     def SourceProbeStart(url)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("SourceProbeStart: %1", URL.HidePassword(url))
 
       # popup label (%1 is repository URL)
@@ -1210,7 +1194,6 @@ module Yast
     end
 
     def SourceProbeFailed(url, type)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone(
         "Repository %1 is not %2 repository",
         URL.HidePassword(url),
@@ -1221,7 +1204,6 @@ module Yast
     end
 
     def SourceProbeSucceeded(url, type)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone(
         "Repository %1 is type %2",
         URL.HidePassword(url),
@@ -1232,12 +1214,10 @@ module Yast
     end
 
     def SourceProbeProgress(_url, value)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       SourcePopupSetProgress(value)
     end
 
     def SourceProbeError(url, error, description)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone(
         "Source probe: error: url: %1, error: %2, description: %3",
         URL.HidePassword(url),
@@ -1303,7 +1283,6 @@ module Yast
     end
 
     def SourceProbeEnd(url, error, description)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       CloseSourcePopup()
       CloseSourcePopup()
 
@@ -1318,7 +1297,6 @@ module Yast
     end
 
     def SourceReportStart(source_id, url, task)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone(
         "Source report start: src: %1, URL: %2, task: %3",
         source_id,
@@ -1342,7 +1320,6 @@ module Yast
     end
 
     def SourceReportProgress(value)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       ret = SourcePopupSetProgress(value)
       Builtins.y2debug("SourceReportProgress(%1) = %2", value, ret)
 
@@ -1350,7 +1327,6 @@ module Yast
     end
 
     def SourceReportError(source_id, url, error, description)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone(
         "Source report: error: id: %1, url: %2, error: %3, description: %4",
         source_id,
@@ -1412,7 +1388,6 @@ module Yast
     end
 
     def SourceReportEnd(src_id, url, task, error, description)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone(
         "Source report end: src: %1, url: %2, task: %3, error: %4, description: %5",
         src_id,
@@ -1429,7 +1404,6 @@ module Yast
     end
 
     def SourceReportInit
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("Source report init")
       OpenSourcePopup()
 
@@ -1437,7 +1411,6 @@ module Yast
     end
 
     def SourceReportDestroy
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("Source report destroy")
       CloseSourcePopup()
 
@@ -1447,7 +1420,6 @@ module Yast
     # at start of delta providal
     #
     def StartDeltaProvide(name, archivesize)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       sz = String.FormatSizeWithPrecision(archivesize, 2, false)
       if Mode.commandline
         CommandLine.PrintVerbose(
@@ -1471,7 +1443,6 @@ module Yast
     # at start of delta application
     #
     def StartDeltaApply(name)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       if Mode.commandline
         CommandLine.PrintVerbose(
           Builtins.sformat(_("Applying delta RPM package %1..."), name)
@@ -1496,7 +1467,6 @@ module Yast
     end
 
     def FinishDeltaProvide
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       if @_provide_popup
         UI.CloseDialog
         @_provide_popup = false
@@ -1506,7 +1476,6 @@ module Yast
     end
 
     def ProblemDeltaDownload(descr)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       FinishDeltaProvide() # close popup
       Builtins.y2milestone("Failed to download delta RPM: %1", descr)
 
@@ -1514,7 +1483,6 @@ module Yast
     end
 
     def ProblemDeltaApply(descr)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       FinishDeltaProvide() # close popup
       Builtins.y2milestone("Failed to apply delta RPM: %1", descr)
 
@@ -1539,7 +1507,6 @@ module Yast
     end
 
     def ScriptStart(patch_name, patch_version, patch_arch, script_path)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       patch_full_name = FormatPatchName(patch_name, patch_version, patch_arch)
 
       Builtins.y2milestone(
@@ -1602,7 +1569,6 @@ module Yast
     end
 
     def ScriptProgress(ping, output)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("ScriptProgress: ping:%1, output: %2", ping, output)
 
       if @_script_popup
@@ -1623,7 +1589,6 @@ module Yast
     end
 
     def ScriptProblem(description)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2warning("ScriptProblem: %1", description)
 
       ui = Popup.AnyQuestion3(
@@ -1657,7 +1622,6 @@ module Yast
     end
 
     def ScriptFinish
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("ScriptFinish")
 
       UI.CloseDialog if @_script_popup
@@ -1666,7 +1630,6 @@ module Yast
     end
 
     def Message(patch_name, patch_version, patch_arch, message)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       patch_full_name = FormatPatchName(patch_name, patch_version, patch_arch)
       Builtins.y2milestone("Message (%1): %2", patch_full_name, message)
 
@@ -1767,14 +1730,12 @@ module Yast
     end
 
     def DestDownload
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       CloseDownloadProgressPopup() if !full_screen
 
       nil
     end
 
     def StartDownload(url, localfile)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone(
         "Downloading %1 to %2",
         URL.HidePassword(url),
@@ -1804,7 +1765,6 @@ module Yast
     end
 
     def ProgressDownload(percent, bps_avg, bps_current)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       if @autorefreshing && @autorefreshing_aborted
         Builtins.y2milestone("Refresh aborted")
         return false
@@ -1875,7 +1835,6 @@ module Yast
 
     # just log the status, errors are handled in MediaChange callback
     def DoneDownload(error_value, error_text)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       if error_value == 0
         Builtins.y2milestone("Download finished")
       elsif @autorefreshing && @autorefreshing_aborted
@@ -1892,7 +1851,6 @@ module Yast
     end
 
     def RefreshStarted
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("Autorefreshing repositories...")
 
       if !Mode.commandline && UI.WidgetExists(Id(:abort))
@@ -1908,7 +1866,6 @@ module Yast
     end
 
     def RefreshDone
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       if !Mode.commandline && UI.WidgetExists(Id(:abort))
         UI.ChangeWidget(Id(:abort), :Label, Label.AbortButton)
         UI.RecalcLayout
@@ -1934,7 +1891,6 @@ module Yast
     end
 
     def StartRebuildDB
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       # heading of popup
       heading = _("Checking Package Database")
 
@@ -1962,14 +1918,12 @@ module Yast
     end
 
     def ProgressRebuildDB(percent)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       UI.ChangeWidget(Id(:progress), :Value, percent)
 
       nil
     end
 
     def StopRebuildDB(error_value, error_text)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       if error_value != 0
         # error message, %1 is the cause for the error
         Popup.Error(
@@ -1986,7 +1940,6 @@ module Yast
     end
 
     def NotifyRebuildDB
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       nil
     end
 
@@ -2004,7 +1957,6 @@ module Yast
     end
 
     def StartConvertDB(_unused1)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       # heading of popup
       heading = _("Checking Package Database")
 
@@ -2036,14 +1988,12 @@ module Yast
     end
 
     def ProgressConvertDB(percent, _file)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       UI.ChangeWidget(Id(:progress), :Value, percent)
 
       nil
     end
 
     def StopConvertDB(error_value, error_text)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       if error_value != 0
         # error message, %1 is the cause for the error
         Popup.Error(
@@ -2060,7 +2010,6 @@ module Yast
     end
 
     def NotifyConvertDB
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       nil
     end
 
@@ -2081,7 +2030,6 @@ module Yast
 
     # Callback for start RPM DB scan event
     def StartScanDb
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("Scanning RPM DB...")
 
       if Mode.commandline
@@ -2125,7 +2073,6 @@ module Yast
 
     # Callback for RPM DB scan progress
     def ProgressScanDb(value)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       if Mode.commandline
         CommandLine.PrintVerboseNoCR(CLEAR_PROGRESS_TEXT + "#{value}%")
       elsif @_scan_popup && UI.WidgetExists(Id(:label_scanDB_popup))
@@ -2145,7 +2092,6 @@ module Yast
 
     # Callback for error handling during RPM DB scan
     def ErrorScanDb(error, description)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2error(
         "ErrorScanDb callback: error: %1, description: %2",
         error,
@@ -2237,7 +2183,6 @@ module Yast
 
     # Callback for finish RPM DB scan event
     def DoneScanDb(error, description)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone(
         "RPM DB scan finished: error: %1, reason: '%2'",
         error,
@@ -2258,7 +2203,6 @@ module Yast
     end
 
     def Authentication(url, msg, username, password)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       # FIXME: after SLE12 release
       # The following 'if' block is a workaround for bnc#895719 that should be
       # extracted to a proper private method (not sure if it will work as
@@ -2338,7 +2282,6 @@ module Yast
     end
 
     def ProgressStart(id, task, in_percent, is_alive, _min, _max, _val_raw, val_percent)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("ProgressStart: %1", id)
 
       @tick_progress = is_alive
@@ -2392,7 +2335,6 @@ module Yast
     end
 
     def ProgressEnd(id)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("ProgressFinish: %1", id)
 
       # remove the last element from the progress stack
@@ -2425,7 +2367,6 @@ module Yast
     end
 
     def ProgressProgress(id, val_raw, val_percent)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2debug("ProgressProgress: %1, %2%% ", id, val_percent)
 
       if Mode.commandline
@@ -2467,7 +2408,6 @@ module Yast
     # @param [Array<String>] stages Descriptions of the stages
     # @param [String] help Help text describing the process
     def ProcessStart(task, stages, help)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       stages = deep_copy(stages)
       Builtins.y2milestone(
         "Process: Start: task: %1, stages: %2, help: %3",
@@ -2509,7 +2449,6 @@ module Yast
     # Hander for ProcessProgress callback - report total progress
     # @param [Fixnum] percent Total progress in percent
     def ProcessProgress(percent)
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2debug("Process: %1%%", percent)
 
       return true if Mode.commandline
@@ -2521,7 +2460,6 @@ module Yast
 
     # Hander for ProcessNextStage callback - the current stage has been finished
     def ProcessNextStage
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("Setting stage: %1", @last_stage)
 
       return if Mode.commandline
@@ -2535,7 +2473,6 @@ module Yast
 
     # Hander for ProcessDone callback - the process has been finished
     def ProcessDone
-      log.info("Starting callback #{self.class}::#{__method__}") if ENV["Y2DEBUG_CALLBACKS"] == "1"
       Builtins.y2milestone("Process: Finished")
       return if Mode.commandline
 
