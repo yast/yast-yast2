@@ -75,7 +75,9 @@ module Yast
       hook = <<-HOOK
       def #{name}_hook(*params)
         log.info("Starting callback #{self}::#{name}")
-        #{name}_without_hook(*params)
+        result = #{name}_without_hook(*params)
+        log.info("Callback #{self}::#{name} returned: \#{result.inspect}")
+        result
       end
       HOOK
       # __FILE__ and __LINE__ are used in a backtrace
