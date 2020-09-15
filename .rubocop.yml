@@ -34,7 +34,7 @@ Metrics/BlockLength:
     - "library/*/test/**/*_test.rb"
 
 Metrics/PerceivedComplexity:
-  Max: 65
+  Max: 70
 
 # this needs more testing if we can have frozen string literals
 Style/FrozenStringLiteralComment:

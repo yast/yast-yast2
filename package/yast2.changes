@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Sep 15 09:29:51 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Clear the download progres for the previous file when displaying
+  an error popup (bsc#1175926)
+- Enable additional callback logging when $Y2DEBUG_CALLBACKS is
+  set to "1"
+- 4.3.26
+
+-------------------------------------------------------------------
 Thu Sep 10 07:30:52 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - Enhance GPG module with symmetric encryption

@@ -44,6 +44,52 @@ module Yast
     # symbols for ticking in cmd line
     TICK_LABELS = ["/", "-", "\\", "|"].freeze
 
+    # Debugging: log the called callbacks when Y2DEBUG_CALLBACKS is set to 1
+    #
+    # This uses some Ruby meta programming, the "method_added" is called whenever
+    # a new method is added into this class, i.e. when each of the following "def"
+    # is processed.
+    #
+    # @param name [Symbol] name of the added method
+    def self.method_added(name)
+      # log the callbacks only when requested, it's quite verbose
+      return if ENV["Y2DEBUG_CALLBACKS"] != "1"
+
+      name_str = name.to_s
+
+      # do not add a hook for a hook itself otherwise it would result
+      # in an endless recursive loop adding a hook for a hook for a hook for...
+      if name_str.end_with?("_hook") ||
+          # ignore dynamically added helper methods for the published variables
+          name_str.start_with?("_") ||
+          # ignore lowercase methods, they are just some helper methods
+          name_str.match(/^[[:lower:]]/) ||
+          # already present
+          method_defined?("#{name}_hook")
+
+        return
+      end
+
+      # add a new *_hook method as a wrapper for the original method,
+      # log the name of the called method
+      hook = <<-HOOK
+      def #{name}_hook(*params)
+        log.info("Starting callback #{self}::#{name}")
+        result = #{name}_without_hook(*params)
+        log.info("Callback #{self}::#{name} returned: \#{result.inspect}")
+        result
+      end
+      HOOK
+      # __FILE__ and __LINE__ are used in a backtrace
+      class_eval(hook, __FILE__, __LINE__)
+
+      # rename the original method
+      class_eval("alias #{name}_without_hook #{name}", __FILE__, __LINE__)
+
+      # replace the original method with the hook
+      class_eval("alias #{name} #{name}_hook", __FILE__, __LINE__)
+    end
+
     def main
       Yast.import "Pkg"
       Yast.import "UI"
@@ -587,6 +633,12 @@ module Yast
         devices,
         current_device
       )
+
+      if full_screen
+        # make sure the old subprogress is cleared when displaying a popup (bsc#1175926)
+        Progress.SubprogressValue(0)
+        Progress.SubprogressTitle("")
+      end
 
       url_scheme = Ops.get_string(URL.Parse(url), "scheme", "").downcase
 
