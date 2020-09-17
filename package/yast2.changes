@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Sep 16 11:14:41 UTC 2020 - José Iván López González <jlopez@suse.com>
+
+- Hide heading of the dialog when no title is defined or title is
+  set to an empty string.
+- Related to bsc#1175489.
+- 4.3.27
+
+-------------------------------------------------------------------
 Tue Sep 15 09:29:51 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Clear the download progres for the previous file when displaying
