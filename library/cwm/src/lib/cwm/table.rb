@@ -119,9 +119,17 @@ module CWM
   private
 
     def format_items(items)
-      items.map do |item|
-        Item(Id(item.first), *item[1..-1])
-      end
+      items.map { |i| format_item(i) }
+    end
+
+    def format_item(item)
+      content = item.dup
+
+      content[0] = Id(content[0])
+
+      content[-2] = format_items(content[-2]) if content[-2].is_a?(Array)
+
+      Item(*content)
     end
   end
 end
