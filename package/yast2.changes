@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep 21 11:28:33 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Decrease error logging to avoid false positives in the y2log
+  (bsc#1176653)
+- 4.3.28
+
+-------------------------------------------------------------------
 Wed Sep 16 11:14:41 UTC 2020 - José Iván López González <jlopez@suse.com>
 
 - Hide heading of the dialog when no title is defined or title is

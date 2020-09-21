@@ -192,7 +192,7 @@ module Yast
       tmp = Convert.to_map(WFM.Read(path(".local.stat"), @slide_base_path))
 
       if !Ops.get_boolean(tmp, "isdir", false)
-        Builtins.y2error("Using default path instead of %1", tmp)
+        Builtins.y2milestone("Using default path instead of %1", tmp)
         @slide_base_path = "/var/adm/YaST/InstSrcManager/tmp/CurrentMedia/suse/setup/slide"
       end
 
@@ -214,7 +214,7 @@ module Yast
     def CheckBasePath
       tmp = Convert.to_map(WFM.Read(path(".local.stat"), @slide_base_path))
       if !Ops.get_boolean(tmp, "isdir", false)
-        Builtins.y2error("Using default path instead of %1", @slide_base_path)
+        Builtins.y2milestone("Using default path instead of %1", @slide_base_path)
         @slide_base_path = "/var/adm/YaST/InstSrcManager/tmp/CurrentMedia/suse/setup/slide"
 
         return false
