@@ -23,7 +23,10 @@ module Yast2
     include Yast::Logger
 
     CONTROL         = "/usr/bin/systemctl".freeze
-    COMMAND_OPTIONS = " --no-legend --no-pager --no-ask-password ".freeze
+    # The combination "--full --no-legend --no-pager --plain" is appropriate for
+    # automated processing of systemctl output.
+    # https://github.com/systemd/systemd/commit/1cabd2d0c56b7de73e4a4fb645f3bbed4a528d2c
+    COMMAND_OPTIONS = " --plain --full --no-legend --no-pager --no-ask-password ".freeze
     ENV_VARS        = " LANG=C TERM=dumb COLUMNS=1024 ".freeze
     SYSTEMCTL       = ENV_VARS + CONTROL + COMMAND_OPTIONS
     TIMEOUT         = 40 # seconds
