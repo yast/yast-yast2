@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Sep 23 13:21:38 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Added "--plain" and "--full" options for the "systemctl"
+  calls, these are recommended when processing the output
+  by scripts (bsc#1176714)
+- 4.3.29
+
+-------------------------------------------------------------------
 Mon Sep 21 11:28:33 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Decrease error logging to avoid false positives in the y2log
