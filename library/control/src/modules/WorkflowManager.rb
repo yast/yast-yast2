@@ -1230,6 +1230,11 @@ module Yast
       ret
     end
 
+    # Read and remember the registration requirement status from an installation
+    # control XML file.
+    # The stored values can be read by the WorkflowsRequiringRegistration() method.
+    # @param filename [String] path to the XML file
+    # @return [Boolean] true if the file has been read properly, false in case of an error
     def IncorporateControlFileOptions(filename)
       return false if filename.nil?
 
