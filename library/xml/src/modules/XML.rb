@@ -165,7 +165,7 @@ module Yast
     # @return [Hash] parsed content
     # @raise [XMLDeserializationError] when non supported XML is passed
     def XMLToYCPFile(xml_file)
-      raise XMLDeserializationError, "Cannot find XML file" if SCR.Read(path(".target.size"), xml_file) <= 0
+      raise XMLDeserializationError, "Cannot find XML file" if xml_file.nil? || SCR.Read(path(".target.size"), xml_file) <= 0
 
       log.info "Reading #{xml_file}"
       XMLToYCPString(SCR.Read(path(".target.string"), xml_file))

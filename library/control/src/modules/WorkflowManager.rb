@@ -1231,6 +1231,8 @@ module Yast
     end
 
     def IncorporateControlFileOptions(filename)
+      return false if filename.nil?
+
       begin
         update_file = XML.XMLToYCPFile(filename)
       rescue RuntimeError => e
