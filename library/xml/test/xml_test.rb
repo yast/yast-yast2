@@ -591,4 +591,10 @@ describe "Yast::XML" do
       end
     end
   end
+
+  describe "#XMLToYCPFile" do
+    it "raises ArgumentError when nil is passed" do
+      expect { subject.XMLToYCPFile(nil) }.to raise_error(ArgumentError)
+    end
+  end
 end

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep 24 07:25:01 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Do not crash when trying to parse non-existing ("nil") add-on
+  product control XML file (bsc#1176593)
+- 4.3.30
+
+-------------------------------------------------------------------
 Wed Sep 23 13:21:38 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Added "--plain" and "--full" options for the "systemctl"
