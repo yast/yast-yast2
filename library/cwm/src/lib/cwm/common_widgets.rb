@@ -186,6 +186,13 @@ module CWM
     abstract_method :label
 
     alias_method :orig_value=, :value=
+
+    # Sets the current value
+    #
+    # If the given value is not in the list of items but the widget is editable,
+    # the item is added to the list.
+    #
+    # @param val [Object] Value to assign to the widget
     def value=(val)
       change_items([[val, val]] + items) if editable? && !items.map(&:first).include?(val)
       self.orig_value = val
