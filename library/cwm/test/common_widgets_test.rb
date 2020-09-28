@@ -126,12 +126,31 @@ describe CWM::ComboBox do
     end
   end
 
-  subject { MountPointSelector.new }
+  class SelectorWithoutOpt < CWM::ComboBox
+    def label
+      ""
+    end
+
+    def items
+      [["/", "/ (root)"]]
+    end
+  end
 
   describe "#value=" do
     describe "when the widget is editable" do
+      subject { MountPointSelector.new }
+
       it "adds the given value to the list of items" do
         expect(subject).to receive(:change_items).with([["/srv", "/srv"], ["/", "/ (root)"]])
+        subject.value = "/srv"
+      end
+    end
+
+    describe "when the widget is not editable" do
+      subject { SelectorWithoutOpt.new }
+
+      it "does not add the given value to the list of items" do
+        expect(subject).to_not receive(:change_items)
         subject.value = "/srv"
       end
     end

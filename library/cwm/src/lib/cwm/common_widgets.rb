@@ -201,7 +201,7 @@ module CWM
   private
 
     def editable?
-      opt.include?(:editable)
+      respond_to?(:opt) && opt.include?(:editable)
     end
   end
 
