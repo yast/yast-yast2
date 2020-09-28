@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Fri Sep 25 08:59:57 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Small improvements to CWM based widgets (related to bsc#1136454):
+  - An editable ComboBox will refresh the list of items when a new
+    one is given as its current value.
+  - By default, a MenuButton widget listens to events from all its
+    buttons.
+- 4.3.31
+
+-------------------------------------------------------------------
 Thu Sep 24 07:25:01 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Do not crash when trying to parse non-existing ("nil") add-on
