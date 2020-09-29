@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Sep 29 09:46:21 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Drop SuSEFirewall2 code completely (fate#323460)
+- 4.3.33
+
+-------------------------------------------------------------------
 Mon Sep 28 08:53:39 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix non-editable ComboBox handling (bsc#1136454).
