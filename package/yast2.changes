@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct  1 15:16:20 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- Revert the drop of SuSEFirewall2 as there are still some packages
+  which need to be adapted (bsc#1177160)
+- 4.3.34
+
+-------------------------------------------------------------------
 Tue Sep 29 09:46:21 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - Drop SuSEFirewall2 code completely (fate#323460)
