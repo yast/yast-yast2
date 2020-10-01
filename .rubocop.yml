@@ -50,11 +50,6 @@ Naming/ClassAndModuleCamelCase:
   Exclude:
     - "library/packages/src/modules/SlideShow.rb"
 
-Style/ClassVars:
-  # We really need the class variables in SuSEFirewall modules
-  Exclude:
-    - "library/network/src/modules/SuSEFirewall.rb"
-
 # ensure new code is properly documented
 Style/Documentation:
   Include:
@@ -67,19 +62,6 @@ Naming/FileName:
 Naming/MethodName:
   Include:
     - "library/*/src/lib/**/*.rb"
-  Exclude:
-    - "library/network/src/lib/network/susefirewall.rb"
-    - "library/network/src/lib/network/susefirewallservices.rb"
-    - "library/network/src/lib/network/susefirewalld.rb"
-    - "library/network/src/lib/network/susefirewalldservices.rb"
-    - "library/network/src/lib/network/susefirewall2.rb"
-    - "library/network/src/lib/network/susefirewall2services.rb"
-
-Style/Next:
-  # skip this check for SuSEFirewall modules since it forces us to
-  # refactor the code in a sub-optimal way.
-  Exclude:
-    - "library/network/src/lib/network/susefirewalld.rb"
 
 # keep it as it is part of API for old code
 Naming/PredicateName:
@@ -94,8 +76,3 @@ Style/TrivialAccessors:
 Naming/VariableName:
   Include:
     - "library/*/src/lib/**/*.rb"
-  Exclude:
-    - "library/network/src/lib/network/susefirewall.rb"
-    - "library/network/src/lib/network/susefirewalld.rb"
-    - "library/network/src/lib/network/susefirewall2.rb"
-    - "library/network/src/lib/network/susefirewall2services.rb"
