@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Oct  2 14:37:00 UTC 2020 - schubi <schubi@localhost>
+
+- Product Class: Checking if method product_package is availble
+  before using it (bsc#1175681). Needed while adding older add-on
+  repos.
+- 4.2.88
+
+-------------------------------------------------------------------
 Fri Jul 24 08:06:27 UTC 2020 - Jeff Kowalczyk <jkowalczyk@suse.com>
 
 - update is_wsl function to match wsl1 and wsl2 osrelease spellings

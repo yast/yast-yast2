@@ -415,7 +415,7 @@ module Yast
       package = case source
       when ::Integer
         product = find_product(source)
-        return nil unless product&.product_package
+        return nil if !product.methods.include?(:product_package) || !product&.product_package
 
         product_package = product.product_package
 
