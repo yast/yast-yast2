@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct  7 13:23:28 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- AutoYaST: do not crash when sections like 'raid_options' are
+  empty (bsc#1177405).
+- 4.3.35
+
+-------------------------------------------------------------------
 Thu Oct  1 15:16:20 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - Revert the drop of SuSEFirewall2 as there are still some packages
