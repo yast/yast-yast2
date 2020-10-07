@@ -111,6 +111,20 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
     end
   end
 
+  describe ".new_from_hashes" do
+    it "returns an instance including the given data" do
+      group = GroupSection.new_from_hashes(name: "users")
+      expect(group.name).to eq("users")
+    end
+
+    context "when nil is given" do
+      it "returns a instance" do
+        group = GroupSection.new_from_hashes(nil)
+        expect(group.name).to be_nil
+      end
+    end
+  end
+
   describe "#section_path" do
     context "when the section does not have a parent" do
       subject { RootSection.new }
