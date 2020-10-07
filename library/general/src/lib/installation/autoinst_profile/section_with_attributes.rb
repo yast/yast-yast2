@@ -147,7 +147,7 @@ module Installation
         # @return [SectionWithAttributes]
         def new_from_hashes(hash, parent = nil)
           result = new(parent)
-          result.init_from_hashes(hash)
+          result.init_from_hashes(hash) if hash.is_a?(Hash)
           result
         end
 
@@ -182,6 +182,8 @@ module Installation
       #
       # @param hash [Hash] see {.new_from_hashes}
       def init_from_hashes(hash)
+        return unless hash.is_a?(Hash)
+
         init_scalars_from_hash(hash)
       end
 
