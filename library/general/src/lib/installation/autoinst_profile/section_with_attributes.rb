@@ -140,14 +140,15 @@ module Installation
         # contain the relevant information. Attributes are set to nil for
         # missing keys and for blank values.
         #
-        # @param hash   [Hash] content of the corresponding section of the profile.
-        #   Each element of the hash corresponds to one of the attributes
-        #   defined in the section.
+        # @param hash [Hash,Array<Hash>] content of the corresponding section of
+        #   the profile. Each element of the hash corresponds to one of the
+        #   attributes defined in the section. When the section is a list, the
+        #   method can receive an array containing one hash per each element.
         # @param parent [#parent,#section_name] parent section
         # @return [SectionWithAttributes]
         def new_from_hashes(hash, parent = nil)
           result = new(parent)
-          result.init_from_hashes(hash) if hash.is_a?(Hash)
+          result.init_from_hashes(hash) if hash.is_a?(Enumerable)
           result
         end
 
@@ -182,8 +183,6 @@ module Installation
       #
       # @param hash [Hash] see {.new_from_hashes}
       def init_from_hashes(hash)
-        return unless hash.is_a?(Hash)
-
         init_scalars_from_hash(hash)
       end
 

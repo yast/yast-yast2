@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct  8 19:35:48 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- AutoYaST: SectionWithAttributes#new_from_hashes accepts
+  an enumerable as first element (related to bsc#1177405).
+- 4.3.36
+
+-------------------------------------------------------------------
 Wed Oct  7 13:23:28 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - AutoYaST: do not crash when sections like 'raid_options' are

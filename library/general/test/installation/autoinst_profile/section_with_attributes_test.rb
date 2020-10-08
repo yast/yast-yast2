@@ -69,12 +69,6 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
           { name: :name }
         ]
       end
-
-      def new_from_hashes(hash, parent = nil)
-        result = new(parent)
-        result.init_from_hashes(hash)
-        result
-      end
     end
 
     define_attr_accessors
@@ -90,12 +84,6 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
         [
           { name: :name }
         ]
-      end
-
-      def new_from_hashes(hash, parent = nil)
-        result = new(parent)
-        result.init_from_hashes(hash)
-        result
       end
     end
 
@@ -120,6 +108,13 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
     context "when nil is given" do
       it "returns a instance" do
         group = GroupSection.new_from_hashes(nil)
+        expect(group.name).to be_nil
+      end
+    end
+
+    context "when an empty string is given" do
+      it "returns a instance" do
+        group = GroupSection.new_from_hashes("")
         expect(group.name).to be_nil
       end
     end
