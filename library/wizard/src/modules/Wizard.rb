@@ -282,8 +282,12 @@ module Yast
             HSpacing(1),
             VBox(
               VSpacing(0.2),
-              # translators: dialog title to appear before any content is initialized
-              ReplacePoint(Id(:heading), dialog_heading(_("Initializing ..."))),
+              HBox(
+                # translators: dialog title to appear before any content is initialized
+                Heading(Id(:title), Opt(:hstretch), _("Initializing ...")),
+                HStretch(),
+                ReplacePoint(Id(:relnotes_rp), Empty())
+              ),
               VWeight(
                 1, # Layout trick: Lower layout priority with weight
                 HVCenter(Opt(:hvstretch), ReplacePoint(Id(:contents), Empty()))
@@ -329,8 +333,15 @@ module Yast
             70,
             VBox(
               VSpacing(0.2),
-              # translators: dialog title to appear before any content is initialized
-              ReplacePoint(Id(:heading), dialog_heading(_("YaST\nInitializing ...\n"))),
+              HBox(
+                # translators: dialog title to appear before any content is initialized
+                Heading(
+                  Id(:title),
+                  Opt(:hstretch),
+                  _("YaST\nInitializing ...\n")
+                ),
+                HStretch()
+              ),
               VWeight(
                 1, # Layout trick: Lower layout priority with weight
                 HVCenter(Opt(:hvstretch), ReplacePoint(Id(:contents), Empty()))
@@ -817,7 +828,7 @@ module Yast
 
         UI.ChangeWidget(Id(:back), :Enabled, has_back) if UI.WidgetExists(Id(:back))
         UI.ChangeWidget(Id(:abort), :Enabled, true) if UI.WidgetExists(Id(:abort))
-        UI.ReplaceWidget(Id(:heading), dialog_heading(title)) if UI.WidgetExists(Id(:heading))
+        UI.ChangeWidget(Id(:title), :Value, title) if UI.WidgetExists(Id(:title))
 
         UI.SetFocus(Id(:accept)) if set_focus && UI.WidgetExists(Id(:accept))
       end
@@ -1848,21 +1859,6 @@ module Yast
       UI.SetApplicationIcon(@icon_name)
       true
     end
-  end
-
-  # Returns the content for the heading of the dialog
-  #
-  # The heading is hidden when no title is given
-  #
-  # @param title [String, nil]
-  def dialog_heading(title)
-    return Empty() if title.nil? || title.empty?
-
-    HBox(
-      Heading(Id(:title), Opt(:hstretch), title),
-      HStretch(),
-      ReplacePoint(Id(:relnotes_rp), Empty())
-    )
   end
 
   Wizard = WizardClass.new
