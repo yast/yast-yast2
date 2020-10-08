@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Oct  8 20:21:22 UTC 2020 - José Iván López González <jlopez@suse.com>
+
+- Revert changes for hiding the heading of the dialog in text mode
+  (the heading has no height if the title is empty).
+- bsc#1176808
+- 4.3.37
+
+-------------------------------------------------------------------
 Thu Oct  8 19:35:48 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - AutoYaST: SectionWithAttributes#new_from_hashes accepts
