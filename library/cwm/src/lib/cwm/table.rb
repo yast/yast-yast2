@@ -2,6 +2,29 @@ require "abstract_method"
 require "cwm/custom_widget"
 
 module CWM
+  # An entry of a {Table}
+  class TableItem
+    # @return [String, Symbol]
+    attr_reader :id
+
+    # @return [Array]
+    attr_reader :values
+
+    # @see Table#items
+    # @return [Array<TableItem, Array>]
+    attr_reader :children
+
+    # @return [Boolean] whether children are initially expanded
+    attr_reader :open
+
+    def initialize(id, values, open: true, children: [])
+      @id = id
+      @values = values
+      @open = open
+      @children = children
+    end
+  end
+
   # Represents Table widget
   class Table < CustomWidget
     # @method header
@@ -19,10 +42,14 @@ module CWM
     #   end
     abstract_method :header
 
-    # gets initial two dimensional array of Table content
-    # one element in the first dimension contain as first element id and then
-    # rest is data in table, which can be e.g. terms. Then it have to be enclosed in
-    # `cell` term.
+    # Array with the table content
+    #
+    # Each element can be a {TableItem} or an Array
+    #
+    # If it's an array, the row contains no nested elements. The first element represents
+    # the id of the row and the rest is used as data for its cells. Those can be e.g. terms.
+    # Then it has to be enclosed in `cell` term.
+    #
     # @see for more complex example see examples directory
     # @note default value is empty array. It is useful when computation expensive content
     #   need to be set. In such case, it is better to keep empty items to quickly show table and
@@ -33,9 +60,11 @@ module CWM
     #   def items
     #     [
     #       [:first_user, "Joe", "Doe"],
-    #       [:best_user, "Chuck", "Norris"]
+    #       TableItem.new(:best_user, ["Chuck", "Norris"])
     #     ]
     #   end
+    #
+    # @return [Array<TableItem, Array>]
     def items
       []
     end
@@ -43,7 +72,7 @@ module CWM
     # change list on fly with argument. Useful when content of widget is changed.
     # @note items and change_items is consistent with ItemsSelection mixin, just format of
     #   items is different due to nature of Table content.
-    # @param items_list [Array<Array<Object>>] same format as {#items}
+    # @param items_list [Array] same format as {#items}
     def change_items(items_list)
       Yast::UI.ChangeWidget(Id(widget_id), :Items, format_items(items_list))
     end
@@ -122,14 +151,13 @@ module CWM
       items.map { |i| format_item(i) }
     end
 
+    # @see #format_items
     def format_item(item)
-      content = item.dup
+      return Item(Id(item.first), *item[1..-1]) if item.is_a?(Array)
 
-      content[0] = Id(content[0])
-
-      content[-2] = format_items(content[-2]) if content[-2].is_a?(Array)
-
-      Item(*content)
+      children = format_items(item.children)
+      open_tag = item.open ? :open : :closed
+      Item(Id(item.id), *item.values, children, open_tag)
     end
   end
 end

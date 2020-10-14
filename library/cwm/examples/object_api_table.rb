@@ -31,6 +31,47 @@ class NiceTable < CWM::Table
   end
 end
 
+class NestedTable < CWM::Table
+  def header
+    [
+      "Device",
+      "Size",
+      "Type"
+    ]
+  end
+
+  def items
+    [
+      CWM::TableItem.new(:sda, ["/dev/sda", "931.5G", "Disk"], children: sda_items),
+      CWM::TableItem.new(:sdb, ["/dev/sdb", "900.0G", "Disk"]),
+      [:sdc, "/dev/sdc", "521.5G", "Disk"],
+      CWM::TableItem.new(:sdd, ["/dev/sdd", "0.89T", "Disk"], children: sdd_items, open: false)
+    ]
+  end
+
+private
+
+  def sda_items
+    [
+      [:sda1, "sda1",  "97.7G", "Ntfs Partition"],
+      [:sda2, "sda2",  "833.9G", "Ext4 Partition"]
+    ]
+  end
+
+  def sdd_items
+    [
+      CWM::TableItem.new(:sdd1, ["sdd1", "0.89T", "BtrFS Partition"], children: sdd1_items)
+    ]
+  end
+
+  def sdd1_items
+    [
+      CWM::TableItem.new(:home, ["@/home", "", "BtrFS Subvolume"]),
+      CWM::TableItem.new(:opt, ["@/opt", "", "BtrFS Subvolume"])
+    ]
+  end
+end
+
 module Yast
   class ExampleDialog
     include Yast::I18n
@@ -39,9 +80,11 @@ module Yast
       textdomain "example"
 
       table_widget = NiceTable.new
+      nested_table_widget = NestedTable.new
 
-      contents = HBox(
-        table_widget
+      contents = VBox(
+        table_widget,
+        nested_table_widget
       )
 
       Yast::Wizard.CreateDialog
