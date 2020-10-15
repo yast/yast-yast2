@@ -147,7 +147,7 @@ module CWM
     end
 
     # helper to create a {TableItem}
-    # @param args content of item
+    # @param args content of item, see {TableItem#initialize}
     # @note Not to be confused with the UI shortcut `Item`
     #
     # @example
