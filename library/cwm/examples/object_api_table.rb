@@ -45,7 +45,7 @@ class NestedTable < CWM::Table
       CWM::TableItem.new(:sda, ["/dev/sda", "931.5G", "Disk"], children: sda_items),
       CWM::TableItem.new(:sdb, ["/dev/sdb", "900.0G", "Disk"]),
       [:sdc, "/dev/sdc", "521.5G", "Disk"],
-      CWM::TableItem.new(:sdd, ["/dev/sdd", "0.89T", "Disk"], children: sdd_items, open: false)
+      item(:sdd, ["/dev/sdd", "0.89T", "Disk"], children: sdd_items, open: false)
     ]
   end
 
@@ -66,8 +66,8 @@ private
 
   def sdd1_items
     [
-      CWM::TableItem.new(:home, ["@/home", "", "BtrFS Subvolume"]),
-      CWM::TableItem.new(:opt, ["@/opt", "", "BtrFS Subvolume"])
+      item(:home, ["@/home", "", "BtrFS Subvolume"]),
+      item(:opt, ["@/opt", "", "BtrFS Subvolume"])
     ]
   end
 end

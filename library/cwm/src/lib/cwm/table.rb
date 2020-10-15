@@ -44,7 +44,8 @@ module CWM
 
     # Array with the table content
     #
-    # Each element can be a {TableItem} or an Array
+    # Each element can be a {TableItem} or an Array. The helper {#item} can be used to easily
+    # create {TableItem} objects.
     #
     # If it's an array, the row contains no nested elements. The first element represents
     # the id of the row and the rest is used as data for its cells. Those can be e.g. terms.
@@ -59,8 +60,15 @@ module CWM
     # @example for table with two columns
     #   def items
     #     [
-    #       [:first_user, "Joe", "Doe"],
-    #       TableItem.new(:best_user, ["Chuck", "Norris"])
+    #       item(:first_user, ["Joe", "Doe"], children: first_children),
+    #       [:best_user, "Chuck", "Norris"]
+    #     ]
+    #   end
+    #
+    #   def first_children
+    #     [
+    #       [:first_sub1, "SubJoe1", "Doe"],
+    #       [:first_sub2, "SubJoe2", "Doe"]
     #     ]
     #   end
     #
@@ -136,6 +144,16 @@ module CWM
     #   cell(icon("/tmp/cool_icon.png"), "Really cool!!!")
     def cell(*args)
       Yast::Term.new(:cell, *args)
+    end
+
+    # helper to create a {TableItem}
+    # @param args content of item
+    # @note Not to be confused with the UI shortcut `Item`
+    #
+    # @example
+    #   item(:joe, ["Joe", "Doe"], children: [[:joeson, "Joeson", "Doe"]], open: false)
+    def item(*args)
+      TableItem.new(*args)
     end
 
     # helper to say if table have multiselection
