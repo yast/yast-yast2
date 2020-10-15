@@ -198,10 +198,10 @@ RSpec.shared_examples "CWM::Table" do
   end
 
   describe "#items" do
-    it "produces an array of arrays" do
+    it "produces a collection with arrays and/or TableItem objects" do
       expect(subject.items).to be_an Enumerable
       subject.items.each do |item|
-        expect(item).to be_a Array
+        expect(item).to be_a(Array).or be_a(CWM::TableItem)
       end
     end
   end

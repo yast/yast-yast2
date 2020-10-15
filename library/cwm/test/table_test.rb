@@ -15,7 +15,7 @@ describe CWM::Table do
     def items
       [
         [:one, "one", "eins"],
-        [:two, "two", "zwei"]
+        item(:two, ["two", "zwei"])
       ]
     end
   end
