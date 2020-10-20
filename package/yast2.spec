@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.3.37
+Version:        4.3.38
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -57,8 +57,8 @@ BuildRequires:  rubygem(%rb_default_ruby_abi:nokogiri)
 # To have Yast::WFM.scr_root
 BuildRequires:  yast2-ruby-bindings >= 3.2.8
 BuildRequires:  yast2-testsuite
-# UI::.SetApplicationTitle
-BuildRequires:  yast2-ycp-ui-bindings >= 3.2.0
+# Nested items in tables
+BuildRequires:  yast2-ycp-ui-bindings >= 4.3.3
 # for the PackageExtractor tests, just make sure they are present,
 # these should be installed in the default build anyway
 BuildRequires:  cpio
@@ -92,8 +92,8 @@ Requires:       yast2-perl-bindings
 Requires:  yast2-pkg-bindings >= 4.3.0
 # for y2start
 Requires:       yast2-ruby-bindings >= 3.2.10
-# new UI::SetApplicationTitle
-Requires:       yast2-ycp-ui-bindings >= 3.2.0
+# Nested items in tables
+Requires:       yast2-ycp-ui-bindings >= 4.3.3
 Requires:       yui_backend
 # scripts for collecting YAST logs
 Requires:       yast2-logs
