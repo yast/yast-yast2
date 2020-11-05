@@ -57,6 +57,13 @@ module CWM
       []
     end
 
+    # List the current items offered in the widget
+    #
+    # @return [Array<Array(String,String)>]
+    def current_items
+      Yast::UI.QueryWidget(Id(widget_id), :Items)
+    end
+
     # @return [WidgetHash]
     def cwm_definition
       super.merge(
@@ -194,7 +201,8 @@ module CWM
     #
     # @param val [Object] Value to assign to the widget
     def value=(val)
-      change_items([[val, val]] + items) if editable? && !items.map(&:first).include?(val)
+      change_items([[val, val]] + current_items) if editable? && !current_items.map(&:first).include?(val)
+
       self.orig_value = val
     end
 
