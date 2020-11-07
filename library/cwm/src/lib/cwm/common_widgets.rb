@@ -61,7 +61,7 @@ module CWM
     #
     # @return [Array<Array(String,String)>]
     def current_items
-      Yast::UI.QueryWidget(Id(widget_id), :Items)
+      Yast::UI.QueryWidget(Id(widget_id), :Items) || []
     end
 
     # @return [WidgetHash]

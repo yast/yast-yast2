@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov  6 22:40:12 UTC 2020 - José Iván López González <jlopez@suse.com>
+
+- Ensure #current_items always returns a list.
+- Related to bsc#1177137.
+- 4.3.40
+
+-------------------------------------------------------------------
 Thu Nov  5 09:08:49 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - CWM ComboBox: query the current items offered by the widget when
