@@ -259,13 +259,13 @@ describe Yast::Kernel do
       context "on real hardware" do
         before do
           allow(Yast::Arch).to receive(:is_kvm).and_return(false)
-          allow(Yast::Arch).to receive(:is_domU).and_return(false)
+          allow(Yast::Arch).to receive(:is_xenU).and_return(false)
         end
 
         context "when product does not want hibernation proposal" do
           before do
             allow(Yast::ProductFeatures).to receive(:GetBooleanFeature)
-              .with("general", "propose_hibernation").and_return(false)
+              .with("globals", "propose_hibernation").and_return(false)
           end
 
           it "returns false" do
@@ -276,7 +276,7 @@ describe Yast::Kernel do
         context "when product wants hibernation proposal" do
           before do
             allow(Yast::ProductFeatures).to receive(:GetBooleanFeature)
-              .with("general", "propose_hibernation").and_return(true)
+              .with("globals", "propose_hibernation").and_return(true)
           end
 
           it "returns true" do
