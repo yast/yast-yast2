@@ -57,6 +57,7 @@ module Yast
       Yast.import "Popup"
       Yast.import "Stage"
       Yast.import "FileUtils"
+      Yast.import "ProductFeatures"
 
       textdomain "base"
 
@@ -550,6 +551,19 @@ module Yast
         Popup.Message(_("Reboot your system\nto activate the new kernel.\n"))
       end
       @inform_about_kernel_change
+    end
+
+    # gets if YaST should propose hibernation aka Kernel resume parameter
+    # @return [Boolean] true if hibernation should be proposed
+    def propose_hibernation?
+      # Do not support s390. (jsc#SLE-6926)
+      return false unless Arch.i386 || Arch.x86_64
+      # Do not propose resume on virtuals (jsc#SLE-12280)
+      return false if Arch.is_kvm || Arch.is_xenU
+      # For some products it does not make sense to have hibernations (jsc#SLE-12280)
+      return false unless ProductFeatures.GetBooleanFeature("globals", "propose_hibernation")
+
+      true
     end
 
     publish function: :AddCmdLine, type: "void (string, string)"

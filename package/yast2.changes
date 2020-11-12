@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 11 22:25:45 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+
+- add methods to decide if hibernation should be proposed
+  (jsc#SLE-12280)
+- 4.3.41
+
+-------------------------------------------------------------------
 Fri Nov  6 22:40:12 UTC 2020 - José Iván López González <jlopez@suse.com>
 
 - Ensure #current_items always returns a list.
