@@ -140,10 +140,6 @@ describe CWM::ComboBox do
     describe "when the widget is editable" do
       subject { MountPointSelector.new }
 
-      before do
-        allow(subject).to receive(:current_items).and_return(subject.items)
-      end
-
       it "adds the given value to the list of items" do
         expect(subject).to receive(:change_items).with([["/srv", "/srv"], ["/", "/ (root)"]])
         subject.value = "/srv"
