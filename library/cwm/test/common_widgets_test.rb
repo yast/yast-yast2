@@ -140,29 +140,20 @@ describe CWM::ComboBox do
     describe "when the widget is editable" do
       subject { MountPointSelector.new }
 
-      context "and there is no current items" do
-        it "adds the given value" do
-          expect(subject).to receive(:change_items).with([["/srv", "/srv"]])
-          subject.value = "/srv"
-        end
+      before do
+        allow(subject).to receive(:current_items).and_return(subject.items)
       end
 
-      context "and there are current items" do
-        before do
-          allow(subject).to receive(:current_items).and_return(subject.items)
-        end
-
-        it "adds the given value to the current list of items" do
-          expect(subject).to receive(:change_items).with([["/srv", "/srv"], ["/", "/ (root)"]])
-          subject.value = "/srv"
-        end
+      it "adds the given value to the list of items" do
+        expect(subject).to receive(:change_items).with([["/srv", "/srv"], ["/", "/ (root)"]])
+        subject.value = "/srv"
       end
     end
 
     describe "when the widget is not editable" do
       subject { SelectorWithoutOpt.new }
 
-      it "does not add the given value to the current list of items" do
+      it "does not add the given value to the list of items" do
         expect(subject).to_not receive(:change_items)
         subject.value = "/srv"
       end
