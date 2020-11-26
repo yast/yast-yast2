@@ -184,12 +184,6 @@ module CWM
     include ValueBasedWidget
     include ItemsSelection
     abstract_method :label
-
-  private
-
-    def editable?
-      respond_to?(:opt) && opt.include?(:editable)
-    end
   end
 
   # Widget representing selection box to select value.
