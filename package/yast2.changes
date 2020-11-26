@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Nov 26 13:35:52 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
+
+- CWM ComboBox: an editable ComboBox will not alter the list of
+  items when the current value is not part of the list as it uses
+  the original list which could be already modified (bsc#1177137)
+- 4.3.43
+
+-------------------------------------------------------------------
 Tue Nov 24 22:03:19 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - CWM ComboBox: reverted the addition of the current_items method
