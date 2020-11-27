@@ -1,10 +1,11 @@
 YaST - The Basic Libraries
 ==========================
 
-[![Travis Build](https://travis-ci.org/yast/yast-yast2.svg?branch=master)](https://travis-ci.org/yast/yast-yast2)
-[![CI](https://github.com/yast/yast-yast2/workflows/CI/badge.svg)](https://github.com/yast/yast-yast2/actions?query=workflow%3ACI)
+[![Workflow Status](https://github.com/yast/yast-yast2/workflows/CI/badge.svg?branch=master)](
+https://github.com/yast/yast-yast2/actions?query=branch%3Amaster)
+[![Jenkins Status](https://ci.opensuse.org/buildStatus/icon?job=yast-yast-yast2-master)](
+https://ci.opensuse.org/view/Yast/job/yast-yast-yast2-master/)
 [![Coverage Status](https://img.shields.io/coveralls/yast/yast-yast2.svg)](https://coveralls.io/r/yast/yast-yast2?branch=master)
-[![Jenkins Build](http://img.shields.io/jenkins/s/https/ci.opensuse.org/yast-yast2-master.svg)](https://ci.opensuse.org/view/Yast/job/yast-yast2-master/)
 [![Code Climate](https://codeclimate.com/github/yast/yast-yast2/badges/gpa.svg)](https://codeclimate.com/github/yast/yast-yast2)
 
 This repository contains basic set of shared libraries and so-called SCR agents

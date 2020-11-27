@@ -15,11 +15,25 @@ jobs:
     - name: Git Checkout
       uses: actions/checkout@v1
 
+    # just for easier debugging...
     - name: Inspect Installed Packages
       run: rpm -qa | sort
 
     - name: Unit Tests
       run: rake test:unit
+      env:
+        # enable code coverage reporting
+        COVERAGE: 1
+        # English messages, UTF-8, "C" locale for numeric formatting tests
+        LC_ALL:
+        LANG: en_US.UTF-8
+        LC_NUMERIC: C
+
+    # send the coverage report to coveralls.io
+    - name: Coveralls Report
+      uses: coverallsapp/github-action@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
   Rubocop:
     runs-on: ubuntu-latest
@@ -30,13 +44,10 @@ jobs:
     - name: Git Checkout
       uses: actions/checkout@v1
 
-    - name: Inspect Installed Packages
-      run: rpm -qa | sort
-
     - name: Rubocop
       run: rake check:rubocop
 
-  Package_and_POT:
+  Package:
     runs-on: ubuntu-latest
     container: registry.opensuse.org/yast/head/containers/yast-ruby:latest
 
@@ -44,17 +55,11 @@ jobs:
 
     - name: Git Checkout
       uses: actions/checkout@v1
-
-    - name: Inspect Installed Packages
-      run: rpm -qa | sort
 
     - name: Package Build
-      run: yast-travis-ruby -o package
+      run: yast-ci-ruby -o package
 
-    - name: POT Check
-      run: yast-travis-ruby -o pot
-
-  Yardoc_and_Perl:
+  Yardoc:
     runs-on: ubuntu-latest
     container: registry.opensuse.org/yast/head/containers/yast-ruby:latest
 
@@ -63,11 +68,22 @@ jobs:
     - name: Git Checkout
       uses: actions/checkout@v1
 
-    - name: Inspect Installed Packages
-      run: rpm -qa | sort
-
     - name: Yardoc
-      run: yast-travis-ruby -o yardoc
+      run: yardoc
+
+  # downloading the Docker image takes some time so bundling several fast
+  # checks into one job avoids that overhead
+  Checks:
+    runs-on: ubuntu-latest
+    container: registry.opensuse.org/yast/head/containers/yast-ruby:latest
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v1
 
     - name: Perl Syntax
-      run: yast-travis-ruby -o perl_syntax
+      run: yast-ci-ruby -o perl_syntax
+
+    - name: POT Check
+      run: rake check:pot
