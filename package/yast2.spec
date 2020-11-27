@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.3.43
+Version:        4.3.44
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -171,6 +171,12 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 
 %yast_install
 
+%if !0%{?usrmerged}
+mkdir -p %{buildroot}/sbin
+ln -s ../%{_sbindir}/yast  %{buildroot}/sbin
+ln -s ../%{_sbindir}/yast2 %{buildroot}/sbin
+%endif
+
 # symlink the yardoc duplicates, saves over 2MB in installed system
 # (the RPM package size is decreased just by few kilobytes
 # because of the compression)
@@ -232,7 +238,9 @@ fi
 %{_mandir}/*/*
 %doc %{yast_vardir}/hooks/README.md
 
+%if !0%{?usrmerged}
 /sbin/yast*
+%endif
 %{_sbindir}/yast*
 
 # wizard
