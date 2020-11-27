@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Nov 27 12:18:41 UTC 2020 - Ludwig Nussel <lnussel@suse.de>
+
+- prepare usrmerge: install legacy symlinks via spec file only (boo#1029961)
+
+-------------------------------------------------------------------
 Thu Nov 26 13:35:52 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - CWM ComboBox: an editable ComboBox will not alter the list of
