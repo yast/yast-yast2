@@ -392,6 +392,18 @@ module Yast
       is_xen && !is_xen0
     end
 
+    # Whether a Xen guest is paravirtualized (PV) or not (HVM)
+    #
+    # @see #is_xenU
+    # @see https://wiki.xen.org/wiki/DomU
+    #
+    # @return [Boolean] true if it is a PV Xen domU; false otherwise
+    def paravirtualized_xen_guest?
+      return false unless is_xenU
+
+      SCR.Read(path(".target.string"), "/sys/hypervisor/guest_type").strip == "PV"
+    end
+
     # Convenience method to retrieve the /proc/xen/capabilities content
     #
     # @return [String]
@@ -514,6 +526,7 @@ module Yast
     publish function: :is_xen, type: "boolean ()"
     publish function: :is_xen0, type: "boolean ()"
     publish function: :is_xenU, type: "boolean ()"
+    publish function: :paravirtualized_xen_guest?, type: "boolean ()"
     publish function: :is_kvm, type: "boolean ()"
     publish function: :is_zkvm, type: "boolean ()"
     publish function: :has_smp, type: "boolean ()"

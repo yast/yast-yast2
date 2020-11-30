@@ -22,7 +22,7 @@ describe Yast::Arch do
       change_scr_root(File.join(GENERAL_DATA_PATH, "arch", scenario), &example)
     end
 
-    context "when running the XEN hypervisor" do
+    context "when running in a XEN host" do
       let(:scenario) { "xen_dom0" }
 
       it "returns true" do
@@ -30,7 +30,23 @@ describe Yast::Arch do
       end
     end
 
-    context "when not running the XEN hypervisor" do
+    context "when running in a XEN PV guest" do
+      let(:scenario) { "xen_pv_domU" }
+
+      it "returns true" do
+        expect(Yast::Arch.is_xen).to eq(true)
+      end
+    end
+
+    context "when running in a XEN HVM guest" do
+      let(:scenario) { "xen_hvm_domU" }
+
+      it "returns true" do
+        expect(Yast::Arch.is_xen).to eq(true)
+      end
+    end
+
+    context "when running in neither a XEN dom0 nor XEN domU" do
       let(:scenario) { "default" }
 
       it "returns false" do
@@ -60,8 +76,16 @@ describe Yast::Arch do
       end
     end
 
-    context "when running in a XEN domU" do
-      let(:scenario) { "xen_domU" }
+    context "when running in a XEN PV guest" do
+      let(:scenario) { "xen_pv_domU" }
+
+      it "returns false" do
+        expect(Yast::Arch.is_xen0).to eq(false)
+      end
+    end
+
+    context "when running in a XEN HVM guest" do
+      let(:scenario) { "xen_hvm_domU" }
 
       it "returns false" do
         expect(Yast::Arch.is_xen0).to eq(false)
@@ -82,7 +106,7 @@ describe Yast::Arch do
       end
     end
 
-    context "when running in a XEN dom0" do
+    context "when running in a XEN host" do
       let(:scenario) { "xen_dom0" }
 
       it "returns false" do
@@ -90,11 +114,57 @@ describe Yast::Arch do
       end
     end
 
-    context "when running in a XEN domU" do
-      let(:scenario) { "xen_domU" }
+    context "when running in a XEN PV guest" do
+      let(:scenario) { "xen_pv_domU" }
 
       it "returns true" do
         expect(Yast::Arch.is_xenU).to eq(true)
+      end
+    end
+
+    context "when running in a XEN HVM guest" do
+      let(:scenario) { "xen_hvm_domU" }
+
+      it "returns true" do
+        expect(Yast::Arch.is_xenU).to eq(true)
+      end
+    end
+  end
+
+  describe ".paravirtualized_xen_guest?" do
+    around do |example|
+      change_scr_root(File.join(GENERAL_DATA_PATH, "arch", scenario), &example)
+    end
+
+    context "when not running in a XEN hypervisor" do
+      let(:scenario) { "default" }
+
+      it "returns false" do
+        expect(Yast::Arch.paravirtualized_xen_guest?).to eq(false)
+      end
+    end
+
+    context "when running in a XEN host" do
+      let(:scenario) { "xen_dom0" }
+
+      it "returns false" do
+        expect(Yast::Arch.paravirtualized_xen_guest?).to eq(false)
+      end
+    end
+
+    context "when running in a XEN PV guest" do
+      let(:scenario) { "xen_pv_domU" }
+
+      it "returns true" do
+        expect(Yast::Arch.paravirtualized_xen_guest?).to eq(true)
+      end
+    end
+
+    context "when running in a XEN HVM guest" do
+      let(:scenario) { "xen_hvm_domU" }
+
+      it "returns false" do
+        expect(Yast::Arch.paravirtualized_xen_guest?).to eq(false)
       end
     end
   end
