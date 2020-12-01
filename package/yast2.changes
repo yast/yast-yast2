@@ -1,7 +1,15 @@
 -------------------------------------------------------------------
+Mon Nov 30 15:00:28 UTC 2020 - David Diaz <dgonzalez@suse.com>
+
+- Yast::Arch add support to know if code is running in a PV Xen guest
+  (related to bsc#952253, bsc#1172742, and bsc#1179197).
+- 4.3.45
+
+-------------------------------------------------------------------
 Fri Nov 27 12:18:41 UTC 2020 - Ludwig Nussel <lnussel@suse.de>
 
 - prepare usrmerge: install legacy symlinks via spec file only (boo#1029961)
+- 4.3.44
 
 -------------------------------------------------------------------
 Thu Nov 26 13:35:52 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
