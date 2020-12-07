@@ -89,18 +89,18 @@ module Yast
           VBox(
             Left(Heading(headline)),
             VSpacing(0.2),
-            richtext ? rt : Left(Label(message)),
+            richtext ? rt : Left(Label(Opt(:autoWrap), message)),
             VSpacing(0.2),
-            (!label.nil? && label != "") ? Label(Id(:label), label) : Empty()
+            (!label.nil? && label != "") ? Label(Id(:label), Opt(:autoWrap), label) : Empty()
           )
         ) # no headline
       else
         VBox(
           VSpacing(0.4),
           VBox(
-            richtext ? rt : VCenter(Label(message)),
+            richtext ? rt : VCenter(Label(Opt(:autoWrap), message)),
             VSpacing(0.2),
-            (!label.nil? && label != "") ? Label(Id(:label), label) : Empty()
+            (!label.nil? && label != "") ? Label(Id(:label), Opt(:autoWrap), label) : Empty()
           )
         )
       end
@@ -1542,7 +1542,7 @@ module Yast
           HSpacing(1),
           VBox(
             VSpacing(0.2),
-            Label(message),
+            Label(Opt(:autoWrap), message),
             HCenter(Label(Id(:remaining_time), Ops.add("", timeout_seconds))),
             ButtonBox(
               PushButton(Id(:timed_stop), Opt(:customButton), Label.StopButton),
