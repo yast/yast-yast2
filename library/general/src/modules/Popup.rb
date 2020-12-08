@@ -87,9 +87,9 @@ module Yast
         VBox(
           VSpacing(0.4),
           VBox(
-            Left(Heading(headline)),
+            Left(MarginBox(5, 5, Heading(headline))),
             VSpacing(0.2),
-            richtext ? rt : Left(Label(Opt(:autoWrap), message)),
+            richtext ? rt : Left(MinWidth(40, Label(Opt(:autoWrap), message))),
             VSpacing(0.2),
             (!label.nil? && label != "") ? Label(Id(:label), label) : Empty()
           )
@@ -98,7 +98,7 @@ module Yast
         VBox(
           VSpacing(0.4),
           VBox(
-            richtext ? rt : VCenter(Label(Opt(:autoWrap), message)),
+            richtext ? rt : VCenter(MinWidth(40, Label(Opt(:autoWrap), message))),
             VSpacing(0.2),
             (!label.nil? && label != "") ? Label(Id(:label), label) : Empty()
           )
