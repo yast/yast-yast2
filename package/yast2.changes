@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Dec 14 13:42:24 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
+
+- Log more details when several resolvables (instead of a single
+  one) are unexpectedely found (related to bsc#1176276)
+- 4.2.88
+
+-------------------------------------------------------------------
 Fri Jul 24 08:06:27 UTC 2020 - Jeff Kowalczyk <jkowalczyk@suse.com>
 
 - update is_wsl function to match wsl1 and wsl2 osrelease spellings
