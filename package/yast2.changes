@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Tue Dec 15 15:49:56 UTC 2020 - Stefan Schubert <schubi@suse.de>
 
-- Removed SCR agent .etc.inittab which is obsolete (bsc#1175494).
+- Removed SCR agent .etc.inittab which is obsolete because SysVinit
+  is no longer supported (bsc#1175494).
 - 4.3.46 
 
 -------------------------------------------------------------------
