@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Dec 15 15:49:56 UTC 2020 - Stefan Schubert <schubi@suse.de>
+
+- Removed SCR agent .etc.inittab which is obsolete because SysVinit
+  is no longer supported (bsc#1175494).
+- 4.3.46 
+
+-------------------------------------------------------------------
 Mon Nov 30 15:00:28 UTC 2020 - David Diaz <dgonzalez@suse.com>
 
 - Yast::Arch add support to know if code is running in a PV Xen guest
