@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Tue Mar 16 13:40:55 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not use the 'installation-helper' binary to create snapshots
+  during installation or offline upgrade (bsc#1180142).
+- Add a new exception to properly handle exceptions
+  when reading/writing snapshots numbers (related to bsc#1180142).
+- 4.0.105
+
+-------------------------------------------------------------------
 Wed Jun 19 12:52:35 UTC 2019 - Knut Anderssen <kanderssen@suse.com>
 
 - Stop "ls: write error: Broken pipe" messages (bsc#1128032)
