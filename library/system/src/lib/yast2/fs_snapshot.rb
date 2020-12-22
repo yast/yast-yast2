@@ -253,6 +253,9 @@ module Yast2
         raise SnapperNotConfigured unless configured?
 
         cmd = LIST_SNAPSHOTS_CMD.dup
+        # Add additional options only when running in normal model. Otherwise,
+        # the snapper version in the chroot might not understand them (e.g.,
+        # when upgrading from SLE 12 to SLE 15).
         cmd << " --disable-used-space" if Yast::Mode.normal
 
         out = Yast::SCR.Execute(
