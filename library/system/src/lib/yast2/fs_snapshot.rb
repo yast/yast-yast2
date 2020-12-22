@@ -74,7 +74,7 @@ module Yast2
 
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
     CREATE_SNAPSHOT_CMD = "/usr/bin/snapper --no-dbus --root=%{root} create --type %{snapshot_type} --description %{description}".freeze
-    LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list --disable-used-space".freeze
+    LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list".freeze
     VALID_LINE_REGEX = /\A\s*\d+[-+*]?\s*\|\s*\w+/
 
     # Predefined snapshot cleanup strategies (the user can define custom ones, too)
@@ -252,9 +252,12 @@ module Yast2
       def all
         raise SnapperNotConfigured unless configured?
 
+        cmd = LIST_SNAPSHOTS_CMD.dup
+        cmd << " --disable-used-space" if Yast::Mode.normal
+
         out = Yast::SCR.Execute(
           Yast::Path.new(".target.bash_output"),
-          format(LIST_SNAPSHOTS_CMD, root: target_root.shellescape)
+          format(cmd, root: target_root.shellescape)
         )
         lines = out["stdout"].lines.grep(VALID_LINE_REGEX) # relevant lines from output.
         log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
