@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Dec 30 14:32:48 UTC 2020 - David Diaz <dgonzalez@suse.com>
+
+- Move the "Release notes" button from the top right corner
+  to the bottom left one (related to bsc#1175489).
+- 4.3.47
+
+-------------------------------------------------------------------
 Tue Dec 15 15:49:56 UTC 2020 - Stefan Schubert <schubi@suse.de>
 
 - Removed SCR agent .etc.inittab which is obsolete because SysVinit
