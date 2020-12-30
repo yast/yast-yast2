@@ -101,7 +101,6 @@ module Yast
             PushButton(Id(:help), Opt(:key_F1, :helpButton), Label.HelpButton)
           )
         ),
-        HStretch(),
         HWeight(
           1,
           ReplacePoint(Id(:relnotes_rp), Empty())
@@ -114,12 +113,10 @@ module Yast
             PushButton(Id(:back), Opt(:key_F8), Label.BackButton)
           )
         ),
-        HStretch(),
         ReplacePoint(
           Id(:rep_abort),
           PushButton(Id(:abort), Opt(:key_F9), Label.AbortButton)
         ),
-        HStretch(),
         HWeight(
           1,
           ReplacePoint(
