@@ -104,6 +104,11 @@ module Yast
         HStretch(),
         HWeight(
           1,
+          ReplacePoint(Id(:relnotes_rp), Empty())
+        ),
+        HStretch(),
+        HWeight(
+          1,
           ReplacePoint(
             Id(:rep_back),
             PushButton(Id(:back), Opt(:key_F8), Label.BackButton)
@@ -282,12 +287,8 @@ module Yast
             HSpacing(1),
             VBox(
               VSpacing(0.2),
-              HBox(
-                # translators: dialog title to appear before any content is initialized
-                Heading(Id(:title), Opt(:hstretch), _("Initializing ...")),
-                HStretch(),
-                ReplacePoint(Id(:relnotes_rp), Empty())
-              ),
+              # translators: dialog title to appear before any content is initialized
+              Heading(Id(:title), Opt(:hstretch), _("Initializing ...")),
               VWeight(
                 1, # Layout trick: Lower layout priority with weight
                 HVCenter(Opt(:hvstretch), ReplacePoint(Id(:contents), Empty()))
