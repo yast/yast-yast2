@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Mon Jan 11 16:40:37 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Ensure the libzypp target is initialized when downloading
+  the skelcd packages (to verify the GPG signatures) (bsc#1179773)
+- Log more details when several resolvables (instead of a single
+  one) are unexpectedly found (related to bsc#1176276)
+- 4.3.48
+
+-------------------------------------------------------------------
 Mon Jan 11 11:47:27 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix default for hibernation proposal (bsc#1169874)
