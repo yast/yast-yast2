@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jan 11 11:47:27 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix default for hibernation proposal (bsc#1169874)
+- 4.3.47
+
+-------------------------------------------------------------------
 Tue Dec 15 15:49:56 UTC 2020 - Stefan Schubert <schubi@suse.de>
 
 - Removed SCR agent .etc.inittab which is obsolete because SysVinit
