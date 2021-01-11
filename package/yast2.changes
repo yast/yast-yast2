@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jan 11 13:20:55 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Ensure the libzypp target is initialized when downloading
+  the skelcd packages (to verify the GPG signatures) (bsc#1179773)
+- 4.2.89
+
+-------------------------------------------------------------------
 Mon Dec 14 13:42:24 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Log more details when several resolvables (instead of a single
