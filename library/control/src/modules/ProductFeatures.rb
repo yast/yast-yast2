@@ -73,7 +73,7 @@ module Yast
           "full_system_media_name"          => "",
           "full_system_download_url"        => "",
           "save_y2logs"                     => true,
-          "propose_hibernate"               => true
+          "propose_hibernation"             => true
         },
         "partitioning"             => {
           "use_flexible_partitioning"    => false,
