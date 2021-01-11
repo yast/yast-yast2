@@ -158,7 +158,10 @@ module Y2Packager
       resolvables = Yast::Pkg.Resolvables(attrs, [attr])
 
       # Finding more than one result is suspicious, log a warning
-      log.warn("Found several resolvables: #{resolvables.inspect}") if resolvables.size > 1
+      if resolvables.size > 1
+        log.warn("Found several resolvables: #{resolvables.inspect}")
+        log.warn("Resolvable details: #{Yast::Pkg.ResolvableProperties(@name, @kind, "").inspect}")
+      end
 
       resolvable = resolvables.first
       return unless resolvable&.key?(attr.to_s)
