@@ -1678,7 +1678,8 @@ module Yast
       downloader = ::Packages::PackageDownloader.new(repo_id, package)
 
       Tempfile.open("downloaded-package-") do |tmp|
-        # libzypp needs the target for verifying the GPG signatures of the downloaded packages
+        # libzypp needs the target for verifying the GPG signatures of the downloaded packages,
+        # keep the target initialized, it might be needed later for verifying other packages
         Pkg.TargetInitialize("/") if Stage.initial
         downloader.download(tmp.path)
 
