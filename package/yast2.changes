@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 13 16:03:51 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Keep the libzypp target open to verify other packages
+  (bsc#1180858, related to the previous fix bsc#1179773)
+- 4.3.49
+
+-------------------------------------------------------------------
 Mon Jan 11 16:40:37 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
 
 - Ensure the libzypp target is initialized when downloading
