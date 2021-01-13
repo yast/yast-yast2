@@ -1681,7 +1681,6 @@ module Yast
         # libzypp needs the target for verifying the GPG signatures of the downloaded packages
         Pkg.TargetInitialize("/") if Stage.initial
         downloader.download(tmp.path)
-        Pkg.TargetFinish() if Stage.initial
 
         extract(tmp.path, dir)
         # the RPM package file is not needed after extracting it's content,
