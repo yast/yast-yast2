@@ -57,7 +57,7 @@ module Y2Packager
     # @return [Array<Y2Packager::Resolvable>] Found resolvables or empty array if nothing found
     # @see https://yast-pkg-bindings.surge.sh/ Yast::Pkg.Resolvables
     def self.find(params, preload = [])
-      attrs = (preload + UNIQUE_ATTRIBUTES).uniq
+      attrs = (preload + UNIQUE_ATTRIBUTES + OPTIONAL_ATTRIBUTES).uniq
       Yast::Pkg.Resolvables(params, attrs).map { |r| new(r) }
     end
 
@@ -129,6 +129,9 @@ module Y2Packager
 
     # attributes required for identifying a resolvable
     UNIQUE_ATTRIBUTES = [:kind, :name, :version, :arch, :source].freeze
+    # additional identifiers, not defined for all resolvable kinds
+    # - path - defined only for Package and Product resolvables
+    OPTIONAL_ATTRIBUTES = [:path].freeze
 
     # Load the attributes from a Hash
     #
@@ -145,7 +148,7 @@ module Y2Packager
     # @param attr [Symbol] The required attribute to load.
     # @return [Object] The read value.
     def load_attribute(attr)
-      attrs = Hash[(UNIQUE_ATTRIBUTES.map { |a| [a, instance_variable_get("@#{a}")] })]
+      attrs = Hash[((UNIQUE_ATTRIBUTES + OPTIONAL_ATTRIBUTES).map { |a| [a, instance_variable_get("@#{a}")] })]
       resolvables = Yast::Pkg.Resolvables(attrs, [attr])
 
       # Finding more than one result is suspicious, log a warning

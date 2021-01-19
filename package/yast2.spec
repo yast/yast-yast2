@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.2.90
+Version:        4.2.91
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -87,8 +87,8 @@ Requires:       yast2-core >= 2.23.0
 Requires:       yast2-hardware-detection
 # for SLPAPI.pm
 Requires:       yast2-perl-bindings
-# Pkg.Resolvables()
-Requires:       yast2-pkg-bindings >= 4.2.0
+# Pkg.Resolvables() with "path" search support
+Requires:       yast2-pkg-bindings >= 4.2.15
 # for y2start
 Requires:       yast2-ruby-bindings >= 3.2.10
 Requires:       yast2-xml

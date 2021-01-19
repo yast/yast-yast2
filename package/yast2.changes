@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 20 09:28:51 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed Resolvables class to uniqely identify the libzypp objects
+  to avoid random failures (related to bsc#1178688)
+- 4.2.91
+
+-------------------------------------------------------------------
 Wed Jan 13 16:03:51 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
 
 - Keep the libzypp target open to verify other packages
