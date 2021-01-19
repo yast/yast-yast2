@@ -137,7 +137,7 @@ module Y2Packager
   private
 
     # attributes required for identifying a resolvable
-    UNIQUE_ATTRIBUTES = [:kind, :name, :version, :arch, :source].freeze
+    UNIQUE_ATTRIBUTES = [:kind, :name, :version, :arch, :source, :path].freeze
 
     # Load the attributes from a Hash
     #
