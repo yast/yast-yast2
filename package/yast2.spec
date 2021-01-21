@@ -50,8 +50,8 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:simpleidn)
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
-# Pkg.Resolvables()
-BuildRequires:  yast2-pkg-bindings >= 4.2.0
+# Pkg.Resolvables() with "path" search support
+BuildRequires:  yast2-pkg-bindings >= 4.2.15
 BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
 # To have Yast::WFM.scr_root
 BuildRequires:  yast2-ruby-bindings >= 3.2.8

@@ -4,6 +4,20 @@ require_relative "../test_helper"
 require "y2packager/resolvable"
 require "tmpdir"
 
+Yast.import "Arch"
+
+# signature callback for accepting unsigned files
+class SignatureCheck
+  include Yast::Logger
+
+  def accept_unsigned_file(file, _repo)
+    log.info "Accepting unsigned file #{file.inspect}"
+    true
+  end
+end
+
+signature_checker = SignatureCheck.new
+
 # This is rather an integration test because it actually
 # reads a real repository metadata using libzypp.
 describe Y2Packager::Resolvable do
@@ -12,13 +26,24 @@ describe Y2Packager::Resolvable do
     @tmpdir = Dir.mktmpdir
     Yast::Pkg.TargetInitialize(@tmpdir)
 
-    # import the repository GPG key
-    gpg_key = File.join(__dir__, "/zypp/test_repo/repodata/repomd.xml.key")
-    Yast::Pkg.ImportGPGKey(gpg_key, true)
+    # the testing repositories are not signed, temporarily allow using unsigned files
+    Yast::Pkg.CallbackAcceptUnsignedFile(
+      Yast::fun_ref(
+        signature_checker.method(:accept_unsigned_file),
+        "boolean (string, integer)"
+      )
+    )
 
     # add the repository
     test_repo = File.join(__dir__, "/zypp/test_repo")
     Yast::Pkg.SourceCreate("dir:#{test_repo}", "/")
+
+    # add the repository
+    test_repo = File.join(__dir__, "/zypp/sle15-sp2-updates")
+    Yast::Pkg.SourceCreate("dir:#{test_repo}", "/")
+
+    # restore the default callback
+    Yast::Pkg.CallbackAcceptUnsignedFile(nil)
   end
 
   after(:all) do
@@ -43,6 +68,24 @@ describe Y2Packager::Resolvable do
       expect(res).to_not be_empty
       expect(res.all? { |r| r.kind == :package && r.name == "yast2-add-on" }).to be true
     end
+
+    it "finds multiple instances of the same product" do
+      res = Y2Packager::Resolvable.find(kind: :product, name: "SLES")
+      # two SLES products
+      expect(res.size).to eq(2)
+      # in the same version "15.2-0"
+      res.each do |r|
+        expect(r.name) == "SLES"
+        expect(r.version) == "15.2-0"
+      end
+    end
+
+    it "can distinguish between the same instances" do
+      # each product refers to a different release RPM package
+      paths = Y2Packager::Resolvable.find(kind: :product, name: "SLES").map(&:path)
+      expect(paths).to include("./noarch/sles-release-15.2-49.1.noarch.rpm")
+      expect(paths).to include("./noarch/sles-release-15.2-52.1.noarch.rpm")
+    end
   end
 
   describe ".any?" do
@@ -60,7 +103,7 @@ describe Y2Packager::Resolvable do
     end
 
     it "returns false if a product is not found" do
-      expect(Y2Packager::Resolvable.any?(kind: :product)).to be false
+      expect(Y2Packager::Resolvable.any?(kind: :product, name: "openSUSE")).to be false
     end
   end
 
