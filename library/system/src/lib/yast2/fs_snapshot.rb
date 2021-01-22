@@ -266,6 +266,34 @@ module Yast2
 
     # Parses the snapshots list
     #
+    # The snapshots list is a table like the following one:
+    #
+    #   # | Type   | Pre # | Date                            | User | Cleanup | Description           | Userdata
+    # ----+--------+-------+---------------------------------+------+---------+-----------------------+--------------
+    #  0  | single |       |                                 | root |         | current               |
+    #  1* | single |       | Wed 20 Jan 2021 09:57:01 PM WET | root |         | first root filesystem |
+    #  2  | single |       | Wed 20 Jan 2021 10:09:46 PM WET | root | number  | after installation    | important=yes
+    #
+    # This method returns an array of hashes containing the information from
+    # the previous table:
+    #
+    # @example Parsing result ouput
+    #   [
+    #     {
+    #       "#"            => "0",
+    #       "Type"         => "single",
+    #       "Pre #"        => "",
+    #       "Date"         => "",
+    #       "User"         => "root",
+    #       "Cleanup"      => "",
+    #       "Description"  => "current",
+    #       "Userdata"     => ""},
+    #       # ...
+    #     }
+    #   ]
+    #
+    # Not that values are not processed.
+    #
     # @param content [String] Snapshots list content
     # @return Array<Hash> An array of hashes containing the data for each snapshot
     def self.parse_snapshots_list(content)
