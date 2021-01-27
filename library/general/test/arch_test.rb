@@ -17,6 +17,29 @@ describe Yast::Arch do
     load module_path
   end
 
+  describe ".is_virtual" do
+    before do
+      allow(Yast::SCR).to receive(:Read)
+        .with(Yast::Path.new(".target.string"), "/proc/cpuinfo").and_return(cpuinfo)
+    end
+
+    context "when running in a non virtualized environment" do
+      let(:cpuinfo) { "processor: 1\nflags: fpu vme de pse tsc msr pae mce\nmodel: 45" }
+
+      it "returns false" do
+        expect(Yast::Arch.is_virtual).to eq(false)
+      end
+    end
+
+    context "when running in a virtualized environment" do
+      let(:cpuinfo) { "processor: 1\nflags: fpu vme de hypervisor pse tsc msr pae mce\nmodel: 45" }
+
+      it "returns true" do
+        expect(Yast::Arch.is_virtual).to eq(true)
+      end
+    end
+  end
+
   describe ".is_xen" do
     around do |example|
       change_scr_root(File.join(GENERAL_DATA_PATH, "arch", scenario), &example)
