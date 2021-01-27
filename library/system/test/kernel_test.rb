@@ -248,7 +248,7 @@ describe Yast::Kernel do
 
       context "on virtual machine" do
         before do
-          allow(Yast::Arch).to receive(:is_kvm).and_return(true)
+          allow(Yast::Arch).to receive(:is_virtual).and_return(true)
         end
 
         it "returns false" do
@@ -258,8 +258,7 @@ describe Yast::Kernel do
 
       context "on real hardware" do
         before do
-          allow(Yast::Arch).to receive(:is_kvm).and_return(false)
-          allow(Yast::Arch).to receive(:is_xenU).and_return(false)
+          allow(Yast::Arch).to receive(:is_virtual).and_return(false)
         end
 
         context "when product does not want hibernation proposal" do

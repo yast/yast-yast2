@@ -559,7 +559,7 @@ module Yast
       # Do not support s390. (jsc#SLE-6926)
       return false unless Arch.i386 || Arch.x86_64
       # Do not propose resume on virtuals (jsc#SLE-12280)
-      return false if Arch.is_kvm || Arch.is_xenU
+      return false if Arch.is_virtual
       # For some products it does not make sense to have hibernations (jsc#SLE-12280)
       return false unless ProductFeatures.GetBooleanFeature("globals", "propose_hibernation")
 
