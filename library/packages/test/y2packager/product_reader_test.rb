@@ -223,15 +223,6 @@ describe Y2Packager::ProductReader do
     # this context do not guarantee the code is working correctly in all cases.
     # They only test a simplistic case with quite some mocking.
     context "with the online media and no base product" do
-      # FIXME: needed because MediumType is wrongly located in yast2-packager
-      module Y2Packager
-        class MediumType
-          def self.online?
-            true
-          end
-        end
-      end
-
       before do
         allow(Yast::Stage).to receive(:initial).and_return true
 
@@ -239,7 +230,8 @@ describe Y2Packager::ProductReader do
         # this to always be an array. Let's copy the most simplistic of those
         # mocks.
         allow(Yast::ProductFeatures).to receive(:GetFeature)
-          .with("software", "base_products").and_return([])
+                                          .with("software", "base_products").and_return([])
+        allow(Y2Packager::MediumType).to receive(:online?).and_return(true)
       end
 
       after do
