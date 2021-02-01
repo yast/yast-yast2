@@ -230,7 +230,7 @@ describe Y2Packager::ProductReader do
         # this to always be an array. Let's copy the most simplistic of those
         # mocks.
         allow(Yast::ProductFeatures).to receive(:GetFeature)
-                                          .with("software", "base_products").and_return([])
+          .with("software", "base_products").and_return([])
         allow(Y2Packager::MediumType).to receive(:online?).and_return(true)
       end
 
