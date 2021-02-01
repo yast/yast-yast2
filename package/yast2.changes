@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri May  7 15:10:14 UTC 2021 - Stefan Schubert <schubi@suse.de>
 
-- Logging all available products information into directory
+- Logging all available product information into directory
   /var/log/YaST2/product_info. This should help for evaluating the
   cause of e.g. bsc#1180888, bsc#1180908, bsc#1178688.
 - 4.4.4
