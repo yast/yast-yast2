@@ -24,18 +24,16 @@ require "y2packager/repository"
 
 module Yast
   class ProductEvaluationClass < Module
+    LOGFILE = "product_information".freeze
+    LOGDIR = "/var/log/YaST2/product_info/".freeze
+    SCC_FILE = "/var/log/YaST2/registration_addons.yml".freeze
 
-    LOGFILE = "product_information"
-    LOGDIR = "/var/log/YaST2/product_info/"
-    SCC_FILE = "/var/log/YaST2/registration_addons.yml"
-      
-    include Yast::Logger    
-    
+    include Yast::Logger
+
     def main
-
       Yast.import "Mode"
       Yast.import "RootPart"
-      Yast.import "Packages"      
+      Yast.import "Packages"
 
       #
       # Function calls which has been set by other modules or 3.parties.
@@ -48,8 +46,8 @@ module Yast
     # Reset all callbacks which would be called while dumping the
     # log file.
     #
-    def reset()
-      @dump_callbacks = []      
+    def reset
+      @dump_callbacks = []
     end
 
     #
@@ -58,7 +56,7 @@ module Yast
     #
     # Example:
     #
-    #     Yast.import "ProductEvaluation"          
+    #     Yast.import "ProductEvaluation"
     #
     #     func = -> do
     #        data = MyClass.collect_data
@@ -81,9 +79,9 @@ module Yast
     # @return [Boolean] success
     def write(filename = LOGFILE)
       ret = {}
-      destfile = File.join(LOGDIR, "#{filename}_#{Time.now.strftime('%F_%I_%M_%S')}.yml")
-      log.info( "Writing product information to #{destfile}" )
-      
+      destfile = File.join(LOGDIR, "#{filename}_#{Time.now.strftime("%F_%I_%M_%S")}.yml")
+      log.info("Writing product information to #{destfile}")
+
       @dump_callbacks.each do |callback|
         ret.merge!(callback.call)
       end
@@ -91,14 +89,14 @@ module Yast
       ret["mode"] = Yast::Mode.mode
       ret["offline_medium"] = Y2Packager::MediumType.offline?
       if Yast::Mode.update
-        #evaluating root partitions
+        # evaluating root partitions
         ret["root_prtitions"] = Yast::RootPart.rootPartitions
         ret["selected_root_partition"] = Yast::RootPart.selectedRootPartition
       end
-      
+
       addons = registration_addons
       ret["registration_addons"] = addons unless addons.empty?
-      
+
       ret["available_base_products"] = available_base_products
 
       products = Yast::Packages.group_products_by_status(Y2Packager::Resolvable.find(kind: :product))
@@ -117,8 +115,8 @@ module Yast
       ::FileUtils.mkdir_p(LOGDIR) unless File.exist?(LOGDIR)
       File.write(destfile, ret.to_yaml)
     end
-    
-private
+
+  private
 
     def to_product_hash_list(products)
       products.map do |product|
@@ -130,24 +128,24 @@ private
 
     def to_repo_hash_list(repos)
       repos.map do |repo|
-        {"id" => repo.repo_id,
-         "name" => repo.name,
-         "url" => repo.url.to_s,
-         "dir" => repo.product_dir,
-         "alias" => repo.repo_alias,
-         "enabled" => repo.enabled?,
-         "local" => repo.local?}
+        { "id"      => repo.repo_id,
+          "name"    => repo.name,
+          "url"     => repo.url.to_s,
+          "dir"     => repo.product_dir,
+          "alias"   => repo.repo_alias,
+          "enabled" => repo.enabled?,
+          "local"   => repo.local? }
       end
     end
 
     def to_update_hash_list(products)
       products.map do |from, to|
-        { "from" => {"name" => from.name, "short_name" => from.short_name,
+        { "from" => { "name" => from.name, "short_name" => from.short_name,
           "display_name" => from.display_name, "version" => from.version,
-          "vendor" => from.vendor},
-          "to" => {"name" => to.name, "short_name" => to.short_name,
+          "vendor" => from.vendor },
+          "to"   => { "name" => to.name, "short_name" => to.short_name,
           "display_name" => to.display_name, "version" => to.version,
-          "vendor" => to.vendor} }
+          "vendor" => to.vendor } }
       end
     end
 
@@ -159,10 +157,10 @@ private
           .scan(InstURL.installInf2Url(""))
           .select { |p| p.details&.base }
           .sort(&::Y2Packager::PRODUCT_SORTER).map do |product|
-          {"name" => product.details.product, "dir" => product.dir,
+          { "name" => product.details.product, "dir" => product.dir,
            "short_name" => product.details.summary,
            "display_name" => product.details.description,
-           "product_package" => product.details.product_package}
+           "product_package" => product.details.product_package }
         end
       else
         to_product_hash_list(libzypp_products)
@@ -173,21 +171,20 @@ private
       ret = []
       if Yast::WFM.ClientExists("scc") && File.exist?(SCC_FILE)
         require "registration/addon"
-        
+
         addons = YAML.load_file(SCC_FILE)
         ret = addons.map do |a|
-          {"name" => a.name,
-           "display_name" => a.friendly_name,
-           "id" => "#{a.identifier}-#{a.version}-#{a.arch}",
-           "eula" => a.eula_url,
-           "free" => a.free}
+          { "name"         => a.name,
+            "display_name" => a.friendly_name,
+            "id"           => "#{a.identifier}-#{a.version}-#{a.arch}",
+            "eula"         => a.eula_url,
+            "free"         => a.free }
         end
       end
       ret
     end
-    
   end
- 
+
   ProductEvaluation = ProductEvaluationClass.new
   ProductEvaluation.main
 end
