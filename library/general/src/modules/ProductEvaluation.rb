@@ -90,7 +90,7 @@ module Yast
       ret["offline_medium"] = Y2Packager::MediumType.offline?
       if Yast::Mode.update
         # evaluating root partitions
-        ret["root_prtitions"] = Yast::RootPart.rootPartitions
+        ret["root_partitions"] = Yast::RootPart.rootPartitions
         ret["selected_root_partition"] = Yast::RootPart.selectedRootPartition
       end
 
