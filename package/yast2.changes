@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri May  7 15:10:14 UTC 2021 - Stefan Schubert <schubi@suse.de>
+
+- Logging all available products information into directory
+  /var/log/YaST2/product_info. This should help for evaluating the
+  cause of e.g. bsc#1180888, bsc#1180908, bsc#1178688.
+- 4.4.4
+
+-------------------------------------------------------------------
 Mon May  3 14:35:49 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Do not crash when a client execution return false
