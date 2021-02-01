@@ -52,6 +52,10 @@ BuildRequires:  yast2-devtools >= 3.1.10
 # Pkg.Resolvables() with "path" search support
 BuildRequires:  yast2-pkg-bindings >= 4.3.7
 BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
+# ProductEvaluation.rb
+BuildRequires:  yast2-packager
+# RootPart
+BuildRequires:  yast2-update
 # for XML module
 BuildRequires:  rubygem(%rb_default_ruby_abi:nokogiri)
 # To have Yast::WFM.scr_root
@@ -88,6 +92,10 @@ Requires:       yast2-core >= 2.23.0
 Requires:       yast2-hardware-detection
 # for SLPAPI.pm
 Requires:       yast2-perl-bindings
+# ProductEvaluation.rb
+Requires:  yast2-packager
+# RootPart
+BuildRequires:  yast2-update
 # Pkg.Resolvables() with "path" search support
 Requires:       yast2-pkg-bindings >= 4.3.7
 # for y2start
