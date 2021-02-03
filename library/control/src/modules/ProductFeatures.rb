@@ -72,7 +72,10 @@ module Yast
           "base_product_license_directory"  => "/usr/share/licenses/product/base/",
           "full_system_media_name"          => "",
           "full_system_download_url"        => "",
-          "save_y2logs"                     => true
+          "save_y2logs"                     => true,
+          # JSC#SLE-17427
+          "selinux_mode"                    => "enforcing",
+          "selinux_configurable"            => false
         },
         "partitioning"             => {
           "use_flexible_partitioning"    => false,
