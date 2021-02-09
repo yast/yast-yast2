@@ -74,7 +74,7 @@ module Yast2
 
     FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
     CREATE_SNAPSHOT_CMD = "/usr/bin/snapper --no-dbus --root=%{root} create --type %{snapshot_type} --description %{description}".freeze
-    LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list".freeze
+    LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list --disable-used-space".freeze
 
     # Predefined snapshot cleanup strategies (the user can define custom ones, too)
     CLEANUP_STRATEGY = { number: "number", timeline: "timeline" }.freeze
@@ -251,16 +251,8 @@ module Yast2
       def all
         raise SnapperNotConfigured unless configured?
 
-        cmd = LIST_SNAPSHOTS_CMD.dup
-        # Add additional options only when running in normal model. Otherwise,
-        # the snapper version in the chroot might not understand them (e.g.,
-        # when upgrading from SLE 12 to SLE 15).
-        cmd << " --disable-used-space" if Yast::Mode.normal
-
-        out = Yast::SCR.Execute(
-          Yast::Path.new(".target.bash_output"),
-          format(cmd, root: target_root.shellescape)
-        )
+        cmd = format(LIST_SNAPSHOTS_CMD, root: target_root.shellescape)
+        out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
         log.info("Retrieving snapshots list: #{cmd} returned: #{out}")
         return [] unless out["exit"].zero?
 

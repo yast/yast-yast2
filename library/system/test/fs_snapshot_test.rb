@@ -11,7 +11,6 @@ describe Yast2::FsSnapshot do
   FIND_CONFIG = "/usr/bin/snapper --no-dbus --root=/ list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
   FIND_IN_ROOT_CONFIG = "/usr/bin/snapper --no-dbus --root=/mnt list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
   LIST_SNAPSHOTS = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list --disable-used-space".freeze
-  LIST_SNAPSHOTS_INSTALLATION = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=/ list".freeze
 
   let(:dummy_snapshot) { double("snapshot", number: 2) }
 
@@ -438,21 +437,6 @@ describe Yast2::FsSnapshot do
 
         it "should return an empty array" do
           expect(described_class.all).to eq([])
-        end
-      end
-
-      context "when not running in normal mode" do
-        let(:output) { "" }
-
-        before do
-          allow(Yast::Mode).to receive(:normal).and_return(false)
-        end
-
-        it "do not use additional snapper options" do
-          expect(Yast::SCR).to receive(:Execute)
-            .with(path(".target.bash_output"), LIST_SNAPSHOTS_INSTALLATION)
-            .and_return("stdout" => output, "exit" => 0)
-          described_class.all
         end
       end
     end
