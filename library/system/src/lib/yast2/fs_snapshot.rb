@@ -75,8 +75,8 @@ module Yast2
       "/usr/bin/snapper --no-dbus --root=%{root} --csvout list-configs " \
       "--columns config,subvolume | /usr/bin/grep \"^root,\" >/dev/null".freeze
 
-    CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} " \
-    "--snapshot-type %{snapshot_type} --description %{description}".freeze
+    CREATE_SNAPSHOT_CMD = "/usr/bin/snapper --no-dbus --root=%{root} create "\
+      "--type %{snapshot_type} --description %{description}".freeze
 
     LIST_SNAPSHOTS_CMD =
       "/usr/bin/snapper --no-dbus --root=%{root} --utc --csvout list --disable-used-space " \
@@ -331,7 +331,7 @@ module Yast2
         out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
 
         if out["exit"] == 0
-          find(out["stdout"].to_i) # The CREATE_SNAPSHOT_CMD returns the number of the new snapshot.
+          all.last
         else
           log.error "Snapshot could not be created: #{cmd} returned: #{out}"
           raise SnapshotCreationFailed
