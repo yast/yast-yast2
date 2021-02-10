@@ -1,7 +1,32 @@
 -------------------------------------------------------------------
-Wed Jan 20 15:56:52 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+Wed Feb 10 15:56:52 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
-- Use Auto Wrapping of long lines for Yast2::Popup (bsc#1179893)
+- Use Auto Wrapping of long lines for Yast2::Popup and Yast::Report
+  (bsc#1179893)
+- 4.3.54
+
+-------------------------------------------------------------------
+Wed Feb 10 07:51:10 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not use the 'installation-helper' binary to create snapshots
+  during installation or offline upgrade (bsc#1180142).
+- Add a new exception to properly handle exceptions
+  when reading/writing snapshots numbers (related to bsc#1180142).
+- 4.3.53
+
+-------------------------------------------------------------------
+Thu Feb  4 09:16:10 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Added supported migration "openSUSE Leap 15.3" -> SLES
+  (in 15.3 the product has been renamed from "openSUSE" to "Leap")
+  (bsc#1181773)
+- 4.3.52
+
+-------------------------------------------------------------------
+Wed Jan 27 09:22:50 UTC 2021 - José Iván López González <jlopez@suse.com>
+
+- Do not propose hibernation when running over a virtualized setup
+  (bsc#1180982).
 - 4.3.51
 
 -------------------------------------------------------------------

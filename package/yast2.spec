@@ -17,11 +17,7 @@
 
 
 Name:           yast2
-<<<<<<< HEAD
-Version:        4.3.46
-=======
-Version:        4.3.50
->>>>>>> origin/master
+Version:        4.3.54
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only

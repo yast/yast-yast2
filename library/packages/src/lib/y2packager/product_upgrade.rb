@@ -41,7 +41,10 @@ module Y2Packager
       # this one is used when openSUSE is not available, e.g. booting SLE medium
       # (moreover the openSUSE medium should contain only one product so that
       # product should be used unconditionally)
-      ["openSUSE"]                                                        => "SLES"
+      ["openSUSE"]                                                        => "SLES",
+      # (installed) openSUSE Leap => (available) SLES,
+      # same as above, in 15.3+ the product has been renamed from "openSUSE" to "Leap"
+      ["Leap"]                                                            => "SLES"
     }.freeze
 
     # This maps uses a list of installed products as the key and the removed products as a value.

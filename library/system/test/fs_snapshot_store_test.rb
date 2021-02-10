@@ -29,7 +29,7 @@ describe Yast2::FsSnapshotStore do
         "42"
       ).and_return(nil)
 
-      expect { described_class.save("test", 42) }.to raise_error(/Failed to write/)
+      expect { described_class.save("test", 42) }.to raise_error(Yast2::FsSnapshotStore::IOError)
     end
   end
 
@@ -49,7 +49,7 @@ describe Yast2::FsSnapshotStore do
         "/var/lib/YaST2/pre_snapshot_test.id"
       ).and_return(nil)
 
-      expect { described_class.load("test") }.to raise_error(/Failed to read/)
+      expect { described_class.load("test") }.to raise_error(Yast2::FsSnapshotStore::IOError)
     end
 
     it "raises exception if file content is not number" do
@@ -58,7 +58,7 @@ describe Yast2::FsSnapshotStore do
         "/var/lib/YaST2/pre_snapshot_test.id"
       ).and_return("blabla\n")
 
-      expect { described_class.load("test") }.to raise_error(/Failed to read/)
+      expect { described_class.load("test") }.to raise_error(Yast2::FsSnapshotStore::IOError)
     end
   end
 

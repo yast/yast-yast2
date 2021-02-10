@@ -343,6 +343,16 @@ module Yast
       @_is_laptop
     end
 
+    # Whether the system is running over a virtualized environment
+    #
+    # @return [Boolean]
+    def is_virtual
+      return @_is_virtual unless @_is_virtual.nil?
+
+      @_is_virtual = SCR.Read(path(".target.string"), "/proc/cpuinfo")
+        .to_s.match?("^flags.*hypervisor.*\n")
+    end
+
     # ************************************************************
     # UML stuff
 
