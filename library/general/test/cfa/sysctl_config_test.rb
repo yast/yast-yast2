@@ -23,11 +23,18 @@ require_relative "../test_helper"
 require "cfa/sysctl_config"
 require "cfa/sysctl"
 
+Yast.import "Report"
+
 describe CFA::SysctlConfig do
   subject(:config) { described_class.new }
 
   around do |example|
     change_scr_root(File.join(GENERAL_DATA_PATH, "sysctl-full"), &example)
+  end
+
+  before do
+    allow(Yast::Report).to receive(:Error) # many chroot calls via Yast2::Execute failed on non-root run
+    allow(Yast::Report).to receive(:LongWarning) # not fail due to missing UI
   end
 
   describe "#load" do

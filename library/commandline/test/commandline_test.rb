@@ -67,6 +67,10 @@ describe Yast::CommandLine do
   end
 
   describe ".UniqueOption" do
+    before do
+      allow(Yast::Report).to receive(:Error)
+    end
+
     context "in options is only one of the options mentioned in unique_options" do
       it "returns string" do
         expect(subject.UniqueOption({ "c" => "v" }, ["c", "d", "e"])).to eq "c"
