@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Wed Feb 10 15:56:52 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+Wed Feb 10 15:56:52 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - Use Auto Wrapping of long lines for Yast2::Popup and Yast::Report
   (bsc#1179893)
