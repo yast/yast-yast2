@@ -27,7 +27,7 @@ describe Yast2::FsSnapshot do
     described_class.log
   end
 
-  let(:dummy_snapshot) { double("snapshot") }
+  let(:dummy_snapshot) { double("snapshot", number: 2) }
 
   before do
     # reset configured cache
@@ -168,14 +168,15 @@ describe Yast2::FsSnapshot do
   end
 
   describe ".create_single" do
-    CREATE_SINGLE_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--root-prefix=/ --snapshot-type single --description some-description".freeze
+    CREATE_SINGLE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
+      "--root=/ create --type single --description some-description".freeze
     OPTION_CLEANUP_NUMBER = " --cleanup number".freeze
     OPTION_IMPORTANT = " --userdata \"important=yes\"".freeze
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
       allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:single).and_return(create_snapshot)
+      allow(Yast2::FsSnapshot).to receive(:all).and_return([dummy_snapshot])
     end
 
     context "when snapper is configured" do
@@ -190,7 +191,7 @@ describe Yast2::FsSnapshot do
       end
 
       context "when snapshot creation fails" do
-        let(:output) { { "stdout" => "", "exit" => 1 } }
+        let(:output) { { "exit" => 1 } }
 
         it "logs the error and returns nil" do
           expect(logger).to receive(:error).with(/Snapshot could not be created/)
@@ -200,23 +201,19 @@ describe Yast2::FsSnapshot do
       end
 
       context "when snapshot creation is successful" do
-        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:output) { { "exit" => 0 } }
 
         it "returns the created snapshot" do
-          expect(described_class).to receive(:find).with(2)
-            .and_return(dummy_snapshot)
           snapshot = described_class.create_single("some-description")
           expect(snapshot).to be(dummy_snapshot)
         end
       end
 
       context "when a cleanup strategy is set" do
-        let(:output) { { "stdout" => "2", "exit" => 0 } }
+        let(:output) { { "exit" => 0 } }
         let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_CLEANUP_NUMBER }
 
         it "creates a snapshot with that strategy" do
-          expect(described_class).to receive(:find).with(2)
-            .and_return(dummy_snapshot)
           snapshot = described_class.create_single("some-description", cleanup: :number)
           expect(snapshot).to be(dummy_snapshot)
         end
@@ -227,8 +224,6 @@ describe Yast2::FsSnapshot do
         let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT }
 
         it "creates a snapshot marked as important" do
-          expect(described_class).to receive(:find).with(2)
-            .and_return(dummy_snapshot)
           snapshot = described_class.create_single("some-description", important: true)
           expect(snapshot).to be(dummy_snapshot)
         end
@@ -239,8 +234,6 @@ describe Yast2::FsSnapshot do
         let(:snapshot_command) { CREATE_SINGLE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
 
         it "creates a snapshot with that strategy that is marked as important" do
-          expect(described_class).to receive(:find).with(2)
-            .and_return(dummy_snapshot)
           snapshot = described_class.create_single("some-description", cleanup: :number, important: true)
           expect(snapshot).to be(dummy_snapshot)
         end
@@ -268,12 +261,13 @@ describe Yast2::FsSnapshot do
   end
 
   describe ".create_pre" do
-    CREATE_PRE_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--root-prefix=/ --snapshot-type pre --description some-description".freeze
+    CREATE_PRE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
+      "--root=/ create --type pre --description some-description".freeze
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
       allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:around).and_return(create_snapshot)
+      allow(Yast2::FsSnapshot).to receive(:all).and_return([dummy_snapshot])
     end
 
     context "when snapper is configured" do
@@ -288,7 +282,7 @@ describe Yast2::FsSnapshot do
       end
 
       context "when snapshot creation fails" do
-        let(:output) { { "stdout" => "", "exit" => 1 } }
+        let(:output) { { "exit" => 1 } }
 
         it "logs the error and returns nil" do
           expect(logger).to receive(:error).with(/Snapshot could not be created/)
@@ -301,8 +295,6 @@ describe Yast2::FsSnapshot do
         let(:output) { { "stdout" => "2", "exit" => 0 } }
 
         it "returns the created snapshot" do
-          expect(described_class).to receive(:find).with(2)
-            .and_return(dummy_snapshot)
           snapshot = described_class.create_pre("some-description")
           expect(snapshot).to be(dummy_snapshot)
         end
@@ -313,8 +305,6 @@ describe Yast2::FsSnapshot do
         let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_CLEANUP_NUMBER }
 
         it "creates a pre snapshot with that strategy" do
-          expect(described_class).to receive(:find).with(2)
-            .and_return(dummy_snapshot)
           snapshot = described_class.create_pre("some-description", cleanup: :number)
           expect(snapshot).to be(dummy_snapshot)
         end
@@ -325,8 +315,6 @@ describe Yast2::FsSnapshot do
         let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_IMPORTANT }
 
         it "creates a pre snapshot marked as important" do
-          expect(described_class).to receive(:find).with(2)
-            .and_return(dummy_snapshot)
           snapshot = described_class.create_pre("some-description", important: true)
           expect(snapshot).to be(dummy_snapshot)
         end
@@ -337,8 +325,6 @@ describe Yast2::FsSnapshot do
         let(:snapshot_command) { CREATE_PRE_SNAPSHOT + OPTION_IMPORTANT + OPTION_CLEANUP_NUMBER }
 
         it "creates a pre snapshot with that strategy that is marked as important" do
-          expect(described_class).to receive(:find).with(2)
-            .and_return(dummy_snapshot)
           snapshot = described_class.create_pre("some-description", important: true, cleanup: :number)
           expect(snapshot).to be(dummy_snapshot)
         end
@@ -366,9 +352,9 @@ describe Yast2::FsSnapshot do
   end
 
   describe ".create_post" do
-    CREATE_POST_SNAPSHOT = "/usr/lib/snapper/installation-helper --step 5 "\
-      "--root-prefix=/ --snapshot-type post --description some-description "\
-      "--pre-num 2".freeze
+    CREATE_POST_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
+      "--root=/ create --type post --description some-description "\
+      "--pre-num 1".freeze
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
@@ -379,16 +365,18 @@ describe Yast2::FsSnapshot do
       let(:configured) { true }
       let(:create_snapshot) { true }
 
-      let(:pre_snapshot) { double("snapshot", snapshot_type: :pre, number: 2) }
+      let(:pre_snapshot) { double("snapshot", snapshot_type: :pre, number: 1) }
       let(:snapshots) { [pre_snapshot] }
-      let(:output) { { "stdout" => "3", "exit" => 0 } }
+      let(:output) { { "exit" => 0 } }
 
       before do
         allow(Yast::SCR).to receive(:Execute)
           .with(path(".target.bash_output"), CREATE_POST_SNAPSHOT)
           .and_return(output)
         allow(Yast2::FsSnapshot).to receive(:all)
-          .and_return(snapshots)
+          .and_return([pre_snapshot])
+        allow(Yast2::FsSnapshot).to receive(:all)
+          .and_return([pre_snapshot, dummy_snapshot])
       end
 
       context "when previous snapshot exists" do
@@ -396,12 +384,8 @@ describe Yast2::FsSnapshot do
 
         context "when snapshot creation is successful" do
           it "returns the created snapshot" do
-            allow(Yast2::FsSnapshot).to receive(:find).with(pre_snapshot.number)
-              .and_return(pre_snapshot)
-            expect(Yast2::FsSnapshot).to receive(:find).with(3)
-              .and_return(dummy_snapshot)
             expect(described_class.create_post("some-description", pre_snapshot.number))
-              .to be(dummy_snapshot)
+              .to eq(dummy_snapshot)
           end
         end
 
