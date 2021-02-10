@@ -256,6 +256,10 @@ module Yast2
       #
       # It raises an exception if Snapper is not configured.
       #
+      # @note Unlike other class methods which inspect the underlying system,
+      #   this method does not cache any result. It always queries snapper
+      #   about existing snapshots.
+      #
       # @return [Array<FsSnapshot>] All snapshots that exist in the system.
       def all
         raise SnapperNotConfigured unless configured?
