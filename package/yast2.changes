@@ -1,7 +1,43 @@
 -------------------------------------------------------------------
-Fri Dec 11 15:56:52 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
+Wed Jan 20 15:56:52 UTC 2020 - Josef Reidinger <jreidinger@suse.com>
 
 - Use Auto Wrapping of long lines for Yast2::Popup (bsc#1179893)
+- 4.3.51
+
+-------------------------------------------------------------------
+Wed Jan 20 09:28:51 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed Resolvables class to uniqely identify the libzypp objects
+  to avoid random failures (related to bsc#1178688)
+- 4.3.50
+
+-------------------------------------------------------------------
+Wed Jan 13 16:03:51 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Keep the libzypp target open to verify other packages
+  (bsc#1180858, related to the previous fix bsc#1179773)
+- 4.3.49
+
+-------------------------------------------------------------------
+Mon Jan 11 16:40:37 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Ensure the libzypp target is initialized when downloading
+  the skelcd packages (to verify the GPG signatures) (bsc#1179773)
+- Log more details when several resolvables (instead of a single
+  one) are unexpectedly found (related to bsc#1176276)
+- 4.3.48
+
+-------------------------------------------------------------------
+Mon Jan 11 11:47:27 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix default for hibernation proposal (bsc#1169874)
+- 4.3.47
+
+-------------------------------------------------------------------
+Tue Dec 15 15:49:56 UTC 2020 - Stefan Schubert <schubi@suse.de>
+
+- Removed SCR agent .etc.inittab which is obsolete because SysVinit
+  is no longer supported (bsc#1175494).
 - 4.3.46
 
 -------------------------------------------------------------------
