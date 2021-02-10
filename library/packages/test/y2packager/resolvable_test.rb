@@ -28,7 +28,7 @@ describe Y2Packager::Resolvable do
 
     # the testing repositories are not signed, temporarily allow using unsigned files
     Yast::Pkg.CallbackAcceptUnsignedFile(
-      Yast::fun_ref(
+      Yast.fun_ref(
         signature_checker.method(:accept_unsigned_file),
         "boolean (string, integer)"
       )
@@ -75,8 +75,8 @@ describe Y2Packager::Resolvable do
       expect(res.size).to eq(2)
       # in the same version "15.2-0"
       res.each do |r|
-        expect(r.name) == "SLES"
-        expect(r.version) == "15.2-0"
+        expect(r.name).to eq("SLES")
+        expect(r.version).to eq("15.2-0")
       end
     end
 
