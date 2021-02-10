@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Wed Feb 10 07:51:10 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not use the 'installation-helper' binary to create snapshots
+  during installation or offline upgrade (bsc#1180142).
+- Add a new exception to properly handle exceptions
+  when reading/writing snapshots numbers (related to bsc#1180142).
+- 4.3.53
+
+-------------------------------------------------------------------
 Thu Feb  4 09:16:10 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
 
 - Added supported migration "openSUSE Leap 15.3" -> SLES

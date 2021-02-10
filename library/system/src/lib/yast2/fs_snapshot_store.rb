@@ -26,6 +26,8 @@ module Yast2
   # Goal of this module is to provide easy to use api to store id of pre
   # snapshots, so post snapshots can be then easy to make.
   module FsSnapshotStore
+    class IOError < StandardError; end
+
     # Stores pre snapshot with given id and purpose
     # @param[String] purpose of snapshot like "upgrade"
     # @raise[RuntimeError] if writing to file failed
@@ -42,7 +44,7 @@ module Yast2
         snapshot_id.to_s
       )
 
-      raise "Failed to write Pre Snapshot id for #{purpose} to store. See logs." unless result
+      raise IOError, "Failed to write Pre Snapshot id for #{purpose} to store. See logs." unless result
     end
 
     # Loads id of pre snapshot for given purpose
@@ -55,7 +57,7 @@ module Yast2
         snapshot_path(purpose)
       )
 
-      raise "Failed to read Pre Snapshot id for #{purpose} from store. See logs." if !content || content !~ /^\d+$/
+      raise IOError, "Failed to read Pre Snapshot id for #{purpose} from store. See logs." if !content || content !~ /^\d+$/
 
       content.to_i
     end
