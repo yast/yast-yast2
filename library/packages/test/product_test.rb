@@ -295,7 +295,7 @@ describe Yast::Product do
 
         # Logging evaluated product information
         expect(FileUtils).to receive(:mkdir_p).at_least(1).with(
-          "/var/log/YaST2/product_info/"
+          "/var/log/YaST2/installation_info/"
         )
         expect(File).to receive(:write).at_least(1).with(/no_base_product/, anything)
 
@@ -318,7 +318,7 @@ describe Yast::Product do
 
         # Logging evaluated product information
         expect(FileUtils).to receive(:mkdir_p).at_least(1).with(
-          "/var/log/YaST2/product_info/"
+          "/var/log/YaST2/installation_info/"
         )
         expect(File).to receive(:write).at_least(1).with(/no_base_product/, anything)
 
