@@ -23,8 +23,8 @@ module Yast2
       RICHTEXT_WIDTH = 60
       RICHTEXT_HEIGHT = 10
 
-      # Minimum width for auto wrapped labels. It is computed that max line or this
-      # value is used to ensure that it is reasonable wrapped.
+      # Minimum width for auto wrapped labels. This value is used when
+      # the label has longer lines.
       LABEL_MINWIDTH = 60
 
       # Show a popup, wait for a button press (or a timeout), return the button ID.
