@@ -95,7 +95,7 @@ Requires:       yast2-perl-bindings
 # ProductEvaluation.rb
 Requires:  yast2-packager
 # RootPart
-BuildRequires:  yast2-update
+Requires:  yast2-update
 # Pkg.Resolvables() with "path" search support
 Requires:       yast2-pkg-bindings >= 4.3.7
 # for y2start

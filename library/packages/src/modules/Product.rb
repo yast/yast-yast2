@@ -29,6 +29,7 @@
 require "yast"
 require "y2packager/product_reader"
 require "y2packager/resolvable"
+require "installation/installation_info"
 
 module Yast
   class ProductClass < Module
@@ -41,7 +42,6 @@ module Yast
       Yast.import "OSRelease"
       Yast.import "PackageLock"
       Yast.import "PackageSystem"
-      Yast.import "ProductEvaluation"
     end
 
     # Loads and returns base product property
@@ -128,7 +128,7 @@ module Yast
       if products.empty?
         log.error "No base product found"
         # Logging all information about the product evaluation
-        ProductEvaluation.write("no_base_product_found")
+        ::Installation::InstallationInfo.instance.write("no_base_product_found")
         raise "No base product found"
       elsif products.size > 1
         log.warn "More than one base product found!"

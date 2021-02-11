@@ -1,4 +1,4 @@
-# Copyright (c) [2020] SUSE LLC
+# Copyright (c) [2021] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -17,20 +17,23 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "singleton"
 require "yast"
 require "y2packager/medium_type"
 require "y2packager/resolvable"
 require "y2packager/repository"
 
-module Yast
-  class ProductEvaluationClass < Module
+module Installation
+  class InstallationInfo
+    include Singleton
+    
     LOGFILE = "product_information".freeze
-    LOGDIR = "/var/log/YaST2/product_info/".freeze
+    LOGDIR = "/var/log/YaST2/installation_info/".freeze
     SCC_FILE = "/var/log/YaST2/registration_addons.yml".freeze
 
     include Yast::Logger
 
-    def main
+    def initialize
       Yast.import "Mode"
       Yast.import "RootPart"
       Yast.import "Packages"
@@ -38,7 +41,7 @@ module Yast
       #
       # Function calls which has been set by other modules or 3.parties.
       # These functions will be called while generating the output.
-      # The return value (hash) will be logged into the output file.
+      # The return value (hash) will be logged into the output file.      
       @dump_callbacks = []
     end
 
@@ -56,14 +59,14 @@ module Yast
     #
     # Example:
     #
-    #     Yast.import "ProductEvaluation"
+    #     require "installation/installation_info"
     #
     #     func = -> do
     #        data = MyClass.collect_data
     #        { foo: data }
     #     end
     #
-    #     ProductEvaluation.add(func)
+    #     ::Installation::InstallationInfo.instance.add(func)
     #
     # @param [Proc] function which has be called
 
@@ -87,7 +90,7 @@ module Yast
       end
 
       ret["mode"] = Yast::Mode.mode
-      ret["offline_medium"] = Y2Packager::MediumType.offline?
+      ret["medium_type"] = Y2Packager::MediumType.type.to_s
       if Yast::Mode.update
         # evaluating root partitions
         ret["root_partitions"] = Yast::RootPart.rootPartitions
@@ -184,7 +187,4 @@ module Yast
       ret
     end
   end
-
-  ProductEvaluation = ProductEvaluationClass.new
-  ProductEvaluation.main
 end
