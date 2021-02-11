@@ -37,6 +37,8 @@ module Yast
   # warnings and errors. Collected messages can be displayed later.
   # @TODO not all methods respect all environment, feel free to open issue with
   #   method that doesn't respect it.
+  # Disable unused method check as we cannot rename keyword parameter for backward compatibility
+  # rubocop:disable Lint/UnusedMethodArgument
   class ReportClass < Module
     include Yast::Logger
 
@@ -364,9 +366,8 @@ module Yast
       if @display_yesno_messages
         timeout = (@timeout_yesno_messages.to_s.to_i > 0) ? @timeout_yesno_messages : 0
         ret = Yast2::Popup.show(message, headline: headline,
-          buttons: {yes: yes_button_message, no: no_button_message},
-          focus: focus, timeout: timeout
-        )
+          buttons: { yes: yes_button_message, no: no_button_message },
+          focus: focus, timeout: timeout)
       end
 
       @yesno_messages = Builtins.add(@yesno_messages, message)
@@ -754,6 +755,7 @@ module Yast
       end
       richtext
     end
+    # rubocop:enable Lint/UnusedMethodArgument
 
     publish variable: :message_settings, type: "map"
     publish variable: :error_settings, type: "map"

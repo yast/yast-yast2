@@ -60,11 +60,11 @@ describe Yast::Report do
         let(:timeout) { 1 }
 
         it "shows a timed popup" do
-        expect(Yast2::Popup).to receive(:show) do |msg, args|
-          expect(msg).to eq "Message"
-          expect(args[:richtext]).to eq true
-          expect(args[:timeout]).to eq 1
-        end
+          expect(Yast2::Popup).to receive(:show) do |msg, args|
+            expect(msg).to eq "Message"
+            expect(args[:richtext]).to eq true
+            expect(args[:timeout]).to eq 1
+          end
           subject.send(meth, "Message")
         end
       end
