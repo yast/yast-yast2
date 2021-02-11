@@ -23,6 +23,10 @@ module Yast2
       RICHTEXT_WIDTH = 60
       RICHTEXT_HEIGHT = 10
 
+      # Minimum width for auto wrapped labels. This value is used when
+      # the label has longer lines.
+      LABEL_MINWIDTH = 60
+
       # Show a popup, wait for a button press (or a timeout), return the button ID.
       # @param message [String] message to show. The only mandatory argument.
       # @param details [String] details that will be shown in another popup
@@ -175,7 +179,8 @@ module Yast2
         elsif message.lines.size >= LINES_THRESHOLD
           message_widget(plain_to_richtext(message), true)
         else
-          Left(Label(message))
+          width = [LABEL_MINWIDTH, message.lines.map(&:size).max].min
+          MinWidth(width, Left(Label(Opt(:autoWrap), message)))
         end
       end
 

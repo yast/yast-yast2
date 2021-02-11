@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Feb 10 15:56:52 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- Use Auto Wrapping of long lines for Yast2::Popup and Yast::Report
+  (bsc#1179893)
+- 4.3.54
+
+-------------------------------------------------------------------
 Wed Feb 10 07:51:10 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not use the 'installation-helper' binary to create snapshots
@@ -56,7 +63,7 @@ Tue Dec 15 15:49:56 UTC 2020 - Stefan Schubert <schubi@suse.de>
 
 - Removed SCR agent .etc.inittab which is obsolete because SysVinit
   is no longer supported (bsc#1175494).
-- 4.3.46 
+- 4.3.46
 
 -------------------------------------------------------------------
 Mon Nov 30 15:00:28 UTC 2020 - David Diaz <dgonzalez@suse.com>

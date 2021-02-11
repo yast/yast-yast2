@@ -14,11 +14,7 @@ describe Yast::Report do
   #
   shared_examples "logging" do |meth, level|
     before do
-      if meth == :yesno_popup
-        allow(Yast2::Popup).to receive(:show)
-      else
-        allow(Yast::Popup).to receive(meth)
-      end
+      allow(Yast2::Popup).to receive(:show)
     end
 
     context "when logging is enabled" do
@@ -44,15 +40,17 @@ describe Yast::Report do
       let(:show) { false }
 
       it "does not show a popup" do
-        expect(Yast::Popup).to_not receive("#{meth}Geometry")
+        expect(Yast2::Popup).to_not receive(:show)
         subject.send(meth, "Message")
       end
     end
 
     context "when display of messages is enabled" do
       it "shows a popup" do
-        expect(Yast::Popup).to receive("#{meth}Geometry")
-          .with("Message", instance_of(Integer), instance_of(Integer))
+        expect(Yast2::Popup).to receive(:show) do |msg, args|
+          expect(msg).to eq "Message"
+          expect(args[:richtext]).to eq true
+        end
         subject.send(meth, "Message")
       end
     end
@@ -62,8 +60,11 @@ describe Yast::Report do
         let(:timeout) { 1 }
 
         it "shows a timed popup" do
-          expect(Yast::Popup).to receive("Timed#{meth}Geometry")
-            .with("Message", 1, instance_of(Integer), instance_of(Integer))
+          expect(Yast2::Popup).to receive(:show) do |msg, args|
+            expect(msg).to eq "Message"
+            expect(args[:richtext]).to eq true
+            expect(args[:timeout]).to eq 1
+          end
           subject.send(meth, "Message")
         end
       end
@@ -213,8 +214,7 @@ describe Yast::Report do
       it "prints the message only on console" do
         expect(Yast::CommandLine).to receive(:Print)
           .with(/#{message}/)
-        expect(Yast::Popup).to_not receive(:Warning)
-        expect(Yast::Popup).to_not receive(:TimedWarning)
+        expect(Yast2::Popup).to_not receive(:show)
         subject.Warning(message)
       end
     end
@@ -228,7 +228,7 @@ describe Yast::Report do
       end
 
       it "shows a popup" do
-        expect(Yast::Popup).to receive(:Warning).with(/#{message}/)
+        expect(Yast2::Popup).to receive(:show).with(message, headline: :warning, timeout: 0)
         subject.Warning(message)
       end
     end
@@ -242,7 +242,7 @@ describe Yast::Report do
       end
 
       it "shows timed popup" do
-        expect(Yast::Popup).to receive(:TimedWarning).with(/#{message}/, timeout)
+        expect(Yast2::Popup).to receive(:show).with(message, headline: :warning, timeout: timeout)
         subject.Warning(message)
       end
     end
@@ -262,8 +262,7 @@ describe Yast::Report do
       it "prints the message only on console" do
         expect(Yast::CommandLine).to receive(:Print)
           .with(/#{message}/)
-        expect(Yast::Popup).to_not receive(:Error)
-        expect(Yast::Popup).to_not receive(:TimedError)
+        expect(Yast2::Popup).to_not receive(:show)
         subject.Error(message)
       end
     end
@@ -277,7 +276,7 @@ describe Yast::Report do
       end
 
       it "shows a popup" do
-        expect(Yast::Popup).to receive(:Error).with(/#{message}/)
+        expect(Yast2::Popup).to receive(:show).with(message, headline: :error, timeout: 0)
         subject.Error(message)
       end
     end
@@ -291,7 +290,7 @@ describe Yast::Report do
       end
 
       it "shows a timed popup" do
-        expect(Yast::Popup).to receive(:TimedError).with(/#{message}/, timeout)
+        expect(Yast2::Popup).to receive(:show).with(message, headline: :error, timeout: timeout)
         subject.Error(message)
       end
     end

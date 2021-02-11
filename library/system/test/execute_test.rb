@@ -6,6 +6,10 @@ require "yast2/execute"
 Yast.import "Report"
 
 describe Yast::Execute do
+  before do
+    allow(Yast::Report).to receive(:Error)
+  end
+
   it "sets yast logger as cheetah logger" do
     expect(Cheetah.default_options[:logger]).to eq Yast::Y2Logger.instance
   end

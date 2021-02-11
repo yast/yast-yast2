@@ -37,6 +37,8 @@ module Yast
   # warnings and errors. Collected messages can be displayed later.
   # @TODO not all methods respect all environment, feel free to open issue with
   #   method that doesn't respect it.
+  # Disable unused method check as we cannot rename keyword parameter for backward compatibility
+  # rubocop:disable Lint/UnusedMethodArgument
   class ReportClass < Module
     include Yast::Logger
 
@@ -44,7 +46,6 @@ module Yast
       textdomain "base"
 
       Yast.import "Mode"
-      Yast.import "Popup"
       Yast.import "Summary"
       Yast.import "CommandLine"
 
@@ -363,31 +364,18 @@ module Yast
 
       ret = false
       if @display_yesno_messages
-        ret = if Ops.greater_than(@timeout_yesno_messages, 0)
-          Popup.TimedAnyQuestion(
-            headline,
-            message,
-            yes_button_message,
-            no_button_message,
-            focus,
-            @timeout_yesno_messages
-          )
-        else
-          Popup.AnyQuestion(
-            headline,
-            message,
-            yes_button_message,
-            no_button_message,
-            focus
-          )
-        end
+        timeout = (@timeout_yesno_messages.to_s.to_i > 0) ? @timeout_yesno_messages : 0
+        ret = Yast2::Popup.show(message, headline: headline,
+          buttons: { yes: yes_button_message, no: no_button_message },
+          focus: focus, timeout: timeout)
       end
 
       @yesno_messages = Builtins.add(@yesno_messages, message)
-      ret
+      ret == :yes
     end
 
     # Question with headline and Yes/No Buttons
+    # @deprecated same as AnyQuestion
     # @param [String] headline Popup Headline
     # @param [String] message Popup Message
     # @param [String] yes_button_message Yes Button Message
@@ -395,32 +383,8 @@ module Yast
     # @param [Symbol] focus Which Button has the focus
     # @return [Boolean] True if Yes is pressed, otherwise false
     def ErrorAnyQuestion(headline, message, yes_button_message, no_button_message, focus)
-      Builtins.y2milestone(1, "%1", message) if @log_yesno_messages
-
-      ret = false
-      if @display_yesno_messages
-        ret = if Ops.greater_than(@timeout_yesno_messages, 0)
-          Popup.TimedErrorAnyQuestion(
-            headline,
-            message,
-            yes_button_message,
-            no_button_message,
-            focus,
-            @timeout_yesno_messages
-          )
-        else
-          Popup.ErrorAnyQuestion(
-            headline,
-            message,
-            yes_button_message,
-            no_button_message,
-            focus
-          )
-        end
-      end
-
-      @yesno_messages = Builtins.add(@yesno_messages, message)
-      ret
+      AnyQuestion(headline, message, yes_button_message,
+        no_button_message, focus)
     end
 
     # Question presented via the Yast2::Popup class
@@ -476,10 +440,9 @@ module Yast
       if @display_messages
         if Mode.commandline
           CommandLine.Print(message_string)
-        elsif Ops.greater_than(@timeout_messages, 0)
-          Popup.TimedMessage(message_string, @timeout_messages)
         else
-          Popup.Message(message_string)
+          timeout = (@timeout_messages.to_s.to_i > 0) ? @timeout_messages : 0
+          Yast2::Print.show(message_string, timeout: timeout)
         end
       end
 
@@ -499,10 +462,9 @@ module Yast
       if @display_messages
         if Mode.commandline
           CommandLine.Print(message_string)
-        elsif Ops.greater_than(@timeout_messages, 0)
-          Popup.TimedLongMessageGeometry(message_string, @timeout_messages, width, height)
         else
-          Popup.LongMessageGeometry(message_string, width, height)
+          timeout = (@timeout_messages.to_s.to_i > 0) ? @timeout_messages : 0
+          Yast2::Popup.show(message_string, richtext: true, timeout: timeout)
         end
       end
 
@@ -523,10 +485,11 @@ module Yast
           CommandLine.Print(headline_string)
           CommandLine.Print("\n\n")
           CommandLine.Print(message_string)
-        elsif Ops.greater_than(@timeout_errors, 0)
-          Popup.ShowTextTimed(headline_string, message_string, @timeout_errors)
         else
-          Popup.ShowText(headline_string, message_string)
+          timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
+          # this works even for big file due to show feature that switch to richtextbox
+          # if text is too long, but do not interpret richtext tags.
+          Yast2::Popup.show(message_string, headline: headline_string, timeout: timeout)
         end
       end
 
@@ -544,10 +507,9 @@ module Yast
       if @display_warnings
         if Mode.commandline
           CommandLine.Print "Warning: #{warning_string}"
-        elsif Ops.greater_than(@timeout_warnings, 0)
-          Popup.TimedWarning(warning_string, @timeout_warnings)
         else
-          Popup.Warning(warning_string)
+          timeout = (@timeout_warnings.to_s.to_i > 0) ? @timeout_warnings : 0
+          Yast2::Popup.show(warning_string, headline: :warning, timeout: timeout)
         end
       end
 
@@ -567,10 +529,9 @@ module Yast
       if @display_warnings
         if Mode.commandline
           CommandLine.Print("Warning: #{warning_string}")
-        elsif Ops.greater_than(@timeout_warnings, 0)
-          Popup.TimedLongWarningGeometry(warning_string, @timeout_warnings, width, height)
         else
-          Popup.LongWarningGeometry(warning_string, width, height)
+          timeout = (@timeout_warnings.to_s.to_i > 0) ? @timeout_warnings : 0
+          Yast2::Popup.show(warning_string, headline: :warning, richtext: true, timeout: timeout)
         end
       end
 
@@ -590,10 +551,9 @@ module Yast
       if @display_errors
         if Mode.commandline
           CommandLine.Print "Error: #{error_string}"
-        elsif Ops.greater_than(@timeout_errors, 0)
-          Popup.TimedError(error_string, @timeout_errors)
         else
-          Popup.Error(error_string)
+          timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
+          Yast2::Popup.show(error_string, headline: :error, timeout: timeout)
         end
       end
 
@@ -613,10 +573,9 @@ module Yast
       if @display_errors
         if Mode.commandline
           CommandLine.Print "Error: #{error_string}"
-        elsif Ops.greater_than(@timeout_errors, 0)
-          Popup.TimedLongErrorGeometry(error_string, @timeout_errors, width, height)
         else
-          Popup.LongErrorGeometry(error_string, width, height)
+          timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
+          Yast2::Popup.show(error_string, headline: :error, richtext: true, timeout: timeout)
         end
       end
 
@@ -796,6 +755,7 @@ module Yast
       end
       richtext
     end
+    # rubocop:enable Lint/UnusedMethodArgument
 
     publish variable: :message_settings, type: "map"
     publish variable: :error_settings, type: "map"
