@@ -29,7 +29,6 @@ module Installation
     
     LOGFILE = "product_information".freeze
     LOGDIR = "/var/log/YaST2/installation_info/".freeze
-    SCC_FILE = "/var/log/YaST2/registration_addons.yml".freeze
 
     include Yast::Logger
 
@@ -99,9 +98,6 @@ module Installation
         ret["selected_root_partition"] = Yast::RootPart.selectedRootPartition
       end
 
-      addons = registration_addons
-      ret["registration_addons"] = addons unless addons.empty?
-
       ret["available_base_products"] = available_base_products
 
       products = Yast::Packages.group_products_by_status(Y2Packager::Resolvable.find(kind: :product))
@@ -170,23 +166,6 @@ module Installation
       else
         to_product_hash_list(libzypp_products)
       end
-    end
-
-    def registration_addons
-      ret = []
-      if Yast::WFM.ClientExists("scc") && File.exist?(SCC_FILE)
-        require "registration/addon"
-
-        addons = YAML.load_file(SCC_FILE)
-        ret = addons.map do |a|
-          { "name"         => a.name,
-            "display_name" => a.friendly_name,
-            "id"           => "#{a.identifier}-#{a.version}-#{a.arch}",
-            "eula"         => a.eula_url,
-            "free"         => a.free }
-        end
-      end
-      ret
     end
   end
 end
