@@ -286,6 +286,7 @@ describe Yast::Product do
       allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product).and_return([])
       allow(Y2Packager::MediumType).to receive(:offline?).and_return(false)
       allow(Y2Packager::MediumType).to receive(:online?).and_return(true)
+      allow(Y2Packager::MediumType).to receive(:type).and_return(:offline)
     end
 
     context "in installation" do
