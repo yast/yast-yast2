@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Feb 12 13:46:19 UTC 2021 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Fixed bug introduced while adding auto wrapping (bsc#1179893)
+- 4.3.55
+
+-------------------------------------------------------------------
 Wed Feb 10 15:56:52 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - Use Auto Wrapping of long lines for Yast2::Popup and Yast::Report
