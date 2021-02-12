@@ -24,9 +24,14 @@ require "y2packager/resolvable"
 require "y2packager/repository"
 
 module Installation
+  #
+  # Class which collects all installation/update information in order
+  # to write it into the /var/log/YaST2/installation_info directory
+  # when the process has been finished correctly or the process has
+  # crashed.
   class InstallationInfo
     include Singleton
-    
+
     LOGFILE = "product_information".freeze
     LOGDIR = "/var/log/YaST2/installation_info/".freeze
 
@@ -40,7 +45,7 @@ module Installation
       #
       # Function calls which has been set by other modules or 3.parties.
       # These functions will be called while generating the output.
-      # The return value (hash) will be logged into the output file.      
+      # The return value (hash) will be logged into the output file.
       @dump_callbacks = []
     end
 
