@@ -442,7 +442,7 @@ module Yast
           CommandLine.Print(message_string)
         else
           timeout = (@timeout_messages.to_s.to_i > 0) ? @timeout_messages : 0
-          Yast2::Print.show(message_string, timeout: timeout)
+          Yast2::Popup.show(message_string, timeout: timeout)
         end
       end
 
