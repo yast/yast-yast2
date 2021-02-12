@@ -78,16 +78,18 @@ module Installation
     # Writes all current available information about the
     # product selection in a YUML file
     #
-    # @param [String] filename
+    # @param filename [String] filename where to store the data
+    # @param additional_info [Hash] additional information
     # @return [Boolean] success
-    def write(filename = LOGFILE)
+    def write(filename = LOGFILE, additional_info = nil)
       ret = {}
       destfile = File.join(LOGDIR, "#{filename}_#{Time.now.strftime("%F_%I_%M_%S")}.yml")
       log.info("Writing product information to #{destfile}")
-
       @dump_callbacks.each do |callback|
         ret.merge!(callback.call)
       end
+
+      ret["additional_info"] = additional_info if additional_info
 
       ret["mode"] = Yast::Mode.mode
       ret["medium_type"] = Y2Packager::MediumType.type.to_s
