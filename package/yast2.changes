@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar  4 12:41:56 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix backward compatibility for focus parameter of
+  Report.AnyQuestion/Report.ErrorAnyQuestion (bsc#1183011)
+- 4.3.56
+
+-------------------------------------------------------------------
 Fri Feb 12 13:46:19 UTC 2021 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Fixed bug introduced while adding auto wrapping (bsc#1179893)

@@ -212,7 +212,7 @@ module Yast
         ),
         continue_button,
         cancel_button,
-        :no_button
+        :focus_no
       )
       if !ret && !product_id.nil?
         # canceled adding add-on: remove profile stored before

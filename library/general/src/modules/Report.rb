@@ -352,16 +352,23 @@ module Yast
       Builtins.size(@errors)
     end
 
+    BACKWARD_MAPPING = {
+      focus_yes: :yes,
+      focus_no:  :no
+    }.freeze
+
     # Question with headline and Yes/No Buttons
     # @param [String] headline Popup Headline
     # @param [String] message Popup Message
     # @param [String] yes_button_message Yes Button Message
     # @param [String] no_button_message No Button Message
-    # @param [Symbol] focus Which Button has the focus
+    # @param [Symbol] focus Which Button has the focus. Possible values are `:yes` and :no`.
+    #   For backward compatibility also `:focus_yes` and `:focus_no` is accepted.
     # @return [Boolean] True if Yes is pressed, otherwise false
     def AnyQuestion(headline, message, yes_button_message, no_button_message, focus)
       Builtins.y2milestone(1, "%1", message) if @log_yesno_messages
 
+      focus = BACKWARD_MAPPING[focus] || focus
       ret = false
       if @display_yesno_messages
         timeout = (@timeout_yesno_messages.to_s.to_i > 0) ? @timeout_yesno_messages : 0
