@@ -367,5 +367,15 @@ describe Yast::Report do
         end
       end
     end
+
+    describe ".AnyQuestion" do
+      it "accepts also :focus_yes/:focus_no as focus parameter" do
+        subject.DisplayYesNoMessages(true, 0)
+        expect(Yast2::Popup).to receive(:show)
+          .with("Message", headline: "test", buttons: {yes: "yes", no: "no"}, focus: :no, timeout: 0)
+
+        subject.AnyQuestion("test", "Message", "yes", "no", :focus_no)
+      end
+    end
   end
 end
