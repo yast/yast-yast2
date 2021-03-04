@@ -354,8 +354,8 @@ module Yast
 
     BACKWARD_MAPPING = {
       focus_yes: :yes,
-      focus_no: :no
-    }
+      focus_no:  :no
+    }.freeze
 
     # Question with headline and Yes/No Buttons
     # @param [String] headline Popup Headline
