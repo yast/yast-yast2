@@ -1360,7 +1360,7 @@ module Yast
             # replaced by the client name (e.g. "registration", "user")
             _(
               "Something went wrong and the expected '%{client}' dialog was not found.\n\n" \
-              "Would you like to skip dialog and continue anyway?"
+              "Would you like to skip the dialog and continue anyway?"
             ),
             client: client_name
           )
