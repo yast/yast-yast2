@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar  8 16:41:27 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- save_y2logs: Make modified content of log files just warning
+  instead of fatal (bsc#1182710 see comment 2)
+- 4.3.58
+
+-------------------------------------------------------------------
 Mon Mar  8 09:19:37 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Ask the user if would like to continue when an installation
