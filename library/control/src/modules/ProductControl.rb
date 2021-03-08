@@ -1353,14 +1353,14 @@ module Yast
           Hooks.run("after_#{step_name}")
         else
           # Client not found. Ask the user if want to continue (related to bsc#1180954)
-          Builtins.y2error("Client '%1' not found", client_name)
+          log.error("Client '#{client_name}' not found")
 
           text = format(
             # TRANSLATORS: Message warning the user that a client is missing where %{client} is
             # replaced by the client name (e.g. "registration", "user")
             _(
               "Something went wrong and the expected '%{client}' dialog was not found.\n\n" \
-              "Would you like to continue anyway?"
+              "Would you like to skip dialog and continue anyway?"
             ),
             client: client_name
           )
@@ -1368,9 +1368,7 @@ module Yast
           continue = Yast2::Popup.show(text, buttons: :yes_no) == :yes
 
           if continue
-            Builtins.y2warning(
-              "Continuing the workflow after skipping the '%1' missing client", client_name
-            )
+            log.warning("Continuing after skipping the '#{client_name}' missing client")
             # If user decided to continue, uses the former_result (:next or :back)
             result = former_result
           else
