@@ -29,6 +29,7 @@
 #
 require "yast"
 require "yast2/control_log_dir_rotator"
+require "yast2/popup"
 
 module Yast
   class ProductControlClass < Module
@@ -1336,16 +1337,45 @@ module Yast
           end
         end
 
-        Hooks.run("before_#{step_name}")
+        client_name = getClientName(step_name, step_execute)
 
-        result = WFM.CallFunction(getClientName(step_name, step_execute), args)
+        # Check if client exist before continuing
+        if WFM.ClientExists(client_name)
+          Hooks.run("before_#{step_name}")
 
-        # this code will be triggered before the red pop window appears on the user's screen
-        Hooks.run("installation_failure") if result == false
+          result = WFM.CallFunction(client_name, args)
 
-        result = Convert.to_symbol(result)
+          # This code will be triggered before the red pop window appears on the user's screen
+          Hooks.run("installation_failure") if result == false
 
-        Hooks.run("after_#{step_name}")
+          result = result.to_sym
+
+          Hooks.run("after_#{step_name}")
+        else
+          # Client not found. Ask the user if want to continue (related to bsc#1180954)
+          log.error("Client '#{client_name}' not found")
+
+          text = format(
+            # TRANSLATORS: Message warning the user that a client is missing where %{client} is
+            # replaced by the client name (e.g. "registration", "user")
+            _(
+              "Something went wrong and the expected '%{client}' dialog was not found.\n\n" \
+              "Would you like to skip dialog and continue anyway?"
+            ),
+            client: client_name
+          )
+
+          continue = Yast2::Popup.show(text, buttons: :yes_no) == :yes
+
+          if continue
+            log.warning("Continuing after skipping the '#{client_name}' missing client")
+            # If user decided to continue, uses the former_result (:next or :back)
+            result = former_result
+          else
+            # :abort because user decided to not continue
+            result = :abort
+          end
+        end
 
         Builtins.y2milestone("Calling %1 returned %2", argterm, result)
 
