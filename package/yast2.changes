@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar  8 09:19:37 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Ask the user if would like to continue when an installation
+  client is missing (related to bsc#1180594).
+- 4.3.57
+
+-------------------------------------------------------------------
 Thu Mar  4 12:41:56 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix backward compatibility for focus parameter of
