@@ -147,8 +147,8 @@ err=$?
 
 rm -rf $TMPDIR
 
-# tar returns 1 when content of tarball is older then current system. Happen when something still writting to logs or memsampler (bsc#1182710#c2)
-[ $err == 1 ] && echo "Warning: logs modified during save. Yast is probably running. Content of tarball can be older then current content." >&2 && err=0
+# tar returns 1 when content of tarball is older than the current system. Happen when something still writting to logs or memsampler (bsc#1182710#c2)
+[ $err == 1 ] && echo "Warning: logs modified during save. Yast is probably running. Content of tarball can be older than current content." >&2 && err=0
 
 [ $err != 0 ] && echo "FATAL: Error creating archive $TARGET" >&2
 
