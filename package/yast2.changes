@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Mar  9 08:23:44 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Use meaningful button labels when asking the user if would like
+  to continue when an installation client is missing
+  (related to bsc#1180594).
+- 4.3.59
+
+-------------------------------------------------------------------
 Mon Mar  8 16:41:27 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - save_y2logs: Make modified content of log files just warning
