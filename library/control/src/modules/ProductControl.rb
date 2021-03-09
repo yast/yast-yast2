@@ -1365,7 +1365,8 @@ module Yast
             client: client_name
           )
 
-          continue = Yast2::Popup.show(text, buttons: :yes_no) == :yes
+          options = { yes: Label.ContinueButton, no: Label.AbortButton }
+          continue = Yast2::Popup.show(text, buttons: options) == :yes
 
           if continue
             log.warn("Continuing after skipping the '#{client_name}' missing client")
