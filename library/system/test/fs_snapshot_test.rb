@@ -70,7 +70,7 @@ describe Yast2::FsSnapshot do
   describe ".create_single" do
     CREATE_SINGLE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
       "--root=/ create --type single --description some-description".freeze
-    OPTION_CLEANUP_NUMBER = " --cleanup \"number\"".freeze
+    OPTION_CLEANUP_NUMBER = " --cleanup number".freeze
     OPTION_IMPORTANT = " --userdata \"important=yes\"".freeze
 
     before do
