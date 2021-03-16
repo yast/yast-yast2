@@ -126,7 +126,7 @@ module Yast2
 
         out = Yast::SCR.Execute(
           Yast::Path.new(".target.bash_output"),
-          format(FIND_CONFIG_CMD, root: target_root)
+          format(FIND_CONFIG_CMD, root: target_root.shellescape)
         )
 
         log.info("Checking if Snapper is configured: \"#{FIND_CONFIG_CMD}\" returned: #{out}")
@@ -303,15 +303,15 @@ module Yast2
         raise SnapperNotConfigured unless configured?
 
         cmd = format(CREATE_SNAPSHOT_CMD,
-          root:          target_root,
-          snapshot_type: snapshot_type,
-          description:   description)
-        cmd << " --pre-num #{previous.number}" if previous
+          root:          target_root.shellescape,
+          snapshot_type: snapshot_type.to_s.shellescape,
+          description:   description.shellescape)
+        cmd << " --pre-num #{previous.number.to_s.shellescape}" if previous
         cmd << " --userdata \"important=yes\"" if important
 
         if cleanup
           strategy = CLEANUP_STRATEGY[cleanup]
-          cmd << " --cleanup \"#{strategy}\"" if strategy
+          cmd << " --cleanup #{strategy.shellescape}" if strategy
         end
 
         log.info("Executing: \"#{cmd}\"")
