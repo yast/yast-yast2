@@ -71,10 +71,9 @@ module Yast2
     Yast.import "Linuxrc"
     Yast.import "Mode"
 
-    FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | grep \"^root \" >/dev/null".freeze
-    CREATE_SNAPSHOT_CMD = "/usr/lib/snapper/installation-helper --step 5 --root-prefix=%{root} --snapshot-type %{snapshot_type} --description \"%{description}\"".freeze
+    FIND_CONFIG_CMD = "/usr/bin/snapper --no-dbus --root=%{root} list-configs | /usr/bin/grep \"^root \" >/dev/null".freeze
+    CREATE_SNAPSHOT_CMD = "/usr/bin/snapper --no-dbus --root=%{root} create --type %{snapshot_type} --description %{description}".freeze
     LIST_SNAPSHOTS_CMD = "LANG=en_US.UTF-8 /usr/bin/snapper --no-dbus --root=%{root} list".freeze
-    VALID_LINE_REGEX = /\A\w+\s+\| \d+/
 
     # Predefined snapshot cleanup strategies (the user can define custom ones, too)
     CLEANUP_STRATEGY = { number: "number", timeline: "timeline" }.freeze
@@ -127,7 +126,7 @@ module Yast2
 
         out = Yast::SCR.Execute(
           Yast::Path.new(".target.bash_output"),
-          format(FIND_CONFIG_CMD, root: target_root)
+          format(FIND_CONFIG_CMD, root: target_root.shellescape)
         )
 
         log.info("Checking if Snapper is configured: \"#{FIND_CONFIG_CMD}\" returned: #{out}")
@@ -255,20 +254,22 @@ module Yast2
           Yast::Path.new(".target.bash_output"),
           format(LIST_SNAPSHOTS_CMD, root: target_root)
         )
-        lines = out["stdout"].lines.grep(VALID_LINE_REGEX) # relevant lines from output.
         log.info("Retrieving snapshots list: #{LIST_SNAPSHOTS_CMD} returned: #{out}")
-        lines.each_with_object([]) do |line, snapshots|
-          data = line.split("|").map(&:strip)
-          next if data[1] == "0" # Ignores 'current' snapshot (id = 0) because it's not a real snapshot
+        return [] unless out["exit"].zero?
+
+        parse_snapshots_list(out["stdout"]).each_with_object([]) do |data, snapshots|
+          next if data["#"] == "0" # Ignores 'current' snapshot (id = 0) because it's not a real snapshot
+
           begin
-            timestamp = DateTime.parse(data[3])
+            timestamp = DateTime.parse(data["Date"])
           rescue ArgumentError
             log.warn("Error when parsing date/time: #{timestamp}")
-            timestamp = nil
           end
-          previous_number = data[2] == "" ? nil : data[2].to_i
-          snapshots << new(data[1].to_i, data[0].to_sym, previous_number, timestamp,
-            data[4], data[5].to_sym, data[6])
+          previous_number = data["Pre #"].to_s.empty? ? nil : data["Pre #"].to_i
+          snapshots << new(
+            data["#"].to_i, data["Type"].to_sym, previous_number, timestamp,
+            data["User"], data["Cleanup"].to_sym, data["Description"]
+          )
         end
       end
 
@@ -302,22 +303,22 @@ module Yast2
         raise SnapperNotConfigured unless configured?
 
         cmd = format(CREATE_SNAPSHOT_CMD,
-          root:          target_root,
-          snapshot_type: snapshot_type,
-          description:   description)
-        cmd << " --pre-num #{previous.number}" if previous
+          root:          target_root.shellescape,
+          snapshot_type: snapshot_type.to_s.shellescape,
+          description:   description.shellescape)
+        cmd << " --pre-num #{previous.number.to_s.shellescape}" if previous
         cmd << " --userdata \"important=yes\"" if important
 
         if cleanup
           strategy = CLEANUP_STRATEGY[cleanup]
-          cmd << " --cleanup \"#{strategy}\"" if strategy
+          cmd << " --cleanup #{strategy.shellescape}" if strategy
         end
 
         log.info("Executing: \"#{cmd}\"")
         out = Yast::SCR.Execute(Yast::Path.new(".target.bash_output"), cmd)
 
         if out["exit"] == 0
-          find(out["stdout"].to_i) # The CREATE_SNAPSHOT_CMD returns the number of the new snapshot.
+          all.last
         else
           log.error "Snapshot could not be created: #{cmd} returned: #{out}"
           raise SnapshotCreationFailed
@@ -364,6 +365,51 @@ module Yast2
 
       def setup_snapper_quota
         Yast::Execute.on_target("/usr/bin/snapper", "--no-dbus", "setup-quota")
+      end
+
+      # Parses the snapshots list
+      #
+      # The snapshots list is a table like the following one:
+      #
+      #   # | Type   | Pre # | Date                            | User | Cleanup | Description           | Userdata
+      # ----+--------+-------+---------------------------------+------+---------+-----------------------+--------------
+      #  0  | single |       |                                 | root |         | current               |
+      #  1* | single |       | Wed 20 Jan 2021 09:57:01 PM WET | root |         | first root filesystem |
+      #  2  | single |       | Wed 20 Jan 2021 10:09:46 PM WET | root | number  | after installation    | important=yes
+      #
+      # This method returns an array of hashes containing the information from
+      # the previous table:
+      #
+      # @example Parsing result ouput
+      #   [
+      #     {
+      #       "#"            => "0",
+      #       "Type"         => "single",
+      #       "Pre #"        => "",
+      #       "Date"         => "",
+      #       "User"         => "root",
+      #       "Cleanup"      => "",
+      #       "Description"  => "current",
+      #       "Userdata"     => ""},
+      #       # ...
+      #     }
+      #   ]
+      #
+      # Not that values are not processed.
+      #
+      # @param content [String] Snapshots list content
+      # @return Array<Hash> An array of hashes containing the data for each snapshot
+      def parse_snapshots_list(content)
+        lines = content.lines
+        return [] if lines.size <= 2
+
+        columns = lines.first.split("|").map(&:strip)
+        lines[2..-1].map do |line|
+          values = line.split("|").map(&:strip)
+          values.each_with_index.each_with_object({}) do |(v, i), all|
+            all[columns[i]] = v
+          end
+        end
       end
     end
   end
