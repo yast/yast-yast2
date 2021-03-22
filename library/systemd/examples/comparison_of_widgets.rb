@@ -1,3 +1,4 @@
+# typed: false
 require "yast"
 
 require "yast2/service_widget"

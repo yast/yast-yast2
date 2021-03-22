@@ -1,4 +1,5 @@
 #!/usr/bin/env rspec
+# typed: false
 # Copyright (c) 2018-2019 SUSE LLC
 #
 # All Rights Reserved.

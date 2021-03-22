@@ -1,0 +1,28 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    abstract_method (1.2.1)
+    cfa (1.0.2)
+      ruby-augeas
+    cheetah (0.5.2)
+      abstract_method (~> 1.2)
+    ruby-augeas (0.5.0)
+    simpleidn (0.0.9)
+    sorbet (0.5.6352)
+      sorbet-static (= 0.5.6352)
+    sorbet-runtime (0.5.6352)
+    sorbet-static (0.5.6352-x86_64-linux)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  abstract_method
+  cfa
+  cheetah
+  simpleidn
+  sorbet
+  sorbet-runtime
+
+BUNDLED WITH
+   1.16.1

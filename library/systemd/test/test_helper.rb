@@ -1,3 +1,4 @@
+# typed: false
 require_relative "../../../test/test_helper.rb"
 
 require "yast2/systemd/unit"

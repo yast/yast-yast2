@@ -1,3 +1,4 @@
+# typed: true
 require "yast"
 Yast.import "Sequencer"
 

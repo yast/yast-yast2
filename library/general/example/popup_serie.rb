@@ -1,3 +1,4 @@
+# typed: strict
 require "yast"
 
 require "yast2/popup"

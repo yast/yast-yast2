@@ -1,3 +1,4 @@
+# typed: true
 require "yast"
 
 module Packages

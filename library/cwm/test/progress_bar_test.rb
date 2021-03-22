@@ -1,4 +1,5 @@
 #! /usr/bin/env rspec --format doc
+# typed: false
 
 # Copyright (c) [2020] SUSE LLC
 #

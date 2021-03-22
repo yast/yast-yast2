@@ -1,3 +1,4 @@
+# typed: true
 require "yast"
 
 require "cwm/abstract_widget"

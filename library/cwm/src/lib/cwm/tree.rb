@@ -1,3 +1,4 @@
+# typed: false
 require "cwm/custom_widget"
 
 module CWM

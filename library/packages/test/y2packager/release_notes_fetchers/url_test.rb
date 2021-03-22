@@ -1,4 +1,5 @@
 #!/usr/bin/env rspec
+# typed: false
 
 require_relative "../../test_helper"
 require "y2packager/release_notes_fetchers/url"

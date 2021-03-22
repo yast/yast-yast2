@@ -1,3 +1,4 @@
+# typed: false
 # File:  modules/ProductProfile.ycp
 # Package:  yast2
 # Summary:  Functions for handling Product Profiles

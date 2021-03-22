@@ -1,3 +1,4 @@
+# typed: false
 require "abstract_method"
 require "cwm/custom_widget"
 

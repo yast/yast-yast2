@@ -1,3 +1,4 @@
+# typed: true
 module Installation
   module AutoinstIssues
     # Base class for autoinstallation problems.

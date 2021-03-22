@@ -1,3 +1,4 @@
+# typed: false
 # ------------------------------------------------------------------------------
 # Copyright (c) 2019 SUSE LINUX GmbH, Nuremberg, Germany.
 #

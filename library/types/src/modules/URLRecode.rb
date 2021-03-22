@@ -1,3 +1,4 @@
+# typed: false
 # Copyright 2014 SUSE, LLC
 
 require "yast"

@@ -1,4 +1,5 @@
 #!/usr/bin/env rspec
+# typed: ignore
 
 require_relative "test_helper"
 

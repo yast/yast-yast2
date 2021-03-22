@@ -1,3 +1,4 @@
+# typed: false
 root_location = File.expand_path("..", __dir__)
 inc_dirs = Dir.glob("#{root_location}/library/*/src")
 # Y2DIRs location needed for testing purpose
