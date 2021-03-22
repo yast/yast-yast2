@@ -16,8 +16,6 @@ module CFA::Sysctl::BaseModel; end
 module Y2Packager::MediumType; end
 module Y2Packager::ReleaseNotesReader::Registration::Registration; end
 module Yast2::ServiceConfiguration; end
-module Yast2::Systemd::Target; end
-module Yast2::Systemd::TargetNotFound; end
 module Yast::Builtins::Float; end
 module Yast::Builtins::List; end
 module Yast::Debugger; end
