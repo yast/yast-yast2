@@ -1,5 +1,5 @@
 #!/usr/bin/env rspec
-# typed: ignore
+# typed: false
 
 # Copyright (c) [2015-2019] SUSE LLC
 #
@@ -168,12 +168,12 @@ describe Yast2::FsSnapshot do
     end
   end
 
-  describe ".create_single" do
-    CREATE_SINGLE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
-      "--root=/ create --type single --description some-description".freeze
-    OPTION_CLEANUP_NUMBER = " --cleanup number".freeze
-    OPTION_IMPORTANT = " --userdata \"important=yes\"".freeze
+  CREATE_SINGLE_SNAPSHOT = "/usr/bin/snapper --no-dbus " \
+    "--root=/ create --type single --description some-description".freeze
+  OPTION_CLEANUP_NUMBER = " --cleanup number".freeze
+  OPTION_IMPORTANT = " --userdata \"important=yes\"".freeze
 
+  describe ".create_single" do
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
       allow(Yast2::FsSnapshot).to receive(:create_snapshot?).with(:single).and_return(create_snapshot)
