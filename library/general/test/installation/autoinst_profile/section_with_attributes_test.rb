@@ -1,4 +1,4 @@
-# typed: ignore
+# typed: false
 # Copyright (c) [2020] SUSE LLC
 #
 # All Rights Reserved.
@@ -32,7 +32,7 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
   #     <name>Some group</name>
   #   </group>
   # </root>
-  class RootSection < described_class
+  class RootSection < Installation::AutoinstProfile::SectionWithAttributes
     class << self
       def attributes
         [
@@ -63,7 +63,7 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
     end
   end
 
-  class ChildSection < described_class
+  class ChildSection < Installation::AutoinstProfile::SectionWithAttributes
     class << self
       def attributes
         [
@@ -79,7 +79,7 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
     end
   end
 
-  class GroupSection < described_class
+  class GroupSection < Installation::AutoinstProfile::SectionWithAttributes
     class << self
       def attributes
         [
