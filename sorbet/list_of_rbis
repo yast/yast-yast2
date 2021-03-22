@@ -1,0 +1,13 @@
+../ruby-bindings/rbi/yast/builtins.rbi
+../ruby-bindings/rbi/yast/client.rbi
+../ruby-bindings/rbi/yast/convert.rbi
+../ruby-bindings/rbi/yast/exportable.rbi
+../ruby-bindings/rbi/yast/i18n.rbi
+../ruby-bindings/rbi/yast/module.rbi
+../ruby-bindings/rbi/yast/ops.rbi
+../ruby-bindings/rbi/yast/scr.rbi
+../ruby-bindings/rbi/yast/ui.rbi
+../ruby-bindings/rbi/yast/uishortcuts.rbi
+../ruby-bindings/rbi/yast/wfm.rbi
+../ruby-bindings/rbi/yast/y2logger.rbi
+../ruby-bindings/rbi/yast/yast.rbi
