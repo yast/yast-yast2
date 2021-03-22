@@ -81,7 +81,7 @@ module Yast2
 
         def get_default # rubocop:disable Naming/AccessorMethodName
           result = Systemctl.execute("get-default")
-          raise(SystemctlError, result) unless result.exit.zero?
+          raise(Systemctl::Error, result) unless result.exit.zero?
 
           find(result.stdout.strip)
         end
