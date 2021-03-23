@@ -19,6 +19,10 @@ jobs:
     - name: Inspect Installed Packages
       run: rpm -qa | sort
 
+    - name: Install sorbet-runtime
+      # TODO: match versions of sorbet and sorbet-runtime (gem/rpm?)
+      run: gem install sorbet-runtime
+
     - name: Unit Tests
       run: rake test:unit
       env:
@@ -109,7 +113,7 @@ jobs:
       run: zypper --gpg-auto-import-keys --non-interactive in --no-recommends --allow-vendor-change 'rubygem(bundler)' ruby-devel gcc-c++
 
     - name: Install sorbet
-      run: bundle update
+      run: bundle install
 
     - name: Sorbet typecheck
       run: srb typecheck

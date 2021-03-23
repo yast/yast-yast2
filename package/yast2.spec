@@ -46,6 +46,8 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
 # For converting to/from punycode strings
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:simpleidn)
+# Type checking
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:sorbet-runtime)
 # Needed already in build time
 BuildRequires:  yast2-core >= 2.18.12
 BuildRequires:  yast2-devtools >= 3.1.10
@@ -78,6 +80,8 @@ Requires:       augeas-lenses
 # For converting to/from punycode strings
 Requires:       sysconfig >= 0.80.0
 Requires:       rubygem(%{rb_default_ruby_abi}:simpleidn)
+# Type checking
+BuildRequires:  rubygem(%{rb_default_ruby_abi}:sorbet-runtime)
 # for running scripts
 Requires:       rubygem(%{rb_default_ruby_abi}:cheetah)
 # for XML module
