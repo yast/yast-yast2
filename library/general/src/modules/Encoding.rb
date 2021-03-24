@@ -148,7 +148,7 @@ module Yast
     # restores console encoding from /etc/sysconfig
     # in normal mode
     def Encoding
-      Restore() if !Stage.initial
+      Restore() if !Stage.inital
       nil
     end
 
