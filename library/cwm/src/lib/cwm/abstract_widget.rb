@@ -188,6 +188,13 @@ module CWM
       Yast::UI.SetFocus(Id(widget_id))
     end
 
+    # Determines whether the widget is currently displayed in the UI
+    #
+    # @return [Boolean]
+    def displayed?
+      Yast::UI.WidgetExists(Id(widget_id))
+    end
+
   protected
 
     # A helper to check if an event is invoked by this widget

@@ -203,4 +203,37 @@ describe CWM::AbstractWidget do
       TFocus.new.focus
     end
   end
+
+  describe "#displayed?" do
+    subject { TPresent.new }
+
+    class TPresent < CWM::AbstractWidget
+      self.widget_type = :empty
+
+      def initialize
+        self.widget_id = "test"
+      end
+    end
+
+    before do
+      allow(Yast::UI).to receive(:WidgetExists).with(Id("test"))
+        .and_return(present?)
+    end
+
+    context "when the widget is displayed in the UI" do
+      let(:present?) { true }
+
+      it "returns true" do
+        expect(subject.displayed?).to eq(true)
+      end
+    end
+
+    context "when the widget is not displayed in the UI" do
+      let(:present?) { false }
+
+      it "returns false" do
+        expect(subject.displayed?).to eq(false)
+      end
+    end
+  end
 end

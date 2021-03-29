@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar 29 09:46:31 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a AbstractWidget#displayed? to determine whether
+  a widget is in the UI (bsc#1184115).
+- 4.3.60
+
+-------------------------------------------------------------------
 Tue Mar  9 08:23:44 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Use meaningful button labels when asking the user if would like
