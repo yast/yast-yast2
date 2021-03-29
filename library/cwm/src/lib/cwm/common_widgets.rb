@@ -25,12 +25,18 @@ module CWM
   # A mix-in for widgets using the :Value property
   module ValueBasedWidget
     # Get widget value
+    #
+    # Calling this method only make sense when the widget is displayed (see #displayed?).
+    #
     # @return [Object] a value according to specific widget type
     def value
       Yast::UI.QueryWidget(Id(widget_id), :Value)
     end
 
     # Set widget value
+    #
+    # Calling this method only make sense when the widget is displayed (see #displayed?).
+    #
     # @param val [Object] a value according to specific widget type
     # @return [void]
     def value=(val)
@@ -196,11 +202,19 @@ module CWM
     include ItemsSelection
     abstract_method :label
 
+    # Get widget value
+    #
+    # Calling this method only make sense when the widget is displayed (see #displayed?).
+    #
     # @return [String] ID of the selected item
     def value
       Yast::UI.QueryWidget(Id(widget_id), :CurrentItem)
     end
 
+    # Set widget value
+    #
+    # Calling this method only make sense when the widget is displayed (see #displayed?).
+    #
     # @param val [String] ID of the selected item
     def value=(val)
       Yast::UI.ChangeWidget(Id(widget_id), :CurrentItem, val)
@@ -217,11 +231,19 @@ module CWM
     include ItemsSelection
     abstract_method :label
 
+    # Get widget value
+    #
+    # Calling this method only make sense when the widget is displayed (see #displayed?).
+    #
     # @return [Array<String>] return IDs of selected items
     def value
       Yast::UI.QueryWidget(Id(widget_id), :SelectedItems)
     end
 
+    # Set widget value
+    #
+    # Calling this method only make sense when the widget is displayed (see #displayed?).
+    #
     # @param val [Array<String>] IDs of newly selected items
     def value=(val)
       Yast::UI.ChangeWidget(Id(widget_id), :SelectedItems, val)
@@ -287,10 +309,19 @@ module CWM
     # @!method hspacing
     #   @return [Fixnum] margin at both sides of the options list
 
+    # Get widget value
+    #
+    # Calling this method only make sense when the widget is displayed (see #displayed?).
+    #
     def value
       Yast::UI.QueryWidget(Id(widget_id), :CurrentButton)
     end
 
+    # Set widget value
+    #
+    # Calling this method only make sense when the widget is displayed (see #displayed?).
+    #
+    # @param val [Object] a value according to specific widget type
     def value=(val)
       Yast::UI.ChangeWidget(Id(widget_id), :CurrentButton, val)
     end
@@ -390,7 +421,8 @@ module CWM
 
     # Updates the content
     #
-    # Depending on #keep_scroll?, the vertical scroll will be saved and restored.
+    # Depending on #keep_scroll?, the vertical scroll will be saved and restored. Calling this
+    # method only make sense when the widget is displayed (see #displayed?).
     #
     # @param val [String] the new content for the widget
     def value=(val)
