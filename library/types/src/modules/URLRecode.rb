@@ -1,6 +1,8 @@
+# typed: true
 # Copyright 2014 SUSE, LLC
 
 require "yast"
+require "sorbet-runtime"
 
 module Yast
   # A drop-in replacement of an earlier Perl implementation
@@ -36,7 +38,11 @@ module Yast
     # @param [String] input input string
     # @return [String] Unescaped string
     def UnEscape(input)
-      input.gsub(/%([0-9A-Fa-f]{2})/) { Regexp.last_match[1].to_i(16).chr }.force_encoding(input.encoding)
+      out = input.gsub(/%([0-9A-Fa-f]{2})/) do
+        lm1 = T.must(Regexp.last_match(1)) # non-nil because this is a gsub block
+        lm1.to_i(16).chr
+      end
+      out.force_encoding(input.encoding)
     end
 
   private

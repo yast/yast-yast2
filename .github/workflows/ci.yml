@@ -19,6 +19,10 @@ jobs:
     - name: Inspect Installed Packages
       run: rpm -qa | sort
 
+    - name: Install sorbet-runtime
+      # TODO: match versions of sorbet and sorbet-runtime (gem/rpm?)
+      run: gem install sorbet-runtime
+
     - name: Unit Tests
       run: rake test:unit
       env:
@@ -87,3 +91,29 @@ jobs:
 
     - name: POT Check
       run: rake check:pot
+
+  SorbetTypes:
+    runs-on: ubuntu-latest
+    container: registry.opensuse.org/yast/head/containers/yast-ruby:latest
+
+    steps:
+
+    - name: Git Checkout
+      uses: actions/checkout@v2
+
+    - name: Install ruby-bindings with RBIs
+      run: zypper ar --refresh https://download.opensuse.org/repositories/home:/mvidner:/branches:/YaST:/Head/openSUSE_Tumbleweed mvyast; zypper --gpg-auto-import-keys --non-interactive in --no-recommends --allow-vendor-change yast2-ruby-bindings
+
+    # In git, sorbet/list_of_rbis points to relative paths to find the sibling
+    # git repos. But here we're using RBIs packaged in a RPM instead.
+    - name: Point to RBIs from RPMs
+      run: find /usr/share/YaST2/rbi -name \*.rbi > sorbet/list_of_rbis
+
+    - name: Install sorbet prerequisites
+      run: zypper --gpg-auto-import-keys --non-interactive in --no-recommends --allow-vendor-change 'rubygem(bundler)' ruby-devel gcc-c++
+
+    - name: Install sorbet
+      run: bundle install
+
+    - name: Sorbet typecheck
+      run: srb typecheck

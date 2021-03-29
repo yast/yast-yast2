@@ -1,3 +1,4 @@
+# typed: false
 # Copyright (c) 2012 Novell, Inc.
 #
 # All Rights Reserved.

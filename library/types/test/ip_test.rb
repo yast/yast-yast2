@@ -1,4 +1,5 @@
 #!/usr/bin/env rspec
+# typed: false
 
 require_relative "test_helper"
 
@@ -104,14 +105,14 @@ describe Yast::IP do
     end
   end
 
-  describe "#ToInteger" do
-    RESULT_MAP_INT = {
-      "0.0.0.0"        => 0,
-      "127.0.0.1"      => 2_130_706_433,
-      "192.168.110.23" => 3_232_263_703,
-      "10.20.1.29"     => 169_083_165
-    }.freeze
+  RESULT_MAP_INT = {
+    "0.0.0.0"        => 0,
+    "127.0.0.1"      => 2_130_706_433,
+    "192.168.110.23" => 3_232_263_703,
+    "10.20.1.29"     => 169_083_165
+  }.freeze
 
+  describe "#ToInteger" do
     RESULT_MAP_INT.each_pair do |k, v|
       it "returns #{v} for #{k}" do
         # in 32bits arch IP#ToInteger returns Bignum, so equal? returns false

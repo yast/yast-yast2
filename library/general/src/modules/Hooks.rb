@@ -1,3 +1,4 @@
+# typed: true
 require "pathname"
 require "ostruct"
 require "yast"

@@ -1,3 +1,4 @@
+# typed: true
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -28,6 +29,7 @@
 #
 # This is a wrrapper around PackageKit DBus interface.
 require "yast"
+require "sorbet-runtime"
 
 module Yast
   class PackageKitClass < Module
@@ -42,7 +44,7 @@ module Yast
 
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
 
-      ret = false
+      ret = T.let(false, T::Boolean)
       lines = Builtins.splitstring(Ops.get_string(out, "stdout", ""), "\n")
 
       Builtins.foreach(lines) do |line|

@@ -1,3 +1,4 @@
+# typed: false
 # Copyright (c) [2013-2020] SUSE LLC
 #
 # All Rights Reserved.

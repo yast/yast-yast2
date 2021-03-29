@@ -1,3 +1,4 @@
+# typed: true
 # Simple example to demonstrate using wrapper for CWM
 
 require_relative "example_helper"

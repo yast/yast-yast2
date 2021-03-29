@@ -1,3 +1,4 @@
+# typed: true
 # Copyright (c) [2019] SUSE LLC
 #
 # All Rights Reserved.

@@ -1,3 +1,4 @@
+# typed: false
 # ***************************************************************************
 #
 # Copyright (c) 2002 - 2012 Novell, Inc.
@@ -30,6 +31,7 @@
 #
 # Provide installation stage information.
 require "yast"
+require "sorbet-runtime"
 
 module Yast
   class StageClass < Module
@@ -122,6 +124,6 @@ module Yast
     publish function: :reprobe, type: "boolean ()"
   end
 
-  Stage = StageClass.new
+  Stage = T.let(StageClass.new, StageClass)
   Stage.main
 end

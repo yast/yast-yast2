@@ -1,3 +1,4 @@
+# typed: strict
 # Copyright (c) [2016-2020] SUSE LLC
 #
 # All Rights Reserved.

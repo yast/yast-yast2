@@ -1,3 +1,4 @@
+# typed: false
 require "yast"
 
 require "abstract_method"
