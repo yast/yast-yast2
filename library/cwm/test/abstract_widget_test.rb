@@ -204,7 +204,7 @@ describe CWM::AbstractWidget do
     end
   end
 
-  describe "#widget_present?" do
+  describe "#displayed?" do
     subject { TPresent.new }
 
     class TPresent < CWM::AbstractWidget
@@ -224,7 +224,7 @@ describe CWM::AbstractWidget do
       let(:present?) { true }
 
       it "returns true" do
-        expect(subject.widget_present?).to eq(true)
+        expect(subject.displayed?).to eq(true)
       end
     end
 
@@ -232,7 +232,7 @@ describe CWM::AbstractWidget do
       let(:present?) { false }
 
       it "returns false" do
-        expect(subject.widget_present?).to eq(false)
+        expect(subject.displayed?).to eq(false)
       end
     end
   end

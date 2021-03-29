@@ -191,7 +191,7 @@ module CWM
     # Determines whether the widget is currently displayed in the UI
     #
     # @return [Boolean]
-    def widget_present?
+    def displayed?
       Yast::UI.WidgetExists(Id(widget_id))
     end
 
