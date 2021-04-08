@@ -1,4 +1,5 @@
 require "yast2/execute"
+require "yast2/group"
 
 module Yast2
   class User
@@ -14,6 +15,14 @@ module Yast2
       }
 
       def all
+        @all ||= read
+      end
+
+      def reset
+        @all = nil
+      end
+
+      def read
         getent = Yast::Execute.on_target!("/usr/bin/getent", "passwd", stdout: :capture)
         getent.lines.map do |line|
           values = line.chomp.split(":")
@@ -28,7 +37,7 @@ module Yast2
       end
     end
 
-    attr_reader :name, :uid,, :gid, :shell, :home
+    attr_reader :name, :uid, :gid, :shell, :home
 
     # TODO: GECOS
     def initialize(name, uid: nil, gid: nil, shell: nil, home: nil)
@@ -37,6 +46,14 @@ module Yast2
       @gid = gid
       @shell = shell
       @home = home
+    end
+
+    def primary_group
+      Group.all.find { |g| g.gid == gid }
+    end
+
+    def groups
+      Group.all.select{ |g| g.users.include?(self) }
     end
   end
 end
