@@ -2,7 +2,7 @@
 Mon Apr 12 15:12:41 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - The ShadowConfig module only considers the /etc/login.defs
-  file (bsc#1184131).
+  file (do not use unsupported /etc/login.defs.d/) (bsc#1184131).
 - 4.2.93
 
 -------------------------------------------------------------------
