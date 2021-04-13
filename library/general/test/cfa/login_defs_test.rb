@@ -90,4 +90,22 @@ describe CFA::LoginDefs do
       end
     end
   end
+
+  describe "#present_attributes" do
+    it "returns the list of present attributes" do
+      expect(login_defs.present_attributes).to include(*ATTRS_VALUES.keys)
+    end
+  end
+
+  describe "#conflicts" do
+    subject(:other) { described_class.new(file_path: file_path, file_handler: file_handler) }
+
+    before do
+      other.encrypt_method = "SHA256"
+    end
+
+    it "returns the list of attributes with different values" do
+      expect(login_defs.conflicts(other)).to eq([:encrypt_method])
+    end
+  end
 end

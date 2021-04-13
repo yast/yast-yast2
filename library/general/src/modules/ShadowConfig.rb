@@ -23,7 +23,6 @@ require "cfa/shadow_config"
 module Yast
   # This class allows to access the API to handle login.defs attributes from Perl
   #
-  # @see CFA::LoginDefs
   # @see CFA::ShadowConfig
   class ShadowConfigClass < Module
     include Logger
