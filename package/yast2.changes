@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 12 15:12:41 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a default value for file_path argument in ::new and ::load
+  methods of CFA::LoginDefs class.
+
+-------------------------------------------------------------------
 Mon Mar 29 09:46:31 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a AbstractWidget#displayed? to determine whether
