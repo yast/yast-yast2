@@ -18,13 +18,14 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "cfa/shadow_config"
+require "cfa/login_defs"
 
 module Yast
   # This class allows to access the API to handle login.defs attributes from Perl
   #
+  # In SLE 15 SP2, it relies on CFA::LoginDefs instead of CFA::ShadowConfig like later versions.
+  #
   # @see CFA::LoginDefs
-  # @see CFA::ShadowConfig
   class ShadowConfigClass < Module
     include Logger
 
@@ -101,7 +102,7 @@ module Yast
     def config
       return @config if @config
 
-      @config = CFA::ShadowConfig.new
+      @config = CFA::LoginDefs.new
       @config.load
       @config
     end

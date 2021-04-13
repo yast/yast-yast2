@@ -23,15 +23,21 @@ Yast.import "ShadowConfig"
 
 describe Yast::ShadowConfig do
   subject { Yast::ShadowConfig }
-  let(:config_path) { File.join(GENERAL_DATA_PATH, "login.defs", "vendor") }
 
-  before { subject.main }
+  let(:login_defs) { CFA::LoginDefs.new }
 
-  around do |example|
-    change_scr_root(config_path, &example)
+  before do
+    allow(CFA::LoginDefs).to receive(:new)
+      .and_return(login_defs)
+    subject.reset
+    subject.main
   end
 
   describe "#fetch" do
+    before do
+      allow(login_defs).to receive(:encrypt_method).and_return("SHA512")
+    end
+
     context "when the value is defined" do
       it "returns the value for the given attribute" do
         expect(subject.fetch(:encrypt_method)).to eq("SHA512")
@@ -51,7 +57,7 @@ describe Yast::ShadowConfig do
       it "sets the attribute to the given value" do
         expect { subject.set(:encrypt_method, "SHA256") }
           .to change { subject.fetch(:encrypt_method) }
-          .from("SHA512").to("SHA256")
+          .to("SHA256")
       end
     end
 
@@ -64,16 +70,8 @@ describe Yast::ShadowConfig do
   end
 
   describe "#write" do
-    let(:shadow_config) { CFA::ShadowConfig.new }
-
-    before do
-      allow(CFA::ShadowConfig).to receive(:new)
-        .and_return(shadow_config)
-      subject.reset
-    end
-
     it "saves the changes" do
-      expect(shadow_config).to receive(:save)
+      expect(login_defs).to receive(:save)
       subject.write
     end
   end
