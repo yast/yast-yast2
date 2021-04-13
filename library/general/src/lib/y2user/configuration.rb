@@ -37,11 +37,13 @@ module Y2User
     attr_reader :name
     attr_accessor :users
     attr_accessor :groups
+    attr_accessor :passwords
 
-    def initialize(name, users: [], groups: [])
+    def initialize(name, users: [], groups: [], passwords: [])
       @name = name
       @users = users
       @groups = groups
+      @passwords = passwords
       self.class.register(self)
     end
 
