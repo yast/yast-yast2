@@ -22,12 +22,17 @@ module Y2User
       configuration.groups.select{ |g| g.users.include?(self) }
     end
 
+    ATTRS = [:name, :uid, :gid, :shell, :home]
+
     def clone_to(configuration)
-      # TODO: write it
+      new_config = ATTRS.each_with_object({}) { |a, r| r[a] = public_send(a) }
+      new_config.delete(:name) # name is separate argument
+      self.class.new(configuration, name, new_config)
     end
 
     def ==(other)
-      # TODO: write it
+      # do not compare configuration to allow comparison between different configs
+      ATTRS.all? { |a| public_send(a) == other.public_send(a) }
     end
   end
 end

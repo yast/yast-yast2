@@ -10,3 +10,7 @@ puts configuration.inspect
 configuration.users.each do |user|
   puts user.name + ": " + user.groups.map(&:name).join(", ")
 end
+
+res = configuration.clone_as(:staging)
+puts configuration.users.size.inspect
+puts res.users.size.inspect

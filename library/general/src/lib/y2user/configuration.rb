@@ -48,7 +48,12 @@ module Y2User
     end
 
     def clone_as(new_name)
-      # TODO: write it
+      result = self.class.new(new_name)
+      result.users = users.map { |u| u.clone_to(result) }
+      result.groups = users.map { |u| u.clone_to(groups) }
+      result.passwords = users.map { |u| u.clone_to(passwords) }
+
+      result
     end
   end
 end
