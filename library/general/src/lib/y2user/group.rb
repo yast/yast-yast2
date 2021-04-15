@@ -1,6 +1,7 @@
 require "yast2/execute"
 
 module Y2User
+  # Represents user groups on system.
   class Group
     attr_reader :configuration, :name, :gid, :users_name
 
@@ -15,7 +16,7 @@ module Y2User
       configuration.users.select { |u| u.gid == gid || users_name.include?(u.name) }
     end
 
-    ATTRS = [:name, :gid, :users_name]
+    ATTRS = [:name, :gid, :users_name].freeze
 
     def clone_to(configuration)
       new_config = ATTRS.each_with_object({}) { |a, r| r[a] = public_send(a) }
@@ -29,4 +30,3 @@ module Y2User
     end
   end
 end
-

@@ -1,6 +1,7 @@
 require "yast2/execute"
 
 module Y2User
+  # Representing user configuration on system in contenxt of given User Configuration.
   class User
     attr_reader :configuration, :name, :uid, :gid, :shell, :home
 
@@ -19,10 +20,14 @@ module Y2User
     end
 
     def groups
-      configuration.groups.select{ |g| g.users.include?(self) }
+      configuration.groups.select { |g| g.users.include?(self) }
     end
 
-    ATTRS = [:name, :uid, :gid, :shell, :home]
+    def password
+      configuration.passwords.find { |p| p.name == name }
+    end
+
+    ATTRS = [:name, :uid, :gid, :shell, :home].freeze
 
     def clone_to(configuration)
       new_config = ATTRS.each_with_object({}) { |a, r| r[a] = public_send(a) }

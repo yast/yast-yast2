@@ -1,4 +1,7 @@
 module Y2User
+  # Holds references to elements of user configuration like users, groupps or passwords.
+  # Class itself holds references to different configuration instances.
+  # TODO: write example
   class Configuration
     class << self
       def get(name)

@@ -1,6 +1,7 @@
 require "yast2/execute"
 
 module Y2User
+  # Password configuration for user including its hashed value.
   class Password
     # @return [String] login name for given password
     attr_reader :name
@@ -16,8 +17,8 @@ module Y2User
     attr_reader :minimum_age
 
     def initialize(configuration, name, value: nil, last_change: nil, minimum_age: nil,
-        maximum_age: nil, warning_period: nil, inactivity_period: nil,
-        account_expiration: nil)
+      maximum_age: nil, warning_period: nil, inactivity_period: nil,
+      account_expiration: nil)
       @configuration = configuration
       @name = name
       @value = value
@@ -30,7 +31,7 @@ module Y2User
     end
 
     ATTRS = [:name, :value, :last_change, :minimum_age, :maximum_age, :warning_period,
-      :inactivity_period, :account_expiration]
+             :inactivity_period, :account_expiration].freeze
 
     def clone_to(configuration)
       new_config = ATTRS.each_with_object({}) { |a, r| r[a] = public_send(a) }
