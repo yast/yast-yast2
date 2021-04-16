@@ -37,7 +37,7 @@ module Y2Issues
       msg = if value
         format(_("Invalid value '%{value}'."), value: value)
       else
-        _("A value is required.")
+        _("A value is required.").dup
       end
 
       msg << " " + format(_("Using '%{fallback}' instead."), fallback: fallback) if fallback
