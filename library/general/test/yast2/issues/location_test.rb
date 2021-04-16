@@ -1,3 +1,4 @@
+#!/usr/bin/env rspec
 # encoding: utf-8
 
 # Copyright (c) [2021] SUSE LLC
@@ -19,15 +20,17 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-module Yast2
-  module Issues
+require_relative "../../test_helper"
+require "yast2/issues/location"
+require "yast2/issues/file_location"
+
+describe Yast2::Issues::Location do
+  describe ".parse" do
+    it "returns a location with the given components" do
+      location = described_class.parse("file:/etc/hosts:1")
+      expect(location.type).to eq("file")
+      expect(location.path).to eq("/etc/hosts")
+      expect(location.id).to eq("1")
+    end
   end
 end
-
-require "yast2/issues/list"
-require "yast2/issues/presenter"
-require "yast2/issues/location"
-
-# Issues types
-require "yast2/issues/issue"
-require "yast2/issues/invalid_value"

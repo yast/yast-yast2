@@ -20,6 +20,7 @@
 # find current contact information at www.suse.com.
 
 require "yast"
+require "yast2/issues/location"
 
 module Yast2
   module Issues
@@ -52,7 +53,7 @@ module Yast2
       #   does not exist an specific location.
       def initialize(message, location: nil, severity: :warn)
         @message = message
-        @location = location.to_s if location
+        @location = Location.parse(location) if location
         @severity = severity
       end
 
