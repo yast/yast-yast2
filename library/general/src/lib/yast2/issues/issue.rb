@@ -48,9 +48,11 @@ module Yast2
       # @return [Symbol] Error severity (:warn, :fatal)
       attr_reader :severity
 
-      # @param [URI,String,nil] Where the error is located. Use a URI or
+      # @param message [String] User-oriented message describing the problem
+      # @param location [URI,String,nil] Where the error is located. Use a URI or
       #   a string to represent the error location. Use 'nil' if it
       #   does not exist an specific location.
+      # @param severity [Symbol] warning (:warn) or fatal (:fatal)
       def initialize(message, location: nil, severity: :warn)
         @message = message
         @location = Location.parse(location) if location
