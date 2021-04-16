@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Apr 16 12:03:50 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add a mechanism to report issues to the user (related to
+  bsc#1181295).
+- 4.4.1
+
+-------------------------------------------------------------------
 Wed Apr 14 12:09:49 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
 
 - Updated manual page ("man yast2") (bsc#1184681)
