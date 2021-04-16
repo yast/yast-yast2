@@ -34,11 +34,11 @@ module Y2Issues
       @items = issues
     end
 
-    # Determine whether any of the problem on the list is an error
+    # Determine whether any of the problem on the list is fatal
     #
-    # @return [Boolean] true if any of them is an error
-    def error?
-      any?(&:error?)
+    # @return [Boolean] true if any of them is a fatal problem
+    def fatal?
+      any?(&:fatal?)
     end
 
     # Returns an array containing registered problems

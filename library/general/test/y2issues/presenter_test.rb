@@ -26,9 +26,9 @@ describe Y2Issues::Presenter do
   let(:list) { Y2Issues::List.new }
 
   describe "#to_html" do
-    context "when an erro was found" do
+    context "when a fatal issue was found" do
       before do
-        list << Y2Issues::Issue.new("Something is invalid", severity: :error)
+        list << Y2Issues::Issue.new("Something is invalid", severity: :fatal)
       end
 
       it "includes issues messages" do
@@ -36,12 +36,12 @@ describe Y2Issues::Presenter do
         expect(presenter.to_html.to_s).to include "<li>#{issue.message}</li>"
       end
 
-      it "includes an introduction to error issues qlist" do
+      it "includes an introduction to fatal issues qlist" do
         expect(presenter.to_html.to_s).to include "Important issues"
       end
     end
 
-    context "when a non error issue was found" do
+    context "when a non fatal issue was found" do
       before do
         list << Y2Issues::Issue.new("Something is missing", severity: :warn)
       end
@@ -51,7 +51,7 @@ describe Y2Issues::Presenter do
         expect(presenter.to_html.to_s).to include "<li>#{issue.message}</li>"
       end
 
-      it "includes an introduction to non error issues list" do
+      it "includes an introduction to non fatal issues list" do
         expect(presenter.to_html.to_s).to include "<p>Minor issues"
       end
     end

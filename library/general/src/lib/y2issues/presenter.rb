@@ -48,10 +48,10 @@ module Y2Issues
     #
     # @return [String] HTML representing the list of issues
     def to_html
-      error, non_error = issues.partition(&:error?)
+      fatal, non_fatal = issues.partition(&:fatal?)
       parts = []
-      parts << error_text(error) unless error.empty?
-      parts << warning_text(non_error) unless non_error.empty?
+      parts << error_text(fatal) unless fatal.empty?
+      parts << warning_text(non_fatal) unless non_fatal.empty?
 
       parts.join
     end
