@@ -21,7 +21,7 @@ module Y2Issues
   # Represent the location of an error
   #
   # It can be a file, a section of an AutoYaST profile, etc. This class is rather open and
-  # its API can change once we know more about error reporting.
+  # its API might change once we know more about error reporting.
   #
   # The concept of "location" is introduce to tell the user where to look for a problem and as
   # a mechanism to group the issues.
@@ -55,7 +55,7 @@ module Y2Issues
     #   location.path #=> "/etc/sysconfig/network/ifcfg-eth0"
     #   location.id   #=> "BOOTPROTO"
     #
-    # @param str [String] Path specification
+    # @param str [String] String representing the path
     # @return [Location]
     def self.parse(str)
       type, path, id = str.split(":")

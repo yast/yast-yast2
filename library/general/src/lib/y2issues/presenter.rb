@@ -60,7 +60,7 @@ module Y2Issues
 
     # Return warning message with a list of issues
     #
-    # @param issues [Array<Installation::AutoinstIssues::Issue>] Array containing issues
+    # @param issues [Array<Issue>] List of issues to include in the message
     # @return [String] Message
     def warning_text(issues)
       Yast::HTML.Para(
@@ -70,7 +70,7 @@ module Y2Issues
 
     # Return error message with a list of issues
     #
-    # @param issues [Array<Installation::AutoinstIssues::Issue>] Array containing issues
+    # @param issues [Array<Issue>] List of issues to include in the message
     # @return [String] Message
     def error_text(issues)
       Yast::HTML.Para(
@@ -108,8 +108,8 @@ module Y2Issues
 
     # Return issues grouped by location where they were found
     #
-    # @return [Hash<(#parent,#section_name),Installation::AutoinstIssues::Issue>]
-    #         Issues grouped by AutoYaST profile section
+    # @return [Hash<String,Issue>]
+    #         Issues grouped by location type and path.
     def issues_by_location(issues)
       issues.each_with_object({}) do |issue, all|
         group = if issue.location
