@@ -1,6 +1,4 @@
 #!/usr/bin/env rspec
-# encoding: utf-8
-
 # Copyright (c) [2021] SUSE LLC
 #
 # All Rights Reserved.
@@ -25,7 +23,7 @@ require "yast2/issues/invalid_value"
 
 describe Yast2::Issues::InvalidValue do
   subject(:issue) do
-    described_class.new('dhcpd', location: 'file:/etc/sysconfig/network/ifcfg-eth0')
+    described_class.new("dhcpd", location: "file:/etc/sysconfig/network/ifcfg-eth0")
   end
 
   describe "#message" do
@@ -36,7 +34,7 @@ describe Yast2::Issues::InvalidValue do
     context "when a fallback value is given" do
       subject(:issue) do
         described_class.new(
-          'dhcpd', location: 'file:/etc/sysconfig/network/ifcfg-eth0', fallback: 'auto'
+          "dhcpd", location: "file:/etc/sysconfig/network/ifcfg-eth0", fallback: "auto"
         )
       end
 

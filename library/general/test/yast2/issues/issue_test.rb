@@ -1,6 +1,4 @@
 #!/usr/bin/env rspec
-# encoding: utf-8
-
 # Copyright (c) [2021] SUSE LLC
 #
 # All Rights Reserved.
@@ -54,7 +52,6 @@ describe Yast2::Issues::Issue do
         expect(issue.fatal?).to eq(true)
       end
     end
-
 
     context "when severity is :fatal" do
       subject(:issue) { described_class.new("Something went wrong", severity: :warn) }

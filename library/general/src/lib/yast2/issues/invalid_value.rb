@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # Copyright (c) [2021] SUSE LLC
 #
 # All Rights Reserved.
@@ -31,9 +29,7 @@ module Yast2
       # @param fallback [#to_s] Value to use instead of the invalid one
       def initialize(value, location:, fallback: nil, severity: :warn)
         msg = format(_("Invalid value '%{value}'."), value: value)
-        if fallback
-          msg << " " + format(_("Using '%{fallback}' instead."), fallback: fallback)
-        end
+        msg << " " + format(_("Using '%{fallback}' instead."), fallback: fallback) if fallback
 
         super(msg, location: location, severity: severity)
       end
