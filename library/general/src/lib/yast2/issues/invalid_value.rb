@@ -25,13 +25,23 @@ module Yast2
     # Represents a situation where an invalid value was given
     class InvalidValue < Issue
       # @param location [URI, String] Error location ("file:/etc/sysconfig/ifcfg-eth0:BOOTPROTO")
-      # @param value [#to_s] Invalid value
+      # @param value [#to_s,nil] Invalid value or nil if no value was given
       # @param fallback [#to_s] Value to use instead of the invalid one
       def initialize(value, location:, fallback: nil, severity: :warn)
-        msg = format(_("Invalid value '%{value}'."), value: value)
-        msg << " " + format(_("Using '%{fallback}' instead."), fallback: fallback) if fallback
+        super(build_message(value, fallback), location: location, severity: severity)
+      end
 
-        super(msg, location: location, severity: severity)
+    private
+
+      def build_message(value, fallback)
+        msg = if value
+          format(_("Invalid value '%{value}'."), value: value)
+        else
+          _("A value is required.")
+        end
+
+        msg << " " + format(_("Using '%{fallback}' instead."), fallback: fallback) if fallback
+        msg
       end
     end
   end

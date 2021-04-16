@@ -31,6 +31,16 @@ describe Yast2::Issues::InvalidValue do
       expect(issue.message).to eq("Invalid value 'dhcpd'.")
     end
 
+    context "when the nil value was given" do
+      subject(:issue) do
+        described_class.new(nil, location: "file:/etc/sysconfig/network/ifcfg-eth0")
+      end
+
+      it "returns a message explaining the problem" do
+        expect(issue.message).to eq("A value is required.")
+      end
+    end
+
     context "when a fallback value is given" do
       subject(:issue) do
         described_class.new(
