@@ -31,12 +31,19 @@ module Yast2
   #   list = Yast2::Issues::List.new
   #   list << Yast2::Issues::Issue.new("Could not read network configuration", severity: :fatal)
   module Issues
+    # Reports the errors to the user
+    #
+    # @see Yast2::Issues::Reporter
+    def self.report(issues)
+      Reporter.new(issues).report
+    end
   end
 end
 
 require "yast2/issues/list"
 require "yast2/issues/presenter"
 require "yast2/issues/location"
+require "yast2/issues/reporter"
 
 # Issues types
 require "yast2/issues/issue"

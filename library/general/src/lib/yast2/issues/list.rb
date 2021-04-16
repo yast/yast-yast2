@@ -29,8 +29,10 @@ module Yast2
       def_delegators :@items, :each, :empty?, :<<
 
       # Constructor
-      def initialize
-        @items = []
+      #
+      # @param issues [Array<Issue>] Issues to include in the list
+      def initialize(issues = [])
+        @items = issues
       end
 
       # Determine whether any of the problem on the list is fatal
