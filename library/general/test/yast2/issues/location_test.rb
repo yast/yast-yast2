@@ -20,7 +20,6 @@
 
 require_relative "../../test_helper"
 require "yast2/issues/location"
-require "yast2/issues/file_location"
 
 describe Yast2::Issues::Location do
   describe ".parse" do
