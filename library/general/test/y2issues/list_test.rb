@@ -56,18 +56,18 @@ describe Y2Issues::List do
     end
   end
 
-  describe "#error?" do
-    context "when contains some error" do
-      let(:issue) { Y2Issues::Issue.new("Something went wrong", severity: :error) }
+  describe "#fatal?" do
+    context "when contains some fatal error" do
+      let(:issue) { Y2Issues::Issue.new("Something went wrong", severity: :fatal) }
 
       it "returns true" do
-        expect(list.error?).to eq(true)
+        expect(list.fatal?).to eq(true)
       end
     end
 
-    context "when does not contain any error" do
+    context "when does not contain any fatal error" do
       it "returns false" do
-        expect(list.error?).to eq(false)
+        expect(list.fatal?).to eq(false)
       end
 
     end
