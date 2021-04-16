@@ -28,11 +28,14 @@ module Yast2
     #
     # @todo Separate by severity, group items, etc.
     class Presenter
+      include Yast::I18n
+
       # @return [List] List of issues to present
       attr_reader :issues
 
       # @param issues [List] Issues list
       def initialize(issues)
+        textdomain "base"
         @issues = issues
       end
 
@@ -47,10 +50,78 @@ module Yast2
       #
       # @return [String] HTML representing the list of issues
       def to_html
-        lines = issues.map do |issue|
-          "#{issue.location}: #{issue.message}"
+        fatal, non_fatal = issues.partition(&:fatal?)
+        parts = []
+        parts << error_text(fatal) unless fatal.empty?
+        parts << warning_text(non_fatal) unless non_fatal.empty?
+
+        parts.join
+      end
+
+    private
+
+      # Return warning message with a list of issues
+      #
+      # @param issues [Array<Installation::AutoinstIssues::Issue>] Array containing issues
+      # @return [String] Message
+      def warning_text(issues)
+        Yast::HTML.Para(
+          _("Minor issues were detected:")
+        ) + issues_list_content(issues)
+      end
+
+      # Return error message with a list of issues
+      #
+      # @param issues [Array<Installation::AutoinstIssues::Issue>] Array containing issues
+      # @return [String] Message
+      def error_text(issues)
+        Yast::HTML.Para(
+          _("Important issues were detected:")
+        ) + issues_list_content(issues)
+      end
+
+      # Return an HTML representation for a list of issues
+      #
+      # The issues are grouped by the location where they were detected. General issues (with no
+      # specific location) are listed first.
+      #
+      # @return [String] Issues list content
+      #
+      # @see issues_by_location
+      def issues_list_content(issues)
+        all_issues = []
+        issues_map = issues_by_location(issues)
+
+        if issues_map[:nolocation]
+          all_issues += issues_map[:nolocation].map(&:message)
+          issues_map.delete(:nolocation)
         end
-        Yast::HTML.List(lines)
+
+        issues_map.each do |group, items|
+          messages = Yast::HTML.List(
+            items.map { |i| "#{i.location.id}: #{i.message}" }
+          )
+          path = group.split(":").last
+          all_issues << "#{path}:#{messages}"
+        end
+
+        Yast::HTML.List(all_issues)
+      end
+
+      # Return issues grouped by location where they were found
+      #
+      # @return [Hash<(#parent,#section_name),Installation::AutoinstIssues::Issue>]
+      #         Issues grouped by AutoYaST profile section
+      def issues_by_location(issues)
+        issues.each_with_object({}) do |issue, all|
+          group = if issue.location
+            "#{issue.location.type}:#{issue.location.path}"
+          else
+            :nolocation
+          end
+          all[group] ||= []
+          all[group] << issue
+        end
       end
     end
   end
