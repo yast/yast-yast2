@@ -20,6 +20,18 @@
 # find current contact information at www.suse.com.
 
 module Yast2
+  # This module offers a mechanism to register and report issues to the user.
+  #
+  # It includes:
+  #
+  # * A set of classes to represent the issues ({Yast2::Issues::Issue},
+  #   {Yast2::Issues::InvalidValue}).
+  # * A class to collect errors ({Yast2::Issues::List}).
+  # * A presenter to help when presenting the issues to the user ({Yast2::Issues::Presenter}).
+  #
+  # @example Registering an error
+  #   list = Yast2::Issues::List.new
+  #   list << Yast2::Issues::Issue.new("Could not read network configuration", severity: :fatal)
   module Issues
   end
 end
