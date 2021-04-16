@@ -56,4 +56,18 @@ describe Y2Issues::Location do
       end
     end
   end
+
+  describe "#to_s" do
+    it "returns a string based representation of the location" do
+      expect(location.to_s).to eq("file:/etc/hosts:1")
+    end
+
+    context "when the ID is missing" do
+      subject(:location) {  described_class.new("file", "/etc/hosts") }
+
+      it "does not include the ID" do
+        expect(location.to_s).to eq("file:/etc/hosts")
+      end
+    end
+  end
 end

@@ -71,6 +71,14 @@ module Y2Issues
       @id = id
     end
 
+    # Returns a string-based representation of the location
+    #
+    # @return [String] String-based representation
+    # @see .parse
+    def to_s
+      [type, path, id].compact.join(":")
+    end
+
     # Determines whether two locations are the same
     #
     # @param other [Location]
