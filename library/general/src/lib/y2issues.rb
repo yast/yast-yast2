@@ -32,6 +32,10 @@
 module Y2Issues
   # Reports the errors to the user
   #
+  # This is a helper method that offers an stable API on top of {Reporter}. Depending on
+  # Yast::Report settings, it may show a pop-up with the found issues and log them.
+  #
+  # @param [List] Issues list
   # @see Y2Issues::Reporter
   def self.report(issues)
     Reporter.new(issues).report
