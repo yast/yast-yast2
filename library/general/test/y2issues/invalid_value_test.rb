@@ -18,10 +18,10 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "yast2/issues/invalid_value"
+require_relative "../test_helper"
+require "y2issues/invalid_value"
 
-describe Yast2::Issues::InvalidValue do
+describe Y2Issues::InvalidValue do
   subject(:issue) do
     described_class.new("dhcpd", location: "file:/etc/sysconfig/network/ifcfg-eth0")
   end

@@ -18,17 +18,17 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "yast2/issues"
+require_relative "../test_helper"
+require "y2issues"
 
-describe Yast2::Issues::Presenter do
+describe Y2Issues::Presenter do
   subject(:presenter) { described_class.new(list) }
-  let(:list) { Yast2::Issues::List.new }
+  let(:list) { Y2Issues::List.new }
 
   describe "#to_html" do
     context "when a fatal issue was found" do
       before do
-        list << Yast2::Issues::Issue.new("Something is invalid", severity: :fatal)
+        list << Y2Issues::Issue.new("Something is invalid", severity: :fatal)
       end
 
       it "includes issues messages" do
@@ -43,7 +43,7 @@ describe Yast2::Issues::Presenter do
 
     context "when a non fatal issue was found" do
       before do
-        list << Yast2::Issues::Issue.new("Something is missing", severity: :warn)
+        list << Y2Issues::Issue.new("Something is missing", severity: :warn)
       end
 
       it "includes issues messages" do

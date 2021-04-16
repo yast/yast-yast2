@@ -18,14 +18,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "yast2/issues"
+require_relative "../test_helper"
+require "y2issues"
 
-describe Yast2::Issues::Reporter do
+describe Y2Issues::Reporter do
   let(:reporter) { described_class.new(list, report_settings: report) }
-  let(:list) { Yast2::Issues::List.new([issue]) }
+  let(:list) { Y2Issues::List.new([issue]) }
   let(:issue) do
-    Yast2::Issues::Issue.new("Something went wrong", severity: level)
+    Y2Issues::Issue.new("Something went wrong", severity: level)
   end
   let(:report) do
     {

@@ -18,10 +18,10 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "yast2/issues"
+require_relative "../test_helper"
+require "y2issues"
 
-describe Yast2::Issues::Issue do
+describe Y2Issues::Issue do
   describe "#new" do
     subject(:issue) do
       described_class.new(
@@ -31,7 +31,7 @@ describe Yast2::Issues::Issue do
 
     it "creates an issue" do
       expect(issue.message).to eq("Something went wrong")
-      expect(issue.location).to eq(Yast2::Issues::Location.parse("file:/etc/hosts"))
+      expect(issue.location).to eq(Y2Issues::Location.parse("file:/etc/hosts"))
       expect(issue.severity).to eq(:fatal)
     end
 

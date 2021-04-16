@@ -18,10 +18,10 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "yast2/issues/location"
+require_relative "../test_helper"
+require "y2issues/location"
 
-describe Yast2::Issues::Location do
+describe Y2Issues::Location do
   subject(:location) do
     described_class.new("file", "/etc/hosts", "1")
   end

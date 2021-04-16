@@ -19,35 +19,33 @@
 
 require "forwardable"
 
-module Yast2
-  module Issues
-    # List of YaST issues
-    class List
-      include Enumerable
-      extend Forwardable
+module Y2Issues
+  # List of YaST issues
+  class List
+    include Enumerable
+    extend Forwardable
 
-      def_delegators :@items, :each, :empty?, :<<
+    def_delegators :@items, :each, :empty?, :<<
 
-      # Constructor
-      #
-      # @param issues [Array<Issue>] Issues to include in the list
-      def initialize(issues = [])
-        @items = issues
-      end
+    # Constructor
+    #
+    # @param issues [Array<Issue>] Issues to include in the list
+    def initialize(issues = [])
+      @items = issues
+    end
 
-      # Determine whether any of the problem on the list is fatal
-      #
-      # @return [Boolean] true if any of them is a fatal problem
-      def fatal?
-        any?(&:fatal?)
-      end
+    # Determine whether any of the problem on the list is fatal
+    #
+    # @return [Boolean] true if any of them is a fatal problem
+    def fatal?
+      any?(&:fatal?)
+    end
 
-      # Returns an array containing registered problems
-      #
-      # @return [Array<Issue>] List of problems
-      def to_a
-        @items
-      end
+    # Returns an array containing registered problems
+    #
+    # @return [Array<Issue>] List of problems
+    def to_a
+      @items
     end
   end
 end
