@@ -19,7 +19,7 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require "yast2/issues/issue"
+require "yast2/issues"
 
 describe Yast2::Issues::Issue do
   describe "#new" do
@@ -31,7 +31,7 @@ describe Yast2::Issues::Issue do
 
     it "creates an issue" do
       expect(issue.message).to eq("Something went wrong")
-      expect(issue.location.to_s).to eq("/etc/hosts")
+      expect(issue.location).to eq(Yast2::Issues::Location.parse("file:/etc/hosts"))
       expect(issue.severity).to eq(:fatal)
     end
 
