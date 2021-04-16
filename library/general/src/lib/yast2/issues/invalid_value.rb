@@ -28,6 +28,7 @@ module Yast2
       # @param value [#to_s,nil] Invalid value or nil if no value was given
       # @param fallback [#to_s] Value to use instead of the invalid one
       def initialize(value, location:, fallback: nil, severity: :warn)
+        textdomain "base"
         super(build_message(value, fallback), location: location, severity: severity)
       end
 
