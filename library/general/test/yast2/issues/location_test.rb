@@ -22,12 +22,38 @@ require_relative "../../test_helper"
 require "yast2/issues/location"
 
 describe Yast2::Issues::Location do
+  subject(:location) do
+    described_class.new("file", "/etc/hosts", "1")
+  end
+
   describe ".parse" do
     it "returns a location with the given components" do
       location = described_class.parse("file:/etc/hosts:1")
       expect(location.type).to eq("file")
       expect(location.path).to eq("/etc/hosts")
       expect(location.id).to eq("1")
+    end
+  end
+
+  describe "#==" do
+    context "when locations have the same values" do
+      let(:other) do
+        described_class.new("file", "/etc/hosts", "1")
+      end
+
+      it "returns true" do
+        expect(location).to eq(other)
+      end
+    end
+
+    context "when locations have different values" do
+      let(:other) do
+        described_class.new("file", "/etc/resolv.conf")
+      end
+
+      it "returns true" do
+        expect(location).to_not eq(other)
+      end
     end
   end
 end

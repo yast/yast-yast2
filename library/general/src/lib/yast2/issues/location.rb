@@ -71,6 +71,16 @@ module Yast2
         @path = path
         @id = id
       end
+
+      # Determines whether two locations are the same
+      #
+      # @param other [Location]
+      # @return [Boolean]
+      def ==(other)
+        type == other.type && path == other.path && id == other.id
+      end
+
+      alias_method :eql?, :==
     end
   end
 end
