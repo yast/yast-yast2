@@ -39,7 +39,7 @@ describe Y2Issues::Reporter do
   let(:errors_settings) do
     { "log" => true, "show" => true, "timeout" => 15 }
   end
-  let(:level) { :fatal }
+  let(:level) { :error }
 
   describe "#report" do
     before do
@@ -51,8 +51,8 @@ describe Y2Issues::Reporter do
       reporter.report
     end
 
-    context "when there is a fatal error" do
-      let(:level) { :fatal }
+    context "when there is an error" do
+      let(:level) { :error }
 
       it "displays issues as errors with no timeout" do
         expect(Yast2::Popup).to receive(:show) .with(
