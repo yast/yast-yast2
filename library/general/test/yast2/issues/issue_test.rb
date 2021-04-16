@@ -33,7 +33,7 @@ describe Yast2::Issues::Issue do
 
     it "creates an issue" do
       expect(issue.message).to eq("Something went wrong")
-      expect(issue.location).to eq("file:/etc/hosts")
+      expect(issue.location.to_s).to eq("/etc/hosts")
       expect(issue.severity).to eq(:fatal)
     end
 
@@ -42,6 +42,25 @@ describe Yast2::Issues::Issue do
 
       it "sets the severity to :warn" do
         expect(issue.severity).to eq(:warn)
+      end
+    end
+  end
+
+  describe "#fatal?" do
+    context "when severity is :fatal" do
+      subject(:issue) { described_class.new("Something went wrong", severity: :fatal) }
+
+      it "returns true" do
+        expect(issue.fatal?).to eq(true)
+      end
+    end
+
+
+    context "when severity is :fatal" do
+      subject(:issue) { described_class.new("Something went wrong", severity: :warn) }
+
+      it "returns false" do
+        expect(issue.fatal?).to eq(false)
       end
     end
   end

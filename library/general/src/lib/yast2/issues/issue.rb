@@ -55,6 +55,13 @@ module Yast2
         @location = location.to_s if location
         @severity = severity
       end
+
+      # Determines whether the error is fatal or not
+      #
+      # @return [Boolean]
+      def fatal?
+        @severity == :fatal
+      end
     end
   end
 end
