@@ -57,6 +57,7 @@ module Y2Issues
     #
     # @param str [String] String representing the path
     # @return [Location]
+    # @see #to_s
     def self.parse(str)
       type, path, id = str.split(":")
       new(type, path, id)
