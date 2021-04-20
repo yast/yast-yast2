@@ -31,12 +31,14 @@ module Y2User
         getent = Yast::Execute.on_target!("/usr/bin/getent", "passwd", stdout: :capture)
         getent.lines.map do |line|
           values = line.chomp.split(":")
+          gecos = values[PASSWD_MAPPING["gecos"]] || ""
           User.new(
             configuration,
             values[PASSWD_MAPPING["name"]],
             uid:   values[PASSWD_MAPPING["uid"]],
             gid:   values[PASSWD_MAPPING["gid"]],
             shell: values[PASSWD_MAPPING["shell"]],
+            gecos: gecos.split(","),
             home:  values[PASSWD_MAPPING["home"]]
           )
         end

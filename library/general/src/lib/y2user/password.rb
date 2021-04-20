@@ -31,10 +31,13 @@ module Y2User
     # @return [Date, nil] Date when whole account expire or nil if there are no account expiration.
     attr_reader :account_expiration
 
+    # @return[:local, :ldap, :unknown] where is user defined
+    attr_reader :source
+
     # @see respective attributes for possible values
     def initialize(configuration, name, value: nil, last_change: nil, minimum_age: nil,
       maximum_age: nil, warning_period: nil, inactivity_period: nil,
-      account_expiration: nil)
+      account_expiration: nil, source: :unknown)
       @configuration = configuration
       @name = name
       @value = value
@@ -44,6 +47,7 @@ module Y2User
       @warning_period = warning_period
       @inactivity_period = inactivity_period
       @account_expiration = account_expiration
+      @source = source
     end
 
     ATTRS = [:name, :value, :last_change, :minimum_age, :maximum_age, :warning_period,

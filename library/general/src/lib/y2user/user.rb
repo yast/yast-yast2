@@ -23,8 +23,14 @@ module Y2User
     # @return[String, nil] home directory or nil if it is not yet assigned.
     attr_reader :home
 
+    # @return [Array<String>] Fields in GECOS entry.
+    attr_reader :gecos
+
+    # @return[:local, :ldap, :unknown] where is user defined
+    attr_reader :source
+
     # @see respective attributes for possible values
-    def initialize(configuration, name, uid: nil, gid: nil, shell: nil, home: nil)
+    def initialize(configuration, name, uid: nil, gid: nil, shell: nil, home: nil, gecos: [], source: :unknown)
       # TODO: GECOS
       @configuration = configuration
       @name = name
@@ -32,6 +38,8 @@ module Y2User
       @gid = gid
       @shell = shell
       @home = home
+      @source = source
+      @gecos = gecos
     end
 
     # @return [Y2User::Group, nil] primary group set to given user or
@@ -48,6 +56,11 @@ module Y2User
     # @return [Y2User::Password] Password configuration assigned to user
     def password
       configuration.passwords.find { |p| p.name == name }
+    end
+
+    # @return [String] Returns full name from gecos entry or username if not specified in gecos.
+    def full_name
+      gecos.first || name
     end
 
     ATTRS = [:name, :uid, :gid, :shell, :home].freeze

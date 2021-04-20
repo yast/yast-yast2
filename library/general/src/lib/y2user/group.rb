@@ -16,12 +16,16 @@ module Y2User
     # @note to get list of users in given group use method #groups
     attr_reader :users_name
 
+    # @return[:local, :ldap, :unknown] where is user defined
+    attr_reader :source
+
     # @see respective attributes for possible values
-    def initialize(configuration, name, gid: nil, users_name: [])
+    def initialize(configuration, name, gid: nil, users_name: [], source: :unknown)
       @configuration = configuration
       @name = name
       @gid = gid
       @users_name = users_name
+      @source = source
     end
 
     # @return [Array<Y2User::User>] all users in this group, including ones that
