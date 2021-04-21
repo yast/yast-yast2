@@ -18,7 +18,7 @@ module Y2User
           configuration.users << User.new(configuration, user["uid"], gecos: [user["cn"]])
           # lets just use the strongest available
           configuration.passwords << Password.new(configuration, user["uid"],
-            value: Yast::Builtins.cryptsha512(user["userPassword"])
+            value: Yast::Builtins.cryptsha512(user["userPassword"]))
         end
       end
     end
