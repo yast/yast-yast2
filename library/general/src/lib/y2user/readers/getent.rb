@@ -6,7 +6,7 @@ require "y2user/user"
 require "y2user/password"
 
 module Y2User
-  module Reader
+  module Readers
     # Reads users configuration using getent utility.
     class Getent
       def read_to(configuration)

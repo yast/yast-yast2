@@ -8,7 +8,7 @@ require "y2user/password"
 Yast.import "UsersSimple"
 
 module Y2User
-  module Reader
+  module Readers
     # Reads users configuration using old Yast Module UsersSimple.
     class UsersSimple
       def read_to(configuration)

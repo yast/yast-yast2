@@ -25,8 +25,8 @@ module Y2User
         return res if res && !force_read
 
         if !reader
-          require "y2user/reader/getent"
-          reader = Reader::Getent.new
+          require "y2user/readers/getent"
+          reader = Readers::Getent.new
         end
 
         # TODO: make system config immutable, so it cannot be modified directly
