@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 22 06:35:11 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- The location given to the Y2Issue::Issue constructor can be a
+  string or a location object.
+
+-------------------------------------------------------------------
 Fri Apr 16 12:03:50 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add a mechanism to report issues to the user (related to
