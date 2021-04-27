@@ -142,6 +142,12 @@ module Yast
       InstallInf("Textmode") == "1"
     end
 
+    def reboot_timeout
+      return nil unless InstallInf("reboot_timeout")
+
+      InstallInf("reboot_timeout").to_i
+    end
+
     # end of install.inf reading routines
 
     # Write /etc/yast.inf during installation
@@ -287,6 +293,7 @@ module Yast
     publish function: :keys, type: "list <string> ()"
     publish function: :value_for, type: "string (string)"
     publish function: :disable_remote, type: "list <string> ()"
+    publish function: :reboot_timeout, type: "integer ()"
 
   private
 

@@ -279,4 +279,16 @@ describe Yast::Linuxrc do
       end
     end
   end
+
+  describe "#reboot_timeout" do
+    it "returns integer value if 'reboot_timeout' is found in install.inf" do
+      load_install_inf("reboot_timeout" => "15")
+      expect(subject.reboot_timeout).to eq(15)
+    end
+
+    it "returns nil if 'reboot_timeout' is not found in install.inf" do
+      load_install_inf({})
+      expect(subject.reboot_timeout).to eq(nil)
+    end
+  end
 end

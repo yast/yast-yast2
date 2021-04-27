@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.1.80
+Version:        4.1.81
 
 Release:        0
 Summary:        YaST2 - Main Package
