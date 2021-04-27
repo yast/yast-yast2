@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Apr 27 10:51:35 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- Add to yast2 mixin Yast2::SecretAttributes for hiding sensitive
+  information (bsc#1141017)
+- 4.4.2
+
+-------------------------------------------------------------------
 Thu Apr 22 06:35:11 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - The location given to the Y2Issue::Issue constructor can be a
