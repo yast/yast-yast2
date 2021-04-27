@@ -53,7 +53,7 @@ module Yast2
       #
       # @example
       #   class TheClass
-      #     include Y2Storage::SecretAttributes
+      #     include Yast2::SecretAttributes
       #
       #     attr_accessor :name
       #     secret_attr :password
