@@ -64,22 +64,23 @@ describe Yast2::FsSnapshotStore do
 
       described_class.clean("test")
     end
-  end
 
-  context "in initial stage before SCR switched" do
-    it "use path on mounted target system" do
-      Yast.import "Installation"
-      Yast::Installation.destdir = "/mnt"
+    context "in initial stage before SCR switched" do
+      it "use path on mounted target system" do
+        Yast.import "Installation"
+        Yast::Installation.destdir = "/mnt"
 
-      Yast.import "Stage"
-      allow(Yast::Stage).to receive(:initial).and_return(true)
+        Yast.import "Stage"
+        allow(Yast::Stage).to receive(:initial).and_return(true)
+        allow(Yast::WFM).to receive(:scr_chrooted?).and_return(false)
 
-      expect(Yast::SCR).to receive(:Execute).with(
-        path(".target.remove"),
-        "/mnt/var/lib/YaST2/pre_snapshot_test.id"
-      )
+        expect(Yast::SCR).to receive(:Execute).with(
+          path(".target.remove"),
+          "/mnt/var/lib/YaST2/pre_snapshot_test.id"
+        )
 
-      described_class.clean("test")
+        described_class.clean("test")
+      end
     end
   end
 end

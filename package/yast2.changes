@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Apr 29 13:24:40 CEST 2021 - Jozef Pupava <jpupava@suse.com>
+
+- Add linuxrc option "reboot_timeout" to configure the timeout
+  before reboot (bsc#1122493 poo#89716)
+- Linuxrc: Ensure the new opened SCR instace is closed when reading
+  the /etc/install.inf file (bsc#1122493, bsc#1157476)
+- Ensure /etc/install.inf is not read from the target system but
+  from the local one. (bsc#1122493, bsc#1157476)
+- 4.1.81
+
+-------------------------------------------------------------------
 Mon Dec 21 10:27:21 UTC 2020 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not use the 'installation-helper' binary to create snapshots
