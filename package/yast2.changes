@@ -23,7 +23,7 @@ Tue Mar  9 08:23:44 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Use meaningful button labels when asking the user if would like
   to continue when an installation client is missing
-  (related to bsc#1180594).
+  (related to bsc#1180954).
 - 4.3.59
 
 -------------------------------------------------------------------
