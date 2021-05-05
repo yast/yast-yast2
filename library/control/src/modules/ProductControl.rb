@@ -1348,7 +1348,7 @@ module Yast
           # This code will be triggered before the red pop window appears on the user's screen
           Hooks.run("installation_failure") if result == false
 
-          result = result.to_sym
+          result = Convert.to_symbol(result)
 
           Hooks.run("after_#{step_name}")
         else
