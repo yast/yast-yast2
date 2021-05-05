@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May  3 14:35:49 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Do not crash when a client execution return false
+  (related to bsc#1185561, and bsc#1180954).
+- 4.4.3
+
+-------------------------------------------------------------------
 Tue Apr 27 10:51:35 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - Add to yast2 mixin Yast2::SecretAttributes for hiding sensitive
@@ -42,7 +49,7 @@ Tue Mar  9 08:23:44 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Use meaningful button labels when asking the user if would like
   to continue when an installation client is missing
-  (related to bsc#1180594).
+  (related to bsc#1180954).
 - 4.3.59
 
 -------------------------------------------------------------------
