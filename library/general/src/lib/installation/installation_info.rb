@@ -18,10 +18,9 @@
 # find current contact information at www.suse.com.
 
 require "singleton"
+require "yaml"
+
 require "yast"
-require "y2packager/medium_type"
-require "y2packager/resolvable"
-require "y2packager/repository"
 
 module Installation
   #
@@ -31,146 +30,82 @@ module Installation
   # crashed.
   class InstallationInfo
     include Singleton
+    include Yast::Logger
 
-    LOGFILE = "product_information".freeze
     LOGDIR = "/var/log/YaST2/installation_info/".freeze
 
     include Yast::Logger
 
     def initialize
-      Yast.import "Mode"
-      Yast.import "RootPart"
-      Yast.import "Packages"
+      self.index = 0
 
-      #
-      # Function calls which has been set by other modules or 3.parties.
-      # These functions will be called while generating the output.
-      # The return value (hash) will be logged into the output file.
-      @dump_callbacks = []
+      # Function calls which has been set by other modules,
+      # these functions will be called while generating the output.
+      # The return value (hash) of each call will be logged into the output file.
+      # Uses "id" => block mapping
+      @callbacks = {}
     end
-
-    #
-    # Reset all callbacks which would be called while dumping the
-    # log file.
-    #
-    def reset
-      @dump_callbacks = []
-    end
-
-    #
-    # Add a callback which will be called while generating the
-    # yml file. This callback must return a hash.
+    
+    # Register a block which will be called while generating the data file.
     #
     # Example:
     #
     #     require "installation/installation_info"
     #
-    #     func = -> do
-    #        data = MyClass.collect_data
-    #        { foo: data }
+    #     ::Installation::InstallationInfo.instance.add("my_module") do
+    #       MyClass.collect_data
     #     end
     #
-    #     ::Installation::InstallationInfo.instance.add(func)
+    # @param name [String] id of the function call, using the same id
+    #   will overwrite the previous setting, use the module/package name
+    #   to avoid conflicts
+    def add(name, &block)
+      return unless block_given?
+
+      log.info("Adding callback #{name.inspect}")
+      callbacks[name] = block
+    end
+
+    # is the callback already registered?
+    # @param name [String] name of the callback
+    # @return [Boolean] `true` if registered, `false` otherwise
+    def included?(name)
+      callbacks.key?(name)
+    end
+
+    # Collects the data and writes the dump into an YAML file.
     #
-    # @param [Proc] function which has be called
+    # @param description [String] description of data, e.g. what happened
+    # @param additional_info [Hash,nil] optional additional information
+    # @param path [String,nil] path to the saved dump file,
+    #   uses the default path if `nil`
+    # @return [String] path to the written file
+    def write(description, additional_info = nil, path = nil)
+      file = path || File.join(LOGDIR, "dump_#{Process.pid}_#{format("%03d", index)}.yml")
+      log.info("Writing installation information to #{file}")
 
-    def add(function_call)
-      @dump_callbacks << function_call
+      # the collected data
+      data = {}
+
+      @callbacks.each do |name, callback|
+        data[name] = callback.call
+      end
+
+      data["description"] = description
+      data["additional_info"] = additional_info if additional_info
+
+      ::FileUtils.mkdir_p(File.dirname(file))
+      File.write(file, data.to_yaml)
+
+      # increase the file counter for the next file
+      self.index += 1
+
+      file
     end
 
-    #
-    # Writes all current available information about the
-    # product selection in a YUML file
-    #
-    # @param filename [String] filename where to store the data
-    # @param additional_info [Hash] additional information
-    # @return [Boolean] success
-    def write(filename = LOGFILE, additional_info = nil)
-      ret = {}
-      destfile = File.join(LOGDIR, "#{filename}_#{Time.now.strftime("%F_%I_%M_%S")}.yml")
-      log.info("Writing product information to #{destfile}")
-      @dump_callbacks.each do |callback|
-        ret.merge!(callback.call)
-      end
+  protected
 
-      ret["additional_info"] = additional_info if additional_info
-
-      ret["mode"] = Yast::Mode.mode
-      ret["medium_type"] = Y2Packager::MediumType.type.to_s
-      if Yast::Mode.update
-        # evaluating root partitions
-        ret["root_partitions"] = Yast::RootPart.rootPartitions
-        ret["selected_root_partition"] = Yast::RootPart.selectedRootPartition
-      end
-
-      ret["available_base_products"] = available_base_products
-
-      products = Yast::Packages.group_products_by_status(Y2Packager::Resolvable.find(kind: :product))
-      ret["evaluated_result"] = {}
-      ret["evaluated_result"]["install_products"] = to_product_hash_list(products[:new])
-
-      if Yast::Mode.update
-        # Evaluating Products
-        ret["evaluated_result"]["removed_products"] = to_product_hash_list(products[:removed])
-        ret["evaluated_result"]["kept_products"] = to_product_hash_list(products[:kept])
-        ret["evaluated_result"]["updated_products"] = to_update_hash_list(products[:updated])
-      end
-
-      ret["repositories"] = to_repo_hash_list(Y2Packager::Repository.all)
-
-      ::FileUtils.mkdir_p(LOGDIR) unless File.exist?(LOGDIR)
-      File.write(destfile, ret.to_yaml)
-    end
-
-  private
-
-    def to_product_hash_list(products)
-      products.map do |product|
-        { "name" => product.name, "short_name" => product.short_name,
-          "display_name" => product.display_name, "version" => product.version,
-          "vendor" => product.vendor }
-      end
-    end
-
-    def to_repo_hash_list(repos)
-      repos.map do |repo|
-        { "id"      => repo.repo_id,
-          "name"    => repo.name,
-          "url"     => repo.url.to_s,
-          "dir"     => repo.product_dir,
-          "alias"   => repo.repo_alias,
-          "enabled" => repo.enabled?,
-          "local"   => repo.local? }
-      end
-    end
-
-    def to_update_hash_list(products)
-      products.map do |from, to|
-        { "from" => { "name" => from.name, "short_name" => from.short_name,
-          "display_name" => from.display_name, "version" => from.version,
-          "vendor" => from.vendor },
-          "to"   => { "name" => to.name, "short_name" => to.short_name,
-          "display_name" => to.display_name, "version" => to.version,
-          "vendor" => to.vendor } }
-      end
-    end
-
-    def available_base_products
-      libzypp_products = Y2Packager::ProductReader.new.available_base_products
-      if libzypp_products.empty? && Y2Packager::MediumType.offline?
-        # Reading the product info again from the offline medium
-        Y2Packager::ProductLocation
-          .scan(InstURL.installInf2Url(""))
-          .select { |p| p.details&.base }
-          .sort(&::Y2Packager::PRODUCT_SORTER).map do |product|
-          { "name" => product.details.product, "dir" => product.dir,
-           "short_name" => product.details.summary,
-           "display_name" => product.details.description,
-           "product_package" => product.details.product_package }
-        end
-      else
-        to_product_hash_list(libzypp_products)
-      end
-    end
+    attr_reader :callbacks
+    attr_accessor :index
   end
 end
