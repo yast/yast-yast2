@@ -53,7 +53,7 @@ return $[
     "bn_BD" : _("Bangladesh"),
     "br_FR" : _("France"),
     "bs_BA" : _("Bosnia and Herzegowina"),
-    "ca_ES" : _("Catalonia"),
+    "ca_ES" : _("Spain"),
     "cs_CZ" : _("Czech Republic"),
     "cy_GB" : _("Great Britain"),
     "da_DK" : _("Denmark"),

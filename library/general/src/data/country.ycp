@@ -57,7 +57,6 @@ return $[
     "EC" : _("Ecuador"),
     "EE" : _("Estonia"),
     "EG" : _("Egypt"),
-    "ES" : _("Catalonia"),
     "ES" : _("Spain"),
     "FI" : _("Finland"),
     "FO" : _("Faroe Islands"),
