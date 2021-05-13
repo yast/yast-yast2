@@ -128,7 +128,12 @@ module Yast
       if products.empty?
         log.error "No base product found"
         # Logging all information about the product evaluation
-        ::Installation::InstallationInfo.instance.write("no_base_product_found")
+        ::Installation::InstallationInfo.instance.write(
+          "No base product found",
+          {
+            "required_product_status" => required_status
+          }
+        )
         raise "No base product found"
       elsif products.size > 1
         log.warn "More than one base product found!"
