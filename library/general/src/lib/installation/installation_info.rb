@@ -45,7 +45,7 @@ module Installation
       # Uses "id" => block mapping
       @callbacks = {}
     end
-    
+
     # Register a block which will be called while generating the data file.
     #
     # Example:
