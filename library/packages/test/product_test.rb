@@ -284,21 +284,13 @@ describe Yast::Product do
     before(:each) do
       allow(Yast::OSRelease).to receive(:os_release_exists?).and_return(false)
       allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product).and_return([])
-      allow(Y2Packager::MediumType).to receive(:offline?).and_return(false)
-      allow(Y2Packager::MediumType).to receive(:online?).and_return(true)
-      allow(Y2Packager::MediumType).to receive(:type).and_return(:offline)
     end
 
     context "in installation" do
       it "reports that no base product was found" do
         allow(Yast::Stage).to receive(:stage).and_return("initial")
         allow(Yast::Mode).to receive(:mode).and_return("installation")
-
-        # Logging evaluated product information
-        expect(FileUtils).to receive(:mkdir_p).at_least(1).with(
-          "/var/log/YaST2/installation_info/"
-        )
-        expect(File).to receive(:write).at_least(1).with(/no_base_product/, anything)
+        allow_any_instance_of(Installation::InstallationInfo).to receive(:write)
 
         SUPPORTED_METHODS.each do |method_name|
           Yast.y2milestone "Yast::Product.#{method_name}"
@@ -316,12 +308,7 @@ describe Yast::Product do
       it "reports that no base product was found" do
         allow(Yast::Stage).to receive(:stage).and_return("normal")
         allow(Yast::Mode).to receive(:mode).and_return("normal")
-
-        # Logging evaluated product information
-        expect(FileUtils).to receive(:mkdir_p).at_least(1).with(
-          "/var/log/YaST2/installation_info/"
-        )
-        expect(File).to receive(:write).at_least(1).with(/no_base_product/, anything)
+        allow_any_instance_of(Installation::InstallationInfo).to receive(:write)
 
         SUPPORTED_METHODS.each do |method_name|
           Yast.y2milestone "Yast::Product.#{method_name}"
