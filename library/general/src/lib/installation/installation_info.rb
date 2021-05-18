@@ -69,7 +69,7 @@ module Installation
     # is the callback already registered?
     # @param name [String] name of the callback
     # @return [Boolean] `true` if registered, `false` otherwise
-    def included?(name)
+    def added?(name)
       callbacks.key?(name)
     end
 
