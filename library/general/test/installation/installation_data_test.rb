@@ -3,6 +3,10 @@ require "installation/installation_data"
 
 describe Installation::InstallationData do
   describe "#add" do
+    before do
+      expect(Yast::Mode).to receive(:update).and_return(false)
+    end
+
     it "adds the default product callback" do
       expect(::Installation::InstallationInfo.instance)
         .to receive(:added?).with("installation").and_return(false)
