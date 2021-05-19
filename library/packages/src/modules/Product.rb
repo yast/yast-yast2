@@ -130,9 +130,7 @@ module Yast
         # Logging all information about the product evaluation
         ::Installation::InstallationInfo.instance.write(
           "No base product found",
-          {
-            "required_product_status" => required_status
-          }
+          "required_product_status" => required_status
         )
         raise "No base product found"
       elsif products.size > 1

@@ -37,11 +37,12 @@ module Installation
     include Yast::Logger
 
     def initialize
+      # index of the saved file to have unique file names
       self.index = 0
 
       # Function calls which has been set by other modules,
       # these functions will be called while generating the output.
-      # The return value (hash) of each call will be logged into the output file.
+      # The return value (usually a Hash) of each call will be logged into the output file.
       # Uses "id" => block mapping
       @callbacks = {}
     end
@@ -85,14 +86,15 @@ module Installation
       log.info("Writing installation information to #{file}")
 
       # the collected data
-      data = {}
+      data = {
+        "description" => description
+      }
+
+      data["additional_info"] = additional_info if additional_info
 
       @callbacks.each do |name, callback|
         data[name] = callback.call
       end
-
-      data["description"] = description
-      data["additional_info"] = additional_info if additional_info
 
       ::FileUtils.mkdir_p(File.dirname(file))
       File.write(file, data.to_yaml)
