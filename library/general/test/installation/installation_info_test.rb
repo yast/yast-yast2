@@ -12,26 +12,26 @@ describe Installation::InstallationInfo do
 
   describe "#add" do
     it "remembers the callback block" do
-      expect { subject.add("test") { puts "foo" } }.to change { subject.included?("test") }
+      expect { subject.add("test") { puts "foo" } }.to change { subject.added?("test") }
         .from(false).to(true)
     end
 
     it "does not save missing block" do
       subject.add("test")
 
-      expect(subject.included?("test")).to eq(false)
+      expect(subject.added?("test")).to eq(false)
     end
   end
 
-  describe "#included?" do
+  describe "#added?" do
     it "returns true for a defined callback name" do
       subject.add("test") { puts "foo" }
 
-      expect(subject.included?("test")).to eq(true)
+      expect(subject.added?("test")).to eq(true)
     end
 
     it "returns false for an undefined callback name" do
-      expect(subject.included?("foo")).to eq(false)
+      expect(subject.added?("foo")).to eq(false)
     end
   end
 
