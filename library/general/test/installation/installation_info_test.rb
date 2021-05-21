@@ -10,28 +10,28 @@ describe Installation::InstallationInfo do
   # the global singleton instance
   subject { Class.new(Installation::InstallationInfo).instance }
 
-  describe "#add" do
+  describe "#add_callback" do
     it "remembers the callback block" do
-      expect { subject.add("test") { puts "foo" } }.to change { subject.added?("test") }
+      expect { subject.add_callback("test") { puts "foo" } }.to change { subject.callback?("test") }
         .from(false).to(true)
     end
 
     it "does not save missing block" do
-      subject.add("test")
+      subject.add_callback("test")
 
-      expect(subject.added?("test")).to eq(false)
+      expect(subject.callback?("test")).to eq(false)
     end
   end
 
-  describe "#added?" do
+  describe "#callback?" do
     it "returns true for a defined callback name" do
-      subject.add("test") { puts "foo" }
+      subject.add_callback("test") { puts "foo" }
 
-      expect(subject.added?("test")).to eq(true)
+      expect(subject.callback?("test")).to eq(true)
     end
 
     it "returns false for an undefined callback name" do
-      expect(subject.added?("foo")).to eq(false)
+      expect(subject.callback?("foo")).to eq(false)
     end
   end
 
@@ -44,8 +44,8 @@ describe Installation::InstallationInfo do
     it "evaluates all callbacks" do
       foo = false
       bar = false
-      subject.add("foo") { foo = true }
-      subject.add("bar") { bar = true }
+      subject.add_callback("foo") { foo = true }
+      subject.add_callback("bar") { bar = true }
 
       subject.write("test")
 
@@ -60,7 +60,7 @@ describe Installation::InstallationInfo do
       # write to a tempfile
       tmpfile = Tempfile.new
       begin
-        subject.write("test", nil, tmpfile)
+        subject.write("test", path: tmpfile)
 
         # check the file is not empty
         expect(File.stat(tmpfile).size).to be > 0

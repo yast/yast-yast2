@@ -2,25 +2,25 @@ require_relative "../test_helper"
 require "installation/installation_data"
 
 describe Installation::InstallationData do
-  describe "#add" do
+  describe "#register_callback" do
     it "adds the default product callback" do
       expect(::Installation::InstallationInfo.instance)
-        .to receive(:added?).with("installation").and_return(false)
+        .to receive(:callback?).with("installation").and_return(false)
 
       expect(::Installation::InstallationInfo.instance)
-        .to receive(:add).with("installation")
+        .to receive(:add_callback).with("installation")
 
-      ::Installation::InstallationData.add
+      subject.register_callback
     end
 
     it "does not add the callback if it is already defined" do
       expect(::Installation::InstallationInfo.instance)
-        .to receive(:added?).with("installation").and_return(true)
+        .to receive(:callback?).with("installation").and_return(true)
 
       expect(::Installation::InstallationInfo.instance)
-        .to_not receive(:add)
+        .to_not receive(:add_callback)
 
-      ::Installation::InstallationData.add
+      subject.register_callback
     end
   end
 end
