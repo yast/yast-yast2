@@ -290,6 +290,7 @@ describe Yast::Product do
       it "reports that no base product was found" do
         allow(Yast::Stage).to receive(:stage).and_return("initial")
         allow(Yast::Mode).to receive(:mode).and_return("installation")
+        allow_any_instance_of(Installation::InstallationInfo).to receive(:write)
 
         SUPPORTED_METHODS.each do |method_name|
           Yast.y2milestone "Yast::Product.#{method_name}"
@@ -307,6 +308,7 @@ describe Yast::Product do
       it "reports that no base product was found" do
         allow(Yast::Stage).to receive(:stage).and_return("normal")
         allow(Yast::Mode).to receive(:mode).and_return("normal")
+        allow_any_instance_of(Installation::InstallationInfo).to receive(:write)
 
         SUPPORTED_METHODS.each do |method_name|
           Yast.y2milestone "Yast::Product.#{method_name}"
