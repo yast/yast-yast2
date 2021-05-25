@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue May 25 07:19:14 UTC 2021 - José Iván López González <jlopez@suse.com>
+
+- Add Yast2::Equatable mixin to avoid troubles with classes that
+  overloads the comparison methods (related to bsc#1186082).
+- 4.4.5
+
+-------------------------------------------------------------------
 Fri May  7 15:10:14 UTC 2021 - Stefan Schubert <schubi@suse.de>
 
 - Logging all available product information into directory
