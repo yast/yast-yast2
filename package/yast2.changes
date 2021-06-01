@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun  1 11:48:18 UTC 2021 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Added some names to the list of parameters handled by CFA for the
+  login.defs configuration (related to jsc#PM-2620).
+- 4.4.6
+
+-------------------------------------------------------------------
 Tue May 25 07:19:14 UTC 2021 - José Iván López González <jlopez@suse.com>
 
 - Add Yast2::Equatable mixin to avoid troubles with classes that
