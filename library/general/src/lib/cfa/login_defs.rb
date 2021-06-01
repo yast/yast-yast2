@@ -46,23 +46,33 @@ module CFA
     # @return [Array<Symbol>] List of known login.defs attributes
     KNOWN_ATTRIBUTES = [
       :character_class,
+      :create_home,
       :encrypt_method,
       :fail_delay,
       :gid_max,
       :gid_min,
       :groupadd_cmd,
+      :home_mode,
       :pass_max_days,
       :pass_min_days,
       :pass_warn_age,
+      :sub_gid_min,
+      :sub_gid_max,
+      :sub_gid_count,
+      :sub_uid_min,
+      :sub_uid_max,
+      :sub_uid_count,
       :sys_gid_max,
       :sys_gid_min,
       :sys_uid_max,
       :sys_uid_min,
       :uid_max,
       :uid_min,
+      :umask,
       :useradd_cmd,
       :userdel_postcmd,
-      :userdel_precmd
+      :userdel_precmd,
+      :usergroups_enab
     ].freeze
 
     DEFAULT_PATH = "/etc/login.defs".freeze
