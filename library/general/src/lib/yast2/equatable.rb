@@ -82,7 +82,7 @@ module Yast2
       end
     end
 
-    # Return a Hash containing all the attributes and values used for comparing
+    # Returns a Hash containing all the attributes and values used for comparing
     # the objects as well as a :class key with the object class as the value.
     #
     # @return [Hash<Symbol, Object]
