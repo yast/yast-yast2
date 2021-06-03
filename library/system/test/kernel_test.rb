@@ -246,42 +246,8 @@ describe Yast::Kernel do
         allow(Yast::Arch).to receive(:architecture).and_return("x86_64")
       end
 
-      context "on virtual machine" do
-        before do
-          allow(Yast::Arch).to receive(:is_virtual).and_return(true)
-        end
-
-        it "returns false" do
-          expect(subject.propose_hibernation?).to eq false
-        end
-      end
-
-      context "on real hardware" do
-        before do
-          allow(Yast::Arch).to receive(:is_virtual).and_return(false)
-        end
-
-        context "when product does not want hibernation proposal" do
-          before do
-            allow(Yast::ProductFeatures).to receive(:GetBooleanFeature)
-              .with("globals", "propose_hibernation").and_return(false)
-          end
-
-          it "returns false" do
-            expect(subject.propose_hibernation?).to eq false
-          end
-        end
-
-        context "when product wants hibernation proposal" do
-          before do
-            allow(Yast::ProductFeatures).to receive(:GetBooleanFeature)
-              .with("globals", "propose_hibernation").and_return(true)
-          end
-
-          it "returns true" do
-            expect(subject.propose_hibernation?).to eq true
-          end
-        end
+      it "returns true" do
+        expect(subject.propose_hibernation?).to eq true
       end
     end
   end
