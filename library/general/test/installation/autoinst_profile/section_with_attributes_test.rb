@@ -1,4 +1,4 @@
-# Copyright (c) [2020] SUSE LLC
+# Copyright (c) [2020-2021] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -82,7 +82,8 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
     class << self
       def attributes
         [
-          { name: :name }
+          { name: :name, allow_blank: true },
+          { name: :other, allow_blank: false }
         ]
       end
     end
@@ -103,6 +104,94 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
     it "returns an instance including the given data" do
       group = GroupSection.new_from_hashes(name: "users")
       expect(group.name).to eq("users")
+    end
+
+    context "when an attribute allows blank" do
+      context "and the hash does not contain that key" do
+        let(:hash) { { other: "" } }
+
+        it "assigns nil to the attribute" do
+          group = GroupSection.new_from_hashes(hash)
+
+          expect(group.name).to be_nil
+        end
+      end
+
+      context "and the hash contains that key" do
+        context "and the value for the key is nil" do
+          let(:hash) { { name: nil } }
+
+          it "assigns nil to the attribute" do
+            group = GroupSection.new_from_hashes(hash)
+
+            expect(group.name).to be_nil
+          end
+        end
+
+        context "and the value for the key is blank" do
+          let(:hash) { { name: "" } }
+
+          it "assigns blank to the attribute" do
+            group = GroupSection.new_from_hashes(hash)
+
+            expect(group.name).to eq("")
+          end
+        end
+
+        context "and the value for the key is not blank" do
+          let(:hash) { { name: "a name" } }
+
+          it "assigns the given value to the attribute" do
+            group = GroupSection.new_from_hashes(hash)
+
+            expect(group.name).to eq("a name")
+          end
+        end
+      end
+    end
+
+    context "when an attribute does not allows blank" do
+      context "and the hash does not contain that key" do
+        let(:hash) { { name: "" } }
+
+        it "assigns nil to the attribute" do
+          group = GroupSection.new_from_hashes(hash)
+
+          expect(group.other).to be_nil
+        end
+      end
+
+      context "and the hash contains that key" do
+        context "and the value for the key is nil" do
+          let(:hash) { { other: nil } }
+
+          it "assigns nil to the attribute" do
+            group = GroupSection.new_from_hashes(hash)
+
+            expect(group.other).to be_nil
+          end
+        end
+
+        context "and the value for the key is blank" do
+          let(:hash) { { other: "" } }
+
+          it "assigns nil to the attribute" do
+            group = GroupSection.new_from_hashes(hash)
+
+            expect(group.other).to be_nil
+          end
+        end
+
+        context "and the value for the key is not blank" do
+          let(:hash) { { other: "a name" } }
+
+          it "assigns the given value to the attribute" do
+            group = GroupSection.new_from_hashes(hash)
+
+            expect(group.other).to eq("a name")
+          end
+        end
+      end
     end
 
     context "when nil is given" do
