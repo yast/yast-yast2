@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun  3 15:40:30 UTC 2021 - José Iván López González <jlopez@suse.com>
+
+- AutoYaST: SectionWithAttributes allows to indicate whether an
+  attribute accepts blank values (related to jsc#PM-2620).
+- 4.4.9
+
+-------------------------------------------------------------------
 Thu Jun  3 09:04:29 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - revert disable of hibernation based on product and virtual
