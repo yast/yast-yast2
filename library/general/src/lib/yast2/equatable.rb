@@ -82,13 +82,21 @@ module Yast2
       end
     end
 
+    # Returns a Hash containing all the attributes and values used for comparing
+    # the objects as well as a :class key with the object class as the value.
+    #
+    # @return [Hash<Symbol, Object]
+    def eql_hash
+      ([[:class, self.class]] + self.class.eql_attrs.map { |m| [m, send(m)] }).to_h
+    end
+
     # Hash key to identify objects
     #
     # Objects with the same values for their eql_attrs have the same hash
     #
     # @return [Integer]
     def hash
-      ([[:class, self.class]] + self.class.eql_attrs.map { |m| [m, send(m)] }).to_h.hash
+      eql_hash.hash
     end
 
     # Whether the objects have the same hash key

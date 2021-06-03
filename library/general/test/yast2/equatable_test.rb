@@ -144,4 +144,30 @@ describe Yast2::Equatable do
       end
     end
   end
+
+  describe "#eql_hash" do
+    class EquatableTest
+      include Yast2::Equatable
+
+      attr_reader :attr1, :attr2, :attr3
+
+      eql_attr :attr1, :attr2
+
+      def initialize(attr1, attr2, attr3)
+        @attr1 = attr1
+        @attr2 = attr2
+        @attr3 = attr3
+      end
+    end
+
+    subject { EquatableTest.new("a", 10, :foo) }
+
+    it "returns a Hash containing the :class key and the object class as the value" do
+      expect(subject.eql_hash).to include(class: subject.class)
+    end
+
+    it "returns a Hash with the comparing attributes and their values" do
+      expect(subject.eql_hash).to include(attr1: "a", attr2: 10)
+    end
+  end
 end
