@@ -124,10 +124,13 @@ module Installation
         # Description of the attributes in the section.
         #
         # To be defined by each subclass. Each entry contains a hash with:
-        #   * :name        : the mandatory key
-        #   * :xml_name    : an optional alternative key
-        #   * :allow_blank : whether blank values (i.e, "" or []) are allowed. If set to false, the
-        #                    the value of the attribute will be nil when a blank is detected.
+        #   * :name        : (mandatory) name of the attribute.
+        #   * :xml_name    : (optional) name of the attribute in the xml profile. This is useful
+        #                    when the attribute is required to be called different to the its xml
+        #                    name.
+        #   * :allow_blank : (optional, false by default) whether blank values (i.e, "" or []) are
+        #                    allowed. If set to false, then the value of the attribute will be nil
+        #                    when a blank is detected.
         #
         # @return [Array<Hash>]
         def attributes

@@ -150,7 +150,7 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
       end
     end
 
-    context "when an attribute does not allows blank" do
+    context "when an attribute does not allow blank" do
       context "and the hash does not contain that key" do
         let(:hash) { { name: "" } }
 
