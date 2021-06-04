@@ -1,4 +1,4 @@
-# Copyright (c) [2020] SUSE LLC
+# Copyright (c) [2020-2021] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -123,8 +123,14 @@ module Installation
       class << self
         # Description of the attributes in the section.
         #
-        # To be defined by each subclass. Each entry contains a hash with the
-        # mandatory key :name and an optional key :xml_name.
+        # To be defined by each subclass. Each entry contains a hash with:
+        #   * :name        : (mandatory) name of the attribute.
+        #   * :xml_name    : (optional) name of the attribute in the xml profile. This is useful
+        #                    when the attribute is required to be called different to the its xml
+        #                    name.
+        #   * :allow_blank : (optional, false by default) whether blank values (i.e, "" or []) are
+        #                    allowed. If set to false, then the value of the attribute will be nil
+        #                    when a blank is detected.
         #
         # @return [Array<Hash>]
         def attributes
@@ -194,10 +200,11 @@ module Installation
       #     included.
       def to_hashes
         attributes.each_with_object({}) do |attrib, result|
-          value = attrib_value(attrib)
-          next if attrib_skip?(value)
-
           key = attrib_key(attrib)
+          value = attrib_value(attrib)
+
+          next if attrib_skip?(key, value)
+
           result[key] = value
         end
       end
@@ -258,10 +265,19 @@ module Installation
         self.class.attributes
       end
 
+      def attrib(key)
+        attributes.find { |a| a[:xml_name] == key.to_sym || a[:name] == key.to_sym }
+      end
+
       # Whether an attribute must be skipped during import/export.
       #
-      # @return [Boolean] true is the value is blank
-      def attrib_skip?(value)
+      # @return [Boolean] true is the attribute allows to skip and its value is blank
+      def attrib_skip?(key, value)
+        attrib = attrib(key)
+
+        return true unless attrib
+        return false if attrib[:allow_blank]
+
         value.nil? || value == [] || value == ""
       end
 
@@ -283,7 +299,7 @@ module Installation
       end
 
       def attrib_name(key)
-        attrib = attributes.detect { |a| a[:xml_name] == key.to_sym || a[:name] == key.to_sym }
+        attrib = attrib(key)
         return nil unless attrib
 
         attrib[:name]
@@ -301,7 +317,7 @@ module Installation
           # This method only reads scalar values
           next if value.is_a?(Array) || value.is_a?(Hash)
 
-          if attrib_skip?(value)
+          if attrib_skip?(key, value)
             log.debug "Ignored blank value (#{value}) for #{key}"
             next
           end
