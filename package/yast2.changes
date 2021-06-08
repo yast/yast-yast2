@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jun  8 08:26:13 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Ignore sysctl configuration files that do not have the .conf
+  extension. The only exception are kernel files
+  (/boot/sysctl.conf-*) (bsc#1187018).
+- 4.2.94
+
+-------------------------------------------------------------------
 Mon Apr 12 15:12:41 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - The ShadowConfig module only considers the /etc/login.defs
