@@ -157,7 +157,9 @@ module CFA
       if Yast::FileUtils.IsFile(path)
         [path]
       elsif Yast::FileUtils.IsDirectory(path)
-        Yast::SCR.Read(Yast::Path.new(".target.dir"), path).map { |file| File.join(path, file) }
+        Yast::SCR.Read(Yast::Path.new(".target.dir"), path)
+          .select { |f| f.end_with?(".conf") } # according to 'sysctl.conf' manpage, only .conf files are considered
+          .map { |f| File.join(path, f) }
       else
         log.debug("Ignoring not valid path: #{path}")
 
