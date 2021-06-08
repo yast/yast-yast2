@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Jun  8 08:26:13 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Ignore sysctl configuration files that do not have the .conf
+  extension. The only exception are kernel files
+  (/boot/sysctl.conf-*) (bsc#1187018).
+- 4.4.10
+
+-------------------------------------------------------------------
 Thu Jun  3 15:40:30 UTC 2021 - José Iván López González <jlopez@suse.com>
 
 - AutoYaST: SectionWithAttributes allows to indicate whether an
