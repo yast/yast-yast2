@@ -1,9 +1,9 @@
 -------------------------------------------------------------------
 Fri Jun 11 15:45:21 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
-- Yast2::AutoClient : Ensure that method, which response is ignored,
-  return value is set to nil to avoid crash in component system
-  (bsc#1187233)
+- Yast2::AutoClient.run: Ensure that Reset, Read, and SetModified
+  return nil regardless of their implementation, to prevent
+  a crash in the component system (bsc#1187233)
 - 4.4.11
 
 -------------------------------------------------------------------
