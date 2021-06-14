@@ -105,7 +105,13 @@ describe ::Installation::AutoClient do
       end
 
       it "dispatch call to abstract method reset" do
-        expect(subject.run).to eq "reset"
+        expect_any_instance_of(subject).to receive(:reset)
+
+        subject.run
+      end
+
+      it "always return nil" do
+        expect(subject.run).to eq nil
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
@@ -147,7 +153,13 @@ describe ::Installation::AutoClient do
       end
 
       it "dispatch call to abstract method read" do
-        expect(subject.run).to eq "read"
+        expect_any_instance_of(subject).to receive(:read)
+
+        subject.run
+      end
+
+      it "always return nil" do
+        expect(subject.run).to eq nil
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
@@ -175,7 +187,13 @@ describe ::Installation::AutoClient do
       end
 
       it "dispatch call to abstract method modified" do
-        expect(subject.run).to eq "modified"
+        expect_any_instance_of(subject).to receive(:modified)
+
+        subject.run
+      end
+
+      it "always return nil" do
+        expect(subject.run).to eq nil
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do

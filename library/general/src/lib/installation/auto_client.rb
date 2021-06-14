@@ -69,6 +69,7 @@ module Installation
         summary
       when "Reset"
         reset
+        nil # return type is ignored, so always return nil to avoid issues with ycp component system
       when "Change"
         change
       when "Write"
@@ -77,10 +78,12 @@ module Installation
         packages
       when "Read"
         read
+        nil # return type is ignored, so always return nil to avoid issues with ycp component system
       when "GetModified"
         modified?
       when "SetModified"
         modified
+        nil # return type is ignored, so always return nil to avoid issues with ycp component system
       else
         raise ArgumentError, "Invalid action for auto client '#{func.inspect}'"
       end
