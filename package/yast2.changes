@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 17 06:15:02 UTC 2021 - Dirk Müller <dmueller@suse.com>
+
+- add riscv64 architecture helper (jsc#PM-2612)
+- 4.4.12
+
+-------------------------------------------------------------------
 Fri Jun 11 15:45:21 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - Yast2::AutoClient.run: Ensure that Reset, Read, and SetModified
