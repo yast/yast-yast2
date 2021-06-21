@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun 21 20:51:57 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- Y2Issue::List: Add method size and concat (related to
+  bsc#1181295).
+- 4.4.13
+
+-------------------------------------------------------------------
 Thu Jun 17 06:15:02 UTC 2021 - Dirk Müller <dmueller@suse.com>
 
 - add riscv64 architecture helper (jsc#PM-2612)
