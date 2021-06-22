@@ -28,7 +28,7 @@
 #
 # @example Registering an error
 #   list = Y2Issues::List.new
-#   list << Y2Issues::Issue.new("Could not read network configuration", severity: :fatal)
+#   list << Y2Issues::Issue.new("Could not read network configuration", severity: :error)
 module Y2Issues
   # Reports the errors to the user
   #

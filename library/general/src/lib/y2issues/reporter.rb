@@ -37,7 +37,7 @@ module Y2Issues
     def initialize(issues, report_settings: Yast::Report.Export)
       textdomain "base"
       @presenter = Presenter.new(issues)
-      @level = issues.fatal? ? :error : :warn
+      @level = issues.error? ? :error : :warn
       @log, @show, @timeout = find_settings(report_settings, @level)
     end
 
@@ -55,7 +55,8 @@ module Y2Issues
 
     # Displays a pop-up containing the issues
     #
-    # It can behave in two different ways depending if a fatal issue was found:
+    # It can behave in two different ways depending if the issues are only
+    # warnings or an error was found:
     #
     # * Ask the user if she/he wants to continue or abort the installation.
     # * Display a message and only offer an 'Abort' button.

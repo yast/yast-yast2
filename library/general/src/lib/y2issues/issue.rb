@@ -27,7 +27,7 @@ module Y2Issues
   # specific information. See {InvalidValue} as an example.
   #
   # @example Create a new error
-  #   Issue.new("Could not read network configuration", severity: :fatal)
+  #   Issue.new("Could not read network configuration", severity: :error)
   #
   # @example Create an error from an specific location
   #   Issue.new(
@@ -42,25 +42,27 @@ module Y2Issues
     attr_reader :location
     # @return [String] Error message
     attr_reader :message
-    # @return [Symbol] Error severity (:warn, :fatal)
+    # @return [Symbol] Error severity (:warn, :error)
     attr_reader :severity
 
     # @param message [String] User-oriented message describing the problem
     # @param location [String,nil] Where the error is located. Use a URI or
     #   a string to represent the error location. Use 'nil' if it
     #   does not exist an specific location.
-    # @param severity [Symbol] warning (:warn) or fatal (:fatal)
+    # @param severity [Symbol] warning (:warn) or error (:error)
     def initialize(message, location: nil, severity: :warn)
       @message = message
       @location = location.is_a?(String) ? Location.parse(location) : location
       @severity = severity
     end
 
-    # Determines whether the error is fatal or not
+    # Determines whether the issue is an error
     #
     # @return [Boolean]
-    def fatal?
-      @severity == :fatal
+    def error?
+      @severity == :error
     end
+
+    alias_method :fatal?, :error?
   end
 end
