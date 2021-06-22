@@ -25,7 +25,7 @@ module Y2Issues
     include Enumerable
     extend Forwardable
 
-    def_delegators :@items, :each, :empty?, :<<
+    def_delegators :@items, :each, :empty?, :<<, :size
 
     # Constructor
     #
@@ -46,6 +46,17 @@ module Y2Issues
     # @return [Array<Issue>] List of problems
     def to_a
       @items
+    end
+
+    # concats issues
+    # @param args [Array[List]] args to concat. see Array#concat
+    #
+    # @note also self is modified
+    # @return [List]
+    def concat(*args)
+      @items.concat(*args.map(&:to_a))
+
+      self
     end
   end
 end

@@ -72,4 +72,17 @@ describe Y2Issues::List do
 
     end
   end
+
+  describe "#concat" do
+    it "concats all passed Lists" do
+      issue1 = Y2Issues::Issue.new("Something went wrong", severity: :fatal)
+      issue2 = Y2Issues::Issue.new("Something went wrong2")
+      issue3 = Y2Issues::Issue.new("Something went wrong3")
+      expect(described_class.new([issue1]).concat(
+        described_class.new([issue2]), described_class.new([issue3])
+      ).to_a).to eq(
+        described_class.new([issue1, issue2, issue3]).to_a
+      )
+    end
+  end
 end
