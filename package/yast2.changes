@@ -1,17 +1,17 @@
 -------------------------------------------------------------------
 Tue Jun 22 10:00:23 UTC 2021 - Ancor Gonzalez Sosa <ancor@suse.com>
 
-- Y2Issue::Issue: renamed severity "fatal" to "error", to be more
+- Y2Issues::Issue: renamed severity "fatal" to "error", to be more
   consistent with other parts of (Auto)YaST
-- Changed behavior of Y2Issue::Reporter to be more generic (related
-  to jsc#PM-2620 and bsc#1166743)
-- Introduced Y2Issue::AutoinstReporter to retain the old behavior
+- Changed behavior of Y2Issues::Reporter to be more generic
+  (related to jsc#PM-2620 and bsc#1166743)
+- Introduced Y2Issues::AutoinstReporter to retain the old behavior
 - 4.4.14
 
 -------------------------------------------------------------------
 Mon Jun 21 20:51:57 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
-- Y2Issue::List: Add methods size and concat (related to
+- Y2Issues::List: Add methods size and concat (related to
   bsc#1181295).
 - 4.4.13
 
@@ -97,7 +97,7 @@ Tue Apr 27 10:51:35 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 -------------------------------------------------------------------
 Thu Apr 22 06:35:11 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- The location given to the Y2Issue::Issue constructor can be a
+- The location given to the Y2Issues::Issue constructor can be a
   string or a location object.
 
 -------------------------------------------------------------------

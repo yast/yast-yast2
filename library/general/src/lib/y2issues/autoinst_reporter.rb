@@ -31,6 +31,12 @@ module Y2Issues
   # possibility to abort. Thus, the return value of {#report} must be checked by the caller
   # to handle that situation.
   class AutoinstReporter < Reporter
+    # @see Reporter#initialize
+    def initialize(*args)
+      super(*args)
+      textdomain "base"
+    end
+
   private
 
     # Displays a pop-up containing the issues
