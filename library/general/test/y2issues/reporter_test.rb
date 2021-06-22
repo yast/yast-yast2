@@ -54,12 +54,22 @@ describe Y2Issues::Reporter do
     context "when there is an error" do
       let(:level) { :error }
 
-      it "displays issues as errors with no timeout" do
-        expect(Yast2::Popup).to receive(:show) .with(
+      it "displays issues as errors with the proper timeout and buttons" do
+        expect(Yast2::Popup).to receive(:show).with(
           /Important issues/, headline: :error, richtext: true, timeout: 0,
           buttons: a_hash_including(abort: String)
         )
-        reporter.report
+        reporter.report(error: :abort)
+
+        expect(Yast2::Popup).to receive(:show).with(
+          /Important issues/, headline: :error, richtext: true, timeout: 15, buttons: :yes_no
+        )
+        reporter.report(error: :ask)
+
+        expect(Yast2::Popup).to receive(:show).with(
+          /Important issues/, headline: :error, richtext: true, timeout: 15, buttons: :ok
+        )
+        reporter.report(error: :continue)
       end
 
       it "logs the issues" do
@@ -84,39 +94,49 @@ describe Y2Issues::Reporter do
           reporter.report
         end
       end
+    end
 
-      context "when there are just warnings" do
-        let(:level) { :warn }
+    context "when there are just warnings" do
+      let(:level) { :warn }
 
-        it "displays issues as errors with no timeout" do
-          expect(Yast2::Popup).to receive(:show) .with(
-            /Minor issues/, headline: :warning, richtext: true, timeout: 10,
-            buttons: :yes_no
-          )
+      it "displays issues as warning with the proper timeout and buttons" do
+        expect(Yast2::Popup).to receive(:show).with(
+          /Minor issues/, headline: :warning, richtext: true, timeout: 0,
+          buttons: a_hash_including(abort: String)
+        )
+        reporter.report(warn: :abort)
+
+        expect(Yast2::Popup).to receive(:show).with(
+          /Minor issues/, headline: :warning, richtext: true, timeout: 10, buttons: :yes_no
+        )
+        reporter.report(warn: :ask)
+
+        expect(Yast2::Popup).to receive(:show).with(
+          /Minor issues/, headline: :warning, richtext: true, timeout: 10, buttons: :ok
+        )
+        reporter.report(warn: :continue)
+      end
+
+      it "logs the issues" do
+        expect(reporter.log).to receive(:warn).with(/Minor issues/)
+        reporter.report
+      end
+
+      context "if showing warnings is disabled" do
+        let(:warnings_settings) { { "show" => false, "log" => true } }
+
+        it "does not display the issues" do
+          expect(Yast2::Popup).to_not receive(:show)
           reporter.report
         end
+      end
 
-        it "logs the issues" do
-          expect(reporter.log).to receive(:warn).with(/Minor issues/)
+      context "if loggin warnings is disabled" do
+        let(:warnings_settings) { { "show" => true, "log" => false } }
+
+        it "does not log the warning" do
+          expect(reporter.log).to_not receive(:warn)
           reporter.report
-        end
-
-        context "if showing warnings is disabled" do
-          let(:warnings_settings) { { "show" => false, "log" => true } }
-
-          it "does not display the issues" do
-            expect(Yast2::Popup).to_not receive(:show)
-            reporter.report
-          end
-        end
-
-        context "if loggin warnings is disabled" do
-          let(:warnings_settings) { { "show" => true, "log" => false } }
-
-          it "does not log the warning" do
-            expect(reporter.log).to_not receive(:warn)
-            reporter.report
-          end
         end
       end
     end

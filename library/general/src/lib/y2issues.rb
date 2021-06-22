@@ -35,10 +35,13 @@ module Y2Issues
   # This is a helper method that offers an stable API on top of {Reporter}. Depending on
   # Yast::Report settings, it may show a pop-up with the found issues and log them.
   #
-  # @param [List] Issues list
+  # @param issues [List] Issues list
+  # @param warn [Symbol] what to do if the list of issues only contains warnings
+  # @param error [Symbol] what to do if the list of issues contains some error
+  # @return [Boolean] whether the process may continue, false means YaST is expected to abort
   # @see Y2Issues::Reporter
-  def self.report(issues)
-    Reporter.new(issues).report
+  def self.report(issues, warn: :ask, error: :abort)
+    Reporter.new(issues).report(warn: warn, error: error)
   end
 end
 
