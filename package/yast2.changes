@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Jun 22 10:00:23 UTC 2021 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Y2Issue::Issue: renamed severity "fatal" to "error", to be more
+  consistent with other parts of (Auto)YaST
+- Changed behavior of Y2Issue::Reporter to be more generic (related
+  to jsc#PM-2620 and bsc#1166743)
+- Introduced Y2Issue::AutoinstReporter to retain the old behavior
+- 4.4.14
+
+-------------------------------------------------------------------
 Mon Jun 21 20:51:57 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - Y2Issue::List: Add methods size and concat (related to
