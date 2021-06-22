@@ -20,7 +20,6 @@
 require "yast"
 require "y2issues"
 
-Yast.import "Label"
 Yast.import "Report"
 
 module Y2Issues
@@ -44,6 +43,8 @@ module Y2Issues
     # Reports the issues to the user
     #
     # Depending on the given report settings, it may display a pop-up, and/or log the error.
+    #
+    # @return [Symbol, nil] response of the user to the pop-up, nil if no pop-up was displayed
     def report
       log_issues if @log
       show_issues if @show
@@ -54,28 +55,10 @@ module Y2Issues
     attr_reader :level, :presenter
 
     # Displays a pop-up containing the issues
-    #
-    # It can behave in two different ways depending if the issues are only
-    # warnings or an error was found:
-    #
-    # * Ask the user if she/he wants to continue or abort the installation.
-    # * Display a message and only offer an 'Abort' button.
     def show_issues
-      if level == :error
-        headline = :error
-        buttons = { abort: Yast::Label.AbortButton }
-        question = _("Please, correct these problems and try again.")
-        timeout = 0
-      else
-        headline = :warning
-        buttons = :yes_no
-        question = _("Do you want to continue?")
-        timeout = @timeout
-      end
-
-      content = presenter.to_html + Yast::HTML.Para(question)
+      head = (level == :error) ? :error : :warning
       Yast2::Popup.show(
-        content, richtext: true, headline: headline, buttons: buttons, timeout: timeout
+        presenter.to_html, richtext: true, headline: head, buttons: :ok, timeout: @timeout
       )
     end
 

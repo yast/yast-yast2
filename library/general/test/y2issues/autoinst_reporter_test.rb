@@ -21,7 +21,7 @@
 require_relative "../test_helper"
 require "y2issues"
 
-describe Y2Issues::Reporter do
+describe Y2Issues::AutoinstReporter do
   let(:reporter) { described_class.new(list, report_settings: report) }
   let(:list) { Y2Issues::List.new([issue]) }
   let(:issue) do
@@ -54,9 +54,10 @@ describe Y2Issues::Reporter do
     context "when there is an error" do
       let(:level) { :error }
 
-      it "displays issues as errors with the corresponding timeout" do
+      it "displays issues as errors with no timeout" do
         expect(Yast2::Popup).to receive(:show) .with(
-          /Important issues/, headline: :error, richtext: true, timeout: 15, buttons: :ok
+          /Important issues/, headline: :error, richtext: true, timeout: 0,
+          buttons: a_hash_including(abort: String)
         )
         reporter.report
       end
@@ -90,7 +91,8 @@ describe Y2Issues::Reporter do
 
       it "displays issues as warnings with the corresponding timeout" do
         expect(Yast2::Popup).to receive(:show) .with(
-          /Minor issues/, headline: :warning, richtext: true, timeout: 10, buttons: :ok
+          /Minor issues/, headline: :warning, richtext: true, timeout: 10,
+          buttons: :yes_no
         )
         reporter.report
       end

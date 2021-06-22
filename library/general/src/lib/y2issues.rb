@@ -46,6 +46,7 @@ require "y2issues/list"
 require "y2issues/presenter"
 require "y2issues/location"
 require "y2issues/reporter"
+require "y2issues/autoinst_reporter"
 
 # Issues types
 require "y2issues/issue"
