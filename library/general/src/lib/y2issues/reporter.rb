@@ -22,6 +22,7 @@ require "y2issues"
 
 Yast.import "Label"
 Yast.import "Report"
+Yast.import "HTML"
 
 module Y2Issues
   # This class provides a mechanism to report YaST2 issues
@@ -37,45 +38,101 @@ module Y2Issues
     def initialize(issues, report_settings: Yast::Report.Export)
       textdomain "base"
       @presenter = Presenter.new(issues)
-      @level = issues.fatal? ? :error : :warn
+      @level = issues.error? ? :error : :warn
       @log, @show, @timeout = find_settings(report_settings, @level)
     end
 
     # Reports the issues to the user
     #
     # Depending on the given report settings, it may display a pop-up, and/or log the error.
-    def report
+    #
+    # In case of displaying the pop-up, the way to present the information and the possible return
+    # values are determined by the severity of the issues and the value of `warn` and `error`.
+    #
+    # If the value specified for the corresponding level is :abort, the pop-up contains the
+    # information and a single button to abort, the method returns false.
+    #
+    # If the value is :ask, the information is presented and the user is asked whether they want to
+    # continue or abort. The returned value depends on the answer.
+    #
+    # In the value is :continue (or any other symbol), the information is displayed with a button to
+    # simply close the pop-up and the method always returns true.
+    #
+    # @param warn [Symbol] what to do if the list of issues only contains warnings
+    # @param error [Symbol] what to do if the list of issues contains some error
+    # @return [Boolean] whether the process may continue, false means aborting
+    def report(warn: :ask, error: :abort)
       log_issues if @log
-      show_issues if @show
+      return true unless @show
+
+      show_issues(warn, error)
     end
 
   private
 
-    attr_reader :level, :presenter
+    # Severity of the set of issues
+    #
+    # @return [Symbol] :warn if all the issues are just warnings, :error if any
+    #   of the issues is an error
+    attr_reader :level
+
+    # @return [Presenter]
+    attr_reader :presenter
 
     # Displays a pop-up containing the issues
     #
-    # It can behave in two different ways depending if a fatal issue was found:
-    #
-    # * Ask the user if she/he wants to continue or abort the installation.
-    # * Display a message and only offer an 'Abort' button.
-    def show_issues
-      if level == :error
-        headline = :error
-        buttons = { abort: Yast::Label.AbortButton }
-        question = _("Please, correct these problems and try again.")
-        timeout = 0
+    # @return [Boolean] see {#report}
+    def show_issues(warn, error)
+      action = (level == :error) ? error : warn
+      case action
+      when :abort
+        show_issues_abort
+      when :ask
+        show_issues_ask
       else
-        headline = :warning
-        buttons = :yes_no
-        question = _("Do you want to continue?")
-        timeout = @timeout
+        show_issues_continue
       end
+    end
 
-      content = presenter.to_html + Yast::HTML.Para(question)
-      Yast2::Popup.show(
-        content, richtext: true, headline: headline, buttons: buttons, timeout: timeout
-      )
+    # @see #show_issues
+    #
+    # @return [Boolean] see {#report}, always false in this case
+    def show_issues_abort
+      buttons = { abort: Yast::Label.AbortButton }
+      question = _("Please, correct these problems and try again.")
+      popup(question, buttons, with_timeout: false)
+
+      false
+    end
+
+    # @see #show_issues
+    #
+    # @return [Boolean] see {#report}
+    def show_issues_ask
+      popup(_("Do you want to continue?"), :yes_no) == :yes
+    end
+
+    # @see #show_issues
+    #
+    # @return [Boolean] see {#report}, always true in this case
+    def show_issues_continue
+      popup("", :ok)
+      true
+    end
+
+    # Displays pop-up with information about the issues
+    def popup(footer, btns, with_timeout: true)
+      text = presenter.to_html
+      text += Yast::HTML.Para(footer) if footer && !footer.empty?
+      time = with_timeout ? @timeout : 0
+      Yast2::Popup.show(text, richtext: true, headline: header, buttons: btns, timeout: time)
+    end
+
+    # @see #popup
+    def header
+      return :error if level == :error
+
+      :warning
     end
 
     # Writes the issues

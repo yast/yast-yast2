@@ -32,7 +32,7 @@ module Installation
       # @param section     [String] Section where it was detected
       # @param attribute   [String] Name of the missing attribute
       # @param description [String] additional explanation; optional
-      # @param severity    [Symbol] :warn, :fatal = abort the installation ; optional
+      # @param severity    [Symbol] :warn, :error = abort the installation ; optional
       def initialize(section, attr, description = "", severity = :warn)
         textdomain "base"
 

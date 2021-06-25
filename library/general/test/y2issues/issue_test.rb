@@ -27,14 +27,14 @@ describe Y2Issues::Issue do
       described_class.new(
         "Something went wrong",
         location: Y2Issues::Location.parse("file:/etc/hosts"),
-        severity: :fatal
+        severity: :error
       )
     end
 
     it "creates an issue" do
       expect(issue.message).to eq("Something went wrong")
       expect(issue.location).to eq(Y2Issues::Location.parse("file:/etc/hosts"))
-      expect(issue.severity).to eq(:fatal)
+      expect(issue.severity).to eq(:error)
     end
 
     context "when location is given as a string" do
@@ -59,20 +59,20 @@ describe Y2Issues::Issue do
     end
   end
 
-  describe "#fatal?" do
-    context "when severity is :fatal" do
-      subject(:issue) { described_class.new("Something went wrong", severity: :fatal) }
+  describe "#error?" do
+    context "when severity is :error" do
+      subject(:issue) { described_class.new("Something went wrong", severity: :error) }
 
       it "returns true" do
-        expect(issue.fatal?).to eq(true)
+        expect(issue.error?).to eq(true)
       end
     end
 
-    context "when severity is :fatal" do
+    context "when severity is :error" do
       subject(:issue) { described_class.new("Something went wrong", severity: :warn) }
 
       it "returns false" do
-        expect(issue.fatal?).to eq(false)
+        expect(issue.error?).to eq(false)
       end
     end
   end

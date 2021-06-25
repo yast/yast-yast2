@@ -34,12 +34,14 @@ module Y2Issues
       @items = issues
     end
 
-    # Determine whether any of the problem on the list is fatal
+    # Determine whether any of the issues on the list is an error
     #
-    # @return [Boolean] true if any of them is a fatal problem
-    def fatal?
-      any?(&:fatal?)
+    # @return [Boolean]
+    def error?
+      any?(&:error?)
     end
+
+    alias_method :fatal?, :error?
 
     # Returns an array containing registered problems
     #
