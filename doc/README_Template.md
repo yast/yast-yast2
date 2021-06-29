@@ -104,4 +104,4 @@ Contact
 
 If you have any question, feel free to ask at the [development mailing
 list](http://lists.opensuse.org/yast-devel/) or at the
-[#yast](https://webchat.freenode.net/?channels=%23yast) IRC channel on freenode.
+[#yast](https://web.libera.chat/#yast) IRC channel on libera.chat.
