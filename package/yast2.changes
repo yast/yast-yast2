@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Jul 13 13:09:33 UTC 2021 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Merged SLE-15-SP3 branch to master:
+
+  - José Iván López González <jlopez@suse.com>:
+     AutoYaST: SectionWithAttributes allows to indicate whether an
+     attribute accepts blank values (related to jsc#PM-2620).
+- 4.4.15
+
+-------------------------------------------------------------------
 Wed Jun 23 13:24:04 UTC 2021 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Y2Issues::Issue: renamed severity "fatal" to "error", to be more
@@ -35,13 +45,6 @@ Tue Jun  8 08:26:13 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   extension. The only exception are kernel files
   (/boot/sysctl.conf-*) (bsc#1187018).
 - 4.4.10
-
--------------------------------------------------------------------
-Thu Jun  3 15:40:30 UTC 2021 - José Iván López González <jlopez@suse.com>
-
-- AutoYaST: SectionWithAttributes allows to indicate whether an
-  attribute accepts blank values (related to jsc#PM-2620).
-- 4.4.9
 
 -------------------------------------------------------------------
 Thu Jun  3 09:04:29 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
