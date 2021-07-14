@@ -194,6 +194,8 @@ module Yast
     end
 
     # Event handler for the main dialog as well as for any open popups
+    #
+    # rubocop:disable Style/GuardClause
     def handle_events
       loop do
         input = UI.UserInput
@@ -223,6 +225,7 @@ module Yast
         input
       end
     end
+    # rubocop:enable Style/GuardClause
 
     # Open a dialog to ask the user which progress type to use and set the
     # internal @progress_type member variable accordingly.
