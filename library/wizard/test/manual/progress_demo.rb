@@ -46,7 +46,6 @@
 require "yast"
 
 module Yast
-
   class ProgressDemo < Client
     include Yast::Logger
 
@@ -196,7 +195,7 @@ module Yast
 
     # Event handler for the main dialog as well as for any open popups
     def handle_events
-      while true
+      loop do
         input = UI.UserInput
         log.info("Input: \"#{input}\"")
 
