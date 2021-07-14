@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 14 16:06:50 UTC 2021 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Don't crash with UI exception in Progress.rb if a popup is in the way
+  (bsc#1187676)
+- 4.3.64
+
+-------------------------------------------------------------------
 Tue Jun  8 08:26:13 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Ignore sysctl configuration files that do not have the .conf
