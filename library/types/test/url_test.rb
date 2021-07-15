@@ -236,7 +236,7 @@ describe Yast::URL do
                              "path"   => "/share$$share/path/on/the/share",
                              "scheme" => "smb",
                              "user"   => "username")).to eq(
-                               "smb://username:passwd@myserver.com/share%24%24share/path/on/the/share?workgroup=workgroup"
+                               "smb://username:passwd@myserver.com/share$$share/path/on/the/share?workgroup=workgroup"
                              )
       end
     end
