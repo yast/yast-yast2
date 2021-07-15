@@ -20,11 +20,6 @@
 #
 # ***************************************************************************
 # File:  modules/Progress.ycp
-# Module:  Progress
-# Summary:  Progress bar
-# Authors:  Petr Blahos <pblahos@suse.cz>
-#
-# $Id$
 #
 # Functions for progress bar.<br>
 # <pre>
@@ -88,6 +83,8 @@ require "yast"
 
 module Yast
   class ProgressClass < Module
+    include Yast::Logger
+
     def main
       Yast.import "UI"
 
@@ -143,8 +140,7 @@ module Yast
       # Check if any progress bar exists. If it does not, we're not running
       # (querying progress counter is not enough, a module ran previously
       # might have failed to reset the counter properly)
-      Ops.greater_than(@progress_running, 0) &&
-        UI.WidgetExists(:progress_replace_point) == true
+      @progress_running > 0 && UI.WidgetExists(:progress_replace_point)
     end
 
     # push the current progress into the stack
@@ -226,7 +222,7 @@ module Yast
       pb_value = Ops.add(pb_value.nil? ? 0 : pb_value, 1)
 
       # refresh the progress widget, add one step for the embedded progress
-      UI.ReplaceWidget(
+      try_replace_widget(
         Id(:progress_replace_point),
         ProgressBar(
           Id(:pb),
@@ -384,14 +380,13 @@ module Yast
         end
 
         # set the maximum value of the progress bar
-        UI.ReplaceWidget(
+        try_replace_widget(
           Id(:progress_replace_point),
           ProgressBar(Id(:pb), progress_title, @progress_max, @progress_val)
         )
         Builtins.y2debug("New progress: %1/%2", @progress_val, @progress_max)
 
-        # increase the reference counter
-        @progress_running = Ops.add(@progress_running, 1)
+        @progress_running += 1
         return
       else
         @progress_max = @steps
@@ -451,7 +446,7 @@ module Yast
       end
 
       # patch from Michal Srb https://bugzilla.novell.com/show_bug.cgi?id=406890#c7
-      UI.ReplaceWidget(Id(:contents), bar) if !Mode.test && UI.WidgetExists(Id(:contents))
+      try_replace_widget(Id(:contents), bar) unless Mode.test
 
       if !UI.WizardCommand(term(:SetDialogHeading, window_title))
         UI.ChangeWidget(Id(:title), :Value, window_title)
@@ -461,7 +456,7 @@ module Yast
       Wizard.DisableBackButton
       Wizard.DisableNextButton
 
-      @progress_running = Ops.add(@progress_running, 1)
+      @progress_running += 1
 
       nil
     end
@@ -547,7 +542,7 @@ module Yast
       end
 
       Builtins.y2debug("widget: %1", widget)
-      UI.ReplaceWidget(Id(:subprogress_replace_point), widget)
+      try_replace_widget(Id(:subprogress_replace_point), widget)
 
       # remember the max. value
       @last_subprogress_max = max_value
@@ -785,7 +780,7 @@ module Yast
       return if !@visible || Mode.commandline
 
       # decrease the reference counter
-      @progress_running = Ops.subtract(@progress_running, 1)
+      @progress_running -= 1
 
       # set the previous state
       if Ops.greater_than(StackSize(), 0)
@@ -896,6 +891,18 @@ module Yast
       end
 
       nil
+    end
+
+    # Try replacing a ReplacePoint widget's content with new content, but only
+    # if the ReplacePoint actually exists: It might be hidden by another dialog
+    # that was opened on top of the current one (bsc#1187676).
+    def try_replace_widget(widget_id, new_content)
+      if UI.WidgetExists(widget_id)
+        UI.ReplaceWidget(widget_id, new_content)
+      else
+        log.warn("No widget with ID #{widget_id} in the current dialog")
+        UI.DumpWidgetTree
+      end
     end
 
     publish function: :IsRunning, type: "boolean ()"

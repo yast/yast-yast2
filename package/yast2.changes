@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 14 16:06:50 UTC 2021 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Don't crash with UI exception in Progress.rb if a popup is in the way
+  (bsc#1187676)
+- 4.4.15
+
+-------------------------------------------------------------------
 Wed Jun 23 13:24:04 UTC 2021 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Y2Issues::Issue: renamed severity "fatal" to "error", to be more
