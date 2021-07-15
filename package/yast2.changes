@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 15 11:04:50 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Do not escape "$" in URL paths (bsc#1187581).
+- 4.1.82
+
+-------------------------------------------------------------------
 Thu Apr 29 13:24:40 CEST 2021 - Jozef Pupava <jpupava@suse.com>
 
 - Add linuxrc option "reboot_timeout" to configure the timeout
