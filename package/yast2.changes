@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 15 11:04:50 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Do not escape "$" in URL paths (bsc#1187581).
+- 4.2.95
+
+-------------------------------------------------------------------
 Tue Jun  8 08:26:13 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Ignore sysctl configuration files that do not have the .conf
