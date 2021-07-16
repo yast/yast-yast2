@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jul 15 11:04:50 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Do not escape "$" in URL paths (bsc#1187581).
+- 4.4.16
+
+-------------------------------------------------------------------
 Wed Jul 14 16:06:50 UTC 2021 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Don't crash with UI exception in Progress.rb if a popup is in the way
