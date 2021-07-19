@@ -67,7 +67,7 @@ Thu Jun  3 09:04:29 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 Wed Jun  2 17:30:50 UTC 2021 - Knut Anderssen <kanderssen@suse.com>
 
 - Improve Yast2::Equatable mixin making the #hash method to be fine
-  tuned easelly (related to bsc#11806082).
+  tuned easily (related to bsc#1186082).
 - 4.4.7
 
 -------------------------------------------------------------------
