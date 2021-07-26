@@ -4,6 +4,12 @@ require "yast"
 
 module Yast
   # A drop-in replacement of an earlier Perl implementation
+  #
+  # @note This is legacy code ported from the
+  # {https://news.opensuse.org/2007/08/29/yast-independence-of-ycp/ YCP} era. Its use is highly
+  # discouraged in favor of the {https://ruby-doc.org/stdlib-3.0.2/libdoc/uri/rdoc/URI.html URI}
+  # standard library or the new {Y2Packager::ZyppUrl} (available from SLE-15-SP3 on) when working
+  # with libzypp URLs.
   class URLRecodeClass < Module
     # these will be substituted to a regex character class
     USERNAME_PASSWORD_FRAGMENT_SAFE_CHARS = "-A-Za-z0-9_.!~*'()".freeze
