@@ -30,6 +30,13 @@
 require "yast"
 
 module Yast
+  # A module for dealing with URLs
+  #
+  # @note This is legacy code ported from the
+  # {https://news.opensuse.org/2007/08/29/yast-independence-of-ycp/ YCP} era. Its use is highly
+  # discouraged in favor of the {https://ruby-doc.org/stdlib-3.0.2/libdoc/uri/rdoc/URI.html URI}
+  # standard library or the new {Y2Packager::ZyppUrl} (available from SLE-15-SP3 on) when working
+  # with libzypp URLs.
   class URLClass < Module
     def main
       textdomain "base"
