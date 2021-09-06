@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep  6 07:42:09 UTC 2021 - Martin Vidner <mvidner@suse.com>
+
+- Mark systemd unit/service state "maintenance" as active
+  (bsc#1190163)
+- 4.4.17
+
+-------------------------------------------------------------------
 Thu Jul 15 11:04:50 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Do not escape "$" in URL paths (bsc#1187581).

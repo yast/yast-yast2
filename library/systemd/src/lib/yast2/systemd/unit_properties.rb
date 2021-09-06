@@ -12,6 +12,10 @@ module Yast2
       #
       # systemctl.c:check_unit_active uses (active, reloading)
       # For bsc#884756 we also consider "activating" to be active.
+      #
+      # "maintenance" means that the unit will automatically return
+      # to be "active" after a while. (`systemctl clean` was invoked)
+      #
       # (The remaining states are "deactivating", "inactive", "failed".)
       #
       # Yes, depending on systemd states that are NOT covered by their
@@ -20,7 +24,7 @@ module Yast2
       # (depending on hardware and software installed, VM or not)
       # is a 1 to 15 second delay (bsc#1045658).
       # That is why we try hard to avoid many systemctl calls.
-      ACTIVE_STATES = ["active", "activating", "reloading"].freeze
+      ACTIVE_STATES = ["active", "activating", "maintenance", "reloading"].freeze
 
       # @param systemd_unit [Yast2::Systemd::Unit]
       # @param property_text [String,nil] if provided, use it instead of calling `systemctl show`
