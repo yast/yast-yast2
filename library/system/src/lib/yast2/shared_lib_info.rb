@@ -1,4 +1,3 @@
-# encoding: utf-8
 # ------------------------------------------------------------------------------
 # Copyright (c) 2021 SUSE LLC
 #
@@ -14,14 +13,14 @@
 
 require "yast"
 
-# Class to get information about shared libraries used by a process from its
-# /proc/self/maps file.
-#
-# You can also get information for a different process by specifying its
-# /proc/$pid/maps file.
-#
-# For testing, a fixed file can be used.
-module Yast2
+module Yast
+  # Class to get information about shared libraries used by a process from its
+  # /proc/self/maps file.
+  #
+  # You can also get information for a different process by specifying its
+  # /proc/$pid/maps file.
+  #
+  # For testing, a fixed file can be used.
   class SharedLibInfo
     include Yast::Logger
 
@@ -29,6 +28,7 @@ module Yast2
     attr_reader :shared_libs
 
     def initialize(maps_file = "/proc/self/maps")
+      log.info("Creating SharedLibInfo from #{maps_file}")
       clear
       read(maps_file)
     end
@@ -40,8 +40,8 @@ module Yast2
     def read(maps_file = "/proc/self/maps")
       return if maps_file.nil? || maps_file.empty?
 
-      open(maps_file).each { |line| parse_maps_line(line) }
-      @shared_libs.uniq!
+      File.open(maps_file).each { |line| parse_maps_line(line) }
+      @shared_libs.sort!.uniq!
     end
 
     # Return the directory name of a shared lib with a full path.
@@ -85,7 +85,7 @@ module Yast2
       full_name.split(/\.so\.?/) # ["libscr", "3.0.0"]
     end
 
-    private
+  private
 
     # Parse one entry of /proc/self/maps and add an entry to @shared_libs if
     # applicable.
@@ -108,8 +108,15 @@ module Yast2
       return nil if line.empty? || line.start_with?("#")
 
       path = line.split[5]
-      @shared_libs << path unless path.nil? || path.start_with?("[")
+      return nil if path.nil?
+
+      @shared_libs << path if shared_lib?(path)
       path
+    end
+
+    # Check if a path is a shared lib.
+    def shared_lib?(path)
+      path =~ /\.so/
     end
   end
 end
