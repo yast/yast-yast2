@@ -14,16 +14,14 @@
 require "yast"
 
 module Yast
-  # Class to get information about shared libraries used by a process from its
-  # /proc/self/maps file.
+  # Class to get information about shared libraries used by a process (by
+  # default the current process) from its /proc/self/maps file.
   #
   # You can also get information for a different process by specifying its
   # /proc/$pid/maps file.
   #
   # For testing, a fixed file can be used.
   class SharedLibInfo
-    include Yast::Logger
-
     # @return [Array<String>] Complete paths of the shared libs
     attr_reader :shared_libs
 
@@ -31,7 +29,6 @@ module Yast
     # @param maps_file [String] name of the maps file to use
     #
     def initialize(maps_file = "/proc/self/maps")
-      log.info("Creating SharedLibInfo from #{maps_file}")
       clear
       read(maps_file)
     end
