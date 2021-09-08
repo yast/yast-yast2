@@ -44,4 +44,59 @@ describe Yast::SharedLibInfo do
     end
   end
 
+  describe "#split_lib_name" do
+    it "survives nil" do
+      expect(described_class.split_lib_name(nil)).to eq nil
+    end
+
+    it "survives an empty string" do
+      expect(described_class.split_lib_name("")).to eq []
+    end
+
+    it "correctly splits a UI plug-in path" do
+      expect(described_class.split_lib_name("/usr/lib64/yui/libyui-qt-pkg.so.15.0.0")).to eq ["libyui-qt-pkg", "15.0.0"]
+    end
+
+    it "correctly splits a libc path without a SO number" do
+      expect(described_class.split_lib_name("/usr/lib64/libc-2.33.so")).to eq ["libc-2.33"]
+    end
+  end
+
+  describe "#lib_basename" do
+    it "survives nil" do
+      expect(described_class.lib_basename(nil)).to eq nil
+    end
+
+    it "correctly returns the lib name of a UI plug-in path" do
+      expect(described_class.lib_basename("/usr/lib64/yui/libyui-qt-pkg.so.15.0.0")).to eq "libyui-qt-pkg"
+    end
+
+    it "correctly returns the lib name of a libc path without a SO number" do
+      expect(described_class.lib_basename("/usr/lib64/libc-2.33.so")).to eq "libc-2.33"
+    end
+  end
+
+  describe "#so_number" do
+    it "survives nil" do
+      expect(described_class.so_number(nil)).to eq nil
+    end
+
+    it "correctly returns the SO number of a UI plug-in path" do
+      expect(described_class.so_number("/usr/lib64/yui/libyui-qt-pkg.so.15.0.0")).to eq "15.0.0"
+    end
+
+    it "correctly returns nil if the lib does not have a SO number" do
+      expect(described_class.so_number("/usr/lib64/libc-2.33.so")).to eq nil
+    end
+  end
+
+  describe "#so_major" do
+    it "correctly returns the SO number of a UI plug-in path" do
+      expect(described_class.so_number("/usr/lib64/yui/libyui-qt-pkg.so.15.0.0")).to eq "15.0.0"
+    end
+
+    it "correctly returns nil if the lib does not have a SO number" do
+      expect(described_class.so_number("/usr/lib64/libc-2.33.so")).to eq nil
+    end
+  end
 end

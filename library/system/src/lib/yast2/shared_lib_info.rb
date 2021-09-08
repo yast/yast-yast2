@@ -27,16 +27,24 @@ module Yast
     # @return [Array<String>] Complete paths of the shared libs
     attr_reader :shared_libs
 
+    # Constructor.
+    # @param maps_file [String] name of the maps file to use
+    #
     def initialize(maps_file = "/proc/self/maps")
       log.info("Creating SharedLibInfo from #{maps_file}")
       clear
       read(maps_file)
     end
 
+    # Clear all previous content.
     def clear
       @shared_libs = []
     end
 
+    # Read a maps file formatted like /proc/self/maps.
+    #
+    # @param maps_file [String] name of the maps file to use
+    #
     def read(maps_file = "/proc/self/maps")
       return if maps_file.nil? || maps_file.empty?
 
@@ -47,30 +55,58 @@ module Yast
     # Return the directory name of a shared lib with a full path.
     # This is really only an alias for File.dirname().
     #
+    # @param lib [String] full name (with path) of a shared lib
+    # @return [String] the directory part of that full name
+    #
     def self.dirname(lib)
       File.dirname(lib)
     end
 
-    # Return the library basename of a shared lib (with or without a full
-    # path). Unlike File.basename(), this also cuts off the SO number.
+    # Return the library basename of a shared lib. Unlike File.basename(), this
+    # also cuts off the SO number.
     #
     # Example:
     #   "/usr/lib64/libscr.so.3.0.0" -> "libscr"
     #   "/usr/lib64/libc-2.33.so"    -> "libc-2.33"
     #
+    # @param lib [String] full name (with or without path) of a shared lib
+    # @return [String] the name of the lib without path and without .so number
+    #
     def self.lib_basename(lib)
-      split_lib_name(lib).first
+      (name, _so_number) = split_lib_name(lib)
+      name
     end
 
-    # Return the so number of a shared lib (with or without a full
-    # path).
+    # Return the so number of a shared lib (with or without a full path).
     #
     # Example:
     #   "/usr/lib64/libscr.so.3.0.0" -> "3.0.0"
     #   "/usr/lib64/libc-2.33.so"    -> nil
     #
+    # @param lib [String] full name (with or without path) of a shared lib
+    # @return [String, nil] the .so number part of the lib ("3.0.0")
+    #
     def self.so_number(lib)
-      split_lib_name(lib).last
+      # There might be only one component if there is no SO number,
+      # so we can't simply use .last: We want to return nil in that case
+      (_name, so_number) = split_lib_name(lib)
+      so_number
+    end
+
+    # Return the SO major number of a shared lib (with or without a full path)
+    #
+    # Example:
+    #   "/usr/lib64/libscr.so.3.0.0" -> "3"
+    #   "/usr/lib64/libc-2.33.so"    -> nil
+    #
+    # @param lib [String] full name (with or without path) of a shared lib
+    # @return [String, nil] the major .so of the lib ("3")
+    #
+    def self.so_major(lib)
+      so = so_number(lib)
+      return nil if so.nil?
+
+      so.split(".").first
     end
 
     # Split a library name (with or without a full path) up into its base name
@@ -80,7 +116,12 @@ module Yast
     #   "/usr/lib64/libscr.so.3.0.0" -> ["libscr", "3.0.0"]
     #   "/usr/lib64/libc-2.33.so"    -> ["libc-2.33", nil]
     #
+    # @param lib [String] full name (with or without path) of a shared lib
+    # @return [Array<String>, nil] lib name split into name and so number
+    #
     def self.split_lib_name(lib)
+      return nil if lib.nil?
+
       full_name = File.basename(lib) # "libscr.so.3.0.0"
       full_name.split(/\.so\.?/) # ["libscr", "3.0.0"]
     end
@@ -104,6 +145,7 @@ module Yast
       #
       # See also
       # https://www.kernel.org/doc/html/latest/filesystems/proc.html
+      #
       line.strip!
       return nil if line.empty? || line.start_with?("#")
 
@@ -115,6 +157,10 @@ module Yast
     end
 
     # Check if a path is a shared lib.
+    #
+    # @param lib [String] full name (with path) of a shared lib
+    # @return [Boolean] true if it is a shared lib, false if not
+    #
     def shared_lib?(path)
       path =~ /\.so/
     end
