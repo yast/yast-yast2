@@ -33,16 +33,6 @@ module Yast
       read(maps_file)
     end
 
-    # Return the directory name of a shared lib with a full path.
-    # This is really only an alias for File.dirname().
-    #
-    # @param lib [String] full name (with path) of a shared lib
-    # @return [String] the directory part of that full name
-    #
-    def self.dirname(lib)
-      File.dirname(lib)
-    end
-
     # Return the library basename of a shared lib. Unlike File.basename(), this
     # also cuts off the SO number.
     #
@@ -105,6 +95,23 @@ module Yast
 
       full_name = File.basename(lib) # "libscr.so.3.0.0"
       full_name.split(/\.so\.?/) # ["libscr", "3.0.0"]
+    end
+
+    # Counterpart to split_lib_name: Build a library name from its base name
+    # and its SO number.
+    #
+    # Example:
+    #   "libscr", "3.0.0" -> "libscr.so.3.0.0"
+    #   "libc-2.33", nil  -> "libc-2.33.so"
+    #
+    # @param basename [String] lib base name without path and SO number
+    # @param so_number [String] lib SO number or nil or empty
+    # @return [String]
+    #
+    def self.build_lib_name(basename, so_number)
+      lib_name = basename + ".so"
+      lib_name += "." + so_number unless so_number.nil? || so_number.empty?
+      lib_name
     end
 
   protected

@@ -29,9 +29,10 @@ module Yast
     # @param maps_file [String] name of the maps file to use
     #
     def initialize(maps_file = "/proc/self/maps")
-      @ui_plugins = nil # Lazy init
-      super(maps_file)
-      log.info("Creating SharedLibInfo from #{maps_file}")
+      super
+      # Lazy init for those member variables
+      @ui_plugins = nil
+      @main_ui_plugin_complete = nil
     end
 
     # Find the UI plug-ins among the shared libs.
@@ -52,21 +53,35 @@ module Yast
     #
     def short_name(ui_plugin)
       name = SharedLibInfo.lib_basename(ui_plugin)
-      return nil if name.nil?
-
-      name.gsub(/^libyui-/, "")
+      name&.gsub(/^libyui-/, "")
     end
 
-    # Find the main UI plug-in (if there are several).
-    # This is generally the one with the shortest name.
+    # Return the complete name (with path and SO number) of the main UI
+    # plug-in.  Several UI plug-ins might be loaded; the main plug-in is
+    # generally the one with the shortest lib base name ("qt", "qt-pkg",
+    # "qt-graph"; "ncurses", "ncurses-pkg").
     #
-    # @return [String, nil] Short name of the main UI plug-in
-    def main_ui_plugin
+    # @return [String, nil] Complete name of the main UI plug-in
+    #
+    def main_ui_plugin_complete
       return nil if ui_plugins.empty?
 
-      plugins = ui_plugins.map { |p| SharedLibInfo.lib_basename(p) }
-      main_plugin = plugins.min { |a, b| a.size <=> b.size }
-      short_name(main_plugin)
+      @main_ui_plugin_complete ||= ui_plugins.min do |a, b|
+        SharedLibInfo.lib_basename(a).size <=> SharedLibInfo.lib_basename(b).size
+      end
+      @main_ui_plugin_complete
+    end
+
+    # Return the short name of the main UI plug-in, i.e. without path,
+    # "libyui-" prefix and SO number Several UI plug-ins might be loaded; the
+    # main plug-in is generally the one with the shortest lib base name ("qt",
+    # "qt-pkg", "qt-graph"; "ncurses", "ncurses-pkg").
+    #
+    # @return [String, nil] Short name of the main UI plug-in
+    #
+    def main_ui_plugin
+      name = SharedLibInfo.lib_basename(main_ui_plugin_complete)
+      name&.gsub!(/^libyui-/, "")
     end
 
     # Find the SO number of the UI main plug-in.
@@ -74,11 +89,7 @@ module Yast
     # @return [String, nil] SO number (e.g. "15.0.0")
     #
     def ui_so_number
-      ui_short_name = main_ui_plugin
-      return nil if ui_short_name.nil?
-
-      plugin = ui_plugins.find { |p| p =~ /#{ui_short_name}\.so/ }
-      SharedLibInfo.so_number(plugin)
+      SharedLibInfo.so_number(main_ui_plugin_complete)
     end
 
     # Find the SO major number of the UI main plug-in.
@@ -86,10 +97,57 @@ module Yast
     # @return [String, nil] SO number (e.g. "15")
     #
     def ui_so_major
-      so = ui_so_number
-      return nil if so.nil?
+      SharedLibInfo.so_major(main_ui_plugin_complete)
+    end
 
-      so.split(".").first
+    # Return the name of a UI extension plug-in with SO number for the current
+    # UI main plug-in.
+    #
+    # Example:
+    #   "pkg" for "libyui-qt.so.15.0.0" -> "libyui-qt-pkg.so.15.0.0"
+    #   "pkg" for "libyui-ncurses.so.15.0.0" -> "libyui-ncurses-pkg.so.15.0.0"
+    #
+    # @param ext [String] Short name for the UI extension ("pkg", "graph")
+    # @return [String] lib name without path for that extension and the current UI
+    #
+    def ui_extension_plugin(ext)
+      (ui_name, so_number) = SharedLibInfo.split_lib_name(main_ui_plugin_complete)
+      return nil if ui_name.nil?
+
+      SharedLibInfo.build_lib_name("#{ui_name}-#{ext}", so_number)
+    end
+
+    # Return the complete name (with path) of a UI extension plug-in with SO
+    # number for the current UI main plug-in.
+    #
+    # Example:
+    #   "pkg" for "/usr/lib64/yui/libyui-qt.so.15.0.0" -> "/usr/lib64/yui/libyui-qt-pkg.so.15.0.0"
+    #   "pkg" for "/usr/lib64/yui/libyui-ncurses.so.15.0.0" -> "/usr/lib64/yui/libyui-ncurses-pkg.so.15.0.0"
+    #
+    # @param ext [String] Short name for the UI extension ("pkg", "graph")
+    # @return [String] lib name with path for that extension and the current UI
+    #
+    def ui_extension_plugin_complete(ext)
+      return nil if main_ui_plugin_complete.nil?
+
+      File.join(File.dirname(main_ui_plugin_complete), ui_extension_plugin(ext))
+    end
+
+    # Return the package name (with standard SUSE libyui package naming
+    # conventions) for a UI extension for the current UI main plug-in.
+    #
+    # Example:
+    #   "pkg" for "libyui-qt.so.15.0.0" -> "libyui-qt-pkg15"
+    #   "pkg" for "libyui-ncurses.so.15.0.0" -> "libyui-ncurses-pkg15"
+    #
+    # @param ext [String] Short name for the UI extension ("pkg", "graph")
+    # @return [String] package name for that extension and the current UI
+    #
+    def ui_extension_pkg(ext)
+      ui = main_ui_plugin
+      return nil if ui.nil?
+
+      "libyui-#{ui}-#{ext}#{ui_so_major}"
     end
   end
 end

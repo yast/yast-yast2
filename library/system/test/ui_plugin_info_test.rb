@@ -98,6 +98,20 @@ describe Yast::UiPluginInfo do
     end
   end
 
+  describe "#main_ui_plugin_complete" do
+    let(:subject) { described_class.new(maps_file) }
+
+    # Just one context for this since the other cases are implicitly already
+    # tested with main_ui_plugin
+    context "with the Qt UI + Qt-Pkg extension" do
+      let(:maps_file) { stored_proc_maps("qt-pkg") }
+
+      it "identifies the UI as \"/usr/lib64/yui/libyui-qt.so.15.0.0\"" do
+        expect(subject.main_ui_plugin_complete).to eq "/usr/lib64/yui/libyui-qt.so.15.0.0"
+      end
+    end
+  end
+
   describe "#ui_so_number" do
     let(:subject) { described_class.new(maps_file) }
 
@@ -166,6 +180,126 @@ describe Yast::UiPluginInfo do
 
       it "returns nil" do
         expect(subject.ui_so_major).to eq nil
+      end
+    end
+  end
+
+  describe "#ui_extension_plugin" do
+    let(:subject) { described_class.new(maps_file) }
+
+    context "empty" do
+      let(:maps_file) { nil }
+
+      it "does not crash and burn" do
+        expect(subject.ui_extension_plugin("pkg")).to eq nil
+      end
+    end
+
+    context "with the Qt UI" do
+      let(:maps_file) { stored_proc_maps("qt") }
+
+      it "returns the -pkg counterpart" do
+        expect(subject.ui_extension_plugin("pkg")).to eq "libyui-qt-pkg.so.15.0.0"
+      end
+    end
+
+    context "with the Qt UI + Qt-Graph extension" do
+      let(:maps_file) { stored_proc_maps("qt-graph") }
+
+      it "returns the -pkg counterpart" do
+        expect(subject.ui_extension_plugin("pkg")).to eq "libyui-qt-pkg.so.15.0.0"
+      end
+    end
+
+    context "with the NCurses UI" do
+      let(:maps_file) { stored_proc_maps("ncurses") }
+
+      it "returns the -pkg counterpart" do
+        expect(subject.ui_extension_plugin("pkg")).to eq "libyui-ncurses-pkg.so.15.0.0"
+      end
+    end
+
+    context "without any UI" do
+      let(:maps_file) { stored_proc_maps("no-ui") }
+
+      it "returns nil" do
+        expect(subject.ui_extension_plugin("pkg")).to eq nil
+      end
+    end
+  end
+
+  describe "#ui_extension_plugin_complete" do
+    let(:subject) { described_class.new(maps_file) }
+
+    context "empty" do
+      let(:maps_file) { nil }
+
+      it "does not crash and burn" do
+        expect(subject.ui_extension_plugin_complete("pkg")).to eq nil
+      end
+    end
+
+    context "with the Qt UI" do
+      let(:maps_file) { stored_proc_maps("qt") }
+
+      it "returns the -pkg counterpart" do
+        expect(subject.ui_extension_plugin_complete("pkg")).to eq "/usr/lib64/yui/libyui-qt-pkg.so.15.0.0"
+      end
+    end
+
+    context "with the NCurses UI" do
+      let(:maps_file) { stored_proc_maps("ncurses") }
+
+      it "returns the -pkg counterpart" do
+        expect(subject.ui_extension_plugin_complete("pkg")).to eq "/usr/lib64/yui/libyui-ncurses-pkg.so.15.0.0"
+      end
+    end
+
+    context "without any UI" do
+      let(:maps_file) { stored_proc_maps("no-ui") }
+
+      it "returns nil" do
+        expect(subject.ui_extension_plugin_complete("pkg")).to eq nil
+      end
+    end
+  end
+
+  describe "#ui_extension_pkg" do
+    let(:subject) { described_class.new(maps_file) }
+
+    context "empty" do
+      let(:maps_file) { nil }
+
+      it "does not crash and burn" do
+        expect(subject.ui_extension_pkg("pkg")).to eq nil
+      end
+    end
+
+    context "with the Qt UI" do
+      let(:maps_file) { stored_proc_maps("qt") }
+
+      it "returns the correct package name for the -pkg UI extension" do
+        expect(subject.ui_extension_pkg("pkg")).to eq "libyui-qt-pkg15"
+      end
+
+      it "returns the correct package name for the -graph UI extension" do
+        expect(subject.ui_extension_pkg("graph")).to eq "libyui-qt-graph15"
+      end
+    end
+
+    context "with the NCurses UI" do
+      let(:maps_file) { stored_proc_maps("ncurses") }
+
+      it "returns the correct package name for the -pkg UI extension" do
+        expect(subject.ui_extension_pkg("pkg")).to eq "libyui-ncurses-pkg15"
+      end
+    end
+
+    context "without any UI" do
+      let(:maps_file) { stored_proc_maps("no-ui") }
+
+      it "returns nil" do
+        expect(subject.ui_extension_pkg("pkg")).to eq nil
       end
     end
   end
