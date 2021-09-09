@@ -99,4 +99,14 @@ describe Yast::SharedLibInfo do
       expect(described_class.so_number("/usr/lib64/libc-2.33.so")).to eq nil
     end
   end
+
+  describe "#build_lib_name" do
+    it "correctly builds a UI plug-in name" do
+      expect(described_class.build_lib_name("libyui-qt-pkg", "15.0.0")).to eq "libyui-qt-pkg.so.15.0.0"
+    end
+
+    it "correctly builds a libc path without a SO number" do
+      expect(described_class.build_lib_name("libc-2.33", nil)).to eq "libc-2.33.so"
+    end
+  end
 end

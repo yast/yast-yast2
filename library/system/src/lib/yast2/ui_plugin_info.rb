@@ -22,6 +22,12 @@ module Yast
   # /proc/$pid/maps file.
   #
   # For testing, a fixed file can be used.
+  #
+  # The information stored in this class is only a snapshot in the life time of
+  # the process. As new shared libs are loaded (e.g. plug-ins are loaded with
+  # dlopen()), this information may become outdated. In that case, simply let
+  # the old instance go out of scope and create a new one.
+  #
   class UiPluginInfo < SharedLibInfo
     include Yast::Logger
 
