@@ -28,6 +28,8 @@ module Yast
   # dlopen()), this information may become outdated. In that case, simply let
   # the old instance go out of scope and create a new one.
   #
+  # More information: https://github.com/yast/yast-yast2/pull/1194
+  #
   class UiPluginInfo < SharedLibInfo
     include Yast::Logger
 

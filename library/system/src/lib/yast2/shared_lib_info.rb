@@ -27,6 +27,8 @@ module Yast
   # dlopen()), this information may become outdated. In that case, simply let
   # the old instance go out of scope and create a new one.
   #
+  # More information: https://github.com/yast/yast-yast2/pull/1194
+  #
   class SharedLibInfo
     # @return [Array<String>] Complete paths of the shared libs
     attr_reader :shared_libs
