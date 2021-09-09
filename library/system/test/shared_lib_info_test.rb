@@ -24,7 +24,7 @@ describe Yast::SharedLibInfo do
     context "with the Qt UI" do
       let(:maps_file) { stored_proc_maps("qt") }
 
-      it "finds a lot of shared libs" do
+      it "finds all the shared libs" do
         expect(subject.shared_libs.size).to eq 117
       end
 
