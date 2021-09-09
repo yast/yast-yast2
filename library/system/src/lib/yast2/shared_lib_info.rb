@@ -33,22 +33,6 @@ module Yast
       read(maps_file)
     end
 
-    # Clear all previous content.
-    def clear
-      @shared_libs = []
-    end
-
-    # Read a maps file formatted like /proc/self/maps.
-    #
-    # @param maps_file [String] name of the maps file to use
-    #
-    def read(maps_file = "/proc/self/maps")
-      return if maps_file.nil? || maps_file.empty?
-
-      File.open(maps_file).each { |line| parse_maps_line(line) }
-      @shared_libs.sort!.uniq!
-    end
-
     # Return the directory name of a shared lib with a full path.
     # This is really only an alias for File.dirname().
     #
@@ -123,7 +107,23 @@ module Yast
       full_name.split(/\.so\.?/) # ["libscr", "3.0.0"]
     end
 
-  private
+  protected
+
+    # Clear all previous content.
+    def clear
+      @shared_libs = []
+    end
+
+    # Read a maps file formatted like /proc/self/maps.
+    #
+    # @param maps_file [String] name of the maps file to use
+    #
+    def read(maps_file = "/proc/self/maps")
+      return if maps_file.nil? || maps_file.empty?
+
+      File.open(maps_file).each { |line| parse_maps_line(line) }
+      @shared_libs.sort!.uniq!
+    end
 
     # Parse one entry of /proc/self/maps and add an entry to @shared_libs if
     # applicable.
