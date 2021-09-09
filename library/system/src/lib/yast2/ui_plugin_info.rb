@@ -74,7 +74,8 @@ module Yast
     def main_ui_plugin_complete
       return nil if ui_plugins.empty?
 
-      @main_ui_plugin_complete ||= ui_plugins.min do |a, b|
+      relevant_plugins = ui_plugins.reject { |p| p =~ /rest-api/ }
+      @main_ui_plugin_complete ||= relevant_plugins.min do |a, b|
         SharedLibInfo.lib_basename(a).size <=> SharedLibInfo.lib_basename(b).size
       end
       @main_ui_plugin_complete
