@@ -30,7 +30,7 @@ module Yast
   #
   # More information: https://github.com/yast/yast-yast2/pull/1194
   #
-  class UiPluginInfo < SharedLibInfo
+  class UIPluginInfo < SharedLibInfo
     include Yast::Logger
 
     # Constructor.

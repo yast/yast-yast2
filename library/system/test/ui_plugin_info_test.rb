@@ -9,7 +9,7 @@ def stored_proc_maps(scenario)
   File.join(PROC_MAPS_PATH, "proc-maps-#{scenario}")
 end
 
-describe Yast::UiPluginInfo do
+describe Yast::UIPluginInfo do
   describe "#new" do
     let(:subject) { described_class.new(maps_file) }
 
