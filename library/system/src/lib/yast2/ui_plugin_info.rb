@@ -48,8 +48,10 @@ module Yast
     # @return [Array<String>] Complete paths of the UI plug-ins
     #
     def ui_plugins
-      @ui_plugins ||= shared_libs.select { |lib| lib =~ /yui\/libyui-/ }
-      log.info("UI plug-ins: #{@ui_plugins}")
+      if @ui_plugins.nil?
+        @ui_plugins = shared_libs.select { |lib| lib =~ /yui\/libyui-/ }
+        log.info("UI plug-ins: #{@ui_plugins}")
+      end
       @ui_plugins
     end
 
