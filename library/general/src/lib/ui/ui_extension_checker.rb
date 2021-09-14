@@ -132,7 +132,7 @@ module Yast
     def not_available_error
       @ok = false
       # Translators: %s is a UI extension name like pkg or graph
-      Report.Error(_("UI extension \"%s\" is not available for this UI.") % ext_name)
+      Report.Error(_("UI extension \"%s\" is not available for this UI.") % @ext_name)
     end
   end
 end
