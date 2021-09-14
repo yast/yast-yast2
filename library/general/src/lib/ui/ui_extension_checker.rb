@@ -86,6 +86,8 @@ module Yast
     def ask
       # Translators: %s is a software packge name like libyui-qt-pkg15
       msg = _("This needs package %s to be installed.") % ext_pkg
+      msg += "\n\n"
+      msg += _("Press \"Continue\" to install this package now or \"Cancel\" to exit.")
       @ok = Popup.ContinueCancel(msg)
     end
 
@@ -97,7 +99,7 @@ module Yast
       if !@ok
         log.error("UI extension package could not be installed: #{ext_pkg}")
         # Translators: %s is a software packge name like libyui-qt-pkg15
-        Report.Error(_("Package %s could not be installed.") %ext_pkg)
+        Report.Error(_("Package %s could not be installed.") % ext_pkg)
       end
       @ok
     end
