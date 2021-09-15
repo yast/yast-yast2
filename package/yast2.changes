@@ -37,7 +37,7 @@ Mon Jun 21 20:51:57 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 -------------------------------------------------------------------
 Thu Jun 17 06:15:02 UTC 2021 - Dirk Müller <dmueller@suse.com>
 
-- add riscv64 architecture helper (jsc#PM-2612)
+- add riscv64 architecture helper (jsc#SLE-19562)
 - 4.4.12
 
 -------------------------------------------------------------------
