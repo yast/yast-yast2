@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Sep 15 15:30:00 UTC 2021 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Added infrastructure for installing missing UI extension plug-ins
+  (jsc#SLE-20346, jsc#SLE-20462)
+- 4.4.19
+
+-------------------------------------------------------------------
 Wed Sep 15 13:58:56 UTC 2021 - José Iván López González <jlopez@suse.com>
 
 - Add Y2Issues::WithIssues mixin to make easier to work with a list
