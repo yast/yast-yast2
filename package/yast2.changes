@@ -31,7 +31,7 @@ Wed Jun 23 13:24:04 UTC 2021 - Ancor Gonzalez Sosa <ancor@suse.com>
 - Y2Issues::Issue: renamed severity "fatal" to "error", to be more
   consistent with other parts of (Auto)YaST
 - Added options to configure the behavior of Y2Issues.report
-  (related to jsc#PM-2620 and bsc#1166743)
+  (related to jsc#SLE-20563 and bsc#1166743)
 - 4.4.14
 
 -------------------------------------------------------------------
