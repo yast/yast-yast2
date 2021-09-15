@@ -463,7 +463,7 @@ Fri Jul 24 08:06:27 UTC 2020 - Jeff Kowalczyk <jkowalczyk@suse.com>
 Thu Jul 23 14:03:42 UTC 2020 - José Iván López González <jlopez@suse.com>
 
 - Add Layout class to configure a Wizard layout.
-- Related to jsc#PM-1998.
+- Related to jsc#SLE-15899.
 - 4.3.16
 
 -------------------------------------------------------------------
