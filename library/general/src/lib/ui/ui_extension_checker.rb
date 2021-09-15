@@ -73,6 +73,22 @@ module Yast
     # @return [Boolean] true if the UI extension is already installed, false if not
     #
     def installed?
+      # Notice that this intentionally checks if the extension plug-in binary
+      # is available, and that it is available in the same path as the main UI
+      # plug-in: That way it also works for libyui developers that had to bump
+      # the UI SO version, or for third-party developers who like to install
+      # their binaries to a different path to avoid interfering with existing
+      # distro packages.
+      #
+      # If this would check for the package instead (which includes the SO
+      # number, e.g. libyui-qt-pkg42 for libyui-qt42), none of that would work:
+      # After a libyui SO version bump, there is no corresponding package yet
+      # in OBS with that name that could be installed, so this would always
+      # throw an error - an error that is hard to recover from in a development
+      # environment.
+      #
+      # 2021-09-15 shundhammer
+      #
       ext_plugin = @ui_plugin_info.ui_extension_plugin_complete(@ext_name)
       @ok = File.exist?(ext_plugin)
       log.info("Not found: #{ext_plugin}") unless @ok
