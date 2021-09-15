@@ -18,20 +18,20 @@ YaST UI plug-ins:
   totally sufficient:
 
       cd ycp-ui-bindings/examples
-      /usr/lib/YaST2/bin/y2base ./HelloWorld.rb qt
+      /usr/lib/YaST2/bin/y2start ./HelloWorld.rb qt
 
   or
 
-      /usr/lib/YaST2/bin/y2base ./HelloWorld.rb ncurses
+      /usr/lib/YaST2/bin/y2start ./HelloWorld.rb ncurses
 
 - For -pkg extensions:
 
-      /usr/lib/YaST2/bin/y2base ./PackageSelector-empty.rb qt
-      /usr/lib/YaST2/bin/y2base ./PackageSelector-empty.rb ncurses
+      /usr/lib/YaST2/bin/y2start ./PackageSelector-empty.rb qt
+      /usr/lib/YaST2/bin/y2start ./PackageSelector-empty.rb ncurses
 
 - For the qt-graph extension:
 
-      /usr/lib/YaST2/bin/y2base ./Graph1.rb qt
+      /usr/lib/YaST2/bin/y2start ./Graph1.rb qt
 
 - Leave the y2base process running (!)
 
