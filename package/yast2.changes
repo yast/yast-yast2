@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Sep 15 13:58:56 UTC 2021 - José Iván López González <jlopez@suse.com>
+
+- Add Y2Issues::WithIssues mixin to make easier to work with a list
+  of issues (needed for jsc#SLE-20563).
+- 4.4.18
+
+-------------------------------------------------------------------
 Mon Sep  6 07:42:09 UTC 2021 - Martin Vidner <mvidner@suse.com>
 
 - Mark systemd unit/service state "maintenance" as active
