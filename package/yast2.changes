@@ -44,7 +44,7 @@ Mon Jun 21 20:51:57 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 -------------------------------------------------------------------
 Thu Jun 17 06:15:02 UTC 2021 - Dirk Müller <dmueller@suse.com>
 
-- add riscv64 architecture helper (jsc#PM-2612)
+- add riscv64 architecture helper (jsc#SLE-19562)
 - 4.4.12
 
 -------------------------------------------------------------------
@@ -470,7 +470,7 @@ Fri Jul 24 08:06:27 UTC 2020 - Jeff Kowalczyk <jkowalczyk@suse.com>
 Thu Jul 23 14:03:42 UTC 2020 - José Iván López González <jlopez@suse.com>
 
 - Add Layout class to configure a Wizard layout.
-- Related to jsc#PM-1998.
+- Related to jsc#SLE-15899.
 - 4.3.16
 
 -------------------------------------------------------------------
