@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Sep 16 13:41:05 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed losing the current product and package selection during
+  installation, caused by unnecessary reloading of repositories
+  (bsc#1190228)
+- 4.4.20
+
+-------------------------------------------------------------------
 Wed Sep 15 15:30:00 UTC 2021 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Added infrastructure for installing missing UI extension plug-ins

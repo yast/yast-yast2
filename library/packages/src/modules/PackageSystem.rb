@@ -62,9 +62,6 @@ module Yast
       # Has Pkg::TargetInit run?
       @target_initialized = false
 
-      # Has Pkg::SourceStartCache run?
-      @source_initialized = false
-
       Yast.include self, "packages/common.rb"
 
       @_rpm_query_binary_initialized = false
@@ -94,7 +91,8 @@ module Yast
     def EnsureSourceInit
       PackageLock.Check
 
-      if @source_initialized
+      # no repository present (not even a disabled one)
+      if Pkg.SourceGetCurrent(false).empty?
         # this way, if somebody closed the cache outside of Package
         # (typically in installation), we will reinitialize
         # it's cheap if cache is already initialized
@@ -107,11 +105,8 @@ module Yast
         EnsureTargetInit()
       end
 
-      sources = Pkg.SourceStartCache(true)
-
-      if Ops.greater_than(Builtins.size(sources), 0)
-        @source_initialized = true
-      else
+      # at least one enabled repository?
+      if Pkg.SourceGetCurrent(true).empty?
         # all repositories are disabled or no repository defined
         Builtins.y2warning("No package repository available")
       end
@@ -310,7 +305,8 @@ module Yast
     def Available(package)
       EnsureSourceInit()
 
-      if !@source_initialized
+      # at least one enabled repository present?
+      if Pkg.SourceGetCurrent(true).empty?
         # error no source initialized
         return nil
       end
@@ -379,7 +375,8 @@ module Yast
     def PackageAvailable(package)
       EnsureSourceInit()
 
-      if !@source_initialized
+      # at least one enabled repository present?
+      if Pkg.SourceGetCurrent(true).empty?
         # error no source initialized
         return nil
       end
