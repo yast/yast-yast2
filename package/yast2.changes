@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Mar  3 14:11:43 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed refreshing old repositories during system upgrade
+  (bsc#1196120, similar to bsc#1190228)
+- 4.3.69
+
+-------------------------------------------------------------------
 Thu Feb 17 09:33:37 UTC 2022 - Steffen Winterfeldt <snwint@suse.com>
 
 - do not strip surrounding white space in CDATA XML elements (bsc#1195910)
