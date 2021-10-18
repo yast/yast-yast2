@@ -57,18 +57,6 @@ describe Y2Packager::Product do
     end
   end
 
-  describe ".selected_base" do
-    let(:not_selected) { instance_double(Y2Packager::Product, selected?: false) }
-    let(:selected) { instance_double(Y2Packager::Product, selected?: true) }
-
-    it "returns base selected packages" do
-      allow(reader).to receive(:available_base_products)
-        .and_return([not_selected, selected])
-
-      expect(described_class.selected_base).to eq(selected)
-    end
-  end
-
   describe "#==" do
     context "when name, arch, version and vendor match" do
       let(:other) { Y2Packager::Product.new(PRODUCT_BASE_ATTRS) }
