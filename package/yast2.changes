@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Oct 19 21:09:10 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt to the new ProductSpec API (bsc#1191843):
+  - Drop the ProductControlProduct class.
+  - Remove the Product.forced_base_product method (moved to
+    ProductSpec).
+  - Add a Yast::Arch.rpm_arch method.
+- 4.4.21
+
+-------------------------------------------------------------------
 Thu Sep 16 13:41:05 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed losing the current product and package selection during
