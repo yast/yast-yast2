@@ -513,19 +513,19 @@ module Yast
     end
 
     # map the Arch.architecture to the arch expected by SCC
-    REG_ARCH = {
+    RPM_ARCH = {
       "s390_32" => "s390",
       "s390_64" => "s390x",
       # ppc64le is the only supported PPC arch, we do not have to distinguish the BE/LE variants
       "ppc64"   => "ppc64le"
     }.freeze
-    private_constant :REG_ARCH
+    private_constant :RPM_ARCH
 
     # Returns the architecture expected by SCC
     #
     # @return [String] Architecture
-    def registration_arch
-      REG_ARCH[architecture] || architecture
+    def rpm_arch
+      RPM_ARCH[architecture] || architecture
     end
 
     publish function: :architecture, type: "string ()"

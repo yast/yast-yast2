@@ -253,7 +253,7 @@ describe Yast::Arch do
     end
   end
 
-  describe ".registration_arch" do
+  describe ".rpm_arch" do
     before do
       allow(subject).to receive(:architecture).and_return(arch)
     end
@@ -262,7 +262,7 @@ describe Yast::Arch do
       let(:arch) { "s390_32" }
 
       it "returns s390" do
-        expect(subject.registration_arch).to eq("s390")
+        expect(subject.rpm_arch).to eq("s390")
       end
     end
 
@@ -270,7 +270,7 @@ describe Yast::Arch do
       let(:arch) { "s390_64" }
 
       it "returns s390x" do
-        expect(subject.registration_arch).to eq("s390x")
+        expect(subject.rpm_arch).to eq("s390x")
       end
     end
 
@@ -278,7 +278,7 @@ describe Yast::Arch do
       let(:arch) { "ppc64" }
 
       it "returns 'ppc64le'" do
-        expect(subject.registration_arch).to eq("ppc64le")
+        expect(subject.rpm_arch).to eq("ppc64le")
       end
     end
 
@@ -286,9 +286,8 @@ describe Yast::Arch do
       let(:arch) { "x86_64" }
 
       it "returns the underlying architecture" do
-        expect(subject.registration_arch).to eq("x86_64")
+        expect(subject.rpm_arch).to eq("x86_64")
       end
     end
-
   end
 end
