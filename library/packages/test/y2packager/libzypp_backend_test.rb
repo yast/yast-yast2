@@ -54,6 +54,15 @@ describe Y2Packager::LibzyppBackend do
   end
 
   describe "#search" do
+    let(:installation_package_map) do
+      instance_double(Y2Packager::InstallationPackageMap, for: "openSUSE-release")
+    end
+
+    before do
+      allow(Y2Packager::InstallationPackageMap).to receive(:new)
+        .and_return(installation_package_map)
+    end
+
     context "searching a package by name" do
       it "returns the package with the given name" do
         expect(Yast::Pkg).to receive(:Resolvables)
@@ -78,16 +87,16 @@ describe Y2Packager::LibzyppBackend do
           .with(
             { kind: :product, name: "openSUSE" }, [:name, :version, :kind]
           )
-          .and_return([
-                        { "name" => "openSUSE", "version" => "20211027-0", "kind" => :product }
-                      ])
-
+          .and_return(
+            [{ "name" => "openSUSE", "version" => "20211027-0", "kind" => :product }]
+          )
         prod = backend.search(
           conditions: { kind: :product, name: "openSUSE" }, properties: [:name, :version]
         ).first
         expect(prod).to be_a(Y2Packager::Product)
         expect(prod.name).to eq("openSUSE")
         expect(prod.version).to eq("20211027-0")
+        expect(prod.installation_package).to eq("openSUSE-release")
       end
     end
   end

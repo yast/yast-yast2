@@ -22,6 +22,7 @@ require "y2packager/backend"
 require "y2packager/rpm_repo"
 require "y2packager/package"
 require "y2packager/product"
+require "y2packager/installation_package_map"
 
 module Y2Packager
   # Backend implementation for libzypp
@@ -54,9 +55,11 @@ module Y2Packager
     # @todo Allow passing multiple statuses
     # @todo Use a set of default properties so you do not need to explictly pass them
     def search(conditions:, properties:)
+      @packages_map = InstallationPackageMap.new
+
       resolvables = Yast::Pkg.Resolvables(
         conditions,
-        (properties + [:kind]).uniq
+        (properties + [:name, :kind]).uniq
       )
 
       resolvables.map do |res|
@@ -71,7 +74,8 @@ module Y2Packager
 
     def hash_to_product(hsh)
       Y2Packager::Product.new(
-        name: hsh["name"], arch: hsh["arch"], version: hsh["version"]
+        name: hsh["name"], arch: hsh["arch"], version: hsh["version"],
+        installation_package: @packages_map.for(hsh["name"])
       )
     end
 
