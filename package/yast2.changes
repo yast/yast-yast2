@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Nov 15 17:33:48 UTC 2021 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Force creating the UI before checking -pkg etc. UI plug-ins
+  (bsc#1192650)
+- 4.4.22
+
+-------------------------------------------------------------------
 Fri Nov 12 12:32:19 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Adapt the code to the new product specification API
