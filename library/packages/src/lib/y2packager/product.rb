@@ -81,18 +81,6 @@ module Y2Packager
         )
       end
 
-      # Create a product from Y2Packager::ProductControlProduct
-      # @param product [Y2Packager::ProductControlProduct] product
-      # @return [Y2Packager::Product] converted product
-      def from_product_control_product(product)
-        Y2Packager::Product.new(
-          name: product.name, display_name: product.label,
-          version: product.version, arch: product.arch,
-          short_name: product.name,
-          installation_package: ""
-        )
-      end
-
       # Return all known available products
       #
       # @return [Array<Product>] Known available products
@@ -139,26 +127,6 @@ module Y2Packager
       # @return [Array<Product>] Products with the given status
       def with_status(*statuses)
         all.select { |p| p.status?(*statuses) }
-      end
-
-      # Returns, if any, the base product which must be selected
-      #
-      # A base product can be forced to be selected through the `select_product`
-      # element in the software section of the control.xml file (bsc#1124590,
-      # bsc#1143943).
-      #
-      # @return [Y2Packager::Product, nil] the forced base product or nil when
-      # either, it wasn't selected or the selected wasn't found among the
-      # available ones.
-      def forced_base_product
-        Yast.import "ProductFeatures"
-
-        return @forced_base_product if @forced_base_product
-
-        forced_product_name = Yast::ProductFeatures.GetStringFeature("software", "select_product")
-        return if forced_product_name.to_s.empty?
-
-        @forced_base_product = available_base_products.find { |p| p.name == forced_product_name }
       end
     end
 

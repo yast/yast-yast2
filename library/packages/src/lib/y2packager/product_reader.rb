@@ -14,7 +14,6 @@ require "yast"
 require "y2packager/product"
 require "y2packager/product_sorter"
 require "y2packager/resolvable"
-require "y2packager/product_control_product"
 
 Yast.import "Pkg"
 Yast.import "Linuxrc"
@@ -82,12 +81,6 @@ module Y2Packager
       end
 
       return @all_products if @all_products && !force_repos
-
-      if Yast::Stage.initial && Y2Packager::MediumType.online? && !force_repos
-        return Y2Packager::ProductControlProduct.products.each_with_object([]) do |p, result|
-          result << Y2Packager::Product.from_product_control_product(p)
-        end
-      end
 
       @all_products = []
 
