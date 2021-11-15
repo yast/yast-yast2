@@ -30,11 +30,13 @@ module Yast
     # Constructor: Create a UI extension checker for the specified extension.
     #
     # @param ext_name [String] Short name of the UI extension ("pkg", "graph")
+    # @param force_ui [Boolean] Enforce creating a UI?
     #
-    def initialize(ext_name)
+    def initialize(ext_name, force_ui = true)
       textdomain "base"
       @ext_name = ext_name
       @ok = false
+      ensure_ui_created if force_ui
       @ui_plugin_info = UIPluginInfo.new
       ensure_ext_installed
     end
@@ -65,6 +67,16 @@ module Yast
         not_available_error
       end
       @ok
+    end
+
+    # Ensure that the UI is actually created: In CLI mode, that might be
+    # delayed because normally they should't create a UI at all.
+    #
+    def ensure_ui_created
+      # Just a UI call that doesn't do anything; this is already sufficient to
+      # load the UI main plug-in completely if it wasn't loaded yet.
+      # See also bsc#1192650
+      UI.WidgetExists(:foo)
     end
 
     # Check if the UI extension plug-in is installed.
