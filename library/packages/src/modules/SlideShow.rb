@@ -508,34 +508,7 @@ module Yast
     # @param [Boolean] show_release_notes release notes tab will be shown.
     def RebuildDialog(show_release_notes = false)
       log.info "Rebuilding partitioning/RPM_installation progress"
-      contents = Empty()
-
-      if UI.HasSpecialWidget(:DumbTab) && !@_relnotes.empty?
-        tabs = []
-
-        @_rn_tabs = {}
-        add_relnotes_for_product @_base_product, @_relnotes[@_base_product], tabs if @_relnotes.key?(@_base_product)
-        @_relnotes.each do |product, relnotes|
-          add_relnotes_for_product product, relnotes, tabs if @_base_product != product
-        end
-
-        contents = DumbTab(
-          Id(:dumbTab),
-          tabs,
-          VBox(
-            VSpacing(0.4),
-            VWeight(
-              1, # lower layout priority
-              HBox(
-                HSpacing(1),
-                ReplacePoint(Id(:tabContents), RelNotesPageWidgets(@_rn_tabs.keys.first)),
-                HSpacing(0.5)
-              )
-            ),
-            VSpacing(0.4)
-          )
-        )
-      end
+      contents = AddProgressWidgets(:_id, Empty())
 
       Builtins.y2milestone("SlideShow contents: %1", contents)
 
