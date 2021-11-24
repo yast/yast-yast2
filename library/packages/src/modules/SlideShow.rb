@@ -371,28 +371,22 @@ module Yast
       nil
     end
 
-    # Add widgets for progress bar etc. around a slide show page
-    # @param [Symbol] page_id    ID to use for this page (for checking with UI::WidgetExists() )
-    # @param [Yast::Term] page_contents  The inner widgets (the page contents)
+    # widgets for progress bar
     # @return      A term describing the widgets
     #
-    def AddProgressWidgets(page_id, page_contents)
+    def progress_widgets
       page_contents = deep_copy(page_contents)
       widgets = HBox(
-        Id(page_id),
+        Id(:progress_bar),
         HSpacing(1),
         VBox(
-          VWeight(
-            1, # lower layout priority
-            page_contents
-          ), # intentionally omitting `Label(`nextMedia) -
-          # too much flicker upon update (UI::RecalcLayout() ) on NCurses
-          # Progress bar for overall progress of software package installation
-          ProgressBar(
-            Id(UI_ID::TOTAL_PROGRESS),
-            @total_progress_label,
-            100,
-            @total_progress_value
+          VCenter(
+            ProgressBar(
+              Id(UI_ID::TOTAL_PROGRESS),
+              @total_progress_label,
+              100,
+              @total_progress_value
+            )
           )
         ),
         HSpacing(0.5)
@@ -425,17 +419,6 @@ module Yast
     # @return  A term describing the widgets
     #
     def RelNotesPageWidgets(id)
-      # Release notes in plain text need to be escaped to be shown properly (bsc#1028721)
-      rel_notes =
-        if @_rn_tabs[id] =~ /<\/.*>/
-          @_rn_tabs[id]
-        else
-          "<pre>#{String.EscapeTags(@_rn_tabs[id])}</pre>"
-        end
-
-      widgets = AddProgressWidgets(:relNotesPage, RichText(rel_notes))
-      Builtins.y2debug("widget term: \n%1", widgets)
-      deep_copy(widgets)
     end
 
     # Switch from the 'details' view to the 'slide show' view.
@@ -508,7 +491,7 @@ module Yast
     # @param [Boolean] show_release_notes release notes tab will be shown.
     def RebuildDialog(show_release_notes = false)
       log.info "Rebuilding partitioning/RPM_installation progress"
-      contents = AddProgressWidgets(:_id, Empty())
+      contents = progress_widgets
 
       Builtins.y2milestone("SlideShow contents: %1", contents)
 
