@@ -1,4 +1,21 @@
 -------------------------------------------------------------------
+Mon Nov 15 17:33:48 UTC 2021 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Force creating the UI before checking -pkg etc. UI plug-ins
+  (bsc#1192650)
+- 4.4.22
+
+-------------------------------------------------------------------
+Fri Nov 12 12:32:19 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Adapt the code to the new product specification API
+  (bsc#1192626).
+- yast2-packager is now responsible for finding the list
+  of available base products during installation.
+- Drop ProductControlProduct class.
+- 4.4.21
+
+-------------------------------------------------------------------
 Thu Sep 16 13:41:05 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed losing the current product and package selection during
