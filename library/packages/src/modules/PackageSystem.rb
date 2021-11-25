@@ -386,11 +386,9 @@ module Yast
     # @return [Boolean] true if installation succeeded or packages were installed,
     # false otherwise
     def CheckAndInstallPackages(packages)
-      packages = deep_copy(packages)
-      return true if Mode.config
-      return true if InstalledAll(packages)
-
-      InstallAll(packages)
+      log.warn "DEPRECATED: call Package.CheckAndInstallPackages instead"
+      Yast.import "Package"
+      Package.CheckAndInstallPackages(packages)
     end
 
     # Check if packages are installed
@@ -403,37 +401,9 @@ module Yast
     # @return [Boolean] true if installation succeeded, packages were installed
     # before or user decided to continue, false otherwise
     def CheckAndInstallPackagesInteractive(packages)
-      packages = deep_copy(packages)
-      success = CheckAndInstallPackages(packages)
-      return true if success
-
-      if !LastOperationCanceled()
-        if Mode.commandline
-          # error report
-          Report.Error(_("Installing required packages failed."))
-        else
-          Popup.ContinueCancel(
-            # continue/cancel popup
-            _(
-              "Installing required packages failed. If you continue\n" \
-              "without installing required packages,\n" \
-              "YaST may not work properly.\n"
-            )
-          )
-        end
-      elsif Mode.commandline
-        Report.Error(
-          # error report
-          _("Cannot continue without installing required packages.")
-        )
-      else
-        Popup.ContinueCancel(
-          # continue/cancel popup
-          _(
-            "If you continue without installing required \npackages, YaST may not work properly.\n"
-          )
-        )
-      end
+      log.warn "DEPRECATED: call Package.CheckAndInstallPackagesInteractive instead"
+      Yast.import "Package"
+      Package.CheckAndInstallPackagesInteractive(packages)
     end
 
     def InstallKernel(kernel_modules)

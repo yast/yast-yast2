@@ -76,94 +76,18 @@ describe "Yast::PackageSystem" do
   end
 
   describe "#CheckAndInstallPackages" do
-    let(:installed) { false }
-
-    before do
-      allow(subject).to receive(:InstalledAll).and_return(installed)
-    end
-
-    context "when given packages are not installed" do
-      let(:installed) { false }
-
-      it "install the packages" do
-        expect(subject).to receive(:InstallAll).with(["pkg1"]).and_return(true)
-        expect(subject.CheckAndInstallPackages(["pkg1"])).to eq(true)
-      end
-    end
-
-    context "when given packages are installed" do
-      let(:installed) { true }
-
-      it "does not install the packages again" do
-        expect(subject).to_not receive(:InstallAll)
-        expect(subject.CheckAndInstallPackages(["pkg1"])).to eq(true)
-      end
-    end
-
-    context "when running in config mode" do
-      before do
-        allow(Yast::Mode).to receive(:config).and_return(true)
-      end
-
-      it "does not install the packages" do
-        expect(subject).to_not receive(:InstallAll)
-        expect(subject.CheckAndInstallPackages(["pkg1"])).to eq(true)
-      end
+    it "delegates to Yast::Package" do
+      expect(Yast::Package).to receive(:CheckAndInstallPackages)
+        .with(["pkg1"]).and_return(true)
+      expect(subject.CheckAndInstallPackages(["pkg1"])).to eq(true)
     end
   end
 
   describe "#CheckAndInstallPackagesInteractive" do
-    let(:canceled) { false }
-
-    before do
-      allow(subject).to receive(:LastOperationCanceled).and_return(canceled)
-    end
-
-    it "installs the given package" do
-      expect(subject).to receive(:CheckAndInstallPackages).with(["pkg1"]).and_return(true)
+    it "delegates to Yast::Package" do
+      expect(Yast::Package).to receive(:CheckAndInstallPackagesInteractive)
+        .with(["pkg1"]).and_return(true)
       expect(subject.CheckAndInstallPackagesInteractive(["pkg1"])).to eq(true)
-    end
-
-    context "when the packages cannot be installed" do
-      before do
-        allow(subject).to receive(:CheckAndInstallPackages).and_return(false)
-      end
-
-      context "when the last operation was canceled" do
-        let(:canceled) { true }
-
-        it "reports the error when running on commandline" do
-          allow(Yast::Mode).to receive(:commandline).and_return(true)
-
-          expect(Yast::Report).to receive(:Error)
-          subject.CheckAndInstallPackagesInteractive(["pkg1"])
-        end
-
-        it "reports the error when not running on commandline" do
-          allow(Yast::Mode).to receive(:commandline).and_return(false)
-
-          expect(Yast::Popup).to receive(:ContinueCancel)
-          subject.CheckAndInstallPackagesInteractive(["pkg1"])
-        end
-      end
-
-      context "when the last operation was not canceled" do
-        let(:canceled) { false }
-
-        it "reports the error when running on commandline" do
-          allow(Yast::Mode).to receive(:commandline).and_return(true)
-
-          expect(Yast::Report).to receive(:Error)
-          subject.CheckAndInstallPackagesInteractive(["pkg1"])
-        end
-
-        it "reports the error when not running on commandline" do
-          allow(Yast::Mode).to receive(:commandline).and_return(false)
-
-          expect(Yast::Popup).to receive(:ContinueCancel)
-          subject.CheckAndInstallPackagesInteractive(["pkg1"])
-        end
-      end
     end
   end
 end
