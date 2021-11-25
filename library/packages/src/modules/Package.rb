@@ -31,186 +31,80 @@
 # The documentation is maintained at
 # <a href="../index.html">.../docs/index.html</a>.
 require "yast"
+require "forwardable"
+
+Yast.import "Mode"
+Yast.import "PackageAI"
+Yast.import "PackageSystem"
 
 module Yast
   class PackageClass < Module
+    extend Forwardable
+
+    def_delegators :backend, :Installed, :Available, :DoInstall, :DoRemove, :DoInstallAndRemove,
+      :InstallKernel, :PackageInstalled, :PackageAvailable
+
+    # @!method Installed(package)
+    #   Determines whether the package is provided or not
+    #
+    #   This method checks whether any installed package provides the given "package".
+    #
+    #   @param package [String] Package name
+    #   @return [Boolean] true if the package exists; false otherwise
+    #   @see PackageInstalled
+
+    # @!method PackageInstalled(package)
+    #   Determines whether the package is installed or not
+    #
+    #   This method check just the package's name.
+    #
+    #   @param package [String] Package name
+    #   @return [Boolean] true if the package exists; false otherwise
+    #   @see Installed
+
+    # @!method Available(package)
+    #   Determines whether the package is available or not
+    #
+    #   This method checks whether any available package provides the given "package".
+    #
+    #   @param package [String] Package name
+    #   @return [Boolean] true if the package is available; false otherwise
+    #   @see PackageAvailable
+
+    # @!method PackageAvailable(package)
+    #   Determines whether the package  with the given name is available
+    #
+    #   This method check just the package's name.
+    #
+    #   @param package [String] Package name
+    #   @return [Boolean] true if the package is available; false otherwise
+    #   @see Available
+
+    # @!method DoInstall(packages)
+    #   Installs the given packages
+    #   @param packages [Array<String>] Name of the packages to install
+    #   @return [Boolean] true if packages were successfully installed
+
+    # @!method DoRemove(packages)
+    #   Removes the given packages
+    #   @param packages [Array<String>] Name of the packages to remove
+    #   @return [Boolean] true if packages were successfully removed
+
+    # @!method DoInstallAndRemove(toinstall, toremove)
+    #   Install and remove packages in one go
+    #   @param toinstall [Array<String>] Name of the packages to install
+    #   @param toremove [Array<String>] Name of the packages to remove
+    #   @return [Boolean] true on success
+
+    # @!method InstallKernel(kernel_modules)
+    #   Installs the given kernel modules
+    #   @param kernel_modules [Array<String>] Names of the kernel modules to install
+    #   @return [Boolean] true on success
     def main
       textdomain "base"
 
-      Yast.import "Mode"
-      Yast.import "PackageAI"
-      Yast.import "PackageSystem"
-
-      # **
-      # Packages Manipulation
-
-      @FunctionsSystem = {
-        "DoInstall"          => fun_ref(
-          PackageSystem.method(:DoInstall),
-          "boolean (list <string>)"
-        ),
-        "DoRemove"           => fun_ref(
-          PackageSystem.method(:DoRemove),
-          "boolean (list <string>)"
-        ),
-        "DoInstallAndRemove" => fun_ref(
-          PackageSystem.method(:DoInstallAndRemove),
-          "boolean (list <string>, list <string>)"
-        ),
-        "Available"          => fun_ref(
-          PackageSystem.method(:Available),
-          "boolean (string)"
-        ),
-        "Installed"          => fun_ref(
-          PackageSystem.method(:Installed),
-          "boolean (string)"
-        ),
-        "InstallKernel"      => fun_ref(
-          PackageSystem.method(:InstallKernel),
-          "boolean (list <string>)"
-        ),
-        "PackageInstalled"   => fun_ref(
-          PackageSystem.method(:PackageInstalled),
-          "boolean (string)"
-        ),
-        "PackageAvailable"   => fun_ref(
-          PackageSystem.method(:PackageAvailable),
-          "boolean (string)"
-        )
-      }
-
-      @FunctionsAI = {
-        "DoInstall"          => fun_ref(
-          PackageAI.method(:DoInstall),
-          "boolean (list <string>)"
-        ),
-        "DoRemove"           => fun_ref(
-          PackageAI.method(:DoRemove),
-          "boolean (list <string>)"
-        ),
-        "DoInstallAndRemove" => fun_ref(
-          PackageAI.method(:DoInstallAndRemove),
-          "boolean (list <string>, list <string>)"
-        ),
-        "Available"          => fun_ref(
-          PackageAI.method(:Available),
-          "boolean (string)"
-        ),
-        "Installed"          => fun_ref(
-          PackageAI.method(:Installed),
-          "boolean (string)"
-        ),
-        "InstallKernel"      => fun_ref(
-          PackageAI.method(:InstallKernel),
-          "boolean (list <string>)"
-        ),
-        "PackageInstalled"   => fun_ref(
-          PackageAI.method(:PackageInstalled),
-          "boolean (string)"
-        ),
-        "PackageAvailable"   => fun_ref(
-          PackageAI.method(:PackageAvailable),
-          "boolean (string)"
-        )
-      }
-
       @last_op_canceled = false
-
       Yast.include self, "packages/common.rb"
-    end
-
-    # If Yast is running in the autoyast configuration mode
-    # no changes will be done on the target system by using
-    # the PackageAI class.
-    def functions
-      Mode.config ? @FunctionsAI : @FunctionsSystem
-    end
-
-    # Install list of packages
-    # @param [Array<String>] packages list of packages to be installed
-    # @return True on success
-    def DoInstall(packages)
-      packages = deep_copy(packages)
-      function = Convert.convert(
-        Ops.get(functions, "DoInstall"),
-        from: "any",
-        to:   "boolean (list <string>)"
-      )
-      function.call(packages)
-    end
-
-    # Remove list of packages
-    # @param [Array<String>] packages list of packages to be removed
-    # @return True on success
-    def DoRemove(packages)
-      packages = deep_copy(packages)
-      function = Convert.convert(
-        Ops.get(functions, "DoRemove"),
-        from: "any",
-        to:   "boolean (list <string>)"
-      )
-      function.call(packages)
-    end
-
-    # Install and Remove list of packages in one go
-    # @param [Array<String>] toinstall list of packages to be installed
-    # @param [Array<String>] toremove list of packages to be removed
-    # @return True on success
-    def DoInstallAndRemove(toinstall, toremove)
-      toinstall = deep_copy(toinstall)
-      toremove = deep_copy(toremove)
-      function = Convert.convert(
-        Ops.get(functions, "DoInstallAndRemove"),
-        from: "any",
-        to:   "boolean (list <string>, list <string>)"
-      )
-      function.call(toinstall, toremove)
-    end
-
-    def Available(package)
-      function = Convert.convert(
-        Ops.get(functions, "Available"),
-        from: "any",
-        to:   "boolean (string)"
-      )
-      function.call(package)
-    end
-
-    def Installed(package)
-      function = Convert.convert(
-        Ops.get(functions, "Installed"),
-        from: "any",
-        to:   "boolean (string)"
-      )
-      function.call(package)
-    end
-
-    def PackageAvailable(package)
-      function = Convert.convert(
-        Ops.get(functions, "PackageAvailable"),
-        from: "any",
-        to:   "boolean (string)"
-      )
-      function.call(package)
-    end
-
-    def PackageInstalled(package)
-      function = Convert.convert(
-        Ops.get(functions, "PackageInstalled"),
-        from: "any",
-        to:   "boolean (string)"
-      )
-      function.call(package)
-    end
-
-    def InstallKernel(kernel_modules)
-      kernel_modules = deep_copy(kernel_modules)
-      function = Convert.convert(
-        Ops.get(functions, "InstallKernel"),
-        from: "any",
-        to:   "boolean (list <string>)"
-      )
-      function.call(kernel_modules)
     end
 
     # Check if packages are installed
@@ -221,7 +115,6 @@ module Yast
     # @return [Boolean] true if installation succeeded or packages were installed,
     # false otherwise
     def CheckAndInstallPackages(packages)
-      packages = deep_copy(packages)
       return true if Mode.config
       return true if InstalledAll(packages)
 
@@ -238,7 +131,6 @@ module Yast
     # @return [Boolean] true if installation succeeded, packages were installed
     # before or user decided to continue, false otherwise
     def CheckAndInstallPackagesInteractive(packages)
-      packages = deep_copy(packages)
       success = CheckAndInstallPackages(packages)
       return true if success
 
@@ -294,6 +186,15 @@ module Yast
     publish function: :PackageAvailable, type: "boolean (string)"
     publish function: :PackageInstalled, type: "boolean (string)"
     publish function: :InstallKernel, type: "boolean (list <string>)"
+
+  private
+
+    # If Yast is running in the autoyast configuration mode
+    # no changes will be done on the target system by using
+    # the PackageAI class.
+    def backend
+      Mode.config ? PackageAI : PackageSystem
+    end
   end
 
   Package = PackageClass.new

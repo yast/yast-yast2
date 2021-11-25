@@ -116,4 +116,96 @@ describe Yast::Package do
       end
     end
   end
+
+  context "when not running in config mode" do
+    before do
+      allow(Yast::Mode).to receive(:config).and_return(false)
+    end
+
+    it "delegates #Installed to PackageSystem" do
+      expect(Yast::PackageSystem).to receive(:Installed)
+      subject.Installed("yast2")
+    end
+
+    it "delegates #PackageInstalled to PackageSystem" do
+      expect(Yast::PackageSystem).to receive(:PackageInstalled)
+      subject.PackageInstalled("yast2")
+    end
+
+    it "delegates #Available to PackageSystem" do
+      expect(Yast::PackageSystem).to receive(:Available)
+      subject.Available("yast2")
+    end
+
+    it "delegates #PackageAvailable to PackageSystem" do
+      expect(Yast::PackageSystem).to receive(:PackageAvailable)
+      subject.PackageAvailable("yast2")
+    end
+
+    it "delegates #DoInstall to PackageSystem" do
+      expect(Yast::PackageSystem).to receive(:DoInstall)
+      subject.DoInstall(["yast2"])
+    end
+
+    it "delegates #DoRemove to PackageSystem" do
+      expect(Yast::PackageSystem).to receive(:DoRemove)
+      subject.DoRemove("yast2")
+    end
+
+    it "delegates #DoInstallAndRemove to PackageSystem" do
+      expect(Yast::PackageSystem).to receive(:DoInstallAndRemove)
+      subject.DoInstallAndRemove(["yast2"], ["ntpd"])
+    end
+
+    it "delegates #InstallKernel to PackageSystem" do
+      expect(Yast::PackageSystem).to receive(:InstallKernel)
+      subject.InstallKernel([])
+    end
+  end
+
+  context "when running in config mode" do
+    before do
+      allow(Yast::Mode).to receive(:config).and_return(true)
+    end
+
+    it "delegates #Installed to PackageAI" do
+      expect(Yast::PackageAI).to receive(:Installed)
+      subject.Installed("yast2")
+    end
+
+    it "delegates #PackageInstalled to PackageAI" do
+      expect(Yast::PackageAI).to receive(:PackageInstalled)
+      subject.PackageInstalled("yast2")
+    end
+
+    it "delegates #Available to PackageAI" do
+      expect(Yast::PackageAI).to receive(:Available)
+      subject.Available("yast2")
+    end
+
+    it "delegates #PackageAvailable to PackageAI" do
+      expect(Yast::PackageAI).to receive(:PackageAvailable)
+      subject.PackageAvailable("yast2")
+    end
+
+    it "delegates #DoInstall to PackageAI" do
+      expect(Yast::PackageAI).to receive(:DoInstall)
+      subject.DoInstall(["yast2"])
+    end
+
+    it "delegates #DoRemove to PackageAI" do
+      expect(Yast::PackageAI).to receive(:DoRemove)
+      subject.DoRemove("yast2")
+    end
+
+    it "delegates #DoInstallAndRemove to PackageAI" do
+      expect(Yast::PackageAI).to receive(:DoInstallAndRemove)
+      subject.DoInstallAndRemove(["yast2"], ["ntpd"])
+    end
+
+    it "delegates #InstallKernel to PackageAI" do
+      expect(Yast::PackageAI).to receive(:InstallKernel)
+      subject.InstallKernel([])
+    end
+  end
 end
