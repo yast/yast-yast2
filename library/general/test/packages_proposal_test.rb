@@ -201,4 +201,47 @@ describe Yast::PackagesProposal do
       expect(subject.IsUniqueID(proposal_id)).to eq(false)
     end
   end
+
+  describe "#AddTaboos" do
+    it "adds taboos for a given unique ID" do
+      expect { subject.AddTaboos("autoyast", ["yast2"]) }
+        .to change { subject.GetTaboos("autoyast") }
+        .from([]).to(["yast2"])
+    end
+  end
+
+  describe "#SetTaboos" do
+    it "sets the taboos for given unique ID" do
+      subject.SetTaboos("autoyast", ["yast2", "chronyd"])
+      expect(subject.GetTaboos("autoyast")).to eq(["yast2", "chronyd"])
+    end
+  end
+
+  describe "#RemoveTaboos" do
+    it "removes taboos for a given unique ID" do
+      subject.AddTaboos("autoyast", ["yast2"])
+
+      expect { subject.RemoveTaboos("autoyast", ["yast2"]) }
+        .to change { subject.GetTaboos("autoyast") }
+        .from(["yast2"]).to([])
+    end
+  end
+
+  describe "#GetTaboos" do
+    it "returns the list of taboos for the given unique ID" do
+      subject.AddTaboos("autoyast", ["yast2"])
+      subject.AddTaboos("bootloader", ["grub2-efi"])
+
+      expect(subject.GetTaboos("autoyast")).to eq(["yast2"])
+    end
+  end
+
+  describe "#GetAllTaboos" do
+    it "returns the list of taboos for the given unique ID" do
+      subject.AddTaboos("autoyast", ["yast2"])
+      subject.AddTaboos("bootloader", ["grub2-efi"])
+
+      expect(subject.GetAllTaboos).to contain_exactly("yast2", "grub2-efi")
+    end
+  end
 end

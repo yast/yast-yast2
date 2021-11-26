@@ -46,6 +46,8 @@ module Yast
       @resolvables_to_install = {}
       # the same as above but the resolvables are considered optional
       @opt_resolvables_to_install = {}
+      # resolvables to remove
+      @taboos = {}
 
       # List of currently supported types of resolvables
       @supported_resolvables = [:package, :pattern]
@@ -57,6 +59,7 @@ module Yast
 
       @resolvables_to_install.clear
       @opt_resolvables_to_install.clear
+      @taboos.clear
 
       nil
     end
@@ -190,6 +193,71 @@ module Yast
       true
     end
 
+    # Adds a list of resolvables to do not be installed
+    #
+    # @param [String] unique_id the unique identificator
+    # @param [Array<String>] resolvables list of resolvables to taboo
+    # @return [Boolean] whether successful
+    def AddTaboos(unique_id, resolvables)
+      return false if !CheckParams(unique_id, :package)
+
+      log.info("Taboo #{resolvables} for #{unique_id}}")
+
+      # Remove the resolvable from the list of resolvables to install
+      RemoveResolvables(unique_id, :package, resolvables)
+      RemoveResolvables(unique_id, :package, resolvables, optional: true)
+
+      @taboos[unique_id] ||= []
+      @taboos[unique_id].concat(resolvables)
+
+      true
+    end
+
+    # Sets the taboos list for a given unique_id
+    #
+    # @param [String] unique_id the unique identificator
+    # @param [Array<String>] resolvables list of resolvables to taboo
+    # @return [Boolean] whether successful
+    def SetTaboos(unique_id, resolvables)
+      return false if !CheckParams(unique_id, :package)
+
+      @taboos[unique_id] = resolvables
+
+      true
+    end
+
+    # Removes a resolvables from the list of taboos
+    #
+    # @param [String] unique_id the unique identificator
+    # @param [Array<String>] resolvables list of resolvables do not taboo
+    # @return [Boolean] whether successful
+    def RemoveTaboos(unique_id, resolvables)
+      return false if !CheckParams(unique_id, :package)
+
+      log.info "Remove taboo #{resolvables} for #{unique_id}"
+
+      taboo_resolvables = @taboos[unique_id] || []
+      @taboos[unique_id] = taboo_resolvables - resolvables
+      @taboos.delete(unique_id) if @taboos[unique_id].empty?
+
+      true
+    end
+
+    # Returns the list of taboos for a ID
+    #
+    # @param [String] unique_id the unique identificator
+    # @return [Array<String>] List of taboos for the given ID
+    def GetTaboos(unique_id)
+      @taboos[unique_id] || []
+    end
+
+    # Returns the full list of taboos
+    #
+    # @return [Array<String>] List of taboos
+    def GetAllTaboos
+      @taboos.values.flatten.uniq
+    end
+
     # Returns all resolvables selected for installation.
     #
     # @param [String] unique_id the unique identificator
@@ -284,7 +352,9 @@ module Yast
         return nil
       end
 
-      !@resolvables_to_install.key?(unique_id) && !@opt_resolvables_to_install.key?(unique_id)
+      !@resolvables_to_install.key?(unique_id) &&
+        !@opt_resolvables_to_install.key?(unique_id) &&
+        !@taboos.key?(unique_id)
     end
 
     publish function: :ResetAll, type: "void ()"
