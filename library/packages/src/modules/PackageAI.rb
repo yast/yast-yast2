@@ -29,70 +29,29 @@
 # $Id$
 require "yast"
 
+Yast.import "PackagesProposal"
+
 module Yast
   class PackageAIClass < Module
     def main
       textdomain "base"
 
-      @toinstall = []
-      @toremove = []
-
       @last_op_canceled = false
 
       Yast.include self, "packages/common.rb"
-
-      # default value of settings modified
-      @modified = false
-    end
-
-    # Function sets internal variable, which indicates, that any
-    # settings were modified, to "true"
-    def SetModified
-      @modified = true
-
-      nil
-    end
-
-    # Functions which returns if the settings were modified
-    # @return [Boolean]  settings were modified
-    def GetModified
-      @modified
-    end
-
-    def DoInstall(packages)
-      packages = deep_copy(packages)
-      @toinstall = Convert.convert(
-        Builtins.union(@toinstall, packages),
-        from: "list",
-        to:   "list <string>"
-      )
-      @toremove = Builtins.filter(@toremove) do |p|
-        !Builtins.contains(packages, p)
-      end
-      @modified = true
-      true
-    end
-
-    def DoRemove(packages)
-      packages = deep_copy(packages)
-      @toremove = Convert.convert(
-        Builtins.union(@toremove, packages),
-        from: "list",
-        to:   "list <string>"
-      )
-      @toinstall = Builtins.filter(@toinstall) do |p|
-        !Builtins.contains(packages, p)
-      end
-      @modified = true
-      true
     end
 
     def DoInstallAndRemove(toinst, torem)
-      toinst = deep_copy(toinst)
-      torem = deep_copy(torem)
-      DoInstall(toinst)
-      DoRemove(torem)
-      @modified = true
+      if !toinst.empty?
+        Yast::PackagesProposal.AddResolvables("autoyast", :package, toinst)
+        Yast::PackagesProposal.RemoveTaboos("autoyast", toinst) # FIXME: should be done by PackagesProposal
+      end
+
+      if !torem.empty?
+        Yast::PackagesProposal.AddTaboos("autoyast", torem)
+        Yast::PackagesProposal.RemoveResolvables("autoyast", :package, torem)
+      end
+
       true
     end
 
@@ -101,7 +60,7 @@ module Yast
     end
 
     def Installed(package)
-      Builtins.contains(@toinstall, package)
+      PackagesProposal.GetResolvables("autoyast").include?(package)
     end
 
     # Is a package installed? Checks only the package name in contrast to Installed() function.
@@ -144,8 +103,6 @@ module Yast
     publish function: :RemoveAll, type: "boolean (list <string>)"
     publish function: :LastOperationCanceled, type: "boolean ()"
     publish variable: :modified, type: "boolean"
-    publish function: :SetModified, type: "void ()"
-    publish function: :GetModified, type: "boolean ()"
     publish function: :PackageInstalled, type: "boolean (string)"
     publish function: :PackageAvailable, type: "boolean (string)"
     publish function: :InstallKernel, type: "boolean (list <string>)"
