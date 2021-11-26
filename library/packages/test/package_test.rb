@@ -117,6 +117,20 @@ describe Yast::Package do
     end
   end
 
+  describe "#DoInstall" do
+    it "installs the given packages" do
+      expect(subject).to receive(:DoInstallAndRemove).with(["yast2"], [])
+      subject.DoInstall(["yast2"])
+    end
+  end
+
+  describe "#DoRemove" do
+    it "removes the given packages" do
+      expect(subject).to receive(:DoInstallAndRemove).with([], ["ntpd"])
+      subject.DoRemove(["ntpd"])
+    end
+  end
+
   context "when not running in config mode" do
     before do
       allow(Yast::Mode).to receive(:config).and_return(false)
@@ -140,16 +154,6 @@ describe Yast::Package do
     it "delegates #PackageAvailable to PackageSystem" do
       expect(Yast::PackageSystem).to receive(:PackageAvailable)
       subject.PackageAvailable("yast2")
-    end
-
-    it "delegates #DoInstall to PackageSystem" do
-      expect(Yast::PackageSystem).to receive(:DoInstall)
-      subject.DoInstall(["yast2"])
-    end
-
-    it "delegates #DoRemove to PackageSystem" do
-      expect(Yast::PackageSystem).to receive(:DoRemove)
-      subject.DoRemove("yast2")
     end
 
     it "delegates #DoInstallAndRemove to PackageSystem" do
@@ -186,16 +190,6 @@ describe Yast::Package do
     it "delegates #PackageAvailable to PackageAI" do
       expect(Yast::PackageAI).to receive(:PackageAvailable)
       subject.PackageAvailable("yast2")
-    end
-
-    it "delegates #DoInstall to PackageAI" do
-      expect(Yast::PackageAI).to receive(:DoInstall)
-      subject.DoInstall(["yast2"])
-    end
-
-    it "delegates #DoRemove to PackageAI" do
-      expect(Yast::PackageAI).to receive(:DoRemove)
-      subject.DoRemove("yast2")
     end
 
     it "delegates #DoInstallAndRemove to PackageAI" do

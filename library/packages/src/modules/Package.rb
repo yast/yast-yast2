@@ -41,8 +41,8 @@ module Yast
   class PackageClass < Module
     extend Forwardable
 
-    def_delegators :backend, :Installed, :Available, :DoInstall, :DoRemove, :DoInstallAndRemove,
-      :InstallKernel, :PackageInstalled, :PackageAvailable
+    def_delegators :backend, :Installed, :Available, :PackageInstalled,
+      :PackageAvailable, :DoInstallAndRemove, :InstallKernel
 
     # @!method Installed(package)
     #   Determines whether the package is provided or not
@@ -104,6 +104,8 @@ module Yast
       textdomain "base"
 
       @last_op_canceled = false
+      @installed_packages = []
+      @removed_packages = []
       Yast.include self, "packages/common.rb"
     end
 
@@ -161,6 +163,19 @@ module Yast
           )
         )
       end
+    end
+
+    def DoInstall(packages)
+      DoInstallAndRemove(packages, [])
+    end
+
+    def DoRemove(packages)
+      DoInstallAndRemove([], packages)
+    end
+
+    def reset
+      @installed_packages.clear
+      @removed_packages.clear
     end
 
     publish function: :Available, type: "boolean (string)"
