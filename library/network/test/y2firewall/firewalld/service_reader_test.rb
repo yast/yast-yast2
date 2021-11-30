@@ -51,7 +51,7 @@ describe Y2Firewall::Firewalld::ServiceReader do
       before do
         allow(api).to receive(:info_service).with(service_name)
         # ruby3 froze child_status so it cannot be mocked
-        #allow($CHILD_STATUS).to receive(:exitstatus).and_return(101)
+        # allow($CHILD_STATUS).to receive(:exitstatus).and_return(101)
       end
 
       xit "raises a NotFound exception" do
@@ -65,7 +65,7 @@ describe Y2Firewall::Firewalld::ServiceReader do
         allow(api).to receive(:info_service).with(service_name)
           .and_return(service_info)
         # ruby3 froze child_status so it cannot be mocked
-        #allow($CHILD_STATUS).to receive(:exitstatus).and_return(1)
+        # allow($CHILD_STATUS).to receive(:exitstatus).and_return(1)
       end
 
       it "returns the service with the parsed configuration" do
