@@ -62,7 +62,7 @@ module Y2Packager
       # @return [Y2Packager::Product] converted product
       def from_h(product)
         params = PKG_BINDINGS_ATTRS.each_with_object({}) { |a, h| h[a.to_sym] = product[a] }
-        Y2Packager::Product.new(params)
+        Y2Packager::Product.new(**params)
       end
 
       # Create a product from Y2Packager::Resolvable
