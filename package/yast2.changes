@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov 30 18:34:38 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- Prepare code for ruby3 (bsc#1193192)
+- 4.4.23
+
+-------------------------------------------------------------------
 Mon Nov 15 17:33:48 UTC 2021 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Force creating the UI before checking -pkg etc. UI plug-ins
