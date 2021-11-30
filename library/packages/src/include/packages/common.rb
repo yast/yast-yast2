@@ -42,60 +42,6 @@ module Yast
       Yast.import "CommandLine"
     end
 
-    # Are all of these packages available?
-    # @param [Array<String>] packages list of packages
-    # @return [Boolean] true if yes (nil = an error occurred)
-    def AvailableAll(packages)
-      packages = deep_copy(packages)
-      error = false
-
-      which = Builtins.find(packages) do |p|
-        avail = Available(p)
-        error = true if avail.nil?
-        !avail
-      end
-
-      return nil if error
-
-      which.nil?
-    end
-
-    # Is any of these packages available?
-    # @param [Array<String>] packages list of packages
-    # @return [Boolean] true if yes (nil = an error occurred)
-    def AvailableAny(packages)
-      packages = deep_copy(packages)
-      error = false
-
-      which = Builtins.find(packages) do |p|
-        avail = Available(p)
-        error = true if avail.nil?
-        avail
-      end
-
-      return nil if error
-
-      !which.nil?
-    end
-
-    # Are all of these packages installed?
-    # @param [Array<String>] packages list of packages
-    # @return [Boolean] true if yes
-    def InstalledAll(packages)
-      packages = deep_copy(packages)
-      which = Builtins.find(packages) { |p| !Installed(p) }
-      which.nil?
-    end
-
-    # Is any of these packages installed?
-    # @param [Array<String>] packages list of packages
-    # @return [Boolean] true if yes
-    def InstalledAny(packages)
-      packages = deep_copy(packages)
-      which = Builtins.find(packages) { |p| Installed(p) }
-      !which.nil?
-    end
-
     def AskPackages(packs, install)
       packs = deep_copy(packs)
       pkgs = Builtins.mergestring(packs, ", ")

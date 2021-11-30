@@ -202,4 +202,92 @@ describe Yast::Package do
       subject.InstallKernel([])
     end
   end
+
+  describe "#AvailableAll" do
+    let(:available) { ["yast2", "autoyast2"] }
+
+    before do
+      allow(subject).to receive(:Available) do |pkg|
+        available.include?(pkg)
+      end
+    end
+
+    context "when the given packages are available" do
+      it "returns true" do
+        expect(subject.AvailableAll(["yast2", "autoyast2"])).to eq(true)
+      end
+    end
+
+    context "when any of the given packages is not available" do
+      it "returns false" do
+        expect(subject.AvailableAll(["yast2", "unknown"])).to eq(false)
+      end
+    end
+  end
+
+  describe "#AvailableAny" do
+    let(:available) { ["yast2", "autoyast2"] }
+
+    before do
+      allow(subject).to receive(:Available) do |pkg|
+        available.include?(pkg)
+      end
+    end
+
+    context "when any of the given packages is available" do
+      it "returns true" do
+        expect(subject.AvailableAny(["yast2", "unknown"])).to eq(true)
+      end
+    end
+
+    context "when none of the given packages is available" do
+      it "returns false" do
+        expect(subject.AvailableAny(["unknown"])).to eq(false)
+      end
+    end
+  end
+
+  describe "#InstalledAll" do
+    let(:installed) { ["yast2", "autoyast2"] }
+
+    before do
+      allow(subject).to receive(:Installed) do |pkg|
+        installed.include?(pkg)
+      end
+    end
+
+    context "when the given packages are installed" do
+      it "returns true" do
+        expect(subject.InstalledAll(["yast2", "autoyast2"])).to eq(true)
+      end
+    end
+
+    context "when any of the given packages is not installed" do
+      it "returns false" do
+        expect(subject.InstalledAll(["yast2", "unknown"])).to eq(false)
+      end
+    end
+  end
+
+  describe "#InstalledAny" do
+    let(:installed) { ["yast2", "autoyast2"] }
+
+    before do
+      allow(subject).to receive(:Installed) do |pkg|
+        installed.include?(pkg)
+      end
+    end
+
+    context "when any of the given packages is installed" do
+      it "returns true" do
+        expect(subject.InstalledAny(["yast2", "unknown"])).to eq(true)
+      end
+    end
+
+    context "when none of the given packages is installed" do
+      it "returns false" do
+        expect(subject.InstalledAny(["unknown"])).to eq(false)
+      end
+    end
+  end
 end
