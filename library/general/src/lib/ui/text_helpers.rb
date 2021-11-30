@@ -25,18 +25,28 @@ module UI
     using ::Yast2::Refinements::StringManipulations
 
     # (see Yast2::Refinements::StringManipulations#plain_text)
-    def plain_text(text, *args, &block)
-      text.plain_text(*args, &block)
+    def plain_text(text, **args, &block)
+      text.plain_text(**args, &block)
     end
 
     # (see Yast2::Refinements::StringManipulations#wrap_text)
     def wrap_text(text, *args)
-      text.wrap_text(*args)
+      width = args.find { |a| a.is_a?(Integer) }
+      map = args.find { |a| a.is_a?(Hash) }
+      if map && width
+        text.wrap_text(width, **map)
+      elsif width
+        text.wrap_text(width)
+      elsif map
+        text.wrap_text(**map)
+      else
+        text.wrap_text
+      end
     end
 
     # (see Yast2::Refinements::StringManipulations#head)
-    def head(text, *args)
-      text.head(*args)
+    def head(text, max_lines, **args)
+      text.head(max_lines, **args)
     end
 
     # (see Yast2::Refinements::StringManipulations#div_with_direction)
