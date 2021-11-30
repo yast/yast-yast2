@@ -15,6 +15,7 @@ require "shellwords"
 
 require "yast"
 require "yast2/execute"
+require "y2packager/exceptions"
 
 module Packages
   # Extracts the RPM package contents to a directory.
@@ -31,9 +32,6 @@ module Packages
     # Path to the package to extract.
     # @return [String] package path
     attr_reader :package_path
-
-    # The package could not be extracted
-    class ExtractionFailed < StandardError; end
 
     # Constructor
     #
@@ -64,7 +62,7 @@ module Packages
         ret = Yast::Execute.locally("sh", "-c", cmd, allowed_exitstatus: 0..255)
         log.info("Extraction result: #{ret}")
 
-        raise ExtractionFailed unless ret.zero?
+        raise Y2Packager::PackageExtractionError unless ret.zero?
       end
     end
   end

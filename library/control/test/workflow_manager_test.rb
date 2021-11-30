@@ -369,7 +369,7 @@ describe Yast::WorkflowManager do
 
     context "downloading the installer extension package fails" do
       before do
-        expect_any_instance_of(Packages::PackageDownloader).to receive(:download).and_raise(Packages::PackageDownloader::FetchError)
+        expect_any_instance_of(Packages::PackageDownloader).to receive(:download).and_raise(Y2Packager::PackageFetchError)
         allow(Yast::Report).to receive(:Error)
       end
 
@@ -385,7 +385,7 @@ describe Yast::WorkflowManager do
 
     context "extracting the installer extension package fails" do
       before do
-        expect_any_instance_of(Packages::PackageExtractor).to receive(:extract).and_raise(Packages::PackageExtractor::ExtractionFailed)
+        expect_any_instance_of(Packages::PackageExtractor).to receive(:extract).and_raise(Y2Packager::PackageFetchError)
         allow(Yast::Report).to receive(:Error)
       end
 

@@ -25,10 +25,10 @@ describe Packages::PackageExtractor do
       end
     end
 
-    it "raises ExtractionFailed when the extraction fails" do
+    it "raises PackageExtractionError when the extraction fails" do
       Dir.mktmpdir do |tmpdir|
         extractor = Packages::PackageExtractor.new("non-existing-package")
-        expect { extractor.extract(tmpdir) }.to raise_error(Packages::PackageExtractor::ExtractionFailed)
+        expect { extractor.extract(tmpdir) }.to raise_error(Y2Packager::PackageExtractionError)
       end
     end
   end

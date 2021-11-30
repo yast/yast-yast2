@@ -69,12 +69,12 @@ describe Y2Packager::Package do
     context "when package download fails" do
       before do
         allow(downloader).to receive(:download)
-          .and_raise(Packages::PackageDownloader::FetchError)
+          .and_raise(Y2Packager::PackageFetchError)
       end
 
       it "raises the error" do
         expect { package.download_to(PACKAGES_FIXTURES_PATH) }
-          .to raise_error(Packages::PackageDownloader::FetchError)
+          .to raise_error(Y2Packager::PackageFetchError)
       end
     end
   end
@@ -101,12 +101,12 @@ describe Y2Packager::Package do
     context "when the package could not be extracted" do
       before do
         allow(extractor).to receive(:extract)
-          .and_raise(Packages::PackageExtractor::ExtractionFailed)
+          .and_raise(Y2Packager::PackageExtractionError)
       end
 
       it "raises the error" do
         expect { package.extract_to("/path") }
-          .to raise_error(Packages::PackageExtractor::ExtractionFailed)
+          .to raise_error(Y2Packager::PackageExtractionError)
       end
     end
   end

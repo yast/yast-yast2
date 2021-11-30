@@ -447,11 +447,11 @@ module Yast
 
       log.info("installation.xml path: #{path}")
       path
-    rescue ::Packages::PackageDownloader::FetchError
+    rescue Y2Packager::PackageFetchError
       # TRANSLATORS: an error message
       Report.Error(_("Downloading the installer extension package failed."))
       nil
-    rescue ::Packages::PackageExtractor::ExtractionFailed
+    rescue Y2Packager::PackageExtractionError
       # TRANSLATORS: an error message
       Report.Error(_("Extracting the installer extension failed."))
       nil
@@ -1687,7 +1687,7 @@ module Yast
     # @param repo_id [Fixnum] repository ID
     # @param package [String] name of the package
     # @raise [::Packages::PackageDownloader::FetchError] if package download failed
-    # @raise [::Packages::PackageExtractor::ExtractionFailed] if package extraction failed
+    # @raise [Y2Packager::PackageExtractionError] if package extraction failed
     def fetch_package(repo_id, package, dir)
       downloader = ::Packages::PackageDownloader.new(repo_id, package)
 
@@ -1708,7 +1708,7 @@ module Yast
     # Extract an RPM package into the given directory.
     # @param package_file [String] the RPM package path
     # @param dir [String] a directory where the package will be extracted to
-    # @raise [::Packages::PackageExtractor::ExtractionFailed] if package extraction failed
+    # @raise [::Y2Packager::PackageExtractionError] if package extraction failed
     def extract(package_file, dir)
       log.info("Extracting file #{package_file}")
       extractor = ::Packages::PackageExtractor.new(package_file)
