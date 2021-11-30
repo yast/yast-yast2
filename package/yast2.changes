@@ -3,6 +3,9 @@ Wed Dec  1 11:06:33 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not crash when it is not possible to fetch the package
   containing the release notes (bsc#1193148).
+- Add register_target to the Y2Packager::Product class
+  (bsc#1193212).
+- 4.4.24
 
 -------------------------------------------------------------------
 Tue Nov 30 18:34:38 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
