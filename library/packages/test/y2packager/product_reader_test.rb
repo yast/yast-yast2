@@ -77,8 +77,7 @@ describe Y2Packager::ProductReader do
           "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
           "display_name" => "display_name", "category" => "addon",
           "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany",
-          "register_target" => ""
-        )
+          "register_target" => "")
       end
 
       let(:prod2) do
@@ -87,8 +86,7 @@ describe Y2Packager::ProductReader do
           "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
           "display_name" => "display_name", "category" => "addon",
           "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany",
-          "register_target" => ""
-        )
+          "register_target" => "")
       end
 
       before do
