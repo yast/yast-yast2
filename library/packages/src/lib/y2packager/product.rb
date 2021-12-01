@@ -146,7 +146,7 @@ module Y2Packager
     # @param installation_package [String]  Installation package name
     # @param register_target      [String]  Register target
     def initialize(name: nil, short_name: nil, display_name: nil, version: nil, arch: nil,
-      category: nil, vendor: nil, order: nil, installation_package: nil, register_target: nil)
+      category: nil, vendor: nil, order: nil, installation_package: nil, register_target: "")
       @name = name
       @short_name = short_name
       @display_name = display_name
@@ -156,7 +156,7 @@ module Y2Packager
       @vendor = vendor
       @order = order
       @installation_package = installation_package
-      @register_target = register_target || ""
+      @register_target = register_target
     end
 
     # Compare two different products
