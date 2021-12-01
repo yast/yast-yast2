@@ -15,6 +15,7 @@ require "yast2/execute"
 require "packages/package_downloader"
 require "packages/package_extractor"
 require "tempfile"
+require "y2packager/exceptions"
 
 Yast.import "Pkg"
 
@@ -101,6 +102,7 @@ module Y2Packager
     #
     # @param path [String,Pathname] Path to download the package to
     # @see Packages::PackageDownloader
+    # @raise PackageFetchError
     def download_to(path)
       downloader = Packages::PackageDownloader.new(repo_id, name)
       downloader.download(path.to_s)
@@ -110,6 +112,8 @@ module Y2Packager
     #
     # @param directory [String,Pathname] Path to extract the package to
     # @see Packages::PackageExtractor
+    # @raise PackageFetchError
+    # @raise PackageExtractionError
     def extract_to(directory)
       tmpfile = Tempfile.new("downloaded-package-#{name}-")
       download_to(tmpfile.path)
