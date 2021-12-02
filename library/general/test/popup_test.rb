@@ -409,4 +409,23 @@ describe Yast::Popup do
       expect(subject.AnyTimedRichMessage("headline", "message", 5)).to eq nil
     end
   end
+
+  describe ".YesNo" do
+    before do
+      allow(ui).to receive(:OpenDialog).and_return(true)
+      allow(ui).to receive(:CloseDialog).and_return(true)
+    end
+
+    it "returns true when user clicks [Yes]" do
+      expect(ui).to receive(:UserInput).and_return(:yes)
+
+      expect(subject.YesNo("question")).to eq(true)
+    end
+
+    it "returns false when user clicks [No]" do
+      expect(ui).to receive(:UserInput).and_return(:no)
+
+      expect(subject.YesNo("question")).to eq(false)
+    end
+  end
 end
