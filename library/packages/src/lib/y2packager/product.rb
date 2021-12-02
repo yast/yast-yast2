@@ -45,6 +45,8 @@ module Y2Packager
     attr_reader :installation_package
     # @return [Integer] repository for the installation_package
     attr_reader :installation_package_repo
+    # @return [String] Registration target name used for registering the product
+    attr_reader :register_target
 
     class << self
       PKG_BINDINGS_ATTRS = ["name", "short_name", "display_name", "version", "arch",
@@ -77,6 +79,7 @@ module Y2Packager
           display_name: product.display_name, version: product.version,
           arch: product.arch, category: product.category,
           vendor: product.vendor, order: displayorder,
+          register_target: product.register_target,
           installation_package: installation_package
         )
       end
@@ -141,8 +144,9 @@ module Y2Packager
     # @param vendor               [String]  Vendor
     # @param order                [Integer] Display order
     # @param installation_package [String]  Installation package name
+    # @param register_target      [String]  Register target
     def initialize(name: nil, short_name: nil, display_name: nil, version: nil, arch: nil,
-      category: nil, vendor: nil, order: nil, installation_package: nil)
+      category: nil, vendor: nil, order: nil, installation_package: nil, register_target: "")
       @name = name
       @short_name = short_name
       @display_name = display_name
@@ -152,6 +156,7 @@ module Y2Packager
       @vendor = vendor
       @order = order
       @installation_package = installation_package
+      @register_target = register_target
     end
 
     # Compare two different products

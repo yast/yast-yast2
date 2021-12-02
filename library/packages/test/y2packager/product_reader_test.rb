@@ -33,19 +33,20 @@ describe Y2Packager::ProductReader do
     end
 
     it "returns empty list if there is no product" do
-      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
+      expect(Y2Packager::Resolvable).to receive(:find).with({ kind: :product }, [:register_target])
         .and_return([])
       expect(subject.available_base_products).to eq([])
     end
 
     it "returns Installation::Product objects" do
-      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
+      expect(Y2Packager::Resolvable).to receive(:find).with({ kind: :product }, [:register_target])
         .and_return(products)
       expect(subject.available_base_products.first).to be_a(Y2Packager::Product)
     end
 
     it "returns the correct product properties" do
-      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
+      expect(Y2Packager::Resolvable).to receive(:find).with({ kind: :product }, [:register_target])
+        .and_return(products)
         .and_return(products)
       ret = subject.available_base_products.first
       expect(ret.name).to eq("SLES")
@@ -62,7 +63,7 @@ describe Y2Packager::ProductReader do
       addon1 = Y2Packager::Resolvable.new(addon1_hash)
       addon2 = Y2Packager::Resolvable.new(addon2_hash)
 
-      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
+      expect(Y2Packager::Resolvable).to receive(:find).with({ kind: :product }, [:register_target])
         .and_return([addon2, addon1, sp3])
 
       expect(subject.available_base_products.size).to eq(1)
@@ -75,7 +76,8 @@ describe Y2Packager::ProductReader do
           "name" => "SLES", "status" => :available, "source" => 1, "short_name" => "short_name",
           "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
           "display_name" => "display_name", "category" => "addon",
-          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")
+          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany",
+          "register_target" => "")
       end
 
       let(:prod2) do
@@ -83,11 +85,12 @@ describe Y2Packager::ProductReader do
           "name" => "SLED", "status" => :available, "source" => 2, "short_name" => "short_name",
           "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
           "display_name" => "display_name", "category" => "addon",
-          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")
+          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany",
+          "register_target" => "")
       end
 
       before do
-        allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
+        allow(Y2Packager::Resolvable).to receive(:find).with({ kind: :product }, [:register_target])
           .and_return(products)
       end
 
@@ -120,7 +123,7 @@ describe Y2Packager::ProductReader do
     end
 
     it "returns the installed base product" do
-      expect(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
+      expect(Y2Packager::Resolvable).to receive(:find).with({ kind: :product }, [:register_target])
         .and_return(products + [base_prod])
       expect(subject.installed_base_product.name).to eq("base_product")
     end
@@ -139,7 +142,7 @@ describe Y2Packager::ProductReader do
     end
 
     before do
-      allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
+      allow(Y2Packager::Resolvable).to receive(:find).with({ kind: :product }, [:register_target])
         .and_return(products + [special_prod])
       allow(Yast::Pkg).to receive(:PkgQueryProvides).with("system-installation()")
         .and_return([])
@@ -196,7 +199,7 @@ describe Y2Packager::ProductReader do
       installed = Y2Packager::Resolvable.new(installed_hash)
 
       # return the installed product first to ensure the following available duplicate is not lost
-      allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
+      allow(Y2Packager::Resolvable).to receive(:find).with({ kind: :product }, [:register_target])
         .and_return([installed, available])
 
       expect(subject.all_products).to_not be_empty
@@ -211,7 +214,7 @@ describe Y2Packager::ProductReader do
       selected = Y2Packager::Resolvable.new(selected_hash)
       available = Y2Packager::Resolvable.new(available_hash)
 
-      allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product)
+      allow(Y2Packager::Resolvable).to receive(:find).with({ kind: :product }, [:register_target])
         .and_return([selected, available])
 
       expect(subject.all_products.size).to eq(1)

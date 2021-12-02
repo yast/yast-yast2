@@ -159,7 +159,7 @@ module Y2Packager
     # read the available products, remove potential duplicates
     # @return [Array<Hash>] pkg-bindings data structure
     def zypp_products
-      products = Y2Packager::Resolvable.find(kind: :product)
+      products = Y2Packager::Resolvable.find({ kind: :product }, [:register_target])
 
       # remove duplicates, there might be different flavors ("DVD"/"POOL")
       # or archs (x86_64/i586), when selecting the product to install later
