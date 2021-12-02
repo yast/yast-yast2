@@ -250,31 +250,19 @@ module Yast
     #
     # @return [Yast::Term] button box
     def AnyQuestionButtonBox(yes_button_message, no_button_message, focus)
-      yes_button = Empty()
-      no_button = Empty()
+      yes_opts = [:okButton]
+      no_opts = [:cancelButton]
 
       if focus == :focus_no
-        yes_button = PushButton(Id(:yes), Opt(:okButton), yes_button_message)
-        no_button = PushButton(
-          Id(:no_button),
-          Opt(:default, :cancelButton),
-          no_button_message
-        )
+        no_opts << :default
       else
-        yes_button = PushButton(
-          Id(:yes),
-          Opt(:default, :okButton),
-          yes_button_message
-        )
-        no_button = PushButton(
-          Id(:no_button),
-          Opt(:cancelButton),
-          no_button_message
-        )
+        yes_opts << :default
       end
 
-      button_box = ButtonBox(yes_button, no_button)
-      deep_copy(button_box)
+      yes_button = PushButton(Id(:yes), Opt(*yes_opts), yes_button_message)
+      no_button = PushButton(Id(:no), Opt(*no_opts), no_button_message)
+
+      ButtonBox(yes_button, no_button)
     end
 
     # Generic question popup with two buttons.

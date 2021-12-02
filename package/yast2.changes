@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Dec  2 13:47:27 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Popup.YesNo(): Unify the internal [No] button ID (bsc#1193326)
+- 4.4.26
+
+-------------------------------------------------------------------
 Wed Dec  1 13:13:34 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add register_target to the Y2Packager::Product class
