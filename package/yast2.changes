@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Dec  2 17:13:37 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Drop support for subscription-tools, that package is not present
+  in SLE15 anymore - removed modules/ProductProfiles.rb file
+  (bsc#1193339)
+- 4.4.27
+
+-------------------------------------------------------------------
 Thu Dec  2 13:47:27 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
 
 - Popup.YesNo(): Unify the internal [No] button ID (bsc#1193326)
