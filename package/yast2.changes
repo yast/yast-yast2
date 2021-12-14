@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Dec 14 16:24:00 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Added RelURL class for working with relative URLs ("relurl://")
+  (jsc#SLE-22669)
+- 4.4.28
+
+-------------------------------------------------------------------
 Thu Dec  2 17:13:37 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
 
 - Drop support for subscription-tools, that package is not present
