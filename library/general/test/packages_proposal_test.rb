@@ -14,6 +14,7 @@ describe Yast::PackagesProposal do
   let(:packages2) { ["kdump"] }
 
   before do
+    subject.ResetAll
     # store both required and optional resolvables
     subject.AddResolvables(proposal_id, :package, packages)
     subject.AddResolvables(proposal_id, :package, packages2, optional: true)
