@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Dec  9 16:56:23 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not use the 'installation-helper' binary to create snapshots
+  during installation or offline upgrade (bsc#1180142).
+- Add a new exception to properly handle exceptions
+  when reading/writing snapshots numbers (related to bsc#1180142).
+- save_y2logs: save kernel messages and udev log (snwint@suse.de).
+  Related to bsc#1089647 and bsc#1085212.
+- 3.2.51
+
+-------------------------------------------------------------------
 Tue Apr 30 08:52:35 UTC 2019 - mvidner@suse.com
 
 - Stop "ls: write error: Broken pipe" messages (bsc#1128032)
