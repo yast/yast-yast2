@@ -118,6 +118,7 @@ VAR_LOG_FILES='\
   zypper.log zypp/history* pk_backend_zypp \
   pbl.log linuxrc.log wickedd.log \
   evms-engine.* \
+  boot.msg messages udev.log \
 '
 cd /var/log
 for i in $VAR_LOG_FILES ; do
