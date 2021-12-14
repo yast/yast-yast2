@@ -5,6 +5,8 @@ Thu Dec  9 16:56:23 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
   during installation or offline upgrade (bsc#1180142).
 - Add a new exception to properly handle exceptions
   when reading/writing snapshots numbers (related to bsc#1180142).
+- save_y2logs: save kernel messages and udev log (snwint@suse.de).
+  Related to bsc#1089647 and bsc#1085212.
 - 3.2.46.2
 
 -------------------------------------------------------------------
