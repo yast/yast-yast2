@@ -207,4 +207,29 @@ describe Yast2::RelURL do
       expect(relurl.absolute_url("foo/bar").to_s).to eq("//foo/bar")
     end
   end
+
+  describe ".from_installation_repository" do
+    before do
+      allow(Yast::InstURL).to receive(:installInf2Url).and_return(inst_url)
+    end
+
+    let(:rel_url) { "relurl://test" }
+    subject { Yast2::RelURL.from_installation_repository(rel_url) }
+
+    context "during installation" do
+      let(:inst_url) { "http://example.com/repo" }
+
+      it "returns URL relative to the installation repository" do
+        expect(subject.absolute_url.to_s).to eq("http://example.com/repo/test")
+      end
+    end
+
+    context "in an installed system" do
+      let(:inst_url) { "" }
+
+      it "returns the original relative URL" do
+        expect(subject.absolute_url.to_s).to eq(rel_url)
+      end
+    end
+  end
 end

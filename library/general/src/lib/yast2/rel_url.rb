@@ -17,7 +17,10 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
 require "uri"
+
+Yast.import "InstURL"
 
 module Yast2
   # Class for working with relative URLs ("relurl://")
