@@ -40,6 +40,7 @@ Yast.import "PackageSystem"
 module Yast
   class PackageClass < Module
     extend Forwardable
+    include Yast::Logger
 
     def_delegators :backend, :Installed, :Available, :PackageInstalled,
       :PackageAvailable, :DoInstallAndRemove, :InstallKernel
@@ -89,12 +90,6 @@ module Yast
     #   Removes the given packages
     #   @param packages [Array<String>] Name of the packages to remove
     #   @return [Boolean] true if packages were successfully removed
-
-    # @!method DoInstallAndRemove(toinstall, toremove)
-    #   Install and remove packages in one go
-    #   @param toinstall [Array<String>] Name of the packages to install
-    #   @param toremove [Array<String>] Name of the packages to remove
-    #   @return [Boolean] true on success
 
     # @!method InstallKernel(kernel_modules)
     #   Installs the given kernel modules
@@ -171,6 +166,23 @@ module Yast
 
     def DoRemove(packages)
       DoInstallAndRemove([], packages)
+    end
+
+    # Install and remove packages in one go
+    #
+    # @param toinstall [Array<String>] Name of the packages to install
+    # @param toremove [Array<String>] Name of the packages to remove
+    # @return [Boolean] true on success
+    def DoInstallAndRemove(toinstall, toremove)
+      ret = backend.DoInstallAndRemove(toinstall, toremove)
+      return false unless ret
+
+      if !InstalledAll(toinstall)
+        log.error("Required packages have not been installed")
+        return false
+      end
+
+      true
     end
 
     def reset

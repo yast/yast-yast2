@@ -4,6 +4,7 @@ require_relative "test_helper"
 
 Yast.import "PackageSystem"
 Yast.import "PackagesUI"
+Yast.import "Package"
 
 describe "Yast::PackageSystem" do
   subject(:system) { Yast::PackageSystem }
@@ -46,7 +47,6 @@ describe "Yast::PackageSystem" do
       allow(system).to receive(:SelectPackages).and_return(true)
       allow(Yast::Pkg).to receive(:IsAnyResolvable).with(:package, :to_install).and_return(true)
       allow(Yast::Pkg).to receive(:PkgCommit).with(0).and_return(result)
-      allow(system).to receive(:InstalledAll).and_return(true)
     end
 
     context "when package system is locked" do

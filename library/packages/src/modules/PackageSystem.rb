@@ -268,12 +268,6 @@ module Yast
         SCR.RegisterNewAgents
       end
 
-      # check if the required packages have been installed
-      if !InstalledAll(toinstall)
-        Builtins.y2error("Required packages have not been installed")
-        return false
-      end
-
       true
     end
 

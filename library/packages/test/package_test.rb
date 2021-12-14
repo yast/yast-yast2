@@ -290,4 +290,46 @@ describe Yast::Package do
       end
     end
   end
+
+  describe "#DoInstallAndRemove" do
+    let(:backend) do
+      double("backend", DoInstallAndRemove: result)
+    end
+
+    let(:result) { true }
+    let(:toinstall) { ["yast2"] }
+    let(:toremove) { ["dummy"] }
+
+    before do
+      allow(subject).to receive(:backend).and_return(backend)
+      allow(subject).to receive(:InstalledAll).with(toinstall).and_return(true)
+    end
+
+    it "delegates in the backend" do
+      expect(backend).to receive(:DoInstallAndRemove).with(toinstall, toremove)
+      subject.DoInstallAndRemove(toinstall, toremove)
+    end
+
+    it "returns true on success" do
+      expect(subject.DoInstallAndRemove(toinstall, toremove)).to eq(true)
+    end
+
+    context "when the installation fails" do
+      let(:result) { false }
+
+      it "returns false" do
+        expect(subject.DoInstallAndRemove(toinstall, toremove)).to eq(false)
+      end
+    end
+
+    context "when not all packages are installed" do
+      before do
+        allow(subject).to receive(:InstalledAll).with(toinstall).and_return(false)
+      end
+
+      it "returns false" do
+        expect(subject.DoInstallAndRemove(toinstall, toremove)).to eq(false)
+      end
+    end
+  end
 end
