@@ -25,7 +25,11 @@ Yast.import "InstURL"
 module Yast2
   # Class for working with relative URLs ("relurl://")
   class RelURL
-    attr_reader :base, :relative
+    # @return [URI] the input base URL
+    attr_reader :base
+
+    # @return [URI] the input relative URL
+    attr_reader :relative
 
     # Is the URL a relative URL?
     #
@@ -37,7 +41,8 @@ module Yast2
 
     # Create RelURL object with URL relative to the installation repository
     #
-    # @param rel_url [String, URI] the relative URL
+    # @param rel_url [String, URI] the relative URL, if non-relative URL is used
+    #  then the result is this URL
     # @return [RelURL]
     #
     # @note Works properly only during installation/upgrade, do not use
@@ -53,11 +58,14 @@ module Yast2
     # @param rel_url [String,URI] the relative URL, it should use the "relurl://"
     #  schema otherwise the base URL is ignored
     def initialize(base_url, rel_url)
-      @base = import_url(base_url)
-      @relative = import_url(rel_url)
+      @base = URI(base_url).dup
+      @relative = URI(rel_url).dup
+
+      preprocess_url(base)
+      preprocess_url(relative)
     end
 
-    # Build and absolute URL
+    # Build an absolute URL
     #
     # @param path [String,nil] optional URL subpath
     # @return [URI] the absolute URL
@@ -84,7 +92,7 @@ module Yast2
         # by File.expand_path if the base path is not absolute
         base_path.prepend("/") if !base_path.start_with?("/")
 
-        # escape the "~"" character, it is treated as a home directory name by File.expand_path,
+        # escape the "~" character, it is treated as a home directory name by File.expand_path,
         # moreover it raises ArgumentError if that user does not exist in the system
         relative_path.gsub!("~", "%7E")
         # the relative path really needs to be relative, remove the leading slash(es)
@@ -93,37 +101,31 @@ module Yast2
         ret.path = File.expand_path(relative_path, base_path)
       end
 
-      export_url(ret)
+      postprocess_url(ret)
       ret
     end
 
   private
 
-    # a helper method for importing an URL,
-    # it creates a copy of the input object and pre-processes the
-    # "file://" and "relurl://" URLs
-    def import_url(url)
-      ret = URI(url).dup
-
+    # a helper method which fixes the URL path for the "file://" and "relurl://" URLs
+    def preprocess_url(url)
       # move the host part to the path part for some URL types
-      if ["file", "relurl"].include?(ret.scheme) && ret.host
-        # URI requires absolute path
-        ret.path = File.join("/", ret.host, ret.path)
-        ret.host = nil
-      end
+      return unless ["file", "relurl"].include?(url.scheme) && url.host
 
-      ret
+      # URI requires absolute path
+      url.path = File.join("/", url.host, url.path)
+      url.host = nil
     end
 
-    # adjust the result if it is a "file://" URL
-    def export_url(url)
+    # a reverse method to "preprocess_url", fix the URL if it is a "file://" URL
+    def postprocess_url(url)
       return if url.scheme != "file" && !url.host.nil? && !url.host.empty?
 
       path = url.path.sub(/\A\/+/, "").split("/")
       url.host = path.shift
 
       rest = File.join(path)
-      rest.prepend("/") unless path.empty?
+      rest.prepend("/") unless rest.empty?
       url.path = rest
     end
   end

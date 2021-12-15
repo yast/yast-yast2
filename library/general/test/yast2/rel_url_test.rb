@@ -104,7 +104,7 @@ describe Yast2::RelURL do
 
     # this is rather a side effect of the used library function and not an intended
     # behavior, but as ~ is used very rarely in path names (needs shell escaping)
-    # let's consider it as an acceptable behavior, the escaped path in URL is equal
+    # let's consider it as an acceptable behavior, the escaped character in URL is equal
     # to unescaped one so there is no functional difference, only visual
     it "escapes ~ character in the relative URL path" do
       relurl = Yast2::RelURL.new("http://example.com/~base", "relurl://~test")
