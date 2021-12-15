@@ -1,6 +1,4 @@
-# this mocks the Yast::InstURL module
-require_relative "../../../packages/test/test_helper.rb"
-
+require_relative "../test_helper"
 require "yast2/rel_url"
 
 describe Yast2::RelURL do

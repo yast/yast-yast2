@@ -57,3 +57,15 @@ if ENV["COVERAGE"]
     ]
   end
 end
+
+# mock missing YaST modules
+module Yast
+  # we cannot depend on this module (circular dependency)
+  class InstURLClass
+    def installInf2Url(_extra_dir = "")
+      ""
+    end
+  end
+
+  InstURL = InstURLClass.new
+end
