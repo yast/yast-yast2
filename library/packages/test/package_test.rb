@@ -332,4 +332,184 @@ describe Yast::Package do
       end
     end
   end
+
+  describe "#PackageDialog" do
+    let(:installed_pkg) { "wicked" }
+    let(:uninstalled_pkg) { "firewalld" }
+    let(:packages) { [installed_pkg, uninstalled_pkg] }
+    let(:commandline) { false }
+    let(:interactive) { false }
+    let(:confirm) { false }
+
+    before do
+      allow(subject).to receive(:Installed).with(installed_pkg).and_return(true)
+      allow(subject).to receive(:Installed).with(uninstalled_pkg).and_return(false)
+      allow(Yast::Mode).to receive(:commandline).and_return(commandline)
+      allow(Yast::CommandLine).to receive(:Interactive).and_return(interactive)
+      allow(Yast::Popup).to receive(:AnyQuestionRichText).and_return(confirm)
+    end
+
+    context "when installing packages" do
+      let(:confirm) { false }
+
+      it "displays a pop-up asking for confirmation" do
+        expect(Yast::Popup).to receive(:AnyQuestionRichText).with(
+          "", /to be installed:<p>#{uninstalled_pkg}/, Integer, Integer,
+          Yast::Label.InstallButton, Yast::Label.CancelButton, :focus_yes
+        )
+        subject.PackageDialog(packages, true, nil)
+      end
+
+      context "and the user confirms" do
+        let(:confirm) { true }
+        let(:success) { true }
+
+        before do
+          allow(subject).to receive(:DoInstall).with([uninstalled_pkg]).and_return(success)
+        end
+
+        it "installs the packages" do
+          expect(subject).to receive(:DoInstall).with([uninstalled_pkg])
+          subject.PackageDialog(packages, true, nil)
+        end
+
+        context "and the packages are installed" do
+          it "returns true" do
+            expect(subject.PackageDialog(packages, true, nil)).to eq(true)
+          end
+        end
+
+        context "and the packages could not be installed" do
+          let(:success) { false }
+
+          it "returns false" do
+            expect(subject.PackageDialog(packages, true, nil)).to eq(false)
+          end
+        end
+      end
+
+      context "and the user cancels" do
+        let(:confirm) { false }
+
+        it "does not try to install the packages" do
+          expect(subject).to_not receive(:DoInstall)
+          subject.PackageDialog(packages, true, nil)
+        end
+      end
+    end
+
+    context "when removing packages" do
+      let(:confirm) { false }
+
+      context "and not running on command line mode" do
+        it "displays a pop-up asking for confirmation" do
+          expect(Yast::Popup).to receive(:AnyQuestionRichText).with(
+            "", /to be removed:<p>#{installed_pkg}/, Integer, Integer,
+            /Uninstall/, Yast::Label.CancelButton, :focus_yes
+          )
+          subject.PackageDialog(packages, false, nil)
+        end
+      end
+
+      context "and running on interactive command line mode" do
+        let(:interactive) { true }
+        let(:commandline) { true }
+
+        it "displays a message asking for confirmation" do
+          expect(Yast::CommandLine).to receive(:Print).with(/to be removed: #{installed_pkg}/)
+          expect(Yast::CommandLine).to receive(:YesNo).and_return(false)
+          subject.PackageDialog(packages, false, nil)
+        end
+      end
+
+      context "and the user confirms" do
+        let(:confirm) { true }
+        let(:success) { true }
+
+        before do
+          allow(subject).to receive(:DoRemove).with([installed_pkg]).and_return(success)
+        end
+
+        it "removes the packages" do
+          expect(subject).to receive(:DoRemove).with([installed_pkg])
+          subject.PackageDialog(packages, false, nil)
+        end
+
+        context "and the packages are removed" do
+          it "returns true" do
+            expect(subject.PackageDialog(packages, false, nil)).to eq(true)
+          end
+
+        end
+
+        context "and the packages could not be removed" do
+          let(:success) { false }
+
+          it "returns false" do
+            expect(subject.PackageDialog(packages, false, nil)).to eq(false)
+          end
+        end
+      end
+
+      context "and the user cancels" do
+        let(:confirm) { false }
+
+        it "does not try to remove the packages" do
+          expect(subject).to_not receive(:DoRemove)
+          subject.PackageDialog(packages, false, nil)
+        end
+      end
+    end
+
+    context "when a custom message is given" do
+      it "displays the given message" do
+        expect(Yast::Popup).to receive(:AnyQuestionRichText).with(
+          "", "Should I install random packages?", any_args
+        )
+        subject.PackageDialog(packages, true, "Should I install random packages?")
+      end
+    end
+  end
+
+  describe "#InstallMsg" do
+    it "asks to install a single package using a custom message" do
+      expect(subject).to receive(:PackageDialog).with(["firewalld"], true, "Install?")
+      subject.InstallMsg("firewalld", "Install?")
+    end
+  end
+
+  describe "#Install" do
+    it "asks to install a single package using the default message" do
+      expect(subject).to receive(:PackageDialog).with(["firewalld"], true, nil)
+      subject.Install("firewalld")
+    end
+  end
+
+  describe "#InstallAllMsg" do
+    it "asks to install a set of package using a custom message" do
+      expect(subject).to receive(:PackageDialog).with(["firewalld", "yast2"], true, "Install?")
+      subject.InstallAllMsg(["firewalld", "yast2"], "Install?")
+    end
+  end
+
+  describe "#RemoveMsg" do
+    it "asks to install a single package using a custom message" do
+      expect(subject).to receive(:PackageDialog).with(["firewalld"], false, "Remove?")
+      subject.RemoveMsg("firewalld", "Remove?")
+    end
+  end
+
+  describe "#Remove" do
+    it "asks to install a single package using the default message" do
+      expect(subject).to receive(:PackageDialog).with(["firewalld"], false, nil)
+      subject.Remove("firewalld")
+    end
+  end
+
+  describe "#RemoveAllMsg" do
+    it "asks to install a set of package using a custom message" do
+      expect(subject).to receive(:PackageDialog).with(["firewalld", "yast2"], false, "Remove?")
+      subject.RemoveAllMsg(["firewalld", "yast2"], "Remove?")
+    end
+  end
 end

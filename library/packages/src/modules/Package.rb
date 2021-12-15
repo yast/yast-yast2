@@ -244,6 +244,145 @@ module Yast
       !which.nil?
     end
 
+    # Asks the user if the given packages should be installed or removed
+    #
+    # It only makes sense in CommandLine mode.
+    #
+    # @param packs [Array<String>] List of packages to install/remove
+    # @param install [Boolean] True to install the packages, false to remove them
+    def AskPackages(packs, install)
+      packs = deep_copy(packs)
+      pkgs = Builtins.mergestring(packs, ", ")
+      text = if install
+        # the message is followed by list of required packages
+        _("These packages need to be installed:")
+      else
+        # the message is followed by list of required packages
+        _("These packages need to be removed:")
+      end
+
+      text += " " + pkgs
+
+      CommandLine.Print(text)
+
+      CommandLine.YesNo
+    end
+
+    # Main package installatio|removal dialog
+    # @param [Array<String>] packages list of packages
+    # @param [Boolean] install true if install, false if remove
+    # @param [String] message optional installation|removal text (nil -> standard will be used)
+    # @return true on success
+    def PackageDialog(packages, install, message)
+      packages = deep_copy(packages)
+      Builtins.y2debug("Asking for packages: %1", packages)
+      packs = Builtins.filter(packages) do |package|
+        install ? !Installed(package) : Installed(package)
+      end
+      Builtins.y2debug("Remaining packages: %1", packs)
+
+      return true if Ops.less_than(Builtins.size(packs), 1)
+
+      # Popup Text
+      text = _("These packages need to be installed:") + "<p>"
+      # Popup Text
+      text = _("These packages need to be removed:") + "<p>" if install == false
+
+      Builtins.foreach(packs) do |p|
+        text = Ops.add(text, Builtins.sformat("%1<br>", p))
+      end
+
+      text = Builtins.sformat(message, Builtins.mergestring(packs, ", ")) if !message.nil?
+
+      doit = if Mode.commandline
+        CommandLine.Interactive ? AskPackages(packs, install) : true
+      else
+        Popup.AnyQuestionRichText(
+          "",
+          text,
+          40,
+          10,
+          # labels changed for bug #215195
+          #  Label::ContinueButton (), Label::CancelButton (),
+          # push button label
+          install ? Label.InstallButton : _("&Uninstall"),
+          Label.CancelButton,
+          :focus_yes
+        )
+      end
+
+      if doit
+        @last_op_canceled = false
+        return DoRemove(packs) if install == false
+
+        return DoInstall(packs)
+      end
+
+      @last_op_canceled = true
+      false
+    end
+
+    # Install a package with a custom text message
+    # @param [String] package to be installed
+    # @param [String] message custom text message
+    # @return True on success
+    def InstallMsg(package, message)
+      PackageDialog([package], true, message)
+    end
+
+    # Install list of packages with a custom text message
+    # @param [Array<String>] packages The list packages to be installed
+    # @param [String] message custom text message
+    # @return True on success
+    def InstallAllMsg(packages, message)
+      packages = deep_copy(packages)
+      PackageDialog(packages, true, message)
+    end
+    # FIXME
+
+    # Remove a package with a custom text message
+    # @param [String] package  package to be removed
+    # @param [String] message custom text message
+    # @return True on success
+    def RemoveMsg(package, message)
+      PackageDialog([package], false, message)
+    end
+
+    # Remove a list of packages with a custom text message
+    # @param [Array<String>] packages The list of packages to be removed
+    # @param [String] message custom text message
+    # @return True on success
+    def RemoveAllMsg(packages, message)
+      packages = deep_copy(packages)
+      PackageDialog(packages, false, message)
+    end
+
+    def Install(package)
+      InstallMsg(package, nil)
+    end
+
+    def InstallAll(packages)
+      packages = deep_copy(packages)
+      InstallAllMsg(packages, nil)
+    end
+    # FIXME
+
+    def Remove(package)
+      RemoveMsg(package, nil)
+    end
+
+    def RemoveAll(packages)
+      packages = deep_copy(packages)
+      RemoveAllMsg(packages, nil)
+    end
+
+    # Return result of the last operation
+    # Use immediately after calling any Package*:: function
+    # @return true if it last operation was canceled
+    def LastOperationCanceled
+      @last_op_canceled
+    end
+
     publish function: :Available, type: "boolean (string)"
     publish function: :Installed, type: "boolean (string)"
     publish function: :DoInstall, type: "boolean (list <string>)"
