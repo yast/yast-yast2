@@ -35,12 +35,19 @@ module Yast
   class PackageAIClass < Module
     def main
       textdomain "base"
-
-      @last_op_canceled = false
-
-      Yast.include self, "packages/common.rb"
     end
 
+    # Install and remove packages in one go
+    #
+    # @note In AutoYaST, packages are added or removed from the
+    #       {Yast::PackagesProposalClass packages proposal} instead of actually
+    #       installing or removing them from the system.
+    #
+    # @param toinstall [Array<String>] Name of the packages to install
+    # @param toremove [Array<String>] Name of the packages to remove
+    # @return [Boolean] true on success
+    #
+    # @see Yast::PackageClass#DoInstallAndRemove
     def DoInstallAndRemove(toinst, torem)
       if !toinst.empty?
         Yast::PackagesProposal.AddResolvables("autoyast", :package, toinst)
@@ -55,54 +62,68 @@ module Yast
       true
     end
 
+    # Determines whether the package is installed or not
+    #
+    # @note In AutoYaST, this method always returns true.
+    #
+    # @param package [String] Package name
+    # @return [Boolean] true if the package exists; false otherwise
+    # @see Yast::PackageClass#Available
     def Available(_package)
       true
     end
 
+    # Determines whether the package is installed or not
+    #
+    # @note In AutoYaST, this method just checks whether the package is included
+    #       in the {Yast::PackagesProposalClass packages proposal}.
+    #
+    # @param package [String] Package name
+    # @return [Boolean] true if the package exists; false otherwise
+    #
+    # @see Yast::PackageClass#Installed
     def Installed(package)
       PackagesProposal.GetResolvables("autoyast").include?(package)
     end
 
-    # Is a package installed? Checks only the package name in contrast to Installed() function.
-    # @return true if yes
+    # Determines whether the package is installed or not
+    #
+    # @note In AutoYaST this method is equivalent to #Installed
+    #
+    # @param package [String] Package name
+    # @return [Boolean] true if the package exists; false otherwise
+    #
+    # @see Yast::PackageClass#PackageInstalled
     def PackageInstalled(package)
       Installed(package)
     end
 
-    # Is a package available? Checks only package name, not list of provides.
-    # @return true if yes
+    # Determines whether the package  with the given name is available
+    #
+    # @note In AutoYaST this method is equivalent to #Available
+    #
+    # @param package [String] Package name
+    # @return [Boolean] true if the package is available; false otherwise
+    # @see Yast::PackageClass#Available
     def PackageAvailable(package)
       Available(package)
     end
 
+    # Installs the given kernel modules
+    #
+    # @note The kernel packages are handled by AutoYaST on its own, so this
+    #       method just does nothing and always returns true.
+    #
+    # @param _kernel_modules [Array<String>] Names of the kernel modules to install
+    # @return [Boolean] Always returns true
+    # @see Yast::PackageClass#InstallKernel
     def InstallKernel(_kernel_modules)
-      # the kernel packages are handled by autoyast on its own
       true
     end
 
-    publish variable: :toinstall, type: "list <string>"
-    publish variable: :toremove, type: "list <string>"
     publish function: :Available, type: "boolean (string)"
     publish function: :Installed, type: "boolean (string)"
-    publish function: :DoInstall, type: "boolean (list <string>)"
-    publish function: :DoRemove, type: "boolean (list <string>)"
     publish function: :DoInstallAndRemove, type: "boolean (list <string>, list <string>)"
-    publish function: :AvailableAll, type: "boolean (list <string>)"
-    publish function: :AvailableAny, type: "boolean (list <string>)"
-    publish function: :InstalledAll, type: "boolean (list <string>)"
-    publish function: :InstalledAny, type: "boolean (list <string>)"
-    publish function: :InstallMsg, type: "boolean (string, string)"
-    publish function: :InstallAllMsg, type: "boolean (list <string>, string)"
-    publish function: :InstallAnyMsg, type: "boolean (list <string>, string)"
-    publish function: :RemoveMsg, type: "boolean (string, string)"
-    publish function: :RemoveAllMsg, type: "boolean (list <string>, string)"
-    publish function: :Install, type: "boolean (string)"
-    publish function: :InstallAll, type: "boolean (list <string>)"
-    publish function: :InstallAny, type: "boolean (list <string>)"
-    publish function: :Remove, type: "boolean (string)"
-    publish function: :RemoveAll, type: "boolean (list <string>)"
-    publish function: :LastOperationCanceled, type: "boolean ()"
-    publish variable: :modified, type: "boolean"
     publish function: :PackageInstalled, type: "boolean (string)"
     publish function: :PackageAvailable, type: "boolean (string)"
     publish function: :InstallKernel, type: "boolean (list <string>)"
