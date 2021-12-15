@@ -20,8 +20,6 @@
 require "yast"
 require "uri"
 
-Yast.import "InstURL"
-
 module Yast2
   # Class for working with relative URLs ("relurl://")
   class RelURL
@@ -48,6 +46,7 @@ module Yast2
     # @note Works properly only during installation/upgrade, do not use
     #   in an installed system.
     def self.from_installation_repository(rel_url)
+      Yast.import "InstURL"
       base_url = Yast::InstURL.installInf2Url("")
       new(base_url, rel_url)
     end

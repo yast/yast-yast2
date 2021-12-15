@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Dec 15 13:21:31 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed RelURL unit test randomly crashing (related to
+  jsc#SLE-22669)
+- 4.4.29
+
+-------------------------------------------------------------------
 Tue Dec 14 16:24:00 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
 
 - Added RelURL class for working with relative URLs ("relurl://")
