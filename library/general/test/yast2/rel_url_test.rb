@@ -199,6 +199,11 @@ describe Yast2::RelURL do
       expect(relurl.absolute_url.to_s).to eq("file://foo/bar/test")
     end
 
+    it "works with file:/// base URL" do
+      relurl = Yast2::RelURL.new("file:///", "relurl://test")
+      expect(relurl.absolute_url.to_s).to eq("file://test")
+    end
+
     it "goes up with file:// base URL properly" do
       relurl = Yast2::RelURL.new("file://foo/bar", "relurl://../../test")
       expect(relurl.absolute_url.to_s).to eq("file://test")
