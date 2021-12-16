@@ -59,13 +59,20 @@ if ENV["COVERAGE"]
 end
 
 # mock missing YaST modules
-module Yast
-  # we cannot depend on this module (circular dependency)
-  class InstURLClass
-    def installInf2Url(_extra_dir = "")
-      ""
+begin
+  # try loading the Yast::InstURL module, we cannot depend on it (because of
+  # circular build dependency), but it is present when running the tests
+  # locally or in GitHub Actions
+  Yast.import "InstURL"
+rescue NameError
+  # if it is missing then mock it
+  module Yast
+    class InstURLClass
+      def installInf2Url(_extra_dir = "")
+        ""
+      end
     end
-  end
 
-  InstURL = InstURLClass.new
+    InstURL = InstURLClass.new
+  end
 end
