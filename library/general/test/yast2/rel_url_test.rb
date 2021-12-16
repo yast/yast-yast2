@@ -174,9 +174,34 @@ describe Yast2::RelURL do
       expect(relurl.absolute_url.to_s).to eq("http://user:password@example.com/test")
     end
 
+    it "works with ftp:// URL" do
+      relurl = Yast2::RelURL.new("ftp://example.com", "relurl://test")
+      expect(relurl.absolute_url.to_s).to eq("ftp://example.com/test")
+    end
+
+    it "works with cd:// URL" do
+      relurl = Yast2::RelURL.new("cd://", "relurl://test")
+      expect(relurl.absolute_url.to_s).to eq("cd://test")
+    end
+
+    it "works with cifs:// URL" do
+      relurl = Yast2::RelURL.new("cifs://server/share/path", "relurl://test")
+      expect(relurl.absolute_url.to_s).to eq("cifs://server/share/path/test")
+    end
+
+    it "works with nfs:// URL" do
+      relurl = Yast2::RelURL.new("nfs://server/export/path", "relurl://test")
+      expect(relurl.absolute_url.to_s).to eq("nfs://server/export/path/test")
+    end
+
     it "works with file:// base URL" do
       relurl = Yast2::RelURL.new("file://foo/bar", "relurl://test")
       expect(relurl.absolute_url.to_s).to eq("file://foo/bar/test")
+    end
+
+    it "works with file:/// base URL" do
+      relurl = Yast2::RelURL.new("file:///", "relurl://test")
+      expect(relurl.absolute_url.to_s).to eq("file://test")
     end
 
     it "goes up with file:// base URL properly" do
