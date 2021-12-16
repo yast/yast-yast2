@@ -97,7 +97,11 @@ module Yast2
         # the relative path really needs to be relative, remove the leading slash(es)
         relative_path.sub!(/\A\/+/, "")
 
-        ret.path = File.expand_path(relative_path, base_path)
+        absolute_path = File.expand_path(relative_path, base_path)
+        # URI::FTP escapes the initial "/" to "%2F" which we do not want here
+        absolute_path.sub!(/\A\/+/, "") if ret.scheme == "ftp"
+
+        ret.path = absolute_path
       end
 
       postprocess_url(ret)

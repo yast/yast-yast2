@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Dec 16 08:39:01 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed RelURL to work properly with the FTP URLs (related to
+  jsc#SLE-22669)
+- 4.4.30
+
+-------------------------------------------------------------------
 Wed Dec 15 13:21:31 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed RelURL unit test randomly crashing (related to
