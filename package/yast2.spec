@@ -17,7 +17,8 @@
 
 
 Name:           yast2
-Version:        4.4.30
+Version:        4.4.31
+
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
