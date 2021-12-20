@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Dec 20 11:07:31 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not reinitialize the packaging system during offline
+  upgrade (bsc#1193784 and bsc#1192437).
+- 4.3.66
+
+-------------------------------------------------------------------
 Thu Jul 15 11:04:50 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Do not escape "$" in URL paths (bsc#1187581).
