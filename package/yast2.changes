@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Mon Dec 20 09:48:04 CEST 2020 - jreidinger@suse.com
+Mon Dec 20 09:48:04 CEST 2021 - jreidinger@suse.com
 
 - Backport: Command line interface: Do not start an UI while
   evaluating current language settings (bsc#1173133).
