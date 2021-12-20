@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Dec 20 11:07:31 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not reinitialize the packaging system during offline
+  upgrade (bsc#1193784 and bsc#1192437).
+- 4.4.31
+
+-------------------------------------------------------------------
 Thu Dec 16 08:39:01 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed RelURL to work properly with the FTP URLs (related to

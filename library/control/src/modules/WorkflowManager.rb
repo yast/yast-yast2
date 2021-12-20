@@ -60,6 +60,7 @@ module Yast
       Yast.import "String"
       Yast.import "XML"
       Yast.import "Report"
+      Yast.import "Mode"
 
       #
       #    This API uses some new terms that need to be explained:
@@ -1694,7 +1695,9 @@ module Yast
       Tempfile.open("downloaded-package-") do |tmp|
         # libzypp needs the target for verifying the GPG signatures of the downloaded packages,
         # keep the target initialized, it might be needed later for verifying other packages
-        Pkg.TargetInitialize("/") if Stage.initial
+        # However, avoid this call when running on update mode because we need the repositories
+        # from the system to upgrade too.
+        Pkg.TargetInitialize("/") if Stage.initial && !Mode.update
         downloader.download(tmp.path)
 
         extract(tmp.path, dir)
