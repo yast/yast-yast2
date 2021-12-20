@@ -32,7 +32,6 @@ require "yast"
 module Yast
   class DesktopClass < Module
     def main
-      Yast.import "UI"
       textdomain "base"
       Yast.import "Map"
       Yast.import "Directory"
@@ -105,13 +104,14 @@ module Yast
     def ReadLanguage
       # read language
       @LanguageFull = ""
-      @Language = UI.GetLanguage(true)
-      if Builtins.regexpmatch(@Language, "(.*_[^.]*)\\.?.*") # matches: ll_TT ll_TT.UTF-8
-        @LanguageFull = Builtins.regexpsub(@Language, "(.*_[^.]*)\\.?.*", "\\1")
-      end
-      if Builtins.regexpmatch(@Language, "(.*)_")
-        @Language = Builtins.regexpsub(@Language, "(.*)_", "\\1")
-      end
+      @Language = ""
+
+      # Do not use UI.GetLanguage. It would start an UI which is not
+      # needed for it.
+      @Language = ENV["LANG"].split(/[\.,@]/).first if ENV["LANG"]
+
+      @LanguageFull = Builtins.regexpsub(@Language, "(.*_[^.]*)\\.?.*", "\\1") if Builtins.regexpmatch(@Language, "(.*_[^.]*)\\.?.*") # matches: ll_TT ll_TT.UTF-8
+      @Language = Builtins.regexpsub(@Language, "(.*)_", "\\1") if Builtins.regexpmatch(@Language, "(.*)_")
       Builtins.y2debug("LanguageFull=%1", @LanguageFull)
       Builtins.y2debug("Language=%1", @Language)
 
