@@ -30,18 +30,8 @@ module UI
     end
 
     # (see Yast2::Refinements::StringManipulations#wrap_text)
-    def wrap_text(text, *args)
-      width = args.find { |a| a.is_a?(Integer) }
-      map = args.find { |a| a.is_a?(Hash) }
-      if map && width
-        text.wrap_text(width, **map)
-      elsif width
-        text.wrap_text(width)
-      elsif map
-        text.wrap_text(**map)
-      else
-        text.wrap_text
-      end
+    def wrap_text(text, *args, **kwa)
+      text.wrap_text(*args, **kwa)
     end
 
     # (see Yast2::Refinements::StringManipulations#head)

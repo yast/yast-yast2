@@ -6,10 +6,17 @@ require "cwm/rspec"
 
 describe "CWM::Dialog" do
   class TestCWMDialog < CWM::Dialog
+    attr_reader :title, :disable
+    def initialize(title = "test", disable: :abort)
+      @title = title
+      @disable = disable
+    end
+
     def contents
       VBox()
     end
   end
+
   subject { TestCWMDialog.new }
 
   include_examples "CWM::Dialog"
@@ -19,6 +26,13 @@ describe "CWM::Dialog" do
       allow(Yast::Wizard).to receive(:IsWizardDialog).and_return(false)
       allow(Yast::Wizard).to receive(:CreateDialog)
       allow(Yast::Wizard).to receive(:CloseDialog)
+      allow(Yast::CWM).to receive(:show).and_return(:next)
+    end
+
+    it "pass all arguments to constructor" do
+      expect(TestCWMDialog).to receive(:new).with("test2", disable: :next).and_call_original
+
+      TestCWMDialog.run("test2", disable: :next)
     end
 
     it "opens a dialog when needed, and calls CWM#show" do

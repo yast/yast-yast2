@@ -27,8 +27,8 @@ module CWM
     abstract_method :contents
 
     # A shortcut for `.new(*args).run`
-    def self.run(*args)
-      new(*args).run
+    def self.run(*args, **kws)
+      new(*args, **kws).run
     end
 
     # The entry point.
