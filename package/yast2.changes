@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Dec 23 18:08:19 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- properly pass named arguments in ruby3 (bsc#1193192)
+- 4.4.32
+
+-------------------------------------------------------------------
 Mon Dec 20 11:07:31 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Do not reinitialize the packaging system during offline
