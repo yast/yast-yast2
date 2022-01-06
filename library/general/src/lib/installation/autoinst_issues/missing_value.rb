@@ -26,8 +26,7 @@ module Installation
     # @example Missing value for attribute 'bar' in 'foo' section.
     #   problem = AyMissingValue.new("foo","bar")
     class MissingValue < ::Installation::AutoinstIssues::Issue
-      attr_reader :section, :attribute
-      attr_reader :description, :severity
+      attr_reader :section, :attribute, :description, :severity
 
       # @param section     [String] Section where it was detected
       # @param attribute   [String] Name of the missing attribute

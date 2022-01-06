@@ -99,7 +99,7 @@ module UI
     #       next:  :finish
     #     }
     #   })
-    def run(aliases: nil, sequence:)
+    def run(sequence:, aliases: nil)
       aliases ||= from_methods(sequence)
       self.class.run(aliases, abortable(sequence))
     end

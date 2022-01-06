@@ -152,41 +152,41 @@ describe Yast::URL do
 
     it "returns valid URL string" do
       expect(subject.Build("scheme" => "ftp",
-                           "host"   => "ftp.example.com",
-                           "path"   => "path/to/dir")).to eq(
+        "host"   => "ftp.example.com",
+        "path"   => "path/to/dir")).to eq(
                              "ftp://ftp.example.com/path/to/dir"
                            )
     end
 
     it "returns URL string with escaped leading / in the path" do
       expect(subject.Build("scheme" => "ftp",
-                           "host"   => "ftp.example.com",
-                           "path"   => "/path/to/dir")).to eq(
+        "host"   => "ftp.example.com",
+        "path"   => "/path/to/dir")).to eq(
                              "ftp://ftp.example.com/%2fpath/to/dir"
                            )
     end
 
     it "returns URL string with escaped leading // in the path" do
       expect(subject.Build("scheme" => "ftp",
-                           "host"   => "ftp.example.com",
-                           "path"   => "//path/to/dir")).to eq(
+        "host"   => "ftp.example.com",
+        "path"   => "//path/to/dir")).to eq(
                              "ftp://ftp.example.com/%2fpath/to/dir"
                            )
     end
 
     it "returns URL string with escaped leading /// in the path" do
       expect(subject.Build("scheme" => "ftp",
-                           "host"   => "ftp.example.com",
-                           "path"   => "///path/to/dir")).to eq(
+        "host"   => "ftp.example.com",
+        "path"   => "///path/to/dir")).to eq(
                              "ftp://ftp.example.com/%2fpath/to/dir"
                            )
     end
 
     it "returns URL string with escaped leading /// in the path and params" do
       expect(subject.Build("scheme" => "ftp",
-                           "host"   => "ftp.example.com",
-                           "query"  => "param1=val1&param2=val2",
-                           "path"   => "///path/to/dir")).to eq(
+        "host"   => "ftp.example.com",
+        "query"  => "param1=val1&param2=val2",
+        "path"   => "///path/to/dir")).to eq(
                              "ftp://ftp.example.com/%2fpath/to/dir?param1=val1&param2=val2"
                            )
     end
@@ -194,7 +194,7 @@ describe Yast::URL do
     it "returns URL string with escaped non-ASCII chars in the path" do
       # bnc#446395
       expect(subject.Build("scheme" => "dir",
-                           "path"   => "/path/to/\u011B\u0161\u010D\u0159\u017E\u00FD\u00E1\u00ED\u00E9/dir")).to eq(
+        "path"   => "/path/to/\u011B\u0161\u010D\u0159\u017E\u00FD\u00E1\u00ED\u00E9/dir")).to eq(
                              "dir:///path/to/%c4%9b%c5%a1%c4%8d%c5%99%c5%be%c3%bd%c3%a1%c3%ad%c3%a9/dir"
                            )
     end
@@ -202,8 +202,8 @@ describe Yast::URL do
     it "returns URL string with nonescaped ':' in the path" do
       # bnc#966413
       expect(subject.Build("scheme" => "nfs",
-                           "host"   => "test.suse.de",
-                           "path"   => "dist/ibs/SUSE:/SLE-SP1:/GA/images/iso/test.iso")).to eq(
+        "host"   => "test.suse.de",
+        "path"   => "dist/ibs/SUSE:/SLE-SP1:/GA/images/iso/test.iso")).to eq(
                              "nfs://test.suse.de/dist/ibs/SUSE:/SLE-SP1:/GA/images/iso/test.iso"
                            )
     end
@@ -211,17 +211,17 @@ describe Yast::URL do
     context "given IPv6 host" do
       it "returns ftp URL string with IPv6 host" do
         expect(subject.Build("scheme" => "ftp",
-                             "host"   => "2001:de8:0:f123::1",
-                             "path"   => "///path/to/dir")).to eq(
+          "host"   => "2001:de8:0:f123::1",
+          "path"   => "///path/to/dir")).to eq(
                                "ftp://[2001:de8:0:f123::1]/%2fpath/to/dir"
                              )
       end
 
       it "returns http URL string with IPv6 host" do
         expect(subject.Build("scheme" => "http",
-                             "host"   => "2001:de8:0:f123::1",
-                             "port"   => "8080",
-                             "path"   => "///path/to/dir")).to eq(
+          "host"   => "2001:de8:0:f123::1",
+          "port"   => "8080",
+          "path"   => "///path/to/dir")).to eq(
                                "http://[2001:de8:0:f123::1]:8080/path/to/dir"
                              )
       end
@@ -231,11 +231,11 @@ describe Yast::URL do
       it "returns samba URL string" do
         # bnc#491482
         expect(subject.Build("domain" => "workgroup",
-                             "host"   => "myserver.com",
-                             "pass"   => "passwd",
-                             "path"   => "/share$$share/path/on/the/share",
-                             "scheme" => "smb",
-                             "user"   => "username")).to eq(
+          "host"   => "myserver.com",
+          "pass"   => "passwd",
+          "path"   => "/share$$share/path/on/the/share",
+          "scheme" => "smb",
+          "user"   => "username")).to eq(
                                "smb://username:passwd@myserver.com/share$$share/path/on/the/share?workgroup=workgroup"
                              )
       end

@@ -271,7 +271,7 @@ module Yast
       minimum = 0
       Builtins.foreach(widgets) do |w|
         timeout = Ops.get_integer(w, "ui_timeout", 0)
-        if Ops.less_than(timeout, minimum) && Ops.greater_than(timeout, 0) ||
+        if (Ops.less_than(timeout, minimum) && Ops.greater_than(timeout, 0)) ||
             minimum == 0
           minimum = timeout
         end
@@ -441,10 +441,10 @@ module Yast
         end
         Builtins.foreach(to_check) do |key|
           if key != "label" ||
-              Ops.get(v, "widget") != :radio_buttons &&
+              (Ops.get(v, "widget") != :radio_buttons &&
                   Ops.get(v, "widget") != :custom &&
                   Ops.get(v, "widget") != :rich_text &&
-                  Ops.get(v, "widget") != :func
+                  Ops.get(v, "widget") != :func)
             ret = ValidateValueContents(key, Ops.get(v, key), k) && ret
           end
         end
@@ -488,10 +488,10 @@ module Yast
           from: "any",
           to:   "term ()"
         )
-        if !toEval.nil?
-          Ops.set(w, "widget", toEval.call)
-        else
+        if toEval.nil?
           Ops.set(w, "widget", VBox())
+        else
+          Ops.set(w, "widget", toEval.call)
         end
       else
         id_term = Id(Ops.get_string(w, "_cwm_key", ""))
@@ -551,7 +551,7 @@ module Yast
           )
         when :intfield
           min = Ops.get_integer(w, "minimum", 0)
-          max = Ops.get_integer(w, "maximum", 2**31 - 1) # libyui support only signed int
+          max = Ops.get_integer(w, "maximum", (2**31) - 1) # libyui support only signed int
           Ops.set(
             w,
             "widget",
@@ -796,7 +796,7 @@ module Yast
         handleDebug if Ops.get_string(event_descr, "EventType", "") == "DebugEvent"
         handle_ret = handleWidgets(widgets, event_descr)
         if !handle_ret.nil? ||
-            Ops.is_symbol?(ret) && Builtins.contains(save_exits, ret)
+            (Ops.is_symbol?(ret) && Builtins.contains(save_exits, ret))
           save = true
           if !handle_ret.nil?
             ret = handle_ret
@@ -853,22 +853,22 @@ module Yast
       next_ = "" if next_.nil?
       back = "" if back.nil?
       abort = "" if abort.nil?
-      if next_ != ""
-        Wizard.SetNextButton(:next, next_)
-      else
+      if next_ == ""
         Wizard.HideNextButton
+      else
+        Wizard.SetNextButton(:next, next_)
       end
 
-      if abort != ""
-        Wizard.SetAbortButton(:abort, abort)
-      else
+      if abort == ""
         Wizard.HideAbortButton
+      else
+        Wizard.SetAbortButton(:abort, abort)
       end
 
-      if back != ""
-        Wizard.SetBackButton(:back, back)
-      else
+      if back == ""
         Wizard.HideBackButton
+      else
+        Wizard.SetBackButton(:back, back)
       end
 
       nil
@@ -914,7 +914,7 @@ module Yast
       options = {
         "contents"     => widgets_contents(contents),
         "widget_names" => widgets.map(&:widget_id),
-        "widget_descr" => Hash[widgets.map { |w| [w.widget_id, w.cwm_definition] }]
+        "widget_descr" => widgets.map { |w| [w.widget_id, w.cwm_definition] }.to_h
       }
       options["caption"] = caption if caption
       options["back_button"] = back_button if back_button
@@ -941,7 +941,7 @@ module Yast
         settings["widget_names"] ||= []
         settings["widget_names"] += widgets.map(&:widget_id)
         settings["widget_descr"] ||= {}
-        settings["widget_descr"] = Hash[widgets.map { |w| [w.widget_id, w.cwm_definition] }]
+        settings["widget_descr"] = widgets.map { |w| [w.widget_id, w.cwm_definition] }.to_h
       end
       widget_descr = Ops.get_map(settings, "widget_descr", {})
       contents = Ops.get_term(settings, "contents", VBox())

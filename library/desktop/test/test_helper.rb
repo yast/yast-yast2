@@ -16,6 +16,6 @@
 #
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
-require_relative "../../../test/test_helper.rb"
+require_relative "../../../test/test_helper"
 
 DESKTOP_DATA_PATH = File.join(__dir__, "data")

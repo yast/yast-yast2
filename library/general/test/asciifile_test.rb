@@ -38,7 +38,7 @@ describe "AsciiFile" do
         Yast::AsciiFile.ReadFile(fstab_ref, FSTAB_FILENAME)
       end
 
-      # note that the result is `fstab["l"]`
+      # NOTE: that the result is `fstab["l"]`
       # as the rest of `fstab` are the parsing parameters
       it "produces the result under the 'l' key" do
         expect(fstab_ref.value).to have_key "l"

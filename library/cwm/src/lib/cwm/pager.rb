@@ -35,7 +35,7 @@ module CWM
 
       return nil unless page
 
-      # Note: don't rely on new_id being equal to page.widget_id
+      # NOTE: don't rely on new_id being equal to page.widget_id
       # This may not be true for subclasses redefining #page_for_id
       # (see bsc#1078212)
       return nil if @current_page.widget_id == page.widget_id

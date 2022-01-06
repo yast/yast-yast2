@@ -92,7 +92,7 @@ module Y2Packager
     # Backward compatibility method to access resolvable like hash.
     def [](key)
       log.info "Calling [] with #{key}. It is deprecated. Use method name " \
-        "directly. Called from #{caller(1).first}"
+               "directly. Called from #{caller(1).first}"
 
       public_send(key.to_sym)
     # key not found, so return nil to be compatible
@@ -157,7 +157,7 @@ module Y2Packager
     # @param attr [Symbol] The required attribute to load.
     # @return [Object] The read value.
     def load_attribute(attr)
-      attrs = Hash[((UNIQUE_ATTRIBUTES + OPTIONAL_ATTRIBUTES).map { |a| [a, instance_variable_get("@#{a}")] })]
+      attrs = ((UNIQUE_ATTRIBUTES + OPTIONAL_ATTRIBUTES).map { |a| [a, instance_variable_get("@#{a}")] }).to_h
       resolvables = Yast::Pkg.Resolvables(attrs, [attr])
 
       # Finding more than one result is suspicious, log a warning

@@ -313,9 +313,7 @@ module Yast
         to:   "list <map> ()"
       )
 
-      if !tree_handler.nil?
-        ShowTree(tree_handler)
-      else
+      if tree_handler.nil?
         ShowFlat(ids_order, screens)
         if Ops.get_string(settings, "initial_screen", "") == ""
           Builtins.find(ids_order) do |s|
@@ -323,6 +321,8 @@ module Yast
             true
           end
         end
+      else
+        ShowTree(tree_handler)
       end
       AdjustButtonsAny(settings)
       RunAndHide(settings)

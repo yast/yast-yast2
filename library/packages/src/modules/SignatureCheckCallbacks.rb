@@ -65,7 +65,7 @@ module Yast
         dont_show_dialog_ident,
         filename
       )
-        return SignatureCheckDialogs.UseUnsignedItem(
+        SignatureCheckDialogs.UseUnsignedItem(
           :file,
           filename,
           dont_show_dialog_ident,
@@ -73,7 +73,7 @@ module Yast
         )
         # Return the default value entered by user
       else
-        return SignatureCheckDialogs.GetDefaultDialogReturn(
+        SignatureCheckDialogs.GetDefaultDialogReturn(
           dont_show_dialog_ident,
           filename
         )
@@ -100,14 +100,14 @@ module Yast
         dont_show_dialog_ident,
         filename
       )
-        return SignatureCheckDialogs.UseItemWithNoChecksum(
+        SignatureCheckDialogs.UseItemWithNoChecksum(
           :file,
           filename,
           dont_show_dialog_ident
         )
         # Return the default value entered by user
       else
-        return SignatureCheckDialogs.GetDefaultDialogReturn(
+        SignatureCheckDialogs.GetDefaultDialogReturn(
           dont_show_dialog_ident,
           filename
         )
@@ -128,7 +128,7 @@ module Yast
         dont_show_dialog_ident,
         filename
       )
-        return SignatureCheckDialogs.UseFileWithWrongDigest(
+        SignatureCheckDialogs.UseFileWithWrongDigest(
           filename,
           requested_digest,
           found_digest,
@@ -136,7 +136,7 @@ module Yast
         )
       else
         # Return the default value entered by user
-        return SignatureCheckDialogs.GetDefaultDialogReturn(
+        SignatureCheckDialogs.GetDefaultDialogReturn(
           dont_show_dialog_ident,
           filename
         )
@@ -158,14 +158,14 @@ module Yast
         dont_show_dialog_ident,
         filename
       )
-        return SignatureCheckDialogs.UseFileWithUnknownDigest(
+        SignatureCheckDialogs.UseFileWithUnknownDigest(
           filename,
           digest,
           dont_show_dialog_ident
         )
       else
         # Return the default value entered by user
-        return SignatureCheckDialogs.GetDefaultDialogReturn(
+        SignatureCheckDialogs.GetDefaultDialogReturn(
           dont_show_dialog_ident,
           filename
         )
@@ -194,7 +194,7 @@ module Yast
         filename
       )
         # Unknown keyname == "Unknown Key"
-        return SignatureCheckDialogs.ItemSignedWithUnknownSignature(
+        SignatureCheckDialogs.ItemSignedWithUnknownSignature(
           :file,
           filename,
           keyid,
@@ -203,7 +203,7 @@ module Yast
         )
         # Return the default value entered by user
       else
-        return SignatureCheckDialogs.GetDefaultDialogReturn(
+        SignatureCheckDialogs.GetDefaultDialogReturn(
           dont_show_dialog_ident,
           filename
         )

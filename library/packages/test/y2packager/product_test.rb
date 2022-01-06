@@ -103,11 +103,11 @@ describe Y2Packager::Product do
     before do
       allow(Y2Packager::Resolvable).to receive(:find).with(name: product.name, kind: :product)
         .and_return([Y2Packager::Resolvable.new("kind" => :product,
-        "name" => product.name, "status" => status,
-        "source" => 1, "short_name" => "short_name",
-        "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
-        "display_name" => "display_name", "category" => "addon",
-        "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")])
+          "name" => product.name, "status" => status,
+          "source" => 1, "short_name" => "short_name",
+          "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
+          "display_name" => "display_name", "category" => "addon",
+          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")])
     end
 
     context "if product was selected for installation" do
@@ -131,11 +131,11 @@ describe Y2Packager::Product do
     before do
       allow(Y2Packager::Resolvable).to receive(:find).with(name: product.name, kind: :product)
         .and_return([Y2Packager::Resolvable.new("kind" => :product,
-        "name" => product.name, "status" => status,
-        "source" => 1, "short_name" => "short_name",
-        "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
-        "display_name" => "display_name", "category" => "addon",
-        "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")])
+          "name" => product.name, "status" => status,
+          "source" => 1, "short_name" => "short_name",
+          "version" => "1.0", "arch" => "x86_64", "product_package" => "testpackage",
+          "display_name" => "display_name", "category" => "addon",
+          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")])
     end
 
     context "if product is installed" do
@@ -406,12 +406,12 @@ describe Y2Packager::Product do
       allow(Y2Packager::Resolvable).to receive(:find).with(name: product.name,
         kind: :product, version: product.version)
         .and_return([Y2Packager::Resolvable.new("kind" => :product,
-        "name" => "openSUSE", "status" => :selected,
-        "source" => 1, "short_name" => "short_name",
-        "version" => product.version, "relnotes_url" => relnotes_url,
-        "arch" => "x86_64", "product_package" => "testpackage",
-        "display_name" => "display_name", "category" => "addon",
-        "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")])
+          "name" => "openSUSE", "status" => :selected,
+          "source" => 1, "short_name" => "short_name",
+          "version" => product.version, "relnotes_url" => relnotes_url,
+          "arch" => "x86_64", "product_package" => "testpackage",
+          "display_name" => "display_name", "category" => "addon",
+          "vendor" => "SUSE LINUX Products GmbH, Nuernberg, Germany")])
     end
 
     it "returns relnotes_url property" do

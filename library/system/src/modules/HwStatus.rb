@@ -89,10 +89,10 @@ module Yast
         "Command retval: %1",
         Ops.get_integer(cmdret, "exit", -1)
       )
-      if exit != 0
-        Builtins.y2error("Command output: %1", cmdret)
-      else
+      if exit == 0
         Builtins.y2debug("Command output: %1", cmdret)
+      else
+        Builtins.y2error("Command output: %1", cmdret)
       end
 
       nil

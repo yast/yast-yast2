@@ -65,7 +65,7 @@ module Yast
       elsif Ops.is_float?(variable)
         Builtins.sformat("%2%1 (float)", variable, indent)
       elsif Ops.is_string?(variable)
-        return Builtins.sformat(
+        Builtins.sformat(
           "%2%1 (string)",
           escapestring(Convert.to_string(variable)),
           indent

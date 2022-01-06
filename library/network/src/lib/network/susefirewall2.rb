@@ -1042,10 +1042,10 @@ module Yast
           Builtins.sformat(
             _(
               "Interface '%1' is included in multiple firewall zones.\n" \
-                "Continuing with configuration can produce errors.\n" \
-                "\n" \
-                "It is recommended to leave the configuration and repair it manually in\n" \
-                "the file '/etc/sysconfig/SuSEFirewall'."
+              "Continuing with configuration can produce errors.\n" \
+              "\n" \
+              "It is recommended to leave the configuration and repair it manually in\n" \
+              "the file '/etc/sysconfig/SuSEFirewall'."
             ),
             interface
           )
@@ -1632,7 +1632,7 @@ module Yast
         # Not started - start it
         if !IsStarted()
           Builtins.y2milestone("Starting firewall services")
-          return StartServices()
+          StartServices()
         # Started - restart it
         # modified - restart it, or ...
         # bugzilla #186186
@@ -1643,23 +1643,23 @@ module Yast
           Builtins.y2milestone("Stopping firewall services")
           StopServices()
           Builtins.y2milestone("Starting firewall services")
-          return StartServices()
+          StartServices()
         # not modified - skip restart
         else
           Builtins.y2milestone(
             "Configuration hasn't modified, skipping restarting services"
           )
-          return true
+          true
         end
       # Firewall should stop after Write()
       # started - stop
       elsif IsStarted()
         Builtins.y2milestone("Stopping firewall services")
-        return StopServices()
+        StopServices()
         # stopped - skip stopping
       else
         Builtins.y2milestone("Firewall has been stopped already")
-        return true
+        true
       end
     end
 

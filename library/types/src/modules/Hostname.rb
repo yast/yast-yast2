@@ -53,8 +53,8 @@ module Yast
       # Translators: dot: ".", hyphen: "-"
       _(
         "A valid domain name consists of components separated by dots.\n" \
-          "Each component contains letters, digits, and hyphens. A hyphen may not\n" \
-          "start or end a component and the last component may not begin with a digit."
+        "Each component contains letters, digits, and hyphens. A hyphen may not\n" \
+        "start or end a component and the last component may not begin with a digit."
       )
     end
 
@@ -91,14 +91,12 @@ module Yast
       return false if domain.nil? || domain == ""
 
       # if "domain" contains "." character as last character remove it before validation (but it's valid)
-      if Ops.greater_than(Builtins.size(domain), 1)
-        if Builtins.substring(domain, Ops.subtract(Builtins.size(domain), 1), 1) == "."
-          domain = Builtins.substring(
-            domain,
-            0,
-            Ops.subtract(Builtins.size(domain), 1)
-          )
-        end
+      if Ops.greater_than(Builtins.size(domain), 1) && (Builtins.substring(domain, Ops.subtract(Builtins.size(domain), 1), 1) == ".")
+        domain = Builtins.substring(
+          domain,
+          0,
+          Ops.subtract(Builtins.size(domain), 1)
+        )
       end
       l = Builtins.splitstring(domain, ".")
       return false if Builtins.contains(Builtins.maplist(l) { |h| Check(h) }, false)
@@ -131,11 +129,11 @@ module Yast
       dn = ""
 
       dot = Builtins.findfirstof(fqhostname, ".")
-      if !dot.nil?
+      if dot.nil?
+        hn = fqhostname
+      else
         hn = Builtins.substring(fqhostname, 0, dot)
         dn = Builtins.substring(fqhostname, Ops.add(dot, 1))
-      else
-        hn = fqhostname
       end
 
       [hn, dn]
@@ -157,13 +155,13 @@ module Yast
     def CurrentFQ
       hostname_data = SCR.Execute(path(".target.bash_output"), "/usr/bin/hostname --fqdn")
 
-      if hostname_data["exit"] != 0
+      if hostname_data["exit"] == 0
+        fqhostname = hostname_data["stdout"]
+      else
         Builtins.y2warning("Using fallback hostname")
 
         fqhostname = SCR.Read(path(".target.string"), "/etc/hostname") || ""
         fqhostname = "linux.#{@DefaultDomain}" if fqhostname.empty?
-      else
-        fqhostname = hostname_data["stdout"]
       end
 
       fqhostname = String.FirstChunk(fqhostname, "\n")

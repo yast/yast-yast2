@@ -76,7 +76,7 @@ module Yast2
       "--columns config,subvolume | /usr/bin/grep \"^root,\" >/dev/null".freeze
 
     CREATE_SNAPSHOT_CMD = "/usr/bin/snapper --no-dbus --root=%{root} create "\
-      "--type %{snapshot_type} --description %{description}".freeze
+                          "--type %{snapshot_type} --description %{description}".freeze
 
     LIST_SNAPSHOTS_CMD =
       "/usr/bin/snapper --no-dbus --root=%{root} --utc --csvout list --disable-used-space " \
@@ -192,10 +192,10 @@ module Yast2
         if [:around, :single].include?(snapshot_type)
           return false if disable_snapshots.include?("all")
 
-          return !disable_snapshots.include?(snapshot_type.to_s)
+          !disable_snapshots.include?(snapshot_type.to_s)
         else
           raise ArgumentError, "Unsupported snapshot type #{snapshot_type.inspect}, " \
-                "supported are :around and :single"
+                               "supported are :around and :single"
         end
       end
 

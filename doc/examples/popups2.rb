@@ -55,32 +55,32 @@ module Yast
           Popup.YesNoHeadline(
             "Really delete world?",
             "You in your infinite wisdom have chosen to delete this only world of ours.\n" \
-              "This will mean the end to all of mankind and all life in the only known planet\n" \
-              "known to be inhabited by intelligent or other life in the entire universe.\n" \
-              "\n" \
-              "Even though it is well known that mankind and human character are far from perfect,\n" \
-              "we urgently request you to reconsider that decision.\n" \
-              "\n" \
-              "Are you absolutely sure you wish to delete this world?"
+            "This will mean the end to all of mankind and all life in the only known planet\n" \
+            "known to be inhabited by intelligent or other life in the entire universe.\n" \
+            "\n" \
+            "Even though it is well known that mankind and human character are far from perfect,\n" \
+            "we urgently request you to reconsider that decision.\n" \
+            "\n" \
+            "Are you absolutely sure you wish to delete this world?"
           )
         when :generic2
           Popup.AnyQuestion(
             "Great Dilemma",
             "You must now decide how to save the world.\n" \
-              "\n" \
-              "\n" \
-              "\n" \
-              "If you make the wrong decision, creatures from outer space may choose\n" \
-              "\n" \
-              "to get rid of this planet of ours to make room for some interstellar\n" \
-              "\n" \
-              "hyper expressway.\n" \
-              "\n" \
-              "\n" \
-              "\n" \
-              "So: Do you fail to recognize that your inability to confront\n" \
-             "\n" \
-              "this kind of indecision may destroy all of mankind?",
+            "\n" \
+            "\n" \
+            "\n" \
+            "If you make the wrong decision, creatures from outer space may choose\n" \
+            "\n" \
+            "to get rid of this planet of ours to make room for some interstellar\n" \
+            "\n" \
+            "hyper expressway.\n" \
+            "\n" \
+            "\n" \
+            "\n" \
+            "So: Do you fail to recognize that your inability to confront\n" \
+            "\n" \
+            "this kind of indecision may destroy all of mankind?",
             "&Everything you say",
             "I'll &buy one of it",
             :focus_no
@@ -89,20 +89,20 @@ module Yast
           Popup.AnyQuestion3(
             "Greatest Dilemma of the Millennium",
             "You must now decide how to save the world.\n" \
-              "\n" \
-              "\n" \
-              "\n" \
-              "If you make the wrong decision, creatures from outer space may choose\n" \
-              "\n" \
-              "to get rid of this planet of ours to make room for some interstellar\n" \
-              "\n" \
-              "hyper expressway.\n" \
-              "\n" \
-              "\n" \
-              "\n" \
-              "So: Do you fail to recognize that your inability to confront\n" \
-             "\n" \
-              "this kind of indecision may destroy all of mankind?",
+            "\n" \
+            "\n" \
+            "\n" \
+            "If you make the wrong decision, creatures from outer space may choose\n" \
+            "\n" \
+            "to get rid of this planet of ours to make room for some interstellar\n" \
+            "\n" \
+            "hyper expressway.\n" \
+            "\n" \
+            "\n" \
+            "\n" \
+            "So: Do you fail to recognize that your inability to confront\n" \
+            "\n" \
+            "this kind of indecision may destroy all of mankind?",
             "&Everything you say",
             "I'll &buy one of it",
             "But I don't have a &car",
@@ -113,10 +113,10 @@ module Yast
             "Bad News",
             RichText(
               "<p>Due to unforeseen circumstances it is necessary to <b>format your hard disk</b>.</p>\n" \
-                "<p>This may sound bad enough, but we must <b>format your brain</b>, too.</p>\n" \
-                "<p>And once this is done, you will fail to notice that in the process\n" \
-                "the entire planet will undergo substantial <b>rearranging of the continental shelves</b>:\n" \
-                "The continents will all be lowered to eight feet below sea level.</p>\n"
+              "<p>This may sound bad enough, but we must <b>format your brain</b>, too.</p>\n" \
+              "<p>And once this is done, you will fail to notice that in the process\n" \
+              "the entire planet will undergo substantial <b>rearranging of the continental shelves</b>:\n" \
+              "The continents will all be lowered to eight feet below sea level.</p>\n"
             ),
             50, # width
             10

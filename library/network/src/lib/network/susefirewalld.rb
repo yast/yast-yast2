@@ -195,7 +195,7 @@ module Yast
       @SETTINGS.keys.each do |key|
         next unless import_settings.include?(key)
 
-        if import_settings[key].class == Hash
+        if import_settings[key].instance_of?(Hash)
           # Merge them
           @SETTINGS[key].merge!(import_settings[key])
         else
@@ -315,9 +315,7 @@ module Yast
       # FIXME: Need to improve that to not re-write everything
       begin
         # Set logging
-        if !@SETTINGS["logging"].nil?
-          @fwd_api.log_denied_packets(@SETTINGS["logging"]) if !@fwd_api.log_denied_packets?(@SETTINGS["logging"])
-        end
+        @fwd_api.log_denied_packets(@SETTINGS["logging"]) if !@SETTINGS["logging"].nil? && !@fwd_api.log_denied_packets?(@SETTINGS["logging"])
         # Configure the zones
         GetKnownFirewallZones().each do |zone|
           if zone_attr_modified?(zone)
@@ -380,25 +378,25 @@ module Yast
 
       if GetStartService()
         # Not started - start it
-        if !IsStarted()
-          Builtins.y2milestone("Starting firewall services")
-          return StartServices()
-          # Started - restart it
-        else
+        if IsStarted()
           Builtins.y2milestone("Firewall has been started already")
           # Make it real
           @fwd_api.reload
-          return true
+          true
+        else
+          Builtins.y2milestone("Starting firewall services")
+          StartServices()
+          # Started - restart it
         end
       # Firewall should stop after Write()
       # started - stop
       elsif IsStarted()
         Builtins.y2milestone("Stopping firewall services")
-        return StopServices()
+        StopServices()
         # stopped - skip stopping
       else
         Builtins.y2milestone("Firewall has been stopped already")
-        return true
+        true
       end
     end
 
@@ -752,11 +750,11 @@ module Yast
         drop_rule = @SETTINGS["logging"]
         case drop_rule
         when "off"
-          return "NONE"
+          "NONE"
         when "broadcast", "multicast", "unicast"
-          return "CRIT"
+          "CRIT"
         when "all"
-          return "ALL"
+          "ALL"
         end
       else
         Builtins.y2error("Possible rules are only 'ACCEPT' or 'DROP'")

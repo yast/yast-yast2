@@ -275,7 +275,7 @@ module Yast
       unit = Yast2::Systemd::Service.find(name)
       failure(:not_found, name) unless unit
 
-      (unit&.active?) ? 0 : -1
+      unit&.active? ? 0 : -1
     end
 
     # @deprecated Not supported by systemd
@@ -408,12 +408,12 @@ module Yast
       deprecate("use `start` or `stop` instead")
 
       service = Yast2::Systemd::Service.find(name)
-      if !service
-        failure(:not_found, name)
-        success = false
-      else
+      if service
         success = service.send(param)
         self.error = service.error
+      else
+        failure(:not_found, name)
+        success = false
       end
       { "stdout" => "", "stderr" => error, "exit" => success ? 0 : 1 }
     end

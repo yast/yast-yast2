@@ -282,9 +282,9 @@ module Yast
         "handle"        => fun_ref(method(:GpgNewKey), "symbol (string, map)"),
         "help"          => _(
           "<p><big><b>Create a new GPG key</b></big><br>\n" \
-            "<tt>gpg --gen-key</tt> is started, see the <tt>gpg</tt> manual page for more information.\n" \
-            "Press Ctrl+C to cancel.\n" \
-            "</p>"
+          "<tt>gpg --gen-key</tt> is started, see the <tt>gpg</tt> manual page for more information.\n" \
+          "Press Ctrl+C to cancel.\n" \
+          "</p>"
         )
       }
     end

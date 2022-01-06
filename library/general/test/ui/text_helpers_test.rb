@@ -43,7 +43,7 @@ describe ::UI::TextHelpers do
       it "does not break words" do
         wrapped_text = subject.wrap_text(text)
 
-        expect(wrapped_text).to match(/it\'s/)
+        expect(wrapped_text).to match(/it's/)
         expect(wrapped_text).to match(/not_real_but_really_long_word/)
       end
 
@@ -241,10 +241,10 @@ describe ::UI::TextHelpers do
         let(:text) do
           "<p>YaST is both" \
             "<ol>" \
-              "<li>an extremely flexible installer</li>" \
-              "<li>a powerful control center</li>" \
+            "<li>an extremely flexible installer</li>" \
+            "<li>a powerful control center</li>" \
             "</ol>" \
-          "</p>"
+            "</p>"
         end
 
         let(:result) do

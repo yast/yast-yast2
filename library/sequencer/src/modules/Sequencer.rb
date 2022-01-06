@@ -212,9 +212,7 @@ module Yast
         )
       end
       ret = false
-      if Ops.is_list?(found)
-        ret = Ops.get_boolean(Convert.to_list(found), 1) if Ops.greater_than(Builtins.size(Convert.to_list(found)), 1)
-      end
+      ret = Ops.get_boolean(Convert.to_list(found), 1) if Ops.is_list?(found) && Ops.greater_than(Builtins.size(Convert.to_list(found)), 1)
       ret
     end
 

@@ -283,10 +283,10 @@ module Yast2
     # @see valid_action?
     # @param value [Symbol]
     def selected_item?(value)
-      if !valid_action?(current_action)
-        value == :nothing
-      else
+      if valid_action?(current_action)
         current_action == value
+      else
+        value == :nothing
       end
     end
 

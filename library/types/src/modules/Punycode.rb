@@ -72,10 +72,10 @@ module Yast
     # @param [Fixnum] new_max_size
     # @see #GetMaximumCacheSize()
     def SetMaximumCacheSize(new_max_size)
-      if !new_max_size.nil?
-        @maximum_cache_size = new_max_size
-      else
+      if new_max_size.nil?
         Builtins.y2error("Cannot set MaximumCacheSize to nil!")
+      else
+        @maximum_cache_size = new_max_size
       end
 
       nil
@@ -211,7 +211,7 @@ module Yast
           all << test_cached[string_in]
         else # Recently converted strings
           found_index += 1
-          all << converted_not_cached[found_index] || ""
+          (all << converted_not_cached[found_index]) || ""
 
           # Adding converted strings to cache
           if to_punycode

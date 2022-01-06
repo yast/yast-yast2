@@ -203,8 +203,7 @@ module Yast
       end
 
       # selection box label
-      ret = ChooseItemSimple(_("&NFS Servers"), @found_nfs_servers, selected)
-      ret
+      ChooseItemSimple(_("&NFS Servers"), @found_nfs_servers, selected)
     end
 
     # Give me one host name on the local network
@@ -227,8 +226,7 @@ module Yast
       end
 
       # selection box label
-      ret = ChooseItemSimple(_("Re&mote Hosts"), @found_hosts, selected)
-      ret
+      ChooseItemSimple(_("Re&mote Hosts"), @found_hosts, selected)
     end
 
     # Give me export path of selected server
@@ -247,8 +245,7 @@ module Yast
       dirs = [] if dirs.nil?
 
       # selection box label
-      ret = ChooseItemSimple(_("&Exported Directories"), dirs, selected)
-      ret
+      ChooseItemSimple(_("&Exported Directories"), dirs, selected)
     end
 
     publish function: :ChooseItem, type: "string (string, list <string>, string)"

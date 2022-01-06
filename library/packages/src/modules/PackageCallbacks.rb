@@ -31,7 +31,7 @@ module Yast
     include Yast::Logger
 
     # text to clean progress bar in command line
-    CLEAR_PROGRESS_TEXT = "\b" * 10 + " " * 10 + "\b" * 10
+    CLEAR_PROGRESS_TEXT = ("\b" * 10) + (" " * 10) + ("\b" * 10)
     # max. length of the text in the repository popup window
     MAX_POPUP_TEXT_SIZE = 60
     # base in seconds for automatic retry after a timeout,
@@ -494,7 +494,12 @@ module Yast
       UI.CloseDialog if @_package_popup
       @_package_popup = false
 
-      if error != 0
+      if error == 0
+        # no error, there is additional info (rpm output), see bnc#456446
+        Builtins.y2milestone("Additional RPM otput: %1", reason)
+
+        CommandLine.Print(reason) if Mode.commandline
+      else
         Builtins.y2milestone(
           "DonePackage(error: %1, reason: '%2')",
           error,
@@ -590,12 +595,7 @@ module Yast
           return "R" if r == :retry
         end
 
-      # default: ignore
-      else
-        # no error, there is additional info (rpm output), see bnc#456446
-        Builtins.y2milestone("Additional RPM otput: %1", reason)
-
-        CommandLine.Print(reason) if Mode.commandline
+        # default: ignore
       end
 
       "I"
@@ -983,13 +983,13 @@ module Yast
 
         if found
           Builtins.y2milestone("Device %1 has index %2", eject_device, dindex)
-          return "E#{dindex}"
+          "E#{dindex}"
         else
           Builtins.y2warning(
             "Device %1 not found in the list, using default",
             eject_device
           )
-          return "E"
+          "E"
         end
       when :url
         Builtins.y2milestone("Redirecting to: %1", URL.HidePassword(url))
@@ -1575,15 +1575,15 @@ module Yast
           # popup heading
           Heading(_("Running Script")),
           VBox(
-            if patch_full_name != ""
+            if patch_full_name == ""
+              Empty()
+            else
               HBox(
                 # label, patch name follows
                 Label(Opt(:boldFont), _("Patch: ")),
                 Label(patch_full_name),
                 HStretch()
               )
-            else
-              Empty()
             end,
             HBox(
               # label, script name follows
@@ -1744,32 +1744,30 @@ module Yast
     end
 
     def InitDownload(task)
-      if !Mode.commandline
-        if !full_screen && !IsDownloadProgressPopup()
-          # heading of popup
-          heading = _("Downloading")
+      if !Mode.commandline && (!full_screen && !IsDownloadProgressPopup())
+        # heading of popup
+        heading = _("Downloading")
 
-          UI.OpenDialog(
-            Opt(:decorated),
+        UI.OpenDialog(
+          Opt(:decorated),
+          VBox(
+            Heading(Id(:download_progress_popup_window), heading),
             VBox(
-              Heading(Id(:download_progress_popup_window), heading),
-              VBox(
-                HSpacing(60),
-                HBox(
-                  HSpacing(1),
-                  ProgressBar(Id(:progress), task, 100),
-                  HSpacing(1)
-                ),
-                VSpacing(0.5),
-                ButtonBox(
-                  PushButton(Id(:abort), Opt(:cancelButton), Label.AbortButton)
-                ),
-                VSpacing(0.5)
-              )
+              HSpacing(60),
+              HBox(
+                HSpacing(1),
+                ProgressBar(Id(:progress), task, 100),
+                HSpacing(1)
+              ),
+              VSpacing(0.5),
+              ButtonBox(
+                PushButton(Id(:abort), Opt(:cancelButton), Label.AbortButton)
+              ),
+              VSpacing(0.5)
             )
           )
-          UI.ChangeWidget(Id(:progress), :Value, 0)
-        end
+        )
+        UI.ChangeWidget(Id(:progress), :Value, 0)
       end
 
       nil
@@ -2256,7 +2254,7 @@ module Yast
       # dgettext()
       url_query = URI(url).query
       if url_query
-        url_params = Hash[URI.decode_www_form(url_query)]
+        url_params = URI.decode_www_form(url_query).to_h
         if url_params.key?("credentials")
           # Seems to be the url of a registration server, so add the tip to msg
           tip = Builtins.dgettext("registration",

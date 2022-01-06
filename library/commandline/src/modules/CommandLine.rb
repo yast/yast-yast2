@@ -480,15 +480,15 @@ module Yast
             elsif opttype == "integer"
               i = Builtins.tointeger(v)
               ret = !i.nil?
-              if ret != true
+              if ret == true
+                # update value of the option to integer
+                Ops.set(givenoptions, o, i)
+              else
                 # translators: error message, %2 is the value given
                 Print(
                   Builtins.sformat(_("Invalid value for option '%1': %2"), o, v)
                 )
                 @aborted = true if !@interactive
-              else
-                # update value of the option to integer
-                Ops.set(givenoptions, o, i)
               end
             else
               ret = (v == "") ? false : TypeRepository.is_a(v, opttype)
@@ -735,7 +735,21 @@ module Yast
       # translators: short help title for command line
       Print(_("Basic Syntax:"))
 
-      if !@interactive
+      if @interactive
+        # translators: module command line help
+        # translate <command> and [options] only!
+        Print(_("    <command> [options]"))
+        # translators: module command line help
+        # translate <command> only!
+        Print(_("    <command> help"))
+        # translators: module command line help
+        Print("    help")
+        Print("    longhelp")
+        Print("    xmlhelp")
+        Print("")
+        Print("    exit")
+        Print("    abort")
+      else
         # translators: module command line help, %1 is the module name
         Print(
           Builtins.sformat(
@@ -779,20 +793,6 @@ module Yast
             Ops.get_string(@modulecommands, "id", "")
           )
         )
-      else
-        # translators: module command line help
-        # translate <command> and [options] only!
-        Print(_("    <command> [options]"))
-        # translators: module command line help
-        # translate <command> only!
-        Print(_("    <command> help"))
-        # translators: module command line help
-        Print("    help")
-        Print("    longhelp")
-        Print("    xmlhelp")
-        Print("")
-        Print("    exit")
-        Print("    abort")
       end
 
       Print("")
@@ -1247,13 +1247,13 @@ module Yast
         @commandcache = {}
         @done = !@interactive
         @aborted = false
-        return @interactive
+        @interactive
       else
         # we cannot handle this on our own, return true if there is some command to be processed
         # i.e, there is no parsing error
         @done = Builtins.size(@commandcache) == 0
         @aborted = @done
-        return !@done
+        !@done
       end
     end
 
@@ -1324,7 +1324,7 @@ module Yast
         result = deep_copy(@commandcache)
         @commandcache = {}
         @done = !@interactive
-        return deep_copy(result)
+        deep_copy(result)
       # if in interactive mode, ask user for input
       elsif @interactive
         loop do
@@ -1348,11 +1348,11 @@ module Yast
         result = deep_copy(@commandcache)
         @commandcache = {}
 
-        return deep_copy(result)
+        deep_copy(result)
       else
         # there is no further commands left
         @done = true
-        return { "command" => "exit" }
+        { "command" => "exit" }
       end
     end
 
@@ -1590,20 +1590,16 @@ module Yast
           options = Ops.get_map(m, "options", {})
 
           # start initialization code if it wasn't already used
-          if !initialized
-            # check whether command is defined in the map (i.e. it is not predefined command or invalid command)
-            # and start initialization if it's defined
-            if Builtins.haskey(Ops.get_map(commandline, "actions", {}), command) &&
-                Ops.get(commandline, "initialize")
-              # non-GUI handling
-              PrintVerbose(_("Initializing"))
-              ret2 = commandline["initialize"].call
-              if !ret2
-                Builtins.y2milestone("Module initialization failed")
-                return false
-              else
-                initialized = true
-              end
+          if !initialized && (Builtins.haskey(Ops.get_map(commandline, "actions", {}), command) &&
+                Ops.get(commandline, "initialize"))
+            # non-GUI handling
+            PrintVerbose(_("Initializing"))
+            ret2 = commandline["initialize"].call
+            if ret2
+              initialized = true
+            else
+              Builtins.y2milestone("Module initialization failed")
+              return false
             end
           end
 

@@ -120,7 +120,9 @@ module Yast
     def HidePasswords(in_)
       ret = ""
 
-      if !in_.nil?
+      if in_.nil?
+        ret = nil
+      else
         parts = Builtins.splitstring(in_, " ")
 
         first = true
@@ -138,8 +140,6 @@ module Yast
           end
           ret = Ops.add(ret, cmdopt)
         end
-      else
-        ret = nil
       end
 
       ret
@@ -220,8 +220,8 @@ module Yast
     #
     # @return [void]
     def ProbeKernel
-      kernel_desktop_exists = (Mode.normal || Mode.repair) &&
-        Pkg.PkgInstalled("kernel-desktop") ||
+      kernel_desktop_exists = ((Mode.normal || Mode.repair) &&
+        Pkg.PkgInstalled("kernel-desktop")) ||
         Pkg.PkgAvailable("kernel-desktop")
       Builtins.y2milestone(
         "Desktop kernel available: %1",
@@ -386,15 +386,15 @@ module Yast
         end
       end
 
-      if the_kernel != ""
-        @final_kernel = the_kernel
-      else
+      if the_kernel == ""
         Builtins.y2warning(
           "%1 not available, using kernel-default",
           @kernel_packages
         )
 
         @final_kernel = "kernel-default"
+      else
+        @final_kernel = the_kernel
       end
       @final_kernel
     end
@@ -411,7 +411,7 @@ module Yast
     # @return a list of all kernel packages (including the base package) that
     #  are to be installed together with the base package
     def ComputePackagesForBase(base, _check_avail)
-      # Note: kernel-*-nongpl packages have been dropped, use base only
+      # NOTE: kernel-*-nongpl packages have been dropped, use base only
       ret = [base]
 
       Builtins.y2milestone("Packages for base %1: %2", base, ret)
@@ -685,7 +685,7 @@ module Yast
       discardlist = []
       # some systems (pseries) can autodetect the serial console
       if cmdlist.include?("AUTOCONSOLE")
-        # Note:  `console` is the only value that depends on the input argument.
+        # NOTE: `console` is the only value that depends on the input argument.
         discardlist << "console"
         discardlist << "AUTOCONSOLE"
       end

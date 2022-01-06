@@ -41,8 +41,7 @@ module Test
     end
 
     class InvalidValue < ::Installation::AutoinstIssues::Issue
-      attr_reader :attr
-      attr_reader :value
+      attr_reader :attr, :value
 
       def initialize(section, attr, value)
         @section = section

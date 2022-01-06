@@ -197,7 +197,7 @@ module Yast
     # @param [String] modargs arguments to be passes to module
     def AddModule(modname, modargs)
       log.warn "Initrd.AddModule() is deprecated, do not use (sysconfig.kernel.INITRD_MODULES " \
-        "is not written anymore, see bnc#895084)"
+               "is not written anymore, see bnc#895084)"
 
       if Stage.initial && Builtins.size(@modules) == 0
         tmp_mods = Convert.to_string(
@@ -209,33 +209,33 @@ module Yast
         Read()
       end
       if !Builtins.contains(ListModules(), modname) ||
-          modname == "aic7xxx" &&
-              !Builtins.contains(ListModules(), "aic7xxx_old") ||
-          modname == "aic7xxx_old" &&
-              !Builtins.contains(ListModules(), "aic7xxx")
-        if !Builtins.contains(getModulesToSkip, modname)
+          (modname == "aic7xxx" &&
+              !Builtins.contains(ListModules(), "aic7xxx_old")) ||
+          (modname == "aic7xxx_old" &&
+              !Builtins.contains(ListModules(), "aic7xxx"))
+        if Builtins.contains(getModulesToSkip, modname)
+          Builtins.y2milestone(
+            "Module %1 is in list of modules not to insert to initrd",
+            modname
+          )
+        else
           @changed = true
           Ops.set(@modules_to_store, modname, true)
           Ops.set(@modules_settings, modname, Misc.SplitOptions(modargs, {}))
-          if !Builtins.contains(@modules, modname)
+          if Builtins.contains(@modules, modname)
+            Builtins.y2milestone(
+              "Module %1 from initial list added to initrd, now contains %2",
+              modname,
+              ListModules()
+            )
+          else
             @modules = Builtins.add(@modules, modname)
             Builtins.y2milestone(
               "Module %1 added to initrd, now contains %2",
               modname,
               ListModules()
             )
-          else
-            Builtins.y2milestone(
-              "Module %1 from initial list added to initrd, now contains %2",
-              modname,
-              ListModules()
-            )
           end
-        else
-          Builtins.y2milestone(
-            "Module %1 is in list of modules not to insert to initrd",
-            modname
-          )
         end
       else
         Builtins.y2milestone("Module %1 already present in initrd", modname)

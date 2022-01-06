@@ -137,7 +137,7 @@ module Yast
       metadata = @docs[doc_type]
       if !metadata
         log.error "Calling YCPToXML with unknown doc_type #{doc_type.inspect}. " \
-          "Known types #{@docs.keys.inspect}"
+                  "Known types #{@docs.keys.inspect}"
         return nil
       end
 
@@ -337,8 +337,7 @@ module Yast
     def fetch_type(text, children, node)
       raise XMLDeserializationError.for_node(node, "contains both 't' and 'type' attributes") if node["t"] && node["type"]
 
-      type = node["t"] || node["type"] || detect_type(text, children, node)
-      type
+      node["t"] || node["type"] || detect_type(text, children, node)
     end
 
     def detect_type(text, children, node)

@@ -40,7 +40,7 @@ module Y2Issues
         _("A value is required.").dup
       end
 
-      msg << " " + format(_("Using '%{fallback}' instead."), fallback: fallback) if fallback
+      msg << (" " + format(_("Using '%{fallback}' instead."), fallback: fallback)) if fallback
       msg
     end
   end

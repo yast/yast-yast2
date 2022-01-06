@@ -76,7 +76,10 @@ module Yast
       )
       dialog_ret = nil
 
-      if Ops.get_integer(cmd, "exit", -1) != 0
+      if Ops.get_integer(cmd, "exit", -1) == 0
+        Builtins.y2milestone("Logs have been saved to: %1", savelogsto)
+        dialog_ret = true
+      else
         Builtins.y2error("Unable to save logs to %1", savelogsto)
 
         Report.Error(
@@ -90,9 +93,6 @@ module Yast
         )
 
         dialog_ret = false
-      else
-        Builtins.y2milestone("Logs have been saved to: %1", savelogsto)
-        dialog_ret = true
       end
 
       UI.CloseDialog
@@ -146,8 +146,8 @@ module Yast
                     # %3 - link to the Yast Bug Reporting HOWTO Web page
                     _(
                       "This is worth reporting a bug at %1.\n" \
-                        "Please, attach also all YaST logs stored in the '%2' directory.\n" \
-                        "See %3 for more information about YaST logs."
+                      "Please, attach also all YaST logs stored in the '%2' directory.\n" \
+                      "See %3 for more information about YaST logs."
                     ),
                     bugzilla_url,
                     "/var/log/YaST2/",

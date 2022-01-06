@@ -231,7 +231,7 @@ module Yast
       return "" if seconds < 0
 
       if seconds < 3600 # Less than one hour
-        return Builtins.sformat(
+        Builtins.sformat(
           "%1:%2",
           FormatTwoDigits(seconds / 60),
           FormatTwoDigits(seconds % 60)
@@ -239,7 +239,7 @@ module Yast
       else
         hours = seconds / 3600
         seconds = seconds % 3600
-        return Builtins.sformat(
+        Builtins.sformat(
           "%1:%2:%3",
           hours,
           FormatTwoDigits(seconds / 60),
@@ -419,7 +419,7 @@ module Yast
 
           if state == :out_of_string
             # ignore separator or white space at the beginning of the string
-            if separator.include?(character) || remove_whitespace && character =~ /[ \t]/
+            if separator.include?(character) || (remove_whitespace && character =~ /[ \t]/)
               index += 1
               next
             # start of a quoted string

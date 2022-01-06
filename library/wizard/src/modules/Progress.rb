@@ -416,7 +416,7 @@ module Yast
         end
         bar = Builtins.add(bar, Left(HBox(HSquash(items))))
 
-        bar = if 0 != @steps
+        bar = if 0 == @steps
           Builtins.add(
             bar,
             VBox(
@@ -424,7 +424,7 @@ module Yast
               ReplacePoint(Id(:subprogress_replace_point), Empty()),
               ReplacePoint(
                 Id(:progress_replace_point),
-                ProgressBar(Id(:pb), progress_title, length, 0)
+                Label(Id(:pb), Opt(:hstretch), progress_title)
               ),
               VSpacing(2)
             )
@@ -437,7 +437,7 @@ module Yast
               ReplacePoint(Id(:subprogress_replace_point), Empty()),
               ReplacePoint(
                 Id(:progress_replace_point),
-                Label(Id(:pb), Opt(:hstretch), progress_title)
+                ProgressBar(Id(:pb), progress_title, length, 0)
               ),
               VSpacing(2)
             )
@@ -863,14 +863,12 @@ module Yast
     # Make one step in a superior progress bar.
     def StepSuperior
       if Ops.greater_or_equal(@super_step, 0) &&
-          Ops.less_than(@super_step, @super_steps)
-        if !UI.HasSpecialWidget(:Wizard)
-          UI.ChangeWidget(
-            Id(Builtins.sformat("super_progress_%1", @super_step)),
-            :Value,
-            UI.Glyph(:CheckMark)
-          )
-        end
+          Ops.less_than(@super_step, @super_steps) && !UI.HasSpecialWidget(:Wizard)
+        UI.ChangeWidget(
+          Id(Builtins.sformat("super_progress_%1", @super_step)),
+          :Value,
+          UI.Glyph(:CheckMark)
+        )
       end
       @super_step = Ops.add(@super_step, 1)
       return if Ops.greater_or_equal(@super_step, @super_steps)

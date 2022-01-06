@@ -40,8 +40,8 @@ module Yast
         # Opscode Chef is a different way to configure the system.
         message = _(
           "Chef Client is running. The changes that you make\n" \
-            "may be overridden by Chef later.\n" \
-            "Continue configuration with YaST?"
+          "may be overridden by Chef later.\n" \
+          "Continue configuration with YaST?"
         )
         return Popup.ContinueCancel(message)
       end

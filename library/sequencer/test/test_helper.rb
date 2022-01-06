@@ -1,1 +1,1 @@
-require_relative "../../../test/test_helper.rb"
+require_relative "../../../test/test_helper"

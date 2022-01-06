@@ -647,12 +647,12 @@ module Yast
         v, _j, s = val.rpartition("_")
         log.info("#{val}:#{v}:#{s}")
         # Global
-        if !LOCALS.include?(v)
-          config[val] = item
-        else
+        if LOCALS.include?(v)
           config["_aliases"] ||= {}
           config["_aliases"][s] ||= {}
           config["_aliases"][s][v] = item
+        else
+          config[val] = item
         end
       end
       log.info("config=#{ConcealSecrets1(config)}")
@@ -1287,10 +1287,10 @@ module Yast
         return false
       end
 
-      t = if !IsEmpty(newdev)
-        GetTypeFromIfcfgOrName(name, newdev)
-      else
+      t = if IsEmpty(newdev)
         GetType(name)
+      else
+        GetTypeFromIfcfgOrName(name, newdev)
       end
 
       if name == @Name

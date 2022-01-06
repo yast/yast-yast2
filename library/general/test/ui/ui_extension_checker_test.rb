@@ -1,7 +1,7 @@
 #! /usr/bin/env rspec
 
 require_relative "../test_helper"
-require "ui/ui_extension_checker.rb"
+require "ui/ui_extension_checker"
 
 describe Yast::UIExtensionChecker do
   describe "#new" do

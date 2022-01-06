@@ -209,12 +209,10 @@ module Yast
         index = counter if getItemId(t) == id
         counter = Ops.add(counter, 1)
       end
-      if event_id == :_tw_table
-        if Ops.get_string(event_descr, "EventReason", "") == "Activated" &&
+      if event_id == :_tw_table && (Ops.get_string(event_descr, "EventReason", "") == "Activated" &&
             Ops.get_string(event_descr, "EventType", "") == "WidgetEvent" &&
-            UI.WidgetExists(Id(:_tw_edit))
-          event_id = :_tw_edit
-        end
+            UI.WidgetExists(Id(:_tw_edit)))
+        event_id = :_tw_edit
       end
       case event_id
       when :_tw_edit

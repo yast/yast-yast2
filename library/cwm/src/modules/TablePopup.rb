@@ -589,9 +589,7 @@ module Yast
               from: "any",
               to:   "boolean (any, string, map)"
             )
-            if !toEval.nil?
-              ret = nil if !toEval.call(opt_id, opt_key, event_descr2)
-            end
+            ret = nil if !toEval.nil? && !toEval.call(opt_id, opt_key, event_descr2)
           elsif !CWM.validateWidget(popup_descr, event_descr2, opt_key)
             ret = nil
           end
@@ -669,12 +667,10 @@ module Yast
       event_descr = deep_copy(event_descr)
       event_id = Ops.get(event_descr, "ID")
       UI.SetFocus(Id(:_tp_table))
-      if event_id == :_tp_table
-        if Ops.get_string(event_descr, "EventReason", "") == "Activated" &&
+      if event_id == :_tp_table && (Ops.get_string(event_descr, "EventReason", "") == "Activated" &&
             Ops.get_string(event_descr, "EventType", "") == "WidgetEvent" &&
-            UI.WidgetExists(Id(:_tp_edit))
-          event_id = :_tp_edit
-        end
+            UI.WidgetExists(Id(:_tp_edit)))
+        event_id = :_tp_edit
       end
       case event_id
       when :_tp_edit, :_tp_add
@@ -723,10 +719,7 @@ module Yast
         toEval = Ops.get(option_map, ["table", "handle"])
         if !toEval.nil?
           #    if (is (toEval, symbol))
-          if !Ops.is(toEval, "symbol (any, string, map)")
-            ret2 = Convert.to_symbol(toEval)
-            return ret2
-          else
+          if Ops.is(toEval, "symbol (any, string, map)")
             toEval_c = Convert.convert(
               Ops.get(option_map, ["table", "handle"]),
               from: "any",
@@ -734,6 +727,9 @@ module Yast
             )
             ret2 = toEval_c.call(opt_id, opt_key, event_descr)
             return ret2 if ret2 != :_tp_normal
+          else
+            ret2 = Convert.to_symbol(toEval)
+            return ret2
           end
         end
         Ops.set(option_map, "_cwm_id", opt_id)
@@ -891,8 +887,8 @@ module Yast
       # help 1/4
       help = _(
         "<p><b><big>Editing the Settings</big></b><br>\n" \
-          "To edit the settings, choose the appropriate\n" \
-          "entry of the table then click <b>Edit</b>.</p>"
+        "To edit the settings, choose the appropriate\n" \
+        "entry of the table then click <b>Edit</b>.</p>"
       )
       if Ops.get_boolean(attrib, "add_delete_buttons", true)
         # help 2/4, optional
@@ -920,8 +916,8 @@ module Yast
           help,
           _(
             "<p>To reorder the options, select an option\n" \
-              "and use <b>Up</b> and <b>Down</b> to move it up or down\n" \
-              "in the list.</p>"
+            "and use <b>Up</b> and <b>Down</b> to move it up or down\n" \
+            "in the list.</p>"
           )
         )
       end

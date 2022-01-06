@@ -278,7 +278,7 @@ module Yast
         # Directory (path) is not a valid 'directory'
         Builtins.y2warning("Path %1 is not a directory", check_path)
         # Continue despite the error?
-        return Popup.ContinueCancel(
+        Popup.ContinueCancel(
           Builtins.sformat(
             # TRANSLATORS: popup question (with continue / cancel buttons)
             # %1 is the filesystem path
@@ -305,12 +305,12 @@ module Yast
               "Directory %1 successfully created",
               check_path
             )
-            return true
+            true
             # Failed to create the directory
           else
             Builtins.y2warning("Failed to create directory %1", check_path)
             # Continue despite the error?
-            return Popup.ContinueCancel(
+            Popup.ContinueCancel(
               Builtins.sformat(
                 # TRANSLATORS: popup question (with continue / cancel buttons)
                 # %1 is the name (path) of the directory
@@ -327,7 +327,7 @@ module Yast
             "User doesn't want to create the directory %1",
             check_path
           )
-          return true
+          true
         end
       end
     end
