@@ -562,7 +562,7 @@ module Yast
             new_min = nil
             new_max = nil
             # rubocop:disable Lint/DuplicateBranch
-            # wrong detection of dupliate branch as if cause logic and workflow
+            # wrong detection of duplicate branch as if cause logic and workflow
             # the second one is inside the first one
             if Ops.less_or_equal(min_pr, this_min_pr) &&
                 Ops.greater_or_equal(max_pr, this_max_pr)
@@ -586,7 +586,7 @@ module Yast
               new_max = this_max_pr
               # the second one partly covers the first one (by its left side)
             elsif Ops.greater_or_equal(min_pr, this_min_pr) &&
-                Ops.less_or_equal(max_pr, this_max_pr)
+                Ops.greater_or_equal(max_pr, this_max_pr)
               # take this_min_pr & max_pr
               any_change_during_this_loop = true
               new_min = this_min_pr
