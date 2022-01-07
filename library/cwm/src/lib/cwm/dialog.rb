@@ -28,7 +28,6 @@ module CWM
 
     # Constructor (empty to just allow passing extra options)
     def initialize(*args, **kws)
-      super
     end
 
     # A shortcut for `.new(*args).run`
