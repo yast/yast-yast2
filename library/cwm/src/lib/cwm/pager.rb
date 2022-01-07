@@ -18,6 +18,8 @@ module CWM
 
     # @param [Array<CWM::Page>] pages to be shown
     def initialize(*pages)
+      super()
+
       @pages = pages
       @current_page = nil
       self.handle_all_events = true

@@ -67,6 +67,8 @@ module Yast
     end
 
     def initialize
+      super
+
       textdomain "base"
 
       # firewalld API interface.

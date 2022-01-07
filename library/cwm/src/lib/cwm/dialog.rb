@@ -119,6 +119,8 @@ module CWM
     # Empty widget which is first on the page and contain help for whole dialog
     class FakeHelp < Empty
       def initialize(text)
+        super("__fake_help_widget")
+
         @text = text
       end
 

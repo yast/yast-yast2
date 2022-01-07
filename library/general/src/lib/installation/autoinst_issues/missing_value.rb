@@ -33,6 +33,8 @@ module Installation
       # @param description [String] additional explanation; optional
       # @param severity    [Symbol] :warn, :error = abort the installation ; optional
       def initialize(section, attr, description = "", severity = :warn)
+        super()
+
         textdomain "base"
 
         @section = section

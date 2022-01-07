@@ -10,6 +10,8 @@ class TestPage < CWM::Page
   attr_reader :label, :contents
 
   def initialize(number)
+    super()
+
     self.widget_id = "page#{number}"
     @label = "Page #{number}"
     @contents = Yast::Term.new(:Empty, Yast::Term.new(:id, "empty#{number}"))

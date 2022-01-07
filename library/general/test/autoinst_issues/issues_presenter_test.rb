@@ -40,6 +40,8 @@ module Test
       attr_reader :attr, :value
 
       def initialize(section, attr, value)
+        super()
+
         @section = section
         @attr = attr
         @value = value

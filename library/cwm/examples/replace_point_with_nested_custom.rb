@@ -13,6 +13,8 @@ Yast.import "Popup"
 
 class SwitchWidget < CWM::PushButton
   def initialize(replace_point, widgets)
+    super()
+
     @replace_point = replace_point
     @widgets = widgets
   end
@@ -66,6 +68,8 @@ class LuckyNumberWidget < CWM::IntField
   attr_reader :result, :minimum, :maximum
 
   def initialize
+    super()
+
     @minimum = 0
     @maximum = 1000
   end
@@ -81,6 +85,8 @@ end
 
 class GenerateButton < CWM::PushButton
   def initialize(lucky_number_widget)
+    super()
+
     @lucky_number_widget = lucky_number_widget
     textdomain "example"
   end

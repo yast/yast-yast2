@@ -28,6 +28,8 @@ module CWM
     # creates new widget instance for given service
     # @param service [Yast2::SystemService,Yast2::CompoundService] service to be configured
     def initialize(service)
+      super()
+
       @service_widget = Yast2::ServiceWidget.new(service)
       self.handle_all_events = true
     end

@@ -46,6 +46,8 @@ module Yast
     attr_reader :error
 
     def initialize
+      super
+
       textdomain "base"
       @error = ""
     end

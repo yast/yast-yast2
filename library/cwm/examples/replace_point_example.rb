@@ -12,6 +12,8 @@ Yast.import "Wizard"
 
 class SwitchWidget < CWM::PushButton
   def initialize(replace_point, widgets)
+    super()
+
     @replace_point = replace_point
     @widgets = widgets
   end

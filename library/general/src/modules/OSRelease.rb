@@ -36,6 +36,8 @@ module Yast
     include Yast::Logger
 
     def initialize
+      super
+
       textdomain "base"
     end
 

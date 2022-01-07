@@ -52,6 +52,8 @@ module Yast
     #
     # @param name [Symbol] name of the added method
     def self.method_added(name)
+      super
+
       # log the callbacks only when requested, it's quite verbose
       return if ENV["Y2DEBUG_CALLBACKS"] != "1"
 

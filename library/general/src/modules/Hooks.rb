@@ -68,6 +68,8 @@ module Yast
     private :hooks
 
     def initialize
+      super
+
       textdomain "base"
       @hooks = {}
       @search_path = SearchPath.new

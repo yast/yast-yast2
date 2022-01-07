@@ -9,6 +9,8 @@ describe "CWM::Dialog" do
     attr_reader :title, :disable
 
     def initialize(title = "test", disable: :abort)
+      super()
+
       @title = title
       @disable = disable
     end

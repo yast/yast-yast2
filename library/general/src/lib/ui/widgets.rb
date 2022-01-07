@@ -26,6 +26,8 @@ module UI
     # Its value is ignored and never used anywhere.
     class KeyboardLayoutTest < CWM::InputField
       def initialize
+        super
+
         textdomain "base"
       end
 

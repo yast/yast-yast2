@@ -45,6 +45,8 @@ module Y2Packager
     #
     # @param url [String, ZyppUrl, URI::Generic]
     def initialize(url)
+      super()
+
       uri =
         begin
           URI(repovars_escape(url.to_s))

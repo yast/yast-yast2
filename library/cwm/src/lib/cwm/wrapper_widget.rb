@@ -19,6 +19,8 @@ module CWM
     #   If nil is used, it use default widget_id from class name.
     # @param content [CWM::WidgetHash] CWM hash definition
     def initialize(content, id: nil)
+      super()
+
       self.widget_id = id if id
       @content = content
     end

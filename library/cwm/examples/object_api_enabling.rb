@@ -11,6 +11,8 @@ class LuckyNumberWidget < CWM::IntField
   attr_reader :result, :minimum, :maximum
 
   def initialize
+    super
+
     @minimum = 0
     @maximum = 1000
   end
@@ -26,6 +28,8 @@ end
 
 class EnableButton < CWM::PushButton
   def initialize(lucky_number_widget)
+    super()
+
     @lucky_number_widget = lucky_number_widget
   end
 
@@ -53,6 +57,8 @@ end
 
 class DisableButton < CWM::PushButton
   def initialize(lucky_number_widget)
+    super()
+
     @lucky_number_widget = lucky_number_widget
   end
 

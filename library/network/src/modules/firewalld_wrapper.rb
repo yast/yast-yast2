@@ -35,6 +35,8 @@ module Yast
     VALID_PROTOCOLS = ["udp", "tcp", "sctp", "dccp"].freeze
 
     def initialize
+      super
+
       Yast.import "PortAliases"
       Yast.import "PortRanges"
     end

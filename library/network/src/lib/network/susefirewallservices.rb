@@ -46,6 +46,8 @@ module Yast
     }.freeze
 
     def initialize
+      super
+
       textdomain "base"
     end
 
