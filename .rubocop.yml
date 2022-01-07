@@ -99,3 +99,7 @@ Naming/VariableName:
     - "library/network/src/lib/network/susefirewalld.rb"
     - "library/network/src/lib/network/susefirewall2.rb"
     - "library/network/src/lib/network/susefirewall2services.rb"
+
+# this module provides API for others, so do not change existing API
+Style/OptionalBooleanParameter:
+  Enabled: false
