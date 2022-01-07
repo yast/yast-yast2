@@ -944,15 +944,16 @@ module Yast
       loop do
         user_input = UI.UserInput
         # yes button
-        if user_input == :yes
+        case user_input
+        when :yes
           ret = true
           break
           # no button
-        elsif user_input == :no
+        when :no
           ret = false
           break
           # closing window uisng [x]
-        elsif user_input == :cancel
+        when :cancel
           ret = nil
           break
         else

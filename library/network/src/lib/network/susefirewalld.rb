@@ -177,12 +177,12 @@ module Yast
       Read()
       import_settings = deep_copy(import_settings || {})
       # Sanitize it
-      import_settings.keys.each do |k|
+      import_settings.each_key do |k|
         if !GetKnownFirewallZones().include?(k) && !KEY_SETTINGS.include?(k)
           Builtins.y2warning("Removing invalid key: %1 from imported settings", k)
           import_settings.delete(k)
         elsif import_settings[k].is_a?(Hash)
-          import_settings[k].keys.each do |v|
+          import_settings[k].each_key do |v|
             if !ZONE_ATTRIBUTES.include?(v)
               Builtins.y2warning("Removing invalid value: %1 from key %2", v, k)
               import_settings[k].delete(v)
@@ -192,7 +192,7 @@ module Yast
       end
 
       # Ruby's merge will probably not work since we have nested hashes
-      @SETTINGS.keys.each do |key|
+      @SETTINGS.each_key do |key|
         next unless import_settings.include?(key)
 
         if import_settings[key].instance_of?(Hash)
@@ -204,7 +204,7 @@ module Yast
       end
 
       # Merge missing attributes
-      @SETTINGS.keys.each do |key|
+      @SETTINGS.each_key do |key|
         next unless GetKnownFirewallZones().include?(key)
 
         # is this a zone?
@@ -268,7 +268,7 @@ module Yast
       zone = nil
       all_zone_info.each do |e|
         # is it a zone?
-        z = e.split("\s")[0]
+        z = e.split[0]
         if GetKnownFirewallZones().include?(z)
           zone = z
           next
@@ -279,10 +279,10 @@ module Yast
           # do not bother if empty
           next if attrs[1].nil?
 
-          vals = attrs[1].split("\s")
+          vals = attrs[1].split
           # Fix up for masquerade
           if attr == :masquerade
-            set_to_zone_attr(zone, attr, ((vals == "no") ? false : true))
+            set_to_zone_attr(zone, attr, vals != "no")
           else
             vals.each { |x| add_to_zone_attr(zone, attr, x) }
           end
@@ -845,9 +845,10 @@ module Yast
       result = get_zone_attr(zone, :protocols) if protocol == "ip"
       # We return the name of service instead of its ports
       get_zone_attr(zone, :services).each do |s| # to be SF2 compatible.
-        if protocol == "tcp"
+        case protocol
+        when "tcp"
           result << s if !SuSEFirewallServices.GetNeededTCPPorts(s).empty?
-        elsif protocol == "udp"
+        when "udp"
           result << s if !SuSEFirewallServices.GetNeededUDPPorts(s).empty?
         end
       end
@@ -1176,12 +1177,13 @@ module Yast
         Builtins.y2debug("Examining %1", s)
         # Is it a service?
         if SuSEFirewallServices.GetSupportedServices().keys.include?(s)
-          if protocol == "tcp"
+          case protocol
+          when "tcp"
             if !SuSEFirewallServices.GetNeededTCPPorts(s).empty?
               Builtins.y2debug("Adding service %1", s)
               services << s
             end
-          elsif protocol == "udp"
+          when "udp"
             if !SuSEFirewallServices.GetNeededUDPPorts(s).empty?
               Builtins.y2debug("Adding service %1", s)
               services << s

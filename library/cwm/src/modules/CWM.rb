@@ -244,17 +244,18 @@ module Yast
     # @return [Boolean] true if validation succeeded
     def ValidateValueContents(key, value, widget)
       error = ""
-      if key == "label"
+      case key
+      when "label"
         s = Convert.to_string(value)
         if s.nil? || Builtins.size(s) == 0
           error = "Empty label"
         elsif Builtins.size(Builtins.filterchars(s, "&")) != 1
           error = "Label has no shortcut or more than 1 shortcuts"
         end
-      elsif key == "widget"
+      when "widget"
         s = Convert.to_symbol(value)
         error = "No widget specified" if s.nil?
-      elsif key == "custom_widget"
+      when "custom_widget"
         s = Convert.to_term(value)
         error = "No custom widget specified" if s.nil?
       end
@@ -432,9 +433,10 @@ module Yast
         Builtins.foreach(v) do |kk, vv|
           ret = ValidateValueType(kk, vv, k) && ret
         end
-        to_check = if Ops.get(v, "widget") == :custom
+        to_check = case Ops.get(v, "widget")
+        when :custom
           ["custom_widget"]
-        elsif Ops.get(v, "widget") == :empty
+        when :empty
           []
         else
           ["label", "widget"]

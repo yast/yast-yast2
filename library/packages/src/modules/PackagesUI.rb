@@ -95,9 +95,10 @@ module Yast
       helptext = deep_copy(helptext)
       dia_opt = Opt(:decorated)
 
-      if color == :warncolor
+      case color
+      when :warncolor
         dia_opt = Opt(:decorated, :warncolor)
-      elsif color == :infocolor
+      when :infocolor
         dia_opt = Opt(:decorated, :infocolor)
       end
 
@@ -702,27 +703,28 @@ module Yast
         # handle detail requests (clicking a link in the summary)
         if Ops.is_string?(result)
           # display installation log
-          if result == "install_log"
+          case result
+          when "install_log"
             ShowDetailsString(
               _("Installation log"),
               Ops.get_string(summary, "install_log", "")
             )
-          elsif result == "installed_packages"
+          when "installed_packages"
             ShowDetailsList(
               _("Installed Packages"),
               Ops.get_list(summary, "installed_list", [])
             )
-          elsif result == "updated_packages"
+          when "updated_packages"
             ShowDetailsList(
               _("Updated Packages"),
               Ops.get_list(summary, "updated_list", [])
             )
-          elsif result == "removed_packages"
+          when "removed_packages"
             ShowDetailsList(
               _("Removed Packages"),
               Ops.get_list(summary, "removed_list", [])
             )
-          elsif result == "remaining_packages"
+          when "remaining_packages"
             ShowDetailsList(
               _("Remaining Packages"),
               Ops.get_list(summary, "remaining", [])

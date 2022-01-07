@@ -29,7 +29,7 @@ describe Yast::SharedLibInfo do
       end
 
       it "finds the Qt UI plug-in" do
-        ui_plugins = subject.shared_libs.select { |p| p =~ /yui\/libyui/ }
+        ui_plugins = subject.shared_libs.grep(/yui\/libyui/)
         expect(ui_plugins).to eq ["/usr/lib64/yui/libyui-qt.so.15.0.0"]
       end
     end
@@ -38,7 +38,7 @@ describe Yast::SharedLibInfo do
       let(:maps_file) { stored_proc_maps("qt-pkg") }
 
       it "finds the Qt UI plug-in and the Qt-Pkg plug-in" do
-        ui_plugins = subject.shared_libs.select { |p| p =~ /yui\/libyui/ }
+        ui_plugins = subject.shared_libs.grep(/yui\/libyui/)
         expect(ui_plugins).to eq ["/usr/lib64/yui/libyui-qt-pkg.so.15.0.0", "/usr/lib64/yui/libyui-qt.so.15.0.0"]
       end
     end

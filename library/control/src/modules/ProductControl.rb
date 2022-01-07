@@ -1489,12 +1489,13 @@ module Yast
           break
         when :auto
           if !former_result.nil?
-            if former_result == :next
+            case former_result
+            when :next
               # if the first client just returns `auto, the back button
               # of the next client must be disabled
               minimum_step = Ops.add(minimum_step, 1) if Ops.less_or_equal(@current_step, minimum_step) && !allow_back
               @current_step = Ops.add(@current_step, 1)
-            elsif former_result == :back
+            when :back
               @current_step = Ops.subtract(@current_step, 1)
             end
           end

@@ -414,7 +414,8 @@ module Yast
       widget = deep_copy(widget)
       event = deep_copy(event)
       event_id = Ops.get(event, "ID")
-      if event_id == "_cwm_start_service_now"
+      case event_id
+      when "_cwm_start_service_now"
         if Builtins.haskey(widget, "start_now_action")
           start_now_func = Convert.convert(
             Ops.get(widget, "start_now_action"),
@@ -426,7 +427,7 @@ module Yast
           Service.Restart(Ops.get_string(widget, "service_id", ""))
         end
         Builtins.sleep(500)
-      elsif event_id == "_cwm_stop_service_now"
+      when "_cwm_stop_service_now"
         if Builtins.haskey(widget, "stop_now_action")
           stop_now_func = Convert.convert(
             Ops.get(widget, "stop_now_action"),
@@ -438,7 +439,7 @@ module Yast
           Service.Stop(Ops.get_string(widget, "service_id", ""))
         end
         Builtins.sleep(500)
-      elsif event_id == "_cwm_save_settings_now"
+      when "_cwm_save_settings_now"
         func = Convert.convert(
           Ops.get(widget, "save_now_action"),
           from: "any",

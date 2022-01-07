@@ -391,13 +391,14 @@ module Yast
         os = Convert.to_string(aos)
         o = Builtins.regexptokenize(os, "([^=]+)=(.+)")
         Builtins.y2debug("o=%1", o)
-        if Builtins.size(o) == 2
+        case Builtins.size(o)
+        when 2
           givenoptions = Builtins.add(
             givenoptions,
             Ops.get(o, 0, ""),
             Ops.get(o, 1, "")
           )
-        elsif Builtins.size(o) == 0
+        when 0
           # check, if the last character is "="
           # FIXME: consider whitespace
           if Builtins.substring(os, Ops.subtract(Builtins.size(os), 1)) == "="
@@ -455,7 +456,8 @@ module Yast
 
           if opttype != ""
             # need to check the type
-            if opttype == "regex"
+            case opttype
+            when "regex"
               opttypespec = Ops.get_string(cmdoptions, [o, "typespec"], "")
               ret = TypeRepository.regex_validator(opttypespec, v)
               if ret != true
@@ -465,7 +467,7 @@ module Yast
                 )
                 @aborted = true if !@interactive
               end
-            elsif opttype == "enum"
+            when "enum"
               ret = TypeRepository.enum_validator(
                 Ops.get_list(cmdoptions, [o, "typespec"], []),
                 v
@@ -477,7 +479,7 @@ module Yast
                 )
                 @aborted = true if !@interactive
               end
-            elsif opttype == "integer"
+            when "integer"
               i = Builtins.tointeger(v)
               ret = !i.nil?
               if ret == true
@@ -1275,9 +1277,10 @@ module Yast
       # set the required prompt
       SCR.Write(path(".dev.tty.prompt"), prompt)
 
-      res = if type == :nohistory
+      res = case type
+      when :nohistory
         Convert.to_string(SCR.Read(path(".dev.tty.nohistory")))
-      elsif type == :noecho
+      when :noecho
         Convert.to_string(SCR.Read(path(".dev.tty.noecho")))
       else
         Convert.to_string(SCR.Read(path(".dev.tty")))

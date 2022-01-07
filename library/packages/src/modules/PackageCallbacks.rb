@@ -341,9 +341,10 @@ module Yast
               error_symbol = "ERROR"
 
               # https://github.com/openSUSE/libzypp/blob/8dda46306f06440e1acaefb36fb60f6ce909fd42/zypp/ZYppCallbacks.h#L106
-              if error == 2
+              case error
+              when 2
                 error_symbol = "IO"
-              elsif error == 3
+              when 3
                 error_symbol = "INVALID"
               end
 
@@ -1147,16 +1148,17 @@ module Yast
       # error message - a label followed by a richtext with details
       message = _("An error occurred while creating the repository.")
 
-      if error == :NOT_FOUND
+      case error
+      when :NOT_FOUND
         # error message - a label followed by a richtext with details
         message = _("Unable to retrieve the remote repository description.")
-      elsif error == :IO
+      when :IO
         # error message - a label followed by a richtext with details
         message = _("An error occurred while retrieving the new metadata.")
-      elsif error == :INVALID
+      when :INVALID
         # error message - a label followed by a richtext with details
         message = _("The repository is not valid.")
-      elsif error == :REJECTED
+      when :REJECTED
         # error message - a label followed by a richtext with details
         message = _("The repository metadata is invalid.")
       end
@@ -1274,19 +1276,20 @@ module Yast
       # error message - a label followed by a richtext with details
       message = _("Error occurred while probing the repository.")
 
-      if error == :NOT_FOUND
+      case error
+      when :NOT_FOUND
         # error message - a label followed by a richtext with details
         message = _("Unable to retrieve the remote repository description.")
-      elsif error == :IO
+      when :IO
         # error message - a label followed by a richtext with details
         message = _("An error occurred while retrieving the new metadata.")
-      elsif error == :INVALID
+      when :INVALID
         # error message - a label followed by a richtext with details
         message = _("The repository is not valid.")
-      elsif error == :NO_ERROR
+      when :NO_ERROR
         # error message - a label followed by a richtext with details
         message = _("Repository probing details.")
-      elsif error == :REJECTED
+      when :REJECTED
         # error message - a label followed by a richtext with details
         message = _("Repository metadata is invalid.")
       end
@@ -1384,13 +1387,14 @@ module Yast
       # error message - a label followed by a richtext with details
       message = Builtins.sformat(_("Repository %1"), url)
 
-      if error == :NOT_FOUND
+      case error
+      when :NOT_FOUND
         # error message - a label followed by a richtext with details
         message = _("Unable to retrieve the remote repository description.")
-      elsif error == :IO
+      when :IO
         # error message - a label followed by a richtext with details
         message = _("An error occurred while retrieving the new metadata.")
-      elsif error == :INVALID
+      when :INVALID
         # error message - a label followed by a richtext with details
         message = _("The repository is not valid.")
       end
@@ -1651,13 +1655,14 @@ module Yast
       # Abort is the default
       ret = "A"
 
-      if ui == :retry
+      case ui
+      when :retry
         # ignore
         ret = "I"
-      elsif ui == :yes
+      when :yes
         # retry
         ret = "R"
-      elsif ui == :no
+      when :no
         # abort
         ret = "A"
       else
@@ -1859,9 +1864,10 @@ module Yast
           # display "Continue", "Skip Refresh" dialog
           answer = AskAbortRefresh()
 
-          if answer == :continue
+          case answer
+          when :continue
             download_aborted = false
-          elsif answer == :skip
+          when :skip
             download_aborted = true
             @autorefreshing_aborted = true
 
@@ -2187,9 +2193,10 @@ module Yast
           if show_details
             error_symbol = "UNKNOWN"
 
-            if error == 0
+            case error
+            when 0
               error_symbol = "NO_ERROR"
-            elsif error == 1
+            when 1
               error_symbol = "FAILED"
             end
 
@@ -3221,7 +3228,7 @@ module Yast
     end
 
     def process_message(msg, max_len)
-      words = msg.split(" ")
+      words = msg.split
 
       log.info "words: %{words}"
 

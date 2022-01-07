@@ -20,7 +20,7 @@ describe Yast::Directory do
       let(:file) { "data_file.txt" }
 
       it "returns the full path" do
-        expect(IO.read(file_path)).to eq "Data file content"
+        expect(File.read(file_path)).to eq "Data file content"
       end
     end
   end

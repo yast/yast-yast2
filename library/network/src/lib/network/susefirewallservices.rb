@@ -25,9 +25,6 @@ require "yast"
 module Yast
   # Service not found exception
   class SuSEFirewalServiceNotFound < StandardError
-    def initialize(message)
-      super message
-    end
   end
 
   # Global Definition of Firewall Services

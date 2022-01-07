@@ -101,20 +101,21 @@ module Yast
       value = deep_copy(value)
       success = true
       if popup
-        if key == "init"
+        case key
+        when "init"
           success = Ops.is(value, "void (any, string)")
-        elsif key == "handle"
+        when "handle"
           success = Ops.is(value, "void (any, string, map)") ||
             Ops.is_symbol?(value)
-        elsif key == "store"
+        when "store"
           success = Ops.is(value, "void (any, string)")
-        elsif key == "cleanup"
+        when "cleanup"
           success = Ops.is(value, "void (any, string)")
-        elsif key == "validate_function"
+        when "validate_function"
           success = Ops.is(value, "boolean (any, string, map)")
-        elsif key == "optional"
+        when "optional"
           success = Ops.is_boolean?(value)
-        elsif key == "label_func"
+        when "label_func"
           success = Ops.is(value, "string (any, string)")
         else
           return CWM.ValidateValueType(key, value, widget)
@@ -677,7 +678,8 @@ module Yast
         opt_key = nil
         opt_id = nil
 
-        if event_id == :_tp_add
+        case event_id
+        when :_tp_add
           add_unlisted = Ops.get_boolean(descr, "add_unlisted", true)
           if !add_unlisted &&
               Builtins.size(Ops.get_list(descr, "add_items", [])) == 1
@@ -711,7 +713,7 @@ module Yast
             end
           end
           return nil if opt_key.nil?
-        elsif event_id == :_tp_edit
+        when :_tp_edit
           opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
           opt_key = id2key(descr, opt_id)
         end
@@ -741,9 +743,10 @@ module Yast
         )
         ret = singleOptionEditPopup(option_map)
         if ret == :_tp_ok
-          if event_id == :_tp_add
+          case event_id
+          when :_tp_add
             TableInit(descr, key)
-          elsif event_id == :_tp_edit
+          when :_tp_edit
             column = descr.fetch("_cwm_attrib", {}).fetch("changed_column", false) ? 2 : 1
             UI.ChangeWidget(
               Id(:_tp_table),

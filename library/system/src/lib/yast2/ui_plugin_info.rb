@@ -49,7 +49,7 @@ module Yast
     #
     def ui_plugins
       if @ui_plugins.nil?
-        @ui_plugins = shared_libs.select { |lib| lib =~ /yui\/libyui-/ }
+        @ui_plugins = shared_libs.grep(/yui\/libyui-/)
         log.info("UI plug-ins: #{@ui_plugins}")
       end
       @ui_plugins
@@ -76,7 +76,7 @@ module Yast
     def main_ui_plugin_complete
       return nil if ui_plugins.empty?
 
-      relevant_plugins = ui_plugins.reject { |p| p =~ /rest-api/ }
+      relevant_plugins = ui_plugins.grep_v(/rest-api/)
       @main_ui_plugin_complete ||= relevant_plugins.min do |a, b|
         SharedLibInfo.lib_basename(a).size <=> SharedLibInfo.lib_basename(b).size
       end

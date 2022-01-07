@@ -40,9 +40,10 @@ module Yast
       loop do
         @widget = UI.TimeoutUserInput(250)
 
-        if @widget == :timeout
+        case @widget
+        when :timeout
           LogViewCore.Update(Id(:log))
-        elsif @widget == :close
+        when :close
           break
         end
       end

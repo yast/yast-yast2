@@ -1697,10 +1697,11 @@ module Yast
       end
 
       mm = Builtins.maplist(m) do |cc|
-        if Ops.get_string(cc, "type", "") == "MenuEntry"
+        case Ops.get_string(cc, "type", "")
+        when "MenuEntry"
           menu_entry = Ops.get_string(cc, "id", "")
           next Item(Id(menu_entry), Ops.get_string(cc, "title", ""))
-        elsif Ops.get_string(cc, "type", "") == "SubMenu"
+        when "SubMenu"
           sub_menu = Ops.get_string(cc, "id", "")
           next term(
             :menu,

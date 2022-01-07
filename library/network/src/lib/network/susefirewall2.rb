@@ -517,10 +517,11 @@ module Yast
       Builtins.foreach(GetKnownFirewallZones()) do |zone|
         broadcast = GetBroadcastConfiguration(zone)
         # no broadcast allowed for this zone
-        if broadcast == "no"
+        case broadcast
+        when "no"
           Ops.set(allowed_ports, zone, [])
           # BNC #694782: "yes" is automatically translated by SuSEfirewall2
-        elsif broadcast == "yes"
+        when "yes"
           Ops.set(allowed_ports, zone, ["yes"])
           # only listed ports allow broadcast
         else
@@ -799,15 +800,16 @@ module Yast
         needed_ports = Ops.get(needed, key, [])
         next if needed_ports == []
 
-        if key == "tcp_ports"
+        case key
+        when "tcp_ports"
           RemoveAllowedPortsOrServices(needed_ports, "TCP", zone, true)
-        elsif key == "udp_ports"
+        when "udp_ports"
           RemoveAllowedPortsOrServices(needed_ports, "UDP", zone, true)
-        elsif key == "rpc_ports"
+        when "rpc_ports"
           RemoveAllowedPortsOrServices(needed_ports, "RPC", zone, false)
-        elsif key == "ip_protocols"
+        when "ip_protocols"
           RemoveAllowedPortsOrServices(needed_ports, "IP", zone, false)
-        elsif "broadcast_ports" == key
+        when "broadcast_ports"
           RemoveAllowedBroadcast(needed_ports, zone)
         else
           Builtins.y2error("Unknown key '%1'", key)
@@ -848,15 +850,16 @@ module Yast
         needed_ports = Ops.get(needed, key, [])
         next if needed_ports == []
 
-        if key == "tcp_ports"
+        case key
+        when "tcp_ports"
           AddAllowedPortsOrServices(needed_ports, "TCP", zone)
-        elsif key == "udp_ports"
+        when "udp_ports"
           AddAllowedPortsOrServices(needed_ports, "UDP", zone)
-        elsif key == "rpc_ports"
+        when "rpc_ports"
           AddAllowedPortsOrServices(needed_ports, "RPC", zone)
-        elsif key == "ip_protocols"
+        when "ip_protocols"
           AddAllowedPortsOrServices(needed_ports, "IP", zone)
-        elsif "broadcast_ports" == key
+        when "broadcast_ports"
           AddAllowedBroadcast(needed_ports, zone)
         else
           Builtins.y2error("Unknown key '%1'", key)
@@ -1360,35 +1363,36 @@ module Yast
         needed_ports = Ops.get(needed, key, [])
         next if needed_ports == []
 
-        if key == "tcp_ports"
+        case key
+        when "tcp_ports"
           service_is_supported = ArePortsOrServicesAllowed(
             needed_ports,
             "TCP",
             zone,
             true
           )
-        elsif key == "udp_ports"
+        when "udp_ports"
           service_is_supported = ArePortsOrServicesAllowed(
             needed_ports,
             "UDP",
             zone,
             true
           )
-        elsif key == "rpc_ports"
+        when "rpc_ports"
           service_is_supported = ArePortsOrServicesAllowed(
             needed_ports,
             "RPC",
             zone,
             false
           )
-        elsif key == "ip_protocols"
+        when "ip_protocols"
           service_is_supported = ArePortsOrServicesAllowed(
             needed_ports,
             "IP",
             zone,
             false
           )
-        elsif "broadcast_ports" == key
+        when "broadcast_ports"
           # testing for allowed broadcast ports
           service_is_supported = IsBroadcastAllowed(needed_ports, zone)
         else
@@ -1813,13 +1817,14 @@ module Yast
         if IsServiceSupportedInZone(service_id, zone) == true
           # all needed ports etc for service/protocol
           needed_all = []
-          if protocol == "TCP"
+          case protocol
+          when "TCP"
             needed_all = SuSEFirewallServices.GetNeededTCPPorts(service_id)
-          elsif protocol == "UDP"
+          when "UDP"
             needed_all = SuSEFirewallServices.GetNeededUDPPorts(service_id)
-          elsif protocol == "RPC"
+          when "RPC"
             needed_all = SuSEFirewallServices.GetNeededRPCPorts(service_id)
-          elsif protocol == "IP"
+          when "IP"
             needed_all = SuSEFirewallServices.GetNeededIPProtocols(service_id)
           end
           Builtins.foreach(needed_all) do |remove_port|
@@ -2152,7 +2157,8 @@ module Yast
     def GetLoggingSettings(rule)
       ret_val = nil
 
-      if rule == "ACCEPT"
+      case rule
+      when "ACCEPT"
         ret_val = if Ops.get_string(@SETTINGS, "FW_LOG_ACCEPT_ALL", "no") == "yes"
           "ALL"
         elsif Ops.get_string(@SETTINGS, "FW_LOG_ACCEPT_CRIT", "yes") == "yes"
@@ -2160,7 +2166,7 @@ module Yast
         else
           "NONE"
         end
-      elsif rule == "DROP"
+      when "DROP"
         ret_val = if Ops.get_string(@SETTINGS, "FW_LOG_DROP_ALL", "no") == "yes"
           "ALL"
         elsif Ops.get_string(@SETTINGS, "FW_LOG_DROP_CRIT", "yes") == "yes"
@@ -2186,22 +2192,25 @@ module Yast
     def SetLoggingSettings(rule, state)
       SetModified()
 
-      if rule == "ACCEPT"
-        if state == "ALL"
+      case rule
+      when "ACCEPT"
+        case state
+        when "ALL"
           Ops.set(@SETTINGS, "FW_LOG_ACCEPT_CRIT", "yes")
           Ops.set(@SETTINGS, "FW_LOG_ACCEPT_ALL", "yes")
-        elsif state == "CRIT"
+        when "CRIT"
           Ops.set(@SETTINGS, "FW_LOG_ACCEPT_CRIT", "yes")
           Ops.set(@SETTINGS, "FW_LOG_ACCEPT_ALL", "no")
         else
           Ops.set(@SETTINGS, "FW_LOG_ACCEPT_CRIT", "no")
           Ops.set(@SETTINGS, "FW_LOG_ACCEPT_ALL", "no")
         end
-      elsif rule == "DROP"
-        if state == "ALL"
+      when "DROP"
+        case state
+        when "ALL"
           Ops.set(@SETTINGS, "FW_LOG_DROP_CRIT", "yes")
           Ops.set(@SETTINGS, "FW_LOG_DROP_ALL", "yes")
-        elsif state == "CRIT"
+        when "CRIT"
           Ops.set(@SETTINGS, "FW_LOG_DROP_CRIT", "yes")
           Ops.set(@SETTINGS, "FW_LOG_DROP_ALL", "no")
         else

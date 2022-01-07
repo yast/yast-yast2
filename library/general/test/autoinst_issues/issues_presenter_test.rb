@@ -27,10 +27,6 @@ require "installation/autoinst_issues/issues_presenter"
 module Test
   module AutoinstIssues
     class MissingSection < ::Installation::AutoinstIssues::Issue
-      def initialize(*args)
-        super
-      end
-
       def severity
         :fatal
       end

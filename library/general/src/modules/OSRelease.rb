@@ -30,9 +30,6 @@ module Yast
   import "FileUtils"
 
   class OSReleaseFileMissingError < StandardError
-    def initialize(message)
-      super message
-    end
   end
 
   class OSReleaseClass < Module

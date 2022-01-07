@@ -29,7 +29,7 @@ module Y2Firewall
       module Zones
         # @return [Array<String>] List of firewall zones
         def zones
-          string_command("--get-zones").split(" ")
+          string_command("--get-zones").split
         end
 
         # Create the given zone in firewalld. New zones must be created
@@ -53,7 +53,7 @@ module Y2Firewall
         #   reads the permanent configuration
         # @return [Array<String>] list of zone's interfaces
         def list_interfaces(zone, permanent: permanent?)
-          string_command("--zone=#{zone}", "--list-interfaces", permanent: permanent).split(" ")
+          string_command("--zone=#{zone}", "--list-interfaces", permanent: permanent).split
         end
 
         # @param zone [String] The firewall zone
@@ -61,7 +61,7 @@ module Y2Firewall
         #   reads the permanent configuration
         # @return [Arrray<String>] list of zone's services
         def list_services(zone, permanent: permanent?)
-          string_command("--zone=#{zone}", "--list-services", permanent: permanent).split(" ")
+          string_command("--zone=#{zone}", "--list-services", permanent: permanent).split
         end
 
         # @param zone [String] The firewall zone
@@ -69,7 +69,7 @@ module Y2Firewall
         #   reads the permanent configuration
         # @return [Array<String>] list of zone's ports
         def list_ports(zone, permanent: permanent?)
-          string_command("--zone=#{zone}", "--list-ports", permanent: permanent).split(" ")
+          string_command("--zone=#{zone}", "--list-ports", permanent: permanent).split
         end
 
         # @param zone [String] The firewall zone
@@ -77,7 +77,7 @@ module Y2Firewall
         #   reads the permanent configuration
         # @return [Array<String>] list of zone's protocols
         def list_protocols(zone, permanent: permanent?)
-          string_command("--zone=#{zone}", "--list-protocols", permanent: permanent).split(" ")
+          string_command("--zone=#{zone}", "--list-protocols", permanent: permanent).split
         end
 
         # @param zone [String] The firewall zone
@@ -88,7 +88,7 @@ module Y2Firewall
           args = ["--zone=#{zone}", "--list-all"]
           args << "--verbose" if verbose
 
-          string_command(*args, permanent: permanent).split(" ")
+          string_command(*args, permanent: permanent).split
         end
 
         # @param permanent [Boolean] if true and firewalld is running it

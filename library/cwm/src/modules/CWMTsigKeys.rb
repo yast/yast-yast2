@@ -279,7 +279,8 @@ module Yast
       new_filename = Convert.to_string(
         UI.QueryWidget(Id("_cwm_new_key_file"), :Value)
       )
-      if ret == "_cwm_delete_key"
+      case ret
+      when "_cwm_delete_key"
         key2 = Convert.to_string(
           UI.QueryWidget(Id("_cwm_key_listing_table"), :CurrentItem)
         )
@@ -309,7 +310,7 @@ module Yast
           end
         end
         RemoveTSIGKeyFile(delete_filename)
-      elsif ret == "_cwm_browse_existing_key_file"
+      when "_cwm_browse_existing_key_file"
         existing_filename = UI.AskForExistingFile(
           existing_filename,
           "",
@@ -324,7 +325,7 @@ module Yast
           )
         end
         return nil
-      elsif ret == "_cwm_browse_new_key_file"
+      when "_cwm_browse_new_key_file"
         new_filename = UI.AskForSaveFileName(
           new_filename,
           "",
@@ -333,7 +334,7 @@ module Yast
         )
         UI.ChangeWidget(Id("_cwm_new_key_file"), :Value, new_filename) if !new_filename.nil?
         return nil
-      elsif ret == "_cwm_generate_key"
+      when "_cwm_generate_key"
         if !UI.WidgetExists(Id("_cwm_new_key_file"))
           Builtins.y2error("No such UI widget: %1", "_cwm_new_key_file")
           return nil

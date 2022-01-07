@@ -417,7 +417,8 @@ module Yast
             end
           end
 
-          if state == :out_of_string
+          case state
+          when :out_of_string
             # ignore separator or white space at the beginning of the string
             if separator.include?(character) || (remove_whitespace && character =~ /[ \t]/)
               index += 1
@@ -432,7 +433,7 @@ module Yast
               str = (character == "\\\"") ? "\"" : character
             end
           # after double quoted string - handle non-separator chars after double quote
-          elsif state == :in_quoted_string_after_dblqt
+          when :in_quoted_string_after_dblqt
             if separator.include?(character)
               ret << str if !unique || !Builtins.contains(ret, str)
 
@@ -443,16 +444,17 @@ module Yast
             else
               str << character
             end
-          elsif state == :in_quoted_string
-            if character == "\""
+          when :in_quoted_string
+            case character
+            when "\""
               # end of quoted string
               state = :in_quoted_string_after_dblqt
-            elsif character == "\\\""
+            when "\\\""
               str << "\""
             else
               str << character
             end
-          elsif state == :in_string
+          when :in_string
             if separator.include?(character)
               state = :out_of_string
 
@@ -688,7 +690,7 @@ module Yast
       digits = DIGIT_CHARS + LOWER_CHARS # uses the character classes from above
       ret = Array.new(len) { digits[rand(digits.size)] }
 
-      ret.join("")
+      ret.join
     end
 
     # Format file name - truncate the middle part of the directory to fit to the reqested lenght.

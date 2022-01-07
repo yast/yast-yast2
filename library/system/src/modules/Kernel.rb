@@ -255,7 +255,7 @@ module Yast
 
         # bugzilla #303842
         if cpuinfo_flags
-          cpuflags = cpuinfo_flags.empty? ? [] : cpuinfo_flags.split(" ")
+          cpuflags = cpuinfo_flags.empty? ? [] : cpuinfo_flags.split
         else
           Builtins.y2error("Cannot read cpuflags")
           Builtins.y2milestone(

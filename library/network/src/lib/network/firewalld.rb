@@ -66,7 +66,7 @@ module Firewalld
           cmd_result["stdout"]
         else
           log.debug "#{command} returned: #{cmd_result["stdout"]}"
-          cmd_result["exit"].zero? ? true : false
+          cmd_result["exit"].zero?
         end
       else
         raise FirewallCMDError, "Calling firewall-cmd (cmd: #{command}) failed: #{cmd_result["stderr"]}"
@@ -96,13 +96,13 @@ module Firewalld
 
     # Simple wrapper for commands. Returns true on success
     def fwd_quiet_result(*args)
-      fwcmd = FWCmd.new(args.join(""))
+      fwcmd = FWCmd.new(args.join)
       fwcmd.fwd_output(false)
     end
 
     # Simple wrapper for commands. Returns command output
     def fwd_result(*args)
-      fwcmd = FWCmd.new(args.join(""))
+      fwcmd = FWCmd.new(args.join)
       fwcmd.fwd_output(true)
     end
 
@@ -134,37 +134,37 @@ module Firewalld
 
     # @return [Array<String>] List of firewall zones
     def zones
-      fwd_result("--permanent --get-zones").split(" ")
+      fwd_result("--permanent --get-zones").split
     end
 
     # @param zone [String] The firewall zone
     # @return [Array<String>] list of zone's interfaces
     def list_interfaces(zone)
-      fwd_result("--permanent --zone=#{zone.shellescape} --list-interfaces").split(" ")
+      fwd_result("--permanent --zone=#{zone.shellescape} --list-interfaces").split
     end
 
     # @param zone [String] The firewall zone
     # @return [Arrray<String>] list of zone's services
     def list_services(zone)
-      fwd_result("--permanent --zone=#{zone.shellescape} --list-services").split(" ")
+      fwd_result("--permanent --zone=#{zone.shellescape} --list-services").split
     end
 
     # @param zone [String] The firewall zone
     # @return [Array<String>] list of zone's ports
     def list_ports(zone)
-      fwd_result("--permanent --zone=#{zone.shellescape} --list-ports").split(" ")
+      fwd_result("--permanent --zone=#{zone.shellescape} --list-ports").split
     end
 
     # @param zone [String] The firewall zone
     # @return [Array<String>] list of zone's protocols
     def list_protocols(zone)
-      fwd_result("--permanent --zone=#{zone.shellescape} --list-protocols").split(" ")
+      fwd_result("--permanent --zone=#{zone.shellescape} --list-protocols").split
     end
 
     # @param zone [String] The firewall zone
     # @return [Array<String>] list of all information for given zone
     def list_all(zone)
-      fwd_result("--permanent --zone=#{zone.shellescape} --list-all").split(" ")
+      fwd_result("--permanent --zone=#{zone.shellescape} --list-all").split
     end
 
     # @return [Array<String>] list of all information for all firewall zones
@@ -199,7 +199,7 @@ module Firewalld
 
     # @return [Array<String>] List of firewall services
     def services
-      fwd_result("--permanent --get-services").split(" ")
+      fwd_result("--permanent --get-services").split
     end
 
     # @param service [String] The firewall service
@@ -336,7 +336,7 @@ module Firewalld
     # all, unicast, broadcast, multicast and off
     # @return [Boolean] True if desired packet type is being logged when denied
     def log_denied_packets?(kind)
-      (fwd_result("--get-log-denied").strip == kind) ? true : false
+      (fwd_result("--get-log-denied").strip == kind)
     end
 
     # @param kind [String] Denied packets to log. Possible values are:
