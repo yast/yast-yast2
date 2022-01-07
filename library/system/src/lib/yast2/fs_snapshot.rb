@@ -157,7 +157,7 @@ module Yast2
 
         @configured = nil
 
-        installation_helper_step_4
+        installation_helper_step4
         write_snapper_config
         update_etc_sysconfig_yast2
         setup_snapper_quota
@@ -364,7 +364,7 @@ module Yast2
       # Unfortunately the steps of the Snapper helper are not much descriptive.
       # The step 4 must be executed in the target system after installing the
       # packages and before using snapper for the first time.
-      def installation_helper_step_4
+      def installation_helper_step4
         Yast::Execute.on_target("/usr/lib/snapper/installation-helper", "--step", "4")
       end
 
