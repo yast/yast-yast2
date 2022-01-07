@@ -561,6 +561,8 @@ module Yast
             # If new port range should be created
             new_min = nil
             new_max = nil
+            # rubocop:disable Lint/DuplicateBranch
+            # wrong detection of dupliate branch as if cause logic and workflow
             # the second one is inside the first one
             if Ops.less_or_equal(min_pr, this_min_pr) &&
                 Ops.greater_or_equal(max_pr, this_max_pr)
@@ -602,6 +604,7 @@ module Yast
               new_min = this_min_pr
               new_max = max_pr
             end
+            # rubocop:enable Lint/DuplicateBranch
             if any_change_during_this_loop && !new_min.nil? && !new_max.nil?
               new_port_range = CreateNewPortRange(new_min, new_max)
               Builtins.y2milestone(

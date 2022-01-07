@@ -196,9 +196,8 @@ module Yast
     def GetEthTypeFromSysfs(dev)
       sys_dir_path = "/sys/class/net/#{dev}"
 
-      if FileUtils.Exists("#{sys_dir_path}/wireless")
-        "wlan"
-      elsif FileUtils.Exists("#{sys_dir_path}/phy80211")
+      if FileUtils.Exists("#{sys_dir_path}/wireless") ||
+          FileUtils.Exists("#{sys_dir_path}/phy80211")
         "wlan"
       elsif FileUtils.Exists("#{sys_dir_path}/bridge")
         "br"

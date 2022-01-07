@@ -206,10 +206,9 @@ module Yast
       success = if type.nil?
         case key
         when "widget_func" then Ops.is(value, "term ()")
-        when "init" then Ops.is(value, "void (string)")
+        when "init", "cleanup" then Ops.is(value, "void (string)")
         when "handle" then Ops.is(value, "symbol (string, map)")
         when "store" then Ops.is(value, "void (string, map)")
-        when "cleanup" then Ops.is(value, "void (string)")
         when "validate_function" then Ops.is(value, "boolean (string, map)")
         when "items" then Ops.is(value, "list <list <string>>")
         when "_cwm_do_validate" then Ops.is(value, "boolean (string, map <string, any>)")

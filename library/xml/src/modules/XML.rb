@@ -344,13 +344,11 @@ module Yast
       # backward compatibility. Newly maps should have its type
       if text.empty? && !children.empty?
         "map"
-      elsif !text.empty? && children.empty?
-        "string"
-      # keep cdata trick to create empty string
-      elsif !node.children.reject(&:text?).select(&:cdata?).empty?
-        "string"
-      elsif text.empty? && children.empty?
-        # default type is text if nothing is specified and cannot interfere
+      elsif (!text.empty? && children.empty?) ||
+          # keep cdata trick to create empty string
+          !node.children.reject(&:text?).select(&:cdata?).empty? ||
+          # default type is text if nothing is specified and cannot interfere
+          (text.empty? && children.empty?)
         "string"
       else
         raise XMLDeserializationError.for_node(node, "contains both text #{text.inspect} and elements #{children.inspect}.")

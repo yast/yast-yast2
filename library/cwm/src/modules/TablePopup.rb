@@ -102,15 +102,11 @@ module Yast
       success = true
       if popup
         case key
-        when "init"
+        when "init", "store", "cleanup"
           success = Ops.is(value, "void (any, string)")
         when "handle"
           success = Ops.is(value, "void (any, string, map)") ||
             Ops.is_symbol?(value)
-        when "store"
-          success = Ops.is(value, "void (any, string)")
-        when "cleanup"
-          success = Ops.is(value, "void (any, string)")
         when "validate_function"
           success = Ops.is(value, "boolean (any, string, map)")
         when "optional"
@@ -120,22 +116,16 @@ module Yast
         else
           return CWM.ValidateValueType(key, value, widget)
         end
-      elsif key == "id2key"
-        success = Ops.is(value, "string (map, any)")
-      elsif key == "ids"
-        success = Ops.is(value, "list (map)")
-      elsif key == "option_delete"
-        success = Ops.is(value, "boolean (any, string)")
-      elsif key == "summary"
-        success = Ops.is(value, "string (any, string)")
-      elsif key == "label_func"
-        success = Ops.is(value, "string (any, string)")
-      elsif key == "option_move"
-        success = Ops.is(value, "any (any, string, symbol)")
-      elsif key == "options"
-        success = Ops.is(value, "map <string, any>")
-      elsif key == "add_items"
-        success = Ops.is_list?(value)
+      else
+        success = case key
+        when "id2key" then Ops.is(value, "string (map, any)")
+        when "ids" then Ops.is(value, "list (map)")
+        when "option_delete" then Ops.is(value, "boolean (any, string)")
+        when "summary", "label_func" then Ops.is(value, "string (any, string)")
+        when "option_move" then Ops.is(value, "any (any, string, symbol)")
+        when "options" then Ops.is(value, "map <string, any>")
+        when "add_items" then Ops.is_list?(value)
+        end
       end
 
       if !success
@@ -790,6 +780,8 @@ module Yast
             current_index = Ops.add(current_index, 1)
             e == opt_id
           end
+          # rubocop:disable Lint/DuplicateBranch
+          # rubocop here wrongly detect logic in if conditions to decide step direction
           step = if current_index == 0
             1
           elsif Ops.add(current_index, 1) == Builtins.size(id_list)
@@ -799,6 +791,7 @@ module Yast
           else
             -1
           end
+          # rubocop:enable Lint/DuplicateBranch
           new_index = Ops.add(current_index, step)
           opt_id = Ops.get(id_list, new_index)
           UI.ChangeWidget(Id(:_tp_table), :CurrentItem, opt_id)

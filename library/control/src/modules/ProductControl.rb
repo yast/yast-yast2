@@ -557,40 +557,6 @@ module Yast
       nil
     end
 
-    # Get list of required files for the workflow.
-    # @return [Array<String>] Required files list.
-    # FIXME: this function seems to be unused, remove it?
-    def RequiredFiles(stage, mode)
-      # Files needed during installation.
-      needed_client_files = []
-
-      workflow = FindMatchingWorkflow(stage, mode)
-
-      modules = Ops.get_list(workflow, "modules", [])
-      modules = Builtins.filter(modules) do |m|
-        Ops.get_boolean(m, "enabled", true)
-      end
-
-      Builtins.foreach(modules) do |m|
-        client = if Stage.firstboot
-          Ops.get_string(m, "name", "dummy")
-        elsif Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
-          Ops.get_string(m, "name", "dummy")
-        else
-          Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
-        end
-        # FIXME: what about the ruby files?
-        client = Ops.add(
-          Ops.add(Ops.add(Directory.clientdir, "/"), client),
-          ".ycp"
-        )
-        needed_client_files = Builtins.add(needed_client_files, client)
-      end
-
-      needed_client_files = Builtins.toset(needed_client_files)
-      deep_copy(needed_client_files)
-    end
-
     # Get Workflow
     # @param [String] stage Stage
     # @param [String] mode Mode
@@ -653,15 +619,11 @@ module Yast
       end
 
       modules = Builtins.filter(modules) do |one_module|
-        # modules
-        if !Ops.get_string(one_module, "name").nil? &&
-            Ops.get_string(one_module, "name", "") != ""
-          next true
-          # proposals
-        elsif !Ops.get_string(one_module, "proposal").nil? &&
-            Ops.get_string(one_module, "proposal", "") != ""
-          next true
-        end
+        name = one_module["name"]
+        proposal = one_module["proposal"]
+
+        next true if name && !name.empty?
+        next true if proposal && !proposal.empty?
 
         # the rest
         false
@@ -1471,15 +1433,13 @@ module Yast
           @current_step = Ops.add(@current_step, 1)
         when :back
           @current_step = Ops.subtract(@current_step, 1)
-        when :cancel
+        when :cancel, :finish
           break
         when :abort
           # handling when user aborts the workflow (FATE #300422, bnc #406401, bnc #247552)
           final_result = result
           Hooks.run("installation_aborted")
 
-          break
-        when :finish
           break
         when :again
           next # Show same dialog again
