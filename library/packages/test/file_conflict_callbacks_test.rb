@@ -109,8 +109,7 @@ class DummyPkg
   ].freeze
 
   MOCK_METHODS.each do |method|
-    # mock empty methods with a single argument
-    define_method(method) { |arg| }
+    define_method(method) { |arg| } # mock empty methods with a single argument
   end
 end
 

@@ -116,7 +116,7 @@ describe Yast::InstExtensionImage do
         .with(path(".local.bash_output"), "/bin/extend 'snapper'")
         .and_return("exit" => 1)
 
-      expect { subject.with_extension("snapper") {} }.to raise_error
+      expect { subject.with_extension("snapper") {} }.to raise_error # empty block is enough
     end
 
     it "unloads extension even if block raises exception" do

@@ -25,8 +25,7 @@ describe Yast::Popup do
       it "opens a popup dialog and closes it at the end" do
         expect(ui).to receive(:OpenDialog).ordered
         expect(ui).to receive(:CloseDialog).ordered
-        # just pass an empty block
-        subject.Feedback("Label", "Message") {}
+        subject.Feedback("Label", "Message") {} # just pass an empty block
       end
 
       it "closes the popup even when an exception occurs in the block" do
@@ -58,14 +57,14 @@ describe Yast::Popup do
       expect(ui).to receive(:OpenDialog).ordered
       expect(ui).to receive(:CloseDialog).ordered
       subject.Feedback("test", "test") do
-        subject.SuppressFeedback {}
+        subject.SuppressFeedback {} # just empty testing block
       end
     end
 
     it "just call block if no feedback is given" do
       expect(ui).to_not receive(:OpenDialog)
       expect(ui).to_not receive(:CloseDialog)
-      subject.SuppressFeedback {}
+      subject.SuppressFeedback {} # empty block passed
     end
 
     context "when block is missing" do
