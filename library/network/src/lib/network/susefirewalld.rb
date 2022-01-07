@@ -195,24 +195,21 @@ module Yast
 
       # Ruby's merge will probably not work since we have nested hashes
       @SETTINGS.each_key do |key|
-        next unless import_settings.include?(key)
-
-        if import_settings[key].instance_of?(Hash)
-          # Merge them
-          @SETTINGS[key].merge!(import_settings[key])
-        else
-          @SETTINGS[key] = import_settings[key]
+        if import_settings.include?(key)
+          if import_settings[key].instance_of?(Hash)
+            # Merge them
+            @SETTINGS[key].merge!(import_settings[key])
+          else
+            @SETTINGS[key] = import_settings[key]
+          end
         end
-      end
-
-      # Merge missing attributes
-      @SETTINGS.each_key do |key|
-        next unless GetKnownFirewallZones().include?(key)
-
-        # is this a zone?
-        @SETTINGS[key] = EMPTY_ZONE.merge(@SETTINGS[key])
-        # Everything may have been modified
-        @SETTINGS[key][:modified] = [:interfaces, :masquerade, :ports, :protocols, :services]
+        # Merge missing attributes
+        if GetKnownFirewallZones().include?(key)
+          # is this a zone?
+          @SETTINGS[key] = EMPTY_ZONE.merge(@SETTINGS[key])
+          # Everything may have been modified
+          @SETTINGS[key][:modified] = [:interfaces, :masquerade, :ports, :protocols, :services]
+        end
       end
 
       # Tests mock the read method so read the NetworkInterface list again
