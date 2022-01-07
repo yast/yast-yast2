@@ -86,10 +86,10 @@ module Yast
       class_eval(hook, __FILE__, __LINE__)
 
       # rename the original method
-      class_eval("alias #{name}_without_hook #{name}", __FILE__, __LINE__)
+      class_eval("alias #{name}_without_hook #{name}", __FILE__, __LINE__) # alias m_without_hook m
 
       # replace the original method with the hook
-      class_eval("alias #{name} #{name}_hook", __FILE__, __LINE__)
+      class_eval("alias #{name} #{name}_hook", __FILE__, __LINE__) # alias m m_hook
     end
 
     def main
