@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        distro: [ "TW", "15.4" ]
+        distro: [ "tumbleweed", "15.4" ]
 
     container:
       image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
