@@ -37,6 +37,8 @@ jobs:
 
     # send the coverage report to coveralls.io
     - name: Coveralls Report
+      # send it only once from the TW build to avoid duplicate submits
+      if: ${{ matrix.distro == 'tumbleweed' }}
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
