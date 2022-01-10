@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        docker_repo: [ "containers", "containers_15.4" ]
+        docker_repo: [ "containers_15.4" ]
 
     container:
       image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
@@ -63,7 +63,7 @@ jobs:
 
     strategy:
       matrix:
-        docker_repo: [ "containers", "containers_15.4" ]
+        docker_repo: [ "containers_15.4" ]
 
     container:
       image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
@@ -81,7 +81,7 @@ jobs:
 
     strategy:
       matrix:
-        docker_repo: [ "containers", "containers_15.4" ]
+        docker_repo: [ "containers_15.4" ]
 
     container:
       image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
@@ -101,7 +101,7 @@ jobs:
 
     strategy:
       matrix:
-        docker_repo: [ "containers", "containers_15.4" ]
+        docker_repo: [ "containers_15.4" ]
 
     container:
       image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
