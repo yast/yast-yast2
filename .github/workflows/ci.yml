@@ -11,10 +11,10 @@ jobs:
 
     strategy:
       matrix:
-        docker_repo: [ "containers", "containers_15.4" ]
+        distro: [ "TW", "15.4" ]
 
     container:
-      image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
+      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
 
     steps:
 
@@ -45,10 +45,10 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        docker_repo: [ "containers_15.4" ]
+        distro: [ "15.4" ]
 
     container:
-      image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
+      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
 
     steps:
 
@@ -63,10 +63,10 @@ jobs:
 
     strategy:
       matrix:
-        docker_repo: [ "containers_15.4" ]
+        distro: [ "15.4" ]
 
     container:
-      image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
+      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
 
     steps:
 
@@ -81,10 +81,10 @@ jobs:
 
     strategy:
       matrix:
-        docker_repo: [ "containers_15.4" ]
+        distro: [ "15.4" ]
 
     container:
-      image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
+      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
 
     steps:
 
@@ -101,10 +101,10 @@ jobs:
 
     strategy:
       matrix:
-        docker_repo: [ "containers_15.4" ]
+        distro: [ "15.4" ]
 
     container:
-      image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
+      image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
 
     steps:
 
