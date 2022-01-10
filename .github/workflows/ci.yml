@@ -8,8 +8,13 @@ on: [push, pull_request]
 jobs:
   Tests:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        docker_repo: [ "containers", "containers_15.4" ]
+
     container:
-      image: registry.opensuse.org/yast/head/containers/yast-ruby:latest
+      image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
 
     steps:
 
@@ -38,8 +43,12 @@ jobs:
 
   Rubocop:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        docker_repo: [ "containers", "containers_15.4" ]
+
     container:
-      image: registry.opensuse.org/yast/head/containers/yast-ruby:latest
+      image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
 
     steps:
 
@@ -51,8 +60,13 @@ jobs:
 
   Package:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        docker_repo: [ "containers", "containers_15.4" ]
+
     container:
-      image: registry.opensuse.org/yast/head/containers/yast-ruby:latest
+      image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
 
     steps:
 
@@ -64,8 +78,13 @@ jobs:
 
   Yardoc:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        docker_repo: [ "containers", "containers_15.4" ]
+
     container:
-      image: registry.opensuse.org/yast/head/containers/yast-ruby:latest
+      image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
 
     steps:
 
@@ -79,8 +98,13 @@ jobs:
   # checks into one job avoids that overhead
   Checks:
     runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        docker_repo: [ "containers", "containers_15.4" ]
+
     container:
-      image: registry.opensuse.org/yast/head/containers/yast-ruby:latest
+      image: registry.opensuse.org/yast/head/${{matrix.docker_repo}}/yast-ruby:latest
 
     steps:
 
