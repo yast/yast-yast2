@@ -11,7 +11,7 @@ jobs:
 
     strategy:
       matrix:
-        distro: [ "tumbleweed", "15.4" ]
+        distro: [ "tumbleweed", "leap_latest" ]
 
     container:
       image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
@@ -45,7 +45,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        distro: [ "15.4" ]
+        distro: [ "leap_latest" ]
 
     container:
       image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
@@ -63,7 +63,7 @@ jobs:
 
     strategy:
       matrix:
-        distro: [ "15.4" ]
+        distro: [ "leap_latest" ]
 
     container:
       image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
@@ -81,7 +81,7 @@ jobs:
 
     strategy:
       matrix:
-        distro: [ "15.4" ]
+        distro: [ "leap_latest" ]
 
     container:
       image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
@@ -101,7 +101,7 @@ jobs:
 
     strategy:
       matrix:
-        distro: [ "15.4" ]
+        distro: [ "leap_latest" ]
 
     container:
       image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
