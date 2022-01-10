@@ -63,7 +63,7 @@ jobs:
 
     strategy:
       matrix:
-        distro: [ "leap_latest" ]
+        distro: [ "tumbleweed", "leap_latest" ]
 
     container:
       image: registry.opensuse.org/yast/head/containers_${{matrix.distro}}/yast-ruby
