@@ -45,7 +45,7 @@ module Y2Packager
     #
     # @param url [String, ZyppUrl, URI::Generic]
     def initialize(url)
-      super()
+      super
 
       uri =
         begin
