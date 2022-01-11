@@ -27,8 +27,7 @@ module CWM
     abstract_method :contents
 
     # Constructor (empty to just allow passing extra options)
-    def initialize(*args, **kws)
-    end
+    def initialize(*args, **kws); end
 
     # A shortcut for `.new(*args).run`
     def self.run(*args, **kws)
