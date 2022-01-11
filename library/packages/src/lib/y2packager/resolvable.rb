@@ -81,6 +81,15 @@ module Y2Packager
       Yast::Pkg.AnyResolvable(params)
     end
 
+    # Return true when there is no resolvable matching the requested parameters or false
+    # otherwise.
+    #
+    # @param params [Hash<Symbol,Object>] The requested attributes
+    # @return [Boolean] `true` if no matching resolvable is found, `false` otherwise.
+    def self.none?(params)
+      !any?(params)
+    end
+
     #
     # Constructor, initialize the object from a pkg-bindings resolvable hash.
     #

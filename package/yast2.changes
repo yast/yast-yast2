@@ -1,4 +1,18 @@
 -------------------------------------------------------------------
+Fri Jan  7 14:41:15 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed test failure in Ruby 2.5, caused by the fix for Ruby 3.0
+  (related to bsc#1193192)
+- 4.4.34
+
+-------------------------------------------------------------------
+Fri Jan  7 08:32:21 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
+
+- Y2Packager::Resolvable: added none? method in order to not crash
+  in case of rubocop automatic change (bsc#1194387)
+- 4.4.33
+
+-------------------------------------------------------------------
 Thu Dec 23 18:08:19 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - properly pass named arguments in ruby3 (bsc#1193192)

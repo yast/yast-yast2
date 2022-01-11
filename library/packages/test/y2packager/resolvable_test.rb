@@ -141,6 +141,25 @@ describe Y2Packager::Resolvable do
     end
   end
 
+  describe ".none?" do
+    it "returns true if no package is found" do
+      expect(Y2Packager::Resolvable.none?(kind: :package, name: "not existing")).to be true
+    end
+
+    it "returns true if no product is found" do
+      expect(Y2Packager::Resolvable.none?(kind: :product, name: "openSUSE")).to be true
+    end
+
+    it "returns false if a package with name is found" do
+      # use some noarch package here, the testing data covers only the x86_64 arch
+      expect(Y2Packager::Resolvable.none?(kind: :package, name: "yast2-add-on")).to be false
+    end
+
+    it "returns false if a package is found" do
+      expect(Y2Packager::Resolvable.none?(kind: :package)).to be false
+    end
+  end
+
   describe "#vendor" do
     it "lazy loads the missing attributes" do
       # use some noarch package here, the testing data covers only the x86_64 arch
