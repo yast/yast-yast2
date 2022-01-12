@@ -97,11 +97,6 @@
 # ==================
 # The SlideShow dialog contains the following functionality:
 # - global progress (see above)
-# - subprogress for the current action (e.g. download a package, format
-# disk, ...)
-# - installation log
-# - slide show support
-# - optional package table
 # - release notes viewer
 require "yast"
 require "yast2/system_time"
@@ -109,8 +104,6 @@ require "yast2/system_time"
 module Yast
   class SlideShowClass < Module
     include Yast::Logger
-
-    attr_accessor :user_switched_to
 
     module UI_ID
       TOTAL_PROGRESS = :progressTotal
@@ -129,35 +122,15 @@ module Yast
       Yast.import "Popup"
       Yast.import "Slides"
 
-      @total_time_elapsed = 0
-      @start_time = -1
-      @initial_recalc_delay = 60 # const - seconds before initially calculating remaining times
-      @recalc_interval = 30 # const - seconds between "remaining time" recalculations
-      @next_recalc_time = Yast2::SystemTime.uptime
-
-      @current_slide_no = 0
-      @slide_start_time = 0
-      @slide_interval = 30 # FIXME: constant
       @language = "en"
       @widgets_created = false
-      @user_switched_to = :none
       @opened_own_wizard = false
-      @inst_log = ""
       @user_abort = false
 
       # we need to remember the values for tab switching
       # these are the initial values
       @total_progress_label = _("Installing...")
-      @sub_progress_label = _("Installing...")
       @total_progress_value = 0
-      @sub_progress_value = 0
-      @table_items = []
-
-      @_show_table = false
-
-      # properties of the current UI
-      @textmode = false
-      @display_width = 80
 
       @relnotes = nil # forward declaration
 
@@ -186,38 +159,18 @@ module Yast
     # Start the internal (global) timer.
     #
     def StartTimer
-      @start_time = Yast2::SystemTime.uptime
-
       nil
     end
 
     # Reset the internal (global) timer.
     #
     def ResetTimer
-      @start_time = Yast2::SystemTime.uptime
-
       nil
     end
 
     # Stop the internal (global) timer and account elapsed time.
     #
     def StopTimer
-      if Ops.less_than(@start_time, 0)
-        Builtins.y2error("StopTimer(): No timer running.")
-        return
-      end
-
-      elapsed = Ops.subtract(Yast2::SystemTime.uptime, @start_time)
-      @start_time = -1
-      @total_time_elapsed = Ops.add(@total_time_elapsed, elapsed)
-      Builtins.y2debug(
-        "StopTimer(): Elapsed this time: %1 sec; total: %2 sec (%3:%4)",
-        elapsed,
-        @total_time_elapsed,
-        Ops.divide(@total_time_elapsed, 60),
-        Ops.modulo(@total_time_elapsed, 60) # min
-      ) # sec
-
       nil
     end
 
@@ -232,7 +185,7 @@ module Yast
     # @return true if showing details, false otherwise
     #
     def ShowingSlide
-      @widgets_created && UI.WidgetExists(:slideShowPage)
+      false
     end
 
     # Check if currently the "Release Notes" page is shown
@@ -249,9 +202,7 @@ module Yast
     # Restart the subprogress of the slideshow. This means the
     # label will be set to given text, value to 0.
     # @param [String] text  new label for the subprogress
-    def SubProgressStart(text)
-      SubProgress(0, text)
-    end
+    def SubProgressStart(text); end
 
     # Updates status of the sub-progress in slide show. The new value and label
     # will be set to values given as parametes. If a given parameter contains *nil*,
@@ -259,24 +210,7 @@ module Yast
     #
     # @param [Fixnum] value  new value for the subprogress
     # @param [String] label  new label for the subprogress
-    def SubProgress(value, label)
-      value ||= @sub_progress_value
-      label ||= @sub_progress_label
-
-      if UI.WidgetExists(UI_ID::CURRENT_PACKAGE)
-        if @sub_progress_value != value
-          @sub_progress_value = value
-          UI.ChangeWidget(UI_ID::CURRENT_PACKAGE, :Value, value)
-        end
-
-        if @sub_progress_label != label
-          @sub_progress_label = label
-          UI.ChangeWidget(UI_ID::CURRENT_PACKAGE, :Label, label)
-        end
-      end
-
-      nil
-    end
+    def SubProgress(value, label); end
 
     # Restart the global progress of the slideshow. This means the
     # label will be set to given text, value to 0.
@@ -309,9 +243,6 @@ module Yast
       else
         log.warn "progressTotal widget missing"
       end
-
-      # update slide
-      ChangeSlideIfNecessary() if ShowingSlide()
 
       nil
     end
@@ -385,13 +316,7 @@ module Yast
 
     # Append message to the installation log.
     # @param [String] msg  message to be added, without trailing eoln
-    def AppendMessageToInstLog(msg)
-      log_line = "#{msg}\n"
-
-      @inst_log << log_line
-
-      UI.ChangeWidget(:instLog, :LastLine, log_line) if ShowingDetails() && UI.WidgetExists(:instLog)
-
+    def AppendMessageToInstLog(_msg)
       nil
     end
 
@@ -405,28 +330,13 @@ module Yast
     # to access any slides; some late initialization is done here.
     #
     def CheckForSlides
-      Slides.CheckBasePath
-
-      if Stage.initial || Stage.cont
-        if Slides.HaveSlideSupport
-          Builtins.y2milestone("Display OK for slide show, loading")
-          Slides.LoadSlides(@language)
-        else
-          Builtins.y2warning(
-            "Disabling slide show - insufficient display capabilities"
-          )
-        end
-      end
-
       nil
     end
 
     # Set the slide show text.
     # @param [String] text
     #
-    def SetSlideText(text)
-      UI.ChangeWidget(:slideText, :Value, text) if UI.WidgetExists(:slideText)
-
+    def SetSlideText(_text)
       nil
     end
 
@@ -448,17 +358,7 @@ module Yast
     # Load a slide image + text.
     # @param [Fixnum] slide_no number of slide to load
     #
-    def LoadSlide(slide_no)
-      slide_no = 0 if slide_no >= Slides.slides.size
-      log.info "load slide #{slide_no}"
-
-      @current_slide_no = slide_no
-
-      slide_name = Ops.get(Slides.slides, slide_no, "")
-      @slide_start_time = Yast2::SystemTime.uptime
-
-      SetSlideText(Slides.LoadSlideFile(slide_name))
-
+    def LoadSlide(_slide_no)
       nil
     end
 
@@ -466,40 +366,28 @@ module Yast
     # necessary.
     #
     def ChangeSlideIfNecessary
-      LoadSlide(@current_slide_no + 1) if Yast2::SystemTime.uptime > (@slide_start_time + @slide_interval)
-
       nil
     end
 
-    # Add widgets for progress bar etc. around a slide show page
-    # @param [Symbol] page_id    ID to use for this page (for checking with UI::WidgetExists() )
-    # @param [Yast::Term] page_contents  The inner widgets (the page contents)
+    # widgets for progress bar
     # @return      A term describing the widgets
     #
-    def AddProgressWidgets(page_id, page_contents)
-      page_contents = deep_copy(page_contents)
-      widgets = HBox(
-        Id(page_id),
+    def progress_widgets
+      HBox(
+        Id(:progress_bar),
         HSpacing(1),
         VBox(
-          VWeight(
-            1, # lower layout priority
-            page_contents
-          ), # intentionally omitting `Label(`nextMedia) -
-          # too much flicker upon update (UI::RecalcLayout() ) on NCurses
-          # Progress bar for overall progress of software package installation
-          ProgressBar(
-            Id(UI_ID::TOTAL_PROGRESS),
-            @total_progress_label,
-            100,
-            @total_progress_value
+          VCenter(
+            ProgressBar(
+              Id(UI_ID::TOTAL_PROGRESS),
+              @total_progress_label,
+              100,
+              @total_progress_value
+            )
           )
         ),
         HSpacing(0.5)
       )
-
-      Builtins.y2debug("widget term: \n%1", widgets)
-      deep_copy(widgets)
     end
 
     # Construct widgets describing a page with the real slide show
@@ -507,73 +395,21 @@ module Yast
     #
     # @return  A term describing the widgets
     #
-    def SlidePageWidgets
-      widgets = AddProgressWidgets(:slideShowPage, RichText(Id(:slideText), ""))
-      Builtins.y2debug("widget term: \n%1", widgets)
-      deep_copy(widgets)
-    end
+    def SlidePageWidgets; end
 
-    def DetailsTableWidget
-      VWeight(
-        1,
-        Table(
-          Id(:cdStatisticsTable),
-          Opt(:keepSorting),
-          Header(
-            # Table headings for CD statistics during installation
-            _("Media"),
-            # Table headings for CD statistics during installation - keep as short as possible!
-            Right(_("Remaining")),
-            # Table headings for CD statistics during installation
-            Right(_("Packages")),
-            # Table headings for CD statistics during installation
-            Right(_("Time"))
-          ),
-          @table_items
-        )
-      )
-    end
+    def DetailsTableWidget; end
 
     # Construct widgets for the "details" page
     #
     # @return  A term describing the widgets
     #
-    def DetailsPageWidgets
-      widgets = AddProgressWidgets(
-        :detailsPage,
-        VBox(
-          @_show_table ? DetailsTableWidget() : Empty(),
-          VWeight(1, LogView(Id(:instLog), _("Actions performed:"), 6, 0)),
-          ProgressBar(
-            Id(UI_ID::CURRENT_PACKAGE),
-            @sub_progress_label,
-            100,
-            @sub_progress_value
-          )
-        )
-      )
-
-      Builtins.y2debug("widget term: \n%1", widgets)
-      deep_copy(widgets)
-    end
+    def DetailsPageWidgets; end
 
     # Construct widgets for the "release notes" page
     #
     # @return  A term describing the widgets
     #
-    def RelNotesPageWidgets(id)
-      # Release notes in plain text need to be escaped to be shown properly (bsc#1028721)
-      rel_notes =
-        if @_rn_tabs[id] =~ /<\/.*>/
-          @_rn_tabs[id]
-        else
-          "<pre>#{String.EscapeTags(@_rn_tabs[id])}</pre>"
-        end
-
-      widgets = AddProgressWidgets(:relNotesPage, RichText(rel_notes))
-      Builtins.y2debug("widget term: \n%1", widgets)
-      deep_copy(widgets)
-    end
+    def RelNotesPageWidgets(id); end
 
     # Switch from the 'details' view to the 'slide show' view.
     #
@@ -591,26 +427,12 @@ module Yast
 
     # Rebuild the details page.
     def RebuildDetailsView
-      if UI.WidgetExists(:tabContents)
-        UI.ChangeWidget(:dumbTab, :CurrentItem, :showDetails) if UI.WidgetExists(:dumbTab)
-        UI.ReplaceWidget(:tabContents, DetailsPageWidgets())
-        Builtins.y2milestone("Contents set to details")
-      end
-
-      UI.ChangeWidget(:instLog, :Value, @inst_log) if UI.WidgetExists(:instLog) && @inst_log != ""
-
       nil
     end
 
     # Switch from the 'slide show' view to the 'details' view.
     #
     def SwitchToDetailsView
-      if ShowingDetails()
-        Builtins.y2milestone("Already showing details")
-        return
-      end
-      RebuildDetailsView()
-
       nil
     end
 
@@ -655,49 +477,9 @@ module Yast
     # Rebuild the dialog. Useful if slides become available post-creating the dialog.
     #
     # @param [Boolean] show_release_notes release notes tab will be shown.
-    def RebuildDialog(show_release_notes = false)
+    def RebuildDialog(_show_release_notes = false)
       log.info "Rebuilding partitioning/RPM_installation progress"
-      contents = Empty()
-
-      show_slides = Slides.HaveSlideSupport && Slides.HaveSlides
-      if UI.HasSpecialWidget(:DumbTab) && (show_slides || !@_relnotes.empty?)
-        tabs = [
-          # tab
-          Item(Id(:showDetails), _("&Details"))
-        ]
-        if show_slides
-          # tab
-          tabs.unshift(Item(Id(:showSlide), _("Slide Sho&w")))
-        end
-
-        if show_release_notes
-          @_rn_tabs = {}
-          add_relnotes_for_product @_base_product, @_relnotes[@_base_product], tabs if @_relnotes.key?(@_base_product)
-          @_relnotes.each do |product, relnotes|
-            add_relnotes_for_product product, relnotes, tabs if @_base_product != product
-          end
-        end
-
-        contents = DumbTab(
-          Id(:dumbTab),
-          tabs,
-          VBox(
-            VSpacing(0.4),
-            VWeight(
-              1, # lower layout priority
-              HBox(
-                HSpacing(1),
-                ReplacePoint(Id(:tabContents), SlidePageWidgets()),
-                HSpacing(0.5)
-              )
-            ),
-            VSpacing(0.4)
-          )
-        )
-      else
-        # no tabs, but we need to modify hide cd statistics table, so add replace point
-        contents = ReplacePoint(Id(:tabContents), DetailsPageWidgets())
-      end
+      contents = progress_widgets
 
       Builtins.y2milestone("SlideShow contents: %1", contents)
 
@@ -717,35 +499,13 @@ module Yast
 
       @widgets_created = true
 
-      # if no tabs, update the log
-      RebuildDetailsView() if ShowingDetails()
-
-      SwitchToDetailsView() if !Slides.HaveSlides && ShowingSlide()
-
       nil
     end
 
     # Redrawing the complete slide show if needed.
     #
     def Redraw
-      CheckForSlides()
-
-      # do not rebuild if the user reads the release notes
-      return if @user_switched_to == :release_notes
-
-      if Slides.HaveSlides && Slides.HaveSlideSupport
-        if !SlideShow.HaveSlideWidget
-          # (true) : Showing release tab if needed
-          RebuildDialog(true)
-          SwitchToDetailsView() if @user_switched_to == :details
-        end
-
-        # Don't override explicit user request!
-        SwitchToSlideView() if @user_switched_to != :details
-      elsif !ShowingDetails()
-        # (true) : Showing release tab if needed
-        RebuildDialog(true)
-      end
+      nil
     end
 
     # Open the slide show base dialog with empty work area (placeholder for
@@ -772,7 +532,7 @@ module Yast
         false
       ) # has_back, has_next
 
-      RebuildDialog()
+      RebuildDialog(true)
 
       # reset abort status
       SetUserAbort(false)
@@ -782,47 +542,13 @@ module Yast
 
     # Initialize generic data to default values
     def Reset
-      @current_slide_no = -1
-      @slide_start_time = 0
-      @total_time_elapsed = 0
-      @start_time = -1
-      @next_recalc_time = -1
-
-      @textmode = Ops.get_boolean(UI.GetDisplayInfo, "TextMode", false)
-      @display_width = Ops.get_integer(UI.GetDisplayInfo, "Width", 0)
-
       nil
     end
 
     # Process (slide show) input (button press).
     #
     def HandleInput(button)
-      button = deep_copy(button)
-      if button == :showDetails && !ShowingDetails()
-        Builtins.y2milestone("User asks to switch to details")
-        @user_switched_to = :details
-        SwitchToDetailsView()
-      elsif button == :showSlide && !ShowingSlide()
-        if Slides.HaveSlides
-          if @user_switched_to == :release_notes
-            # The user is currently in the release notes tab.
-            # In order to not disturb him while reading the release notes
-            # we are not updating the tabs although the slide show has been
-            # changed in the background.
-            # Now the user is switching from release notes to slide show
-            # and we are updating the slide show now.
-            RebuildDialog(true) # true: showing the release tab
-          end
-          SwitchToSlideView()
-          LoadSlide(@current_slide_no)
-        else
-          UI.ChangeWidget(:dumbTab, :CurrentItem, :showDetails)
-        end
-        @user_switched_to = :slides
-      elsif @_rn_tabs.key?(button) && !ShowingRelNotes(button)
-        @user_switched_to = :release_notes
-        SwitchToReleaseNotesView(button)
-      end
+      SwitchToReleaseNotesView(button) if @_rn_tabs.key?(button) && !ShowingRelNotes(button)
       # NOTE: `abort is handled in SlideShowCallbacks::HandleInput()
 
       nil
@@ -867,16 +593,7 @@ module Yast
       # call SlideShowCallbacks::InstallSlideShowCallbacks()
       WFM.call("wrapper_slideshow_callbacks", ["InstallSlideShowCallbacks"])
 
-      # check for slides first, otherwise dialogs will be built without them
-      CheckForSlides()
-
       OpenSlideShowBaseDialog()
-
-      if Slides.HaveSlides
-        LoadSlide(0)
-      else
-        SwitchToDetailsView()
-      end
 
       nil
     end
@@ -893,30 +610,14 @@ module Yast
     end
 
     def ShowTable
-      if ShowingDetails() && !@_show_table
-        @_show_table = true
-        RebuildDetailsView()
-      end
-      @_show_table = true
-
       nil
     end
 
     def HideTable
-      if ShowingDetails() && @_show_table
-        @_show_table = false
-        RebuildDetailsView()
-      end
-      @_show_table = false
-
       nil
     end
 
-    def UpdateTable(items)
-      items = deep_copy(items)
-      @table_items = deep_copy(items)
-      UI.ChangeWidget(Id(:cdStatisticsTable), :Items, items) if ShowingDetails() && @_show_table
-
+    def UpdateTable(_items)
       nil
     end
 
@@ -1046,20 +747,9 @@ module Yast
       deep_copy(@_stages)
     end
 
-    publish variable: :total_time_elapsed, type: "integer"
-    publish variable: :start_time, type: "integer"
-    publish variable: :initial_recalc_delay, type: "integer"
-    publish variable: :recalc_interval, type: "integer"
-    publish variable: :next_recalc_time, type: "integer"
-    publish variable: :current_slide_no, type: "integer"
-    publish variable: :slide_start_time, type: "integer"
-    publish variable: :slide_interval, type: "integer"
     publish variable: :language, type: "string"
     publish variable: :widgets_created, type: "boolean"
     publish variable: :opened_own_wizard, type: "boolean"
-    publish variable: :inst_log, type: "string"
-    publish variable: :textmode, type: "boolean"
-    publish variable: :display_width, type: "integer"
     publish variable: :relnotes, type: "string"
     publish function: :ChangeSlideIfNecessary, type: "void ()"
     publish function: :SetUserAbort, type: "void (boolean)"
