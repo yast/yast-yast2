@@ -202,8 +202,7 @@ module Yast
     # Restart the subprogress of the slideshow. This means the
     # label will be set to given text, value to 0.
     # @param [String] text  new label for the subprogress
-    def SubProgressStart(text)
-    end
+    def SubProgressStart(text); end
 
     # Updates status of the sub-progress in slide show. The new value and label
     # will be set to values given as parametes. If a given parameter contains *nil*,
@@ -211,8 +210,7 @@ module Yast
     #
     # @param [Fixnum] value  new value for the subprogress
     # @param [String] label  new label for the subprogress
-    def SubProgress(value, label)
-    end
+    def SubProgress(value, label); end
 
     # Restart the global progress of the slideshow. This means the
     # label will be set to given text, value to 0.
@@ -318,7 +316,7 @@ module Yast
 
     # Append message to the installation log.
     # @param [String] msg  message to be added, without trailing eoln
-    def AppendMessageToInstLog(msg)
+    def AppendMessageToInstLog(_msg)
       nil
     end
 
@@ -338,7 +336,7 @@ module Yast
     # Set the slide show text.
     # @param [String] text
     #
-    def SetSlideText(text)
+    def SetSlideText(_text)
       nil
     end
 
@@ -360,7 +358,7 @@ module Yast
     # Load a slide image + text.
     # @param [Fixnum] slide_no number of slide to load
     #
-    def LoadSlide(slide_no)
+    def LoadSlide(_slide_no)
       nil
     end
 
@@ -375,8 +373,7 @@ module Yast
     # @return      A term describing the widgets
     #
     def progress_widgets
-      page_contents = deep_copy(page_contents)
-      widgets = HBox(
+      HBox(
         Id(:progress_bar),
         HSpacing(1),
         VBox(
@@ -391,9 +388,6 @@ module Yast
         ),
         HSpacing(0.5)
       )
-
-      Builtins.y2debug("widget term: \n%1", widgets)
-      deep_copy(widgets)
     end
 
     # Construct widgets describing a page with the real slide show
@@ -401,25 +395,21 @@ module Yast
     #
     # @return  A term describing the widgets
     #
-    def SlidePageWidgets
-    end
+    def SlidePageWidgets; end
 
-    def DetailsTableWidget
-    end
+    def DetailsTableWidget; end
 
     # Construct widgets for the "details" page
     #
     # @return  A term describing the widgets
     #
-    def DetailsPageWidgets
-    end
+    def DetailsPageWidgets; end
 
     # Construct widgets for the "release notes" page
     #
     # @return  A term describing the widgets
     #
-    def RelNotesPageWidgets(id)
-    end
+    def RelNotesPageWidgets(id); end
 
     # Switch from the 'details' view to the 'slide show' view.
     #
@@ -487,7 +477,7 @@ module Yast
     # Rebuild the dialog. Useful if slides become available post-creating the dialog.
     #
     # @param [Boolean] show_release_notes release notes tab will be shown.
-    def RebuildDialog(show_release_notes = false)
+    def RebuildDialog(_show_release_notes = false)
       log.info "Rebuilding partitioning/RPM_installation progress"
       contents = progress_widgets
 
@@ -558,9 +548,7 @@ module Yast
     # Process (slide show) input (button press).
     #
     def HandleInput(button)
-      if @_rn_tabs.key?(button) && !ShowingRelNotes(button)
-        SwitchToReleaseNotesView(button)
-      end
+      SwitchToReleaseNotesView(button) if @_rn_tabs.key?(button) && !ShowingRelNotes(button)
       # NOTE: `abort is handled in SlideShowCallbacks::HandleInput()
 
       nil
@@ -629,7 +617,7 @@ module Yast
       nil
     end
 
-    def UpdateTable(items)
+    def UpdateTable(_items)
       nil
     end
 
