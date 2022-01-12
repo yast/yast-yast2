@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 12 11:46:50 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
+
+- Simplify slide show to support future parallel installations
+  (jsc#SLE-20437)
+- 4.4.35
+
+-------------------------------------------------------------------
 Fri Jan  7 14:41:15 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed test failure in Ruby 2.5, caused by the fix for Ruby 3.0
