@@ -72,7 +72,7 @@ describe "UI::Greasemonkey" do
     let(:old) { term(:LeftRadioButtonWithAttachment, "foo", "bar", "contents") }
     let(:new) do
       VBox(
-        # NOTE that it does not expand this Greasemonkey term!
+        # NOTE: that it does not expand this Greasemonkey term!
         term(:LeftRadioButton, "foo", "bar"),
         HBox(HSpacing(4), "contents")
       )
@@ -96,7 +96,7 @@ describe "UI::Greasemonkey" do
     let(:old) { term(:LeftCheckBoxWithAttachment, "foo", "bar", "contents") }
     let(:new) do
       VBox(
-        # NOTE that it does not expand this Greasemonkey term!
+        # NOTE: that it does not expand this Greasemonkey term!
         term(:LeftCheckBox, "foo", "bar"),
         HBox(HSpacing(4), "contents")
       )

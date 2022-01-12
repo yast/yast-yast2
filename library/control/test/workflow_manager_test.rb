@@ -299,7 +299,7 @@ describe Yast::WorkflowManager do
     let(:product_package) { "foo-release" }
     let(:product) do
       Y2Packager::Resolvable.new("kind" => :product, "name" => "foo", "source" => repo_id,
-      "version" => "1.0", "arch" => "x86_64", "product_package" => product_package)
+        "version" => "1.0", "arch" => "x86_64", "product_package" => product_package)
     end
     let(:ext_package) { "foo-installation" }
     let(:extension) do
@@ -308,7 +308,7 @@ describe Yast::WorkflowManager do
     end
     let(:release) do
       Y2Packager::Resolvable.new("name" => product_package, "source" => repo_id, "version" => "1.0", "arch" => "x86_64",
-      "kind" => :package, "deps" => ["provides" => "installerextension(#{ext_package})"])
+        "kind" => :package, "deps" => ["provides" => "installerextension(#{ext_package})"])
     end
 
     before do
@@ -369,7 +369,7 @@ describe Yast::WorkflowManager do
 
     context "downloading the installer extension package fails" do
       before do
-        expect_any_instance_of(Packages::PackageDownloader).to receive(:download).and_raise(Packages::PackageDownloader::FetchError)
+        expect_any_instance_of(Packages::PackageDownloader).to receive(:download).and_raise(Y2Packager::PackageFetchError)
         allow(Yast::Report).to receive(:Error)
       end
 
@@ -385,7 +385,7 @@ describe Yast::WorkflowManager do
 
     context "extracting the installer extension package fails" do
       before do
-        expect_any_instance_of(Packages::PackageExtractor).to receive(:extract).and_raise(Packages::PackageExtractor::ExtractionFailed)
+        expect_any_instance_of(Packages::PackageExtractor).to receive(:extract).and_raise(Y2Packager::PackageFetchError)
         allow(Yast::Report).to receive(:Error)
       end
 

@@ -165,6 +165,7 @@ module CWM
     # Concrete tab within the current node to show in the next redraw
     # @return [String, nil]
     attr_reader :tab
+
     # @see #tab
     def tab=(tab)
       @tab = tab

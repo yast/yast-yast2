@@ -52,6 +52,8 @@ module Yast
     attr_accessor :progress_type
 
     def initialize
+      super
+
       Yast.import "UI"
       Yast.import "Progress"
 

@@ -170,10 +170,10 @@ module CFA
     def boot_config_path
       return @boot_config_path if @boot_config_path
 
-      @boot_config_path = if !kernel_version.empty?
-        "/boot/sysctl.conf-#{kernel_version}"
-      else
+      @boot_config_path = if kernel_version.empty?
         ""
+      else
+        "/boot/sysctl.conf-#{kernel_version}"
       end
     end
 

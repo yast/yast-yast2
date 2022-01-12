@@ -130,21 +130,17 @@ module Yast
       ok = true
 
       Builtins.foreach(toinstall) do |p|
-        if ok == true
-          if Pkg.PkgInstall(p) != true
-            Builtins.y2error("Package %1 install failed: %2", p, Pkg.LastError)
-            ok = false
-          end
+        if ok == true && (Pkg.PkgInstall(p) != true)
+          Builtins.y2error("Package %1 install failed: %2", p, Pkg.LastError)
+          ok = false
         end
       end
       return false if ok != true
 
       Builtins.foreach(toremove) do |p|
-        if ok == true
-          if Pkg.PkgDelete(p) != true
-            Builtins.y2error("Package %1 delete failed: %2", p, Pkg.LastError)
-            ok = false
-          end
+        if ok == true && (Pkg.PkgDelete(p) != true)
+          Builtins.y2error("Package %1 delete failed: %2", p, Pkg.LastError)
+          ok = false
         end
       end
 
@@ -254,11 +250,9 @@ module Yast
       PackagesUI.show_update_messages(result)
 
       Builtins.foreach(Ops.get_list(result, 2, [])) do |remaining|
-        if ok == true
-          if Builtins.contains(toinstall, remaining)
-            Builtins.y2error("Package remain: %1", remaining)
-            ok = false
-          end
+        if ok == true && Builtins.contains(toinstall, remaining)
+          Builtins.y2error("Package remain: %1", remaining)
+          ok = false
         end
       end
       return false if ok != true
@@ -422,8 +416,8 @@ module Yast
             # continue/cancel popup
             _(
               "Installing required packages failed. If you continue\n" \
-                "without installing required packages,\n" \
-                "YaST may not work properly.\n"
+              "without installing required packages,\n" \
+              "YaST may not work properly.\n"
             )
           )
         end

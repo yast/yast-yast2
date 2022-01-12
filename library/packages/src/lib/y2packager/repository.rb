@@ -130,7 +130,7 @@ module Y2Packager
     # @param product_dir [String]       Product directory
     # @param enabled     [Boolean]      Is the repository enabled?
     # @param autorefresh [Boolean]      Is auto-refresh enabled for this repository?
-    def initialize(repo_id:, repo_alias:, name:, url:, raw_url: nil, product_dir: "", enabled:, autorefresh:)
+    def initialize(repo_id:, repo_alias:, name:, url:, enabled:, autorefresh:, raw_url: nil, product_dir: "")
       @repo_id = repo_id
       @repo_alias = repo_alias
       @name    = name

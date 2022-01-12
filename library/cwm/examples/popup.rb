@@ -9,6 +9,8 @@ Yast.import "CWM"
 
 class Goat < CWM::CheckBox
   def initialize
+    super
+
     textdomain "example"
   end
 
@@ -23,6 +25,8 @@ end
 
 class Cabbage < CWM::CheckBox
   def initialize
+    super
+
     textdomain "example"
   end
 
@@ -37,6 +41,8 @@ end
 
 class Wolf < CWM::CheckBox
   def initialize
+    super
+
     textdomain "example"
   end
 
@@ -51,6 +57,8 @@ end
 
 class Ferryman < ::CWM::Popup
   def initialize
+    super
+
     textdomain "example"
   end
 

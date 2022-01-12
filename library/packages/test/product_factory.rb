@@ -53,7 +53,7 @@ class ProductFactory
     product["register_target"] = attrs["register_target"] || "sle-12-x86_64"
     product["relnotes_url"] = attrs["relnotes_url"] ||
       "https://www.suse.com/releasenotes/#{product["arch"]}/SLE-#{product_id}/12-SP#{sp}/" \
-        "release-notes-#{product_id}.rpm"
+      "release-notes-#{product_id}.rpm"
     product["relnotes_urls"] = attrs["relnotes_urls"] || [product["relnotes_url"]]
     product["short_name"] = attrs["short_name"] || "SLE#{product_id.upcase}12-SP#{sp}"
     product["source"] = attrs["source"] || rand(10)
@@ -85,13 +85,13 @@ class ProductFactory
     package_name = "#{product_name}-release"
     package = Y2Packager::Resolvable.new(
       "kind" => :package,
-       "name" => package_name, "status" => :selected,
-       "deps" => [{ "requires" => "foo" }, { "provides" => "bar" },
-                  { "provides" => "defaultpattern(#{pattern_name})" }]
+      "name" => package_name, "status" => :selected,
+      "deps" => [{ "requires" => "foo" }, { "provides" => "bar" },
+                 { "provides" => "defaultpattern(#{pattern_name})" }]
     )
     product = Y2Packager::Resolvable.new(
       ProductFactory.create_product("status" => :selected,
-      "source" => src, "product_package" => package_name)
+        "source" => src, "product_package" => package_name)
     )
 
     [pattern_name, package_name, package, product]

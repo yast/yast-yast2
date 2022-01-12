@@ -18,7 +18,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../test_helper.rb"
+require_relative "../test_helper"
 require "installation/autoinst_issues/invalid_value"
 
 describe Installation::AutoinstIssues::InvalidValue do

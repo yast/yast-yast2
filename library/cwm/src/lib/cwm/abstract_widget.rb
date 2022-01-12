@@ -62,14 +62,13 @@ module CWM
     def handle_all_events
       @handle_all_events.nil? ? false : @handle_all_events
     end
-    attr_writer :handle_all_events
+    attr_writer :handle_all_events, :widget_id
 
     # @return [String] An ID, unique within a dialog, used for the widget.
     #   By default, the class name is used.
     def widget_id
       @widget_id || self.class.to_s
     end
-    attr_writer :widget_id
 
     # Declare widget type for {Yast::CWMClass}.
     # Your derived widgets will not need to do this.

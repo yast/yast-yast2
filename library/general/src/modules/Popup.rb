@@ -250,31 +250,19 @@ module Yast
     #
     # @return [Yast::Term] button box
     def AnyQuestionButtonBox(yes_button_message, no_button_message, focus)
-      yes_button = Empty()
-      no_button = Empty()
+      yes_opts = [:okButton]
+      no_opts = [:cancelButton]
 
       if focus == :focus_no
-        yes_button = PushButton(Id(:yes), Opt(:okButton), yes_button_message)
-        no_button = PushButton(
-          Id(:no_button),
-          Opt(:default, :cancelButton),
-          no_button_message
-        )
+        no_opts << :default
       else
-        yes_button = PushButton(
-          Id(:yes),
-          Opt(:default, :okButton),
-          yes_button_message
-        )
-        no_button = PushButton(
-          Id(:no_button),
-          Opt(:cancelButton),
-          no_button_message
-        )
+        yes_opts << :default
       end
 
-      button_box = ButtonBox(yes_button, no_button)
-      deep_copy(button_box)
+      yes_button = PushButton(Id(:yes), Opt(*yes_opts), yes_button_message)
+      no_button = PushButton(Id(:no), Opt(*no_opts), no_button_message)
+
+      ButtonBox(yes_button, no_button)
     end
 
     # Generic question popup with two buttons.
@@ -689,7 +677,8 @@ module Yast
       # Button that will continue with the installation
       continue_button = _("&Continue Installation")
 
-      if severity == :painless
+      case severity
+      when :painless
         if Mode.repair
           # Confirm user request to abort System Repair
           abort_label = _("Really abort YaST System Repair?")
@@ -701,27 +690,27 @@ module Yast
           # Warning text for aborting an installation before anything is installed
           what_will_happen = _(
             "If you abort the installation now,\n" \
-              "Linux will not be installed.\n" \
-              "Your hard disk will remain untouched."
+            "Linux will not be installed.\n" \
+            "Your hard disk will remain untouched."
           )
         end
-      elsif severity == :incomplete
+      when :incomplete
         # Warning text for aborting an installation during the install process
         # - After some installation steps have been performed - e.g.
         # disks formatted / some packages already installed
         what_will_happen = _(
           "If you abort the installation now, you will\n" \
-            "have an incomplete Linux system\n" \
-            "that might or might not be usable.\n" \
-            "You might need to reinstall.\n"
+          "have an incomplete Linux system\n" \
+          "that might or might not be usable.\n" \
+          "You might need to reinstall.\n"
         )
-      elsif severity == :unusable
+      when :unusable
         # Warning text for aborting an installation during the install process
         # right in the middle of some critical process (e.g. formatting)
         what_will_happen = _(
           "If you abort the installation now,\n" \
-            "Linux will be unusable.\n" \
-            "You will need to reinstall."
+          "Linux will be unusable.\n" \
+          "You will need to reinstall."
         )
       else
         Builtins.y2error("Unknown symbol for ConfirmAbort")
@@ -1605,7 +1594,8 @@ module Yast
       no_button = Empty()
       retry_button = Empty()
 
-      if focus == :focus_no
+      case focus
+      when :focus_no
         yes_button = PushButton(
           Id(:yes),
           Opt(:key_F10, :okButton),
@@ -1621,7 +1611,7 @@ module Yast
           Opt(:key_F6, :customButton),
           retry_button_message
         )
-      elsif focus == :focus_yes
+      when :focus_yes
         yes_button = PushButton(
           Id(:yes),
           Opt(:default, :key_F10, :okButton),

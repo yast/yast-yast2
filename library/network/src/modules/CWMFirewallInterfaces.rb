@@ -383,18 +383,15 @@ module Yast
         end
       end
 
-      if ifaces.empty?
-        # question popup
-        if !Popup.YesNo(
+      if ifaces.empty? && !Popup.YesNo(
           _(
             "No interface is selected. Service will not\n" \
-              "be available for other computers.\n" \
-              "\n" \
-              "Continue?"
+            "be available for other computers.\n" \
+            "\n" \
+            "Continue?"
           )
         )
-          return false
-        end
+        return false
       end
 
       firewall_ifaces = Selected2Opened(ifaces, false)
@@ -405,42 +402,39 @@ module Yast
       log.info("removed_ifaces: #{removed_ifaces}")
 
       # to hide that special string
-      if !added_ifaces.empty?
-        if !Popup.YesNo(
+      if !added_ifaces.empty? && !Popup.YesNo(
           Builtins.sformat(
             # yes-no popup
             _(
               "Because of firewalld settings, the port\n" \
-                "on the following interfaces will additionally be open:\n" \
-                "%1\n" \
-                "\n" \
-                "Continue?"
+              "on the following interfaces will additionally be open:\n" \
+              "%1\n" \
+              "\n" \
+              "Continue?"
             ),
             added_ifaces.join("\n")
           )
         )
-          return false
-        end
+        return false
       end
 
       # to hide that special string
-      if !removed_ifaces.empty?
-        if !Popup.YesNo(
+      if !removed_ifaces.empty? && !Popup.YesNo(
           Builtins.sformat(
             # yes-no popup
             _(
               "Because of firewalld settings, the port\n" \
-                "on the following interfaces cannot be opened:\n" \
-                "%1\n" \
-                "\n" \
-                "Continue?"
+              "on the following interfaces cannot be opened:\n" \
+              "%1\n" \
+              "\n" \
+              "Continue?"
             ),
             removed_ifaces.join("\n")
           )
         )
-          return false
-        end
+        return false
       end
+
       true
     end
 
@@ -655,11 +649,11 @@ module Yast
         Builtins.y2milestone("FD: %1", handle_firewall_details)
         ret = nil
         Builtins.y2milestone("RT: %1", ret)
-        if !handle_firewall_details.nil?
-          ret = handle_firewall_details.call
-        else
+        if handle_firewall_details.nil?
           w = Builtins.filter(widget) { |k, _v| "services" == k }
           DisplayDetailsPopup(w)
+        else
+          ret = handle_firewall_details.call
         end
         UpdateFirewallStatus()
         EnableOrDisableFirewallDetails()
@@ -760,8 +754,8 @@ module Yast
       # %1 is check box label, eg. "Open Port in Firewall" (without quotes)
       help = _(
         "<p><b><big>Firewall Settings</big></b><br>\n" \
-          "To open the firewall to allow access to the service from remote computers,\n" \
-          "set <b>%1</b>.<br>"
+        "To open the firewall to allow access to the service from remote computers,\n" \
+        "set <b>%1</b>.<br>"
       )
       if restart_displayed
         # help text for firewall port openning widget 2/3, optional
@@ -775,11 +769,10 @@ module Yast
         )
       end
       # help text for firewall settings widget 3/3,
-      help = Ops.add(
+      Ops.add(
         help,
         _("This option is available only if the firewall\nis enabled.</p>")
       )
-      help
     end
 
     # Get the help text to the firewall opening widget
@@ -1055,14 +1048,14 @@ module Yast
     def services_not_defined_widget(services)
       services_list =
         services.map do |service|
-          if !firewalld.current_service_names.include?(service)
-            # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
-            # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
-            HBox(HSpacing(2), Left(Label(format(_("- %{service} (Not available)"), service: service))))
-          else
+          if firewalld.current_service_names.include?(service)
             # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
             # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
             HBox(HSpacing(2), Left(Label(format(_("- %{service}"), service: service))))
+          else
+            # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
+            # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
+            HBox(HSpacing(2), Left(Label(format(_("- %{service} (Not available)"), service: service))))
           end
         end
 

@@ -24,6 +24,12 @@ require_relative "../../test_helper"
 require "ui/wizards/layout"
 
 describe UI::Wizards::Layout do
+  before do
+    # ProductFeatures read the defaults from the system when running
+    # in an installed system
+    allow(Yast::Stage).to receive(:normal).and_return(false)
+  end
+
   describe ".with_steps" do
     it "creates a layout with steps sidebar" do
       layout = described_class.with_steps
@@ -221,7 +227,7 @@ describe UI::Wizards::Layout do
       it "closes the wizard" do
         expect(Yast::Wizard).to receive(:CloseDialog)
 
-        subject.open_wizard {}
+        subject.open_wizard {} # block is not needed
       end
     end
   end

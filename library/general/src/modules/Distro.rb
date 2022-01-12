@@ -38,11 +38,9 @@ module Yast
 
     # Is it SUSE based? openSUSE, SLES, SLED, ...
     def suse
-      if @_distro.nil?
-        if SCR.Read(path(".target.size"), "/etc/SuSE-release") != -1
-          @_distro = "suse"
-          Builtins.y2milestone("Found SUSE")
-        end
+      if @_distro.nil? && (SCR.Read(path(".target.size"), "/etc/SuSE-release") != -1)
+        @_distro = "suse"
+        Builtins.y2milestone("Found SUSE")
       end
 
       @_distro == "suse"
@@ -50,11 +48,9 @@ module Yast
 
     # Is it Fedora based? RHEL, Oracle, ...
     def fedora
-      if @_distro.nil?
-        if SCR.Read(path(".target.size"), "/etc/fedora-release") != -1
-          @_distro = "fedora"
-          Builtins.y2milestone("Found Fedora")
-        end
+      if @_distro.nil? && (SCR.Read(path(".target.size"), "/etc/fedora-release") != -1)
+        @_distro = "fedora"
+        Builtins.y2milestone("Found Fedora")
       end
 
       @_distro == "fedora"
@@ -62,14 +58,12 @@ module Yast
 
     # Is it Debian based? Ubuntu, ...
     def debian
-      if @_distro.nil?
-        if SCR.Execute(
-          path(".target.bash"),
-          "/usr/bin/grep DISTRIB_ID=Ubuntu /etc/lsb-release"
-        ) == 0
-          @_distro = "debian"
-          Builtins.y2milestone("Found Debian/Ubuntu")
-        end
+      if @_distro.nil? && (SCR.Execute(
+        path(".target.bash"),
+        "/usr/bin/grep DISTRIB_ID=Ubuntu /etc/lsb-release"
+      ) == 0)
+        @_distro = "debian"
+        Builtins.y2milestone("Found Debian/Ubuntu")
       end
 
       @_distro == "debian"

@@ -19,6 +19,8 @@ describe CWM::CustomWidget do
   context "handle_all_events is false" do
     class IsolationistTestWidget < CustomTestWidget
       def initialize
+        super
+
         self.handle_all_events = false
         self.widget_id = "test_widget"
       end

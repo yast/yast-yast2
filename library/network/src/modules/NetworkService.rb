@@ -97,9 +97,9 @@ module Yast
       raise ArgumentError, "No network service defined." if service.nil?
 
       cmd = "/usr/bin/systemctl "\
-        "#{force ? "--force" : ""} " \
-        "#{action.shellescape} " \
-        "#{service.shellescape}.service"
+            "#{force ? "--force" : ""} " \
+            "#{action.shellescape} " \
+            "#{service.shellescape}.service"
       ret = SCR.Execute(path(".target.bash_output"), cmd, "TERM" => "raw")
       Builtins.y2debug("RunSystemCtl: Command '%1' returned '%2'", cmd, ret)
       Ops.get_integer(ret, "exit", -1)
@@ -304,9 +304,9 @@ module Yast
       cont = Popup.ContinueCancel(
         _(
           "Your network interfaces are currently controlled by NetworkManager\n" \
-            "but the service to configure might not work well with it.\n" \
-            "\n" \
-            "Really continue?"
+          "but the service to configure might not work well with it.\n" \
+          "\n" \
+          "Really continue?"
         )
       )
       Builtins.y2milestone(
@@ -330,10 +330,10 @@ module Yast
       )
       if net == 0
         Builtins.y2milestone("IPv4 network is running ...")
-        return true
+        true
       else
         Builtins.y2milestone("IPv4 network is not running ...")
-        return false
+        false
       end
     end
 
@@ -346,10 +346,10 @@ module Yast
 
       if net == 0
         Builtins.y2milestone("IPv6 network is running ...")
-        return true
+        true
       else
         Builtins.y2milestone("IPv6 network is not running ...")
-        return false
+        false
       end
     end
 

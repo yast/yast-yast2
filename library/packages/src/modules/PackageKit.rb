@@ -37,7 +37,7 @@ module Yast
     # @return [Boolean] return true if PackageKit is currently running
     def IsRunning
       cmd = "/usr/bin/dbus-send --system --dest=org.freedesktop.DBus --type=method_call --print-reply " \
-        "--reply-timeout=200 / org.freedesktop.DBus.NameHasOwner string:org.freedesktop.PackageKit"
+            "--reply-timeout=200 / org.freedesktop.DBus.NameHasOwner string:org.freedesktop.PackageKit"
       Builtins.y2milestone("Checking PackageKit status: %1", cmd)
 
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
@@ -59,7 +59,7 @@ module Yast
     # you have to check the current status using isRunning() function.
     def SuggestQuit
       cmd = "/usr/bin/dbus-send --system --dest=org.freedesktop.PackageKit --type=method_call " \
-        "/org/freedesktop/PackageKit org.freedesktop.PackageKit.SuggestDaemonQuit"
+            "/org/freedesktop/PackageKit org.freedesktop.PackageKit.SuggestDaemonQuit"
       Builtins.y2milestone("Asking PackageKit to quit: %1", cmd)
 
       ret = Convert.to_integer(SCR.Execute(path(".target.bash"), cmd))

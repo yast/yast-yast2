@@ -39,8 +39,8 @@ module CFA
       text = ""
       text << _("Changed values have conflicts with:<br><br>")
       conflicts.each do |filename, conflict|
-        text << _("File: %s<br>") % filename
-        text << _("Conflicting entries: %s<br>") % conflict.join(", ")
+        text << (_("File: %s<br>") % filename)
+        text << (_("Conflicting entries: %s<br>") % conflict.join(", "))
         text << "<br>"
       end
       text << _("You will have to adapt these entries manually in order to set your changes.")

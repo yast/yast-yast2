@@ -1,4 +1,4 @@
-# Copyright (c) [2019] SUSE LLC
+# Copyright (c) [2021] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -16,6 +16,17 @@
 #
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
-require_relative "../../../test/test_helper"
 
-DESKTOP_DATA_PATH = File.join(__dir__, "data")
+module Y2Packager
+  # Base class for Y2Packager exceptions
+  class Error < RuntimeError
+  end
+
+  # It was not possible to download a package
+  class PackageFetchError < Error
+  end
+
+  # It was not possible to extract a package's content
+  class PackageExtractionError < Error
+  end
+end

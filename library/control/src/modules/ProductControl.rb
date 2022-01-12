@@ -557,40 +557,6 @@ module Yast
       nil
     end
 
-    # Get list of required files for the workflow.
-    # @return [Array<String>] Required files list.
-    # FIXME: this function seems to be unused, remove it?
-    def RequiredFiles(stage, mode)
-      # Files needed during installation.
-      needed_client_files = []
-
-      workflow = FindMatchingWorkflow(stage, mode)
-
-      modules = Ops.get_list(workflow, "modules", [])
-      modules = Builtins.filter(modules) do |m|
-        Ops.get_boolean(m, "enabled", true)
-      end
-
-      Builtins.foreach(modules) do |m|
-        client = if Stage.firstboot
-          Ops.get_string(m, "name", "dummy")
-        elsif Builtins.issubstring(Ops.get_string(m, "name", "dummy"), "inst_")
-          Ops.get_string(m, "name", "dummy")
-        else
-          Ops.add("inst_", Ops.get_string(m, "name", "dummy"))
-        end
-        # FIXME: what about the ruby files?
-        client = Ops.add(
-          Ops.add(Ops.add(Directory.clientdir, "/"), client),
-          ".ycp"
-        )
-        needed_client_files = Builtins.add(needed_client_files, client)
-      end
-
-      needed_client_files = Builtins.toset(needed_client_files)
-      deep_copy(needed_client_files)
-    end
-
     # Get Workflow
     # @param [String] stage Stage
     # @param [String] mode Mode
@@ -653,15 +619,11 @@ module Yast
       end
 
       modules = Builtins.filter(modules) do |one_module|
-        # modules
-        if !Ops.get_string(one_module, "name").nil? &&
-            Ops.get_string(one_module, "name", "") != ""
-          next true
-          # proposals
-        elsif !Ops.get_string(one_module, "proposal").nil? &&
-            Ops.get_string(one_module, "proposal", "") != ""
-          next true
-        end
+        name = one_module["name"]
+        proposal = one_module["proposal"]
+
+        next true if name && !name.empty?
+        next true if proposal && !proposal.empty?
 
         # the rest
         false
@@ -761,7 +723,7 @@ module Yast
         one_workflow != this_workflow
       end
 
-      # Note: This might be done by a simple reverting with 'X = localX'
+      # NOTE: This might be done by a simple reverting with 'X = localX'
       #       but some of these modules don't need to be in a defined mode and stage
 
       Builtins.foreach(getModules(stage, mode, :all)) do |m|
@@ -907,11 +869,11 @@ module Yast
             first_id = Ops.get_string(m, "id", "") if first_id == ""
 
             if last_label != ""
-              if last_domain != ""
+              if last_domain == ""
+                label = Builtins.dgettext(wizard_textdomain, last_label)
+              else
                 label = Builtins.dgettext(last_domain, last_label)
                 id = Ops.get_string(m, "id", "")
-              else
-                label = Builtins.dgettext(wizard_textdomain, last_label)
               end
               id = Ops.get_string(m, "id", "")
             end
@@ -1082,23 +1044,23 @@ module Yast
             proposal_name
           )
         # All proposal file names end with _proposal
-        if !is_disabled
-          final_proposals = if !Builtins.issubstring(proposal_name, "_proposal")
-            Builtins.add(
-              final_proposals,
-              [Ops.add(proposal_name, "_proposal"), order_value]
-            )
-          else
-            Builtins.add(
-              final_proposals,
-              [proposal_name, order_value]
-            )
-          end
-        else
+        if is_disabled
           Builtins.y2milestone(
             "Proposal module %1 found among disabled subproposals",
             proposal_name
           )
+        else
+          final_proposals = if Builtins.issubstring(proposal_name, "_proposal")
+            Builtins.add(
+              final_proposals,
+              [proposal_name, order_value]
+            )
+          else
+            Builtins.add(
+              final_proposals,
+              [Ops.add(proposal_name, "_proposal"), order_value]
+            )
+          end
         end
       end
 
@@ -1276,18 +1238,14 @@ module Yast
         retranslate = Ops.get_boolean(step, "retranslate", false)
 
         # The very first dialog has back button disabled
-        if Ops.less_or_equal(@current_step, minimum_step)
-          # Don't mark back button disabled when back button status
-          # is forced in the control file
-          if !Builtins.haskey(step, "enable_back")
-            Ops.set(step, "enable_back", "no")
-            Builtins.y2milestone(
-              "Disabling back: %1 %2 %3",
-              @current_step,
-              minimum_step,
-              Ops.get(step, "enable_back")
-            )
-          end
+        if Ops.less_or_equal(@current_step, minimum_step) && !Builtins.haskey(step, "enable_back")
+          Ops.set(step, "enable_back", "no")
+          Builtins.y2milestone(
+            "Disabling back: %1 %2 %3",
+            @current_step,
+            minimum_step,
+            Ops.get(step, "enable_back")
+          )
         end
 
         do_continue = false
@@ -1327,14 +1285,12 @@ module Yast
         @CurrentWizardStep = step_id
 
         # Register what step we are going to run
-        if !Stage.initial
-          if !SCR.Write(
-            path(".target.string"),
-            Installation.current_step,
-            step_id
-          )
-            Builtins.y2error("Error writing step identifier")
-          end
+        if !Stage.initial && !SCR.Write(
+          path(".target.string"),
+          Installation.current_step,
+          step_id
+        )
+          Builtins.y2error("Error writing step identifier")
         end
 
         client_name = getClientName(step_name, step_execute)
@@ -1393,12 +1349,10 @@ module Yast
 
         # Remove file if step was run and returned (without a crash);
         if Ops.less_than(@current_step, Ops.subtract(Builtins.size(modules), 1)) &&
-            !Stage.initial
-          if !Convert.to_boolean(
+            !Stage.initial && !Convert.to_boolean(
             SCR.Execute(path(".target.remove"), Installation.current_step)
           )
-            Builtins.y2error("Error removing step identifier")
-          end
+          Builtins.y2error("Error removing step identifier")
         end
 
         if retranslate
@@ -1432,11 +1386,11 @@ module Yast
               # %4 - directory where YaST logs are stored
               # %5 - link to the Yast Bug Reporting HOWTO Web page
               "Calling the YaST module %1 has failed.\n" \
-                "More information can be found near the end of the '%2' file.\n" \
-                "\n" \
-                "This is worth reporting a bug at %3.\n" \
-                "Please, attach also all YaST logs stored in the '%4' directory.\n" \
-                "See %5 for more information about YaST logs.",
+              "More information can be found near the end of the '%2' file.\n" \
+              "\n" \
+              "This is worth reporting a bug at %3.\n" \
+              "Please, attach also all YaST logs stored in the '%4' directory.\n" \
+              "See %5 for more information about YaST logs.",
               Builtins.symbolof(argterm),
               "/var/log/YaST2/y2log",
               "http://bugzilla.suse.com/",
@@ -1463,7 +1417,7 @@ module Yast
         # The very first dialog must not exit with `back
         # or `auto
         if @current_step == 0 &&
-            (result == :back || result == :auto && former_result == :back)
+            (result == :back || (result == :auto && former_result == :back))
           Builtins.y2warning(
             "Returned %1, Current step %2 (%3). The current step will be called again...",
             result,
@@ -1479,15 +1433,13 @@ module Yast
           @current_step = Ops.add(@current_step, 1)
         when :back
           @current_step = Ops.subtract(@current_step, 1)
-        when :cancel
+        when :cancel, :finish
           break
         when :abort
           # handling when user aborts the workflow (FATE #300422, bnc #406401, bnc #247552)
           final_result = result
           Hooks.run("installation_aborted")
 
-          break
-        when :finish
           break
         when :again
           next # Show same dialog again
@@ -1497,12 +1449,13 @@ module Yast
           break
         when :auto
           if !former_result.nil?
-            if former_result == :next
+            case former_result
+            when :next
               # if the first client just returns `auto, the back button
               # of the next client must be disabled
               minimum_step = Ops.add(minimum_step, 1) if Ops.less_or_equal(@current_step, minimum_step) && !allow_back
               @current_step = Ops.add(@current_step, 1)
-            elsif former_result == :back
+            when :back
               @current_step = Ops.subtract(@current_step, 1)
             end
           end

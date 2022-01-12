@@ -13,6 +13,8 @@ describe CWM::AbstractWidget do
   describe "#widget_id" do
     class T1 < CWM::AbstractWidget
       def initialize(id: nil)
+        super()
+
         self.widget_id = id
       end
     end
@@ -41,6 +43,8 @@ describe CWM::AbstractWidget do
   describe "#handle_all_events" do
     class T3 < CWM::AbstractWidget
       def initialize(all: nil)
+        super()
+
         self.handle_all_events = all
       end
     end
@@ -118,6 +122,8 @@ describe CWM::AbstractWidget do
         self.widget_type = :empty
 
         def initialize
+          super
+
           self.widget_id = "test"
           self.handle_all_events = false
         end
@@ -133,6 +139,8 @@ describe CWM::AbstractWidget do
         self.widget_type = :empty
 
         def initialize
+          super
+
           self.handle_all_events = true
         end
       end
@@ -193,6 +201,8 @@ describe CWM::AbstractWidget do
       self.widget_type = :empty
 
       def initialize
+        super
+
         self.widget_id = "test"
       end
     end
@@ -211,6 +221,8 @@ describe CWM::AbstractWidget do
       self.widget_type = :empty
 
       def initialize
+        super
+
         self.widget_id = "test"
       end
     end

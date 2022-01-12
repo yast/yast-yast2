@@ -126,9 +126,7 @@ module Yast
       end
 
       # replace % at the end
-      in_ = String.Replace(in_, "%25", "%")
-
-      in_
+      String.Replace(in_, "%25", "%")
     end
 
     # Escape reserved characters in string used as a part of URL (e.g. '%' => '%25', '@' => '%40'...)
@@ -187,11 +185,11 @@ module Yast
         # 4,5: ?question
         # 6,7: #fragment
         "^" \
-          "(([^:/?#]+):[/]{0,2})?" \
-          "([^/?#]*)?" \
-          "([^?#]*)?" \
-          "(\\?([^#]*))?" \
-          "(#(.*))?"
+        "(([^:/?#]+):[/]{0,2})?" \
+        "([^/?#]*)?" \
+        "([^?#]*)?" \
+        "(\\?([^#]*))?" \
+        "(#(.*))?"
       )
       Builtins.y2debug("rawtokens=%1", rawtokens)
       tokens = {}
@@ -224,9 +222,9 @@ module Yast
         # FIXME: "(([^:@]+)|(\\[([^]]+)\\]))" +
         # 8,9: port
         "^" \
-          "(([^@:]+)(:([^@:]+))?@)?" \
-          "(([^:@]+))" \
-          "(:([^:@]+))?"
+        "(([^@:]+)(:([^@:]+))?@)?" \
+        "(([^:@]+))" \
+        "(:([^:@]+))?"
       )
       Builtins.y2debug("userpass=%1", userpass)
 
@@ -242,10 +240,10 @@ module Yast
       )
       Ops.set(tokens, "port", Ops.get_string(userpass, 7, ""))
 
-      if Ops.get_string(userpass, 5, "") != ""
-        Ops.set(tokens, "host", Ops.get_string(userpass, 5, ""))
-      else
+      if Ops.get_string(userpass, 5, "") == ""
         Ops.set(tokens, "host", Ops.get_string(userpass, 7, ""))
+      else
+        Ops.set(tokens, "host", Ops.get_string(userpass, 5, ""))
       end
 
       hostport6 = Builtins.substring(
@@ -268,7 +266,7 @@ module Yast
       # some exceptions for samba scheme (there is optional extra option "domain")
       if Ops.get_string(tokens, "scheme", "") == "samba" ||
           Ops.get_string(tokens, "scheme", "") == "smb"
-        # Note: CUPS uses different URL syntax for Samba printers:
+        # NOTE: CUPS uses different URL syntax for Samba printers:
         #     smb://username:password@workgroup/server/printer
         # Fortunately yast2-printer does not use URL.ycp, so we can safely support libzypp syntax only:
         #     smb://username:passwd@servername/share/path/on/the/share?workgroup=mygroup

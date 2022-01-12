@@ -66,7 +66,7 @@ def load_install_inf(defaults_replacement = {})
     .with(path(".etc.install_inf"))
     .and_return install_inf.keys
 
-  install_inf.keys.each do |key|
+  install_inf.each_key do |key|
     allow(Yast::SCR).to receive(:Read)
       .with(path(".etc.install_inf.#{key}"))
       .and_return install_inf[key]

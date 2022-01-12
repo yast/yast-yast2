@@ -95,9 +95,10 @@ module Yast
       helptext = deep_copy(helptext)
       dia_opt = Opt(:decorated)
 
-      if color == :warncolor
+      case color
+      when :warncolor
         dia_opt = Opt(:decorated, :warncolor)
-      elsif color == :infocolor
+      when :infocolor
         dia_opt = Opt(:decorated, :infocolor)
       end
 
@@ -174,12 +175,12 @@ module Yast
           # help text
           help = _(
             "<p><b><big>License Confirmation</big></b><br>\n" \
-              "The package in the headline of the dialog requires an explicit confirmation\n" \
-              "of acceptance of its license.\n" \
-              "If you reject the license of the package, the package will not be installed.\n" \
-              "<br>\n" \
-              "To accept the license of the package, click <b>I Agree</b>.\n" \
-              "To reject the license of the package, click <b>I Disagree</b></p>."
+            "The package in the headline of the dialog requires an explicit confirmation\n" \
+            "of acceptance of its license.\n" \
+            "If you reject the license of the package, the package will not be installed.\n" \
+            "<br>\n" \
+            "To accept the license of the package, click <b>I Agree</b>.\n" \
+            "To reject the license of the package, click <b>I Disagree</b></p>."
           )
 
           UI.OpenDialog(
@@ -206,11 +207,11 @@ module Yast
           package,
           ui == :accept
         )
-        if ui != :accept
+        if ui == :accept
+          Pkg.PkgMarkLicenseConfirmed(package)
+        else
           Pkg.PkgTaboo(package)
           ret = false
-        else
-          Pkg.PkgMarkLicenseConfirmed(package)
         end
       end
 
@@ -310,10 +311,10 @@ module Yast
       # exception text
       raise _("Opening package selector failed.") if !UI.OpenDialog(
         Opt(:defaultsize),
-        if !widget_options.empty?
-          PackageSelector(Id(:packages), widget_options, "")
-        else
+        if widget_options.empty?
           PackageSelector(Id(:packages), "")
+        else
+          PackageSelector(Id(:packages), widget_options, "")
         end
       )
 
@@ -342,32 +343,32 @@ module Yast
       # Help text for software patterns / selections dialog
       help_text = _(
         "<p>\n" \
-          "\t\t This dialog allows you to define this system's tasks and what software to install.\n" \
-          "\t\t Available tasks and software for this system are shown by category in the left\n" \
-          "\t\t column.  To view a description for an item, select it in the list.\n" \
-          "\t\t </p>"
+        "\t\t This dialog allows you to define this system's tasks and what software to install.\n" \
+        "\t\t Available tasks and software for this system are shown by category in the left\n" \
+        "\t\t column.  To view a description for an item, select it in the list.\n" \
+        "\t\t </p>"
       ) +
         _(
           "<p>\n" \
-            "\t\t Change the status of an item by clicking its status icon\n" \
-            "\t\t or right-click any icon for a context menu.\n" \
-            "\t\t With the context menu, you can also change the status of all items.\n" \
-            "\t\t </p>"
+          "\t\t Change the status of an item by clicking its status icon\n" \
+          "\t\t or right-click any icon for a context menu.\n" \
+          "\t\t With the context menu, you can also change the status of all items.\n" \
+          "\t\t </p>"
         ) +
         _(
           "<p>\n" \
-            "\t\t <b>Details</b> opens the detailed software package selection\n" \
-            "\t\t where you can view and select individual software packages.\n" \
-            "\t\t </p>"
+          "\t\t <b>Details</b> opens the detailed software package selection\n" \
+          "\t\t where you can view and select individual software packages.\n" \
+          "\t\t </p>"
         ) +
         _(
           "<p>\n" \
-            "\t\t The disk usage display in the lower right corner shows the remaining disk space\n" \
-            "\t\t after all requested changes will have been performed.\n" \
-            "\t\t Hard disk partitions that are full or nearly full can degrade\n" \
-            "\t\t system performance and in some cases even cause serious problems.\n" \
-            "\t\t The system needs some available disk space to run properly.\n" \
-            "\t\t </p>"
+          "\t\t The disk usage display in the lower right corner shows the remaining disk space\n" \
+          "\t\t after all requested changes will have been performed.\n" \
+          "\t\t Hard disk partitions that are full or nearly full can degrade\n" \
+          "\t\t system performance and in some cases even cause serious problems.\n" \
+          "\t\t The system needs some available disk space to run properly.\n" \
+          "\t\t </p>"
         )
 
       # bugzilla #298056
@@ -702,27 +703,28 @@ module Yast
         # handle detail requests (clicking a link in the summary)
         if Ops.is_string?(result)
           # display installation log
-          if result == "install_log"
+          case result
+          when "install_log"
             ShowDetailsString(
               _("Installation log"),
               Ops.get_string(summary, "install_log", "")
             )
-          elsif result == "installed_packages"
+          when "installed_packages"
             ShowDetailsList(
               _("Installed Packages"),
               Ops.get_list(summary, "installed_list", [])
             )
-          elsif result == "updated_packages"
+          when "updated_packages"
             ShowDetailsList(
               _("Updated Packages"),
               Ops.get_list(summary, "updated_list", [])
             )
-          elsif result == "removed_packages"
+          when "removed_packages"
             ShowDetailsList(
               _("Removed Packages"),
               Ops.get_list(summary, "removed_list", [])
             )
-          elsif result == "remaining_packages"
+          when "remaining_packages"
             ShowDetailsList(
               _("Remaining Packages"),
               Ops.get_list(summary, "remaining", [])
@@ -746,8 +748,8 @@ module Yast
         if new_action != "summary"
           # disabling installation report dialog, inform the user how to enable it back
           Popup.Message(_("If you want to show this report dialog again edit\n\n"\
-            "System > Yast2 > GUI > PKGMGR_ACTION_AT_EXIT\n\n" \
-            "value in the YaST sysconfig editor."))
+                          "System > Yast2 > GUI > PKGMGR_ACTION_AT_EXIT\n\n" \
+                          "value in the YaST sysconfig editor."))
         end
 
         Builtins.y2milestone("Changing PKGMGR_ACTION_AT_EXIT from #{current_action.inspect} to #{new_action.inspect}")

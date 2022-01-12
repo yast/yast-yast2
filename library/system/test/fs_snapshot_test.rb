@@ -169,7 +169,7 @@ describe Yast2::FsSnapshot do
 
   describe ".create_single" do
     CREATE_SINGLE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
-      "--root=/ create --type single --description some-description".freeze
+                             "--root=/ create --type single --description some-description".freeze
     OPTION_CLEANUP_NUMBER = " --cleanup number".freeze
     OPTION_IMPORTANT = " --userdata \"important=yes\"".freeze
 
@@ -262,7 +262,7 @@ describe Yast2::FsSnapshot do
 
   describe ".create_pre" do
     CREATE_PRE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
-      "--root=/ create --type pre --description some-description".freeze
+                          "--root=/ create --type pre --description some-description".freeze
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
@@ -353,8 +353,8 @@ describe Yast2::FsSnapshot do
 
   describe ".create_post" do
     CREATE_POST_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
-      "--root=/ create --type post --description some-description "\
-      "--pre-num 1".freeze
+                           "--root=/ create --type post --description some-description "\
+                           "--pre-num 1".freeze
 
     before do
       allow(Yast2::FsSnapshot).to receive(:configured?).and_return(configured)
@@ -469,7 +469,7 @@ describe Yast2::FsSnapshot do
       context "when an snapshot contains a wrong date" do
         let(:output) do
           "number,type,pre-number,date,user,cleanup,description\n" \
-          "1,single,,bad-date,root,,\n"
+            "1,single,,bad-date,root,,\n"
         end
 
         it "sets timestamp to nil" do

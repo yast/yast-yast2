@@ -1,4 +1,86 @@
 -------------------------------------------------------------------
+Fri Jan  7 14:41:15 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed test failure in Ruby 2.5, caused by the fix for Ruby 3.0
+  (related to bsc#1193192)
+- 4.4.34
+
+-------------------------------------------------------------------
+Fri Jan  7 08:32:21 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
+
+- Y2Packager::Resolvable: added none? method in order to not crash
+  in case of rubocop automatic change (bsc#1194387)
+- 4.4.33
+
+-------------------------------------------------------------------
+Thu Dec 23 18:08:19 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- properly pass named arguments in ruby3 (bsc#1193192)
+- 4.4.32
+
+-------------------------------------------------------------------
+Mon Dec 20 11:07:31 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not reinitialize the packaging system during offline
+  upgrade (bsc#1193784 and bsc#1192437).
+- 4.4.31
+
+-------------------------------------------------------------------
+Thu Dec 16 08:39:01 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed RelURL to work properly with the FTP URLs (related to
+  jsc#SLE-22669)
+- 4.4.30
+
+-------------------------------------------------------------------
+Wed Dec 15 13:21:31 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed RelURL unit test randomly crashing (related to
+  jsc#SLE-22669)
+- 4.4.29
+
+-------------------------------------------------------------------
+Tue Dec 14 16:24:00 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Added RelURL class for working with relative URLs ("relurl://")
+  (jsc#SLE-22669)
+- 4.4.28
+
+-------------------------------------------------------------------
+Thu Dec  2 17:13:37 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Drop support for subscription-tools, that package is not present
+  in SLE15 anymore - removed modules/ProductProfiles.rb file
+  (bsc#1193339)
+- 4.4.27
+
+-------------------------------------------------------------------
+Thu Dec  2 13:47:27 UTC 2021 - Ladislav Slezák <lslezak@suse.cz>
+
+- Popup.YesNo(): Unify the internal [No] button ID (bsc#1193326)
+- 4.4.26
+
+-------------------------------------------------------------------
+Wed Dec  1 13:13:34 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add register_target to the Y2Packager::Product class
+  (bsc#1193212).
+- 4.4.25
+
+-------------------------------------------------------------------
+Wed Dec  1 11:06:33 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Do not crash when it is not possible to fetch the package
+  containing the release notes (bsc#1193148).
+- 4.4.24
+
+-------------------------------------------------------------------
+Tue Nov 30 18:34:38 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- Prepare code for ruby3 (bsc#1193192)
+- 4.4.23
+
+-------------------------------------------------------------------
 Mon Nov 15 17:33:48 UTC 2021 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Force creating the UI before checking -pkg etc. UI plug-ins

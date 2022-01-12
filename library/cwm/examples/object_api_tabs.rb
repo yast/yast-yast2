@@ -12,6 +12,8 @@ class LuckyNumberWidget < ::CWM::IntField
   attr_reader :result, :minimum, :maximum
 
   def initialize
+    super
+
     @minimum = 0
     @maximum = 1000
   end
@@ -31,6 +33,8 @@ end
 
 class GenerateButton < ::CWM::PushButton
   def initialize(lucky_number_widget)
+    super()
+
     @lucky_number_widget = lucky_number_widget
   end
 
@@ -47,6 +51,8 @@ end
 
 class LuckyNumberTab < ::CWM::Tab
   def initialize
+    super
+
     self.initial = true
   end
 
@@ -78,6 +84,8 @@ end
 
 class TrueLoveSelector < ::CWM::RadioButtons
   def initialize
+    super
+
     @chosen = nil
   end
 

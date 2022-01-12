@@ -187,7 +187,12 @@ module Yast
         inst_if_file = "/etc/install.inf"
 
         if !root.nil? && root != "" && root != "/"
-          if WFM.Read(path(".local.size"), inst_if_file) != -1
+          if WFM.Read(path(".local.size"), inst_if_file) == -1
+            Builtins.y2error(
+              "Can't SaveInstallInf, file %1 doesn't exist",
+              inst_if_file
+            )
+          else
             Builtins.y2milestone("Copying %1 to %2", inst_if_file, root)
             if Convert.to_integer(
               WFM.Execute(
@@ -205,11 +210,6 @@ module Yast
                 root
               )
             end
-          else
-            Builtins.y2error(
-              "Can't SaveInstallInf, file %1 doesn't exist",
-              inst_if_file
-            )
           end
         else
           Builtins.y2error("Can't SaveInstallInf, root is %1", root)

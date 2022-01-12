@@ -29,6 +29,10 @@
 require "yast"
 
 module Yast
+  # Representing architecture information yast have.
+  #
+  # rubocop:disable Naming/VariableNumber
+  # Reason for disable is that API is stable and some method names follows domain conventions
   class ArchClass < Module
     def main
       # local variables
@@ -566,6 +570,7 @@ module Yast
     publish function: :x11_setup_needed, type: "boolean ()"
     publish function: :is_wsl, type: "boolean ()"
   end
+  # rubocop:enable Naming/VariableNumber
 
   Arch = ArchClass.new
   Arch.main

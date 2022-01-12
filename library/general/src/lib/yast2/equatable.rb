@@ -63,6 +63,8 @@ module Yast2
     module ClassMethods
       # Inherited classes must remember the attributes for comparison from its parent class
       def inherited(subclass)
+        super
+
         subclass.eql_attr(*eql_attrs)
       end
 

@@ -116,9 +116,10 @@ module Yast
                 module_modprobe
               )
             end
-            if load_result == :fail
+            case load_result
+            when :fail
               all_modules_loaded = false
-            elsif load_result == :dont
+            when :dont
               all_modules_loaded = true
             end
             # break out of module load loop if one module failed

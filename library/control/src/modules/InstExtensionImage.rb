@@ -377,11 +377,11 @@ module Yast
       Builtins.y2milestone("Returned: %1", cmd_out)
 
       ret = true
-      if Ops.get_integer(cmd_out, "exit", -1) != 0
+      if Ops.get_integer(cmd_out, "exit", -1) == 0
+        @integrated_extensions = Builtins.add(@integrated_extensions, package)
+      else
         Builtins.y2error("'extend' failed!")
         ret = false
-      else
-        @integrated_extensions = Builtins.add(@integrated_extensions, package)
       end
 
       Popup.ClearFeedback if message != "" && !message.nil?
@@ -414,13 +414,13 @@ module Yast
       Builtins.y2milestone("Returned: %1", cmd_out)
 
       ret = true
-      if Ops.get_integer(cmd_out, "exit", -1) != 0
-        Builtins.y2error("'extend' failed!")
-        ret = false
-      else
+      if Ops.get_integer(cmd_out, "exit", -1) == 0
         @integrated_extensions = Builtins.filter(@integrated_extensions) do |p|
           p != package
         end
+      else
+        Builtins.y2error("'extend' failed!")
+        ret = false
       end
 
       Popup.ClearFeedback if message != "" && !message.nil?

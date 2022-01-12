@@ -35,6 +35,8 @@ module Installation
       # @param description [String] additional explanation
       # @param severity    [Symbol] :warn, :fatal = abort the installation
       def initialize(section, attribute, value, description, severity = :warn)
+        super()
+
         textdomain "base"
         @section = section
         @attribute = attribute

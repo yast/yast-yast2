@@ -948,9 +948,7 @@ module Yast
     # @note This is a stable API function
     #
     def HideNextButton
-      if UI.WizardCommand(term(:SetNextButtonLabel, "")) == false
-        UI.ReplaceWidget(Id(:rep_next), Empty()) if UI.WidgetExists(Id(:rep_next))
-      end
+      UI.ReplaceWidget(Id(:rep_next), Empty()) if UI.WizardCommand(term(:SetNextButtonLabel, "")) == false && UI.WidgetExists(Id(:rep_next))
 
       nil
     end
@@ -962,9 +960,7 @@ module Yast
     # @note This is a stable API function
     #
     def HideBackButton
-      if UI.WizardCommand(term(:SetBackButtonLabel, "")) == false
-        UI.ReplaceWidget(Id(:rep_back), Empty()) if UI.WidgetExists(Id(:rep_back))
-      end
+      UI.ReplaceWidget(Id(:rep_back), Empty()) if UI.WizardCommand(term(:SetBackButtonLabel, "")) == false && UI.WidgetExists(Id(:rep_back))
 
       nil
     end
@@ -1701,10 +1697,11 @@ module Yast
       end
 
       mm = Builtins.maplist(m) do |cc|
-        if Ops.get_string(cc, "type", "") == "MenuEntry"
+        case Ops.get_string(cc, "type", "")
+        when "MenuEntry"
           menu_entry = Ops.get_string(cc, "id", "")
           next Item(Id(menu_entry), Ops.get_string(cc, "title", ""))
-        elsif Ops.get_string(cc, "type", "") == "SubMenu"
+        when "SubMenu"
           sub_menu = Ops.get_string(cc, "id", "")
           next term(
             :menu,

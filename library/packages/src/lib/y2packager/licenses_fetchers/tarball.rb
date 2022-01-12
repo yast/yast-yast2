@@ -22,11 +22,8 @@ module Y2Packager
     # of a given product from a tar archive (.tar.gz)
     class Tarball < Archive
     # FIXME: there's (ATM) no way to indent the 'private' below so rubocop accepts it
-    # rubocop:disable Layout/IndentationWidth
 
     private
-
-      # rubocop:enable Layout/IndentationWidth
 
       attr_reader :archive_file_name
 

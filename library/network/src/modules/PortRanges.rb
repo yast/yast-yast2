@@ -438,53 +438,51 @@ module Yast
 
       Builtins.foreach(port_numbers_to_port_names) do |port_number, _port_names|
         # Port is not in any defined port range
-        if !PortIsInPortranges(Builtins.tostring(port_number), list_of_ranges)
-          # Port - 1 IS in some port range
-          if PortIsInPortranges(
-            Builtins.tostring(Ops.subtract(port_number, 1)),
-            list_of_ranges
-          )
-            # Creating fake port range, to be joined with another one
-            list_of_ranges = Builtins.add(
-              list_of_ranges,
-              CreateNewPortRange(Ops.subtract(port_number, 1), port_number)
-            )
-            # Port + 1 IS in some port range
-          elsif PortIsInPortranges(
-            Builtins.tostring(Ops.add(port_number, 1)),
-            list_of_ranges
-          )
-            # Creating fake port range, to be joined with another one
-            list_of_ranges = Builtins.add(
-              list_of_ranges,
-              CreateNewPortRange(port_number, Ops.add(port_number, 1))
-            )
-            # Port is not in any port range and also it cannot be joined with any one
-          else
-            # Port names of this port
-            used_port_names = Ops.get(
-              port_numbers_to_port_names,
-              port_number,
-              []
-            )
-            if Ops.greater_than(Builtins.size(used_port_names), 0)
-              new_list = Builtins.add(new_list, Ops.get(used_port_names, 0, ""))
-            else
-              Builtins.y2milestone(
-                "No port name for port number %1. Adding %1...",
-                port_number
-              )
-              # There are no port names (hmm?), adding port number
-              new_list = Builtins.add(new_list, Builtins.tostring(port_number))
-            end
-          end
-          # Port is in a port range
-        else
+        if PortIsInPortranges(Builtins.tostring(port_number), list_of_ranges)
           Builtins.y2milestone(
             "Removing port %1 mentioned in port ranges %2",
             port_number,
             list_of_ranges
           )
+        elsif PortIsInPortranges(
+          Builtins.tostring(Ops.subtract(port_number, 1)),
+          list_of_ranges
+        )
+          # Port - 1 IS in some port range
+          list_of_ranges = Builtins.add(
+            list_of_ranges,
+            CreateNewPortRange(Ops.subtract(port_number, 1), port_number)
+          )
+        # Creating fake port range, to be joined with another one
+        # Port + 1 IS in some port range
+        elsif PortIsInPortranges(
+          Builtins.tostring(Ops.add(port_number, 1)),
+          list_of_ranges
+        )
+          # Creating fake port range, to be joined with another one
+          list_of_ranges = Builtins.add(
+            list_of_ranges,
+            CreateNewPortRange(port_number, Ops.add(port_number, 1))
+          )
+        # Port is not in any port range and also it cannot be joined with any one
+        else
+          # Port names of this port
+          used_port_names = Ops.get(
+            port_numbers_to_port_names,
+            port_number,
+            []
+          )
+          if Ops.greater_than(Builtins.size(used_port_names), 0)
+            new_list = Builtins.add(new_list, Ops.get(used_port_names, 0, ""))
+          else
+            Builtins.y2milestone(
+              "No port name for port number %1. Adding %1...",
+              port_number
+            )
+            # There are no port names (hmm?), adding port number
+            new_list = Builtins.add(new_list, Builtins.tostring(port_number))
+          end
+          # Port is in a port range
         end
       end
 
@@ -563,6 +561,8 @@ module Yast
             # If new port range should be created
             new_min = nil
             new_max = nil
+            # rubocop:disable Lint/DuplicateBranch
+            # wrong detection of duplicate branch as if cause logic and workflow
             # the second one is inside the first one
             if Ops.less_or_equal(min_pr, this_min_pr) &&
                 Ops.greater_or_equal(max_pr, this_max_pr)
@@ -586,7 +586,7 @@ module Yast
               new_max = this_max_pr
               # the second one partly covers the first one (by its left side)
             elsif Ops.greater_or_equal(min_pr, this_min_pr) &&
-                Ops.less_or_equal(max_pr, this_max_pr)
+                Ops.greater_or_equal(max_pr, this_max_pr)
               # take this_min_pr & max_pr
               any_change_during_this_loop = true
               new_min = this_min_pr
@@ -604,6 +604,7 @@ module Yast
               new_min = this_min_pr
               new_max = max_pr
             end
+            # rubocop:enable Lint/DuplicateBranch
             if any_change_during_this_loop && !new_min.nil? && !new_max.nil?
               new_port_range = CreateNewPortRange(new_min, new_max)
               Builtins.y2milestone(

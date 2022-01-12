@@ -137,9 +137,7 @@ module Yast
         html = Ops.add(Ops.add(Ops.add(html, "<li>"), item), "</li>")
       end
 
-      html = Ops.add(html, "</ul>")
-
-      html
+      Ops.add(html, "</ul>")
     end
 
     # Make a HTML (unsorted) colored list from a list of strings
@@ -165,9 +163,7 @@ module Yast
         )
       end
 
-      html = Ops.add(html, "</ul>")
-
-      html
+      Ops.add(html, "</ul>")
     end
 
     # Colorize a piece of HTML code

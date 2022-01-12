@@ -221,8 +221,8 @@ module Yast
       # (both without quotes)
       _(
         "<p><b><big>Service Start</big></b><br>\n" \
-          "To start the service every time your computer is booted, set\n" \
-          "<b>%1</b>. Otherwise set <b>%2</b>.</p>"
+        "To start the service every time your computer is booted, set\n" \
+        "<b>%1</b>. Otherwise set <b>%2</b>.</p>"
       )
     end
 
@@ -237,9 +237,9 @@ module Yast
       # (both without quotes)
       _(
         "<p><b><big>Service Start</big></b><br>\n" \
-          "To start the service every time your computer is booted, set\n" \
-          "<b>%1</b>. To start the service via systemd socket activation, " \
-          "set <b>%3</b>.\nOtherwise set <b>%2</b>.</p>"
+        "To start the service every time your computer is booted, set\n" \
+        "<b>%1</b>. To start the service via systemd socket activation, " \
+        "set <b>%3</b>.\nOtherwise set <b>%2</b>.</p>"
       )
     end
 
@@ -414,7 +414,8 @@ module Yast
       widget = deep_copy(widget)
       event = deep_copy(event)
       event_id = Ops.get(event, "ID")
-      if event_id == "_cwm_start_service_now"
+      case event_id
+      when "_cwm_start_service_now"
         if Builtins.haskey(widget, "start_now_action")
           start_now_func = Convert.convert(
             Ops.get(widget, "start_now_action"),
@@ -426,7 +427,7 @@ module Yast
           Service.Restart(Ops.get_string(widget, "service_id", ""))
         end
         Builtins.sleep(500)
-      elsif event_id == "_cwm_stop_service_now"
+      when "_cwm_stop_service_now"
         if Builtins.haskey(widget, "stop_now_action")
           stop_now_func = Convert.convert(
             Ops.get(widget, "stop_now_action"),
@@ -438,7 +439,7 @@ module Yast
           Service.Stop(Ops.get_string(widget, "service_id", ""))
         end
         Builtins.sleep(500)
-      elsif event_id == "_cwm_save_settings_now"
+      when "_cwm_save_settings_now"
         func = Convert.convert(
           Ops.get(widget, "save_now_action"),
           from: "any",
@@ -500,8 +501,8 @@ module Yast
       # (both without quotes)
       help = _(
         "<p><b><big>Switch On or Off</big></b><br>\n" \
-          "To start or stop the service immediately, use \n" \
-          "<b>%1</b> or <b>%2</b>.</p>"
+        "To start or stop the service immediately, use \n" \
+        "<b>%1</b> or <b>%2</b>.</p>"
       )
       if restart_displayed
         # help text for service start widget 2/2, optional
@@ -721,8 +722,8 @@ module Yast
       # %1 is button label, eg. "LDAP Support Active" (without quotes)
       _(
         "<p><b><big>LDAP Support</big></b><br>\n" \
-          "To store the settings in LDAP instead of native configuration files,\n" \
-          "set <b>%1</b>.</p>"
+        "To store the settings in LDAP instead of native configuration files,\n" \
+        "set <b>%1</b>.</p>"
       )
     end
 

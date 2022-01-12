@@ -60,6 +60,7 @@ module Yast
       Yast.import "String"
       Yast.import "XML"
       Yast.import "Report"
+      Yast.import "Mode"
 
       #
       #    This API uses some new terms that need to be explained:
@@ -379,8 +380,8 @@ module Yast
           path(".target.bash_output"),
           Builtins.sformat(
             "\n" \
-              "/bin/mkdir -p '%1';\n" \
-              "/bin/cp -v '%2' '%3';\n",
+            "/bin/mkdir -p '%1';\n" \
+            "/bin/cp -v '%2' '%3';\n",
             String.Quote(GetWorkflowDirectory()),
             String.Quote(file_from),
             String.Quote(file_to)
@@ -447,11 +448,11 @@ module Yast
 
       log.info("installation.xml path: #{path}")
       path
-    rescue ::Packages::PackageDownloader::FetchError
+    rescue Y2Packager::PackageFetchError
       # TRANSLATORS: an error message
       Report.Error(_("Downloading the installer extension package failed."))
       nil
-    rescue ::Packages::PackageExtractor::ExtractionFailed
+    rescue Y2Packager::PackageExtractionError
       # TRANSLATORS: an error message
       Report.Error(_("Extracting the installer extension failed."))
       nil
@@ -527,7 +528,7 @@ module Yast
       # A cached copy exists
       if FileUtils.Exists(disk_filename)
         Builtins.y2milestone("Using cached file %1", disk_filename)
-        return disk_filename
+        disk_filename
         # Trying to get the file from source
       else
         Builtins.y2milestone("File %1 not cached", disk_filename)
@@ -549,7 +550,7 @@ module Yast
         end
 
         # File exists?
-        return use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
+        use_filename.nil? ? nil : StoreWorkflowFile(use_filename, disk_filename)
       end
     ensure
       # release the media accessors (close server connections/unmount disks)
@@ -634,14 +635,12 @@ module Yast
           )
         end
 
-        if !Stage.initial
-          if FileUtils.Exists(used_filename)
-            Builtins.y2milestone(
-              "Removing cached file '%1': %2",
-              used_filename,
-              SCR.Execute(path(".target.remove"), used_filename)
-            )
-          end
+        if !Stage.initial && FileUtils.Exists(used_filename)
+          Builtins.y2milestone(
+            "Removing cached file '%1': %2",
+            used_filename,
+            SCR.Execute(path(".target.remove"), used_filename)
+          )
         end
       end
 
@@ -664,9 +663,9 @@ module Yast
           SCR.Execute(
             path(".target.bash_ouptut"),
             "\n" \
-              "cd '%1';\n" \
-              "/usr/bin/test -x /usr/bin/tar && /usr/bin/tar -zcf workflows_backup.tgz *.xml *.ycp *.rb;\n" \
-              "/usr/bin/rm -rf *.xml *.ycp *.rb",
+            "cd '%1';\n" \
+            "/usr/bin/test -x /usr/bin/tar && /usr/bin/tar -zcf workflows_backup.tgz *.xml *.ycp *.rb;\n" \
+            "/usr/bin/rm -rf *.xml *.ycp *.rb",
             String.Quote(directory)
           )
         )
@@ -689,9 +688,9 @@ module Yast
       found = false
 
       modules = Builtins.maplist(Ops.get_list(proposal, "proposal_modules", [])) do |m|
-        if Ops.is_string?(m) && Convert.to_string(m) == old ||
-            Ops.is_map?(m) &&
-                Ops.get_string(Convert.to_map(m), "name", "") == old
+        if (Ops.is_string?(m) && Convert.to_string(m) == old) ||
+            (Ops.is_map?(m) &&
+                Ops.get_string(Convert.to_map(m), "name", "") == old)
           found = true
 
           next deep_copy(new) unless Ops.is_map?(m)
@@ -832,12 +831,12 @@ module Yast
           new_proposals = Builtins.add(new_proposals, p)
         end
         if !found
-          if arch_all_prop != {}
+          if arch_all_prop == {}
+            Ops.set(proposal, "textdomain", domain)
+          else
             Ops.set(arch_all_prop, "archs", arch)
             proposal = MergeProposal(arch_all_prop, proposal, prod_name, domain)
             # completly new proposal
-          else
-            Ops.set(proposal, "textdomain", domain)
           end
 
           new_proposals = Builtins.add(new_proposals, proposal)
@@ -982,11 +981,7 @@ module Yast
           new_workflows = Builtins.add(new_workflows, w)
         end
         if !found
-          if arch_all_wf != {}
-            Ops.set(arch_all_wf, ["defaults", "archs"], arch)
-            workflow = MergeWorkflow(arch_all_wf, workflow, prod_name, domain)
-          # completly new workflow
-          else
+          if arch_all_wf == {}
             # If modules has not been defined we are trying to use the appended modules
             workflow["modules"] = workflow["append_modules"] unless workflow["modules"]
 
@@ -1000,6 +995,10 @@ module Yast
                 deep_copy(mod)
               end
             )
+          else
+            Ops.set(arch_all_wf, ["defaults", "archs"], arch)
+            workflow = MergeWorkflow(arch_all_wf, workflow, prod_name, domain)
+            # completly new workflow
           end
 
           new_workflows = Builtins.add(new_workflows, workflow)
@@ -1107,7 +1106,12 @@ module Yast
       forbidden = Builtins.toset(forbidden)
 
       Builtins.foreach(proposals) do |proposal|
-        if !Builtins.contains(forbidden, Ops.get_string(proposal, "name", ""))
+        if Builtins.contains(forbidden, Ops.get_string(proposal, "name", ""))
+          Builtins.y2warning(
+            "Proposal '%1' already exists, not adding",
+            Ops.get_string(proposal, "name", "")
+          )
+        else
           Builtins.y2milestone(
             "Adding new proposal %1",
             Ops.get_string(proposal, "name", "")
@@ -1115,11 +1119,6 @@ module Yast
           ProductControl.proposals = Builtins.add(
             ProductControl.proposals,
             proposal
-          )
-        else
-          Builtins.y2warning(
-            "Proposal '%1' already exists, not adding",
-            Ops.get_string(proposal, "name", "")
           )
         end
       end
@@ -1687,14 +1686,16 @@ module Yast
     # @param repo_id [Fixnum] repository ID
     # @param package [String] name of the package
     # @raise [::Packages::PackageDownloader::FetchError] if package download failed
-    # @raise [::Packages::PackageExtractor::ExtractionFailed] if package extraction failed
+    # @raise [Y2Packager::PackageExtractionError] if package extraction failed
     def fetch_package(repo_id, package, dir)
       downloader = ::Packages::PackageDownloader.new(repo_id, package)
 
       Tempfile.open("downloaded-package-") do |tmp|
         # libzypp needs the target for verifying the GPG signatures of the downloaded packages,
         # keep the target initialized, it might be needed later for verifying other packages
-        Pkg.TargetInitialize("/") if Stage.initial
+        # However, avoid this call when running on update mode because we need the repositories
+        # from the system to upgrade too.
+        Pkg.TargetInitialize("/") if Stage.initial && !Mode.update
         downloader.download(tmp.path)
 
         extract(tmp.path, dir)
@@ -1708,7 +1709,7 @@ module Yast
     # Extract an RPM package into the given directory.
     # @param package_file [String] the RPM package path
     # @param dir [String] a directory where the package will be extracted to
-    # @raise [::Packages::PackageExtractor::ExtractionFailed] if package extraction failed
+    # @raise [::Y2Packager::PackageExtractionError] if package extraction failed
     def extract(package_file, dir)
       log.info("Extracting file #{package_file}")
       extractor = ::Packages::PackageExtractor.new(package_file)

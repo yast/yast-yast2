@@ -1,4 +1,4 @@
-require_relative "../../../test/test_helper.rb"
+require_relative "../../../test/test_helper"
 
 require "yast2/systemd/unit"
 require "yast2/systemd/unit_properties"

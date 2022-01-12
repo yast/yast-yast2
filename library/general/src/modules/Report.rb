@@ -192,7 +192,7 @@ module Yast
           @log_errors ? _("Yes") : _("No")
         )
       )
-      summary = Summary.CloseList(summary)
+      Summary.CloseList(summary)
       # summary = Summary::AddHeader(summary, _("Yes or No Messages (Critical Messages)"));
       # summary = Summary::OpenList(summary);
       # // Report configuration - will be error messages displayed?
@@ -207,7 +207,6 @@ module Yast
       # summary = Summary::AddListItem(summary, sformat(_("Log Yes or No Messages: %1"), (log_yesno_messages) ?
       #                 _("Yes") : _("No")));
       # summary = Summary::CloseList(summary);
-      summary
     end
 
     # Get all the Report configuration from a map.

@@ -19,11 +19,8 @@ module Y2Packager
     # of a given product from a RPM package
     class Rpm < Archive
     # FIXME: there's (ATM) no way to indent the 'private' below so rubocop accepts it
-    # rubocop:disable Layout/IndentationWidth
 
     private
-
-      # rubocop:enable Layout/IndentationWidth
 
       # Check if a license archive exists
       #

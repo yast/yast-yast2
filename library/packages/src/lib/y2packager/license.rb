@@ -58,7 +58,7 @@ module Y2Packager
         handler = LicensesHandlers.for(fetcher, product_name) if fetcher
 
         license = License.new(product_name: product_name, fetcher: fetcher,
-                              handler: handler, content: content)
+          handler: handler, content: content)
         return unless license.id
 
         cached_license = cache.values.find { |l| l.id == license.id }

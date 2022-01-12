@@ -17,6 +17,7 @@ require "tempfile"
 require "shellwords"
 
 require "yast2/execute"
+require "y2packager/exceptions"
 
 Yast.import "Pkg"
 
@@ -47,9 +48,6 @@ module Packages
     # @return [String] Name of the package
     attr_reader :package_name
 
-    # Error while downloading the package.
-    class FetchError < StandardError; end
-
     # Constructor
     #
     # @param [Integer] repo_id Repository ID
@@ -74,7 +72,7 @@ module Packages
       return if Yast::Pkg.ProvidePackage(repo_id, package_name, path.to_s)
 
       log.error("Package #{package_name} could not be retrieved.")
-      raise FetchError
+      raise Y2Packager::PackageFetchError
     end
   end
 end

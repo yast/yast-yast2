@@ -25,18 +25,18 @@ module UI
     using ::Yast2::Refinements::StringManipulations
 
     # (see Yast2::Refinements::StringManipulations#plain_text)
-    def plain_text(text, *args, &block)
-      text.plain_text(*args, &block)
+    def plain_text(text, **args, &block)
+      text.plain_text(**args, &block)
     end
 
     # (see Yast2::Refinements::StringManipulations#wrap_text)
-    def wrap_text(text, *args)
-      text.wrap_text(*args)
+    def wrap_text(text, *args, **kwa)
+      text.wrap_text(*args, **kwa)
     end
 
     # (see Yast2::Refinements::StringManipulations#head)
-    def head(text, *args)
-      text.head(*args)
+    def head(text, max_lines, **args)
+      text.head(max_lines, **args)
     end
 
     # (see Yast2::Refinements::StringManipulations#div_with_direction)

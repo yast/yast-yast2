@@ -177,9 +177,10 @@ module Yast2
     def start_mode=(configuration)
       raise ArgumentError, "Invalid parameter #{configuration.inspect}" if !AUTOSTART_OPTIONS.include?(configuration)
 
-      if configuration == :inconsistent
+      case configuration
+      when :inconsistent
         reset(exclude: [:action])
-      elsif configuration == :on_demand
+      when :on_demand
         services_with_socket.each { |s| s.start_mode = :on_demand }
         services_without_socket.each { |s| s.start_mode = :on_boot }
       else

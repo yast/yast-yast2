@@ -47,7 +47,7 @@ module Y2Packager
       def content(lang)
         # FIXME: not #default_content at some place?
         if default_lang?(lang) && @default_content
-          return (@default_content&.empty?) ? nil : @default_content
+          return @default_content&.empty? ? nil : @default_content
         end
 
         license_content_for(lang)

@@ -19,9 +19,9 @@ describe Packages::PackageDownloader do
       subject.download(path)
     end
 
-    it "raises FetchError when download fails" do
+    it "raises PackageFetchError when download fails" do
       expect(Yast::Pkg).to receive(:ProvidePackage).with(repo_id, package, path).and_return(nil)
-      expect { subject.download(path) }.to raise_error(Packages::PackageDownloader::FetchError)
+      expect { subject.download(path) }.to raise_error(Y2Packager::PackageFetchError)
     end
   end
 end

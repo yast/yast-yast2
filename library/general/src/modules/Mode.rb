@@ -110,14 +110,14 @@ module Yast
       arg_no = 0
       while Ops.less_than(arg_no, arg_count)
         # parsing for main mode
-        if WFM.Args(arg_no) == "initial" || WFM.Args(arg_no) == "continue" ||
-            WFM.Args(arg_no) == "firstboot"
+        case WFM.Args(arg_no)
+        when "initial", "continue", "firstboot"
           @_mode = "installation"
         # parsing for test mode
-        elsif WFM.Args(arg_no) == "test" || WFM.Args(arg_no) == "demo"
+        when "test", "demo"
           @_test = "test"
           Builtins.y2warning("***** Test mode enabled *****")
-        elsif WFM.Args(arg_no) == "screenshots"
+        when "screenshots"
           @_test = "screenshot"
           Builtins.y2warning("***** Screen shot mode enabled *****")
         end

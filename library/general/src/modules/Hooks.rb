@@ -68,6 +68,8 @@ module Yast
     private :hooks
 
     def initialize
+      super
+
       textdomain "base"
       @hooks = {}
       @search_path = SearchPath.new
@@ -191,7 +193,7 @@ module Yast
         end
         unless hook_files.empty?
           log.info "Found #{hook_files.size} hook files: " \
-            "#{hook_files.map { |f| f.basename.to_s }.join(", ")}"
+                   "#{hook_files.map { |f| f.basename.to_s }.join(", ")}"
         end
         hook_files.sort
       end

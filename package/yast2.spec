@@ -17,7 +17,8 @@
 
 
 Name:           yast2
-Version:        4.4.22
+Version:        4.4.34
+
 Release:        0
 Summary:        YaST2 Main Package
 License:        GPL-2.0-only
@@ -112,8 +113,10 @@ Recommends:     xdg-utils
 Conflicts:      yast2-country < 4.2.3
 # SrvStatusComponent moved to yast2.rpm
 Conflicts:      yast2-dns-server < 3.1.17
-# removed the XVersion API
-Conflicts:      yast2-installation < 4.2.9
+# removed ProductProfiles
+Conflicts:      yast2-installation < 4.4.25
+# removed ProductProfiles
+Conflicts:      yast2-add-on < 4.4.5
 # moved cfg_mail.scr
 Conflicts:      yast2-mail < 3.1.7
 # anyxml droppped

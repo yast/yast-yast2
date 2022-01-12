@@ -34,6 +34,8 @@ module Yast
     include Yast::Logger
 
     def initialize
+      super
+
       @services = {}
     end
 
