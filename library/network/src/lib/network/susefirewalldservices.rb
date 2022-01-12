@@ -35,6 +35,8 @@ module Yast
     IGNORED_SERVICES = ["..", "."].freeze
 
     def initialize
+      super
+
       textdomain "base"
 
       @services = nil
@@ -151,13 +153,13 @@ module Yast
       # This going to be too expensive (5 API calls per service) but this
       # is really the slowpath since we rarely need to extract so much
       # information from a service
-      SuSEFirewall.api.service_modules(service_name).split(" ").each do |x|
+      SuSEFirewall.api.service_modules(service_name).split.each do |x|
         @services[service_name]["modules"] << x
       end
-      SuSEFirewall.api.service_protocols(service_name).split(" ").each do |x|
+      SuSEFirewall.api.service_protocols(service_name).split.each do |x|
         @services[service_name]["protocols"] << x
       end
-      SuSEFirewall.api.service_ports(service_name).split(" ").each do |x|
+      SuSEFirewall.api.service_ports(service_name).split.each do |x|
         port_proto = x.split("/")
         @services[service_name]["tcp_ports"] << port_proto[0] if port_proto[1] == "tcp"
         @services[service_name]["udp_ports"] << port_proto[0] if port_proto[1] == "udp"

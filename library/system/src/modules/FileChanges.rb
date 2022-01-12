@@ -96,10 +96,9 @@ module Yast
       # See also FileUtils::MD5sum()
       cmd = Builtins.sformat("/usr/bin/md5sum %1", file.shellescape)
       out = Convert.to_map(SCR.Execute(path(".target.bash_output"), cmd))
-      # note: it also contains file name, but since it is only to be compared
+      # NOTE: it also contains file name, but since it is only to be compared
       # it does not matter
-      sum = Ops.get_string(out, "stdout", "")
-      sum
+      Ops.get_string(out, "stdout", "")
     end
 
     # Check if file was modified compared to the one distributed

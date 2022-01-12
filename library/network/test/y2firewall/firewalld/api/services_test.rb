@@ -60,7 +60,7 @@ describe Y2Firewall::Firewalld::Api::Services do
     it "obtains the list of firewalld defined services" do
       allow(api).to receive(:string_command).with("--get-services").and_return(defined_services)
 
-      expect(subject.services).to eql(defined_services.split(" "))
+      expect(subject.services).to eql(defined_services.split)
     end
   end
 

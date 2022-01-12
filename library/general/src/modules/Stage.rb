@@ -49,13 +49,14 @@ module Yast
         arg_count = Builtins.size(WFM.Args)
         arg_no = 0
         while Ops.less_than(arg_no, arg_count)
-          if WFM.Args(arg_no) == "initial"
+          case WFM.Args(arg_no)
+          when "initial"
             @_stage = "initial"
-          elsif WFM.Args(arg_no) == "continue"
+          when "continue"
             @_stage = "continue"
-          elsif WFM.Args(arg_no) == "firstboot"
+          when "firstboot"
             @_stage = "firstboot"
-          elsif WFM.Args(arg_no) == "reprobe"
+          when "reprobe"
             @_stage = "hardware_probed"
           end
 

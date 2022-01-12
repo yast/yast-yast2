@@ -140,9 +140,9 @@ module Yast
           Ops.greater_or_equal(Ops.get_integer(disp, "DefaultWidth", -1), 800) &&
           Ops.greater_or_equal(Ops.get_integer(disp, "DefaultHeight", -1), 600) &&
           Ops.greater_or_equal(Ops.get_integer(disp, "Depth", -1), 8)
-        return true
+        true
       else
-        return false
+        false
       end
     end
 

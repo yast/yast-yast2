@@ -115,7 +115,7 @@ module Y2Packager
 
         if relnotes
           log.info "Got release notes for #{product.name} from URL #{relnotes_url} " \
-            "with #{prefs}"
+                   "with #{prefs}"
           return relnotes
         end
 

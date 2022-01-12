@@ -105,7 +105,7 @@ module Yast
 
       # Do not use UI.GetLanguage. It would start an UI which is not
       # needed for it.
-      @Language = ENV["LANG"].split(/[\.,@]/).first if ENV["LANG"]
+      @Language = ENV["LANG"].split(/[.,@]/).first if ENV["LANG"]
 
       @LanguageFull = Builtins.regexpsub(@Language, "(.*_[^.]*)\\.?.*", "\\1") if Builtins.regexpmatch(@Language, "(.*_[^.]*)\\.?.*") # matches: ll_TT ll_TT.UTF-8
       @Language = Builtins.regexpsub(@Language, "(.*)_", "\\1") if Builtins.regexpmatch(@Language, "(.*)_")
@@ -408,7 +408,7 @@ module Yast
   private
 
     # @return [Regexp] Regular expression which matches the module name of a desktop file
-    FILE_REGEXP = /([^\.]+).desktop\Z/.freeze
+    FILE_REGEXP = /([^.]+).desktop\Z/.freeze
 
     # Converts the file name to the expected module name
     #

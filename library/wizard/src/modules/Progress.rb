@@ -167,7 +167,8 @@ module Yast
         "progress_val"         => @progress_val
       }
 
-      if current_subprogress == :progress
+      case current_subprogress
+      when :progress
         Ops.set(
           state,
           "subprogress_label",
@@ -178,7 +179,7 @@ module Yast
           "subprogress_value",
           Convert.to_integer(UI.QueryWidget(Id(:subprogress_progress), :Value))
         )
-      elsif current_subprogress == :tick
+      when :tick
         Ops.set(
           state,
           "subprogress_label",
@@ -416,7 +417,7 @@ module Yast
         end
         bar = Builtins.add(bar, Left(HBox(HSquash(items))))
 
-        bar = if 0 != @steps
+        bar = if 0 == @steps
           Builtins.add(
             bar,
             VBox(
@@ -424,7 +425,7 @@ module Yast
               ReplacePoint(Id(:subprogress_replace_point), Empty()),
               ReplacePoint(
                 Id(:progress_replace_point),
-                ProgressBar(Id(:pb), progress_title, length, 0)
+                Label(Id(:pb), Opt(:hstretch), progress_title)
               ),
               VSpacing(2)
             )
@@ -437,7 +438,7 @@ module Yast
               ReplacePoint(Id(:subprogress_replace_point), Empty()),
               ReplacePoint(
                 Id(:progress_replace_point),
-                Label(Id(:pb), Opt(:hstretch), progress_title)
+                ProgressBar(Id(:pb), progress_title, length, 0)
               ),
               VSpacing(2)
             )
@@ -487,10 +488,11 @@ module Yast
       current_type = CurrentSubprogressType()
 
       # normal progress
-      if current_type == :progress
+      case current_type
+      when :progress
         UI.ChangeWidget(Id(:subprogress_progress), :Value, value)
       # tick progress
-      elsif current_type == :tick
+      when :tick
         UI.ChangeWidget(Id(:subprogress_tick), :Alive, true)
       else
         Builtins.y2warning("No subprogress is defined, cannot set the value!")
@@ -513,14 +515,15 @@ module Yast
       )
 
       if type == CurrentSubprogressType()
-        if type == :progress
+        case type
+        when :progress
           # just reset the current value of the progress bar if the requested progress is the same
           if max_value == @last_subprogress_max
             Builtins.y2milestone("Resetting the subprogressbar...")
             SubprogressValue(0)
             return
           end
-        elsif type == :tick
+        when :tick
           # just restart the animation
           UI.ChangeWidget(Id(:subprogress_tick), :Alive, true)
         else
@@ -531,11 +534,12 @@ module Yast
 
       widget = Empty()
 
-      if type == :progress
+      case type
+      when :progress
         widget = ProgressBar(Id(:subprogress_progress), " ", max_value, 0)
-      elsif type == :tick
+      when :tick
         widget = BusyIndicator(Id(:subprogress_tick), " ", 3000)
-      elsif type == :none
+      when :none
         widget = Empty()
       else
         Builtins.y2error("Unknown subprogress type: %1", type)
@@ -557,9 +561,10 @@ module Yast
 
       current_type = CurrentSubprogressType()
 
-      if current_type == :progress
+      case current_type
+      when :progress
         UI.ChangeWidget(Id(:subprogress_progress), :Label, title)
-      elsif current_type == :tick
+      when :tick
         UI.ChangeWidget(Id(:subprogress_tick), :Label, title)
       else
         Builtins.y2warning("No subprogress is defined, cannot set the label!")
@@ -863,14 +868,12 @@ module Yast
     # Make one step in a superior progress bar.
     def StepSuperior
       if Ops.greater_or_equal(@super_step, 0) &&
-          Ops.less_than(@super_step, @super_steps)
-        if !UI.HasSpecialWidget(:Wizard)
-          UI.ChangeWidget(
-            Id(Builtins.sformat("super_progress_%1", @super_step)),
-            :Value,
-            UI.Glyph(:CheckMark)
-          )
-        end
+          Ops.less_than(@super_step, @super_steps) && !UI.HasSpecialWidget(:Wizard)
+        UI.ChangeWidget(
+          Id(Builtins.sformat("super_progress_%1", @super_step)),
+          :Value,
+          UI.Glyph(:CheckMark)
+        )
       end
       @super_step = Ops.add(@super_step, 1)
       return if Ops.greater_or_equal(@super_step, @super_steps)

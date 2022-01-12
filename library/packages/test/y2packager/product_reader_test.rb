@@ -150,9 +150,9 @@ describe Y2Packager::ProductReader do
         .and_return(nil)
       allow(subject).to receive(:product_package).with("SLES_BCL-release")
         .and_return(Y2Packager::Resolvable.new("name" => "product_package",
-        "source" => 1, "version" => "1.0", "arch" => "x86_64",
-        "kind" => :package, "deps" => [{ "conflicts"=>"kernel < 4.4" },
-                                       { "provides"=>"specialproduct(SLES_BCL)" }]))
+          "source" => 1, "version" => "1.0", "arch" => "x86_64",
+          "kind" => :package, "deps" => [{ "conflicts"=>"kernel < 4.4" },
+                                         { "provides"=>"specialproduct(SLES_BCL)" }]))
       allow(Yast::Linuxrc).to receive(:InstallInf).with("specialproduct").and_return(nil)
     end
 

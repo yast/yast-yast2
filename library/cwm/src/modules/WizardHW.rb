@@ -110,15 +110,15 @@ module Yast
     # Used when using the callback interface
     # @param [String] key strnig the widget key
     def Init(_key)
-      if !@set_items_callback.nil?
-        @set_items_callback.call
-      else
+      if @set_items_callback.nil?
         Builtins.y2warning("No initialization callback")
-      end
-      if !@select_initial_item_callback.nil?
-        @select_initial_item_callback.call
       else
+        @set_items_callback.call
+      end
+      if @select_initial_item_callback.nil?
         _SetSelectedItem(Ops.get_string(@current_items, [0, "id"]))
+      else
+        @select_initial_item_callback.call
       end
 
       nil

@@ -31,6 +31,8 @@ module Test
 
       # @param error [StandardError]
       def initialize(error)
+        super()
+
         @error = error
       end
 

@@ -7,7 +7,10 @@ require "cwm/rspec"
 describe "CWM::Dialog" do
   class TestCWMDialog < CWM::Dialog
     attr_reader :title, :disable
+
     def initialize(title = "test", disable: :abort)
+      super()
+
       @title = title
       @disable = disable
     end

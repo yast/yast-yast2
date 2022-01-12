@@ -100,14 +100,12 @@ module Yast
     # @param [String] log file for the commands output
     # @return true if successful started
     def Start(log)
-      if @type == "dsl" && @capi_adsl || @type == "isdn"
+      if (@type == "dsl" && @capi_adsl) || @type == "isdn"
         status = Service.Status("isdn")
         Builtins.y2milestone("We need ISDN service, status: %1", status)
-        if status != 0
-          if !Service.Start("isdn")
-            Builtins.y2error("start failed")
-            return false
-          end
+        if status != 0 && !Service.Start("isdn")
+          Builtins.y2error("start failed")
+          return false
         end
       end
 
@@ -139,14 +137,12 @@ module Yast
         return false
       end
 
-      if @type == "isdn" && !@capi_isdn
-        if SCR.Execute(
-          path(".target.bash"),
-          "/sbin/isdnctrl dial #{@device.shellescape}"
-        ) != 0
-          Builtins.y2error("isdnctrl failed")
-          return false
-        end
+      if @type == "isdn" && !@capi_isdn && (SCR.Execute(
+        path(".target.bash"),
+        "/sbin/isdnctrl dial #{@device.shellescape}"
+      ) != 0)
+        Builtins.y2error("isdnctrl failed")
+        return false
       end
 
       true
@@ -183,7 +179,7 @@ module Yast
     # Test if the interface is connected
     # @return true if connected
     def Connected
-      if @type == "dsl" || @type == "modem" || @type == "isdn" && @capi_isdn
+      if @type == "dsl" || @type == "modem" || (@type == "isdn" && @capi_isdn)
         tmp1 = Convert.to_string(
           SCR.Read(
             path(".target.string"),

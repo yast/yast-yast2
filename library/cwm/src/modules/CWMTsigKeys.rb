@@ -279,7 +279,8 @@ module Yast
       new_filename = Convert.to_string(
         UI.QueryWidget(Id("_cwm_new_key_file"), :Value)
       )
-      if ret == "_cwm_delete_key"
+      case ret
+      when "_cwm_delete_key"
         key2 = Convert.to_string(
           UI.QueryWidget(Id("_cwm_key_listing_table"), :CurrentItem)
         )
@@ -300,8 +301,8 @@ module Yast
             # popup message
             message = _(
               "The selected TSIG key cannot be deleted,\n" \
-                "because it is in use.\n" \
-                "Stop using it in the configuration first."
+              "because it is in use.\n" \
+              "Stop using it in the configuration first."
             )
             # popup title
             Popup.AnyMessage(_("Cannot delete TSIG key."), message)
@@ -309,7 +310,7 @@ module Yast
           end
         end
         RemoveTSIGKeyFile(delete_filename)
-      elsif ret == "_cwm_browse_existing_key_file"
+      when "_cwm_browse_existing_key_file"
         existing_filename = UI.AskForExistingFile(
           existing_filename,
           "",
@@ -324,7 +325,7 @@ module Yast
           )
         end
         return nil
-      elsif ret == "_cwm_browse_new_key_file"
+      when "_cwm_browse_new_key_file"
         new_filename = UI.AskForSaveFileName(
           new_filename,
           "",
@@ -333,7 +334,7 @@ module Yast
         )
         UI.ChangeWidget(Id("_cwm_new_key_file"), :Value, new_filename) if !new_filename.nil?
         return nil
-      elsif ret == "_cwm_generate_key"
+      when "_cwm_generate_key"
         if !UI.WidgetExists(Id("_cwm_new_key_file"))
           Builtins.y2error("No such UI widget: %1", "_cwm_new_key_file")
           return nil
@@ -366,14 +367,14 @@ module Yast
         # specified key exists
         if Key2File(key2) != ""
           # yes-no popup
-          if !Popup.YesNo(
+          if Popup.YesNo(
             _("The key with the specified ID exists and is used.\nRemove it?")
           )
-            return nil
-          else
             remove_file = Key2File(key2)
             DeleteTSIGKeyFromDisk(remove_file)
             RemoveTSIGKeyFile(remove_file)
+          else
+            return nil
           end
         end
         # specified key is present on the disk, but not used
@@ -384,28 +385,25 @@ module Yast
                 "/usr/bin/ls /etc/named.d/K%1\\.*",
                 Builtins.tolower(key2).shellescape
               )
-            )
-          # yes-no popup
-          if Popup.YesNo(
+            ) && Popup.YesNo(
             _(
               "A key with the specified ID was found\non your disk. Remove it?"
             )
           )
-            SCR.Execute(
-              path(".target.bash"),
-              Builtins.sformat(
-                "/usr/bin/rm -rf `/usr/bin/ls /etc/named.d/K%1\\.*`",
-                Builtins.tolower(key2).shellescape
-              )
+          SCR.Execute(
+            path(".target.bash"),
+            Builtins.sformat(
+              "/usr/bin/rm -rf `/usr/bin/ls /etc/named.d/K%1\\.*`",
+              Builtins.tolower(key2).shellescape
             )
-            files = Convert.convert(
-              SCR.Read(path(".target.dir"), "/etc/named.d"),
-              from: "any",
-              to:   "list <string>"
-            )
-            Builtins.foreach(files) do |f|
-              DeleteTSIGKeyFromDisk(f) if Builtins.contains(AnalyzeTSIGKeyFile(f), key2)
-            end
+          )
+          files = Convert.convert(
+            SCR.Read(path(".target.dir"), "/etc/named.d"),
+            from: "any",
+            to:   "list <string>"
+          )
+          Builtins.foreach(files) do |f|
+            DeleteTSIGKeyFromDisk(f) if Builtins.contains(AnalyzeTSIGKeyFile(f), key2)
           end
         end
 
@@ -452,16 +450,16 @@ module Yast
         end
         if Ops.greater_than(Builtins.size(coliding_files), 0)
           # yes-no popup
-          if !Popup.YesNo(
+          if Popup.YesNo(
             _(
               "The specified file contains a TSIG key with the same\n" \
-                "identifier as some of already present keys.\n" \
-                "Old keys will be removed. Continue?"
+              "identifier as some of already present keys.\n" \
+              "Old keys will be removed. Continue?"
             )
           )
-            return nil
-          else
             Builtins.foreach(coliding_files) { |f| RemoveTSIGKeyFile(f) }
+          else
+            return nil
           end
         end
         AddTSIGKeyFile(existing_filename)
@@ -562,24 +560,24 @@ module Yast
         # tsig keys management dialog help 2/4
         _(
           "<p><big><b>Adding an Existing TSIG Key</b></big><br>\n" \
-            "To add an already created TSIG key, select a <b>Filename</b> of the file\n" \
-            "containing the key and click <b>Add</b>.</p>\n"
+          "To add an already created TSIG key, select a <b>Filename</b> of the file\n" \
+          "containing the key and click <b>Add</b>.</p>\n"
         ) +
         # tsig keys management dialog help 3/4
         _(
           "<p><big><b>Creating a New TSIG Key</b></big><br>\n" \
-            "To create a new TSIG key, set the <b>Filename</b> of the file in which to\n" \
-            "create the key and the <b>Key ID</b> to identify the key then click\n" \
-            "<b>Generate</b>.</p>\n"
+          "To create a new TSIG key, set the <b>Filename</b> of the file in which to\n" \
+          "create the key and the <b>Key ID</b> to identify the key then click\n" \
+          "<b>Generate</b>.</p>\n"
         ) +
         # tsig keys management dialog help 4/4
         _(
           "<p><big><b>Removing a TSIG Key</b></big><br>\n" \
-            "To remove a configured TSIG key, select it and click <b>Delete</b>.\n" \
-            "All keys in the same file are deleted.\n" \
-            "If a TSIG key is in use in the configuration\n" \
-            "of the server, it cannot be deleted. The server must stop using it\n" \
-            "in the configuration first.</p>\n"
+          "To remove a configured TSIG key, select it and click <b>Delete</b>.\n" \
+          "All keys in the same file are deleted.\n" \
+          "If a TSIG key is in use in the configuration\n" \
+          "of the server, it cannot be deleted. The server must stop using it\n" \
+          "in the configuration first.</p>\n"
         )
 
       add_existing = VSquash(

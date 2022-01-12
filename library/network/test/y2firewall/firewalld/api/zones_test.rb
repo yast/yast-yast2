@@ -30,7 +30,7 @@ describe Y2Firewall::Firewalld::Api::Zones do
     it "obtains the list of firewalld defined zones" do
       allow(api).to receive(:string_command).with("--get-zones").and_return(known_zones)
 
-      expect(subject.zones).to eql(known_zones.split(" "))
+      expect(subject.zones).to eql(known_zones.split)
     end
   end
 

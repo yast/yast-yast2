@@ -26,11 +26,6 @@ module CWM
   # This class offers a CWM dialog which behaves as a pop-up.
   # @see {CWM::Dialog} for remaining configuration options.
   class Popup < Dialog
-    # Constructor (empty to just allow passing extra options)
-    def initialize(*args, **kws)
-      super
-    end
-
     # Determines that a dialog should always be open
     #
     # @return [true]

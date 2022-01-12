@@ -26,11 +26,14 @@ describe CWM::Tree do
   include_examples "CWM::CustomWidget"
 
   describe "#items" do
+    # TODO: pending
   end
 
   describe "#items=" do
+    # TODO: pending
   end
 
   describe "change_items" do
+    # TODO: pending
   end
 end

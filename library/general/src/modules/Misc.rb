@@ -177,10 +177,10 @@ module Yast
           "Failed reading '%1', using default value",
           sysconfig_path
         )
-        return defaultv
+        defaultv
       else
         Builtins.y2milestone("%1: '%2'", sysconfig_path, local_ret)
-        return local_ret
+        local_ret
       end
     end
 

@@ -131,7 +131,7 @@ module Packages
         if Yast::Mode.auto || Yast::Mode.commandline
           # TRANSLATORS: An error message, %s is the actual list of detected conflicts
           Yast::Report.Error(_("File conflicts detected, these conflicting files will " \
-            "be overwritten:\n\n%s") % conflicts.join("\n\n"))
+                               "be overwritten:\n\n%s") % conflicts.join("\n\n"))
           return true
         end
 
@@ -168,8 +168,8 @@ module Packages
 
         # TRANSLATORS: A popup label, use max. 70 chars per line, use more lines if needed
         label = _("File conflicts happen when two packages attempt to install\n" \
-          "files with the same name but different contents. If you continue\n" \
-          "the conflicting files will be replaced, losing the previous content.")
+                  "files with the same name but different contents. If you continue\n" \
+                  "the conflicting files will be replaced, losing the previous content.")
 
         # TRANSLATORS: Popup heading
         heading = n_("A File Conflict Detected", "File Conflicts Detected", conflicts.size)

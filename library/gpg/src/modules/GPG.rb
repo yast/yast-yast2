@@ -147,7 +147,7 @@ module Yast
     # @param [String] input gpg output
     # @return [Array<Hash>] parsed keys
     def parseKeys(input)
-      # note: see /usr/share/doc/packages/gpg/DETAILS for another way
+      # NOTE: see /usr/share/doc/packages/gpg/DETAILS for another way
 
       ret = []
       lines = Builtins.splitstring(input, "\n")
@@ -219,7 +219,12 @@ module Yast
 
       ret = false
 
-      if !text_mode
+      if text_mode
+        command = Ops.add("LC_ALL=en_US.UTF-8 ", command)
+        Builtins.y2internal("Executing in terminal: %1", command)
+        # in ncurses use UI::RunInTerminal
+        ret = UI.RunInTerminal(command) == 0
+      else
         if Ops.less_than(SCR.Read(path(".target.size"), XTERM_PATH), 0)
           # FIXME: do it
           Report.Error(_("Xterm is missing, install xterm package."))
@@ -233,7 +238,7 @@ module Yast
         SCR.Execute(path(".target.bash"), "/usr/bin/rm -f #{exit_file.shellescape}") if FileUtils.Exists(exit_file)
 
         command = "LC_ALL=en_US.UTF-8 #{XTERM_PATH} -e " \
-          "\"#{command}; echo $? > #{exit_file.shellescape}\""
+                  "\"#{command}; echo $? > #{exit_file.shellescape}\""
 
         Builtins.y2internal("Executing: %1", command)
 
@@ -257,11 +262,6 @@ module Yast
           Builtins.y2warning("Exit file is missing, the gpg command has failed")
           ret = false
         end
-      else
-        command = Ops.add("LC_ALL=en_US.UTF-8 ", command)
-        Builtins.y2internal("Executing in terminal: %1", command)
-        # in ncurses use UI::RunInTerminal
-        ret = UI.RunInTerminal(command) == 0
       end
 
       if ret
@@ -428,7 +428,7 @@ module Yast
     # @raise [GPGFailed] when encryption failed
     def encrypt_symmetric(input_file, output_file, password)
       out = callGPG("--armor --batch --symmetric --passphrase '#{String.Quote(password)}' " \
-        "--output '#{String.Quote(output_file)}' '#{String.Quote(input_file)}'")
+                    "--output '#{String.Quote(output_file)}' '#{String.Quote(input_file)}'")
 
       raise GPGFailed, out["stderr"] if out["exit"] != 0
     end

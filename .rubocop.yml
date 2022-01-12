@@ -1,6 +1,6 @@
 # use the shared Yast defaults
 inherit_from:
-  /usr/share/YaST2/data/devtools/data/rubocop-0.71.0_yast_style.yml
+  /usr/share/YaST2/data/devtools/data/rubocop-1.24.1_yast_style.yml
 
 Metrics/AbcSize:
   Max: 446
@@ -17,7 +17,7 @@ Metrics/ModuleLength:
 Metrics/CyclomaticComplexity:
   Max: 59
 
-Metrics/LineLength:
+Layout/LineLength:
   Max: 274
 
 Metrics/MethodLength:
@@ -99,3 +99,7 @@ Naming/VariableName:
     - "library/network/src/lib/network/susefirewalld.rb"
     - "library/network/src/lib/network/susefirewall2.rb"
     - "library/network/src/lib/network/susefirewall2services.rb"
+
+# this module provides API for others, so do not change existing API
+Style/OptionalBooleanParameter:
+  Enabled: false

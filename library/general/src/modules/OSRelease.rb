@@ -30,15 +30,14 @@ module Yast
   import "FileUtils"
 
   class OSReleaseFileMissingError < StandardError
-    def initialize(message)
-      super message
-    end
   end
 
   class OSReleaseClass < Module
     include Yast::Logger
 
     def initialize
+      super
+
       textdomain "base"
     end
 
@@ -114,7 +113,7 @@ module Yast
     # @return [String] nice product name (to be displayed)
     def MakeNiceName(longname)
       # remove everything after first left parenthesis and spaces leading to it
-      longname.gsub(/[ ]*\(.*/, "")
+      longname.gsub(/ *\(.*/, "")
     end
   end
 

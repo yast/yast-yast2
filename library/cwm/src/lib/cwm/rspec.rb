@@ -148,6 +148,7 @@ RSpec.shared_examples "CWM::RadioButtons" do
 end
 
 RSpec.shared_examples "CWM::ValueBasedWidget" do
+  # no specific test yet
 end
 
 RSpec.shared_examples "CWM::CheckBox" do

@@ -11,6 +11,8 @@ class DisplayWidget < CWM::InputField
   attr_reader :result
 
   def initialize
+    super
+
     self.widget_id = "lucky_number_widget"
     self.handle_all_events = true
     disable
@@ -43,6 +45,8 @@ end
 
 class FirstButton < CWM::PushButton
   def initialize
+    super
+
     self.widget_id = "first button"
   end
 
@@ -53,6 +57,8 @@ end
 
 class SecondButton < CWM::PushButton
   def initialize
+    super
+
     self.widget_id = "second button"
   end
 

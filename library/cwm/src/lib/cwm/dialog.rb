@@ -27,8 +27,7 @@ module CWM
     abstract_method :contents
 
     # Constructor (empty to just allow passing extra options)
-    def initialize(*args, **kws)
-    end
+    def initialize(*args, **kws); end
 
     # A shortcut for `.new(*args).run`
     def self.run(*args, **kws)
@@ -123,6 +122,8 @@ module CWM
     # Empty widget which is first on the page and contain help for whole dialog
     class FakeHelp < Empty
       def initialize(text)
+        super("__fake_help_widget")
+
         @text = text
       end
 

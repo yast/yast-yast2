@@ -62,27 +62,20 @@ module Yast
         tag = Builtins.tolower(Builtins.substring(lpart, 0, s))
         # *** Handle tags ****
 
-        # BR
-        if tag == "br"
+        case tag
+        when "br", "p"
           result = Ops.add(result, "\n")
-        # P
-        elsif tag == "p"
-          result = Ops.add(result, "\n")
-        # UL
-        elsif tag == "ul"
+        when "ul"
           inli = true
           indents = Ops.add(indents, 1)
-        # /UL
-        elsif tag == "/ul"
+        when "/ul"
           result = Ops.add(result, "\n") if inli && indents == 1
           indents = Ops.subtract(indents, 1)
           inli = false
-        # LI
-        elsif tag == "li"
+        when "li"
           result = Ops.add(result, "\n") if inli
           inli = true
-        # /LI
-        elsif tag == "/li"
+        when "/li"
           inli = false
           result = Ops.add(result, "\n")
         end

@@ -43,6 +43,8 @@ module Yast
     include Yast::Logger
 
     def initialize
+      super
+
       textdomain "base"
     end
 
@@ -64,16 +66,16 @@ module Yast
         return nil
       end
 
-      if GetStartService() != start_service
-        SetModified()
-
-        Builtins.y2milestone("Setting start-firewall to %1", start_service)
-      else
+      if GetStartService() == start_service
         # without set modified!
         Builtins.y2milestone(
           "start-firewall has been already set to %1",
           start_service
         )
+      else
+        SetModified()
+
+        Builtins.y2milestone("Setting start-firewall to %1", start_service)
       end
 
       Ops.set(@SETTINGS, "start_firewall", start_service)
@@ -101,16 +103,16 @@ module Yast
         return nil
       end
 
-      if GetEnableService() != enable_service
-        SetModified()
-
-        Builtins.y2milestone("Setting enable-firewall to %1", enable_service)
-      else
+      if GetEnableService() == enable_service
         # without set modified
         Builtins.y2milestone(
           "enable-firewall has been already set to %1",
           enable_service
         )
+      else
+        SetModified()
+
+        Builtins.y2milestone("Setting enable-firewall to %1", enable_service)
       end
 
       Ops.set(@SETTINGS, "enable_firewall", enable_service)
@@ -128,10 +130,10 @@ module Yast
 
       if Service.Start(@firewall_service)
         Builtins.y2milestone("Started")
-        return true
+        true
       else
         Builtins.y2error("Cannot start service %1", @firewall_service)
-        return false
+        false
       end
     end
 
@@ -145,10 +147,10 @@ module Yast
 
       if Service.Stop(@firewall_service)
         Builtins.y2milestone("Stopped")
-        return true
+        true
       else
         Builtins.y2error("Could not stop service %1", @firewall_service)
-        return false
+        false
       end
     end
 
@@ -191,10 +193,10 @@ module Yast
 
       if Service.Enabled(@firewall_service)
         Builtins.y2milestone("Firewall service is enabled")
-        return true
+        true
       else
         Builtins.y2milestone("Firewall service is not enabled")
-        return false
+        false
       end
     end
 
@@ -210,10 +212,10 @@ module Yast
       Builtins.y2milestone("Checking firewall status...")
       if Service.Status(@firewall_service) == 0
         Builtins.y2milestone("Firewall service is started")
-        return true
+        true
       else
         Builtins.y2milestone("Firewall service is stopped")
-        return false
+        false
       end
     end
 
@@ -966,14 +968,14 @@ module Yast
       # Adding service support into each mentioned zone
       Builtins.foreach(zones_affected) do |zone|
         # If there isn't already
-        if !ArePortsOrServicesAllowed([service], protocol, zone, true)
-          AddAllowedPortsOrServices([service], protocol, zone)
-        else
+        if ArePortsOrServicesAllowed([service], protocol, zone, true)
           Builtins.y2milestone(
             "Port %1 has been already allowed in %2",
             service,
             zone
           )
+        else
+          AddAllowedPortsOrServices([service], protocol, zone)
         end
       end
 

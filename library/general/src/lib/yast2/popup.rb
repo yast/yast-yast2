@@ -103,7 +103,7 @@ module Yast2
 
         if !buttons.key?(focus)
           raise ArgumentError, "Invalid value #{focus.inspect} for parameter focus. " \
-           "Known buttons: #{buttons.keys}."
+                               "Known buttons: #{buttons.keys}."
         end
 
         nil

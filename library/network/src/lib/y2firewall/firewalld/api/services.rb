@@ -47,7 +47,7 @@ module Y2Firewall
         #
         # @return [Array<String>] List of firewall services
         def services
-          string_command("--get-services").split(" ")
+          string_command("--get-services").split
         end
 
         # Show all the service declaration (name, description, ports,
@@ -114,7 +114,7 @@ module Y2Firewall
         #   reads the permanent configuration
         # @return [Array<String>] The firewall service ports
         def service_ports(service, permanent: permanent?)
-          string_command("--service=#{service}", "--get-ports", permanent: permanent).split(" ")
+          string_command("--service=#{service}", "--get-ports", permanent: permanent).split
         end
 
         # @param service [String] The firewall service
@@ -122,7 +122,7 @@ module Y2Firewall
         #   reads the permanent configuration
         # @return [Array<String>] The firewall service protocols
         def service_protocols(service, permanent: permanent?)
-          string_command("--service=#{service}", "--get-protocols", permanent: permanent).split(" ")
+          string_command("--service=#{service}", "--get-protocols", permanent: permanent).split
         end
 
         # @param service [String] The firewall service
@@ -130,7 +130,7 @@ module Y2Firewall
         #   reads the permanent configuration
         # @return [Array<String>] The firewall service modules
         def service_modules(service, permanent: permanent?)
-          string_command("--service=#{service}", "--get-modules", permanent: permanent).split(" ")
+          string_command("--service=#{service}", "--get-modules", permanent: permanent).split
         end
 
         # @param service [String] The firewall service

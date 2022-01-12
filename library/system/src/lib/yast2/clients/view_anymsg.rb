@@ -138,15 +138,15 @@ module Yast
     #
     def start_journal?
       case file_state(selected_filename)
-      when :ok then
+      when :ok
         false
-      when :empty then
+      when :empty
         Yast2::Popup.show(_("The selected log file is empty."))
         false
-      when :no_file then
+      when :no_file
         Yast2::Popup.show(_("The selected item is not a file."))
         false
-      when :no_access then
+      when :no_access
         Yast2::Popup.show(
           _(
             "You do not have permission to read the selected log file.\n\n" \
@@ -154,7 +154,7 @@ module Yast
           )
         )
         false
-      when :missing then
+      when :missing
         res = Yast2::Popup.show(
           _(
             "The selected log file does not exist.\n\n" \

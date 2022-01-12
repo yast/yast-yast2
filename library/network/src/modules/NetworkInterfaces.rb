@@ -196,9 +196,8 @@ module Yast
     def GetEthTypeFromSysfs(dev)
       sys_dir_path = "/sys/class/net/#{dev}"
 
-      if FileUtils.Exists("#{sys_dir_path}/wireless")
-        "wlan"
-      elsif FileUtils.Exists("#{sys_dir_path}/phy80211")
+      if FileUtils.Exists("#{sys_dir_path}/wireless") ||
+          FileUtils.Exists("#{sys_dir_path}/phy80211")
         "wlan"
       elsif FileUtils.Exists("#{sys_dir_path}/bridge")
         "br"
@@ -647,12 +646,12 @@ module Yast
         v, _j, s = val.rpartition("_")
         log.info("#{val}:#{v}:#{s}")
         # Global
-        if !LOCALS.include?(v)
-          config[val] = item
-        else
+        if LOCALS.include?(v)
           config["_aliases"] ||= {}
           config["_aliases"][s] ||= {}
           config["_aliases"][s][v] = item
+        else
+          config[val] = item
         end
       end
       log.info("config=#{ConcealSecrets1(config)}")
@@ -995,13 +994,7 @@ module Yast
         to:   "map <string, map <string, map <string, any>>>"
       )
 
-      @initialized = if devices.nil? || devices == {}
-        # devices == $[] is used in lan_auto "Reset" as a way how to
-        # rollback changes imported from AY
-        false
-      else
-        true
-      end
+      @initialized = !(devices.nil? || devices == {})
 
       Builtins.y2milestone(
         "NetworkInterfaces::Import - done, cache content: %1",
@@ -1287,10 +1280,10 @@ module Yast
         return false
       end
 
-      t = if !IsEmpty(newdev)
-        GetTypeFromIfcfgOrName(name, newdev)
-      else
+      t = if IsEmpty(newdev)
         GetType(name)
+      else
+        GetTypeFromIfcfgOrName(name, newdev)
       end
 
       if name == @Name
@@ -1346,9 +1339,10 @@ module Yast
       Builtins.y2debug("Deleted=%1", @Deleted)
       Builtins.y2debug("operation=%1", @operation)
 
-      if @operation == :add || @operation == :edit
+      case @operation
+      when :add, :edit
         Change2(@Name, @Current, @operation == :add)
-      elsif @operation == :delete
+      when :delete
         Delete2(@Name)
       else
         Builtins.y2error("Unknown operation: %1 (%2)", @operation, @Name)
@@ -1400,7 +1394,7 @@ module Yast
     def Locate(key, val)
       ret = []
 
-      @Devices.values.each do |devsmap|
+      @Devices.each_value do |devsmap|
         devsmap.each do |device, conf|
           ret << device if conf[key] == val
         end
@@ -1561,7 +1555,7 @@ module Yast
       # look in OriginalDevs because we need to catch all variables
       # of the alias
 
-      dev_aliases.fetch(alias_num, {}).keys.each do |key|
+      dev_aliases.fetch(alias_num, {}).each_key do |key|
         p = base + "#{key}_#{alias_num}"
         log.debug("deleting: #{p}")
         SCR.Write(p, nil)

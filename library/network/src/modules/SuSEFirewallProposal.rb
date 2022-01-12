@@ -506,14 +506,14 @@ module Yast
       end
 
       # Not changed by user - Propose from scratch
-      if !GetChangedByUser()
+      if GetChangedByUser()
+        Builtins.y2milestone("Calling firewall configuration update proposal")
+        UpdateProposal()
+      else
         Builtins.y2milestone("Calling firewall configuration proposal")
         Reset()
         ProposeFunctions()
         # Changed - don't break user's configuration
-      else
-        Builtins.y2milestone("Calling firewall configuration update proposal")
-        UpdateProposal()
       end
 
       nil
@@ -635,15 +635,13 @@ module Yast
           "SSH is " + (is_ssh_enabled ? "" : "not ") + "enabled"
         )
 
-        if Linuxrc.usessh
-          if !is_ssh_enabled
-            # TRANSLATORS: This is a warning message. Installation over SSH without SSH allowed on firewall
-            AddWarning(
-              _(
-                "You are installing a system over SSH, but you have not opened the SSH port on the firewall."
-              )
+        if Linuxrc.usessh && !is_ssh_enabled
+          # TRANSLATORS: This is a warning message. Installation over SSH without SSH allowed on firewall
+          AddWarning(
+            _(
+              "You are installing a system over SSH, but you have not opened the SSH port on the firewall."
             )
-          end
+          )
         end
 
         # when the firewall is enabled and we are installing the system over VNC

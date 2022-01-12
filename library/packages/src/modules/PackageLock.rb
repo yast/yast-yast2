@@ -59,10 +59,10 @@ module Yast
         else
           _(
             "PackageKit is blocking software management.\n" \
-              "This happens when the updater applet or another software management\n" \
-              "application is running.\n" \
-              "\n" \
-              "Ask PackageKit to quit?"
+            "This happens when the updater applet or another software management\n" \
+            "application is running.\n" \
+            "\n" \
+            "Ask PackageKit to quit?"
           )
         end
 
@@ -158,8 +158,8 @@ module Yast
                 # TRANSLATORS: an error message with question
                 _(
                   "Would you like to retry accessing the software manager,\n" \
-                    "continue without having access to the software management,\n" \
-                    "or abort?\n"
+                  "continue without having access to the software management,\n" \
+                  "or abort?\n"
                 )
               ),
               Label.RetryButton,

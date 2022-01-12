@@ -299,7 +299,7 @@ describe Yast::WorkflowManager do
     let(:product_package) { "foo-release" }
     let(:product) do
       Y2Packager::Resolvable.new("kind" => :product, "name" => "foo", "source" => repo_id,
-      "version" => "1.0", "arch" => "x86_64", "product_package" => product_package)
+        "version" => "1.0", "arch" => "x86_64", "product_package" => product_package)
     end
     let(:ext_package) { "foo-installation" }
     let(:extension) do
@@ -308,7 +308,7 @@ describe Yast::WorkflowManager do
     end
     let(:release) do
       Y2Packager::Resolvable.new("name" => product_package, "source" => repo_id, "version" => "1.0", "arch" => "x86_64",
-      "kind" => :package, "deps" => ["provides" => "installerextension(#{ext_package})"])
+        "kind" => :package, "deps" => ["provides" => "installerextension(#{ext_package})"])
     end
 
     before do

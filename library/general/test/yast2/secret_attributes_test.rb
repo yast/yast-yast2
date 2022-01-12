@@ -28,6 +28,7 @@ describe Yast2::SecretAttributes do
     include Yast2::SecretAttributes
 
     attr_accessor :name
+
     secret_attr :password
   end
 
@@ -36,6 +37,7 @@ describe Yast2::SecretAttributes do
     include Yast2::SecretAttributes
 
     attr_accessor :name
+
     secret_attr :data
   end
 

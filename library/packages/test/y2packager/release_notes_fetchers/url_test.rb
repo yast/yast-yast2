@@ -61,8 +61,8 @@ describe Y2Packager::ReleaseNotesFetchers::Url do
 
     it "uses cURL to download release notes" do
       cmd = "/usr/bin/curl --location --verbose --fail --max-time 300 --connect-timeout 15   " \
-        "'http://doc.opensuse.org/openSUSE/RELEASE-NOTES.de_DE.txt' --output '/tmp/relnotes' " \
-        "> '/var/log/YaST2/curl_log' 2>&1"
+            "'http://doc.opensuse.org/openSUSE/RELEASE-NOTES.de_DE.txt' --output '/tmp/relnotes' " \
+            "> '/var/log/YaST2/curl_log' 2>&1"
 
       expect(Yast::SCR).to receive(:Execute).with(Yast::Path.new(".target.bash"), cmd)
       fetcher.release_notes(prefs)

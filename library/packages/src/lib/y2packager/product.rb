@@ -169,8 +169,8 @@ module Y2Packager
       result = arch == other.arch && name == other.name &&
         version == other.version && vendor == other.vendor
       log.info("Comparing products: '#{arch}' <=> '#{other.arch}', '#{name}' <=> '#{other.name}', "\
-        "'#{version}' <=> '#{other.version}', '#{vendor}' <=> '#{other.vendor}' => "\
-        "result: #{result}")
+               "'#{version}' <=> '#{other.version}', '#{vendor}' <=> '#{other.vendor}' => "\
+               "result: #{result}")
       result
     end
 

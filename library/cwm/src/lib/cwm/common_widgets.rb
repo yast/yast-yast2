@@ -18,6 +18,8 @@ module CWM
 
     # @param id [String] widget ID
     def initialize(id)
+      super()
+
       self.widget_id = id
     end
   end

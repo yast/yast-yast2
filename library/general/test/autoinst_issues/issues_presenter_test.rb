@@ -27,10 +27,6 @@ require "installation/autoinst_issues/issues_presenter"
 module Test
   module AutoinstIssues
     class MissingSection < ::Installation::AutoinstIssues::Issue
-      def initialize(*args)
-        super
-      end
-
       def severity
         :fatal
       end
@@ -41,10 +37,11 @@ module Test
     end
 
     class InvalidValue < ::Installation::AutoinstIssues::Issue
-      attr_reader :attr
-      attr_reader :value
+      attr_reader :attr, :value
 
       def initialize(section, attr, value)
+        super()
+
         @section = section
         @attr = attr
         @value = value

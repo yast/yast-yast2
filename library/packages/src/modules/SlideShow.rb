@@ -631,12 +631,10 @@ module Yast
     # Help text for the dialog
     def HelpText
       # Help text while software packages are being installed (displayed only in rare cases)
-      help_text = _("<p>Packages are being installed.</p>") +
+      _("<p>Packages are being installed.</p>") +
         _(
           "<P><B>Aborting Installation</B> Package installation can be aborted using the <B>Abort</B> button. However, the system then can be in an inconsistent or unusable state or it may not boot if the basic system component is not installed.</P>"
         )
-
-      help_text
     end
 
     # set the release notes for slide show
@@ -825,7 +823,7 @@ module Yast
         @user_switched_to = :release_notes
         SwitchToReleaseNotesView(button)
       end
-      # note: `abort is handled in SlideShowCallbacks::HandleInput()
+      # NOTE: `abort is handled in SlideShowCallbacks::HandleInput()
 
       nil
     end
@@ -1025,7 +1023,7 @@ module Yast
 
         new_size = 100 - total_size + updated_stage["size"]
         log.info "Updating '#{updated_stage_name}' stage size from " \
-          "#{updated_stage["size"]}% to #{new_size}%"
+                 "#{updated_stage["size"]}% to #{new_size}%"
 
         updated_stage["size"] = new_size
         @_stages[updated_stage_name] = updated_stage

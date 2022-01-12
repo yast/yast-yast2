@@ -4,7 +4,7 @@ require "yast2/popup"
 
 Yast2::Popup.show("Simple text")
 
-Yast2::Popup.show("First paragraph.\n\n" + "Long text without newlines. " * 50)
+Yast2::Popup.show("First paragraph.\n\n" + ("Long text without newlines. " * 50))
 
 Yast2::Popup.show("First paragraph.", details: "Long text without newlines. " * 50)
 

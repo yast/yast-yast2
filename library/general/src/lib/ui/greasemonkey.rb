@@ -148,7 +148,7 @@ module UI
     end
     module_function :LeftRadioButton
 
-    # NOTE that it does not expand the nested
+    # NOTE: that it does not expand the nested
     # Greasemonkey term LeftRadioButton! {#transform} does that.
     # @param old [Yast::Term]
     # @return    [Yast::Term]
@@ -165,10 +165,10 @@ module UI
       tmp1 = Builtins.sublist(args, 0, Ops.subtract(Builtins.size(args), 1))
       tmp2 = Ops.get(args, Ops.subtract(Builtins.size(args), 1))
 
-      if tmp2 == Empty() # rubocop:disable Style/GuardClause
-        return VBox(Builtins.toterm(:LeftRadioButton, tmp1))
+      if tmp2 == Empty()
+        VBox(Builtins.toterm(:LeftRadioButton, tmp1))
       else
-        return VBox(
+        VBox(
           Builtins.toterm(:LeftRadioButton, tmp1),
           HBox(HSpacing(4), tmp2)
         )
@@ -187,7 +187,7 @@ module UI
     end
     module_function :LeftCheckBox
 
-    # NOTE that it does not expand the nested
+    # NOTE: that it does not expand the nested
     # Greasemonkey term LeftCheckBox! {#transform} does that.
     # @param old [Yast::Term]
     # @return    [Yast::Term]
@@ -204,10 +204,10 @@ module UI
       tmp1 = Builtins.sublist(args, 0, Ops.subtract(Builtins.size(args), 1))
       tmp2 = Ops.get(args, Ops.subtract(Builtins.size(args), 1))
 
-      if tmp2 == Empty() # rubocop:disable Style/GuardClause
-        return VBox(Builtins.toterm(:LeftCheckBox, tmp1))
+      if tmp2 == Empty()
+        VBox(Builtins.toterm(:LeftCheckBox, tmp1))
       else
-        return VBox(
+        VBox(
           Builtins.toterm(:LeftCheckBox, tmp1),
           HBox(HSpacing(4), tmp2)
         )
@@ -245,11 +245,10 @@ module UI
       handler = Greasemonkey.method(s) if @handlers.include?(s)
       return Transform(handler.call(old)) if !handler.nil?
 
-      new = Builtins::List.reduce(Builtins.toterm(s), Builtins.argsof(old)) do |tmp, arg|
+      Builtins::List.reduce(Builtins.toterm(s), Builtins.argsof(old)) do |tmp, arg|
         arg = Transform(Convert.to_term(arg)) if Ops.is_term?(arg)
         Builtins.add(tmp, arg)
       end
-      new
     end
     module_function :Transform
 

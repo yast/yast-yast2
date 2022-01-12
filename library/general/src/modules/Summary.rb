@@ -75,11 +75,11 @@ module Yast
       devices = deep_copy(devices)
       text = ""
       if Builtins.size(devices) == 0
-        text = if !Mode.config
+        text = if Mode.config
+          Builtins.sformat("<ul><li>%1</li></ul>", NotConfigured())
+        else
           # translators: summary if no hardware was detected
           Builtins.sformat("<ul><li>%1</li></ul>", _("Not detected."))
-        else
-          Builtins.sformat("<ul><li>%1</li></ul>", NotConfigured())
         end
       else
         Builtins.foreach(devices) { |dev| text = Ops.add(text, dev) }
@@ -161,9 +161,7 @@ module Yast
       summary = AddHeader(summary, header)
       summary = OpenList(summary)
       summary = AddListItem(summary, item)
-      summary = CloseList(summary)
-
-      summary
+      CloseList(summary)
     end
 
     publish function: :NotConfigured, type: "string ()"

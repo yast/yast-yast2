@@ -9,6 +9,8 @@ Yast.import "CWM"
 
 class Name < CWM::InputField
   def initialize
+    super
+
     textdomain "example"
   end
 
@@ -19,6 +21,8 @@ end
 
 class EventDate < CWM::DateField
   def initialize
+    super
+
     textdomain "example"
   end
 
@@ -33,6 +37,8 @@ end
 
 class EventTime < CWM::TimeField
   def initialize
+    super
+
     textdomain "example"
   end
 
@@ -47,6 +53,8 @@ end
 
 class Event < ::CWM::Popup
   def initialize
+    super
+
     textdomain "example"
   end
 

@@ -35,6 +35,8 @@ module Yast
     VALID_PROTOCOLS = ["udp", "tcp", "sctp", "dccp"].freeze
 
     def initialize
+      super
+
       Yast.import "PortAliases"
       Yast.import "PortRanges"
     end
@@ -210,11 +212,9 @@ module Yast
     # either a number or a known service name
     # @return [Boolean] true if is valid port or range of ports
     def valid_port?(port_or_range)
-      if !PortRanges.IsValidPortRange(port_or_range)
-        unless PortAliases.GetPortNumber(port_or_range)
-          log.error("The given port or range of ports are not valid: #{port_or_range}")
-          return false
-        end
+      if !PortRanges.IsValidPortRange(port_or_range) && !PortAliases.GetPortNumber(port_or_range)
+        log.error("The given port or range of ports are not valid: #{port_or_range}")
+        return false
       end
 
       true

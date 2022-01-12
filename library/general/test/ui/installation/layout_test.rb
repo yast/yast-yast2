@@ -227,7 +227,7 @@ describe UI::Wizards::Layout do
       it "closes the wizard" do
         expect(Yast::Wizard).to receive(:CloseDialog)
 
-        subject.open_wizard {}
+        subject.open_wizard {} # block is not needed
       end
     end
   end

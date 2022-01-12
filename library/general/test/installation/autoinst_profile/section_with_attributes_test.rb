@@ -57,6 +57,8 @@ describe Installation::AutoinstProfile::SectionWithAttributes do
     define_attr_accessors
 
     def initialize
+      super
+
       @children = []
       @group = nil
     end

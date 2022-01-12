@@ -326,10 +326,10 @@ module Yast
       # NCurses Control Center help 1/
       help = _(
         "<p>1) <i>General</i><br>\n" \
-          "Navigate through the dialog elements with [TAB] to go to\n" \
-          "the next element and [SHIFT] (or [ALT]) + [TAB] to move backwards.\n" \
-          "Select or activate elements with [SPACE] or [ENTER].\n" \
-          "Some elements use arrow keys (e.g., to scroll in lists).</p>"
+        "Navigate through the dialog elements with [TAB] to go to\n" \
+        "the next element and [SHIFT] (or [ALT]) + [TAB] to move backwards.\n" \
+        "Select or activate elements with [SPACE] or [ENTER].\n" \
+        "Some elements use arrow keys (e.g., to scroll in lists).</p>"
       ) +
         # NCurses Control Center help 2/10
         _(
@@ -349,38 +349,38 @@ module Yast
         # NCurses Control Center help 5/10
         _(
           "<p>2) <i>Substitution of Keystrokes</i><br>\n" \
-            "<p>Because the environment can affect the use of the keyboard,\n" \
-            "there is more than one way to navigate the dialog pages.\n" \
-            "If [TAB] and [SHIFT] (or [ALT]) + [TAB] do not work,\n" \
-            "move focus forward with [CTRL] + [F] and backward with [CTRL] + [B].</p>"
+          "<p>Because the environment can affect the use of the keyboard,\n" \
+          "there is more than one way to navigate the dialog pages.\n" \
+          "If [TAB] and [SHIFT] (or [ALT]) + [TAB] do not work,\n" \
+          "move focus forward with [CTRL] + [F] and backward with [CTRL] + [B].</p>"
         ) +
         # NCurses Control Center help 6/10
         _(
           "<p>If [ALT] + [letter] does not work,\n" \
-            "try [ESC] + [letter]. Example: [ESC] + [H] for [ALT] + [H].\n" \
-            "[ESC] + [TAB] is also a substitute for [ALT] + [TAB].</p>"
+          "try [ESC] + [letter]. Example: [ESC] + [H] for [ALT] + [H].\n" \
+          "[ESC] + [TAB] is also a substitute for [ALT] + [TAB].</p>"
         ) +
         # NCurses Control Center help 7/10
         _(
           "<p>3) <i>Function Keys</i><br>\n" \
-            "F keys provide a quick access to main functions. " \
-            "The function key bindings for the current dialog are " \
-            "shown in the bottom line.</p>"
+          "F keys provide a quick access to main functions. " \
+          "The function key bindings for the current dialog are " \
+          "shown in the bottom line.</p>"
         ) +
         # NCurses Control Center help 8/10
         _("<p>The F keys are usually connected to a certain action:</p>") +
         # NCurses Control Center help 9/10
         _(
           "F1  = Help<br>\n" \
-            "F2  = Info or Description<br>\n" \
-            "F3  = Add<br>\n" \
-            "F4  = Edit or Configure<br>\n" \
-            "F5  = Delete<br>\n" \
-            "F6  = Test<br>\n" \
-            "F7  = Expert or Advanced<br>\n" \
-            "F8  = Back<br>\n" \
-            "F9  = Abort or Cancel<br>\n" \
-            "F10 = OK, Next, Finish, or Accept<br>"
+          "F2  = Info or Description<br>\n" \
+          "F3  = Add<br>\n" \
+          "F4  = Edit or Configure<br>\n" \
+          "F5  = Delete<br>\n" \
+          "F6  = Test<br>\n" \
+          "F7  = Expert or Advanced<br>\n" \
+          "F8  = Back<br>\n" \
+          "F9  = Abort or Cancel<br>\n" \
+          "F10 = OK, Next, Finish, or Accept<br>"
         ) +
         # NCurses Control Center help 10/10
         _("<p>In some environments, all or some\nF keys are not available.</p>")

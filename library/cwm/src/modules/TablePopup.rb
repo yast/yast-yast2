@@ -101,40 +101,31 @@ module Yast
       value = deep_copy(value)
       success = true
       if popup
-        if key == "init"
+        case key
+        when "init", "store", "cleanup"
           success = Ops.is(value, "void (any, string)")
-        elsif key == "handle"
+        when "handle"
           success = Ops.is(value, "void (any, string, map)") ||
             Ops.is_symbol?(value)
-        elsif key == "store"
-          success = Ops.is(value, "void (any, string)")
-        elsif key == "cleanup"
-          success = Ops.is(value, "void (any, string)")
-        elsif key == "validate_function"
+        when "validate_function"
           success = Ops.is(value, "boolean (any, string, map)")
-        elsif key == "optional"
+        when "optional"
           success = Ops.is_boolean?(value)
-        elsif key == "label_func"
+        when "label_func"
           success = Ops.is(value, "string (any, string)")
         else
           return CWM.ValidateValueType(key, value, widget)
         end
-      elsif key == "id2key"
-        success = Ops.is(value, "string (map, any)")
-      elsif key == "ids"
-        success = Ops.is(value, "list (map)")
-      elsif key == "option_delete"
-        success = Ops.is(value, "boolean (any, string)")
-      elsif key == "summary"
-        success = Ops.is(value, "string (any, string)")
-      elsif key == "label_func"
-        success = Ops.is(value, "string (any, string)")
-      elsif key == "option_move"
-        success = Ops.is(value, "any (any, string, symbol)")
-      elsif key == "options"
-        success = Ops.is(value, "map <string, any>")
-      elsif key == "add_items"
-        success = Ops.is_list?(value)
+      else
+        success = case key
+        when "id2key" then Ops.is(value, "string (map, any)")
+        when "ids" then Ops.is(value, "list (map)")
+        when "option_delete" then Ops.is(value, "boolean (any, string)")
+        when "summary", "label_func" then Ops.is(value, "string (any, string)")
+        when "option_move" then Ops.is(value, "any (any, string, symbol)")
+        when "options" then Ops.is(value, "map <string, any>")
+        when "add_items" then Ops.is_list?(value)
+        end
       end
 
       if !success
@@ -589,9 +580,7 @@ module Yast
               from: "any",
               to:   "boolean (any, string, map)"
             )
-            if !toEval.nil?
-              ret = nil if !toEval.call(opt_id, opt_key, event_descr2)
-            end
+            ret = nil if !toEval.nil? && !toEval.call(opt_id, opt_key, event_descr2)
           elsif !CWM.validateWidget(popup_descr, event_descr2, opt_key)
             ret = nil
           end
@@ -669,19 +658,18 @@ module Yast
       event_descr = deep_copy(event_descr)
       event_id = Ops.get(event_descr, "ID")
       UI.SetFocus(Id(:_tp_table))
-      if event_id == :_tp_table
-        if Ops.get_string(event_descr, "EventReason", "") == "Activated" &&
+      if event_id == :_tp_table && (Ops.get_string(event_descr, "EventReason", "") == "Activated" &&
             Ops.get_string(event_descr, "EventType", "") == "WidgetEvent" &&
-            UI.WidgetExists(Id(:_tp_edit))
-          event_id = :_tp_edit
-        end
+            UI.WidgetExists(Id(:_tp_edit)))
+        event_id = :_tp_edit
       end
       case event_id
       when :_tp_edit, :_tp_add
         opt_key = nil
         opt_id = nil
 
-        if event_id == :_tp_add
+        case event_id
+        when :_tp_add
           add_unlisted = Ops.get_boolean(descr, "add_unlisted", true)
           if !add_unlisted &&
               Builtins.size(Ops.get_list(descr, "add_items", [])) == 1
@@ -715,7 +703,7 @@ module Yast
             end
           end
           return nil if opt_key.nil?
-        elsif event_id == :_tp_edit
+        when :_tp_edit
           opt_id = UI.QueryWidget(Id(:_tp_table), :CurrentItem)
           opt_key = id2key(descr, opt_id)
         end
@@ -723,10 +711,7 @@ module Yast
         toEval = Ops.get(option_map, ["table", "handle"])
         if !toEval.nil?
           #    if (is (toEval, symbol))
-          if !Ops.is(toEval, "symbol (any, string, map)")
-            ret2 = Convert.to_symbol(toEval)
-            return ret2
-          else
+          if Ops.is(toEval, "symbol (any, string, map)")
             toEval_c = Convert.convert(
               Ops.get(option_map, ["table", "handle"]),
               from: "any",
@@ -734,6 +719,9 @@ module Yast
             )
             ret2 = toEval_c.call(opt_id, opt_key, event_descr)
             return ret2 if ret2 != :_tp_normal
+          else
+            ret2 = Convert.to_symbol(toEval)
+            return ret2
           end
         end
         Ops.set(option_map, "_cwm_id", opt_id)
@@ -745,9 +733,10 @@ module Yast
         )
         ret = singleOptionEditPopup(option_map)
         if ret == :_tp_ok
-          if event_id == :_tp_add
+          case event_id
+          when :_tp_add
             TableInit(descr, key)
-          elsif event_id == :_tp_edit
+          when :_tp_edit
             column = descr.fetch("_cwm_attrib", {}).fetch("changed_column", false) ? 2 : 1
             UI.ChangeWidget(
               Id(:_tp_table),
@@ -791,6 +780,8 @@ module Yast
             current_index = Ops.add(current_index, 1)
             e == opt_id
           end
+          # rubocop:disable Lint/DuplicateBranch
+          # rubocop here wrongly detect logic in if conditions to decide step direction
           step = if current_index == 0
             1
           elsif Ops.add(current_index, 1) == Builtins.size(id_list)
@@ -800,6 +791,7 @@ module Yast
           else
             -1
           end
+          # rubocop:enable Lint/DuplicateBranch
           new_index = Ops.add(current_index, step)
           opt_id = Ops.get(id_list, new_index)
           UI.ChangeWidget(Id(:_tp_table), :CurrentItem, opt_id)
@@ -891,8 +883,8 @@ module Yast
       # help 1/4
       help = _(
         "<p><b><big>Editing the Settings</big></b><br>\n" \
-          "To edit the settings, choose the appropriate\n" \
-          "entry of the table then click <b>Edit</b>.</p>"
+        "To edit the settings, choose the appropriate\n" \
+        "entry of the table then click <b>Edit</b>.</p>"
       )
       if Ops.get_boolean(attrib, "add_delete_buttons", true)
         # help 2/4, optional
@@ -920,8 +912,8 @@ module Yast
           help,
           _(
             "<p>To reorder the options, select an option\n" \
-              "and use <b>Up</b> and <b>Down</b> to move it up or down\n" \
-              "in the list.</p>"
+            "and use <b>Up</b> and <b>Down</b> to move it up or down\n" \
+            "in the list.</p>"
           )
         )
       end

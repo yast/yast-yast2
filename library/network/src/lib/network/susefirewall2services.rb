@@ -478,13 +478,13 @@ module Yast
 
       # flush the cache to the disk
       if write_ok
-        if !SCR.Write(path(".firewall_service_definition"), nil)
-          log.error "Cannot write to disk!"
-          write_ok = false
-        else
+        if SCR.Write(path(".firewall_service_definition"), nil)
           # not only store to disk but also to the memory
           @services[service] = new_store_definition
           SetModified()
+        else
+          log.error "Cannot write to disk!"
+          write_ok = false
         end
       end
 

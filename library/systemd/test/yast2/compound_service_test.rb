@@ -25,7 +25,7 @@ require "yast2/compound_service"
 describe Yast2::CompoundService do
   def service(*args)
     args[0] ||= {}
-    args[0][:"is_a?"] = true
+    args[0][:is_a?] = true
     args[0][:errors] = {}
     double("Yast2::SystemService", *args).as_null_object
   end
