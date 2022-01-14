@@ -345,6 +345,16 @@ describe Yast::Report do
         subject.yesno_popup("Message", buttons: { yes: "Sir" })
       end
 
+      it "forwards any extra argument to Popup.show" do
+        # Use block syntax in the expectaton instead of ".with" to unveil the problem with Ruby3
+        # and named params
+        expect(Yast2::Popup).to receive(:show) do |msg, **args|
+          expect(msg).to eq "Message"
+          expect(args).to include(headline: "Breaking News")
+        end
+        subject.yesno_popup("Message", headline: "Breaking News", focus: :yes)
+      end
+
       it "returns true if :yes is pressed" do
         allow(Yast2::Popup).to receive(:show).and_return :yes
         expect(subject.yesno_popup("Message")).to eq true

@@ -427,7 +427,7 @@ module Yast
         if @display_yesno_messages
           args = { buttons: :yes_no }.merge(extra_args)
           args[:timeout] = @timeout_yesno_messages
-          answer = Yast2::Popup.show(message, args)
+          answer = Yast2::Popup.show(message, **args)
           answer == :yes
         else
           false

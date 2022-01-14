@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 14 13:56:49 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Adapted Report.yesno_popup to Ruby 3 (bsc#1193192)
+- 4.4.36
+
+-------------------------------------------------------------------
 Wed Jan 12 11:46:50 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 
 - Simplify slide show to support future parallel installations
