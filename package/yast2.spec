@@ -54,8 +54,8 @@ BuildRequires:  yast2-pkg-bindings >= 4.3.7
 BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
 # for XML module
 BuildRequires:  rubygem(%rb_default_ruby_abi:nokogiri)
-# To have Yast::WFM.scr_root
-BuildRequires:  yast2-ruby-bindings >= 3.2.8
+# yast/rspec/helpers.rb
+BuildRequires:  yast2-ruby-bindings >= 4.4.7
 BuildRequires:  yast2-testsuite
 # Nested items in tables
 BuildRequires:  yast2-ycp-ui-bindings >= 4.3.3
