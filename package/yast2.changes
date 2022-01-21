@@ -1,11 +1,18 @@
 -------------------------------------------------------------------
-Wed Jan 19 11:46:14 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Fri Jan 21 15:41:19 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Unify Package, PackageSystem and PackageAI. Now the Package
   module is the entry point. PackageSystem and PackageAI implement
   specific logic and they should not be referenced from outside
   (bsc#1194886).
-- 4.3.37
+- 4.3.38
+
+-------------------------------------------------------------------
+Fri Jan 21 12:51:45 UTC 2022 - José Iván López González <jlopez@suse.com>
+
+- Fix CWM dialog: argument delegation is handled differently in
+  ruby 2.6 and before (bsc#1194984).
+- 4.4.37
 
 -------------------------------------------------------------------
 Fri Jan 14 13:56:49 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>

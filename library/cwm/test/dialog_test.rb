@@ -32,10 +32,16 @@ describe "CWM::Dialog" do
       allow(Yast::CWM).to receive(:show).and_return(:next)
     end
 
-    it "pass all arguments to constructor" do
+    it "pass all given arguments to constructor" do
       expect(TestCWMDialog).to receive(:new).with("test2", disable: :next).and_call_original
 
       TestCWMDialog.run("test2", disable: :next)
+    end
+
+    it "does not past extra arguments to constructor" do
+      expect(TestCWMDialog).to receive(:new).with(no_args).and_call_original
+
+      TestCWMDialog.run
     end
 
     it "opens a dialog when needed, and calls CWM#show" do
