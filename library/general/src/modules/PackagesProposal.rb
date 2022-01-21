@@ -184,7 +184,7 @@ module Yast
       end
 
       log.info("Removing #{log_label(optional)} #{resolvables.inspect} " \
-        "type #{type} for #{unique_id}")
+               "type #{type} for #{unique_id}")
 
       current_resolvables = data_for(unique_id, type, data(optional))
       current_resolvables.reject! { |r| resolvables.include?(r) }
