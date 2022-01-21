@@ -4,6 +4,7 @@ require_relative "test_helper"
 
 Yast.import "PackageSystem"
 Yast.import "PackagesUI"
+Yast.import "Package"
 
 describe "Yast::PackageSystem" do
   subject(:system) { Yast::PackageSystem }
@@ -46,7 +47,6 @@ describe "Yast::PackageSystem" do
       allow(system).to receive(:SelectPackages).and_return(true)
       allow(Yast::Pkg).to receive(:IsAnyResolvable).with(:package, :to_install).and_return(true)
       allow(Yast::Pkg).to receive(:PkgCommit).with(0).and_return(result)
-      allow(system).to receive(:InstalledAll).and_return(true)
     end
 
     context "when package system is locked" do
@@ -72,6 +72,22 @@ describe "Yast::PackageSystem" do
         expect(Yast::PackagesUI).to receive(:show_update_messages).with(result)
         expect(system.DoInstallAndRemove(["pkg1"], ["pkg2"])).to eq(true)
       end
+    end
+  end
+
+  describe "#CheckAndInstallPackages" do
+    it "delegates to Yast::Package" do
+      expect(Yast::Package).to receive(:CheckAndInstallPackages)
+        .with(["pkg1"]).and_return(true)
+      expect(subject.CheckAndInstallPackages(["pkg1"])).to eq(true)
+    end
+  end
+
+  describe "#CheckAndInstallPackagesInteractive" do
+    it "delegates to Yast::Package" do
+      expect(Yast::Package).to receive(:CheckAndInstallPackagesInteractive)
+        .with(["pkg1"]).and_return(true)
+      expect(subject.CheckAndInstallPackagesInteractive(["pkg1"])).to eq(true)
     end
   end
 end

@@ -29,123 +29,101 @@
 # $Id$
 require "yast"
 
+Yast.import "PackagesProposal"
+
 module Yast
   class PackageAIClass < Module
     def main
       textdomain "base"
-
-      @toinstall = []
-      @toremove = []
-
-      @last_op_canceled = false
-
-      Yast.include self, "packages/common.rb"
-
-      # default value of settings modified
-      @modified = false
     end
 
-    # Function sets internal variable, which indicates, that any
-    # settings were modified, to "true"
-    def SetModified
-      @modified = true
-
-      nil
-    end
-
-    # Functions which returns if the settings were modified
-    # @return [Boolean]  settings were modified
-    def GetModified
-      @modified
-    end
-
-    def DoInstall(packages)
-      packages = deep_copy(packages)
-      @toinstall = Convert.convert(
-        Builtins.union(@toinstall, packages),
-        from: "list",
-        to:   "list <string>"
-      )
-      @toremove = Builtins.filter(@toremove) do |p|
-        !Builtins.contains(packages, p)
-      end
-      @modified = true
-      true
-    end
-
-    def DoRemove(packages)
-      packages = deep_copy(packages)
-      @toremove = Convert.convert(
-        Builtins.union(@toremove, packages),
-        from: "list",
-        to:   "list <string>"
-      )
-      @toinstall = Builtins.filter(@toinstall) do |p|
-        !Builtins.contains(packages, p)
-      end
-      @modified = true
-      true
-    end
-
+    # Install and remove packages in one go
+    #
+    # @note In AutoYaST, packages are added or removed from the
+    #       {Yast::PackagesProposalClass packages proposal} instead of actually
+    #       installing or removing them from the system.
+    #
+    # @param toinstall [Array<String>] Name of the packages to install
+    # @param toremove [Array<String>] Name of the packages to remove
+    # @return [Boolean] true on success
+    #
+    # @see Yast::PackageClass#DoInstallAndRemove
     def DoInstallAndRemove(toinst, torem)
-      toinst = deep_copy(toinst)
-      torem = deep_copy(torem)
-      DoInstall(toinst)
-      DoRemove(torem)
-      @modified = true
+      if !toinst.empty?
+        Yast::PackagesProposal.AddResolvables("autoyast", :package, toinst)
+        Yast::PackagesProposal.RemoveTaboos("autoyast", :package, toinst)
+      end
+
+      if !torem.empty?
+        Yast::PackagesProposal.AddTaboos("autoyast", :package, torem)
+        Yast::PackagesProposal.RemoveResolvables("autoyast", :package, torem)
+      end
+
       true
     end
 
+    # Determines whether the package is installed or not
+    #
+    # @note In AutoYaST, this method always returns true.
+    #
+    # @param package [String] Package name
+    # @return [Boolean] true if the package exists; false otherwise
+    # @see Yast::PackageClass#Available
     def Available(_package)
       true
     end
 
+    # Determines whether the package is installed or not
+    #
+    # @note In AutoYaST, this method just checks whether the package is included
+    #       in the {Yast::PackagesProposalClass packages proposal}.
+    #
+    # @param package [String] Package name
+    # @return [Boolean] true if the package exists; false otherwise
+    #
+    # @see Yast::PackageClass#Installed
     def Installed(package)
-      Builtins.contains(@toinstall, package)
+      PackagesProposal.GetResolvables("autoyast").include?(package)
     end
 
-    # Is a package installed? Checks only the package name in contrast to Installed() function.
-    # @return true if yes
+    # Determines whether the package is installed or not
+    #
+    # @note In AutoYaST this method is equivalent to #Installed
+    #
+    # @param package [String] Package name
+    # @return [Boolean] true if the package exists; false otherwise
+    #
+    # @see Yast::PackageClass#PackageInstalled
     def PackageInstalled(package)
       Installed(package)
     end
 
-    # Is a package available? Checks only package name, not list of provides.
-    # @return true if yes
+    # Determines whether the package  with the given name is available
+    #
+    # @note In AutoYaST this method is equivalent to #Available
+    #
+    # @param package [String] Package name
+    # @return [Boolean] true if the package is available; false otherwise
+    # @see Yast::PackageClass#Available
     def PackageAvailable(package)
       Available(package)
     end
 
+    # Installs the given kernel modules
+    #
+    # @note The kernel packages are handled by AutoYaST on its own, so this
+    #       method just does nothing and always returns true.
+    #
+    # @param _kernel_modules [Array<String>] Names of the kernel modules to install
+    # @return [Boolean] Always returns true
+    # @see Yast::PackageClass#InstallKernel
     def InstallKernel(_kernel_modules)
-      # the kernel packages are handled by autoyast on its own
       true
     end
 
-    publish variable: :toinstall, type: "list <string>"
-    publish variable: :toremove, type: "list <string>"
     publish function: :Available, type: "boolean (string)"
     publish function: :Installed, type: "boolean (string)"
-    publish function: :DoInstall, type: "boolean (list <string>)"
-    publish function: :DoRemove, type: "boolean (list <string>)"
     publish function: :DoInstallAndRemove, type: "boolean (list <string>, list <string>)"
-    publish function: :AvailableAll, type: "boolean (list <string>)"
-    publish function: :AvailableAny, type: "boolean (list <string>)"
-    publish function: :InstalledAll, type: "boolean (list <string>)"
-    publish function: :InstalledAny, type: "boolean (list <string>)"
-    publish function: :InstallMsg, type: "boolean (string, string)"
-    publish function: :InstallAllMsg, type: "boolean (list <string>, string)"
-    publish function: :InstallAnyMsg, type: "boolean (list <string>, string)"
-    publish function: :RemoveMsg, type: "boolean (string, string)"
-    publish function: :RemoveAllMsg, type: "boolean (list <string>, string)"
-    publish function: :Install, type: "boolean (string)"
-    publish function: :InstallAll, type: "boolean (list <string>)"
-    publish function: :InstallAny, type: "boolean (list <string>)"
-    publish function: :Remove, type: "boolean (string)"
-    publish function: :RemoveAll, type: "boolean (list <string>)"
-    publish function: :LastOperationCanceled, type: "boolean ()"
-    publish variable: :modified, type: "boolean"
-    publish function: :SetModified, type: "void ()"
-    publish function: :GetModified, type: "boolean ()"
     publish function: :PackageInstalled, type: "boolean (string)"
     publish function: :PackageAvailable, type: "boolean (string)"
     publish function: :InstallKernel, type: "boolean (list <string>)"
