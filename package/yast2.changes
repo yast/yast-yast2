@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 21 12:51:45 UTC 2022 - José Iván López González <jlopez@suse.com>
+
+- Fix CWM dialog: argument delegation is handled differently in
+  ruby 2.6 and before (bsc#1194984).
+- 4.4.37
+
+-------------------------------------------------------------------
 Fri Jan 14 13:56:49 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Adapted Report.yesno_popup to Ruby 3 (bsc#1193192)

@@ -31,7 +31,18 @@ module CWM
 
     # A shortcut for `.new(*args).run`
     def self.run(*args, **kws)
-      new(*args, **kws).run
+      # Argument delegation is handled differently since ruby 2.7:
+      #
+      # An empty Hash argument is automatically converted and absorbed into **kws, and the delegation
+      # call removes the empty keyword hash, so no argument is passed to target. In ruby 2.6 and before,
+      # an empty hash is passed:
+      #
+      # * Ruby 2.6 or before: run("foo") passes new("foo", {})
+      # * Ruby 2.7 or later:  run("foo") passes new("foo")
+      #
+      # See https://www.ruby-lang.org/en/news/2019/12/12/separation-of-positional-and-keyword-arguments-in-ruby-3-0/
+      dialog = kws.empty? ? new(*args) : new(*args, **kws)
+      dialog.run
     end
 
     # The entry point.
