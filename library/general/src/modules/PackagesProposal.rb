@@ -126,7 +126,7 @@ module Yast
 
       log.info("Adding #{log_label(optional)} #{resolvables} of type #{type} for #{unique_id}")
 
-      current_resolvables = data_for(unique_id, type, optional: optional)
+      current_resolvables = data_for(unique_id, type, data(optional))
       current_resolvables.concat(resolvables)
 
       true
@@ -153,7 +153,7 @@ module Yast
 
       log.info("Setting #{log_label(optional)} #{resolvables} of type #{type} for #{unique_id}")
 
-      current_resolvables = data_for(unique_id, type, optional: optional)
+      current_resolvables = data_for(unique_id, type, data(optional))
       current_resolvables.replace(resolvables)
 
       true
@@ -185,7 +185,7 @@ module Yast
 
       log.info("Removing #{log_label(optional)} #{resolvables} type #{type} for #{unique_id}")
 
-      current_resolvables = data_for(unique_id, type, optional: optional)
+      current_resolvables = data_for(unique_id, type, data(optional))
       current_resolvables.reject! { |r| resolvables.include?(r) }
 
       log.info("#{log_label(optional)} left: #{current_resolvables.inspect}")
@@ -195,8 +195,9 @@ module Yast
 
     # Adds a list of resolvables to not be installed
     #
-    # @param [String] unique_id the unique identificator
-    # @param [Array<String>] resolvables list of resolvables to taboo
+    # @param unique_id [String] the unique identificator
+    # @param type [Symbol] resolvable type
+    # @param resolvables [Array<String>] list of resolvables to taboo
     # @return [Boolean] whether successful
     def AddTaboos(unique_id, type, resolvables)
       return false if !CheckParams(unique_id, type)
@@ -208,55 +209,53 @@ module Yast
       # ... and from the optional list too
       RemoveResolvables(unique_id, type, resolvables, optional: true)
 
-      @taboos[unique_id] ||= {}
-      @taboos[unique_id][type] ||= []
-      @taboos[unique_id][type].concat(resolvables)
+      data_for(unique_id, type, @taboos).concat(resolvables)
+      log.info("Adding taboos #{resolvables} of type #{type} for #{unique_id}")
 
       true
     end
 
     # Sets the taboos list for a given unique_id
     #
-    # @param [String] unique_id the unique identificator
-    # @param [Array<String>] resolvables list of resolvables to taboo
+    # @param unique_id [String] the unique identificator
+    # @param type [Symbol] resolvable type
+    # @param resolvables [Array<String>] list of resolvables to taboo
     # @return [Boolean] whether successful
     def SetTaboos(unique_id, type, resolvables)
-      return false if !CheckParams(unique_id, :package)
+      return false if !CheckParams(unique_id, type)
 
-      @taboos[unique_id] ||= {}
-      @taboos[unique_id][type] = resolvables
+      current_taboos = data_for(unique_id, type, @taboos)
+      current_taboos.replace(resolvables)
 
       true
     end
 
     # Removes a resolvables from the list of taboos
     #
-    # @param [String] unique_id the unique identificator
-    # @param [Array<String>] resolvables list of resolvables do not taboo
+    # @param unique_id [String] the unique identificator
+    # @param type [Symbol] resolvables type
+    # @param resolvables [Array<String>] list of resolvables to taboo
     # @return [Boolean] whether successful
     def RemoveTaboos(unique_id, type, resolvables)
-      return false if !CheckParams(unique_id, :package)
+      return false if !CheckParams(unique_id, type)
 
-      log.info "Remove taboo #{resolvables} for #{unique_id}"
+      current_taboos = data_for(unique_id, type, @taboos)
+      current_taboos.reject! { |r| resolvables.include?(r) }
 
-      return unless @taboos.key?(unique_id) && @taboos[unique_id].key?(type)
-
-      taboo_resolvables = @taboos[unique_id][type]
-      @taboos[unique_id][type] = taboo_resolvables - resolvables
-      @taboos[unique_id].delete(type) if @taboos[unique_id][type].empty?
-      @taboos.delete(unique_id) if @taboos[unique_id].empty?
+      log.info("Removing taboos  #{resolvables} type #{type} for #{unique_id}")
 
       true
     end
 
     # Returns the list of taboos for a ID
     #
-    # @param [String] unique_id the unique identificator
+    # @param unique_id [String] the unique identificator
+    # @param type [Symbol] resolvable type
     # @return [Array<String>] List of taboos for the given ID
     def GetTaboos(unique_id, type)
       return [] unless @taboos.key?(unique_id) && @taboos[unique_id].key?(type)
 
-      @taboos[unique_id][type]
+      data_for(unique_id, type, @taboos)
     end
 
     # Returns the full list of taboos
@@ -273,7 +272,7 @@ module Yast
     # Returns all resolvables selected for installation.
     #
     # @param [String] unique_id the unique identificator
-    # @param [Symbol] type resolvable type
+    # @param [Symbol] type resolvables type
     # @param [Boolean] optional True for optional list, false (the default) for
     #   the required list
 
@@ -289,7 +288,7 @@ module Yast
 
     # Returns list of selected resolvables of a given type
     #
-    # @param [Symbol] type resolvable type
+    # @param [Symbol] type resolvables type
     # @param [Boolean] optional True for optional list, false (the default) for
     #   the required list
     # @return [Array<String>] list of resolvables
@@ -297,7 +296,7 @@ module Yast
     # @example
     #   GetAllResolvables (`package) -> ["list", "of", "packages"]
     #   GetAllResolvables (`pattern) -> ["list", "of", "patterns"]
-    #   // not a supported resolvable type
+    #   // not a supported resolvables type
     #   GetAllResolvables (`unknown) -> nil
     #
     # @see #supported_resolvables
@@ -397,25 +396,26 @@ module Yast
     end
 
     # Returns the resolvable list for the requested ID, resolvable type and kind
-    # (required/optinal). If the list does not exit yet then a new empty list is created.
+    # (required/optional). If the list does not exit yet then a new empty list is created.
     #
     # @param [String] unique_id
     # @param [Symbol] type
+    # @param [Hash] Resolvables lists
     # @param [Boolean] optional True for optional list, false (the default) for
     #   the required list
     # @return [Array<String>] the stored resolvables list
-    def data_for(unique_id, type, optional: false)
-      if !data(optional).key?(unique_id)
+    def data_for(unique_id, type, resolvables)
+      if !resolvables.key?(unique_id)
         log.debug("Creating #{unique_id.inspect} ID")
-        data(optional)[unique_id] = {}
+        resolvables[unique_id] = {}
       end
 
-      if !data(optional)[unique_id].key?(type)
+      if !resolvables[unique_id].key?(type)
         log.debug("Creating '#{type}' key for #{unique_id.inspect} ID")
-        data(optional)[unique_id][type] = []
+        resolvables[unique_id][type] = []
       end
 
-      data(optional)[unique_id][type]
+      resolvables[unique_id][type]
     end
   end
 

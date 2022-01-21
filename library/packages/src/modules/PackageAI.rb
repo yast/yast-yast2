@@ -51,11 +51,11 @@ module Yast
     def DoInstallAndRemove(toinst, torem)
       if !toinst.empty?
         Yast::PackagesProposal.AddResolvables("autoyast", :package, toinst)
-        Yast::PackagesProposal.RemoveTaboos("autoyast", toinst) # FIXME: should be done by PackagesProposal
+        Yast::PackagesProposal.RemoveTaboos("autoyast", :package, toinst)
       end
 
       if !torem.empty?
-        Yast::PackagesProposal.AddTaboos("autoyast", torem)
+        Yast::PackagesProposal.AddTaboos("autoyast", :package, torem)
         Yast::PackagesProposal.RemoveResolvables("autoyast", :package, torem)
       end
 

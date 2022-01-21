@@ -33,7 +33,7 @@ describe Yast::PackageAI do
       subject.DoInstallAndRemove(["yast2"], ["ntpd"])
 
       expect(Yast::PackagesProposal.GetResolvables("autoyast", :package)).to eq(["yast2"])
-      expect(Yast::PackagesProposal.GetTaboos("autoyast")).to eq(["ntpd"])
+      expect(Yast::PackagesProposal.GetTaboos("autoyast", :package)).to eq(["ntpd"])
     end
   end
 end
