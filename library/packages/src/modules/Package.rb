@@ -338,7 +338,6 @@ module Yast
       packages = deep_copy(packages)
       PackageDialog(packages, true, message)
     end
-    # FIXME
 
     # Remove a package with a custom text message
     # @param [String] package  package to be removed
@@ -357,20 +356,35 @@ module Yast
       PackageDialog(packages, false, message)
     end
 
+    # Installs a package
+    #
+    # @param package [String] package to be installed
+    # @return [Boolean] true on success
     def Install(package)
       InstallMsg(package, nil)
     end
 
+    # Installs a list of packages
+    #
+    # @param packages [Array<String>] list of packages to be installed
+    # @return [Boolean] true on success
     def InstallAll(packages)
       packages = deep_copy(packages)
       InstallAllMsg(packages, nil)
     end
-    # FIXME
 
+    # Removes a package
+    #
+    # @param package [String] package to be removed
+    # @return [Boolean] true on success
     def Remove(package)
       RemoveMsg(package, nil)
     end
 
+    # Removes a list of packages
+    #
+    # @param packages [Array<String>] list of packages to be removed
+    # @return [Boolean] true on success
     def RemoveAll(packages)
       packages = deep_copy(packages)
       RemoveAllMsg(packages, nil)

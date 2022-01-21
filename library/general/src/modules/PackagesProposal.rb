@@ -201,10 +201,11 @@ module Yast
     def AddTaboos(unique_id, resolvables)
       return false if !CheckParams(unique_id, :package)
 
-      log.info("Taboo #{resolvables} for #{unique_id}}")
+      log.info("Taboo #{resolvables.inspect} for #{unique_id}}")
 
-      # Remove the resolvable from the list of resolvables to install
+      # Remove the resolvable from the list of resolvables to install....
       RemoveResolvables(unique_id, :package, resolvables)
+      # ... and from the optional list too
       RemoveResolvables(unique_id, :package, resolvables, optional: true)
 
       @taboos[unique_id] ||= []
