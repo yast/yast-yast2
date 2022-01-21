@@ -124,7 +124,7 @@ module Yast
         resolvables = []
       end
 
-      log.info("Adding #{log_label(optional)} #{resolvables} of type #{type} for #{unique_id}")
+      log.info("Adding #{log_label(optional)} #{resolvables.inspect} of type #{type} for #{unique_id}")
 
       current_resolvables = data_for(unique_id, type, data(optional))
       current_resolvables.concat(resolvables)
@@ -183,7 +183,8 @@ module Yast
         resolvables = []
       end
 
-      log.info("Removing #{log_label(optional)} #{resolvables} type #{type} for #{unique_id}")
+      log.info("Removing #{log_label(optional)} #{resolvables.inspect} " \
+        "type #{type} for #{unique_id}")
 
       current_resolvables = data_for(unique_id, type, data(optional))
       current_resolvables.reject! { |r| resolvables.include?(r) }
@@ -210,7 +211,7 @@ module Yast
       RemoveResolvables(unique_id, type, resolvables, optional: true)
 
       data_for(unique_id, type, @taboos).concat(resolvables)
-      log.info("Adding taboos #{resolvables} of type #{type} for #{unique_id}")
+      log.info("Adding taboos #{resolvables.inspect} of type #{type} for #{unique_id}")
 
       true
     end
@@ -242,7 +243,7 @@ module Yast
       current_taboos = data_for(unique_id, type, @taboos)
       current_taboos.reject! { |r| resolvables.include?(r) }
 
-      log.info("Removing taboos  #{resolvables} type #{type} for #{unique_id}")
+      log.info("Removing taboos  #{resolvables.inspect} type #{type} for #{unique_id}")
 
       true
     end
@@ -253,13 +254,14 @@ module Yast
     # @param type [Symbol] resolvable type
     # @return [Array<String>] List of taboos for the given ID
     def GetTaboos(unique_id, type)
-      return [] unless @taboos.key?(unique_id) && @taboos[unique_id].key?(type)
+      return [] unless @taboos.dig(unique_id, type)
 
       data_for(unique_id, type, @taboos)
     end
 
     # Returns the full list of taboos
     #
+    # @param type [Symbol] resolvable type
     # @return [Array<String>] List of taboos
     def GetAllTaboos(type)
       all_taboos = @taboos.values.each_with_object([]) do |tab, all|
@@ -401,8 +403,6 @@ module Yast
     # @param [String] unique_id
     # @param [Symbol] type
     # @param [Hash] Resolvables lists
-    # @param [Boolean] optional True for optional list, false (the default) for
-    #   the required list
     # @return [Array<String>] the stored resolvables list
     def data_for(unique_id, type, resolvables)
       if !resolvables.key?(unique_id)
