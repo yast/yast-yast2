@@ -204,45 +204,78 @@ describe Yast::PackagesProposal do
   end
 
   describe "#AddTaboos" do
-    it "adds taboos for a given unique ID" do
-      expect { subject.AddTaboos("autoyast", ["yast2"]) }
-        .to change { subject.GetTaboos("autoyast") }
+    it "adds package taboos for a given unique ID" do
+      expect { subject.AddTaboos("autoyast", :package, ["yast2"]) }
+        .to change { subject.GetTaboos("autoyast", :package) }
         .from([]).to(["yast2"])
+    end
+
+    it "adds pattern taboos for a given unique ID" do
+      expect { subject.AddTaboos("autoyast", :pattern, ["x11"]) }
+        .to change { subject.GetTaboos("autoyast", :pattern) }
+        .from([]).to(["x11"])
     end
   end
 
   describe "#SetTaboos" do
-    it "sets the taboos for given unique ID" do
-      subject.SetTaboos("autoyast", ["yast2", "chronyd"])
-      expect(subject.GetTaboos("autoyast")).to eq(["yast2", "chronyd"])
+    it "sets package taboos for given unique ID" do
+      subject.SetTaboos("autoyast", :package, ["yast2", "chronyd"])
+      expect(subject.GetTaboos("autoyast", :package)).to eq(["yast2", "chronyd"])
+    end
+
+    it "sets pattern taboos for given unique ID" do
+      subject.SetTaboos("autoyast", :pattern, ["x11"])
+      expect(subject.GetTaboos("autoyast", :pattern)).to eq(["x11"])
     end
   end
 
   describe "#RemoveTaboos" do
-    it "removes taboos for a given unique ID" do
-      subject.AddTaboos("autoyast", ["yast2"])
+    it "removes package taboos for a given unique ID" do
+      subject.AddTaboos("autoyast", :package, ["yast2"])
 
-      expect { subject.RemoveTaboos("autoyast", ["yast2"]) }
-        .to change { subject.GetTaboos("autoyast") }
+      expect { subject.RemoveTaboos("autoyast", :package, ["yast2"]) }
+        .to change { subject.GetTaboos("autoyast", :package) }
         .from(["yast2"]).to([])
+    end
+
+    it "removes package taboos for a given unique ID" do
+      subject.AddTaboos("autoyast", :pattern, ["x11"])
+
+      expect { subject.RemoveTaboos("autoyast", :pattern, ["x11"]) }
+        .to change { subject.GetTaboos("autoyast", :pattern) }
+        .from(["x11"]).to([])
     end
   end
 
   describe "#GetTaboos" do
-    it "returns the list of taboos for the given unique ID" do
-      subject.AddTaboos("autoyast", ["yast2"])
-      subject.AddTaboos("bootloader", ["grub2-efi"])
+    it "returns the list of package taboos for the given unique ID and type" do
+      subject.AddTaboos("autoyast", :package, ["yast2"])
+      subject.AddTaboos("bootloader", :package, ["grub2-efi"])
 
-      expect(subject.GetTaboos("autoyast")).to eq(["yast2"])
+      expect(subject.GetTaboos("autoyast", :package)).to eq(["yast2"])
+    end
+
+    it "returns the list of pattern taboos for the given unique ID and type" do
+      subject.AddTaboos("autoyast", :pattern, ["x11"])
+      subject.AddTaboos("security", :pattern, ["apparmor"])
+
+      expect(subject.GetTaboos("autoyast", :pattern)).to eq(["x11"])
     end
   end
 
   describe "#GetAllTaboos" do
-    it "returns the list of taboos for the given unique ID" do
-      subject.AddTaboos("autoyast", ["yast2"])
-      subject.AddTaboos("bootloader", ["grub2-efi"])
+    it "returns the list of package taboos for the given unique ID" do
+      subject.AddTaboos("autoyast", :package, ["yast2"])
+      subject.AddTaboos("bootloader", :package, ["grub2-efi"])
 
-      expect(subject.GetAllTaboos).to contain_exactly("yast2", "grub2-efi")
+      expect(subject.GetAllTaboos(:package)).to contain_exactly("yast2", "grub2-efi")
+    end
+
+    it "returns the list of pattern taboos for the given unique ID" do
+      subject.AddTaboos("autoyast", :pattern, ["x11"])
+      subject.AddTaboos("security", :pattern, ["apparmor"])
+
+      expect(subject.GetAllTaboos(:pattern)).to contain_exactly("x11", "apparmor")
     end
   end
 end

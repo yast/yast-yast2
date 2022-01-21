@@ -193,23 +193,24 @@ module Yast
       true
     end
 
-    # Adds a list of resolvables to do not be installed
+    # Adds a list of resolvables to not be installed
     #
     # @param [String] unique_id the unique identificator
     # @param [Array<String>] resolvables list of resolvables to taboo
     # @return [Boolean] whether successful
-    def AddTaboos(unique_id, resolvables)
-      return false if !CheckParams(unique_id, :package)
+    def AddTaboos(unique_id, type, resolvables)
+      return false if !CheckParams(unique_id, type)
 
       log.info("Taboo #{resolvables.inspect} for #{unique_id}}")
 
       # Remove the resolvable from the list of resolvables to install....
-      RemoveResolvables(unique_id, :package, resolvables)
+      RemoveResolvables(unique_id, type, resolvables)
       # ... and from the optional list too
-      RemoveResolvables(unique_id, :package, resolvables, optional: true)
+      RemoveResolvables(unique_id, type, resolvables, optional: true)
 
-      @taboos[unique_id] ||= []
-      @taboos[unique_id].concat(resolvables)
+      @taboos[unique_id] ||= {}
+      @taboos[unique_id][type] ||= []
+      @taboos[unique_id][type].concat(resolvables)
 
       true
     end
@@ -219,10 +220,11 @@ module Yast
     # @param [String] unique_id the unique identificator
     # @param [Array<String>] resolvables list of resolvables to taboo
     # @return [Boolean] whether successful
-    def SetTaboos(unique_id, resolvables)
+    def SetTaboos(unique_id, type, resolvables)
       return false if !CheckParams(unique_id, :package)
 
-      @taboos[unique_id] = resolvables
+      @taboos[unique_id] ||= {}
+      @taboos[unique_id][type] = resolvables
 
       true
     end
@@ -232,13 +234,16 @@ module Yast
     # @param [String] unique_id the unique identificator
     # @param [Array<String>] resolvables list of resolvables do not taboo
     # @return [Boolean] whether successful
-    def RemoveTaboos(unique_id, resolvables)
+    def RemoveTaboos(unique_id, type, resolvables)
       return false if !CheckParams(unique_id, :package)
 
       log.info "Remove taboo #{resolvables} for #{unique_id}"
 
-      taboo_resolvables = @taboos[unique_id] || []
-      @taboos[unique_id] = taboo_resolvables - resolvables
+      return unless @taboos.key?(unique_id) && @taboos[unique_id].key?(type)
+
+      taboo_resolvables = @taboos[unique_id][type]
+      @taboos[unique_id][type] = taboo_resolvables - resolvables
+      @taboos[unique_id].delete(type) if @taboos[unique_id][type].empty?
       @taboos.delete(unique_id) if @taboos[unique_id].empty?
 
       true
@@ -248,15 +253,21 @@ module Yast
     #
     # @param [String] unique_id the unique identificator
     # @return [Array<String>] List of taboos for the given ID
-    def GetTaboos(unique_id)
-      @taboos[unique_id] || []
+    def GetTaboos(unique_id, type)
+      return [] unless @taboos.key?(unique_id) && @taboos[unique_id].key?(type)
+
+      @taboos[unique_id][type]
     end
 
     # Returns the full list of taboos
     #
     # @return [Array<String>] List of taboos
-    def GetAllTaboos
-      @taboos.values.flatten.uniq
+    def GetAllTaboos(type)
+      all_taboos = @taboos.values.each_with_object([]) do |tab, all|
+        all.concat(tab[type]) if tab.key?(type)
+      end
+
+      all_taboos.sort.uniq
     end
 
     # Returns all resolvables selected for installation.
