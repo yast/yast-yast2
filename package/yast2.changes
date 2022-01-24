@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Mon Jan 24 21:04:10 UTC 2022 - Jacek Tomasiak <jtomasiak@suse.com>
+
+- Preload libsuseconnect.so if avaiable. On aarch64 installer/YaST
+  sometimes failed to load libsuseconnect.so with "cannot allocate
+  memory in static TLS block" error.
+  Loading the library before others solves the problem until a better
+  solution is found (bsc#1194996).
+- 4.3.39
+
+-------------------------------------------------------------------
 Fri Jan 21 15:41:19 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Unify Package, PackageSystem and PackageAI. Now the Package
