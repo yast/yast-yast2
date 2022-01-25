@@ -51,7 +51,6 @@ module Yast
       Yast.import "Message"
       Yast.import "Progress"
       Yast.import "PortRanges"
-      Yast.import "PackageSystem"
       Yast.import "FileUtils"
       Yast.import "Directory"
       Yast.import "Stage"

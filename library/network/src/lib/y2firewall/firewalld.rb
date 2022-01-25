@@ -30,7 +30,7 @@ require "y2firewall/firewalld/service_reader"
 require "yast2/system_service"
 require "singleton"
 
-Yast.import "PackageSystem"
+Yast.import "Package"
 
 module Y2Firewall
   # Main class to interact with Firewalld
@@ -206,7 +206,7 @@ module Y2Firewall
     def installed?
       return true if @installed
 
-      @installed = Yast::PackageSystem.Installed(PACKAGE)
+      @installed = Yast::Package.Installed(PACKAGE)
     end
 
     # Check whether the firewalld service is enable or not

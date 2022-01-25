@@ -52,7 +52,7 @@ textdomain("base");
 
 use YaST::YCP qw( sformat y2milestone y2error y2warning );
 YaST::YCP::Import ("DnsServer");
-YaST::YCP::Import ("PackageSystem");
+YaST::YCP::Import ("Package");
 YaST::YCP::Import ("Service");
 YaST::YCP::Import ("Progress");
 # for reporting errors
@@ -657,15 +657,15 @@ sub UnquoteString {
 sub Init {
     if (Mode->test ()) {
       $package_installed = 1;
-      y2milestone("TestMode -> PackageSystem->Installed: ", $package_installed);
+      y2milestone("TestMode -> Package->Installed: ", $package_installed);
     }
 
     if ($package_installed != -1){
         return $package_installed;
     }
 
-    $package_installed = PackageSystem->Installed('yast2-dns-server');
-    y2milestone("PackageSystem->Installed: ", $package_installed);
+    $package_installed = Package->Installed('yast2-dns-server');
+    y2milestone("Package->Installed: ", $package_installed);
     if ($package_installed == 0){
         y2warning("yast2-dns-server is not installed. Functions of DnsServerAPI will be disabled") 
     }
@@ -2761,7 +2761,7 @@ sub IsServiceConfigurableExternally {
 
     my $service_enabled   = Service->Enabled         ("named");
     my $service_status    = Service->Status          ("named");
-    my $service_installed = PackageSystem->Installed ("bind");
+    my $service_installed = Package->Installed ("bind");
 
     y2milestone (
 	"Enabled: ".$service_enabled.", ".
