@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 25 17:00:34 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use Package module instead of PackageSystem (bsc#1194886).
+- 4.4.39
+
+-------------------------------------------------------------------
 Fri Jan 21 15:41:19 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Unify Package, PackageSystem and PackageAI. Now the Package
