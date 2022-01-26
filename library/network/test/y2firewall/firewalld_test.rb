@@ -22,7 +22,7 @@
 require_relative "../test_helper"
 require "y2firewall/firewalld"
 
-Yast.import "PackageSystem"
+Yast.import "Package"
 Yast.import "Service"
 
 describe Y2Firewall::Firewalld do
@@ -42,14 +42,14 @@ describe Y2Firewall::Firewalld do
     end
 
     it "returns false it the firewalld is not installed" do
-      allow(Yast::PackageSystem).to receive("Installed")
+      allow(Yast::Package).to receive("Installed")
         .with(described_class::PACKAGE).and_return(false)
 
       expect(firewalld.installed?).to eq(false)
     end
 
     it "returns true it the firewalld is installed" do
-      allow(Yast::PackageSystem).to receive("Installed")
+      allow(Yast::Package).to receive("Installed")
         .with(described_class::PACKAGE).and_return true
 
       expect(firewalld.installed?).to eq(true)

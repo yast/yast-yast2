@@ -101,7 +101,6 @@ module Yast
       @last_op_canceled = false
       @installed_packages = []
       @removed_packages = []
-      Yast.include self, "packages/common.rb"
     end
 
     # Check if packages are installed

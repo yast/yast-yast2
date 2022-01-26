@@ -36,7 +36,7 @@ module Yast
 
     Yast.import "Mode"
     Yast.import "NetworkInterfaces"
-    Yast.import "PackageSystem"
+    Yast.import "Package"
     Yast.import "PortRanges"
     Yast.import "Service"
 
@@ -554,10 +554,10 @@ module Yast
       return true if @needed_packages_installed
 
       if Mode.normal
-        @needed_packages_installed = PackageSystem.CheckAndInstallPackages([@FIREWALL_PACKAGE])
+        @needed_packages_installed = Package.CheckAndInstallPackages([@FIREWALL_PACKAGE])
         log.info "CheckAndInstallPackages -> #{@needed_packages_installed}"
       else
-        @needed_packages_installed = PackageSystem.Installed(@FIREWALL_PACKAGE)
+        @needed_packages_installed = Package.Installed(@FIREWALL_PACKAGE)
         log.info "Installed -> #{@needed_packages_installed}"
       end
 

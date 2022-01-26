@@ -75,7 +75,7 @@ module Yast
       Yast.import "Popup"
       Yast.import "Mode"
       Yast.import "Stage"
-      Yast.import "PackageSystem"
+      Yast.import "Package"
       Yast.import "Systemd"
 
       textdomain "base"
@@ -124,7 +124,7 @@ module Yast
 
     # Checks if given network backend is available in the system
     def backend_available?(backend)
-      PackageSystem.Installed(BACKEND_PKG_NAMES[backend])
+      Package.Installed(BACKEND_PKG_NAMES[backend])
     end
 
     alias_method :is_backend_available, :backend_available?

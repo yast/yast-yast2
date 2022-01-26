@@ -28,7 +28,7 @@ require "y2firewall/firewalld/api/zones"
 
 Yast.import "Stage"
 Yast.import "Service"
-Yast.import "PackageSystem"
+Yast.import "Package"
 
 module Y2Firewall
   class Firewalld
@@ -91,7 +91,7 @@ module Y2Firewall
       # @return [Boolean] true if the state is running; false otherwise
       def running?
         return false if Yast::Stage.initial
-        return false if !Yast::PackageSystem.Installed(PACKAGE)
+        return false if !Yast::Package.Installed(PACKAGE)
 
         state == "running"
       end
