@@ -83,7 +83,7 @@ module Yast
     #
     # @see Yast::PackageClass#Installed
     def Installed(package)
-      PackagesProposal.GetResolvables("autoyast").include?(package)
+      PackagesProposal.GetResolvables("autoyast", :package).include?(package)
     end
 
     # Determines whether the package is installed or not

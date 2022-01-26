@@ -36,4 +36,29 @@ describe Yast::PackageAI do
       expect(Yast::PackagesProposal.GetTaboos("autoyast", :package)).to eq(["ntpd"])
     end
   end
+
+  describe "#Installed" do
+    before do
+      allow(Yast::PackagesProposal).to receive(:GetResolvables).with("autoyast", :package)
+        .and_return(["yast2"])
+    end
+
+    context "when the package is included in the proposal" do
+      it "returns true" do
+        expect(subject.Installed("yast2")).to eq(true)
+      end
+    end
+
+    context "when the package is not included in the proposal" do
+      it "returns false" do
+        expect(subject.Installed("autoyast2")).to eq(false)
+      end
+    end
+  end
+
+  describe "#Available" do
+    it "returns true" do
+      expect(subject.Available("yast2")).to eq(true)
+    end
+  end
 end
