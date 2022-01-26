@@ -150,7 +150,6 @@ module Yast
     end
 
     def Install(package)
-      log.info "DEBUG: call Install(#{package.inspect})"
       InstallMsg(package, nil)
     end
 
