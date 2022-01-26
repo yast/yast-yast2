@@ -62,7 +62,7 @@ module Yast
       true
     end
 
-    # Determines whether the package is installed or not
+    # Determines whether the package is available or not
     #
     # @note In AutoYaST, this method always returns true.
     #
