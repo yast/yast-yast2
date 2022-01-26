@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 26 13:21:21 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Fix PackageAI call to PackagesProposal.GetResolvable. It prevents
+  a crash when cloning a system (bsc#1195137).
+- 4.4.41
+
+-------------------------------------------------------------------
 Tue Jan 25 17:00:34 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Use Package module instead of PackageSystem (bsc#1194886).
