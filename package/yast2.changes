@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jan 26 18:27:40 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
+
+- Added Y2Packager::NewRepositorySetup to track new repositories
+  (related to bsc#1194453)
+- 4.4.42
+
+-------------------------------------------------------------------
 Wed Jan 26 13:21:21 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Fix PackageAI call to PackagesProposal.GetResolvable. It prevents
