@@ -68,14 +68,14 @@ module Yast
           "incomplete_translation_treshold" => "95",
           "keyboard"                        => "",
           "language"                        => "",
-          "propose_hibernation"             => true
+          "propose_hibernation"             => true,
           "relnotesurl"                     => "",
           "run_you"                         => true,
           "save_y2logs"                     => true,
           "skip_language_dialog"            => false,
           "timezone"                        => "",
           "ui_mode"                         => "expert",
-          "vendor_url"                      => "",
+          "vendor_url"                      => ""
         },
         "partitioning"             => {
           "use_flexible_partitioning"    => false,
