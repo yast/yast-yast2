@@ -51,6 +51,8 @@ module Yast
           "additional_kernel_parameters"    => "",
           # FATE #304865
           "base_product_license_directory"  => "/usr/share/licenses/product/base/",
+          # jsc#SLE-22667
+          "boot_timeout"                    => 8,
           "default_target"                  => "",
           "disable_os_prober"               => false,
           "enable_autologin"                => true,
