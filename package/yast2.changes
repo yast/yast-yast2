@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 28 14:03:04 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
+
+- ProductFeatures: add boot timeout option (jsc#SLE-22667)
+- 4.4.43
+
+-------------------------------------------------------------------
 Wed Jan 26 18:27:40 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
 
 - Added Y2Packager::NewRepositorySetup to track new repositories
