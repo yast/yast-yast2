@@ -247,7 +247,20 @@ module Yast
       children = children.select(&:element?)
       # we need just direct text under node. Can be splitted with another elements
       # but remove whitespace only text
-      text = node.xpath("text()").text.strip
+      #
+      # Do NOT strip trailing white space in CDATA blocks. Maybe people put
+      # it intentionally there (bsc#1195910).
+      #
+      # But strip leading white space. This is useful to avoid problems with
+      # unexpected empty lines at the start of scripts.
+      #
+      # An example for this is the script section in this AutoYaST file from
+      # the official AutoYaST docs:
+      #   https://doc.opensuse.org/projects/autoyast/#Profile-Format
+      #
+      # See also #add_element.
+      text_nodes = node.xpath("text()")
+      text = text_nodes.map { |n| n.cdata? ? n.content.lstrip : n.content.strip }.join
 
       type = fetch_type(text, children, node)
 
@@ -301,7 +314,13 @@ module Yast
         element = Nokogiri::XML::Node.new(key, doc)
         case value
         when ::String
-          element.content = value
+          # Write CDATA block if string ends with white space. This matches
+          # the stripping in #parse_node.
+          if value.match?(/\s\z/)
+            element.add_child(doc.create_cdata(value))
+          else
+            element.content = value
+          end
         when ::Integer
           element[type_attr] = "integer"
           element.content = value.to_s
