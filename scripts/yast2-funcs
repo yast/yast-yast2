@@ -129,8 +129,12 @@ function set_qt_env()
 
 function set_inst_qt_env()
 {
-    export XCURSOR_THEME="DMZ-White"
-    export Y2STYLE="installation.qss"
+    # default values
+    : "${Y2STYLE=installation.qss}"
+    : "${XCURSOR_THEME=DMZ-White}"
+
+    export XCURSOR_THEME
+    export Y2STYLE
     export QT_HOME_DIR="/tmp/.qt/"
     if [ "$Screenmode" != "" ] && [ "$Screenmode" != "default" ]; then
         export Y2ALTSTYLE="$Screenmode"

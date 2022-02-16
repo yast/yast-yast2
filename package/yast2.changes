@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Feb 16 15:17:14 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
+
+- Keep the user defined $Y2STYLE and $XCURSOR_THEME environment
+  variables, allow changing the installer theme via these
+  environment variables (related to jsc#SLE-20547)
+- 4.4.44
+
+-------------------------------------------------------------------
 Fri Jan 28 14:03:04 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 
 - ProductFeatures: add boot timeout option (jsc#SLE-22667)
