@@ -247,7 +247,11 @@ module Yast
       children = children.select(&:element?)
       # we need just direct text under node. Can be splitted with another elements
       # but remove whitespace only text
-      text = node.xpath("text()").text.strip
+      #
+      # Do NOT strip trailing white space in CDATA blocks. Maybe people put
+      # it intentionally there (bsc#1195910).
+      text_nodes = node.xpath("text()")
+      text = text_nodes.map { |n| n.cdata? ? n.content.lstrip : n.content.strip }.join
 
       type = fetch_type(text, children, node)
 
