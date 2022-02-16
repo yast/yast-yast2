@@ -251,6 +251,13 @@ module Yast
       # Do NOT strip trailing white space in CDATA blocks. Maybe people put
       # it intentionally there (bsc#1195910).
       #
+      # But strip leading white space. This is useful to avoid problems with
+      # unexpected empty lines at the start of scripts.
+      #
+      # An example for this is the script section in this AutoYaST file from
+      # the official AutoYaST docs:
+      #   https://doc.opensuse.org/projects/autoyast/#Profile-Format
+      #
       # See also #add_element.
       text_nodes = node.xpath("text()")
       text = text_nodes.map { |n| n.cdata? ? n.content.lstrip : n.content.strip }.join
