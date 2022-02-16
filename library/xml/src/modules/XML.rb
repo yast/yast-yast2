@@ -250,6 +250,8 @@ module Yast
       #
       # Do NOT strip trailing white space in CDATA blocks. Maybe people put
       # it intentionally there (bsc#1195910).
+      #
+      # See also #add_element.
       text_nodes = node.xpath("text()")
       text = text_nodes.map { |n| n.cdata? ? n.content.lstrip : n.content.strip }.join
 
@@ -305,7 +307,13 @@ module Yast
         element = Nokogiri::XML::Node.new(key, doc)
         case value
         when ::String
-          element.content = value
+          # Write CDATA block if string ends with white space. This matches
+          # the stripping in #parse_node.
+          if value.match?(/\s\z/)
+            element.add_child(doc.create_cdata(value))
+          else
+            element.content = value
+          end
         when ::Integer
           element[type_attr] = "integer"
           element.content = value.to_s
