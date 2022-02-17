@@ -89,11 +89,11 @@ describe "Yast::XML" do
       it "creates CDATA element if string starts with spaces" do
         input = { "test" => " test", "lest" => "\nlest" }
         expected = "<?xml version=\"1.0\"?>\n" \
-          "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
-          "<test>\n" \
-          "  <lest><![CDATA[\nlest]]></lest>\n" \
-          "  <test><![CDATA[ test]]></test>\n" \
-          "</test>\n"
+                   "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
+                   "<test>\n" \
+                   "  <lest><![CDATA[\nlest]]></lest>\n" \
+                   "  <test><![CDATA[ test]]></test>\n" \
+                   "</test>\n"
 
         expect(subject.YCPToXMLString("test", input)).to eq expected
       end
@@ -101,11 +101,11 @@ describe "Yast::XML" do
       it "creates CDATA element if string ends with spaces" do
         input = { "test" => "test ", "lest" => "lest\n" }
         expected = "<?xml version=\"1.0\"?>\n" \
-          "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
-          "<test>\n" \
-          "  <lest><![CDATA[lest\n]]></lest>\n" \
-          "  <test><![CDATA[test ]]></test>\n" \
-          "</test>\n"
+                   "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
+                   "<test>\n" \
+                   "  <lest><![CDATA[lest\n]]></lest>\n" \
+                   "  <test><![CDATA[test ]]></test>\n" \
+                   "</test>\n"
 
         expect(subject.YCPToXMLString("test", input)).to eq expected
       end
@@ -310,11 +310,11 @@ describe "Yast::XML" do
 
     it "strips spaces at the end of strings" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <test>foo </test>\n" \
-        "  <lest>bar\n" \
-        "  </lest>\n" \
-        "</test>\n"
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "  <test>foo </test>\n" \
+              "  <lest>bar\n" \
+              "  </lest>\n" \
+              "</test>\n"
       expected = { "test" => "foo", "lest" => "bar" }
 
       expect(subject.XMLToYCPString(input)).to eq expected
@@ -322,10 +322,10 @@ describe "Yast::XML" do
 
     it "preserves spaces at the end of CDATA elements" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <test><![CDATA[foo ]]></test>\n" \
-        "  <lest><![CDATA[bar\n]]></lest>\n" \
-        "</test>\n"
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "  <test><![CDATA[foo ]]></test>\n" \
+              "  <lest><![CDATA[bar\n]]></lest>\n" \
+              "</test>\n"
       expected = { "test" => "foo ", "lest" => "bar\n" }
 
       expect(subject.XMLToYCPString(input)).to eq expected
@@ -333,11 +333,11 @@ describe "Yast::XML" do
 
     it "strips spaces at the start of strings" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <test> foo</test>\n" \
-        "  <lest>\nbar" \
-        "  </lest>\n" \
-        "</test>\n"
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "  <test> foo</test>\n" \
+              "  <lest>\nbar" \
+              "  </lest>\n" \
+              "</test>\n"
       expected = { "test" => "foo", "lest" => "bar" }
 
       expect(subject.XMLToYCPString(input)).to eq expected
@@ -345,10 +345,10 @@ describe "Yast::XML" do
 
     it "preserves spaces at the start of CDATA elements" do
       input = "<?xml version=\"1.0\"?>\n" \
-        "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
-        "  <test><![CDATA[ foo]]></test>\n" \
-        "  <lest><![CDATA[\nbar]]></lest>\n" \
-        "</test>\n"
+              "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
+              "  <test><![CDATA[ foo]]></test>\n" \
+              "  <lest><![CDATA[\nbar]]></lest>\n" \
+              "</test>\n"
       expected = { "test" => " foo", "lest" => "\nbar" }
 
       expect(subject.XMLToYCPString(input)).to eq expected
