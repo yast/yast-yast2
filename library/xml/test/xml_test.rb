@@ -86,13 +86,13 @@ describe "Yast::XML" do
         expect(subject.YCPToXMLString("test", input)).to eq expected
       end
 
-      it "creates no CDATA element if string starts with spaces" do
+      it "creates CDATA element if string starts with spaces" do
         input = { "test" => " test", "lest" => "\nlest" }
         expected = "<?xml version=\"1.0\"?>\n" \
           "<!DOCTYPE test SYSTEM \"just_testing.dtd\">\n" \
           "<test>\n" \
-          "  <lest>\nlest</lest>\n" \
-          "  <test> test</test>\n" \
+          "  <lest><![CDATA[\nlest]]></lest>\n" \
+          "  <test><![CDATA[ test]]></test>\n" \
           "</test>\n"
 
         expect(subject.YCPToXMLString("test", input)).to eq expected
@@ -343,13 +343,13 @@ describe "Yast::XML" do
       expect(subject.XMLToYCPString(input)).to eq expected
     end
 
-    it "strips spaces at the start of CDATA elements" do
+    it "preserves spaces at the start of CDATA elements" do
       input = "<?xml version=\"1.0\"?>\n" \
         "<test xmlns=\"http://www.suse.com/1.0/yast2ns\" xmlns:config=\"http://www.suse.com/1.0/configns\">\n" \
         "  <test><![CDATA[ foo]]></test>\n" \
         "  <lest><![CDATA[\nbar]]></lest>\n" \
         "</test>\n"
-      expected = { "test" => "foo", "lest" => "bar" }
+      expected = { "test" => " foo", "lest" => "\nbar" }
 
       expect(subject.XMLToYCPString(input)).to eq expected
     end
