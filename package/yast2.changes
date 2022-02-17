@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 17 09:33:37 UTC 2022 - Steffen Winterfeldt <snwint@suse.com>
+
+- do not strip surrounding white space in CDATA XML elements (bsc#1195910)
+- 4.3.68
+
+-------------------------------------------------------------------
 Wed Feb 16 15:41:54 UTC 2022 - Steffen Winterfeldt <snwint@suse.com>
 
 - do not strip trailing white space in XML elements (bsc#1195910)
