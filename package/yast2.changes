@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 17 13:25:33 UTC 2022 - Steffen Winterfeldt <snwint@suse.com>
+
+- do not strip surrounding white space in CDATA XML elements (bsc#1195910)
+- 4.4.45
+
+-------------------------------------------------------------------
 Wed Feb 16 15:17:14 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
 
 - Keep the user defined $Y2STYLE and $XCURSOR_THEME environment
