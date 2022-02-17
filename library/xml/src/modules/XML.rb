@@ -247,7 +247,13 @@ module Yast
       children = children.select(&:element?)
       # we need just direct text under node. Can be splitted with another elements
       # but remove whitespace only text
-      text = node.xpath("text()").text.strip
+      #
+      # Do NOT strip surrounding white space in CDATA blocks (bsc#1195910).
+      # This restores the behavior prior to SLE15-SP3.
+      #
+      # See also #add_element.
+      text_nodes = node.xpath("text()")
+      text = text_nodes.map { |n| n.cdata? ? n.content : n.content.strip }.join
 
       type = fetch_type(text, children, node)
 
@@ -301,7 +307,13 @@ module Yast
         element = Nokogiri::XML::Node.new(key, doc)
         case value
         when ::String
-          element.content = value
+          # Write CDATA block if string has surrounding white space. This matches
+          # the stripping in #parse_node.
+          if value.match?(/\A\s|\s\z/)
+            element.add_child(doc.create_cdata(value))
+          else
+            element.content = value
+          end
         when ::Integer
           element[type_attr] = "integer"
           element.content = value.to_s
