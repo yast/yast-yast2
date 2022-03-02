@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Mar  2 12:00:57 UTC 2022 - Stefan Hundhammer <shundhammer@suse.com>
+
+- New doc: Invoking External Commands in YaST (in doc/)
+
+-------------------------------------------------------------------
 Thu Feb 17 13:25:33 UTC 2022 - Steffen Winterfeldt <snwint@suse.com>
 
 - do not strip surrounding white space in CDATA XML elements (bsc#1195910)
