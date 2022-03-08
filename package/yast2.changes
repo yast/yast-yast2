@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar  8 13:24:14 UTC 2022 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Reverted LD_PRELOAD change (GitHub PR#1236) (bsc#1196326)
+- 4.4.46
+
+-------------------------------------------------------------------
 Wed Mar  2 12:00:57 UTC 2022 - Stefan Hundhammer <shundhammer@suse.com>
 
 - New doc: Invoking External Commands in YaST (in doc/)
