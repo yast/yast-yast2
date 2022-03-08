@@ -13,11 +13,6 @@
 # wise ncurses. It starts then the module 'menu' which implements
 # the configuration and administration menu.
 
-# bsc#1194996: workaround for "cannot allocate memory in static TLS block"
-if [ -f /usr/lib64/libsuseconnect.so ]; then
-  export LD_PRELOAD="/usr/lib64/libsuseconnect.so $LD_PRELOAD"
-fi
-
 # FATE#317637, bsc#877447: In installation system, we call the installer
 # script directly and then exit
 if [ -f /.instsys.config ]; then
