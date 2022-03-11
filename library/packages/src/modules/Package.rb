@@ -55,6 +55,10 @@ module Yast
   # `autoinst_config` but you are dealing with the underlying system. In those cases, you can force
   # {Package} to work with {PackageSystem}.
   #
+  # If you are accessing this module through YCP (for instance, using Perl), you cannot pass the
+  # :target option. If you need to specify this option, please consider using {PackageSystem} or
+  # {PackageAI} functions directly.
+  #
   # @example Forcing to check for packages on the underlying system
   #   Yast::Package.Installed("firewalld", target: :system)
   #
