@@ -2,7 +2,10 @@
 Fri Mar 11 13:05:14 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Extend the Package module to force using PackageSystem or
-  PackageAI without having the mode into account (bsc#1196963).
+  PackageAI without having the mode into account.
+- AutoYaST: properly detect whether firewalld, bind and
+  yast2-dns-server packages are installed when cloning a system
+  (bsc#1196963).
 - 4.4.47
 
 -------------------------------------------------------------------

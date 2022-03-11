@@ -53,7 +53,7 @@ module Yast
   # There might a scenario where you want to force Package to work with the real packages. For
   # instance, while reading the configuration during a `clone_system` operation: the mode is still
   # `autoinst_config` but you are dealing with the underlying system. In those cases, you can force
-  # {Package} to work with {PackageSystem}. {Package} to work with {PackageSystem}.
+  # {Package} to work with {PackageSystem}.
   #
   # @example Forcing to check for packages on the underlying system
   #   Yast::Package.Installed("firewalld", target: :system)
