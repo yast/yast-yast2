@@ -38,6 +38,24 @@ Yast.import "PackageAI"
 Yast.import "PackageSystem"
 
 module Yast
+  # This module implements support to query, install and remove packages.
+  #
+  # ## Prefer Package to PackageSystem
+  #
+  # Depending on the mode, this module decides if it should interact with PackageSystem (libzypp) or
+  # PackagesProposal. For instance, if you open a module in the AutoYaST UI, calling to
+  # {CheckAndInstallPackages} does not install the package for real. Instead, it adds the package to
+  # the {PackagesProposal} so it gets exported in the profile. However, when running on other modes
+  # (normal, installation, etc.), it just installs the package.
+  #
+  # ## When to use PackageSystem
+  #
+  # There might an scenario where using PackageSystem is the best option: reading the configuration
+  # during a `clone_system` operation. In that situation, the mode is still `autoinst_config` but
+  # you are dealing with the underlying system. In those cases, you need to check if the package is
+  # actually installed. Once you read the configuration, you should rely again on {Package}.
+  #
+  # See https://bugzilla.suse.com/show_bug.cgi?id=1196963 for further details.
   class PackageClass < Module
     extend Forwardable
     include Yast::Logger
