@@ -63,8 +63,7 @@ module Yast
     extend Forwardable
     include Yast::Logger
 
-    def_delegators :backend, :Installed, :Available, :PackageInstalled,
-      :PackageAvailable, :DoInstallAndRemove, :InstallKernel
+    def_delegators :backend, :Available, :PackageAvailable, :DoInstallAndRemove, :InstallKernel
 
     # @!method Available(package)
     #   Determines whether the package is available or not
