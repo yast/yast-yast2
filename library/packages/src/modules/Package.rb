@@ -43,10 +43,10 @@ module Yast
   # ## Prefer Package to PackageSystem
   #
   # Depending on the mode, this module decides if it should interact with PackageSystem (libzypp) or
-  # PackagesProposal. For instance, if you open a module in the AutoYaST UI, calling to
+  # PackageAI (AutoYaST). For instance, if you open a module in the AutoYaST UI, calling to
   # {CheckAndInstallPackages} does not install the package for real. Instead, it adds the package to
-  # the {PackagesProposal} so it gets exported in the profile. However, when running on other modes
-  # (normal, installation, etc.), it just installs the package.
+  # the list of packages to include in the profile. However, when running on other modes (normal,
+  # installation, etc.), it just installs the package.
   #
   # ## Overriding default behavior
   #
