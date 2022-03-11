@@ -206,7 +206,7 @@ module Y2Firewall
     def installed?
       return true if @installed
 
-      @installed = Yast::Package.Installed(PACKAGE)
+      @installed = Yast::Package.Installed(PACKAGE, target: :system)
     end
 
     # Check whether the firewalld service is enable or not

@@ -43,14 +43,14 @@ describe Y2Firewall::Firewalld do
 
     it "returns false it the firewalld is not installed" do
       allow(Yast::Package).to receive("Installed")
-        .with(described_class::PACKAGE).and_return(false)
+        .with(described_class::PACKAGE, target: :system).and_return(false)
 
       expect(firewalld.installed?).to eq(false)
     end
 
     it "returns true it the firewalld is installed" do
       allow(Yast::Package).to receive("Installed")
-        .with(described_class::PACKAGE).and_return true
+        .with(described_class::PACKAGE, target: :system).and_return true
 
       expect(firewalld.installed?).to eq(true)
     end
