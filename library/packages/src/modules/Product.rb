@@ -41,7 +41,7 @@ module Yast
       Yast.import "Stage"
       Yast.import "OSRelease"
       Yast.import "PackageLock"
-      Yast.import "Package"
+      Yast.import "PackageSystem"
     end
 
     # Loads and returns base product property

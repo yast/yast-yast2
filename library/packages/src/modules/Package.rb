@@ -38,30 +38,36 @@ Yast.import "PackageAI"
 Yast.import "PackageSystem"
 
 module Yast
+  # This module implements support to query, install and remove packages.
+  #
+  # ## Prefer Package to PackageSystem
+  #
+  # Depending on the mode, this module decides if it should interact with PackageSystem (libzypp) or
+  # PackageAI (AutoYaST). For instance, if you open a module in the AutoYaST UI, calling to
+  # {CheckAndInstallPackages} does not install the package for real. Instead, it adds the package to
+  # the list of packages to include in the profile. However, when running on other modes (normal,
+  # installation, etc.), it just installs the package.
+  #
+  # ## Overriding default behavior
+  #
+  # There might a scenario where you want to force Package to work with the real packages. For
+  # instance, while reading the configuration during a `clone_system` operation: the mode is still
+  # `autoinst_config` but you are dealing with the underlying system. In those cases, you can force
+  # {Package} to work with {PackageSystem}.
+  #
+  # If you are accessing this module through YCP (for instance, using Perl), you cannot pass the
+  # :target option. If you need to specify this option, please consider using {PackageSystem} or
+  # {PackageAI} functions directly.
+  #
+  # @example Forcing to check for packages on the underlying system
+  #   Yast::Package.Installed("firewalld", target: :system)
+  #
+  # See https://bugzilla.suse.com/show_bug.cgi?id=1196963 for further details.
   class PackageClass < Module
     extend Forwardable
     include Yast::Logger
 
-    def_delegators :backend, :Installed, :Available, :PackageInstalled,
-      :PackageAvailable, :DoInstallAndRemove, :InstallKernel
-
-    # @!method Installed(package)
-    #   Determines whether the package is provided or not
-    #
-    #   This method checks whether any installed package provides the given "package".
-    #
-    #   @param package [String] Package name
-    #   @return [Boolean] true if the package exists; false otherwise
-    #   @see PackageInstalled
-
-    # @!method PackageInstalled(package)
-    #   Determines whether the package is installed or not
-    #
-    #   This method check just the package's name.
-    #
-    #   @param package [String] Package name
-    #   @return [Boolean] true if the package exists; false otherwise
-    #   @see Installed
+    def_delegators :backend, :Available, :PackageAvailable, :DoInstallAndRemove, :InstallKernel
 
     # @!method Available(package)
     #   Determines whether the package is available or not
@@ -101,6 +107,32 @@ module Yast
       @last_op_canceled = false
       @installed_packages = []
       @removed_packages = []
+    end
+
+    # Determines whether the package is provided or not
+    #
+    # This method checks whether any installed package provides the given "package".
+    #
+    # @param package [String] Package name
+    # @param target [Symbol,nil] :autoinst or :system. If it is nil,
+    #   it guesses the backend depending on the mode.
+    # @return [Boolean] true if the package exists; false otherwise
+    # @see PackageInstalled
+    def Installed(package, target: nil)
+      find_backend(target).Installed(package)
+    end
+
+    # Determines whether the package is installed or not
+    #
+    # This method check just the package's name.
+    #
+    # @param package [String] Package name
+    # @param target [Symbol,nil] :autoinst or :system. If it is nil,
+    #   it guesses the backend depending on the mode.
+    # @return [Boolean] true if the package exists; false otherwise
+    # @see Installed
+    def PackageInstalled(package, target: nil)
+      find_backend(target).PackageInstalled(package)
     end
 
     # Check if packages are installed
@@ -227,19 +259,23 @@ module Yast
 
     # Are all of these packages installed?
     # @param [Array<String>] packages list of packages
+    # @param target [Symbol,nil] :autoinst or :system. If it is nil,
+    #   it guesses the backend depending on the mode.
     # @return [Boolean] true if yes
-    def InstalledAll(packages)
+    def InstalledAll(packages, target: nil)
       packages = deep_copy(packages)
-      which = Builtins.find(packages) { |p| !Installed(p) }
+      which = Builtins.find(packages) { |p| !Installed(p, target: target) }
       which.nil?
     end
 
     # Is any of these packages installed?
     # @param [Array<String>] packages list of packages
+    # @param target [Symbol,nil] :autoinst or :system. If it is nil,
+    #   it guesses the backend depending on the mode.
     # @return [Boolean] true if yes
-    def InstalledAny(packages)
+    def InstalledAny(packages, target: nil)
       packages = deep_copy(packages)
-      which = Builtins.find(packages) { |p| Installed(p) }
+      which = Builtins.find(packages) { |p| Installed(p, target: target) }
       !which.nil?
     end
 
@@ -427,6 +463,25 @@ module Yast
     # the PackageAI class.
     def backend
       Mode.config ? PackageAI : PackageSystem
+    end
+
+    # Find the backend for the given target
+    #
+    # @param target [Symbol,nil] :autoinst or :system. If it is nil,
+    #   it guesses the backend depending on the mode.
+    def find_backend(target)
+      return backend if target.nil?
+
+      found_backend = case target
+      when :system
+        PackageSystem
+      when :autoinst
+        PackageAI
+      end
+
+      log.warn "select_backend: target '#{target}' is unknown." if found_backend.nil?
+
+      found_backend || backend
     end
   end
 

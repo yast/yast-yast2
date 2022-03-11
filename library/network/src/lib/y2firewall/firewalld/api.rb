@@ -91,7 +91,7 @@ module Y2Firewall
       # @return [Boolean] true if the state is running; false otherwise
       def running?
         return false if Yast::Stage.initial
-        return false if !Yast::Package.Installed(PACKAGE)
+        return false if !Yast::Package.Installed(PACKAGE, target: :system)
 
         state == "running"
       end

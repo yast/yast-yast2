@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Fri Mar 11 13:05:14 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Extend the Package module to force using PackageSystem or
+  PackageAI without having the mode into account.
+- AutoYaST: properly detect whether firewalld, bind and
+  yast2-dns-server packages are installed when cloning a system
+  (bsc#1196963).
+- 4.4.47
+
+-------------------------------------------------------------------
 Tue Mar  8 13:24:14 UTC 2022 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Reverted LD_PRELOAD change (GitHub PR#1236) (bsc#1196326)

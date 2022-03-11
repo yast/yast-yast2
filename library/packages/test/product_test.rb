@@ -7,15 +7,6 @@ require "yaml"
 # Important: Loads data in constructor
 Yast.import "Product"
 
-Yast.import "Mode"
-Yast.import "Stage"
-Yast.import "OSRelease"
-Yast.import "Package"
-Yast.import "Pkg"
-Yast.import "PackageLock"
-Yast.import "Mode"
-Yast.import "Stage"
-
 def load_zypp(file_name)
   file_name = File.join(PACKAGES_FIXTURES_PATH, "zypp", file_name)
 

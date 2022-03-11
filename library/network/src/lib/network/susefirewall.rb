@@ -557,7 +557,7 @@ module Yast
         @needed_packages_installed = Package.CheckAndInstallPackages([@FIREWALL_PACKAGE])
         log.info "CheckAndInstallPackages -> #{@needed_packages_installed}"
       else
-        @needed_packages_installed = Package.Installed(@FIREWALL_PACKAGE)
+        @needed_packages_installed = Package.Installed(@FIREWALL_PACKAGE, target: :system)
         log.info "Installed -> #{@needed_packages_installed}"
       end
 

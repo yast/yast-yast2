@@ -267,6 +267,13 @@ describe Yast::Package do
         expect(subject.InstalledAll(["yast2", "unknown"])).to eq(false)
       end
     end
+
+    context "when the target is set" do
+      it "asks for packages in the corresponding backend" do
+        expect(subject).to receive(:Installed).with("yast2", target: :system)
+        subject.InstalledAll(["yast2"], target: :system)
+      end
+    end
   end
 
   describe "#InstalledAny" do
@@ -287,6 +294,13 @@ describe Yast::Package do
     context "when none of the given packages is installed" do
       it "returns false" do
         expect(subject.InstalledAny(["unknown"])).to eq(false)
+      end
+    end
+
+    context "when the target is set" do
+      it "asks for packages in the corresponding backend" do
+        expect(subject).to receive(:Installed).with("yast2", target: :system)
+        subject.InstalledAny(["yast2"], target: :system)
       end
     end
   end
@@ -467,6 +481,38 @@ describe Yast::Package do
           "", "Should I install random packages?", any_args
         )
         subject.PackageDialog(packages, true, "Should I install random packages?")
+      end
+    end
+  end
+
+  describe "#Installed" do
+    context "when the target is set to :system" do
+      it "delegates to the PackageSystem module" do
+        expect(Yast::PackageSystem).to receive(:Installed).with("firewalld")
+        subject.Installed("firewalld", target: :system)
+      end
+    end
+
+    context "when the target is set to :system" do
+      it "delegates to the PackageAI module" do
+        expect(Yast::PackageAI).to receive(:Installed).with("firewalld")
+        subject.Installed("firewalld", target: :autoinst)
+      end
+    end
+  end
+
+  describe "#PackageInstalled" do
+    context "when the target is set to :system" do
+      it "delegates to the PackageSystem module" do
+        expect(Yast::PackageSystem).to receive(:PackageInstalled).with("firewalld")
+        subject.PackageInstalled("firewalld", target: :system)
+      end
+    end
+
+    context "when the target is set to :system" do
+      it "delegates to the PackageAI module" do
+        expect(Yast::PackageAI).to receive(:PackageInstalled).with("firewalld")
+        subject.PackageInstalled("firewalld", target: :autoinst)
       end
     end
   end

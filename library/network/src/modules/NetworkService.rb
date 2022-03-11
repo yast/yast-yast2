@@ -124,7 +124,7 @@ module Yast
 
     # Checks if given network backend is available in the system
     def backend_available?(backend)
-      Package.Installed(BACKEND_PKG_NAMES[backend])
+      Package.Installed(BACKEND_PKG_NAMES[backend], target: :system)
     end
 
     alias_method :is_backend_available, :backend_available?
