@@ -56,14 +56,38 @@ module Yast
     # This also starts the timer with a default (4 seconds) timeout.
     # Call stop_timer() immediately if that is not desired.
     #
-    def initialize
+    # The `close` method must be explicitly called at the end when the progress
+    # is finished.
+    #
+    # @param delay [Integer,nil] optional delay in seconds
+    # @param heading [String,nil] optional popup heading
+    def initialize(delay: nil, heading: nil)
       Yast.import "UI"
       Yast.import "Label"
 
-      @delay_seconds = 4
+      @delay_seconds = delay || 4
+      @heading = heading
       @use_cancel_button = true
       @is_open = false
       start_timer
+    end
+
+    # A static variant with block, it automatically closes the popup at the end.
+    #
+    # @param delay [Integer,nil] optional delay in seconds
+    # @param heading [String,nil] optional popup heading
+    # @example
+    #  Yast::DelayedProgressPopup.run(delay: 5, heading: "Working...") do |popup|
+    #    10.times do |sec|
+    #      popup.progress(10 * sec, "Working #{sec}")
+    #      sleep(1)
+    #    end
+    #  end
+    def self.run(delay: nil, heading: nil, &block)
+      popup = new(delay: delay, heading: heading)
+      block.call(popup)
+    ensure
+      popup&.close
     end
 
     # Update the progress.
