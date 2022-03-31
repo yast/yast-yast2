@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Copyright (c) 2016 SUSE LLC
+# Copyright (c) 2016-2022 SUSE LLC
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of version 2 of the GNU General Public License as published by the
@@ -13,6 +13,7 @@
 #
 
 require "yast"
+require "ui/delayed_progress_popup"
 
 module Packages
   # Default file conflicts callbacks for package bindings. To register the
@@ -83,11 +84,7 @@ module Packages
           Yast::UI.ChangeWidget(Id(PKG_INSTALL_WIDGET), :Value, 0)
           Yast::UI.ChangeWidget(Id(PKG_INSTALL_WIDGET), :Label, label)
         else
-          Yast::Wizard.CreateDialog
-          # TRANSLATORS: help text for the file conflict detection progress
-          help = _("<p>Detecting the file conflicts is in progress.</p>")
-          # Use the same label for the window title and the progressbar label
-          Yast::Progress.Simple(label, label, 100, help)
+          @@delayed_progress_popup = Yast::DelayedProgressPopup.new(heading: label)
         end
       end
 
@@ -102,7 +99,7 @@ module Packages
         elsif pkg_installation?
           Yast::UI.ChangeWidget(Id(PKG_INSTALL_WIDGET), :Value, progress)
         else
-          Yast::Progress.Step(progress)
+          @@delayed_progress_popup.progress(progress)
         end
 
         ui = Yast::UI.PollInput unless Yast::Mode.commandline
@@ -152,8 +149,7 @@ module Packages
         return if Yast::Mode.commandline || pkg_installation?
 
         # finish the opened progress dialog
-        Yast::Progress.Finish
-        Yast::Wizard.CloseDialog
+        @@delayed_progress_popup.progress.close unless @@delayed_progress_popup.nil?
       end
 
       # Construct the file conflicts dialog.
