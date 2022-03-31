@@ -19,9 +19,6 @@ module Packages
   # Default file conflicts callbacks for package bindings. To register the
   # callbacks in Yast::Pkg just call {Packages::FileConflictCallbacks.register}
   class FileConflictCallbacks
-    # Widget ID (created by other code)
-    PKG_INSTALL_WIDGET = :progressCurrentPackage
-
     class << self
       include Yast::Logger
       include Yast::I18n
@@ -65,12 +62,6 @@ module Packages
         nil
       end
 
-      # Is the package installation progress displayed?
-      # @return [Boolean] true if package installation progress is displayed
-      def pkg_installation?
-        Yast::UI.WidgetExists(PKG_INSTALL_WIDGET)
-      end
-
       # Handle the file conflict detection start callback.
       def start
         log.info "Starting the file conflict check..."
@@ -79,10 +70,6 @@ module Packages
 
         if Yast::Mode.commandline
           Yast::CommandLine.PrintVerbose(label)
-        elsif pkg_installation?
-          # package slideshow with progress already present
-          Yast::UI.ChangeWidget(Id(PKG_INSTALL_WIDGET), :Value, 0)
-          Yast::UI.ChangeWidget(Id(PKG_INSTALL_WIDGET), :Label, label)
         else
           @@delayed_progress_popup = Yast::DelayedProgressPopup.new(heading: label)
         end
@@ -96,8 +83,6 @@ module Packages
 
         if Yast::Mode.commandline
           Yast::CommandLine.PrintVerboseNoCR("#{Yast::PackageCallbacksClass::CLEAR_PROGRESS_TEXT}#{progress}%")
-        elsif pkg_installation?
-          Yast::UI.ChangeWidget(Id(PKG_INSTALL_WIDGET), :Value, progress)
         else
           @@delayed_progress_popup.progress(progress)
         end
@@ -146,10 +131,9 @@ module Packages
       # Handle the file conflict detection finish callback.
       def finish
         log.info "File conflict check finished"
-        return if Yast::Mode.commandline || pkg_installation?
+        return if Yast::Mode.commandline ||  @@delayed_progress_popup.nil?
 
-        # finish the opened progress dialog
-        @@delayed_progress_popup.progress.close unless @@delayed_progress_popup.nil?
+        @@delayed_progress_popup.progress.close
       end
 
       # Construct the file conflicts dialog.
