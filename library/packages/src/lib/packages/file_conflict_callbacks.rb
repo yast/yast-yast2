@@ -62,6 +62,10 @@ module Packages
         nil
       end
 
+      def delayed_progress_popup
+        @@delayed_progress_popup ||= Yast::DelayedProgressPopup.new
+      end
+
       # Handle the file conflict detection start callback.
       def start
         log.info "Starting the file conflict check..."
@@ -71,7 +75,7 @@ module Packages
         if Yast::Mode.commandline
           Yast::CommandLine.PrintVerbose(label)
         else
-          @@delayed_progress_popup = Yast::DelayedProgressPopup.new(heading: label)
+          @@delayed_progress_popup ||= Yast::DelayedProgressPopup.new(heading: label)
         end
       end
 
@@ -84,7 +88,7 @@ module Packages
         if Yast::Mode.commandline
           Yast::CommandLine.PrintVerboseNoCR("#{Yast::PackageCallbacksClass::CLEAR_PROGRESS_TEXT}#{progress}%")
         else
-          @@delayed_progress_popup.progress(progress)
+          delayed_progress_popup.progress(progress)
         end
 
         ui = Yast::UI.PollInput unless Yast::Mode.commandline
@@ -131,9 +135,10 @@ module Packages
       # Handle the file conflict detection finish callback.
       def finish
         log.info "File conflict check finished"
-        return if Yast::Mode.commandline ||  @@delayed_progress_popup.nil?
+        return if Yast::Mode.commandline || @@delayed_progress_popup.nil?
 
-        @@delayed_progress_popup.progress.close
+        @@delayed_progress_popup.close
+        @@delayed_progress_popup = nil
       end
 
       # Construct the file conflicts dialog.

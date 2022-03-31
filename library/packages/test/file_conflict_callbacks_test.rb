@@ -162,17 +162,8 @@ describe Packages::FileConflictCallbacks do
         allow(Yast::Mode).to receive(:commandline).and_return(false)
       end
 
-      it "reuses the package installation progress" do
-        expect(Yast::UI).to receive(:WidgetExists).and_return(true)
-        expect(Yast::UI).to receive(:ChangeWidget).twice
-
-        start_cb.call
-      end
-
-      it "opens a new progress if installation progress was not displayed" do
-        expect(Yast::UI).to receive(:WidgetExists).and_return(false)
-        expect(Yast::Wizard).to receive(:CreateDialog)
-        expect(Yast::Progress).to receive(:Simple)
+      it "uses a delayed progress popup" do
+        expect(Yast::DelayedProgressPopup).to receive(:new)
 
         start_cb.call
       end
@@ -180,6 +171,11 @@ describe Packages::FileConflictCallbacks do
   end
 
   describe "the registered progress callback handler" do
+    let(:start_cb) do
+      Packages::FileConflictCallbacks.register
+      dummy_pkg.fc_start
+    end
+
     let(:progress_cb) do
       Packages::FileConflictCallbacks.register
       dummy_pkg.fc_progress
@@ -216,6 +212,13 @@ describe Packages::FileConflictCallbacks do
         allow(Yast::Mode).to receive(:commandline).and_return(false)
       end
 
+      it "receives the progress call" do
+        expect_any_instance_of(Yast::DelayedProgressPopup).to receive(:progress)
+
+        start_cb.call
+        progress_cb.call(progress)
+      end
+
       it "returns false to abort if user clicks Abort" do
         expect(Yast::UI).to receive(:PollInput).and_return(:abort)
 
@@ -232,20 +235,6 @@ describe Packages::FileConflictCallbacks do
         expect(Yast::UI).to receive(:PollInput).and_return(:next)
 
         expect(progress_cb.call(progress)).to eq(true)
-      end
-
-      it "uses the existing widget if package installation progress was displayed" do
-        expect(Yast::UI).to receive(:WidgetExists).and_return(true)
-        expect(Yast::UI).to receive(:ChangeWidget)
-
-        progress_cb.call(progress)
-      end
-
-      it "sets the progress if package installation progress was not displayed" do
-        expect(Yast::UI).to receive(:WidgetExists).and_return(false)
-        expect(Yast::Progress).to receive(:Step).with(progress)
-
-        progress_cb.call(progress)
       end
     end
   end
@@ -357,6 +346,11 @@ describe Packages::FileConflictCallbacks do
   end
 
   describe "the registered finish callback handler" do
+    let(:start_cb) do
+      Packages::FileConflictCallbacks.register
+      dummy_pkg.fc_start
+    end
+
     let(:finish_cb) do
       Packages::FileConflictCallbacks.register
       dummy_pkg.fc_finish
@@ -387,14 +381,12 @@ describe Packages::FileConflictCallbacks do
         finish_cb.call
       end
 
-      it "closes progress if installation progress was not displayed" do
-        allow(Yast::UI).to receive(:WidgetExists).and_return(false)
-        expect(Yast::Wizard).to receive(:CloseDialog)
-        expect(Yast::Progress).to receive(:Finish)
+      it "closes the delayed progress popup" do
+        expect_any_instance_of(Yast::DelayedProgressPopup).to receive(:close)
 
+        start_cb.call
         finish_cb.call
       end
-
     end
   end
 end
