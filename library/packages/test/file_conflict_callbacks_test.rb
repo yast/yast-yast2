@@ -133,12 +133,6 @@ describe Packages::FileConflictCallbacks do
         allow(Yast::Mode).to receive(:commandline).and_return(false)
       end
 
-      # Must come first since this uses a class variable
-      it "creates a delayed progress popup in advance" do
-        expect(Yast::DelayedProgressPopup).to receive(:new).at_least(:once)
-        Packages::FileConflictCallbacks.register
-      end
-
       it "calls the Pkg methods for registering the file conflicts handlers" do
         expect(dummy_pkg).to receive(:CallbackFileConflictStart).at_least(:once)
         expect(dummy_pkg).to receive(:CallbackFileConflictProgress).at_least(:once)
