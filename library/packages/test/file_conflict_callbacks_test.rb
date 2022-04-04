@@ -128,13 +128,25 @@ describe Packages::FileConflictCallbacks do
   end
 
   describe ".register" do
-    it "calls the Pkg methods for registering the file conflicts handlers" do
-      expect(dummy_pkg).to receive(:CallbackFileConflictStart).at_least(:once)
-      expect(dummy_pkg).to receive(:CallbackFileConflictProgress).at_least(:once)
-      expect(dummy_pkg).to receive(:CallbackFileConflictReport).at_least(:once)
-      expect(dummy_pkg).to receive(:CallbackFileConflictFinish).at_least(:once)
+    context "in UI mode" do
+      before do
+        allow(Yast::Mode).to receive(:commandline).and_return(false)
+      end
 
-      Packages::FileConflictCallbacks.register
+      # Must come first since this uses a class variable
+      it "creates a delayed progress popup in advance" do
+        expect(Yast::DelayedProgressPopup).to receive(:new).at_least(:once)
+        Packages::FileConflictCallbacks.register
+      end
+
+      it "calls the Pkg methods for registering the file conflicts handlers" do
+        expect(dummy_pkg).to receive(:CallbackFileConflictStart).at_least(:once)
+        expect(dummy_pkg).to receive(:CallbackFileConflictProgress).at_least(:once)
+        expect(dummy_pkg).to receive(:CallbackFileConflictReport).at_least(:once)
+        expect(dummy_pkg).to receive(:CallbackFileConflictFinish).at_least(:once)
+
+        Packages::FileConflictCallbacks.register
+      end
     end
   end
 
@@ -152,18 +164,6 @@ describe Packages::FileConflictCallbacks do
       it "does not call any UI method" do
         ui = double("no method call expected")
         stub_const("Yast::UI", ui)
-
-        start_cb.call
-      end
-    end
-
-    context "in UI mode" do
-      before do
-        allow(Yast::Mode).to receive(:commandline).and_return(false)
-      end
-
-      it "uses a delayed progress popup" do
-        expect(Yast::DelayedProgressPopup).to receive(:new)
 
         start_cb.call
       end
@@ -251,11 +251,6 @@ describe Packages::FileConflictCallbacks do
 
       before do
         allow(Yast::Mode).to receive(:commandline).and_return(true)
-      end
-
-      it "does not check the command line mode, it behaves same as in the UI mode" do
-        expect(Yast::Mode).to_not receive(:commandline)
-        report_cb.call(excluded, conflicts)
       end
 
       it "does not call any UI method" do
