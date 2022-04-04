@@ -38,12 +38,13 @@ module Packages
 
         textdomain "base"
 
+        create_delayed_progress_popup unless Yast::Mode.commandline
         register_file_conflict_callbacks
       end
 
     private
 
-      # Helper function for creating an YaST function reference
+      # Helper function for creating a YaST function reference
       def fun_ref(*args)
         Yast::FunRef.new(*args)
       end
@@ -62,20 +63,43 @@ module Packages
         nil
       end
 
+      # Create the DelayedProgressPopup, but don't start the timer yet.
+      #
+      # This needs to be done outside of any of the callbacks to avoid clashes
+      # between Ruby, C++ and ex-YCP YaST components.
+      #
+      # rubocop:disable Style/ClassVars
+      def create_delayed_progress_popup
+        log.info "Creating DelayedProgressPopup"
+        @@delayed_progress_popup ||= Yast::DelayedProgressPopup.new(
+          auto_start: false,
+          heading:    progress_bar_label
+        )
+        nil
+      end
+
       def delayed_progress_popup
-        @@delayed_progress_popup ||= Yast::DelayedProgressPopup.new
+        # Intentionally NOT creating the DelayedProgressPopup here so it isn't
+        # accidentially created in one of the callbacks.
+        @@delayed_progress_popup
+      end
+      # rubocop:enable Style/ClassVars
+
+      def progress_bar_label
+        # TRANSLATORS: progress bar label
+        _("Checking file conflicts...")
       end
 
       # Handle the file conflict detection start callback.
       def start
         log.info "Starting the file conflict check..."
-        # TRANSLATORS: progress bar label
-        label = _("Checking file conflicts...")
 
         if Yast::Mode.commandline
-          Yast::CommandLine.PrintVerbose(label)
+          Yast::CommandLine.PrintVerbose(progress_bar_label)
         else
-          @@delayed_progress_popup ||= Yast::DelayedProgressPopup.new(heading: label)
+          # Don't create the DelayedProgressPopup here, otherwise there will be
+          # conflicts between the Ruby, C++ and ex-YCP YaST components.
+          delayed_progress_popup.start_timer
         end
       end
 
@@ -83,7 +107,7 @@ module Packages
       # @param [Fixnum] progress progress in percents
       # @return [Boolean] true = continue, false = abort
       def progress(progress)
-        log.debug "File conflict progress: #{progress}%"
+        log.info "File conflict progress: #{progress}%"
 
         if Yast::Mode.commandline
           Yast::CommandLine.PrintVerboseNoCR("#{Yast::PackageCallbacksClass::CLEAR_PROGRESS_TEXT}#{progress}%")
@@ -135,10 +159,9 @@ module Packages
       # Handle the file conflict detection finish callback.
       def finish
         log.info "File conflict check finished"
-        return if Yast::Mode.commandline || @@delayed_progress_popup.nil?
+        return if Yast::Mode.commandline
 
-        @@delayed_progress_popup.close
-        @@delayed_progress_popup = nil
+        delayed_progress_popup.close
       end
 
       # Construct the file conflicts dialog.
