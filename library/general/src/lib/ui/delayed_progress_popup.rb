@@ -53,15 +53,16 @@ module Yast
 
     # Constructor.
     #
-    # This also starts the timer with a default (4 seconds) timeout.
-    # Call stop_timer() immediately if that is not desired.
+    # If `auto_start` is `true` (default), this also starts the timer with a
+    # default (4 seconds) timeout.
     #
     # The `close` method must be explicitly called at the end when the progress
     # is finished.
     #
-    # @param delay [Integer,nil] optional delay in seconds
+    # @param delay [Integer,nil]  optional delay in seconds
+    # @param auto_start [Boolean] start the timer immediately
     # @param heading [String,nil] optional popup heading
-    def initialize(delay: nil, heading: nil)
+    def initialize(delay: nil, auto_start: true, heading: nil)
       Yast.import "UI"
       Yast.import "Label"
 
@@ -69,7 +70,8 @@ module Yast
       @heading = heading
       @use_cancel_button = true
       @is_open = false
-      start_timer
+      start_timer if auto_start
+      log.info "Created delayed progress popup"
     end
 
     # A static variant with block, it automatically closes the popup at the end.
@@ -83,8 +85,8 @@ module Yast
     #      sleep(1)
     #    end
     #  end
-    def self.run(delay: nil, heading: nil, &block)
-      popup = new(delay: delay, heading: heading)
+    def self.run(delay: nil, auto_start: true, heading: nil, &block)
+      popup = new(delay: delay, auto_start: auto_start, heading: heading)
       block.call(popup)
     ensure
       popup&.close
@@ -98,6 +100,7 @@ module Yast
     # @param [nil|String] progress_text  optional progress bar label text
     #
     def progress(progress_percent, progress_text = nil)
+      log.info "progress_percent: #{progress_percent}"
       open_if_needed
       return unless open?
 
