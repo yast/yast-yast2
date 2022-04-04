@@ -107,7 +107,7 @@ module Packages
       # @param [Fixnum] progress progress in percents
       # @return [Boolean] true = continue, false = abort
       def progress(progress)
-        log.info "File conflict progress: #{progress}%"
+        log.debug "File conflict progress: #{progress}%"
 
         if Yast::Mode.commandline
           Yast::CommandLine.PrintVerboseNoCR("#{Yast::PackageCallbacksClass::CLEAR_PROGRESS_TEXT}#{progress}%")
