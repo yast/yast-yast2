@@ -68,7 +68,7 @@ module Packages
 
       def checking_percent(percent)
         # TRANSLATORS: progress bar label; %1 is the percent value.
-        Yast::Builtins.sformat(_("Checking file conflicts (%1%%)"))
+        Yast::Builtins.sformat(_("Checking file conflicts (%1%%)"), percent)
       end
 
       # Set the label text of the global progress bar, if it exists.
@@ -89,6 +89,7 @@ module Packages
           Yast::CommandLine.PrintVerbose(checking_label)
         else
           update_progress_text(checking_label)
+          sleep(1)
         end
       end
 
@@ -102,6 +103,7 @@ module Packages
           Yast::CommandLine.PrintVerboseNoCR("#{Yast::PackageCallbacksClass::CLEAR_PROGRESS_TEXT}#{progress}%")
         else
           update_progress_text(checking_percent(progress))
+          sleep(1)
         end
 
         ui = Yast::UI.PollInput unless Yast::Mode.commandline
