@@ -48,6 +48,11 @@ module Yast
     # @return [Integer] Delay (timeout) in seconds.
     attr_accessor :delay_seconds
 
+    # @return [Integer] Percent (0..100) that are considered "almost done"
+    # so the dialog is not opened anymore if it isn't already. Default: 80
+    # Set this to 100 to disable that.
+    attr_accessor :almost_done_percent
+
     # @return [Boolean] Add a "Cancel" button to the dialog. Default: true.
     attr_accessor :use_cancel_button
 
@@ -69,6 +74,7 @@ module Yast
       @delay_seconds = delay || 4
       @heading = heading
       @use_cancel_button = true
+      @almost_done_percent = 80
       @is_open = false
       start_timer if auto_start
       log.info "Created delayed progress popup"
@@ -94,14 +100,18 @@ module Yast
 
     # Update the progress.
     #
-    # If the dialog is not open yet, this opens it if the timeout is expired.
+    # If the dialog is not open yet, this opens it if the timeout is expired;
+    # unless the whole process is almost done anyway, i.e. at the time when the
+    # dialog would be opened, progress_percent is already at the
+    # @almost_done_percent threshold, so it would just open and then close
+    # almost immediately again.
     #
     # @param [Integer] progress_percent  numeric progress bar value
     # @param [nil|String] progress_text  optional progress bar label text
     #
     def progress(progress_percent, progress_text = nil)
       log.info "progress_percent: #{progress_percent}"
-      open_if_needed
+      open_if_needed unless progress_percent >= @almost_done_percent
       return unless open?
 
       update_progress(progress_percent, progress_text)
