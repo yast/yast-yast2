@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Apr 06 13:24:58 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
+
+- Bump version to 4.5.0 (#bsc1198109)
+
+-------------------------------------------------------------------
 Fri Mar 11 13:05:14 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Extend the Package module to force using PackageSystem or
