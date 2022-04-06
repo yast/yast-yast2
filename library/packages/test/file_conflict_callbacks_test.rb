@@ -363,13 +363,6 @@ describe Packages::FileConflictCallbacks do
         allow(Yast::Mode).to receive(:commandline).and_return(false)
       end
 
-      it "no change if installation progress was already displayed" do
-        ui = double("no method call expected", WidgetExists: true)
-        stub_const("Yast::UI", ui)
-
-        finish_cb.call
-      end
-
       it "closes the delayed progress popup" do
         expect_any_instance_of(Yast::DelayedProgressPopup).to receive(:close)
 

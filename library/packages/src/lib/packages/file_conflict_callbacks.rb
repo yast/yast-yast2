@@ -90,6 +90,23 @@ module Packages
         _("Checking file conflicts...")
       end
 
+      # Set the label text of the global progress bar, if it exists.
+      #
+      # @param [String] text
+      #
+      def update_progress_text(text)
+        # This uses the widget ID of the global progress bar of the SlideShow
+        # module directly to keep the cross-dependencies down at least a little
+        # bit.
+        #
+        # On the plus side, this is so defensive (it does nothing if there is
+        # no such widget) that the worst thing that can happen is that there is
+        # that there is no immediate feedback by setting the progress bar label.
+        return unless Yast::UI.WidgetExists(:progressTotal)
+
+        Yast::UI.ChangeWidget(:progressTotal, :Label, text)
+      end
+
       # Handle the file conflict detection start callback.
       def start
         log.info "Starting the file conflict check..."
@@ -100,6 +117,7 @@ module Packages
           # Don't create the DelayedProgressPopup here, otherwise there will be
           # conflicts between the Ruby, C++ and ex-YCP YaST components.
           delayed_progress_popup.start_timer
+          update_progress_text(progress_bar_label) # Immediate feedback
         end
       end
 
@@ -122,13 +140,15 @@ module Packages
       end
 
       # Handle the file conflict detection result callback.
-      # Ask to user whether to continue. In the AutoYaST mode an error is reported
-      # but the installation will continue ignoring the confliucts.
+      # Ask the user whether to continue. In AutoYaST mode, an error is
+      # reported, but the installation will continue ignoring the conflicts.
+      #
       # @param excluded_packages [Array<String>] packages ignored in the check
       #   (e.g. not available for check in the download-as-needed mode)
       # @param conflicts [Array<String>] list of translated descriptions of
       #   the detected file conflicts
       # @return [Boolean] true = continue, false = abort
+      #
       def report(excluded_packages, conflicts)
         log.info "Excluded #{excluded_packages.size} packages in file conflict check"
         log.debug "Excluded packages: #{excluded_packages.inspect}"
@@ -162,6 +182,7 @@ module Packages
         return if Yast::Mode.commandline
 
         delayed_progress_popup.close
+        update_progress_text(" ") # One blank to maintain the label's height
       end
 
       # Construct the file conflicts dialog.
