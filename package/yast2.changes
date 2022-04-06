@@ -2,6 +2,7 @@
 Wed Apr  6 13:59:53 UTC 2022 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Show file conflict checking progress in delayed popup (bsc#1195608)
+  PR: https://github.com/yast/yast-yast2/pull/1250
 - 4.4.48
 
 -------------------------------------------------------------------
