@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Apr  7 11:43:15 UTC 2022 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Show file conflict checking progress in delayed popup (bsc#1195608)
+  PR: https://github.com/yast/yast-yast2/pull/1252
+- 4.5.1
+
+-------------------------------------------------------------------
 Wed Apr 06 13:24:58 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
 
 - Bump version to 4.5.0 (#bsc1198109)
