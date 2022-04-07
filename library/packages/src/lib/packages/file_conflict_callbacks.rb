@@ -1,5 +1,5 @@
 # ------------------------------------------------------------------------------
-# Copyright (c) 2016 SUSE LLC
+# Copyright (c) 2016-2022 SUSE LLC
 #
 # This program is free software; you can redistribute it and/or modify it under
 # the terms of version 2 of the GNU General Public License as published by the
@@ -13,14 +13,12 @@
 #
 
 require "yast"
+require "ui/delayed_progress_popup"
 
 module Packages
   # Default file conflicts callbacks for package bindings. To register the
   # callbacks in Yast::Pkg just call {Packages::FileConflictCallbacks.register}
   class FileConflictCallbacks
-    # Widget ID (created by other code)
-    PKG_INSTALL_WIDGET = :progressCurrentPackage
-
     class << self
       include Yast::Logger
       include Yast::I18n
@@ -40,12 +38,13 @@ module Packages
 
         textdomain "base"
 
+        create_delayed_progress_popup unless Yast::Mode.commandline
         register_file_conflict_callbacks
       end
 
     private
 
-      # Helper function for creating an YaST function reference
+      # Helper function for creating a YaST function reference
       def fun_ref(*args)
         Yast::FunRef.new(*args)
       end
@@ -64,30 +63,61 @@ module Packages
         nil
       end
 
-      # Is the package installation progress displayed?
-      # @return [Boolean] true if package installation progress is displayed
-      def pkg_installation?
-        Yast::UI.WidgetExists(PKG_INSTALL_WIDGET)
+      # Create the DelayedProgressPopup, but don't start the timer yet.
+      #
+      # This needs to be done outside of any of the callbacks to avoid clashes
+      # between Ruby, C++ and ex-YCP YaST components.
+      #
+      # rubocop:disable Style/ClassVars
+      def create_delayed_progress_popup
+        log.info "Creating DelayedProgressPopup"
+        @@delayed_progress_popup ||= Yast::DelayedProgressPopup.new(
+          auto_start: false,
+          heading:    progress_bar_label
+        )
+        nil
+      end
+
+      def delayed_progress_popup
+        # Intentionally NOT creating the DelayedProgressPopup here so it isn't
+        # accidentially created in one of the callbacks.
+        @@delayed_progress_popup
+      end
+      # rubocop:enable Style/ClassVars
+
+      def progress_bar_label
+        # TRANSLATORS: progress bar label
+        _("Checking file conflicts...")
+      end
+
+      # Set the label text of the global progress bar, if it exists.
+      #
+      # @param [String] text
+      #
+      def update_progress_text(text)
+        # This uses the widget ID of the global progress bar of the SlideShow
+        # module directly to keep the cross-dependencies down at least a little
+        # bit.
+        #
+        # On the plus side, this is so defensive (it does nothing if there is
+        # no such widget) that the worst thing that can happen is that there is
+        # that there is no immediate feedback by setting the progress bar label.
+        return unless Yast::UI.WidgetExists(:progressTotal)
+
+        Yast::UI.ChangeWidget(:progressTotal, :Label, text)
       end
 
       # Handle the file conflict detection start callback.
       def start
         log.info "Starting the file conflict check..."
-        # TRANSLATORS: progress bar label
-        label = _("Checking file conflicts...")
 
         if Yast::Mode.commandline
-          Yast::CommandLine.PrintVerbose(label)
-        elsif pkg_installation?
-          # package slideshow with progress already present
-          Yast::UI.ChangeWidget(Id(PKG_INSTALL_WIDGET), :Value, 0)
-          Yast::UI.ChangeWidget(Id(PKG_INSTALL_WIDGET), :Label, label)
+          Yast::CommandLine.PrintVerbose(progress_bar_label)
         else
-          Yast::Wizard.CreateDialog
-          # TRANSLATORS: help text for the file conflict detection progress
-          help = _("<p>Detecting the file conflicts is in progress.</p>")
-          # Use the same label for the window title and the progressbar label
-          Yast::Progress.Simple(label, label, 100, help)
+          # Don't create the DelayedProgressPopup here, otherwise there will be
+          # conflicts between the Ruby, C++ and ex-YCP YaST components.
+          delayed_progress_popup.start_timer
+          update_progress_text(progress_bar_label) # Immediate feedback
         end
       end
 
@@ -99,10 +129,8 @@ module Packages
 
         if Yast::Mode.commandline
           Yast::CommandLine.PrintVerboseNoCR("#{Yast::PackageCallbacksClass::CLEAR_PROGRESS_TEXT}#{progress}%")
-        elsif pkg_installation?
-          Yast::UI.ChangeWidget(Id(PKG_INSTALL_WIDGET), :Value, progress)
         else
-          Yast::Progress.Step(progress)
+          delayed_progress_popup.progress(progress)
         end
 
         ui = Yast::UI.PollInput unless Yast::Mode.commandline
@@ -112,13 +140,15 @@ module Packages
       end
 
       # Handle the file conflict detection result callback.
-      # Ask to user whether to continue. In the AutoYaST mode an error is reported
-      # but the installation will continue ignoring the confliucts.
+      # Ask the user whether to continue. In AutoYaST mode, an error is
+      # reported, but the installation will continue ignoring the conflicts.
+      #
       # @param excluded_packages [Array<String>] packages ignored in the check
       #   (e.g. not available for check in the download-as-needed mode)
       # @param conflicts [Array<String>] list of translated descriptions of
       #   the detected file conflicts
       # @return [Boolean] true = continue, false = abort
+      #
       def report(excluded_packages, conflicts)
         log.info "Excluded #{excluded_packages.size} packages in file conflict check"
         log.debug "Excluded packages: #{excluded_packages.inspect}"
@@ -149,11 +179,10 @@ module Packages
       # Handle the file conflict detection finish callback.
       def finish
         log.info "File conflict check finished"
-        return if Yast::Mode.commandline || pkg_installation?
+        return if Yast::Mode.commandline
 
-        # finish the opened progress dialog
-        Yast::Progress.Finish
-        Yast::Wizard.CloseDialog
+        delayed_progress_popup.close
+        update_progress_text(" ") # One blank to maintain the label's height
       end
 
       # Construct the file conflicts dialog.
