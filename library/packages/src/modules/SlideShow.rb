@@ -153,18 +153,21 @@ module Yast
 
     # Start the internal (global) timer.
     #
+    # FIXME: Obsolete published method
     def StartTimer
       nil
     end
 
     # Reset the internal (global) timer.
     #
+    # FIXME: Obsolete published method
     def ResetTimer
       nil
     end
 
     # Stop the internal (global) timer and account elapsed time.
     #
+    # FIXME: Obsolete published method
     def StopTimer
       nil
     end
@@ -179,6 +182,7 @@ module Yast
     # Check if currently the "Slide Show" page is shown
     # @return true if showing details, false otherwise
     #
+    # FIXME: Obsolete published method
     def ShowingSlide
       false
     end
@@ -197,6 +201,8 @@ module Yast
     # Restart the subprogress of the slideshow. This means the
     # label will be set to given text, value to 0.
     # @param [String] text  new label for the subprogress
+    #
+    # FIXME: Obsolete published method
     def SubProgressStart(text); end
 
     # Updates status of the sub-progress in slide show. The new value and label
@@ -205,12 +211,16 @@ module Yast
     #
     # @param [Fixnum] value  new value for the subprogress
     # @param [String] label  new label for the subprogress
+    #
+    # FIXME: Obsolete published method
     def SubProgress(value, label); end
 
     # Restart the global progress of the slideshow. This means the
     # label will be set to given text, value to 0.
     #
     # @param [String] text  new label for the global progress
+    #
+    # FIXME: Obsolete published method
     def GlobalProgressStart(text)
       UpdateGlobalProgress(0, text)
     end
@@ -324,6 +334,7 @@ module Yast
     # Check if the slide show is available. This must be called before trying
     # to access any slides; some late initialization is done here.
     #
+    # FIXME: Obsolete
     def CheckForSlides
       nil
     end
@@ -331,6 +342,7 @@ module Yast
     # Set the slide show text.
     # @param [String] text
     #
+    # FIXME: Obsolete
     def SetSlideText(_text)
       nil
     end
@@ -346,6 +358,7 @@ module Yast
 
     # Create one single item for the CD statistics table
     #
+    # FIXME: Obsolete published method
     def TableItem(id, col1, col2, col3, col4)
       Item(Id(id), col1, col2, col3, col4)
     end
@@ -353,6 +366,7 @@ module Yast
     # Load a slide image + text.
     # @param [Fixnum] slide_no number of slide to load
     #
+    # FIXME: Obsolete
     def LoadSlide(_slide_no)
       nil
     end
@@ -360,6 +374,7 @@ module Yast
     # Check if the current slide needs to be changed and do that if
     # necessary.
     #
+    # FIXME: Obsolete
     def ChangeSlideIfNecessary
       nil
     end
@@ -408,6 +423,7 @@ module Yast
 
     # Switch from the 'details' view to the 'slide show' view.
     #
+    # FIXME: Obsolete
     def SwitchToSlideView
       return if ShowingSlide()
 
@@ -421,12 +437,14 @@ module Yast
     end
 
     # Rebuild the details page.
+    # FIXME: Obsolete
     def RebuildDetailsView
       nil
     end
 
     # Switch from the 'slide show' view to the 'details' view.
     #
+    # FIXME: Obsolete
     def SwitchToDetailsView
       nil
     end
