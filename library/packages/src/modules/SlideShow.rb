@@ -107,7 +107,6 @@ module Yast
 
     module UI_ID
       TOTAL_PROGRESS = :progressTotal
-      CURRENT_PACKAGE = :progressCurrentPackage
     end
 
     def main
