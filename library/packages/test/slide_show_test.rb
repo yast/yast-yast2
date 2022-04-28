@@ -12,7 +12,7 @@ describe "Yast::SlideShow" do
     allow(::File).to receive(:exist?).and_return(true)
   end
 
-  TOTAL_PROGRESS_ID = Yast::SlideShowClass::UI_ID::TOTAL_PROGRESS
+  TOTAL_PROGRESS_ID = :progressTotal
 
   describe "#UpdateGlobalProgress" do
     before(:each) do

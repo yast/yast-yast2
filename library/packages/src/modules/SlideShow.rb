@@ -105,10 +105,6 @@ module Yast
   class SlideShowClass < Module
     include Yast::Logger
 
-    module UI_ID
-      TOTAL_PROGRESS = :progressTotal
-    end
-
     def main
       Yast.import "UI"
 
@@ -229,15 +225,15 @@ module Yast
       value ||= @total_progress_value
       label ||= @total_progress_label
 
-      if UI.WidgetExists(UI_ID::TOTAL_PROGRESS)
+      if UI.WidgetExists(:progressTotal)
         if @total_progress_value != value
           @total_progress_value = value
-          UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Value, value)
+          UI.ChangeWidget(:progressTotal, :Value, value)
         end
 
         if @total_progress_label != label
           @total_progress_label = label
-          UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Label, label)
+          UI.ChangeWidget(:progressTotal, :Label, label)
         end
       else
         log.warn "progressTotal widget missing"
@@ -378,7 +374,7 @@ module Yast
         VBox(
           VCenter(
             ProgressBar(
-              Id(UI_ID::TOTAL_PROGRESS),
+              Id(:progressTotal),
               @total_progress_label,
               100,
               @total_progress_value
