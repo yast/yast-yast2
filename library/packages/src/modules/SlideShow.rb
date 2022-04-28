@@ -100,6 +100,7 @@
 # - release notes viewer
 require "yast"
 require "yast2/system_time"
+require "y2packager/product_spec"
 
 module Yast
   class SlideShowClass < Module
@@ -379,14 +380,14 @@ module Yast
       nil
     end
 
-    # widgets for progress bar
-    # @return      A term describing the widgets
+    # Widgets for the progress bar tab
+    # @return  A term describing the widgets
     #
     def progress_widgets
-      HBox(
-        Id(:progress_bar),
-        HSpacing(1),
+      MarginBox(
+        4, 1, # hor/vert
         VBox(
+          product_name_widgets,
           VCenter(
             ProgressBar(
               Id(:progressTotal),
@@ -395,9 +396,35 @@ module Yast
               @total_progress_value
             )
           )
-        ),
-        HSpacing(0.5)
+        )
       )
+    end
+
+    # Widgets for the product name
+    # @return A term describing the widgets
+    def product_name_widgets
+      text = product_name
+      return Empty() if text.nil? || text.empty?
+
+      MarginBox(
+        0, 1, # hor/vert
+        Left(
+          Label(Id(:productName), text)
+        )
+      )
+    end
+
+    # Name of the base product that is or will be installed
+    # @return [String,nil] Display name of the base product
+    def product_name
+      # Avoid expensive operation in the installed system where this will
+      # always return 'nil' anyway.
+      return nil if Mode.normal
+
+      product = Y2Packager::ProductSpec.selected_base
+      return nil if product.nil?
+
+      product.display_name
     end
 
     # Construct widgets describing a page with the real slide show
