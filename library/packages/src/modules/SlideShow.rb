@@ -100,15 +100,11 @@
 # - release notes viewer
 require "yast"
 require "yast2/system_time"
+require "y2packager/product_spec"
 
 module Yast
   class SlideShowClass < Module
     include Yast::Logger
-
-    module UI_ID
-      TOTAL_PROGRESS = :progressTotal
-      CURRENT_PACKAGE = :progressCurrentPackage
-    end
 
     def main
       Yast.import "UI"
@@ -158,18 +154,21 @@ module Yast
 
     # Start the internal (global) timer.
     #
+    # FIXME: Obsolete published method
     def StartTimer
       nil
     end
 
     # Reset the internal (global) timer.
     #
+    # FIXME: Obsolete published method
     def ResetTimer
       nil
     end
 
     # Stop the internal (global) timer and account elapsed time.
     #
+    # FIXME: Obsolete published method
     def StopTimer
       nil
     end
@@ -184,6 +183,7 @@ module Yast
     # Check if currently the "Slide Show" page is shown
     # @return true if showing details, false otherwise
     #
+    # FIXME: Obsolete published method
     def ShowingSlide
       false
     end
@@ -202,6 +202,8 @@ module Yast
     # Restart the subprogress of the slideshow. This means the
     # label will be set to given text, value to 0.
     # @param [String] text  new label for the subprogress
+    #
+    # FIXME: Obsolete published method
     def SubProgressStart(text); end
 
     # Updates status of the sub-progress in slide show. The new value and label
@@ -210,12 +212,16 @@ module Yast
     #
     # @param [Fixnum] value  new value for the subprogress
     # @param [String] label  new label for the subprogress
+    #
+    # FIXME: Obsolete published method
     def SubProgress(value, label); end
 
     # Restart the global progress of the slideshow. This means the
     # label will be set to given text, value to 0.
     #
     # @param [String] text  new label for the global progress
+    #
+    # FIXME: Obsolete published method
     def GlobalProgressStart(text)
       UpdateGlobalProgress(0, text)
     end
@@ -230,15 +236,15 @@ module Yast
       value ||= @total_progress_value
       label ||= @total_progress_label
 
-      if UI.WidgetExists(UI_ID::TOTAL_PROGRESS)
+      if UI.WidgetExists(:progressTotal)
         if @total_progress_value != value
           @total_progress_value = value
-          UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Value, value)
+          UI.ChangeWidget(:progressTotal, :Value, value)
         end
 
         if @total_progress_label != label
           @total_progress_label = label
-          UI.ChangeWidget(UI_ID::TOTAL_PROGRESS, :Label, label)
+          UI.ChangeWidget(:progressTotal, :Label, label)
         end
       else
         log.warn "progressTotal widget missing"
@@ -329,6 +335,7 @@ module Yast
     # Check if the slide show is available. This must be called before trying
     # to access any slides; some late initialization is done here.
     #
+    # FIXME: Obsolete
     def CheckForSlides
       nil
     end
@@ -336,6 +343,7 @@ module Yast
     # Set the slide show text.
     # @param [String] text
     #
+    # FIXME: Obsolete
     def SetSlideText(_text)
       nil
     end
@@ -351,6 +359,7 @@ module Yast
 
     # Create one single item for the CD statistics table
     #
+    # FIXME: Obsolete published method
     def TableItem(id, col1, col2, col3, col4)
       Item(Id(id), col1, col2, col3, col4)
     end
@@ -358,6 +367,7 @@ module Yast
     # Load a slide image + text.
     # @param [Fixnum] slide_no number of slide to load
     #
+    # FIXME: Obsolete
     def LoadSlide(_slide_no)
       nil
     end
@@ -365,29 +375,56 @@ module Yast
     # Check if the current slide needs to be changed and do that if
     # necessary.
     #
+    # FIXME: Obsolete
     def ChangeSlideIfNecessary
       nil
     end
 
-    # widgets for progress bar
-    # @return      A term describing the widgets
+    # Widgets for the progress bar tab
+    # @return  A term describing the widgets
     #
     def progress_widgets
-      HBox(
-        Id(:progress_bar),
-        HSpacing(1),
+      MarginBox(
+        4, 1, # hor/vert
         VBox(
+          product_name_widgets,
           VCenter(
             ProgressBar(
-              Id(UI_ID::TOTAL_PROGRESS),
+              Id(:progressTotal),
               @total_progress_label,
               100,
               @total_progress_value
             )
           )
-        ),
-        HSpacing(0.5)
+        )
       )
+    end
+
+    # Widgets for the product name
+    # @return A term describing the widgets
+    def product_name_widgets
+      text = product_name
+      return Empty() if text.nil? || text.empty?
+
+      MarginBox(
+        0, 1, # hor/vert
+        Left(
+          Label(Id(:productName), text)
+        )
+      )
+    end
+
+    # Name of the base product that is or will be installed
+    # @return [String,nil] Display name of the base product
+    def product_name
+      # Avoid expensive operation in the installed system where this will
+      # always return 'nil' anyway.
+      return nil if Mode.normal
+
+      product = Y2Packager::ProductSpec.selected_base
+      return nil if product.nil?
+
+      product.display_name
     end
 
     # Construct widgets describing a page with the real slide show
@@ -413,6 +450,7 @@ module Yast
 
     # Switch from the 'details' view to the 'slide show' view.
     #
+    # FIXME: Obsolete
     def SwitchToSlideView
       return if ShowingSlide()
 
@@ -426,12 +464,14 @@ module Yast
     end
 
     # Rebuild the details page.
+    # FIXME: Obsolete
     def RebuildDetailsView
       nil
     end
 
     # Switch from the 'slide show' view to the 'details' view.
     #
+    # FIXME: Obsolete
     def SwitchToDetailsView
       nil
     end
