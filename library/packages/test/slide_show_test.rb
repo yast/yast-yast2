@@ -6,13 +6,33 @@ Yast.import "SlideShow"
 Yast.import "Slides"
 Yast.import "UI"
 
+# Avoid testing product_name() and the methods that are using it:
+# This will break because we needed to suppress
+#
+#   require "y2packager/product_spec"
+#
+# by overloading Kernel::require in ./test_helper.rb to avoid a cyclic
+# dependency between this package and yast2-packager.
+#
+# It will work when running the unit tests locally, but it will break in an
+# autobuild environment ("rake osc:build", "rake osc:sr") which is called in
+# Jenkins because unlike any real-life system using YaST, an AutoBuild
+# environment will NOT install yast2-packager anyway to satisfy other
+# requirements. So this problem is hard to spot.
+#
+# It might be possible to force it to work with some heavy monkey-patching and
+# instance_double, but for the extent of useful testing that it might bring,
+# this is simply not worthwhile.
+#
+# 2022-05-04 shundhammer
+#
 describe "Yast::SlideShow" do
   before(:each) do
     Yast.y2milestone "--------- Running test ---------"
     allow(::File).to receive(:exist?).and_return(true)
   end
 
-  TOTAL_PROGRESS_ID = Yast::SlideShowClass::UI_ID::TOTAL_PROGRESS
+  TOTAL_PROGRESS_ID = :progressTotal
 
   describe "#UpdateGlobalProgress" do
     before(:each) do

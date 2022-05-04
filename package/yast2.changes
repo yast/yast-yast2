@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue May  3 14:05:10 UTC 2022 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Show what product is being installed (bsc#1196674)
+- 4.5.2
+
+-------------------------------------------------------------------
 Thu Apr  7 11:43:15 UTC 2022 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Show file conflict checking progress in delayed popup (bsc#1195608)
