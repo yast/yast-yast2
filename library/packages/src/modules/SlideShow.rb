@@ -100,7 +100,6 @@
 # - release notes viewer
 require "yast"
 require "yast2/system_time"
-require "y2packager/product_spec"
 
 module Yast
   class SlideShowClass < Module
@@ -421,10 +420,16 @@ module Yast
       # always return 'nil' anyway.
       return nil if Mode.normal
 
+      # lazy load product spec as it lives in packager and maybe is not available
+      require "y2packager/product_spec"
       product = Y2Packager::ProductSpec.selected_base
       return nil if product.nil?
 
       product.display_name
+    rescue LoadError
+      log.info "product spec not available. Probably packager missing"
+
+      nil
     end
 
     # Construct widgets describing a page with the real slide show
