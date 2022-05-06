@@ -427,7 +427,7 @@ module Yast
 
       product.display_name
     rescue LoadError
-      log.info "product spec not available. Probably packager missing"
+      log.info "product spec not available. Probably yast2-packager is missing"
 
       nil
     end
