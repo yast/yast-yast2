@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.4.49
+Version:        4.4.50
 
 Release:        0
 Summary:        YaST2 Main Package
@@ -63,16 +63,6 @@ BuildRequires:  yast2-ycp-ui-bindings >= 4.3.3
 # these should be installed in the default build anyway
 BuildRequires:  cpio
 BuildRequires:  rpm
-
-# Intentionally NOT requiring or build-requiring yast2-packager
-# to avoid a cyclic dependency.
-#
-# For the BuildRequires, see test_helper.rb and slide_show_test.rb
-# in library/packages/test/ .
-#
-# For the runtime Requires, it can safely be assumed that every system that
-# does any package installation has yast2-packager from the dependencies of the
-# client module that does that.
 
 # for ag_tty (/bin/stty)
 # for /usr/bin/md5sum
