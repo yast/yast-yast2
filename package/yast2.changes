@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri May  6 15:23:06 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
+
+- Avoid build failures when packager is not available (related to
+  bsc#1196674)
+- 4.4.50
+
+-------------------------------------------------------------------
 Tue May  3 14:05:10 UTC 2022 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Show what product is being installed (bsc#1196674)
