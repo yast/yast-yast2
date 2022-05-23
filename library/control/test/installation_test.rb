@@ -23,4 +23,58 @@ describe Yast::Installation do
       subject.sourcedir
     end
   end
+
+  # test the module constructor
+  describe "#Installation (module constructor)" do
+    before do
+      # mock a running system
+      allow(Yast::Stage).to receive(:cont).and_return(false)
+      allow(Yast::Stage).to receive(:initial).and_return(false)
+    end
+
+    before(:each) do
+      # reset the value before each run
+      subject.destdir = "/"
+    end
+
+    context "YAST_TARGET_DIR is not set" do
+      before do
+        expect(ENV).to receive(:[]).with("YAST_TARGET_DIR").and_return(nil)
+      end
+
+      it "sets the 'destdir' to /" do
+        subject.Installation
+        expect(subject.destdir).to eq("/")
+      end
+    end
+
+    context "YAST_TARGET_DIR is set" do
+      let(:target_dir) { "/mnt" }
+      before do
+        expect(ENV).to receive(:[]).with("YAST_TARGET_DIR").and_return(target_dir)
+      end
+
+      context "the target directory exists" do
+        before do
+          expect(File).to receive(:directory?).with(target_dir).and_return(true)
+        end
+
+        it "sets the 'destdir' to the target directory" do
+          subject.Installation
+          expect(subject.destdir).to eq(target_dir)
+        end
+      end
+
+      context "the target directory does not exist" do
+        before do
+          expect(File).to receive(:directory?).with(target_dir).and_return(false)
+        end
+
+        it "aborts with an error" do
+          expect(subject).to receive(:abort)
+          subject.Installation
+        end
+      end
+    end
+  end
 end

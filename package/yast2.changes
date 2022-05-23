@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon May 23 15:10:38 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
+
+- Added experimental infrastructure for managing system in
+  a chroot (bsc#1199840)
+- 4.5.4
+
+-------------------------------------------------------------------
 Fri May  6 15:23:06 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 
 - Avoid build failures when packager is not available (related to

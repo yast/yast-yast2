@@ -290,4 +290,42 @@ describe Yast::Arch do
       end
     end
   end
+
+  describe ".chroot_management" do
+    before do
+      expect(ENV).to receive(:[]).with("YAST_TARGET_DIR").and_return(target_dir)
+    end
+
+    context "YAST_TARGET_DIR is set" do
+      let(:target_dir) { "/mnt" }
+
+      before do
+        expect(File).to receive(:directory?).with(target_dir).and_return(target_exists)
+      end
+
+      context "the target directory exists" do
+        let(:target_exists) { true }
+
+        it "returns true" do
+          expect(subject.chroot_management).to eq(true)
+        end
+      end
+
+      context "the target directory does not exist" do
+        let(:target_exists) { false }
+
+        it "returns false" do
+          expect(subject.chroot_management).to eq(false)
+        end
+      end
+    end
+
+    context "YAST_TARGET_DIR is not set" do
+      let(:target_dir) { nil }
+
+      it "returns false" do
+        expect(subject.chroot_management).to eq(false)
+      end
+    end
+  end
 end
