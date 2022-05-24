@@ -26,53 +26,36 @@ describe Yast::Installation do
 
   # test the module constructor
   describe "#Installation (module constructor)" do
-    before do
-      # mock a running system
-      allow(Yast::Stage).to receive(:cont).and_return(false)
-      allow(Yast::Stage).to receive(:initial).and_return(false)
-    end
-
-    before(:each) do
-      # reset the value before each run
+    after(:each) do
+      # reset the value after each run
       subject.destdir = "/"
     end
 
-    context "YAST_TARGET_DIR is not set" do
+    context "in a running system" do
       before do
-        expect(ENV).to receive(:[]).with("YAST_TARGET_DIR").and_return(nil)
+        # mock a running system
+        allow(Yast::Stage).to receive(:cont).and_return(false)
+        allow(Yast::Stage).to receive(:initial).and_return(false)
+
+        allow(Yast::WFM).to receive(:scr_root).and_return(scr_chroot)
+        allow(Yast::WFM).to receive(:scr_chrooted?).and_return(scr_chroot != "/")
       end
 
-      it "sets the 'destdir' to /" do
-        subject.Installation
-        expect(subject.destdir).to eq("/")
-      end
-    end
+      context "SCR runs in a chroot" do
+        let(:scr_chroot) { "/mnt" }
 
-    context "YAST_TARGET_DIR is set" do
-      let(:target_dir) { "/mnt" }
-      before do
-        expect(ENV).to receive(:[]).with("YAST_TARGET_DIR").and_return(target_dir)
-      end
-
-      context "the target directory exists" do
-        before do
-          expect(File).to receive(:directory?).with(target_dir).and_return(true)
-        end
-
-        it "sets the 'destdir' to the target directory" do
+        it "sets the 'destdir' to the chroot" do
           subject.Installation
-          expect(subject.destdir).to eq(target_dir)
+          expect(subject.destdir).to eq(scr_chroot)
         end
       end
 
-      context "the target directory does not exist" do
-        before do
-          expect(File).to receive(:directory?).with(target_dir).and_return(false)
-        end
+      context "SCR runs in the root" do
+        let(:scr_chroot) { "/" }
 
-        it "aborts with an error" do
-          expect(subject).to receive(:abort)
+        it "leaves the 'destdir' at the default root" do
           subject.Installation
+          expect(subject.destdir).to eq(scr_chroot)
         end
       end
     end

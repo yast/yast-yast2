@@ -516,23 +516,6 @@ module Yast
       SCR.Read(path(".target.string"), "/proc/sys/kernel/osrelease").to_s.downcase.include?("-microsoft")
     end
 
-    # Check whether managing another target system. The target system location
-    # is then specified in the Installation.destdir value.
-    #
-    # @note Technically the management can run in a chroot or in a Linux
-    #   container (Docker, Podman,...), or using a Live medium... It does not
-    #   check how it is implemented.
-    #
-    #   The main goal is to distinguish between running in a container and managing
-    #   the container itself or running in a container and managing the host
-    #   system which runs the container.
-    #
-    # @return [Boolean] true if managing another system in chroot/container
-    def chroot_management
-      target_dir = ENV["YAST_TARGET_DIR"] || ""
-      File.directory?(target_dir)
-    end
-
     # map the Arch.architecture to the arch expected by SCC
     RPM_ARCH = {
       "s390_32" => "s390",

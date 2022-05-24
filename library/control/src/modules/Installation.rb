@@ -212,16 +212,9 @@ module Yast
       elsif Stage.initial
         @destdir = "/mnt"
         @scr_destdir = "/mnt"
-      end
-
-      # managing another system in a chroot
-      target_dir = ENV["YAST_TARGET_DIR"] || ""
-      if !target_dir.empty?
-        if File.directory?(target_dir)
-          @destdir = target_dir
-        else
-          abort "Cannot set the target, directory #{target_dir} not found"
-        end
+      elsif WFM.scr_chrooted?
+        @destdir = WFM.scr_root
+        @scr_destdir = WFM.scr_root
       end
 
       nil
