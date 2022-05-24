@@ -212,6 +212,9 @@ module Yast
       elsif Stage.initial
         @destdir = "/mnt"
         @scr_destdir = "/mnt"
+      elsif WFM.scr_chrooted?
+        @destdir = WFM.scr_root
+        @scr_destdir = WFM.scr_root
       end
 
       nil
