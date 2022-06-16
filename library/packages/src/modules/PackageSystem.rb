@@ -49,6 +49,7 @@ module Yast
       Yast.import "Report"
       Yast.import "Stage"
       Yast.import "CommandLine"
+      Yast.import "Installation"
 
       # Was last operation canceled?
       #
@@ -82,7 +83,7 @@ module Yast
 
       PackageLock.Check
       # always initizalize target, it should be cheap according to #45356
-      @target_initialized = Pkg.TargetInit("/", false)
+      @target_initialized = Pkg.TargetInit(Installation.destdir, false)
 
       nil
     end

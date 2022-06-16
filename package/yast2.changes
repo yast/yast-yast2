@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jun 16 11:06:09 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
+
+- Allow to install missing packages in chroot (bsc#1199840)
+- 4.5.5
+
+-------------------------------------------------------------------
 Mon May 23 15:10:38 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
 
 - Added experimental infrastructure for managing system in
