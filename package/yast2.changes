@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun 24 12:08:30 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
+
+- save_y2logs - check both Packages and Packages.db in
+  /var/lib/rpm (bsc#1200831)
+- 4.5.6
+
+-------------------------------------------------------------------
 Thu Jun 16 11:06:09 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 
 - Allow to install missing packages in chroot (bsc#1199840)
