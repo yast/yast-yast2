@@ -54,8 +54,8 @@ BuildRequires:  yast2-pkg-bindings >= 4.3.7
 BuildRequires:  rubygem(%rb_default_ruby_abi:yast-rake)
 # for XML module
 BuildRequires:  rubygem(%rb_default_ruby_abi:nokogiri)
-# yast/rspec/helpers.rb
-BuildRequires:  yast2-ruby-bindings >= 4.4.7
+# log.group call
+BuildRequires:  yast2-ruby-bindings >= 4.5.4
 BuildRequires:  yast2-testsuite
 # Nested items in tables
 BuildRequires:  yast2-ycp-ui-bindings >= 4.3.3
@@ -90,8 +90,8 @@ Requires:       yast2-hardware-detection
 Requires:       yast2-perl-bindings
 # Pkg.Resolvables() with "path" search support
 Requires:       yast2-pkg-bindings >= 4.3.7
-# for y2start
-Requires:       yast2-ruby-bindings >= 3.2.10
+# log.group
+Requires:       yast2-ruby-bindings >= 4.5.4
 # Nested items in tables
 Requires:       yast2-ycp-ui-bindings >= 4.3.3
 Requires:       yui_backend

@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Oct 25 08:32:48 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
+
+- Improve logging in the ProductControl module, use the new
+  "log.group" call to group logs for each workflow step
+  (bsc#1204625)
+- 4.5.18
+
+-------------------------------------------------------------------
 Fri Oct 14 14:54:58 UTC 2022 - Steffen Winterfeldt <snwint@suse.com>
 
 - remove #postprocess_url from RelURL class (jsc#SLE-22578, jsc#SLE-24584)
