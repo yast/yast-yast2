@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Jul 22 12:13:13 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
+
+- Text mode control center: always display the YaST modules
+  installed in the system root (when running in a container
+  display the modules installed in the container) (bsc#1199840)
+- 4.5.7
+
+-------------------------------------------------------------------
 Fri Jun 24 12:08:30 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
 
 - save_y2logs - check both Packages and Packages.db in

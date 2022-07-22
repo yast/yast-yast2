@@ -66,6 +66,13 @@ module Yast
         "Hidden"
       ]
 
+      # always load the desktop files from the system root
+      if WFM.scr_chrooted?
+        # revert back the chrooting
+        handle = Yast::WFM.SCROpen("chroot=/:scr", false)
+        Yast::WFM.SCRSetDefault(handle)
+      end
+
       Desktop.Read(@Values)
       @Groups = deep_copy(Desktop.Groups)
       @Modules = deep_copy(Desktop.Modules)
