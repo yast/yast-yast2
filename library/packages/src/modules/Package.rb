@@ -32,6 +32,7 @@
 # <a href="../index.html">.../docs/index.html</a>.
 require "yast"
 require "forwardable"
+require "y2packager/resolvable"
 
 Yast.import "Mode"
 Yast.import "PackageAI"
@@ -219,6 +220,18 @@ module Yast
     def reset
       @installed_packages.clear
       @removed_packages.clear
+    end
+
+    # Tries to find a package according to the pattern
+    #
+    # @param pattern [String] a pattern to match, no escaping done
+    # @return list of matching package names
+    def by_pattern(pattern = "")
+      init_packager
+      Y2Packager::Resolvable.find(provides_regexp: "^#{pattern}$")
+        .select{|p| p.name =~ /\A#{pattern}\z/ }
+        .map(&:name)
+        .uniq
     end
 
     # Are all of these packages available?
@@ -432,6 +445,7 @@ module Yast
       @last_op_canceled
     end
 
+    publish function: :by_pattern, type: "list <string> (string)"
     publish function: :Available, type: "boolean (string)"
     publish function: :Installed, type: "boolean (string)"
     publish function: :DoInstall, type: "boolean (list <string>)"
@@ -457,6 +471,14 @@ module Yast
     publish function: :InstallKernel, type: "boolean (list <string>)"
 
   private
+
+    # Makes sure the package database is initialized.
+    def init_packager
+      Pkg.TargetInitialize(Installation.destdir)
+      Pkg.TargetLoad
+      Pkg.SourceRestore
+      Pkg.SourceLoad
+    end
 
     # If Yast is running in the autoyast configuration mode
     # no changes will be done on the target system by using
