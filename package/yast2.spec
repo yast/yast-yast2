@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.4.51
+Version:        4.4.52
 
 Release:        0
 Summary:        YaST2 Main Package
