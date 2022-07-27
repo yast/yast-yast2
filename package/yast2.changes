@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 27 13:41:45 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
+
+- Fixed libzypp initialization, in the YaST container read the
+  configured repositories from the host (related to bsc#1199840)
+- 4.5.8
+
+-------------------------------------------------------------------
 Fri Jul 22 12:13:13 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
 
 - Text mode control center: always display the YaST modules
