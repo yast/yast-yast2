@@ -213,22 +213,38 @@ describe Packages::FileConflictCallbacks do
         progress_cb.call(progress)
       end
 
-      it "returns false to abort if user clicks Abort" do
-        expect(Yast::UI).to receive(:PollInput).and_return(:abort)
+      context "when the delayed progress popup is open" do
+        before do
+          allow_any_instance_of(Yast::DelayedProgressPopup).to receive(:open?).and_return(true)
+        end
 
-        expect(progress_cb.call(progress)).to eq(false)
+        it "returns false to abort if user clicks Abort" do
+          expect(Yast::UI).to receive(:PollInput).and_return(:abort)
+
+          expect(progress_cb.call(progress)).to eq(false)
+        end
+
+        it "returns true to continue when no user input" do
+          expect(Yast::UI).to receive(:PollInput).and_return(nil)
+
+          expect(progress_cb.call(progress)).to eq(true)
+        end
+
+        it "returns true to continue on unknown user input" do
+          expect(Yast::UI).to receive(:PollInput).and_return(:next)
+
+          expect(progress_cb.call(progress)).to eq(true)
+        end
       end
 
-      it "returns true to continue when no user input" do
-        expect(Yast::UI).to receive(:PollInput).and_return(nil)
+      context "when the delayed progress popup is NOT open" do
+        before do
+          allow_any_instance_of(Yast::DelayedProgressPopup).to receive(:open?).and_return(false)
+        end
 
-        expect(progress_cb.call(progress)).to eq(true)
-      end
-
-      it "returns true to continue on unknown user input" do
-        expect(Yast::UI).to receive(:PollInput).and_return(:next)
-
-        expect(progress_cb.call(progress)).to eq(true)
+        it "returns true to continue" do
+          expect(progress_cb.call(progress)).to eq(true)
+        end
       end
     end
   end

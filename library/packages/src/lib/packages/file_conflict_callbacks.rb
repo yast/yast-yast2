@@ -129,12 +129,14 @@ module Packages
 
         if Yast::Mode.commandline
           Yast::CommandLine.PrintVerboseNoCR("#{Yast::PackageCallbacksClass::CLEAR_PROGRESS_TEXT}#{progress}%")
-        else
-          delayed_progress_popup.progress(progress)
+          return true
         end
 
-        ui = Yast::UI.PollInput unless Yast::Mode.commandline
-        log.info "User input in file conflict progress (#{progress}%): #{ui}" if ui
+        delayed_progress_popup.progress(progress)
+        return true unless delayed_progress_popup.open?
+
+        ui = Yast::UI.PollInput
+        log.info "User input in file conflict progress (#{progress}%): #{ui}"
 
         ui != :abort && ui != :cancel
       end
