@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Aug 31 06:47:29 UTC 2022 - Michal Filka <mfilka@suse.com>
+
+- Do not ask for user input while checking file conflicts if the
+  delayed progress popup is not shown (bsc#1201924)
+- backported from master
+- 4.4.51
+
+-------------------------------------------------------------------
 Fri May  6 15:23:06 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 
 - Avoid build failures when packager is not available (related to
