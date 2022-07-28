@@ -231,10 +231,10 @@ module Yast
 
       init_packager
 
-      # NOTE:
-      # - Resolvable.find takes POSIX regexp, later select uses Ruby regexp
-      # - Resolvable.find supports regexps only for dependencies, so we need to
-      # filter result according to package name
+      # NOTE: Resolvable.find
+      # - takes POSIX regexp, later select uses Ruby regexp
+      # - supports regexps only for dependencies, so we need to filter result
+      # according to package name
       Y2Packager::Resolvable.find({ provides_regexp: "^#{pattern}$" }, [:name])
         .select { |p| p.name =~ /\A#{pattern}\z/ }
         .map(&:name)
