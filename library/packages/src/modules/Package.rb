@@ -236,7 +236,7 @@ module Yast
       # - Resolvable.find supports regexps only for dependencies, so we need to
       # filter result according to package name
       Y2Packager::Resolvable.find({ provides_regexp: "^#{pattern}$" }, [:name])
-        .select{|p| p.name =~ /\A#{pattern}\z/ }
+        .select { |p| p.name =~ /\A#{pattern}\z/ }
         .map(&:name)
         .uniq
     end
