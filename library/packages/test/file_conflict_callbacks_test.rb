@@ -242,6 +242,10 @@ describe Packages::FileConflictCallbacks do
           allow_any_instance_of(Yast::DelayedProgressPopup).to receive(:open?).and_return(false)
         end
 
+        it "does not ask for user input" do
+          expect(Yast::UI).to_not receive(:PollInput)
+        end
+
         it "returns true to continue" do
           expect(progress_cb.call(progress)).to eq(true)
         end
