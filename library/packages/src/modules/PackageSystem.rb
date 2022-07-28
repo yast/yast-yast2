@@ -154,8 +154,8 @@ module Yast
       Builtins.y2debug("toinstall: %1, toremove: %2", toinstall, toremove)
       return false if !PackageLock.Check
 
-      EnsureSourceInit()
       EnsureTargetInit()
+      EnsureSourceInit()
       ok = true
 
       Yast.import "Label"
@@ -272,9 +272,20 @@ module Yast
       true
     end
 
+    # Install and remove requested packages
+    # @note The packages are by default installed also with soft dependencies
+    #   (like Recommends or Supplements)
+    # @param toinstall [Array<String>] the list of package to install (package names)
+    # @param toremove [Array<String>] the list of package to remove (package names)
+    # @return [Boolean] `true`` on success, `false` on error
     def DoInstallAndRemove(toinstall, toremove)
-      toinstall = deep_copy(toinstall)
-      toremove = deep_copy(toremove)
+      return false if !PackageLock.Check
+
+      # the DoInstallAndRemoveInt() call initializes the libzypp internally
+      # but we need initialized libzypp earlier to change the solver settings
+      EnsureTargetInit()
+      EnsureSourceInit()
+
       # remember the current solver flags
       solver_flags = Pkg.GetSolverFlags
 
@@ -292,6 +303,7 @@ module Yast
     # Is a package available?
     # @return true if yes (nil = no package source available)
     def Available(package)
+      EnsureTargetInit()
       EnsureSourceInit()
 
       # at least one enabled repository present?
@@ -362,6 +374,7 @@ module Yast
     # Is a package available? Checks only package name, not list of provides.
     # @return true if yes (nil = no package source available)
     def PackageAvailable(package)
+      EnsureTargetInit()
       EnsureSourceInit()
 
       # at least one enabled repository present?
