@@ -224,11 +224,18 @@ module Yast
 
     # Tries to find a package according to the pattern
     #
-    # @param pattern [String] a pattern to match, no escaping done
+    # @param pattern [String] a regex pattern to match, no escaping done
     # @return list of matching package names
-    def by_pattern(pattern = "")
+    def by_pattern(pattern)
+      raise ArgumentError, "Missing search pattern" if pattern.nil? || pattern.empty?
+
       init_packager
-      Y2Packager::Resolvable.find(provides_regexp: "^#{pattern}$")
+
+      # NOTE:
+      # - Resolvable.find takes POSIX regexp, later select uses Ruby regexp
+      # - Resolvable.find supports regexps only for dependencies, so we need to
+      # filter result according to package name
+      Y2Packager::Resolvable.find({ provides_regexp: "^#{pattern}$" }, [:name])
         .select{|p| p.name =~ /\A#{pattern}\z/ }
         .map(&:name)
         .uniq
