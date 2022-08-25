@@ -452,30 +452,44 @@ module Yast
       @last_op_canceled
     end
 
-    publish function: :by_pattern, type: "list <string> (string)"
+    # Return if system is transactional and does not support direct package
+    # install
+    def TransactionalSystem
+      return @transactional unless @transactional.nil?
+      mounts = SCR.Read(path(".proc.mounts"))
+      root = mounts.find { |m| m["file"] == WFM.scr_root }
+      log.info "root in mounts #{root.inspect}"
+
+      raise "Failed to find #{WFM.scr_root} at /proc/mounts" unless root
+      # check if there are ro keyword in mount
+      @transactional = /(?:^|,)ro(?:,|$)/.match?(root["mntops"])
+    end
+
     publish function: :Available, type: "boolean (string)"
-    publish function: :Installed, type: "boolean (string)"
-    publish function: :DoInstall, type: "boolean (list <string>)"
-    publish function: :DoRemove, type: "boolean (list <string>)"
-    publish function: :DoInstallAndRemove, type: "boolean (list <string>, list <string>)"
     publish function: :AvailableAll, type: "boolean (list <string>)"
     publish function: :AvailableAny, type: "boolean (list <string>)"
-    publish function: :InstalledAll, type: "boolean (list <string>)"
-    publish function: :InstalledAny, type: "boolean (list <string>)"
-    publish function: :InstallMsg, type: "boolean (string, string)"
-    publish function: :InstallAllMsg, type: "boolean (list <string>, string)"
-    publish function: :InstallAnyMsg, type: "boolean (list <string>, string)"
-    publish function: :RemoveMsg, type: "boolean (string, string)"
-    publish function: :RemoveAllMsg, type: "boolean (list <string>, string)"
+    publish function: :DoInstall, type: "boolean (list <string>)"
+    publish function: :DoInstallAndRemove, type: "boolean (list <string>, list <string>)"
+    publish function: :DoRemove, type: "boolean (list <string>)"
     publish function: :Install, type: "boolean (string)"
     publish function: :InstallAll, type: "boolean (list <string>)"
+    publish function: :InstallAllMsg, type: "boolean (list <string>, string)"
     publish function: :InstallAny, type: "boolean (list <string>)"
-    publish function: :Remove, type: "boolean (string)"
-    publish function: :RemoveAll, type: "boolean (list <string>)"
+    publish function: :InstallAnyMsg, type: "boolean (list <string>, string)"
+    publish function: :InstallKernel, type: "boolean (list <string>)"
+    publish function: :InstallMsg, type: "boolean (string, string)"
+    publish function: :Installed, type: "boolean (string)"
+    publish function: :InstalledAll, type: "boolean (list <string>)"
+    publish function: :InstalledAny, type: "boolean (list <string>)"
     publish function: :LastOperationCanceled, type: "boolean ()"
     publish function: :PackageAvailable, type: "boolean (string)"
     publish function: :PackageInstalled, type: "boolean (string)"
-    publish function: :InstallKernel, type: "boolean (list <string>)"
+    publish function: :Remove, type: "boolean (string)"
+    publish function: :RemoveAll, type: "boolean (list <string>)"
+    publish function: :RemoveAllMsg, type: "boolean (list <string>, string)"
+    publish function: :RemoveMsg, type: "boolean (string, string)"
+    publish function: :TransactionalSystem, type: "boolean ()"
+    publish function: :by_pattern, type: "list <string> (string)"
 
   private
 
