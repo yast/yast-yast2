@@ -393,7 +393,7 @@ describe Yast::Package do
         )
 
         expect(Yast::Popup).to receive(:LongMessage)
-        expect{subject.PackageDialog(packages, true, nil)}.to raise_error(Yast::AbortException)
+        expect { subject.PackageDialog(packages, true, nil) }.to raise_error(Yast::AbortException)
       end
     end
 
