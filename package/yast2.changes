@@ -1,10 +1,10 @@
 -------------------------------------------------------------------
 Fri Aug 26 13:18:39 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 
-- Inform user when running on transactional system that it needs
-  to install packages himself together with list of that packages
-  (related to bsc#1199840)
+- On transactional systems, inform the user that packages are
+  required to be installed manually (related to bsc#1199840)
 - 4.5.11
+
 -------------------------------------------------------------------
 Thu Jul 28 09:40:31 UTC 2022 - David Diaz <dgonzalez@suse.com>
 
