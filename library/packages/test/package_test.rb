@@ -559,7 +559,7 @@ describe Yast::Package do
     end
   end
 
-  describe "#TransactionalSystem" do
+  describe "#IsTransactionalSystem" do
     before do
       # reset cache
       subject.instance_variable_set(:@transactional, nil)
@@ -577,7 +577,7 @@ describe Yast::Package do
         }]
       )
 
-      expect(subject.TransactionalSystem).to eq false
+      expect(subject.IsTransactionalSystem).to eq false
     end
 
     it "returns true if system is transactional" do
@@ -592,7 +592,7 @@ describe Yast::Package do
         }]
       )
 
-      expect(subject.TransactionalSystem).to eq true
+      expect(subject.IsTransactionalSystem).to eq true
     end
   end
 end

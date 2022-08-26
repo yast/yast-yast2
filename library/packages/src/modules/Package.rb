@@ -457,7 +457,8 @@ module Yast
 
     # Return if system is transactional and does not support direct package
     # install
-    def TransactionalSystem
+    # @return [Boolean]
+    def IsTransactionalSystem
       return @transactional unless @transactional.nil?
       mounts = SCR.Read(path(".proc.mounts"))
       root = mounts.find { |m| m["file"] == WFM.scr_root }
@@ -491,7 +492,7 @@ module Yast
     publish function: :RemoveAll, type: "boolean (list <string>)"
     publish function: :RemoveAllMsg, type: "boolean (list <string>, string)"
     publish function: :RemoveMsg, type: "boolean (string, string)"
-    publish function: :TransactionalSystem, type: "boolean ()"
+    publish function: :IsTransactionalSystem, type: "boolean ()"
     publish function: :by_pattern, type: "list <string> (string)"
 
   private
@@ -533,7 +534,7 @@ module Yast
     # checks if working on transactional system
     # if so, then it shows popup to user and abort yast
     def check_transactional_system!(packages, mode = :install)
-      return unless TransactionalSystem()
+      return unless IsTransactionalSystem()
 
       msg = _("Transactional system detected. ")
       case mode
