@@ -558,4 +558,41 @@ describe Yast::Package do
       subject.RemoveAllMsg(["firewalld", "yast2"], "Remove?")
     end
   end
+
+  describe "#IsTransactionalSystem" do
+    before do
+      # reset cache
+      subject.instance_variable_set(:@transactional, nil)
+    end
+
+    it "returns false if system is not transactional" do
+      allow(Yast::SCR).to receive(:Read).and_return(
+        [{
+          "file"    => "/",
+          "freq"    => 0,
+          "mntops"  => "rw,relatime",
+          "passno"  => 0,
+          "spec"    => "/dev/nvme0n1p2",
+          "vfstype" => "ext4"
+        }]
+      )
+
+      expect(subject.IsTransactionalSystem).to eq false
+    end
+
+    it "returns true if system is transactional" do
+      allow(Yast::SCR).to receive(:Read).and_return(
+        [{
+          "file"    => "/",
+          "freq"    => 0,
+          "mntops"  => "ro,seclabel,relatime,subvolid=244,subvol=/@/.snapshots/8/snapshot",
+          "passno"  => 0,
+          "spec"    => "/dev/vda3",
+          "vfstype" => "ext4"
+        }]
+      )
+
+      expect(subject.IsTransactionalSystem).to eq true
+    end
+  end
 end
