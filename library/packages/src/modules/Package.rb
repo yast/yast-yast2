@@ -34,9 +34,11 @@ require "yast"
 require "forwardable"
 require "y2packager/resolvable"
 
+Yast.import "CommandLine"
 Yast.import "Mode"
 Yast.import "PackageAI"
 Yast.import "PackageSystem"
+Yast.import "Popup"
 
 module Yast
   # This module implements support to query, install and remove packages.
@@ -329,14 +331,15 @@ module Yast
     # @param [String] message optional installation|removal text (nil -> standard will be used)
     # @return true on success
     def PackageDialog(packages, install, message)
-      packages = deep_copy(packages)
-      Builtins.y2debug("Asking for packages: %1", packages)
+      log.info "Asking for packages: #{packages}"
       packs = Builtins.filter(packages) do |package|
         install ? !Installed(package) : Installed(package)
       end
-      Builtins.y2debug("Remaining packages: %1", packs)
+      log.info "Remaining packages: #{packs}"
 
-      return true if Ops.less_than(Builtins.size(packs), 1)
+      return true if packs.empty?
+
+      check_transactional_system!(packs, install ? :install : :remove)
 
       # Popup Text
       text = _("These packages need to be installed:") + "<p>"
@@ -525,6 +528,24 @@ module Yast
       log.warn "select_backend: target '#{target}' is unknown." if found_backend.nil?
 
       found_backend || backend
+    end
+
+    # checks if working on transactional system
+    # if so, then it shows popup to user and abort yast
+    def check_transactional_system!(packages, mode = :install)
+      return unless TransactionalSystem()
+
+      msg = _("Transactional system detected. ")
+      case mode
+      when :install then msg += _("Following packages have to be installed manually:")
+      when :remove then msg += _("Following packages have to be removed manually:")
+      else
+        raise "Unknown mode #{mode}"
+      end
+      msg += "<p><ul><li>#{packages.join("</li><li>")}</li></ul></p>"
+      msg += _("Please start YaST again after reboot.")
+      Popup.LongMessage(msg)
+      raise Yast::AbortException
     end
   end
 
