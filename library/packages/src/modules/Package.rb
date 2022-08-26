@@ -460,11 +460,13 @@ module Yast
     # @return [Boolean]
     def IsTransactionalSystem
       return @transactional unless @transactional.nil?
+
       mounts = SCR.Read(path(".proc.mounts"))
       root = mounts.find { |m| m["file"] == WFM.scr_root }
       log.info "root in mounts #{root.inspect}"
 
       raise "Failed to find #{WFM.scr_root} at /proc/mounts" unless root
+
       # check if there are ro keyword in mount
       @transactional = /(?:^|,)ro(?:,|$)/.match?(root["mntops"])
     end
