@@ -25,6 +25,11 @@ Yast.import "Mode"
 describe Yast::Package do
   subject { Yast::Package }
 
+  before do
+    # reset cache
+    subject.instance_variable_set(:@transactional, nil)
+  end
+
   describe "#CheckAndInstallPackages" do
     let(:installed) { false }
 
@@ -361,6 +366,35 @@ describe Yast::Package do
       allow(Yast::Mode).to receive(:commandline).and_return(commandline)
       allow(Yast::CommandLine).to receive(:Interactive).and_return(interactive)
       allow(Yast::Popup).to receive(:AnyQuestionRichText).and_return(confirm)
+
+      allow(Yast::SCR).to receive(:Read).and_return(
+        [{
+          "file"    => "/",
+          "freq"    => 0,
+          "mntops"  => "rw,relatime",
+          "passno"  => 0,
+          "spec"    => "/dev/nvme0n1p2",
+          "vfstype" => "ext4"
+        }]
+      )
+    end
+
+    context "when run on transactional system" do
+      it "shows popup and abort" do
+        allow(Yast::SCR).to receive(:Read).and_return(
+          [{
+            "file"    => "/",
+            "freq"    => 0,
+            "mntops"  => "ro,relatime",
+            "passno"  => 0,
+            "spec"    => "/dev/nvme0n1p2",
+            "vfstype" => "ext4"
+          }]
+        )
+
+        expect(Yast::Popup).to receive(:LongMessage)
+        expect { subject.PackageDialog(packages, true, nil) }.to raise_error(Yast::AbortException)
+      end
     end
 
     context "when installing packages" do
@@ -560,11 +594,6 @@ describe Yast::Package do
   end
 
   describe "#IsTransactionalSystem" do
-    before do
-      # reset cache
-      subject.instance_variable_set(:@transactional, nil)
-    end
-
     it "returns false if system is not transactional" do
       allow(Yast::SCR).to receive(:Read).and_return(
         [{
