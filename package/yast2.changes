@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep  1 08:08:30 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
+
+- Allow to force an enablement of the selected network service even
+  when the selected service has not been modified (bsc#1202479)
+- 4.4.52
+
+-------------------------------------------------------------------
 Wed Aug 31 06:47:29 UTC 2022 - Michal Filka <mfilka@suse.com>
 
 - Do not ask for user input while checking file conflicts if the
