@@ -47,42 +47,50 @@ describe Yast::NetworkService do
 
   describe "#EnableDisableNow" do
     subject { Yast::NetworkService }
+    let(:current_name) { :wicked }
+    let(:cached_name) { :wicked }
 
     before(:each) do
-      expect(subject).to receive(:Modified).and_return(true)
+      allow(subject).to receive(:Modified).and_return(current_name != cached_name)
+      allow(subject).to receive(:cached_name).and_return(cached_name)
+      allow(subject).to receive(:current_name).and_return(current_name)
+    end
+
+    context "when the service has not changed but it is forced to be enabled" do
+      it "enables the selected service" do
+        expect(subject).to receive(:RunSystemCtl).with("wicked", "enable", any_args)
+
+        subject.EnableDisableNow(force: true)
+      end
     end
 
     context "When changing running service" do
-      before(:each) do
-        allow(subject).to receive(:current_name).and_return(:netconfig)
+      let(:current_name) { :netconfig }
 
+      before(:each) do
         # using anything instead of exact service name because of some magic in identifying the service in the system
         expect(subject).to receive(:RunSystemCtl).with(anything, /stop|kill/)
         expect(subject).to receive(:RunSystemCtl).with("network", "disable")
       end
 
       it "disables old service and enables new one" do
-        allow(subject).to receive(:cached_name).and_return(:wicked)
-
         expect(subject).to receive(:RunSystemCtl).with("wicked", "enable", any_args)
 
         subject.EnableDisableNow
       end
 
-      it "only disables old service when no network service was requested" do
-        allow(subject).to receive(:cached_name).and_return(nil)
+      context "when no service is selected to be run" do
+        let(:cached_name) { nil }
 
-        expect(subject).not_to receive(:RunSystemCtl).with("wicked", "enable", any_args)
-
-        subject.EnableDisableNow
+        it "only disables old service when no network service was requested" do
+          expect(subject).not_to receive(:RunSystemCtl).with(anything, "enable", any_args)
+          subject.EnableDisableNow
+        end
       end
     end
 
     context "When activating a service if none is running" do
-      before(:each) do
-        allow(subject).to receive(:current_name).and_return(nil)
-        allow(subject).to receive(:cached_name).and_return(:wicked)
-      end
+      let(:current_name) { nil }
 
       it "activates new service" do
         expect(subject).to receive(:RunSystemCtl).with("wicked", "enable", any_args)
