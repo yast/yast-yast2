@@ -240,7 +240,7 @@ module Yast
     # Helper to apply a change of the network service
     # @param force [Boolean] whether the service should forced to be enabled or not
     def EnableDisableNow(force: false)
-      return if !force && !Modified()
+      return unless force || Modified()
 
       if current_name && Modified()
         stop_service(current_name)

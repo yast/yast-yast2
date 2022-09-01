@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
 Thu Sep  1 08:08:30 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
 
-- Allow to force an enablement of the selected network service even
-  when the selected service has not been modified (bsc#1202479)
+- Added a parameter to NetworkService.EnableDisableNow method in
+  order to ensure that the selected network service is enabled even
+  when the selection has not been modified (bsc#1202479)
 - 4.4.52
 
 -------------------------------------------------------------------
