@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Sep  1 08:08:30 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
+
+- Added a parameter to NetworkService.EnableDisableNow method in
+  order to ensure that the selected network service is enabled even
+  when the selection has not been modified (bsc#1202479)
+- 4.5.12
+
+-------------------------------------------------------------------
 Fri Aug 26 13:18:39 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 
 - On transactional systems, inform the user that packages are
