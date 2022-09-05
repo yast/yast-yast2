@@ -237,11 +237,18 @@ module Yast
       @cached_name = nil
     end
 
-    # Helper to apply a change of the network service
-    def EnableDisableNow
-      return if !Modified()
+    # Helper to apply a change of the network service enabling the service selected and taking care
+    # of disabling the current one in case of modified.
+    #
+    # TODO: this method could take care of disabling all the services except the one selected in
+    #   order to prevent that multiple backends are enabled at the same time.
+    #
+    # @param force [Boolean] whether the service should forced to be enabled or not; it will not
+    #   disable other services apart of the one currently in use in case of modified
+    def EnableDisableNow(force: false)
+      return unless force || Modified()
 
-      if current_name
+      if current_name && Modified()
         stop_service(current_name)
         disable_service(current_name)
       end
