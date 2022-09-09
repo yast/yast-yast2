@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Sep  9 08:18:15 UTC 2022 - Michal Filka <mfilka@suse.com>
+
+- bsc#1203227 
+  - Replaced egrep with grep -E.
+- 4.5.13
+
+-------------------------------------------------------------------
 Thu Sep  1 08:08:30 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
 
 - Added a parameter to NetworkService.EnableDisableNow method in
