@@ -3,6 +3,14 @@ Wed Sep 14 08:22:33 UTC 2022 - Michal Filka <mfilka@suse.com>
 
 - bsc#1200016
   - added a method for finding a package according to a pattern
+- 4.4.53
+
+-------------------------------------------------------------------
+Thu Sep  1 08:08:30 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
+
+- Added a parameter to NetworkService.EnableDisableNow method in
+  order to ensure that the selected network service is enabled even
+  when the selection has not been modified (bsc#1202479)
 - 4.4.52
 
 -------------------------------------------------------------------
