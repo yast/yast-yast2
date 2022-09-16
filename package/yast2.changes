@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Fri Sep 16 10:12:41 UTC 2022 - Michal Filka <mfilka@suse.com>
+
+- bsc#1200016
+  - by_pattern moved into http_server moduleas it is the only
+    user
+- 4.5.14
+
+-------------------------------------------------------------------
 Fri Sep  9 08:18:15 UTC 2022 - Michal Filka <mfilka@suse.com>
 
 - bsc#1203227 
