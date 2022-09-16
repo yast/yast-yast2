@@ -224,25 +224,6 @@ module Yast
       @removed_packages.clear
     end
 
-    # Tries to find a package according to the pattern
-    #
-    # @param pattern [String] a regex pattern to match, no escaping done
-    # @return list of matching package names
-    def by_pattern(pattern)
-      raise ArgumentError, "Missing search pattern" if pattern.nil? || pattern.empty?
-
-      init_packager
-
-      # NOTE: Resolvable.find
-      # - takes POSIX regexp, later select uses Ruby regexp
-      # - supports regexps only for dependencies, so we need to filter result
-      # according to package name
-      Y2Packager::Resolvable.find({ provides_regexp: "^#{pattern}$" }, [:name])
-        .select { |p| p.name =~ /\A#{pattern}\z/ }
-        .map(&:name)
-        .uniq
-    end
-
     # Are all of these packages available?
     # @param [Array<String>] packages list of packages
     # @return [Boolean] true if yes (nil = an error occurred)
@@ -495,7 +476,6 @@ module Yast
     publish function: :RemoveAllMsg, type: "boolean (list <string>, string)"
     publish function: :RemoveMsg, type: "boolean (string, string)"
     publish function: :IsTransactionalSystem, type: "boolean ()"
-    publish function: :by_pattern, type: "list <string> (string)"
 
   private
 
