@@ -180,8 +180,11 @@ describe Yast::ViewAnymsgClient do
       before do
         allow(Yast::Package).to receive(:Install).and_return(true)
         allow(Yast2::Popup).to receive(:show).and_return(:yes)
+        allow(Yast::WFM).to receive(:ClientExists).and_return(client_exists)
         allow_any_instance_of(Yast::ViewAnymsgClient).to receive(:file_state).and_return(:missing)
       end
+
+      let(:client_exists) { true }
 
       it "ask to open journal instead" do
         expect(Yast2::Popup).to receive(:show).with(/does not exist/, any_args)
@@ -189,16 +192,36 @@ describe Yast::ViewAnymsgClient do
         subject.main
       end
 
-      it "ensures yast2-journal is installed" do
-        expect(Yast::Package).to receive(:Install).and_return(true)
+      context "if the journal client is already available" do
+        let(:client_exists) { true }
 
-        subject.main
+        it "does not try to install yast2-journal" do
+          expect(Yast::Package).to_not receive(:Install)
+
+          subject.main
+        end
+
+        it "switches to yast2-journal module if user wants it" do
+          expect(Yast::WFM).to receive(:CallFunction).with("journal")
+
+          subject.main
+        end
       end
 
-      it "switches to yast2-journal module if user wants it and all goes well" do
-        expect(Yast::WFM).to receive(:CallFunction).with("journal")
+      context "if the journal client is not available" do
+        let(:client_exists) { false }
 
-        subject.main
+        it "installs yast2-journal" do
+          expect(Yast::Package).to receive(:Install).with(/journal/).and_return(true)
+
+          subject.main
+        end
+
+        it "switches to yast2-journal module if user wants it and all goes well" do
+          expect(Yast::WFM).to receive(:CallFunction).with("journal")
+
+          subject.main
+        end
       end
     end
 
