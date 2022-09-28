@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Sep 28 12:22:59 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
+
+- Better detection of YaST2 Journal (related to bsc#1199840).
+- 4.5.15
+
+-------------------------------------------------------------------
 Fri Sep 16 10:12:41 UTC 2022 - Michal Filka <mfilka@suse.com>
 
 - bsc#1200016

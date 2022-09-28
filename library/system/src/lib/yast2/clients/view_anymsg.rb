@@ -165,8 +165,14 @@ module Yast
           focus:   :no
         ) == :yes
 
-        res && Package.Install("yast2-journal")
+        res && journal_client?
       end
+    end
+
+    # Tries to ensure the 'journal' client is available, even installing additional
+    # packages if needed
+    def journal_client?
+      WFM.ClientExists("journal") || Package.Install("yast2-journal")
     end
 
     def dialog_content
