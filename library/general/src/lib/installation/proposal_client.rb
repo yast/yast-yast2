@@ -172,10 +172,6 @@ module Installation
     #     This module just caused a change of the root partition.
     #     This is only relevant for the "root part" module.
     #
-    #   * **`"help"`** [String, nil] ---
-    #     Help text for this module which appears in the standard dialog
-    #     help (particular helps for modules sorted by presentation order).
-    #
     #   * **`"trigger"`** [Hash, nil] defines circumstances when the proposal
     #     should be called again at the end. For instance, when partitioning or
     #     software selection changes. Mandatory keys of the trigger are:
@@ -272,6 +268,10 @@ module Installation
     #   * **`"id"`** [String] ---
     #     A programmer-readable unique identifier for this section. This is not
     #     auto-generated to keep the log file readable.
+    #
+    #   * **`"help"`** [String, nil] ---
+    #     Help text for this module which appears in the standard dialog
+    #     help (particular helps for modules sorted by presentation order).
     #
     #   This map may be empty. In this case, this proposal section will silently
     #   be ignored. Proposal modules may use this if there is no useful proposal
