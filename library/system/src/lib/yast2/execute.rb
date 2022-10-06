@@ -1,4 +1,3 @@
-
 # ***************************************************************************
 #
 # Copyright (c) 2015 SUSE LLC
@@ -250,7 +249,6 @@ module Yast
   # specific recorder which can be used when some sensitive information that
   # should not go to log
   class ReducedRecorder < Cheetah::DefaultRecorder
-
     # @param skip [Array<Symbol>|Symbol] possible symbols are `:stdin`,
     #   `:stdout`, `:stderr` and `:args`. Those streams won't be recorded.
     def initialize(skip: [], logger: Y2Logger.instance)
@@ -261,16 +259,17 @@ module Yast
       skip.each do |m|
         method = PARAM_MAPPING[m]
         raise ArgumentError, "Invalid value '#{m.inspect}'" unless method
-        self.define_singleton_method(method) {|_|}
+
+        define_singleton_method(method) { |_| } # intentionally empty
       end
     end
 
     PARAM_MAPPING = {
-      stdin: :record_stdin,
+      stdin:  :record_stdin,
       stdout: :record_stdout,
       stderr: :record_stderr,
-      args: :record_commands
-    }
+      args:   :record_commands
+    }.freeze
     private_constant :PARAM_MAPPING
   end
 end
