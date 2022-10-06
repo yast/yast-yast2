@@ -148,3 +148,37 @@ describe Yast::Execute do
     end
   end
 end
+
+describe Yast::ReducedRecorder do
+  let(:logger) { double(debug: nil, info: nil, warn: nil, error: nil) }
+
+  it "skips logging stdin if :stdin is passed" do
+    expect(logger).to_not receive(:info).with(/secret/i)
+    recorder = described_class.new(skip: :stdin, logger: logger)
+
+    Yast::Execute.locally!("echo", stdin: "secret", recorder: recorder)
+  end
+
+  it "skips logging stdout if :stdout is passed" do
+    expect(logger).to_not receive(:info).with(/secret/i)
+    recorder = described_class.new(skip: [:stdout, :args], logger: logger)
+
+    Yast::Execute.locally!("echo", "secret", recorder: recorder)
+  end
+
+  it "skips logging stderr if :stderr is passed" do
+    expect(logger).to_not receive(:error).with(/secret/i)
+    recorder = described_class.new(skip: [:stderr, :args], logger: logger)
+
+    Yast::Execute.locally!("cat", "/dev/supersecretfile", recorder: recorder,
+      allowed_exitstatus: 1)
+  end
+
+  it "skips logging of arguments if :args are passed" do
+    expect(logger).to_not receive(:info).with(/secret/i)
+    recorder = described_class.new(skip: [:args], logger: logger)
+
+    Yast::Execute.locally!("false", "secret", recorder: recorder,
+      allowed_exitstatus: 1)
+  end
+end
