@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Thu Oct  6 13:48:28 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 
-- add Cheetah recorder class that can filter out certain streams to
+- add Yast::ReducedRecorder for Cheetah to filter out certain streams to
   be able to not log sensitive information (bsc#1201962)
 - 4.5.16
 
