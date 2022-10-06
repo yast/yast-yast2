@@ -254,7 +254,7 @@ module Yast
     def initialize(skip: [], logger: Y2Logger.instance)
       super(logger)
 
-      skip = [skip] unless skip.is_a?(Array)
+      skip = Array(skip)
 
       skip.each do |m|
         method = PARAM_MAPPING[m]
