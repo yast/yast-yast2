@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct  6 13:48:28 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
+
+- add Yast::ReducedRecorder for Cheetah to filter out certain streams to
+  be able to not log sensitive information (bsc#1201962)
+- 4.5.16
+
+-------------------------------------------------------------------
 Wed Sep 28 12:22:59 UTC 2022 - Ancor Gonzalez Sosa <ancor@suse.com>
 
 - Better detection of YaST2 Journal (related to bsc#1199840).

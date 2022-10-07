@@ -32,6 +32,9 @@ module Yast
   # It also globally switches the default Cheetah logger to
   # {http://www.rubydoc.info/github/yast/yast-ruby-bindings/Yast%2FLogger Y2Logger}.
   #
+  # To limit logging sensitive input/output/arguments,
+  # you can pass a {ReducedRecorder} as the *recorder* option.
+  #
   # @example Methods of this class can be chained.
   #
   #   Yast::Execute.locally!.stdout("ls", "-l")
@@ -244,5 +247,32 @@ module Yast
     rescue Cheetah::ExecutionFailed
       ""
     end
+  end
+
+  # specific recorder which can be used when some sensitive information that
+  # should not go to log
+  class ReducedRecorder < Cheetah::DefaultRecorder
+    # @param skip [Array<Symbol>|Symbol] possible symbols are `:stdin`,
+    #   `:stdout`, `:stderr` and `:args`. Those streams won't be recorded.
+    def initialize(skip: [], logger: Y2Logger.instance)
+      super(logger)
+
+      skip = Array(skip)
+
+      skip.each do |m|
+        method = PARAM_MAPPING[m]
+        raise ArgumentError, "Invalid value '#{m.inspect}'" unless method
+
+        define_singleton_method(method) { |_| } # intentionally empty
+      end
+    end
+
+    PARAM_MAPPING = {
+      stdin:  :record_stdin,
+      stdout: :record_stdout,
+      stderr: :record_stderr,
+      args:   :record_commands
+    }.freeze
+    private_constant :PARAM_MAPPING
   end
 end
