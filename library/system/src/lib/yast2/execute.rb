@@ -32,6 +32,9 @@ module Yast
   # It also globally switches the default Cheetah logger to
   # {http://www.rubydoc.info/github/yast/yast-ruby-bindings/Yast%2FLogger Y2Logger}.
   #
+  # To limit logging sensitive input/output/arguments,
+  # you can pass a {ReducedRecorder} as the *recorder* option.
+  #
   # @example Methods of this class can be chained.
   #
   #   Yast::Execute.locally!.stdout("ls", "-l")
