@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 14 14:54:58 UTC 2022 - Steffen Winterfeldt <snwint@suse.com>
+
+- remove #postprocess_url from RelURL class (jsc#SLE-22578, jsc#SLE-24584)
+- 4.5.17
+
+-------------------------------------------------------------------
 Thu Oct  6 13:48:28 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 
 - add Yast::ReducedRecorder for Cheetah to filter out certain streams to
