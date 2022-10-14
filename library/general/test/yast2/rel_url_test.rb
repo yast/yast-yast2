@@ -64,7 +64,22 @@ describe Yast2::RelURL do
 
     it "returns the relative URL if the base URL is empty" do
       relurl = Yast2::RelURL.new("", "relurl://test")
-      expect(relurl.absolute_url.to_s).to eq("relurl://test")
+      expect(relurl.absolute_url.to_s).to eq("relurl:/test")
+    end
+
+    it "relurl can have 1 slash (relurl:/)" do
+      relurl = Yast2::RelURL.new("", "relurl:/test")
+      expect(relurl.absolute_url.to_s).to eq("relurl:/test")
+    end
+
+    it "relurl can have 2 slashes (relurl://)" do
+      relurl = Yast2::RelURL.new("", "relurl://test")
+      expect(relurl.absolute_url.to_s).to eq("relurl:/test")
+    end
+
+    it "relurl can have 3 slashes (relurl:///)" do
+      relurl = Yast2::RelURL.new("", "relurl:///test")
+      expect(relurl.absolute_url.to_s).to eq("relurl:/test")
     end
 
     it "returns empty URL if both relative and base URLs are empty" do
@@ -179,9 +194,14 @@ describe Yast2::RelURL do
       expect(relurl.absolute_url.to_s).to eq("ftp://example.com/test")
     end
 
-    it "works with cd:// URL" do
-      relurl = Yast2::RelURL.new("cd://", "relurl://test")
-      expect(relurl.absolute_url.to_s).to eq("cd://test")
+    it "works with cd:/ URL" do
+      relurl = Yast2::RelURL.new("cd:/", "relurl://test")
+      expect(relurl.absolute_url.to_s).to eq("cd:/test")
+    end
+
+    it "corrects cd:// URL to cd:/" do
+      relurl = Yast2::RelURL.new("cd:/", "relurl://test")
+      expect(relurl.absolute_url.to_s).to eq("cd:/test")
     end
 
     it "works with cifs:// URL" do
@@ -194,19 +214,24 @@ describe Yast2::RelURL do
       expect(relurl.absolute_url.to_s).to eq("nfs://server/export/path/test")
     end
 
-    it "works with file:// base URL" do
+    it "works with file:/ base URL" do
+      relurl = Yast2::RelURL.new("file:/foo/bar", "relurl://test")
+      expect(relurl.absolute_url.to_s).to eq("file:///foo/bar/test")
+    end
+
+    it "corrects file:// base URL to file:///" do
       relurl = Yast2::RelURL.new("file://foo/bar", "relurl://test")
-      expect(relurl.absolute_url.to_s).to eq("file://foo/bar/test")
+      expect(relurl.absolute_url.to_s).to eq("file:///foo/bar/test")
     end
 
     it "works with file:/// base URL" do
       relurl = Yast2::RelURL.new("file:///", "relurl://test")
-      expect(relurl.absolute_url.to_s).to eq("file://test")
+      expect(relurl.absolute_url.to_s).to eq("file:///test")
     end
 
-    it "goes up with file:// base URL properly" do
-      relurl = Yast2::RelURL.new("file://foo/bar", "relurl://../../test")
-      expect(relurl.absolute_url.to_s).to eq("file://test")
+    it "follows '..' with file:/ base URL properly" do
+      relurl = Yast2::RelURL.new("file:/foo/bar", "relurl://../../test")
+      expect(relurl.absolute_url.to_s).to eq("file:///test")
     end
 
     it "adds the requested path to the absolute URL" do
@@ -229,7 +254,7 @@ describe Yast2::RelURL do
       # might not be exactly what you would expect as the result but this is a corner
       # case, do not overengineer the code, the most important fact is that it does
       # not crash and the result is a valid file path
-      expect(relurl.absolute_url("foo/bar").to_s).to eq("//foo/bar")
+      expect(relurl.absolute_url("foo/bar").to_s).to eq("/foo/bar")
     end
   end
 
@@ -238,7 +263,7 @@ describe Yast2::RelURL do
       allow(Yast::InstURL).to receive(:installInf2Url).and_return(inst_url)
     end
 
-    let(:rel_url) { "relurl://test" }
+    let(:rel_url) { "relurl:/test" }
     subject { Yast2::RelURL.from_installation_repository(rel_url) }
 
     context "during installation" do

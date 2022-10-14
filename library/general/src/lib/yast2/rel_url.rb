@@ -104,7 +104,6 @@ module Yast2
         ret.path = absolute_path
       end
 
-      postprocess_url(ret)
       ret
     end
 
@@ -118,18 +117,6 @@ module Yast2
       # URI requires absolute path
       url.path = File.join("/", url.host, url.path)
       url.host = nil
-    end
-
-    # a reverse method to "preprocess_url", fix the URL if it is a "file://" URL
-    def postprocess_url(url)
-      return if url.scheme != "file" && !url.host.nil? && !url.host.empty?
-
-      path = url.path.sub(/\A\/+/, "").split("/")
-      url.host = path.shift
-
-      rest = File.join(path)
-      rest.prepend("/") unless rest.empty?
-      url.path = rest
     end
   end
 end
