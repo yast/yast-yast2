@@ -1227,8 +1227,6 @@ module Yast
       while Ops.greater_or_equal(@current_step, 0) &&
           Ops.less_than(@current_step, Builtins.size(modules))
         step = Ops.get(modules, @current_step, {})
-        Builtins.y2milestone("Current step: %1", step)
-
         step_name = Ops.get_string(step, "name", "")
         # BNC #401319
         # if "execute" is defined, it's called without modifications
@@ -1267,98 +1265,107 @@ module Yast
           end
         end
         # Continue in 'while' means 'next step'
-        next if do_continue
+        if do_continue
+          log.info "Skipping step #{step.inspect}"
+          next
+        end
 
         argterm = getClientTerm(step, defaults, former_result)
-        Builtins.y2milestone("Running module: %1 (%2)", argterm, @current_step)
 
-        Builtins.y2milestone("Calling %1", argterm)
+        result = nil
+        log.group("#{step["label"]} #{step["name"].inspect}") do
+          Builtins.y2milestone("Running module: %1 (%2)", argterm, @current_step)
 
-        args = []
-        i = 0
-        while Ops.less_than(i, Builtins.size(argterm))
-          Ops.set(args, i, Ops.get(argterm, i))
-          i = Ops.add(i, 1)
-        end
+          Builtins.y2milestone("Calling %1", argterm)
 
-        UI.WizardCommand(term(:SetCurrentStep, step_id))
-        @CurrentWizardStep = step_id
-
-        # Register what step we are going to run
-        if !Stage.initial && !SCR.Write(
-          path(".target.string"),
-          Installation.current_step,
-          step_id
-        )
-          Builtins.y2error("Error writing step identifier")
-        end
-
-        client_name = getClientName(step_name, step_execute)
-
-        # Check if client exist before continuing
-        if WFM.ClientExists(client_name)
-          Hooks.run("before_#{step_name}")
-
-          result = WFM.CallFunction(client_name, args)
-
-          # This code will be triggered before the red pop window appears on the user's screen
-          Hooks.run("installation_failure") if result == false
-
-          result = Convert.to_symbol(result)
-
-          Hooks.run("after_#{step_name}")
-        else
-          # Client not found. Ask the user if want to continue (related to bsc#1180954)
-          log.error("Client '#{client_name}' not found")
-
-          text = format(
-            # TRANSLATORS: Message warning the user that a client is missing where %{client} is
-            # replaced by the client name (e.g. "registration", "user")
-            _(
-              "Something went wrong and the expected '%{client}' dialog was not found.\n\n" \
-              "Would you like to skip the dialog and continue anyway?"
-            ),
-            client: client_name
-          )
-
-          options = { yes: Label.ContinueButton, no: Label.AbortButton }
-          continue = Yast2::Popup.show(text, buttons: options) == :yes
-
-          if continue
-            log.warn("Continuing after skipping the '#{client_name}' missing client")
-            # If user decided to continue, uses the former_result (:next or :back)
-            result = former_result
-          else
-            # :abort because user decided to not continue
-            result = :abort
+          args = []
+          i = 0
+          while Ops.less_than(i, Builtins.size(argterm))
+            Ops.set(args, i, Ops.get(argterm, i))
+            i = Ops.add(i, 1)
           end
-        end
 
-        Builtins.y2milestone("Calling %1 returned %2", argterm, result)
+          UI.WizardCommand(term(:SetCurrentStep, step_id))
+          @CurrentWizardStep = step_id
 
-        # bnc #369846
-        if [:access, :ok].include?(result)
-          Builtins.y2milestone("Evaluating %1 as it was `next", result)
-          result = :next
-        end
-
-        # Clients can break the installation/workflow
-        Wizard.RestoreNextButton
-        Wizard.RestoreAbortButton
-        Wizard.RestoreBackButton
-
-        # Remove file if step was run and returned (without a crash);
-        if Ops.less_than(@current_step, Ops.subtract(Builtins.size(modules), 1)) &&
-            !Stage.initial && !Convert.to_boolean(
-            SCR.Execute(path(".target.remove"), Installation.current_step)
+          # Register what step we are going to run
+          if !Stage.initial && !SCR.Write(
+            path(".target.string"),
+            Installation.current_step,
+            step_id
           )
-          Builtins.y2error("Error removing step identifier")
-        end
+            Builtins.y2error("Error writing step identifier")
+          end
 
-        if retranslate
-          Builtins.y2milestone("retranslate")
-          retranslateWizardDialog
-          retranslate = false
+          client_name = getClientName(step_name, step_execute)
+
+          # Check if client exist before continuing
+          if WFM.ClientExists(client_name)
+            Hooks.run("before_#{step_name}")
+
+            result = WFM.CallFunction(client_name, args)
+
+            # This code will be triggered before the red pop window appears on the user's screen
+            Hooks.run("installation_failure") if result == false
+
+            result = Convert.to_symbol(result)
+
+            Hooks.run("after_#{step_name}")
+          else
+            # Client not found. Ask the user if want to continue (related to bsc#1180954)
+            log.error("Client '#{client_name}' not found")
+
+            text = format(
+              # TRANSLATORS: Message warning the user that a client is missing where %{client} is
+              # replaced by the client name (e.g. "registration", "user")
+              _(
+                "Something went wrong and the expected '%{client}' dialog was not found.\n\n" \
+                "Would you like to skip the dialog and continue anyway?"
+              ),
+              client: client_name
+            )
+
+            options = { yes: Label.ContinueButton, no: Label.AbortButton }
+            continue = Yast2::Popup.show(text, buttons: options) == :yes
+
+            if continue
+              log.warn("Continuing after skipping the '#{client_name}' missing client")
+              # If user decided to continue, uses the former_result (:next or :back)
+              result = former_result
+            else
+              # :abort because user decided to not continue
+              result = :abort
+            end
+          end
+
+          Builtins.y2milestone("Calling %1 returned %2", argterm, result)
+
+          # bnc #369846
+          if [:access, :ok].include?(result)
+            Builtins.y2milestone("Evaluating %1 as it was `next", result)
+            result = :next
+          end
+
+          # Clients can break the installation/workflow
+          Wizard.RestoreNextButton
+          Wizard.RestoreAbortButton
+          Wizard.RestoreBackButton
+
+          # Remove file if step was run and returned (without a crash);
+          if Ops.less_than(@current_step, Ops.subtract(Builtins.size(modules), 1)) &&
+              !Stage.initial && !Convert.to_boolean(
+              SCR.Execute(path(".target.remove"), Installation.current_step)
+            )
+            Builtins.y2error("Error removing step identifier")
+          end
+
+          if retranslate
+            Builtins.y2milestone("retranslate")
+            retranslateWizardDialog
+            retranslate = false
+          end
+
+          result
         end
 
         # If the module return nil, something basic went wrong.
