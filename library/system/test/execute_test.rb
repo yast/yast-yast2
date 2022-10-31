@@ -58,7 +58,8 @@ describe Yast::Execute do
 
     it "adds to passed arguments chroot option if scr chrooted" do
       allow(Yast::WFM).to receive(:scr_root).and_return("/mnt")
-      expect(Cheetah).to receive(:run).with("ls", "-a", chroot: "/mnt")
+      opts = { chroot: "/mnt" }
+      expect(Cheetah).to receive(:run).with("ls", "-a", opts)
 
       subject.on_target("ls", "-a")
     end
@@ -80,7 +81,8 @@ describe Yast::Execute do
 
     it "adds to passed arguments chroot option if scr chrooted" do
       allow(Yast::WFM).to receive(:scr_root).and_return("/mnt")
-      expect(Cheetah).to receive(:run).with("ls", "-a", chroot: "/mnt")
+      opts = { chroot: "/mnt" }
+      expect(Cheetah).to receive(:run).with("ls", "-a", opts)
 
       subject.on_target("ls", "-a")
     end
@@ -96,7 +98,8 @@ describe Yast::Execute do
     end
 
     it "captures stdout of the command" do
-      expect(Cheetah).to receive(:run).with("ls", "-a", stdout: :capture)
+      opts = { stdout: :capture }
+      expect(Cheetah).to receive(:run).with("ls", "-a", opts)
 
       subject.stdout("ls", "-a")
     end

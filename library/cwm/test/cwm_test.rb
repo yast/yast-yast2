@@ -48,6 +48,7 @@ describe Yast::CWMClass do
 
   let(:test_stringterm) { VBox(HBox("w1")) }
   let(:widget_names) { ["w1", "w2"] }
+  let(:event) { { "ID" => :my_event_id } }
   let(:test_widgets) do
     {
       "w1" => {
@@ -158,9 +159,9 @@ describe Yast::CWMClass do
   # used by CWMTab and CWM::ReplacePoint
   describe "#saveWidgets" do
     it "calls store methods" do
-      expect(self).to receive(:generic_save).with("w1", "ID" => :event)
-      expect(self).to receive(:w2_store).with("w2", "ID" => :event)
-      subject.saveWidgets(run_widgets, "ID" => :event)
+      expect(self).to receive(:generic_save).with("w1", event)
+      expect(self).to receive(:w2_store).with("w2", event)
+      subject.saveWidgets(run_widgets, event)
     end
 
     # used via GetProcessedWidget by yast2-slp-server and yast2
@@ -168,29 +169,29 @@ describe Yast::CWMClass do
       allow(self).to receive(:generic_save)
       allow(self).to receive(:w2_store)
       expect(subject).to receive(:processed_widget=).twice
-      subject.saveWidgets(run_widgets, "ID" => :event)
+      subject.saveWidgets(run_widgets, event)
     end
   end
 
   # used by CWMTab and CWM::ReplacePoint
   describe "#handleWidgets" do
     it "calls the handle methods" do
-      expect(self).to receive(:w1_handle).with("w1", "ID" => :event).and_return(nil)
-      expect(self).to receive(:w2_handle).with("w2", "ID" => :event).and_return(nil)
-      expect(subject.handleWidgets(run_widgets, "ID" => :event)).to eq(nil)
+      expect(self).to receive(:w1_handle).with("w1", event).and_return(nil)
+      expect(self).to receive(:w2_handle).with("w2", event).and_return(nil)
+      expect(subject.handleWidgets(run_widgets, event)).to eq(nil)
     end
 
     it "breaks the loop if a handler returns non-nil" do
-      expect(self).to receive(:w1_handle).with("w1", "ID" => :event).and_return(:foo)
+      expect(self).to receive(:w1_handle).with("w1", event).and_return(:foo)
       expect(self).to_not receive(:w2_handle)
-      expect(subject.handleWidgets(run_widgets, "ID" => :event)).to eq(:foo)
+      expect(subject.handleWidgets(run_widgets, event)).to eq(:foo)
     end
 
     it "sets @processed_widget" do
       allow(self).to receive(:w1_handle).and_return(nil)
       allow(self).to receive(:w2_handle).and_return(nil)
       expect(subject).to receive(:processed_widget=).twice
-      subject.handleWidgets(run_widgets, "ID" => :event)
+      subject.handleWidgets(run_widgets, event)
     end
 
     it "filters the events if 'handle_events' is specified" do
@@ -198,25 +199,25 @@ describe Yast::CWMClass do
       allow(self).to receive(:w2_handle)
       widgets = deep_copy(run_widgets)
       widgets[0]["handle_events"] = [:special_event]
-      subject.handleWidgets(widgets, "ID" => :event)
+      subject.handleWidgets(widgets, event)
     end
   end
 
   describe "#validateWidgets" do
     it "calls the validate methods" do
-      expect(self).to receive(:w1_validate).with("w1", "ID" => :event).and_return(true)
-      expect(self).to receive(:w2_validate).with("w2", "ID" => :event).and_return(true)
-      expect(subject.validateWidgets(run_widgets, "ID" => :event)).to eq(true)
+      expect(self).to receive(:w1_validate).with("w1", event).and_return(true)
+      expect(self).to receive(:w2_validate).with("w2", event).and_return(true)
+      expect(subject.validateWidgets(run_widgets, event)).to eq(true)
     end
 
     context "if a handler returns false" do
       before do
-        expect(self).to receive(:w1_validate).with("w1", "ID" => :event).and_return(false)
+        expect(self).to receive(:w1_validate).with("w1", event).and_return(false)
       end
 
       it "breaks the loop if a handler returns false" do
         expect(self).to_not receive(:w2_validate)
-        expect(subject.validateWidgets(run_widgets, "ID" => :event)).to eq(false)
+        expect(subject.validateWidgets(run_widgets, event)).to eq(false)
       end
 
       # SetValidationFailedHandler
@@ -225,7 +226,7 @@ describe Yast::CWMClass do
         handler = -> { called = true }
         subject.SetValidationFailedHandler(handler)
 
-        subject.validateWidgets(run_widgets, "ID" => :event)
+        subject.validateWidgets(run_widgets, event)
         # we cannot set an expectation on `handler` because a copy is made
         expect(called).to eq(true)
       end
