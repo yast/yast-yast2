@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Oct 31 13:07:35 UTC 2022 - Martin Vidner <mvidner@suse.com>
+
+- Fix hash vs keyword arguments in RSpec expectations (bsc#1204871)
+- 4.5.19
+
+-------------------------------------------------------------------
 Tue Oct 25 08:32:48 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
 
 - Improve logging in the ProductControl module, use the new
