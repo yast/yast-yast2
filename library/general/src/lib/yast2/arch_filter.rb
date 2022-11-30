@@ -36,7 +36,8 @@ module Yast2
 
     # @return [Array<Hash>] list of specifications where each entry is hash with key `:method` and
     #   `:negate`, where method is Yast::Arch method and negate specify if
-    #   method have to return false
+    #   method have to return false. There is one specific method `:all` that is not in Yast::Arch,
+    #   but can be used to always return true.
     attr_reader :specifications
 
     # creates new architecture filter from passed list of individual specifications
@@ -48,7 +49,7 @@ module Yast2
         method = spec.downcase
         negate = spec.start_with?("!")
         method = spec[1..-1] if negate
-        raise Invalid, spec unless Yast::Arch.respond_to?(method)
+        raise Invalid, spec unless valid_method?(method)
 
         @specifications << { method: method.to_sym, negate: negate }
       end
@@ -67,6 +68,7 @@ module Yast2
     #   "ppc, !board_powernv" # spaces are allowed
     #   "!ppc64,!aarch64" # always returns false as there is none positive method
     #   "s390, !is_zKVM" # return true on s390 when not running in zKVM hypervisor
+    #   "all,!s390" # return true on all archs except s390
     #   "invalid" # raises ArchFilter::Invalid exception
     def self.from_string(value)
       new(value.split(",").map(&:strip))
@@ -76,9 +78,23 @@ module Yast2
     # @return [Boolean]
     def match?
       negative, positive = @specifications.partition { |s| s[:negate] }
-      return false if negative.any? { |s| Yast::Arch.public_send(s[:method]) }
+      return false if negative.any? { |s| invoke_method(s[:method]) }
 
-      positive.any? { |s| Yast::Arch.public_send(s[:method]) }
+      positive.any? { |s| invoke_method(s[:method]) }
+    end
+
+  private
+
+    def invoke_method(m)
+      return true if m == :all
+
+      Yast::Arch.public_send(m)
+    end
+
+    def valid_method?(m)
+      return true if m.to_s == "all"
+
+      Yast::Arch.respond_to?(m)
     end
   end
 end
