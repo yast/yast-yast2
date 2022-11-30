@@ -85,16 +85,16 @@ module Yast2
 
   private
 
-    def invoke_method(m)
-      return true if m == :all
+    def invoke_method(name)
+      return true if name == :all
 
-      Yast::Arch.public_send(m)
+      Yast::Arch.public_send(name)
     end
 
-    def valid_method?(m)
-      return true if m.to_s == "all"
+    def valid_method?(name)
+      return true if name.to_s == "all"
 
-      Yast::Arch.respond_to?(m)
+      Yast::Arch.respond_to?(name)
     end
   end
 end

@@ -88,10 +88,10 @@ describe Yast2::ArchFilter do
     end
 
     it "supports special 'all' method" do
-        filter = described_class.from_string("all,!x86_64")
-        allow(Yast::Arch).to receive(:x86_64).and_return(false)
+      filter = described_class.from_string("all,!x86_64")
+      allow(Yast::Arch).to receive(:x86_64).and_return(false)
 
-        expect(filter.match?).to eq true
+      expect(filter.match?).to eq true
     end
   end
 
