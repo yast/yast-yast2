@@ -60,15 +60,17 @@ module Yast2
     # When "!" is used it is called negative method and without it is called positive.
     # List of possible values are supported with comma separator. In list
     # at least one positive specified method have to return true and all methods
-    # with `!` have to be false to return true as result. Whitespaces are allowed. Only `!` and method
+    # with `!` have to be false to return true as result. If there are no positive methods
+    # then only negatives are evaluated. Whitespaces are allowed. Only `!` and method
     # has to be without space. Also it is case insensitive, so acronyms can be in upper case.
     # @example various format and how it behave in given situations
     #   "x86_64,ppc64" # returns true on either x86_64 or ppc64
     #   "ppc,!board_powernv" # returns false on powernv_board or non-ppc
     #   "ppc, !board_powernv" # spaces are allowed
-    #   "!ppc64,!aarch64" # always returns false as there is none positive method
+    #   "!ppc64,!aarch64" # returns false on ppc64 and arm and true for others
     #   "s390, !is_zKVM" # return true on s390 when not running in zKVM hypervisor
-    #   "all,!s390" # return true on all archs except s390
+    #   "" # always return true
+    #   "all" # always return true
     #   "invalid" # raises ArchFilter::Invalid exception
     def self.from_string(value)
       new(value.split(",").map(&:strip))
@@ -79,6 +81,9 @@ module Yast2
     def match?
       negative, positive = @specifications.partition { |s| s[:negate] }
       return false if negative.any? { |s| invoke_method(s[:method]) }
+
+      # handle case when there is only negative conditions
+      return true if positive.empty?
 
       positive.any? { |s| invoke_method(s[:method]) }
     end

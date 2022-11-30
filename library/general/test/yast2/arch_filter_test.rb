@@ -70,26 +70,37 @@ describe Yast2::ArchFilter do
     end
 
     context "there are no positive methods" do
-      it "returns false" do
-        filter = described_class.from_string("!x86_64,!board_powernv")
-        allow(Yast::Arch).to receive(:x86_64).and_return(false)
-        allow(Yast::Arch).to receive(:board_powernv).and_return(false)
+      context "all negative methods return false" do
+        it "returns true" do
+          filter = described_class.from_string("!x86_64,!board_powernv")
+          allow(Yast::Arch).to receive(:x86_64).and_return(false)
+          allow(Yast::Arch).to receive(:board_powernv).and_return(false)
 
-        expect(filter.match?).to eq false
+          expect(filter.match?).to eq true
+        end
+      end
+
+      context "at least one negative method returns true" do
+        it "returns false" do
+          filter = described_class.from_string("!x86_64,!board_powernv")
+          allow(Yast::Arch).to receive(:x86_64).and_return(false)
+          allow(Yast::Arch).to receive(:board_powernv).and_return(true)
+
+          expect(filter.match?).to eq false
+        end
       end
     end
 
     context "there are no methods" do
-      it "returns false" do
+      it "returns true" do
         filter = described_class.from_string("")
 
-        expect(filter.match?).to eq false
+        expect(filter.match?).to eq true
       end
     end
 
     it "supports special 'all' method" do
-      filter = described_class.from_string("all,!x86_64")
-      allow(Yast::Arch).to receive(:x86_64).and_return(false)
+      filter = described_class.from_string("all")
 
       expect(filter.match?).to eq true
     end
