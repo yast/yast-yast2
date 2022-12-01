@@ -55,14 +55,21 @@ module Yast2
       end
     end
 
-    # parses architecture filter specification from string.
-    # supported values are methods from Yast::Arch with possible `!` in front of it.
-    # When "!" is used it is called negative method and without it is called positive.
-    # List of possible values are supported with comma separator. In list
-    # at least one positive specified method have to return true and all methods
-    # with `!` have to be false to return true as result. If there are no positive methods
-    # then only negatives are evaluated. Whitespaces are allowed. Only `!` and method
-    # has to be without space. Also it is case insensitive, so acronyms can be in upper case.
+    # Parses architecture filter specification from a string.
+    #
+    # Supported values are methods from {Yast::ArchClass Arch} with possible `!` in front of it.
+    #
+    # When a `!` is used it is called a *negative* method and without it is a *positive* one.
+    #
+    # A list of methods is separated with commas `,`.
+    # To match,
+    # at least one positive specified method has to return true and
+    # all negative methods have to return false.
+    # If there are no positive methods then only negatives are evaluated.
+    #
+    # Whitespaces are allowed. Only `!` and method has to be without space.
+    # Also it is case insensitive, so acronyms can be in upper case.
+    #
     # @example various format and how it behave in given situations
     #   "x86_64,ppc64" # returns true on either x86_64 or ppc64
     #   "ppc,!board_powernv" # returns false on powernv_board or non-ppc
