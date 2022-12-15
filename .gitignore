@@ -1,3 +1,9 @@
+/.bundle/
+/vendor/
+/Gemfile
+/Gemfile.lock
+/.ruby-version*
+
 *.pot
 *.log
 *.trs
