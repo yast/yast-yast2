@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Dec 27 13:26:10 UTC 2022 - Ludwig Nussel <lnussel@suse.com>
+
+- Replace transitional %usrmerged macro with regular version check (boo#1206798)
+- 4.5.21
+
+-------------------------------------------------------------------
 Thu Dec  1 16:12:54 UTC 2022 - Josef Reidinger <jreidinger@suse.com>
 
 - ArchFilter: Add new class to allow unified definition of hardware
