@@ -101,7 +101,7 @@ describe Y2Packager::Product do
 
   describe "#selected?" do
     before do
-      allow(Y2Packager::Resolvable).to receive(:find).with(name: product.name, kind: :product)
+      allow(Y2Packager::Resolvable).to receive(:find).with({ name: product.name, kind: :product })
         .and_return([Y2Packager::Resolvable.new("kind" => :product,
           "name" => product.name, "status" => status,
           "source" => 1, "short_name" => "short_name",
@@ -129,7 +129,7 @@ describe Y2Packager::Product do
 
   describe "#installed?" do
     before do
-      allow(Y2Packager::Resolvable).to receive(:find).with(name: product.name, kind: :product)
+      allow(Y2Packager::Resolvable).to receive(:find).with({ name: product.name, kind: :product })
         .and_return([Y2Packager::Resolvable.new("kind" => :product,
           "name" => product.name, "status" => status,
           "source" => 1, "short_name" => "short_name",
@@ -383,7 +383,7 @@ describe Y2Packager::Product do
 
     before do
       allow(Y2Packager::Resolvable).to receive(:find)
-        .with(name: "openSUSE", kind: :product).and_return(properties)
+        .with({ name: "openSUSE", kind: :product }).and_return(properties)
     end
 
     context "when given status is within product statuses" do
@@ -403,8 +403,8 @@ describe Y2Packager::Product do
     let(:relnotes_url) { "http://doc.opensuse.org/openSUSE/release-notes-openSUSE.rpm" }
 
     before do
-      allow(Y2Packager::Resolvable).to receive(:find).with(name: product.name,
-        kind: :product, version: product.version)
+      allow(Y2Packager::Resolvable).to receive(:find).with({ name: product.name,
+        kind: :product, version: product.version })
         .and_return([Y2Packager::Resolvable.new("kind" => :product,
           "name" => "openSUSE", "status" => :selected,
           "source" => 1, "short_name" => "short_name",
@@ -428,8 +428,8 @@ describe Y2Packager::Product do
 
     context "when product properties are not found" do
       before do
-        allow(Y2Packager::Resolvable).to receive(:find).with(name: product.name,
-          kind: :product, version: product.version).and_return([])
+        allow(Y2Packager::Resolvable).to receive(:find).with({ name: product.name,
+          kind: :product, version: product.version }).and_return([])
       end
 
       it "returns nil" do

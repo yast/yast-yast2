@@ -301,7 +301,7 @@ describe Y2Packager::Repository do
     end
 
     it "returns products available in the repository" do
-      allow(Y2Packager::Resolvable).to receive(:find).with(kind: :product, source: repo_id)
+      allow(Y2Packager::Resolvable).to receive(:find).with({ kind: :product, source: repo_id })
         .and_return(products_data)
       product = repo.products.first
       expect(product.name).to eq("openSUSE")
