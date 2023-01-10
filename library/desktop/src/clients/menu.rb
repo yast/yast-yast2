@@ -264,7 +264,7 @@ module Yast
           VSpacing(1.0),
           HBox(
             HSpacing(1),
-            PushButton(Id(:help), Opt(:key_F1, :helpButton), Label.HelpButton),
+            PushButton(Id(:help), Opt(:key_F1), Label.HelpButton),
             HStretch(),
             PushButton(Id(:run), Opt(:defaultButton), _("Run")),
             PushButton(Id(:quit), Opt(:key_F9, :cancelButton), Label.QuitButton),
