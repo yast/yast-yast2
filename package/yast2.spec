@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.5.21
+Version:        4.5.22
 
 Release:        0
 Summary:        YaST2 Main Package
@@ -173,7 +173,7 @@ mkdir -p %{buildroot}%{_sysconfdir}/YaST2
 
 %yast_install
 
-%if !0%{?usrmerged}
+%if 0%{?suse_version} < 1550
 mkdir -p %{buildroot}/sbin
 ln -s ../%{_sbindir}/yast  %{buildroot}/sbin
 ln -s ../%{_sbindir}/yast2 %{buildroot}/sbin
@@ -240,7 +240,7 @@ fi
 %{_mandir}/*/*
 %doc %{yast_vardir}/hooks/README.md
 
-%if !0%{?usrmerged}
+%if 0%{?suse_version} < 1550
 /sbin/yast*
 %endif
 %{_sbindir}/yast*

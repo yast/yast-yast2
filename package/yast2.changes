@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 18 12:52:10 UTC 2023 - Ludwig Nussel <lnussel@suse.com>
+
+- Replace transitional %usrmerged macro with regular version check (boo#1206798)
+- 4.5.22
+
+-------------------------------------------------------------------
 Tue Jan 10 11:38:40 UTC 2023 - José Iván López González <jlopez@suse.com>
 
 - Show help text in YaST Control Center (bsc#1206919).
