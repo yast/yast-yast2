@@ -140,6 +140,18 @@ describe Yast::Linuxrc do
     end
   end
 
+  describe "#usefcoe" do
+    it "returns true if 'WithFCoE' is set to '1' in install.inf" do
+      load_install_inf("WithFCoE" => "1")
+      expect(subject.usefcoe).to eq(true)
+    end
+
+    it "returns false if 'WithFCoE' is not set to '1' in install.inf" do
+      load_install_inf("WithFCoE" => "0")
+      expect(subject.usefcoe).to eq(false)
+    end
+  end
+
   describe "#useiscsi" do
     it "returns true if 'WithiSCSI' is set to '1' in install.inf" do
       load_install_inf("WithiSCSI" => "1")
@@ -149,6 +161,18 @@ describe Yast::Linuxrc do
     it "returns false if 'WithiSCSI' is not set to '1' in install.inf" do
       load_install_inf("WithiSCSI" => "0")
       expect(subject.useiscsi).to eq(false)
+    end
+  end
+
+  describe "#usenbft" do
+    it "returns true if 'UseNBFT' is set to '1' in install.inf" do
+      load_install_inf("UseNBFT" => "1")
+      expect(subject.usenbft).to eq(true)
+    end
+
+    it "returns false if 'UseNBFT' is not set to '1' in install.inf" do
+      load_install_inf("UseNBFT" => "0")
+      expect(subject.usenbft).to eq(false)
     end
   end
 

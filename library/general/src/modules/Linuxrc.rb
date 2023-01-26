@@ -142,9 +142,19 @@ module Yast
       InstallInf("UseSSH") == "1"
     end
 
+    # Returns if FCoE has been requested in Linuxrc.
+    def usefcoe
+      InstallInf("WithFCoE") == "1"
+    end
+
     # Returns if iSCSI has been requested in Linuxrc.
     def useiscsi
       InstallInf("WithiSCSI") == "1"
+    end
+
+    # Returns if using NBFT has been requested in Linuxrc.
+    def usenbft
+      InstallInf("UseNBFT") == "1"
     end
 
     # we're running in textmode (-> UI::GetDisplayInfo())
