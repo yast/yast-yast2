@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Jan 26 13:43:43 UTC 2023 - Knut Alejandro Anderssen González <kanderssen@suse.com>
+
+- Aded Linuxrc.usenbft and Linuxrc.usefcoe convenience methods to
+  detects whether NBFT of FCoE disks activation should be called
+  (jsc#PED-3138, bsc#207573).
+- 4.5.23
+
+-------------------------------------------------------------------
 Wed Jan 18 12:52:10 UTC 2023 - Ludwig Nussel <lnussel@suse.com>
 
 - Replace transitional %usrmerged macro with regular version check (boo#1206798)
