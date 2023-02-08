@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Wed Feb  8 21:46:04 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- DnsServerApi: drop module. It should never be in yast2 as it
+  import module from yast2-dns-server. And now dns-server is going
+  to be dropped (bsc#1205363)
+- 4.5.23
+
+-------------------------------------------------------------------
 Wed Jan 18 12:52:10 UTC 2023 - Ludwig Nussel <lnussel@suse.com>
 
 - Replace transitional %usrmerged macro with regular version check (boo#1206798)
