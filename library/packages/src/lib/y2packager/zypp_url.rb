@@ -136,7 +136,7 @@ module Y2Packager
     # @return [String]
     def inspect
       # Prevent SimpleDelegator from forwarding this to the wrapped URI object
-      "#<#{self.class}:#{object_id}} @uri=#{uri.inspect}>"
+      "#<#{self.class}:#{object_id} @uri=#{uri.inspect}>"
     end
 
     # Compares two URLs
@@ -146,7 +146,10 @@ module Y2Packager
     # object is introduced to replace an existing URI one.
     def ==(other)
       if other.is_a?(URI::Generic)
-        uri == other
+        uri == other ||
+          # zypp will normalize dir:///foo to dir:/foo
+          # https://github.com/openSUSE/libzypp/issues/441
+          uri == URI(other.to_s.sub(":///", ":/"))
       elsif other.class == self.class
         uri == other.uri
       else
