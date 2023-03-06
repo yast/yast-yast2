@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar  6 13:09:12 UTC 2023 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Revert dropping DnsServerAPI.pm to prevent build failures
+  for yast2-dns-server, yast2-http-server (bsc#1208833)
+- 4.5.25
+
+-------------------------------------------------------------------
 Tue Feb 14 10:28:30 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
 - Allow dir:///foo to equal dir:/foo (bsc#1207239)
