@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar  6 13:54:48 UTC 2023 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Merged SLE-15-SP5 branch
+- Revert restoring DnsServerAPI.pm (bsc#1208833)
+- 4.6.1
+
+-------------------------------------------------------------------
 Fri Mar 03 14:29:01 UTC 2023 - Ladislav Slezák <lslezak@suse.cz>
 
 - Bump version to 4.6.0 (bsc#1208913)
