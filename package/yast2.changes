@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Mar 29 13:13:52 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
+
+- Replace calls to mkinitrd with dracut as mkinitrd will be
+  dropped (bsc#1203019)
+- 4.6.2
+
+-------------------------------------------------------------------
 Mon Mar  6 13:54:48 UTC 2023 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Merged SLE-15-SP5 branch
