@@ -1,4 +1,22 @@
 -------------------------------------------------------------------
+Mon Mar  6 13:54:48 UTC 2023 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Merged SLE-15-SP5 branch
+- Revert restoring DnsServerAPI.pm (bsc#1208833)
+- 4.6.1
+
+-------------------------------------------------------------------
+Fri Mar 03 14:29:01 UTC 2023 - Ladislav Slezák <lslezak@suse.cz>
+
+- Bump version to 4.6.0 (bsc#1208913)
+
+-------------------------------------------------------------------
+Tue Feb 14 10:28:30 UTC 2023 - Martin Vidner <mvidner@suse.com>
+
+- Allow dir:///foo to equal dir:/foo (bsc#1207239)
+- 4.5.24
+
+-------------------------------------------------------------------
 Wed Feb  8 21:46:04 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - DnsServerApi: drop module. It should never be in yast2 as it
