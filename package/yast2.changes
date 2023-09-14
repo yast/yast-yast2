@@ -2,6 +2,10 @@
 Fri Sep 01 19:57:03 UTC 2023 - Josef Reidinger <jreidinger@suse.com>
 
 - Branch package for SP6 (bsc#1208913)
+- backport:
+-- Replace calls to mkinitrd with dracut as mkinitrd will be
+   dropped (bsc#1203019)
+- 4.6.3
 
 -------------------------------------------------------------------
 Mon Mar  6 13:09:12 UTC 2023 - Stefan Hundhammer <shundhammer@suse.com>
