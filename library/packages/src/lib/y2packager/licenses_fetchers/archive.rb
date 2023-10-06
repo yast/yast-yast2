@@ -42,7 +42,7 @@ module Y2Packager
           begin
             unpack_archive
 
-            license_files = Dir.glob(File.join(archive_dir, "**", "LICENSE.*.TXT"), File::FNM_CASEFOLD)
+            license_files = find_case_insensitive(archive_dir, "LICENSE.*.TXT")
             # NOTE: despite the use of the case-insensitive flag, the captured group will be
             # returned as it is.
             languages = license_files.map { |path| path[/LICENSE.(\w*).TXT/i, 1] }
@@ -155,12 +155,22 @@ module Y2Packager
 
       # Return the path for the given file in specified directory
       #
-      # @param directory [String] Directory where licenses were unpacked
-      # @param file      [String] File name (without directory component)
-      #
+      # @param (see #find_case_insensitive)
       # @return [String, nil] The file path; nil if was not found
-      def find_path_for(directory, file)
-        Dir.glob(File.join(directory, "**", file), File::FNM_CASEFOLD).first
+      def find_path_for(directory, fileglob)
+        find_case_insensitive(directory, fileglob).first
+      end
+
+      # Return paths for the given file glob in specified directory
+      #
+      # @param directory [String] Directory, whole subtree is searched
+      # @param fileglob  [String] File name, with glob characters like `*` `{a,b}`, case insensitive
+      # @return [Array<String>] All found file paths
+      def find_case_insensitive(directory, fileglob)
+        files = Dir.glob(File.join(directory, "**", "*"))
+        files.find_all do |fn|
+          File.fnmatch?(File.join(directory, "**", fileglob), fn, File::FNM_CASEFOLD | File::FNM_EXTGLOB)
+        end
       end
     end
   end
