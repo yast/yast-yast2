@@ -91,8 +91,8 @@ module Y2Firewall
       end
 
       def current_zone_from(line)
-        attribute, _value = line.split(/\s*\(active\)\s*$/)
-        zone_names.include?(attribute) ? attribute : nil
+        name, *_status = line.split
+        zone_names.include?(name) ? name : nil
       end
 
       ATTRIBUTE_MAPPING = { "summary" => "short" }.freeze
