@@ -43,11 +43,11 @@ describe Y2Firewall::Firewalld::ZoneReader do
         "  rich rules: ",
         "\t",
         "",
-        "public (active)",
+        "public (default, active)",
         "  summary: Public",
-        "  description: For use in public areas. You do not trust the other" \
-        " computers on networks to not harm your computer." \
-        " Only selected incoming connections are accepted.",
+        "  description: For use in public areas. You do not trust the other " \
+        "computers on networks to not harm your computer. " \
+        "Only selected incoming connections are accepted.",
         "  target: default",
         "  icmp-block-inversion: no",
         "  interfaces: eth0 ens3",
