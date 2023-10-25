@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct 25 11:16:21 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Fix firewalld zones reader adapting it to the new firewall-cmd
+  --list-all-zones output format (bsc#1216534)
+- 5.0.2
+
+-------------------------------------------------------------------
 Thu Oct  5 08:50:25 UTC 2023 - Martin Vidner <mvidner@suse.com>
 
 - Fix case-insensitive finding of LICENSE.*.TXT (bsc#1215698)
