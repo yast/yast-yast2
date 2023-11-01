@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov  1 08:35:38 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
+
+- Added Repository#refresh method (related to bsc#1215884)
+- 5.0.3
+
+-------------------------------------------------------------------
 Wed Oct 25 11:16:21 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix firewalld zones reader adapting it to the new firewall-cmd
