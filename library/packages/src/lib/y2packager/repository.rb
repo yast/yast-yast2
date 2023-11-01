@@ -253,6 +253,29 @@ module Y2Packager
       true
     end
 
+    # Refresh the repository metadata on disk.
+    #
+    # If the repository is loaded in memory you need to reload the repositories
+    # again to activate the changes.
+    #
+    # During refresh the progress callbacks might be executed.
+    #
+    # @param force [Boolean] Force refreshing the data unconditionally.
+    #   Disabled by default, libzypp checks the metadata time
+    #   stamp and skips refresh if the repository has been refreshed not long ago.
+    #   See the "repo.refresh.delay" option in /etc/zypp/zypp.conf file.
+    # @return [Boolean] true on success, false otherwise
+    #
+    # @see Yast::Pkg.SourceRefreshNow
+    # @see Yast::Pkg.SourceForceRefreshNow
+    def refresh(force: false)
+      if force
+        Yast::Pkg.SourceForceRefreshNow(repo_id)
+      else
+        Yast::Pkg.SourceRefreshNow(repo_id)
+      end
+    end
+
     # Change the repository URL
     #
     # The URL will be changed only in memory. Calling to

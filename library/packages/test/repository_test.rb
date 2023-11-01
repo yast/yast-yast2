@@ -289,6 +289,23 @@ describe Y2Packager::Repository do
     end
   end
 
+  describe "#refresh" do
+    it "runs the refresh only when needed if called without parameters" do
+      expect(Yast::Pkg).to receive(:SourceRefreshNow).with(repo.repo_id)
+      repo.refresh
+    end
+
+    it "runs the refresh only when needed if the force parameter is false" do
+      expect(Yast::Pkg).to receive(:SourceRefreshNow).with(repo.repo_id)
+      repo.refresh(force: false)
+    end
+
+    it "always runs the refresh if the force parameter is true" do
+      expect(Yast::Pkg).to receive(:SourceForceRefreshNow).with(repo.repo_id)
+      repo.refresh(force: true)
+    end
+  end
+
   describe "#products" do
     let(:products_data) { [product] }
     let(:product) do
