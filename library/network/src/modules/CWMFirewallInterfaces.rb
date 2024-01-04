@@ -213,7 +213,7 @@ module Yast
     def InitAllowedInterfaces(services)
       service_status = {}
 
-      zone_services(services).each do |_s, status|
+      zone_services(services).each_value do |status|
         status.each do |iface, en|
           service_status[iface] = service_status.fetch(iface, true) && en
         end
@@ -1051,11 +1051,11 @@ module Yast
           if firewalld.current_service_names.include?(service)
             # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
             # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
-            HBox(HSpacing(2), Left(Label(format(_("- %{service}"), service: service))))
+            HBox(HSpacing(2), Left(Label(format(_("- %{service}"), service:))))
           else
             # TRANSLATORS: do not modify '%{service}', it will be replaced with service name.
             # TRANSLATORS: item in a list, '-' is used as marker. Feel free to change it
-            HBox(HSpacing(2), Left(Label(format(_("- %{service} (Not available)"), service: service))))
+            HBox(HSpacing(2), Left(Label(format(_("- %{service} (Not available)"), service:))))
           end
         end
 
@@ -1102,7 +1102,7 @@ module Yast
       services = settings.fetch("services", []) || []
       return [] if services.empty?
 
-      services.each { |s| s.sub!(/service:/, "") }
+      services.each { |s| s.sub!("service:", "") }
 
       settings["services"] = services.select { |s| s && !s.empty? }
     end

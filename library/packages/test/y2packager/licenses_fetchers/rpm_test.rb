@@ -12,7 +12,7 @@
 # ------------------------------------------------------------------------------
 
 require_relative "../../test_helper"
-require_relative "./shared_examples"
+require_relative "shared_examples"
 
 require "y2packager/licenses_fetchers/rpm"
 require "y2packager/package"

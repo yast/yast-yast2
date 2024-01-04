@@ -10,7 +10,7 @@ module Yast2
     # Represent a missing service
     class ServiceNotFound < StandardError
       def initialize(service_name)
-        super "Service unit '#{service_name}' not found"
+        super("Service unit '#{service_name}' not found")
       end
     end
 

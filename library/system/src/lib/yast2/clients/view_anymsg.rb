@@ -219,7 +219,7 @@ module Yast
         line.strip!
         result << line if line.empty? || line.start_with?("#")
 
-        line = line[1..-1] if line.start_with?("*")
+        line = line[1..] if line.start_with?("*")
         to_write.delete(line) # remember that we already write it
         line = "*" + line if selected_filename == line
         result << line
@@ -283,7 +283,7 @@ module Yast
         next if line.empty?
         next if line.start_with?("#")
 
-        line = line[1..-1] if line.start_with?("*")
+        line = line[1..] if line.start_with?("*")
         result << line
       end
     end
@@ -297,7 +297,7 @@ module Yast
 
     def arg_filename
       arg = WFM.Args.first
-      return arg if arg.is_a?(::String) && !arg.empty?
+      arg if arg.is_a?(::String) && !arg.empty?
     end
 
     def filenames_content
@@ -322,7 +322,7 @@ module Yast
 
       return @default_filename = available_filenames.first unless default_line
 
-      @default_filename = default_line[1..-1].strip
+      @default_filename = default_line[1..].strip
     end
 
     def combobox_items

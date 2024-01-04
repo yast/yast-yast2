@@ -92,7 +92,7 @@ module Y2Packager
         repo_data = Yast::Pkg.SourceGeneralData(repo_id)
         raise NotFound if repo_data.nil?
 
-        new(repo_id: repo_id, repo_alias: repo_data["alias"], enabled: repo_data["enabled"],
+        new(repo_id:, repo_alias: repo_data["alias"], enabled: repo_data["enabled"],
           name: repo_data["name"], autorefresh: repo_data["autorefresh"],
           url: repo_data["raw_url"], product_dir: repo_data["product_dir"])
       end

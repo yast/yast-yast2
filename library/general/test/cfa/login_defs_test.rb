@@ -22,7 +22,7 @@ require "cfa/login_defs"
 require "tmpdir"
 
 describe CFA::LoginDefs do
-  subject(:login_defs) { described_class.new(file_path: file_path, file_handler: file_handler) }
+  subject(:login_defs) { described_class.new(file_path:, file_handler:) }
   let(:file_path) { File.join(GENERAL_DATA_PATH, "login.defs-example") }
   let(:file_handler) { File }
 
@@ -30,7 +30,7 @@ describe CFA::LoginDefs do
 
   describe "#load" do
     it "loads the file content" do
-      file = described_class.load(file_path: file_path, file_handler: file_handler)
+      file = described_class.load(file_path:, file_handler:)
       expect(file.loaded?).to eq(true)
     end
   end
@@ -98,7 +98,7 @@ describe CFA::LoginDefs do
   end
 
   describe "#conflicts" do
-    subject(:other) { described_class.new(file_path: file_path, file_handler: file_handler) }
+    subject(:other) { described_class.new(file_path:, file_handler:) }
 
     before do
       other.encrypt_method = "SHA256"

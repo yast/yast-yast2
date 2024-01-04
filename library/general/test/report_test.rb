@@ -242,7 +242,7 @@ describe Yast::Report do
       end
 
       it "shows timed popup" do
-        expect(Yast2::Popup).to receive(:show).with(message, headline: :warning, timeout: timeout)
+        expect(Yast2::Popup).to receive(:show).with(message, headline: :warning, timeout:)
         subject.Warning(message)
       end
     end
@@ -290,7 +290,7 @@ describe Yast::Report do
       end
 
       it "shows a timed popup" do
-        expect(Yast2::Popup).to receive(:show).with(message, headline: :error, timeout: timeout)
+        expect(Yast2::Popup).to receive(:show).with(message, headline: :error, timeout:)
         subject.Error(message)
       end
     end

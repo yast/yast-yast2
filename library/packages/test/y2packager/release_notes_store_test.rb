@@ -9,8 +9,8 @@ describe Y2Packager::ReleaseNotesStore do
 
   let(:rn) do
     Y2Packager::ReleaseNotes.new(
-      product_name: "SLES", content: "", user_lang: user_lang, lang: "en_US",
-      format: format, version: version
+      product_name: "SLES", content: "", user_lang:, lang: "en_US",
+      format:, version:
     )
   end
 
@@ -51,8 +51,8 @@ describe Y2Packager::ReleaseNotesStore do
       context "and release notes to store are for the same product" do
         let(:old_rn) do
           Y2Packager::ReleaseNotes.new(
-            product_name: "SLES", content: "", user_lang: user_lang, lang: "en_US",
-            format: format, version: "12.3"
+            product_name: "SLES", content: "", user_lang:, lang: "en_US",
+            format:, version: "12.3"
           )
         end
 
@@ -69,8 +69,8 @@ describe Y2Packager::ReleaseNotesStore do
       context "and release notes to store are for a different product" do
         let(:old_rn) do
           Y2Packager::ReleaseNotes.new(
-            product_name: "openSUSE", content: "", user_lang: user_lang, lang: "en_US",
-            format: format, version: "12.3"
+            product_name: "openSUSE", content: "", user_lang:, lang: "en_US",
+            format:, version: "12.3"
           )
         end
 

@@ -44,7 +44,7 @@ module Yast
     end
 
     def SaveLogs
-      env_home = ENV["HOME"]
+      env_home = Dir.home
 
       homedir = if env_home && !env_home.empty?
         env_home

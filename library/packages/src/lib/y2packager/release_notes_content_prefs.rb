@@ -22,7 +22,7 @@ module Y2Packager
   ReleaseNotesContentPrefs = Struct.new(:user_lang, :fallback_lang, :format) do
     # @return [String] Human readable representation of content preferences
     def to_s
-      "content preferences: language '#{user_lang}', fallback language: '#{fallback_lang}', "\
+      "content preferences: language '#{user_lang}', fallback language: '#{fallback_lang}', " \
         "and format '#{format}'"
     end
   end

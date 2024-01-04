@@ -118,7 +118,7 @@ module Y2Firewall
     def add_zone(name)
       return false if find_zone(name)
 
-      zones << Y2Firewall::Firewalld::Zone.new(name: name)
+      zones << Y2Firewall::Firewalld::Zone.new(name:)
       true
     end
 

@@ -491,7 +491,7 @@ module Yast
       return true unless module_to_be_loaded?(name)
 
       Builtins.y2milestone("Removing module to be loaded at boot: %1", name)
-      @modules_to_load.each do |_key, val|
+      @modules_to_load.each_value do |val|
         val.delete(name)
       end
     end

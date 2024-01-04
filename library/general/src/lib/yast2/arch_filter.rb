@@ -48,10 +48,10 @@ module Yast2
       specs.each do |spec|
         method = spec.downcase
         negate = spec.start_with?("!")
-        method = spec[1..-1] if negate
+        method = spec[1..] if negate
         raise Invalid, spec unless valid_method?(method)
 
-        @specifications << { method: method.to_sym, negate: negate }
+        @specifications << { method: method.to_sym, negate: }
       end
     end
 

@@ -28,19 +28,19 @@ module Y2Issues
     # @param fallback [#to_s] Value to use instead of the invalid one
     def initialize(value, location:, fallback: nil, severity: :warn)
       textdomain "base"
-      super(build_message(value, fallback), location: location, severity: severity)
+      super(build_message(value, fallback), location:, severity:)
     end
 
   private
 
     def build_message(value, fallback)
       msg = if value
-        format(_("Invalid value '%{value}'."), value: value)
+        format(_("Invalid value '%{value}'."), value:)
       else
         _("A value is required.").dup
       end
 
-      msg << (" " + format(_("Using '%{fallback}' instead."), fallback: fallback)) if fallback
+      msg << (" " + format(_("Using '%{fallback}' instead."), fallback:)) if fallback
       msg
     end
   end

@@ -18,7 +18,7 @@ module Y2Packager
     # This class is responsible for obtaining the license and license content
     # of a given product from a RPM package
     class Rpm < Archive
-    # FIXME: there's (ATM) no way to indent the 'private' below so rubocop accepts it
+      # FIXME: there's (ATM) no way to indent the 'private' below so rubocop accepts it
 
     private
 

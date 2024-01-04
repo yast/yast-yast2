@@ -36,7 +36,6 @@ module Yast
   # SuSEFirewalld Class. Trying to provide relevent pieces of SF2 functionality via
   # firewalld.
   class SuSEFirewalldClass < SuSEFirewallClass
-    require "set"
     attr_reader :special_all_interface_zone
 
     # Valid attributes for firewalld zones
@@ -356,7 +355,7 @@ module Yast
     # @return true
     def WriteOnly
       # This does not check if firewalld is running
-      return false if !WriteConfiguration()
+      false if !WriteConfiguration()
     end
 
     # Function which starts/stops firewall. Then firewall is started immediately
@@ -583,7 +582,7 @@ module Yast
       services = []
       Builtins.foreach(tmp_services) do |service|
         sf2_to_firewalld_service(service).each do |s|
-          s = service.include?("service:") ? "service:" + s : s
+          s = "service:" + s if service.include?("service:")
           services << s
         end
       end
@@ -1029,8 +1028,8 @@ module Yast
 
     def set_zone_modified(zone, zone_params)
       # Do nothing if the parameters are not valid
-      return nil if zone_params.nil? || \
-        !@known_firewall_zones.include?(zone) || \
+      return nil if zone_params.nil? ||
+        !@known_firewall_zones.include?(zone) ||
         !zone_params.is_a?(Array)
 
       @SETTINGS[zone][:modified] = zone_params.to_set
@@ -1038,7 +1037,7 @@ module Yast
 
     def add_zone_modified(zone, zone_param)
       # Do nothing if the parameters are not valid
-      return nil if zone_param.nil? || \
+      return nil if zone_param.nil? ||
         !@known_firewall_zones.include?(zone)
 
       @SETTINGS[zone][:modified] << zone_param
@@ -1046,7 +1045,7 @@ module Yast
 
     def del_zone_modified(zone, zone_param)
       # Do nothing if the parameters are not valid
-      return nil if zone_param.nil? || \
+      return nil if zone_param.nil? ||
         !@known_firewall_zones.include?(zone)
 
       @SETTINGS[zone][:modified].delete(zone_param)
@@ -1055,7 +1054,7 @@ module Yast
     def zone_attr_modified?(zone, zone_param = nil)
       return !!@SETTINGS[zone].empty? if zone_param.nil?
       # Do nothing if the parameters are not valid
-      return nil if !@known_firewall_zones.include?(zone)
+      return false if !@known_firewall_zones.include?(zone)
 
       @SETTINGS[zone][:modified].include?(zone_param)
     end

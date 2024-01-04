@@ -234,12 +234,12 @@ describe Yast::CWMFirewallInterfaces do
 
     let(:external_zone) do
       instance_double("Y2Firewall::Firewalld::Zone", name: "external",
-                      interfaces: ["eth0"], services: [])
+        interfaces: ["eth0"], services: [])
     end
 
     let(:public_zone) do
       instance_double("Y2Firewall::Firewalld::Zone", name: "public",
-                      interfaces: ["eth1"], services: ["dns"])
+        interfaces: ["eth1"], services: ["dns"])
     end
 
     let(:zones) { [external_zone, public_zone] }

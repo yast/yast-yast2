@@ -115,7 +115,7 @@ module Y2Packager
     def available_base_products(force_repos: false)
       # If no product contains a 'system-installation()' tag but there is only 1 product,
       # we assume that it is the base one.
-      products = all_products(force_repos: force_repos)
+      products = all_products(force_repos:)
       if products.size == 1 && installation_package_mapping.empty?
         log.info "Assuming that #{products.inspect} is the base product."
         return products
@@ -149,7 +149,7 @@ module Y2Packager
       return nil unless name
 
       # find the highest version
-      Y2Packager::Resolvable.find(kind: :package, name: name).reduce(nil) do |a, p|
+      Y2Packager::Resolvable.find(kind: :package, name:).reduce(nil) do |a, p|
         (!a || (Yast::Pkg.CompareVersions(a.version, p.version) < 0)) ? p : a
       end
     end

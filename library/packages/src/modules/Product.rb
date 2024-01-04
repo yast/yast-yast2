@@ -293,7 +293,7 @@ module Yast
     end
 
     # Handles using dropped methods
-    def method_missing(method_name, *args, &block)
+    def method_missing(method_name, *args, &)
       if DROPPED_METHODS.include? method_name
         log.error "Method Product.#{method_name} dropped"
         raise "Method Product.#{method_name} has been dropped"

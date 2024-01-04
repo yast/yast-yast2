@@ -10,7 +10,7 @@ describe CWM::ReplacePoint do
 
   let(:widget) { ReplacePointTestWidget.new }
   subject do
-    res = described_class.new(widget: widget)
+    res = described_class.new(widget:)
     res.init
     res
   end
@@ -41,7 +41,7 @@ describe CWM::ReplacePoint do
 
   describe ".new" do
     it "has widget_id as passed" do
-      subject = described_class.new(id: "test", widget: widget)
+      subject = described_class.new(id: "test", widget:)
       expect(subject.widget_id).to eq "test"
     end
   end
@@ -55,14 +55,14 @@ describe CWM::ReplacePoint do
   describe "#init" do
     it "places passed widget into replace point" do
       widget = ReplacePointTestWidget.new
-      subject = described_class.new(widget: widget)
+      subject = described_class.new(widget:)
       expect(Yast::UI).to receive(:ReplaceWidget)
       subject.init
     end
 
     it "passes init to enclosed widget" do
       widget = ReplacePointTestWidget.new
-      subject = described_class.new(widget: widget)
+      subject = described_class.new(widget:)
       expect(widget).to receive(:init)
       subject.init
     end
