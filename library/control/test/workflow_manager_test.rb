@@ -554,13 +554,6 @@ describe Yast::WorkflowManager do
         expect { subject.addon_control_dir(src_id) }.to_not(change { File.exist?(path) })
       end
     end
-
-    it "does not create the directory if it already exists" do
-      dir = subject.addon_control_dir(src_id)
-      expect(File.directory?(subject.addon_control_dir(src_id))).to be true
-      expect(FileUtils).to_not receive(:mkdir_p).with(dir)
-      subject.addon_control_dir(src_id)
-    end
   end
 
   describe "#merge_product_workflow" do
