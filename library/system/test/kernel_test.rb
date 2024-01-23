@@ -150,6 +150,7 @@ describe Yast::Kernel do
 
   describe ".ParseInstallationKernelCmdline" do
     before do
+      allow(Yast::SCR).to receive(:Dir).with(path(".etc.install_inf")).and_return(["CmdLine"])
       allow(Yast::SCR).to receive(:Read).with(path(".etc.install_inf.Cmdline")).and_return(cmdline)
       allow(Yast::Stage).to receive(:initial).and_return(true)
       allow(Yast::Arch).to receive(:architecture).and_return("x86_64")
