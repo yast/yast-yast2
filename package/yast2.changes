@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jan 23 12:52:08 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
+
+- Reading Kernel Params: Use kernel cmdline when install.inf is not
+  available (bsc#1216408)
+- 5.0.4
+
+-------------------------------------------------------------------
 Wed Nov  1 08:35:38 UTC 2023 - Ladislav Slezák <lslezak@suse.com>
 
 - Added Repository#refresh method (related to bsc#1215884)
