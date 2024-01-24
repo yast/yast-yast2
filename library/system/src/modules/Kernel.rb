@@ -169,13 +169,14 @@ module Yast
       @cmdline_parsed = true
       return if !(Stage.initial || Stage.cont)
 
-      # live installation does not create /etc/install.inf (bsc#793065)
-      tmp = if Mode.live_installation
+      # Check if /etc/install.inf exists
+      tmp = if SCR.Dir(path(".etc.install_inf")).empty?
         # not using dedicated agent in order to use the same parser for cmdline
         # independently on whether it comes from /proc/cmdline or /etc/install.inf
-        Convert.to_string(SCR.Read(path(".target.string"), "/proc/cmdline"))
+        # use local read as it does not make sense to depend on binding it to chroot
+        WFM.Read(path(".local.string"), "/proc/cmdline").to_s
       else
-        Convert.to_string(SCR.Read(path(".etc.install_inf.Cmdline")))
+        SCR.Read(path(".etc.install_inf.Cmdline")).to_s
       end
 
       Builtins.y2milestone(
