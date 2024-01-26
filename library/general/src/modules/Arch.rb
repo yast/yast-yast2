@@ -62,6 +62,9 @@ module Yast
 
       # zKVM
       @_is_zkvm = nil
+
+      # zVM
+      @_is_zvm = nil
     end
 
     # ************************************************************
@@ -463,6 +466,22 @@ module Yast
       end
 
       @_is_zkvm
+    end
+
+    # ************************************************************
+    # zVM stuff
+
+    # zVM means VM on IBM System z
+    # true if zVM is running
+    #
+    # @return true if we are running on zVM hypervisor
+    def is_zvm
+      if @_is_zvm.nil?
+        # using different check than on x86 as recommended by IBM
+        @_is_zvm = s390 && Yast::WFM.Execute(path(".local.bash"), "/usr/bin/grep 'Control Program: z\/VM' /proc/sysinfo") == 0
+      end
+
+      @_is_zvm
     end
 
     # ************************************************************
