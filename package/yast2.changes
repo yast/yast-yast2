@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Jan 26 15:59:21 UTC 2024 - Knut Anderssen <kanderssen@suse.com>
+
+- Added s390 z/VM check to YaST::Arch (bsc#1210525).
+- 5.0.5
+
+-------------------------------------------------------------------
 Tue Jan 23 12:52:08 UTC 2024 - Josef Reidinger <jreidinger@suse.com>
 
 - Reading Kernel Params: Use kernel cmdline when install.inf is not
