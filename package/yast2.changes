@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 15 11:55:58 UTC 2024 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Allow host/domain names starting with an underscore (bsc#1219920)
+- 4.5.26
+
+-------------------------------------------------------------------
 Mon Mar  6 13:09:12 UTC 2023 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Revert dropping DnsServerAPI.pm to prevent build failures
