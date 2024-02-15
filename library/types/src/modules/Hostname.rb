@@ -81,7 +81,7 @@ module Yast
     def Check(host)
       return false if host.nil? || host == "" || Ops.greater_than(Builtins.size(host), 63)
 
-      Builtins.regexpmatch(host, "^[[:alnum:]]([[:alnum:]-]*[[:alnum:]])?$")
+      Builtins.regexpmatch(host, "^[[:alnum:]_]([[:alnum:]-]*[[:alnum:]])?$")
     end
 
     # Check syntax of domain entry
