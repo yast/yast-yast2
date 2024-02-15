@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Feb 15 11:55:58 UTC 2024 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Allow host/domain names starting with an underscore (bsc#1219920)
+- 4.6.5
+
+-------------------------------------------------------------------
 Wed Oct 25 11:16:21 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
 
 - Fix firewalld zones reader adapting it to the new firewall-cmd
