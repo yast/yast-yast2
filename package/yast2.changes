@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Feb 21 10:22:26 UTC 2024 - Michal Filka <mfilka@suse.com>
+
+- replaced "journalctl --dmesg" with "journalctl -b"
+- 5.0.7
+
+-------------------------------------------------------------------
 Thu Feb 15 11:55:58 UTC 2024 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Allow host/domain names starting with an underscore (bsc#1219920)
