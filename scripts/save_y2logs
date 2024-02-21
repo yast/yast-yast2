@@ -82,7 +82,9 @@ fi
 
 if [ "$(type -p journalctl)" ]; then
   journalctl --dmesg > $TMPDIR/journalctl-dmesg
+  journalctl -b > $TMPDIR/journalctl-b
   LIST_TMP="$LIST_TMP journalctl-dmesg"
+  LIST_TMP="$LIST_TMP journalctl-b"
 fi
 
 # strip sensitive information
@@ -139,6 +141,7 @@ done
 
 
 echo "Saving YaST logs to $TARGET" >&2
+echo "The archive is root readable only" >&2
 
 [ -n "$COMPRESSION" ] && COMPRESSION="--$COMPRESSION"
 
