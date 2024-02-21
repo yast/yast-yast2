@@ -81,9 +81,7 @@ if [ "$(type -p dmesg)" ]; then
 fi
 
 if [ "$(type -p journalctl)" ]; then
-  journalctl --dmesg > $TMPDIR/journalctl-dmesg
   journalctl -b > $TMPDIR/journalctl-b
-  LIST_TMP="$LIST_TMP journalctl-dmesg"
   LIST_TMP="$LIST_TMP journalctl-b"
 fi
 
