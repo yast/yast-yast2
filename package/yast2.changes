@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue Mar 12 08:16:30 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Reimplemented the hardcoded product mapping to support also the
+  migration from SLE_HPC to SLES SP6+ (with the HPC module)
+  (bsc#1220567)
+- 4.3.70
+
+-------------------------------------------------------------------
 Thu Mar  3 14:11:43 UTC 2022 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed refreshing old repositories during system upgrade
