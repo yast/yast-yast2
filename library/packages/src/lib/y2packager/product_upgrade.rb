@@ -23,9 +23,6 @@ module Y2Packager
     # mapping with upgraded products to handle some corner cases,
     # maps installed products to a new available base product
     MAPPING = {
-      # SLES12 + HPC module => SLESHPC15
-      # (a bit tricky, the module became a new base product!)
-      ["SLES", "sle-module-hpc"]                                          => "SLE_HPC",
       ["SLES", "SUSE-Manager-Proxy"]                                      => "SUSE-Manager-Proxy",
       ["SLES", "SUSE-Manager-Server"]                                     => "SUSE-Manager-Server",
       ["SLES", "SUSE-Manager-Proxy", "SUSE-Manager-Retail-Branch-Server"] => "SUSE-Manager-Retail-Branch-Server",
@@ -45,7 +42,12 @@ module Y2Packager
       # (installed) openSUSE Leap => (available) SLES,
       # same as above, in 15.3+ the product has been renamed from "openSUSE" to "Leap"
       ["Leap"]                                                            => "SLES"
+
+      # NOTE: if you change anything here then check the DEFAULT_PRODUCT_RENAMES value
+      # in the modules/AddOnProduct.rb file, maybe it needs an update as well...
     }.freeze
+
+    private_constant :MAPPING
 
     # This maps uses a list of installed products as the key and the removed products as a value.
     # All products in key have to be installed.
@@ -59,7 +61,33 @@ module Y2Packager
       ["SLES", "SUSE-Manager-Proxy", "SUSE-Manager-Retail-Branch-Server"] => ["SLES", "SUSE-Manager-Proxy"]
     }.freeze
 
+    private_constant :UPGRADE_REMOVAL_MAPPING
+
     class << self
+      # flag for using old (<= SLE15-SP5-) or new (>= SLE15-SP6) product mapping
+      attr_accessor :new_renames
+
+      def mapping
+        # special handling for the HPC product
+        product_mapping = if new_renames
+          {
+            # in SLE15-SP6+ SLE_HPC is replaced by SLES + HPC module
+            ["SLE-HPC"] => "SLES",
+            ["SLE_HPC"] => "SLES"
+          }
+        else
+          {
+            # SLES12 + HPC module => SLESHPC15
+            # (a bit tricky, the module became a new base product!)
+            ["SLES", "sle-module-hpc"] => "SLE_HPC",
+            # different ID
+            ["SLE-HPC"]                => "SLE_HPC"
+          }
+        end
+
+        product_mapping.merge!(MAPPING)
+      end
+
       # Find a new available base product which upgrades the installed base product.
       #
       # The workflow to find the new base product is:
@@ -111,18 +139,20 @@ module Y2Packager
         installed = Y2Packager::Product.installed_products.map(&:name)
         selected_products = Y2Packager::Product.with_status(:selected).map(&:name)
 
+        product_mapping = mapping
+
         # the "sort_by(&:size).reverse" part ensures we try first the longer
         # mappings (more installed products) to find more specific matches
-        old_products = MAPPING.keys.sort_by(&:size).reverse.find do |products|
+        old_products = product_mapping.keys.sort_by(&:size).reverse.find do |products|
           # the product is included in the mapping key and all product mapping key
           # products are installed and the replacement products are selected
           products.include?(old_product_name) && (products - installed).empty? &&
-            selected_products.include?(MAPPING[products])
+            selected_products.include?(product_mapping[products])
         end
 
         return [] unless old_products
 
-        [MAPPING[old_products]]
+        [product_mapping[old_products]]
       end
 
       # Returns the products which are upgraded by the solver but should be actually
@@ -171,18 +201,20 @@ module Y2Packager
       def find_by_mapping(available)
         installed = Y2Packager::Product.installed_products
 
+        product_mapping = mapping
+
         # sort the keys by length, try more products first
         # to find the most specific upgrade, prefer the
         # SLES + sle-module-hpc => SLE_HPC upgrade to plain SLES => SLES upgrade
         # (if that would be in the list)
-        upgrade = MAPPING.keys.sort_by(&:size).reverse.find do |keys|
+        upgrade = product_mapping.keys.sort_by(&:size).reverse.find do |keys|
           keys.all? { |name| installed.any? { |p| p.name == name } }
         end
 
         log.info("Fallback upgrade for products: #{upgrade.inspect}")
         return nil unless upgrade
 
-        name = MAPPING[upgrade]
+        name = product_mapping[upgrade]
         product = available.find { |p| p.name == name }
         log.info("New product: #{product}")
         product

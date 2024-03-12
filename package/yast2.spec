@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        4.3.69
+Version:        4.3.70
 
 Release:        0
 Summary:        YaST2 Main Package
@@ -124,6 +124,8 @@ Conflicts:      yast2-packager < 4.3.2
 Conflicts:      yast2-update < 4.3.0
 # Older snapper does not provide machine-readable output
 Conflicts:	snapper < 0.8.6
+# changed API in Y2Packager::ProductUpgrade
+Conflicts:      yast2-registration < 4.3.29
 
 Obsoletes:      yast2-devel-doc
 
