@@ -149,7 +149,7 @@ describe Yast::PackageCallbacks do
 
   describe "retry_label" do
     it "returns localized string with text and passed timeout" do
-      expect(subject.send(:retry_label, 15)).to be_a ::String
+      expect(subject.send(:retry_label, 15)).to be_a String
     end
   end
 

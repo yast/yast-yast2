@@ -95,11 +95,11 @@ describe CFA::SysctlConfig do
       end
 
       it "includes the other configuration files lexicographically ordered" do
-        expect(config.files[1..-1].map(&:file_path)).to eq([
-                                                             "/run/sysctl.d/05-syn_cookies.conf", "/usr/local/lib/sysctl.d/10-lib.conf",
-                                                             "/usr/lib/sysctl.d/15-lib.conf", "/lib/sysctl.d/20-lib.conf",
-                                                             "/etc/sysctl.d/50-overriden.conf", "/etc/sysctl.d/70-yast.conf", "/etc/sysctl.conf"
-                                                           ])
+        expect(config.files[1..].map(&:file_path)).to eq([
+                                                           "/run/sysctl.d/05-syn_cookies.conf", "/usr/local/lib/sysctl.d/10-lib.conf",
+                                                           "/usr/lib/sysctl.d/15-lib.conf", "/lib/sysctl.d/20-lib.conf",
+                                                           "/etc/sysctl.d/50-overriden.conf", "/etc/sysctl.d/70-yast.conf", "/etc/sysctl.conf"
+                                                         ])
       end
     end
 

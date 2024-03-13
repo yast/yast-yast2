@@ -40,7 +40,7 @@ describe Y2Packager::ReleaseNotesReader do
     instance_double(
       Y2Packager::ReleaseNotesFetchers::Rpm,
       latest_version: "15.0",
-      release_notes:  release_notes
+      release_notes:
     )
   end
 

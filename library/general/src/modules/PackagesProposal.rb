@@ -348,7 +348,7 @@ module Yast
       ret = {}
 
       GetSupportedResolvables().each do |one_type|
-        resolvables = GetAllResolvables(one_type, optional: optional)
+        resolvables = GetAllResolvables(one_type, optional:)
         ret[one_type] = resolvables if !resolvables.nil? && !resolvables.empty?
       end
 

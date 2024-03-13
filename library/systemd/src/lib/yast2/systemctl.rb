@@ -16,7 +16,7 @@ module Yast2
     class Error < StandardError
       # @param details [#to_s]
       def initialize(details)
-        super "Systemctl command failed: #{details}"
+        super("Systemctl command failed: #{details}")
       end
     end
 
@@ -42,7 +42,7 @@ module Yast2
         command = SYSTEMCTL + command
         log.debug "Executing `systemctl` command: #{command}"
         result = ::Timeout.timeout(TIMEOUT) { Yast::SCR.Execute(BASH_SCR_PATH, command) }
-        OpenStruct.new(result.merge!(command: command))
+        OpenStruct.new(result.merge!(command:))
       rescue ::Timeout::Error
         raise Yast2::Systemctl::Error, "Timeout #{TIMEOUT} seconds: #{command}"
       end

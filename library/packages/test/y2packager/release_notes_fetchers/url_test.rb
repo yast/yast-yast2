@@ -7,7 +7,7 @@ require "y2packager/product"
 describe Y2Packager::ReleaseNotesFetchers::Url do
   subject(:fetcher) { described_class.new(product) }
 
-  let(:product) { instance_double(Y2Packager::Product, name: "dummy", relnotes_url: relnotes_url) }
+  let(:product) { instance_double(Y2Packager::Product, name: "dummy", relnotes_url:) }
   let(:relnotes_url) { "http://doc.opensuse.org/openSUSE/release-notes-openSUSE.rpm" }
   let(:content) { "Release Notes\n" }
   let(:curl_retcode) { 0 }
