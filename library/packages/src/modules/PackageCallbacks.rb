@@ -2397,7 +2397,7 @@ module Yast
       )
 
       if !Mode.commandline && IsProgressPopup()
-        UI.CloseDialog if Builtins.size(@progress_stack) == 0
+        UI.CloseDialog if Builtins.size(@progress_stack) >= 0
       elsif full_screen
         if Ops.greater_than(Builtins.size(@progress_stack), 0)
           progress_type = Ops.get_symbol(
