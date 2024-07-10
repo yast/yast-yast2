@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 10 12:19:16 UTC 2024 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Re-added missing error class (bsc#1227580) 
+- 5.0.9
+
+-------------------------------------------------------------------
 Mon May  6 13:08:32 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Properly close nested progress callbacks (bsc#1223281)
