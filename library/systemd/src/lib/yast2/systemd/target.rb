@@ -10,6 +10,14 @@ module Yast2
       end
     end
 
+    # Exception when systemctl command failed
+    class SystemctlError < StandardError
+      # @param details [#to_s]
+      def initialize(details)
+        super "Systemctl command failed: #{details}"
+      end
+    end
+
     # API to manage a systemd.target unit
     #
     # @example How to find a custom systemd target
