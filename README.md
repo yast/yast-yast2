@@ -3,8 +3,7 @@ YaST - The Basic Libraries
 
 [![Workflow Status](https://github.com/yast/yast-yast2/workflows/CI/badge.svg?branch=master)](
 https://github.com/yast/yast-yast2/actions?query=branch%3Amaster)
-[![Jenkins Status](https://ci.opensuse.org/buildStatus/icon?job=yast-yast-yast2-master)](
-https://ci.opensuse.org/view/Yast/job/yast-yast-yast2-master/)
+[![OBS](https://github.com/yast/yast-yast2/actions/workflows/submit.yml/badge.svg)](https://github.com/yast/yast-yast2/actions/workflows/submit.yml)
 [![Coverage Status](https://img.shields.io/coveralls/yast/yast-yast2.svg)](https://coveralls.io/r/yast/yast-yast2?branch=master)
 [![Code Climate](https://codeclimate.com/github/yast/yast-yast2/badges/gpa.svg)](https://codeclimate.com/github/yast/yast-yast2)
 

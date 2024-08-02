@@ -1,0 +1,29 @@
+# See https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions
+
+name: OBS
+
+on:
+  # only when committing to master
+  push:
+    branches: master
+
+  # allow running manually from GitHub Web
+  workflow_dispatch:
+
+jobs:
+  submit:
+    # do not run in forks
+    if: github.repository_owner == 'yast'
+
+    runs-on: ubuntu-latest
+
+    # the default timeout is 6 hours, do not wait for that long if osc gets stucked
+    timeout-minutes: 30
+
+    steps:
+      - name: Submit the package
+        # see https://github.com/yast/actions/blob/master/submit/action.yml
+        uses: yast/actions/submit@master
+        with:
+          obs_user:     ${{ secrets.OBS_USER }}
+          obs_password: ${{ secrets.OBS_PASSWORD }}

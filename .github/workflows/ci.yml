@@ -61,6 +61,9 @@ jobs:
         run: rake check:rubocop
 
   Package:
+    # skip in master, but run in forks
+    if:  github.ref_name != 'master' || github.repository_owner != 'yast'
+
     runs-on: ubuntu-latest
 
     strategy:
