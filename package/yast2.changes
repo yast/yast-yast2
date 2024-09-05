@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 05 08:36:09 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
+
+- Branch package for SP7 (bsc#1208913)
+
+-------------------------------------------------------------------
 Mon May  6 13:08:32 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Properly close nested progress callbacks (bsc#1223281)
