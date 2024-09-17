@@ -45,8 +45,8 @@ module Packages
     private
 
       # Helper function for creating a YaST function reference
-      def fun_ref(*args)
-        Yast::FunRef.new(*args)
+      def fun_ref(*)
+        Yast::FunRef.new(*)
       end
 
       # Register the default file conflicts callbacks

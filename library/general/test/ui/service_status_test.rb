@@ -12,7 +12,7 @@ def matches_id_and_text?(widget, id, text)
     p.is_a?(Yast::Term) && p.value == :id && p.params.first =~ id
   end
 
-  widget.params.any? { |p| p.is_a?(::String) && p =~ text }
+  widget.params.any? { |p| p.is_a?(String) && p =~ text }
 end
 
 def widget_by_id_and_text(widgets, id, text)

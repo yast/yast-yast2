@@ -12,11 +12,11 @@ module CWM
     # {Tabs} does not have instances:
     # `Tabs.new` overrides `Class.new` and calls
     # either {DumbTabPager}.new or {PushButtonTabPager}.new.
-    def self.new(*args)
+    def self.new(*)
       if Yast::UI.HasSpecialWidget(:DumbTab)
-        DumbTabPager.new(*args)
+        DumbTabPager.new(*)
       else
-        PushButtonTabPager.new(*args)
+        PushButtonTabPager.new(*)
       end
     end
   end

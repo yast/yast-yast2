@@ -8,7 +8,7 @@ class TestTextHelpers
   include UI::TextHelpers
 end
 
-describe ::UI::TextHelpers do
+describe UI::TextHelpers do
   subject { TestTextHelpers.new }
   let(:text) do
     "This is a long paragraph.
@@ -178,7 +178,7 @@ describe ::UI::TextHelpers do
       let(:tags) { ["p", "em"] }
 
       it "changes only the specified tags" do
-        expect(subject.plain_text(text, tags: tags))
+        expect(subject.plain_text(text, tags:))
           .to eq("YaST:\n\na <b>powerful</b> installation and configuration tool.")
       end
 
@@ -188,24 +188,24 @@ describe ::UI::TextHelpers do
         end
 
         it "keeps unmatched tags" do
-          expect(subject.plain_text(text, tags: tags, replacements: replacements))
+          expect(subject.plain_text(text, tags:, replacements:))
             .to match(/a <b>powerful<\/b> installation/)
         end
 
         it "deletes matched tags without replacements" do
-          expect(subject.plain_text(text, tags: tags, replacements: replacements))
+          expect(subject.plain_text(text, tags:, replacements:))
             .to_not match(/<p>.*<\/p>/)
         end
 
         it "replaces matched tags with replacements" do
-          expect(subject.plain_text(text, tags: tags, replacements: replacements))
+          expect(subject.plain_text(text, tags:, replacements:))
             .to match(/and _configuration_ tool/)
         end
       end
 
       context "and is being used with a block" do
         let(:result) do
-          subject.plain_text(text, tags: tags) do |tag|
+          subject.plain_text(text, tags:) do |tag|
             case tag
             when /<\/?(b|strong)>/ then "*"
             when /<\/?em>/ then "_"
@@ -233,7 +233,7 @@ describe ::UI::TextHelpers do
       end
 
       it "replaces matched tags using given replacements" do
-        expect(subject.plain_text(text, replacements: replacements))
+        expect(subject.plain_text(text, replacements:))
           .to eq("> YaST:\n> a *powerful* installation and _configuration_ tool.")
       end
 
@@ -277,12 +277,12 @@ describe ::UI::TextHelpers do
         let(:tags) { ["b"] }
 
         it "keeps unmatched tags" do
-          expect(subject.plain_text(text, tags: tags, replacements: replacements))
+          expect(subject.plain_text(text, tags:, replacements:))
             .to match(/<p>.*and <em>configuration<\/em> tool.<\/p>/)
         end
 
         it "replaces matched tags with replacements" do
-          expect(subject.plain_text(text, tags: tags, replacements: replacements))
+          expect(subject.plain_text(text, tags:, replacements:))
             .to match(/a \*powerful\* installation/)
         end
       end

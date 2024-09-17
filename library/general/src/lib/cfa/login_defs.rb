@@ -93,7 +93,7 @@ module CFA
       # @param file_path    [String] File path
       # @return [LoginDefs] File with the already loaded content
       def load(file_path: DEFAULT_PATH, file_handler: Yast::TargetFile)
-        new(file_path: file_path, file_handler: file_handler).tap(&:load)
+        new(file_path:, file_handler:).tap(&:load)
       end
     end
 
@@ -111,7 +111,7 @@ module CFA
     #
     # @see CFA::BaseModel#initialize
     def initialize(file_path: DEFAULT_PATH, file_handler: Yast::TargetFile)
-      super(AugeasParser.new("login_defs.lns"), file_path, file_handler: file_handler)
+      super(AugeasParser.new("login_defs.lns"), file_path, file_handler:)
     end
 
     # Determines whether an attribute has a value
