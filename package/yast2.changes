@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct  1 13:28:34 UTC 2024 - Stefan Hundhammer <shundhammer@suse.com>
+
+- Removed obsolete USERADD_CMD, USERDEL_PRECMD, USERDEL_POSTCMD,
+  GROUPADD_CMD (bsc#1231006)
+- 5.0.10
+
+-------------------------------------------------------------------
 Wed Jul 10 12:19:16 UTC 2024 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Re-added missing error class (bsc#1227580) 
