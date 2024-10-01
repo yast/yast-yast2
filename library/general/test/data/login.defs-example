@@ -272,5 +272,3 @@ FORCE_SHADOW    no
 # but be aware that the result could depend on the locale settings.
 #
 CHARACTER_CLASS                [A-Za-z_][A-Za-z0-9_.-]*
-
-GROUPADD_CMD                   /usr/sbin/groupadd.local
