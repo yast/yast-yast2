@@ -77,10 +77,7 @@ describe CFA::LoginDefs do
     sys_uid_max:     "499",
     sys_uid_min:     "100",
     uid_max:         "60000",
-    uid_min:         "1000",
-    useradd_cmd:     "/usr/sbin/useradd.local",
-    userdel_postcmd: "/usr/sbin/userdel-post.local",
-    userdel_precmd:  "/usr/sbin/userdel-pre.local"
+    uid_min:         "1000"
   }.freeze
 
   ATTRS_VALUES.each do |attr, value|

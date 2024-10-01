@@ -69,9 +69,6 @@ module CFA
       :uid_max,
       :uid_min,
       :umask,
-      :useradd_cmd,
-      :userdel_postcmd,
-      :userdel_precmd,
       :usergroups_enab
     ].freeze
 

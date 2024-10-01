@@ -1,2 +1,1 @@
 ENCRYPT_METHOD          SHA256
-USERADD_CMD             /usr/local/sbin/useradd.local

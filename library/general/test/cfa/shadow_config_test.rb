@@ -125,11 +125,11 @@ describe CFA::ShadowConfig do
 
     context "when a conflict is detected" do
       before do
-        allow(config).to receive(:conflicts).and_return([:fail_delay, :useradd_cmd])
+        allow(config).to receive(:conflicts).and_return([:fail_delay, :encrypt_method])
       end
 
       it "logs conflicting attributes" do
-        expect(config.log).to receive(:warn).with(/overridden: fail_delay, useradd_cmd/)
+        expect(config.log).to receive(:warn).with(/overridden: fail_delay, encrypt_method/)
         config.save
       end
     end
@@ -139,7 +139,7 @@ describe CFA::ShadowConfig do
     before { config.load }
 
     it "returns override YaST settings" do
-      expect(config.conflicts).to eq([:useradd_cmd])
+      expect(config.conflicts).to eq([:encrypt_method])
     end
   end
 
