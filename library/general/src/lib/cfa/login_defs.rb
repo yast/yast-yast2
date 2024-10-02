@@ -51,7 +51,6 @@ module CFA
       :fail_delay,
       :gid_max,
       :gid_min,
-      :groupadd_cmd,
       :home_mode,
       :pass_max_days,
       :pass_min_days,
@@ -69,9 +68,6 @@ module CFA
       :uid_max,
       :uid_min,
       :umask,
-      :useradd_cmd,
-      :userdel_postcmd,
-      :userdel_precmd,
       :usergroups_enab
     ].freeze
 

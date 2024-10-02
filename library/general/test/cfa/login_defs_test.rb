@@ -68,7 +68,6 @@ describe CFA::LoginDefs do
     fail_delay:      "3",
     gid_max:         "60000",
     gid_min:         "1000",
-    groupadd_cmd:    "/usr/sbin/groupadd.local",
     pass_max_days:   "99999",
     pass_min_days:   "0",
     pass_warn_age:   "7",
@@ -77,10 +76,7 @@ describe CFA::LoginDefs do
     sys_uid_max:     "499",
     sys_uid_min:     "100",
     uid_max:         "60000",
-    uid_min:         "1000",
-    useradd_cmd:     "/usr/sbin/useradd.local",
-    userdel_postcmd: "/usr/sbin/userdel-post.local",
-    userdel_precmd:  "/usr/sbin/userdel-pre.local"
+    uid_min:         "1000"
   }.freeze
 
   ATTRS_VALUES.each do |attr, value|

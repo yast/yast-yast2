@@ -183,7 +183,7 @@ LOGIN_TIMEOUT		60
 # any combination of letters "frwh" (full name, room number, work
 # phone, home phone).  If not defined, no changes are allowed.
 # For backward compatibility, "yes" = "rwh" and "no" = "frwh".
-# 
+#
 CHFN_RESTRICT		rwh
 
 #
@@ -226,34 +226,11 @@ ENCRYPT_METHOD SHA512
 DEFAULT_HOME	yes
 
 #
-# If defined, this command is run when adding a user.
-# It should rebuild any NIS database etc. to add the
-# new created account.
-#
-USERADD_CMD             /usr/sbin/useradd.local
-
-#
 # If defined, this command is run when removing a user.
 # It should remove any at/cron/print jobs etc. owned by
 # the user to be removed (passed as the first argument).
 #
-# See also USERDEL_PRECMD and USERDEL_POSTCMD below.
-#
 #USERDEL_CMD	/usr/sbin/userdel_local
-
-#
-# If defined, this command is run before removing a user.
-# It should remove any at/cron/print jobs etc. owned by
-# the user to be removed.
-#
-USERDEL_PRECMD          /usr/sbin/userdel-pre.local
-
-#
-# If defined, this command is run after removing a user.
-# It should rebuild any NIS database etc. to remove the
-# account from it.
-#
-USERDEL_POSTCMD         /usr/sbin/userdel-post.local
 
 #
 # Enable setting of the umask group bits to be the same as owner bits
@@ -296,5 +273,3 @@ FORCE_SHADOW    no
 #
 #CHARACTER_CLASS                [A-Za-z_][A-Za-z0-9_.-]*[A-Za-z0-9_.$-]\?
 CHARACTER_CLASS         [ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_][ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.-]*[ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_.$-]\?
-
-GROUPADD_CMD            /usr/sbin/groupadd.local
