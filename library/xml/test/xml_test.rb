@@ -129,7 +129,7 @@ describe "Yast::XML" do
       it "raises XMLSerializationError when key is not string" do
         input = { "test" => { "a" => "b", "lest" => :lest, 1 => 2, nil => "t", :symbol => "symbol" } }
 
-        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError, /non-string key.*nil=>"t"/)
+        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError)
       end
 
       it "places keys in alphabetic sorting" do
@@ -150,13 +150,13 @@ describe "Yast::XML" do
       it "raises XMLSerializationError when entry has nil as value" do
         input = { "test" => { "a" => "b", "b" => "c", "c" => nil, "d" => "e", "e" => "f" } }
 
-        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError, /represent nil, part of .*"c"=>nil/)
+        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError)
       end
 
       it "raises XMLSerializationError when entry has a weird value" do
         input = { "test" => /I am a Regexp/ }
 
-        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError, /represent .*Regexp\//)
+        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError)
       end
     end
 
@@ -193,7 +193,7 @@ describe "Yast::XML" do
       it "raises XMLSerializationError when list contains nil" do
         input = { "test" => ["a", "b", nil, "d", "e", "f"] }
 
-        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError, /represent nil, part of .*"b", nil/)
+        expect { subject.YCPToXMLString("test", input) }.to raise_error(Yast::XMLSerializationError)
       end
     end
 

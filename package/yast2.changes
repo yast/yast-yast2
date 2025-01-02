@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan  2 06:51:16 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- Fix failing tests with ruby 3.4 (gh#yast/yast-yast2#1314)
+- 5.0.11
+
+-------------------------------------------------------------------
 Tue Oct  1 13:28:34 UTC 2024 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Removed obsolete USERADD_CMD, USERDEL_PRECMD, USERDEL_POSTCMD,
