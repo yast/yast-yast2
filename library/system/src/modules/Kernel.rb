@@ -174,7 +174,10 @@ module Yast
         # not using dedicated agent in order to use the same parser for cmdline
         # independently on whether it comes from /proc/cmdline or /etc/install.inf
         # use local read as it does not make sense to depend on binding it to chroot
-        WFM.Read(path(".local.string"), "/proc/cmdline").to_s
+        # and first check if there is dedicated agama filtered kernel parameters (bsc#1234678)
+        agama_path = "/run/agama/cmdline.d/kernel"
+        file_path = File.exist?(agama_path) ? agama_path : "/proc/cmdline"
+        WFM.Read(path(".local.string"), file_path).to_s
       else
         SCR.Read(path(".etc.install_inf.Cmdline")).to_s
       end

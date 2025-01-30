@@ -156,6 +156,44 @@ describe Yast::Kernel do
       allow(Yast::Arch).to receive(:architecture).and_return("x86_64")
     end
 
+    context "if install.inf is not available" do
+      let(:cmdline) { "splash=verbose silent" }
+      before do
+        allow(Yast::SCR).to receive(:Dir).with(path(".etc.install_inf")).and_return([])
+        allow(::File).to receive(:exist?).and_call_original
+      end
+
+      context "if /run/agama/cmdline.d/kernel is available" do
+        before do
+          expect(::File).to receive(:exist?).with("/run/agama/cmdline.d/kernel")
+            .and_return(true)
+          allow(Yast::WFM).to receive(:Read)
+            .with(path(".local.string"), "/run/agama/cmdline.d/kernel")
+            .and_return(cmdline)
+        end
+
+        it "reads kernel command line from /run/agama/cmdline.d/kernel" do
+          subject.ParseInstallationKernelCmdline
+          expect(subject.GetCmdLine).to eq " splash=verbose silent"
+        end
+      end
+
+      context "if /run/agama/cmdline.d/kernel is not available" do
+        before do
+          expect(::File).to receive(:exist?).with("/run/agama/cmdline.d/kernel")
+            .and_return(false)
+          allow(Yast::WFM).to receive(:Read)
+            .with(path(".local.string"), "/proc/cmdline")
+            .and_return(cmdline)
+        end
+
+        it "reads kernel command line from /proc/cmdline" do
+          subject.ParseInstallationKernelCmdline
+          expect(subject.GetCmdLine).to eq " splash=verbose silent"
+        end
+      end
+    end
+
     context "for common options" do
       let(:cmdline) { "splash=verbose silent" }
 
