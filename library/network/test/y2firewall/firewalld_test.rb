@@ -302,7 +302,7 @@ describe Y2Firewall::Firewalld do
   describe "#modified?" do
     let(:api) do
       instance_double(Y2Firewall::Firewalld::Api, log_denied_packets: "off",
-                      default_zone: "public", zones: known_zones, services: ["http"])
+        default_zone: "public", zones: known_zones, services: ["http"])
     end
 
     let(:modified_zone) { false }
@@ -338,7 +338,7 @@ describe Y2Firewall::Firewalld do
     end
     let(:api) do
       instance_double(Y2Firewall::Firewalld::Api, log_denied_packets: "on",
-                      default_zone: "public", zones: known_zones, services: ["http"])
+        default_zone: "public", zones: known_zones, services: ["http"])
     end
 
     before do

@@ -1,0 +1,240 @@
+AllCops:
+  Exclude:
+    # avoid confusion of rpm spec and gem spec
+    - "**/*.spec"
+  TargetRubyVersion: 3.3 # 2.5 is the SLE15 version, so ensure that we use proper version
+  # By default enable all new cops
+  NewCops: enable
+
+# Does not work well with having indentation in strings
+Layout/LineContinuationLeadingSpace:
+  Enabled: false
+
+Layout/EndAlignment:
+  EnforcedStyleAlignWith: variable
+
+Metrics/AbcSize:
+  Max: 30
+
+Layout/LineLength:
+  Max: 100
+  # To make it possible to copy or click on URIs in the code, we allow lines
+  # contaning a URI to be longer than Max.
+  AllowURI: true
+  URISchemes:
+    - http
+    - https
+
+Layout/HashAlignment:
+  EnforcedHashRocketStyle: table
+  EnforcedColonStyle: table
+
+Style/CollectionMethods:
+  Enabled: false
+
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Style/WordArray:
+  Enabled: false
+
+Style/SymbolArray:
+  EnforcedStyle: brackets
+
+Style/RegexpLiteral:
+  Enabled: false
+
+Style/SignalException:
+  EnforcedStyle: only_raise
+
+# Do not require an underscore each three digits. Both 65536 and 65_536 are allowed.
+Style/NumericLiterals:
+  Enabled: false
+
+# no extra indentation for multiline function calls.
+# Reason is that some legacy ruby API call have a lot of parameters and it makes
+# looking it ugly. Especially UI constructions with helpers cannot fit into line
+# lenght. Same applies to method calls separated by dot.
+# required style ( and by default forbidden by rubocop ):
+#
+# SmartClass.smart_method(boring_parameter1, boring_parameter2,
+#   boring_parameter3, boring_parameter4)
+#
+# forbidden style ( require by default by rubocop )
+#
+# SmartClass.smart_method(boring_parameter1, boring_parameter2,
+#                         boring_parameter3, boring_parameter4)
+#
+Layout/ParameterAlignment:
+  EnforcedStyle: with_fixed_indentation
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+
+# no extra indentation for case.
+# We prefer style
+#   case a
+#   when 0
+#     action_a
+#   when 1
+#     action_b
+#   else
+#     action_c
+#   end
+#
+# before longer and from our POV without advantage style which can confuse as it
+# indicate double nesting
+#   case a
+#     when 0
+#       action_a
+#     when 1
+#       action_b
+#     else
+#       action_c
+#   end
+Layout/CaseIndentation:
+  EnforcedStyle: end
+
+# "unless" has a different connotation than "if not" so disable this check
+Style/NegatedIf:
+  Enabled: false
+
+# allow more than 10 lines for methods as some team member feel unconfortable with it
+Metrics/MethodLength:
+  Max: 30
+
+# allow more than 100 lines for class as some team member feel unconfortable with it
+Metrics/ClassLength:
+  Max: 250
+
+# Allow using and/or for driving code flow as its original intention.
+# Forbid it only in conditionals
+# So this rule allow something like
+#
+# a = action_a or raise "Cannot do a"
+#
+# and forbids ( due to confusing operator precedence for work-flow and/or )
+#
+# if a == 5 and b == 6
+#
+Style/AndOr:
+  EnforcedStyle: conditionals
+
+# Access modified affect globally all following method definition, so
+# it deserve bigger visibility then hiddin in method definition block.
+# for that reason we found better style:
+# class C
+#   ...
+#
+# private
+#
+#   ...
+# end
+#
+# then style where access modifier can be easier to overlook in longer class:
+# class C
+#   ...
+#
+#   private
+#
+#   ...
+# end
+Layout/AccessModifierIndentation:
+  EnforcedStyle: outdent
+
+# Forcing ascii only comments prevents examples in code that deal with UTF
+# strings so we allow using it
+Style/AsciiComments:
+  Enabled: false
+
+# YaST code still have to deal with types in component system, so we allow
+# double negation to enforce boolean value
+# so this change allow code
+#
+# return !!result
+#
+Style/DoubleNegation:
+  Enabled: false
+
+# alias method is more convenient method for method aliasing even when in class
+# context self scope is not so clear
+# see https://github.com/bbatsov/ruby-style-guide#alias-method-lexically
+# so force
+# class C
+#   alias_method :a, :b
+#
+# instead of:
+# class C
+#   alias b a
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
+
+# often return code of shell call is compared and using `exitstatus == 0`
+# is more obvious then exitstatus.zero? especially when SCR can return nil
+Style/NumericPredicate:
+  Enabled: false
+
+# no strong preference if 5 == a or a == 5 should be enforced
+Style/YodaCondition:
+  Enabled: false
+
+# Do not enforce neither style of access modifiers as both are useful
+Style/AccessModifierDeclarations:
+  Enabled: false
+
+# when ternany is complex is should be clear enclosed in parentheses for easier read
+Style/TernaryParentheses:
+  EnforcedStyle: require_parentheses_when_complex
+
+# format string is not unified and depending on usage. All three usages has advantages
+# simple style is understandable for translators, but when there are more params it needs names.
+# And template version is needed if there are more params and it needs some formatting.
+Style/FormatStringToken:
+  Enabled: false
+
+Naming/VariableNumber:
+  # do not check numbers usage in symbols as it often come outside of ruby
+  # like `x86_64`
+  CheckSymbols: false
+
+# The detection is buggy and result is in potential bugs in Yast::Path handling.
+# It changes
+#    path + "element"
+# to
+#    "#{path}element"
+# so calls path.to_s and append element. Result is wrong path.
+Style/StringConcatenation:
+  Enabled: false
+
+# while there is agreement on reducing openstruct usage,
+# it is still used too widely, so disable only per module when
+# it is ready
+Style/OpenStructUse:
+  Enabled: false
+
+# Skip warning for constant definition in tests
+# as in rspec we often locate testing data close to respective test
+Lint/ConstantDefinitionInBlock:
+  Exclude:
+    - "**/test/**/*.rb"
+
+# Both styles has advantages and disadvantages and we decided to keep it
+# up to code writer which one fits better. Can be changed when we use more
+# widely type checking which needs separated style.
+Style/AccessorGrouping:
+  Enabled: false
+
+Metrics/BlockLength:
+  # rspec is known as DSL with big blocks
+  Exclude:
+    - "**/test/**/*"

@@ -51,7 +51,7 @@ class EventTime < CWM::TimeField
   end
 end
 
-class Event < ::CWM::Popup
+class Event < CWM::Popup
   def initialize
     super
 

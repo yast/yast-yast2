@@ -1838,11 +1838,11 @@ module Yast
 
     # Sets the icon and opens a wizard dialog with the content specified as
     # arguments
-    def open_wizard_dialog(*args)
+    def open_wizard_dialog(*)
       set_icon
       UI.OpenDialog(
         Opt(:wizardDialog),
-        Wizard(*args)
+        Wizard(*)
       )
     end
 
