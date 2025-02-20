@@ -170,13 +170,16 @@ module Yast
       return if !(Stage.initial || Stage.cont)
 
       # Check if /etc/install.inf exists
-      tmp = if SCR.Dir(path(".etc.install_inf")).empty?
+      tmp = if !SCR.Dir(path(".etc.install_inf")).empty?
+        SCR.Read(path(".etc.install_inf.Cmdline")).to_s
+      # else check if there is agama specific filtered kernel options
+      elsif ::File.exist?("/run/agama/cmdline.d/kernel.conf")
+        WFM.Read(path(".local.string"), "/run/agama/cmdline.d/kernel.conf").to_s
+      else
         # not using dedicated agent in order to use the same parser for cmdline
         # independently on whether it comes from /proc/cmdline or /etc/install.inf
         # use local read as it does not make sense to depend on binding it to chroot
         WFM.Read(path(".local.string"), "/proc/cmdline").to_s
-      else
-        SCR.Read(path(".etc.install_inf.Cmdline")).to_s
       end
 
       Builtins.y2milestone(
