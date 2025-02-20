@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Feb 20 16:09:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
+
+- respect kernel parameter filtering from agama if found
+  (bsc#1237390,bsc#1234678)
+- 5.0.12
+
+-------------------------------------------------------------------
 Thu Jan  2 06:51:16 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Fix failing tests with ruby 3.4 (gh#yast/yast-yast2#1314)
@@ -14,7 +21,7 @@ Tue Oct  1 13:28:34 UTC 2024 - Stefan Hundhammer <shundhammer@suse.com>
 -------------------------------------------------------------------
 Wed Jul 10 12:19:16 UTC 2024 - Stefan Hundhammer <shundhammer@suse.com>
 
-- Re-added missing error class (bsc#1227580) 
+- Re-added missing error class (bsc#1227580)
 - 5.0.9
 
 -------------------------------------------------------------------
