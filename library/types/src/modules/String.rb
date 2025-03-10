@@ -238,7 +238,7 @@ module Yast
         ) # More than one hour - we don't hope this will ever happen, but who knows?
       else
         hours = seconds / 3600
-        seconds = seconds % 3600
+        seconds %= 3600
         Builtins.sformat(
           "%1:%2:%3",
           hours,
@@ -512,7 +512,7 @@ module Yast
           first_index = p[0]
           lenght = p[1] || 0
 
-          output = output[0, first_index] + output[(first_index + lenght)..-1]
+          output = output[0, first_index] + output[(first_index + lenght)..]
           p = Builtins.regexppos(output, regex)
           break unless glob
           break if p.empty?
@@ -670,7 +670,7 @@ module Yast
       pos = input.index(source)
       while pos
         tmp = input[0, pos] + target
-        tmp << input[(pos + source.size)..-1] if input.size > (pos + source.size)
+        tmp << input[(pos + source.size)..] if input.size > (pos + source.size)
 
         input = tmp
 

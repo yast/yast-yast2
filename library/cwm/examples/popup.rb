@@ -55,7 +55,7 @@ class Wolf < CWM::CheckBox
   end
 end
 
-class Ferryman < ::CWM::Popup
+class Ferryman < CWM::Popup
   def initialize
     super
 

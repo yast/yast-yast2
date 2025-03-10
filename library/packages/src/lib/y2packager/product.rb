@@ -80,7 +80,7 @@ module Y2Packager
           arch: product.arch, category: product.category,
           vendor: product.vendor, order: displayorder,
           register_target: product.register_target,
-          installation_package: installation_package
+          installation_package:
         )
       end
 
@@ -168,8 +168,8 @@ module Y2Packager
     def ==(other)
       result = arch == other.arch && name == other.name &&
         version == other.version && vendor == other.vendor
-      log.info("Comparing products: '#{arch}' <=> '#{other.arch}', '#{name}' <=> '#{other.name}', "\
-               "'#{version}' <=> '#{other.version}', '#{vendor}' <=> '#{other.vendor}' => "\
+      log.info("Comparing products: '#{arch}' <=> '#{other.arch}', '#{name}' <=> '#{other.name}', " \
+               "'#{version}' <=> '#{other.version}', '#{vendor}' <=> '#{other.vendor}' => " \
                "result: #{result}")
       result
     end
@@ -237,7 +237,7 @@ module Y2Packager
     # @see ReleaseNotesReader
     # @see ReleaseNotes
     def release_notes(user_lang, format = :txt)
-      ReleaseNotesReader.new(self).release_notes(user_lang: user_lang, format: format)
+      ReleaseNotesReader.new(self).release_notes(user_lang:, format:)
     end
 
     # Return release notes URL
@@ -262,7 +262,7 @@ module Y2Packager
     # @param statuses [Array<Symbol>] Status to compare with.
     # @return [Boolean] true if it is in the given status
     def status?(*statuses)
-      Y2Packager::Resolvable.find(kind: :product, name: name).any? do |res|
+      Y2Packager::Resolvable.find(kind: :product, name:).any? do |res|
         statuses.include?(res.status)
       end
     end
@@ -275,7 +275,7 @@ module Y2Packager
     #
     # @return [Hash] properties
     def resolvable_properties
-      @resolvable_properties ||= Y2Packager::Resolvable.find(kind: :product, name: name, version: version).first
+      @resolvable_properties ||= Y2Packager::Resolvable.find(kind: :product, name:, version:).first
     end
 
     # Returns the version number (without the release part)

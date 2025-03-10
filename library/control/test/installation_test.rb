@@ -9,7 +9,7 @@ describe Yast::Installation do
 
   describe ".sourcedir" do
     before do
-      allow(::File).to receive(:exist?).and_return(true)
+      allow(File).to receive(:exist?).and_return(true)
     end
 
     it "returns string" do
@@ -17,8 +17,8 @@ describe Yast::Installation do
     end
 
     it "ensures that directory exists" do
-      expect(::File).to receive(:exist?).and_return(false)
-      expect(::FileUtils).to receive(:mkdir_p)
+      expect(File).to receive(:exist?).and_return(false)
+      expect(FileUtils).to receive(:mkdir_p)
 
       subject.sourcedir
     end

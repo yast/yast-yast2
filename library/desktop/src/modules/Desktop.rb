@@ -408,7 +408,7 @@ module Yast
   private
 
     # @return [Regexp] Regular expression which matches the module name of a desktop file
-    FILE_REGEXP = /([^.]+).desktop\Z/.freeze
+    FILE_REGEXP = /([^.]+).desktop\Z/
 
     # Converts the file name to the expected module name
     #
