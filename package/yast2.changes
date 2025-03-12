@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 12 11:48:52 UTC 2025 - Stefan Schubert <schubi@suse.de>
+
+- Checking if a TPM2 device is available (has_tpm2). (jsc#PED-10703)
+- 5.0.13
+
+-------------------------------------------------------------------
 Thu Feb 20 16:09:57 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - respect kernel parameter filtering from agama if found
