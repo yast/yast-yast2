@@ -339,7 +339,7 @@ describe Yast::Arch do
       expect(has_tpm2).to eq(false)
     end
 
-    it "returns false if /sys/module/tpm/version does not exists" do
+    it "returns false if /sys/module/tpm/version does not exist" do
       allow(Yast::SCR).to receive(:Read)
         .with(Yast::Path.new(".target.string"), "/sys/module/tpm/version").and_return(nil)
 
