@@ -45,6 +45,8 @@ module Yast
 
       @_has_pcmcia = nil
 
+      @_has_tpm2 = nil
+
       @_is_laptop = nil
 
       @_is_uml = nil
@@ -427,6 +429,14 @@ module Yast
       SCR.Read(path(".target.string"), "/sys/hypervisor/guest_type").strip == "PV"
     end
 
+    # Whether a TPM2 chip is available or not.
+    #
+    # @return [Boolean] true if a TPM2 chip is available; false otherwise
+    def has_tpm2
+      @_has_tpm2 = SCR.Read(path(".target.string"), "/sys/module/tpm/version")&.strip == "2.0" if @_has_tpm2.nil?
+      @_has_tpm2
+    end
+
     # Convenience method to retrieve the /proc/xen/capabilities content
     #
     # @return [String]
@@ -577,6 +587,7 @@ module Yast
     publish function: :board_pegasos, type: "boolean ()"
     publish function: :board_wintel, type: "boolean ()"
     publish function: :has_pcmcia, type: "boolean ()"
+    publish function: :has_tpm2, type: "boolean ()"
     publish function: :is_laptop, type: "boolean ()"
     publish function: :is_uml, type: "boolean ()"
     publish function: :is_xen, type: "boolean ()"

@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        5.0.12
+Version:        5.0.13
 
 Release:        0
 Summary:        YaST2 Main Package
