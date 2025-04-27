@@ -34,7 +34,7 @@ module Yast2
   # Represents the fact that Snapper is not configured for "/" (root).
   class SnapperNotConfigured < StandardError
     def initialize
-      super "Programming error: Snapper is not configured yet."
+      super("Programming error: Snapper is not configured yet.")
     end
   end
 
@@ -43,7 +43,7 @@ module Yast2
   # installation.
   class SnapperNotConfigurable < StandardError
     def initialize
-      super "Programming error: Snapper cannot be configured at this point."
+      super("Programming error: Snapper cannot be configured at this point.")
     end
   end
 
@@ -51,14 +51,14 @@ module Yast2
   # snapshot.
   class PreviousSnapshotNotFound < StandardError
     def initialize
-      super "Previous snapshot was not found."
+      super("Previous snapshot was not found.")
     end
   end
 
   # Represents the fact that the snapshot could not be created.
   class SnapshotCreationFailed < StandardError
     def initialize
-      super "Filesystem snapshot could not be created."
+      super("Filesystem snapshot could not be created.")
     end
   end
 
@@ -75,7 +75,7 @@ module Yast2
       "/usr/bin/snapper --no-dbus --root=%{root} --csvout list-configs " \
       "--columns config,subvolume | /usr/bin/grep \"^root,\" >/dev/null".freeze
 
-    CREATE_SNAPSHOT_CMD = "/usr/bin/snapper --no-dbus --root=%{root} create "\
+    CREATE_SNAPSHOT_CMD = "/usr/bin/snapper --no-dbus --root=%{root} create " \
                           "--type %{snapshot_type} --description %{description}".freeze
 
     LIST_SNAPSHOTS_CMD =
@@ -211,7 +211,7 @@ module Yast2
       def create_single(description, cleanup: nil, important: false)
         return nil unless create_snapshot?(:single)
 
-        create(:single, description, cleanup: cleanup, important: important)
+        create(:single, description, cleanup:, important:)
       end
 
       # Creates a new 'pre' snapshot
@@ -224,7 +224,7 @@ module Yast2
       def create_pre(description, cleanup: nil, important: false)
         return nil unless create_snapshot?(:around)
 
-        create(:pre, description, cleanup: cleanup, important: important)
+        create(:pre, description, cleanup:, important:)
       end
 
       # Creates a new 'post' snapshot unless disabled by user
@@ -245,7 +245,7 @@ module Yast2
         previous = find(previous_number)
 
         if previous
-          create(:post, description, previous: previous, cleanup: cleanup, important: important)
+          create(:post, description, previous:, cleanup:, important:)
         else
           log.error "Previous filesystem snapshot was not found"
           raise PreviousSnapshotNotFound

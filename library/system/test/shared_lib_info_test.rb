@@ -1,6 +1,6 @@
 #! /usr/bin/env rspec
 
-require_relative "./test_helper"
+require_relative "test_helper"
 require "yast2/shared_lib_info"
 
 PROC_MAPS_PATH = File.join(__dir__, "data/proc-maps")

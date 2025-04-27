@@ -141,7 +141,7 @@ module Yast
           if d == 0
             ""
           else
-            Ops.add(Ops.get_string(m, d, ""), (b != 3) ? "." : "")
+            Ops.add(Ops.get_string(m, d, ""), (b == 3) ? "" : ".")
           end
         ),
         Ops.get_string(r, (d == 0) ? b : Ops.add(b, 1), "")

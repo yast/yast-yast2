@@ -268,7 +268,7 @@ module Yast2
 
     # @param value [Symbol]
     def action_item_id(value)
-      Id("service_widget_action_#{value}".to_sym)
+      Id(:"service_widget_action_#{value}")
     end
 
     # @param value [Symbol]

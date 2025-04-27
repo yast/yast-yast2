@@ -54,8 +54,8 @@ module Test
       def message
         format(
           "Invalid value '%{value}' for attribute '%{attr}'.",
-          value: value,
-          attr:  attr
+          value:,
+          attr:
         )
       end
     end
@@ -65,15 +65,15 @@ end
 describe Installation::AutoinstIssues::IssuesPresenter do
   subject(:presenter) { described_class.new(list) }
   let(:section) do
-    ::Installation::AutoinstProfile::SectionWithAttributes.new_from_hashes({})
+    Installation::AutoinstProfile::SectionWithAttributes.new_from_hashes({})
   end
 
-  let(:list) { ::Installation::AutoinstIssues::List.new }
+  let(:list) { Installation::AutoinstIssues::List.new }
 
   describe "#to_html" do
     context "when a fatal issue was found" do
       before do
-        list.add(::Test::AutoinstIssues::MissingSection)
+        list.add(Test::AutoinstIssues::MissingSection)
       end
 
       it "includes issues messages" do
@@ -88,7 +88,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
 
     context "when a non fatal issue was found" do
       before do
-        list.add(::Test::AutoinstIssues::InvalidValue,
+        list.add(Test::AutoinstIssues::InvalidValue,
           section, "foo", "bar")
       end
 
@@ -108,7 +108,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
 
     context "when a non located issue was found" do
       before do
-        list.add(::Test::AutoinstIssues::MissingSection)
+        list.add(Test::AutoinstIssues::MissingSection)
       end
 
       it "includes issues messages" do
@@ -121,7 +121,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
   describe "#to_plain" do
     context "when a fatal issue was found" do
       before do
-        list.add(::Test::AutoinstIssues::MissingSection)
+        list.add(Test::AutoinstIssues::MissingSection)
       end
 
       it "includes issues messages" do
@@ -136,7 +136,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
 
     context "when a non fatal issue was found" do
       before do
-        list.add(::Test::AutoinstIssues::InvalidValue,
+        list.add(Test::AutoinstIssues::InvalidValue,
           section, "foo", "bar")
       end
 
@@ -156,7 +156,7 @@ describe Installation::AutoinstIssues::IssuesPresenter do
 
     context "when a non located issue was found" do
       before do
-        list.add(::Test::AutoinstIssues::MissingSection)
+        list.add(Test::AutoinstIssues::MissingSection)
       end
 
       it "includes issues messages" do

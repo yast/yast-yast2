@@ -199,7 +199,7 @@ module Y2Firewall
         log.info("Executing #{command} with #{arguments.inspect}")
 
         Yast::Execute.on_target(
-          command, *arguments, stdout: :capture, allowed_exitstatus: allowed_exitstatus
+          command, *arguments, stdout: :capture, allowed_exitstatus:
         )
       end
 
@@ -211,8 +211,8 @@ module Y2Firewall
       # @param permanent [Boolean] if true and firewalld is running it
       #   operates over the permanent configuration
       # @return [String] the chomped output of the run command
-      def string_command(*args, permanent: false)
-        run_command(*args, permanent: permanent).to_s.chomp
+      def string_command(*, permanent: false)
+        run_command(*, permanent:).to_s.chomp
       end
 
       # Convenience method that run the given modification command for the
@@ -224,8 +224,8 @@ module Y2Firewall
       # @param permanent [Boolean] if true and firewalld is running it
       #   operates over the permanent configuration
       # @return [Boolean] true if the executed command returns succesfully
-      def modify_command(*args, permanent: false)
-        string_command(*args, permanent: permanent) == SUCCESS
+      def modify_command(*, permanent: false)
+        string_command(*, permanent:) == SUCCESS
       end
 
       # Convenience method which return true whether the run command for the
@@ -236,8 +236,8 @@ module Y2Firewall
       # @param permanent [Boolean] if true and firewalld is running it
       #   operates over the permanent configuration
       # @return [Boolean] true if the exit status of the executed command is 0
-      def query_command(*args, permanent: false)
-        _output, exit_status = run_command(*args, allowed_exitstatus: [0, 1], permanent: permanent)
+      def query_command(*, permanent: false)
+        _output, exit_status = run_command(*, allowed_exitstatus: [0, 1], permanent:)
 
         exit_status == 0
       end
