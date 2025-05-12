@@ -1209,6 +1209,7 @@ module Yast
         return true
       else
         Mode.SetUI("commandline")
+        fatal_no_more_cli_support # This does not return
       end
 
       if !cmdline_supported
@@ -1722,6 +1723,15 @@ module Yast
       list[0..-2].map { |l| "'#{l}'" }.join(", ") + " " +
         Builtins.sformat(_("or '%1'"), list[-1])
     end
+  end
+
+  # Write a message that yast-cli is not supported anymore to stderr and
+  # to the log and exit with an error code.
+  def fatal_no_more_cli_support
+    msg = "FATAL: The YaST command line interface is not supported anymore. Exiting."
+    log.error(msg)
+    warn(msg)
+    exit(1)
   end
 
   CommandLine = CommandLineClass.new
