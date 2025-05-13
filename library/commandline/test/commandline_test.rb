@@ -30,6 +30,17 @@ describe Yast::CommandLine do
   # all "expect($stdout)" lines otherwise the byebug output will be
   # lost in the rspec mocks and you won't see anything.
 
+  it "exits with an error message" do
+    expect {
+      begin
+        # Yast::WFM.CallFunction("dummy_cmdline", ["echo", "text=something"])
+        Yast::WFM.CallFunction("dummy_cmdline")
+      rescue Exception => ex
+        # puts "Caught #{ex.class}"
+      end
+    }.to output(/FATAL.*not supported anymore/).to_stderr
+  end
+
   it "invokes initialize, handler and finish" do
     expect($stdout).to receive(:puts).with("Initialize called").ordered
     expect($stdout).to receive(:puts).with("something").ordered
