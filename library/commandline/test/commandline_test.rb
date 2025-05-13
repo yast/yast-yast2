@@ -33,8 +33,7 @@ describe Yast::CommandLine do
   it "exits with an error message" do
     expect {
       begin
-        # Yast::WFM.CallFunction("dummy_cmdline", ["echo", "text=something"])
-        Yast::WFM.CallFunction("dummy_cmdline")
+        Yast::WFM.CallFunction("dummy_cmdline", ["echo", "text=something"])
       rescue Exception => ex
         # puts "Caught #{ex.class}"
       end
