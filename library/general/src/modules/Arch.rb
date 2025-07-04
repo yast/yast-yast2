@@ -435,7 +435,7 @@ module Yast
     def has_tpm2
       if @_has_tpm2.nil?
         @_has_tpm2 = SCR.Read(path(".target.string"), "/sys/module/tpm/version")&.strip == "2.0"
-        @_has_tpm2 = @_has_tpm2 && Dir['/dev/tpm*'].any?
+        @_has_tpm2 = @_has_tpm2 && Dir.glob('/dev/tpm*').any?
       end
     end
 
