@@ -434,10 +434,10 @@ module Yast
     # @return [Boolean] true if a TPM2 chip is available; false otherwise
     def has_tpm2
       if @_has_tpm2.nil?
-        @_has_tpm2 = SCR.Read(path(".target.string"), "/sys/module/tpm/version")&.strip == "2.0"
-        @_has_tpm2 &&= Dir.glob("/dev/tpm*").any?
+        @_has_tpm2 = SCR.Read(path(".target.string"),
+          "/sys/class/tpm/tpm0/tpm_version_major")&.strip == "2"
       end
-      @has_tpm2
+      @_has_tpm2
     end
 
     # Convenience method to retrieve the /proc/xen/capabilities content

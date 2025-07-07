@@ -321,27 +321,30 @@ describe Yast::Arch do
   end
 
   describe ".has_tpm2" do
-    it "returns true if /sys/module/tpm/version is set correctly" do
+    it "returns true if /sys/class/tpm/tpm0/tpm_version_major is set correctly" do
       allow(Yast::SCR).to receive(:Read)
-        .with(Yast::Path.new(".target.string"), "/sys/module/tpm/version").and_return("2.0")
+        .with(Yast::Path.new(".target.string"),
+          "/sys/class/tpm/tpm0/tpm_version_major").and_return("2")
 
       has_tpm2 = Yast::Arch.has_tpm2
 
       expect(has_tpm2).to eq(true)
     end
 
-    it "returns false if /sys/module/tpm/version has wrong version" do
+    it "returns false if /sys/class/tpm/tpm0/tpm_version_major has wrong version" do
       allow(Yast::SCR).to receive(:Read)
-        .with(Yast::Path.new(".target.string"), "/sys/module/tpm/version").and_return("1.0")
+        .with(Yast::Path.new(".target.string"),
+          "/sys/class/tpm/tpm0/tpm_version_major").and_return("1")
 
       has_tpm2 = Yast::Arch.has_tpm2
 
       expect(has_tpm2).to eq(false)
     end
 
-    it "returns false if /sys/module/tpm/version does not exist" do
+    it "returns false if /sys/class/tpm/tpm0/tpm_version_major does not exist" do
       allow(Yast::SCR).to receive(:Read)
-        .with(Yast::Path.new(".target.string"), "/sys/module/tpm/version").and_return(nil)
+        .with(Yast::Path.new(".target.string"),
+          "/sys/class/tpm/tpm0/tpm_version_major").and_return(nil)
 
       has_tpm2 = Yast::Arch.has_tpm2
 
