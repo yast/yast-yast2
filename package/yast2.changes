@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul  7 09:49:51 UTC 2025 - Stefan Schubert <schubi@suse.de>
+
+- Improved checking TPM2 device. (bsc#1245247)
+- 5.0.14
+
+-------------------------------------------------------------------
 Wed Mar 12 11:48:52 UTC 2025 - Stefan Schubert <schubi@suse.de>
 
 - Checking if a TPM2 device is available (has_tpm2). (jsc#PED-10703)
