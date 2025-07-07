@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jul  7 09:49:51 UTC 2025 - Stefan Schubert <schubi@suse.de>
+
+- Improved checking TPM2 device. (bsc#1245247)
+- 5.0.14
+
+-------------------------------------------------------------------
 Wed Mar 12 11:48:52 UTC 2025 - Stefan Schubert <schubi@suse.de>
 
 - Checking if a TPM2 device is available (has_tpm2). (jsc#PED-10703)
@@ -2095,7 +2101,6 @@ Wed Oct  3 07:48:30 UTC 2018 - knut.anderssen@suse.com
   (fate#324662)
 
 -------------------------------------------------------------------
-
 Tue Oct  2 11:11:26 UTC 2018 - lslezak@suse.cz
 
 - Make the service status label stretchable so the updated status
@@ -3114,7 +3119,6 @@ Fri Mar 24 09:37:44 UTC 2017 - lslezak@suse.cz
 - 3.2.22
 
 -------------------------------------------------------------------
-
 Wed Mar 22 16:53:07 UTC 2017 - jreidinger@suse.com
 
 - Use for Yast::TargetFile and Yast::Execute real path where scr
