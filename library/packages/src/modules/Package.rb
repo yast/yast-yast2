@@ -39,6 +39,7 @@ Yast.import "Mode"
 Yast.import "PackageAI"
 Yast.import "PackageSystem"
 Yast.import "Popup"
+Yast.import "Stage"
 
 module Yast
   # This module implements support to query, install and remove packages.
@@ -146,7 +147,7 @@ module Yast
     # @return [Boolean] true if installation succeeded or packages were installed,
     # false otherwise
     def CheckAndInstallPackages(packages)
-      return true if Mode.config
+      return true if Mode.config || Stage.initial
       return true if InstalledAll(packages)
 
       InstallAll(packages)
