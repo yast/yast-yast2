@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jul 18 09:38:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not try installing packages into the inst-sys during
+  installation (bsc#1240867)
+- 5.0.15
+
+-------------------------------------------------------------------
 Mon Jul  7 09:49:51 UTC 2025 - Stefan Schubert <schubi@suse.de>
 
 - Improved checking TPM2 device. (bsc#1245247)
