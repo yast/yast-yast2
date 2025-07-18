@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jul 18 09:38:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
+
+- Do not try installing packages into the inst-sys during
+  installation (bsc#1240867)
+- 4.7.1
+
+-------------------------------------------------------------------
 Thu Sep 05 08:36:09 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Branch package for SP7 (bsc#1208913)
