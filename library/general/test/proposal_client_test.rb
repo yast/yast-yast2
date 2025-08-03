@@ -4,7 +4,7 @@ require_relative "test_helper"
 
 require "installation/proposal_client"
 
-class TestProposal < ::Installation::ProposalClient
+class TestProposal < Installation::ProposalClient
   def make_proposal(args)
     args.empty? ? "make_proposal" : args
   end
@@ -22,12 +22,12 @@ class TestProposal < ::Installation::ProposalClient
   end
 end
 
-describe ::Installation::ProposalClient do
-  subject { ::TestProposal }
+describe Installation::ProposalClient do
+  subject { TestProposal }
   describe ".run" do
     it "raise ArgumentError exception if unknown first argument is passed" do
       allow(Yast::WFM).to receive(:Args).and_return(["Unknown", {}])
-      expect { ::Installation::ProposalClient.run }.to raise_error(ArgumentError)
+      expect { Installation::ProposalClient.run }.to raise_error(ArgumentError)
     end
 
     context "first client argument is MakeProposal" do
@@ -47,7 +47,7 @@ describe ::Installation::ProposalClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::ProposalClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::ProposalClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -68,7 +68,7 @@ describe ::Installation::ProposalClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::ProposalClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::ProposalClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -82,7 +82,7 @@ describe ::Installation::ProposalClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::ProposalClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::ProposalClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -96,7 +96,7 @@ describe ::Installation::ProposalClient do
       end
 
       it "succeeds even if write  method is not defined" do
-        expect { ::Installation::ProposalClient.run }.to_not raise_error
+        expect { Installation::ProposalClient.run }.to_not raise_error
       end
     end
   end

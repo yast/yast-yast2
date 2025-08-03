@@ -150,9 +150,9 @@ module Y2Packager
 
         Y2Packager::ReleaseNotes.new(
           product_name: product.name,
-          content:      content,
+          content:,
           user_lang:    prefs.user_lang,
-          lang:         lang,
+          lang:,
           format:       prefs.format,
           version:      :latest
         )
@@ -278,7 +278,7 @@ module Y2Packager
 
         return @curl_proxy_args unless proxy_ok
 
-        user_pass = (Yast::Proxy.user != "") ? "#{Yast::Proxy.user}:#{Yast::Proxy.pass}" : ""
+        user_pass = (Yast::Proxy.user == "") ? "" : "#{Yast::Proxy.user}:#{Yast::Proxy.pass}"
         @curl_proxy_args = "--proxy #{Yast::Proxy.http}"
         @curl_proxy_args << " --proxy-user '#{user_pass}'" unless user_pass.empty?
 

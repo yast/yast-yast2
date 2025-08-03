@@ -15,8 +15,8 @@ describe Y2Packager::Repository do
   let(:repo_raw_url) { repo_url }
 
   subject(:repo) do
-    Y2Packager::Repository.new(repo_id: repo_id, name: "repo-oss", enabled: enabled,
-      autorefresh: autorefresh, url: repo_url, raw_url: repo_url, repo_alias: "repo#{repo_id}")
+    Y2Packager::Repository.new(repo_id:, name: "repo-oss", enabled:,
+      autorefresh:, url: repo_url, raw_url: repo_url, repo_alias: "repo#{repo_id}")
   end
 
   let(:disabled) do

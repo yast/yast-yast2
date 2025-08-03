@@ -115,7 +115,7 @@ module CFA
     boolean_attr(*BOOLEAN_ATTRIBUTES)
 
     def initialize(file_handler: Yast::TargetFile, file_path: PATH)
-      super(AugeasParser.new("sysctl.lns"), file_path, file_handler: file_handler)
+      super(AugeasParser.new("sysctl.lns"), file_path, file_handler:)
     end
 
     def empty?

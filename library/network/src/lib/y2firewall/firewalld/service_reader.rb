@@ -33,7 +33,7 @@ module Y2Firewall
         info = Y2Firewall::Firewalld.instance.api.info_service(name)
         raise(Service::NotFound, name) if $CHILD_STATUS.exitstatus == 101
 
-        service = Service.new(name: name)
+        service = Service.new(name:)
 
         info.each do |line|
           next if line.lstrip.empty?

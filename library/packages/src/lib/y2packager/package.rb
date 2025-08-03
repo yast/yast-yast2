@@ -40,7 +40,7 @@ module Y2Packager
       # @return [Array<Package>,nil] Packages named like `name`. It returns `nil`
       #   if some problem occurs interacting with libzypp.
       def find(name)
-        resolvables = Yast::Pkg.Resolvables({ kind: :package, name: name },
+        resolvables = Yast::Pkg.Resolvables({ kind: :package, name: },
           [:name, :source, :version])
 
         return nil if resolvables.nil?
@@ -83,8 +83,8 @@ module Y2Packager
     # @return [Symbol] Package status (:installed, :available, etc.)
     # @see Yast::Pkg.Resolvables
     def status
-      resolvables = Yast::Pkg.Resolvables({ kind: :package, name: name,
-        version: version, source: repo_id }, [:status])
+      resolvables = Yast::Pkg.Resolvables({ kind: :package, name:,
+        version:, source: repo_id }, [:status])
 
       log.warn "Found multiple resolvables: #{resolvables}" if resolvables.size > 1
 

@@ -142,8 +142,8 @@ module CWM
     #
     # @example
     #   cell(icon("/tmp/cool_icon.png"), "Really cool!!!")
-    def cell(*args)
-      Yast::Term.new(:cell, *args)
+    def cell(*)
+      Yast::Term.new(:cell, *)
     end
 
     # helper to create a {TableItem}
@@ -152,8 +152,8 @@ module CWM
     #
     # @example
     #   item(:joe, ["Joe", "Doe"], children: [[:joeson, "Joeson", "Doe"]], open: false)
-    def item(*args)
-      TableItem.new(*args)
+    def item(*)
+      TableItem.new(*)
     end
 
     # helper to say if table have multiselection
@@ -171,7 +171,7 @@ module CWM
 
     # @see #format_items
     def format_item(item)
-      return Item(Id(item.first), *item[1..-1]) if item.is_a?(Array)
+      return Item(Id(item.first), *item[1..]) if item.is_a?(Array)
 
       children = format_items(item.children)
       open_tag = item.open ? :open : :closed

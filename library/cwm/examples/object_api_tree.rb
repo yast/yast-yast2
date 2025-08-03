@@ -9,7 +9,7 @@ Yast.import "CWM"
 Yast.import "Popup"
 Yast.import "Wizard"
 
-class LuckyNumberWidget < ::CWM::IntField
+class LuckyNumberWidget < CWM::IntField
   attr_reader :result, :minimum, :maximum
 
   def initialize
@@ -32,7 +32,7 @@ class LuckyNumberWidget < ::CWM::IntField
   end
 end
 
-class GenerateButton < ::CWM::PushButton
+class GenerateButton < CWM::PushButton
   def initialize(lucky_number_widget)
     super()
 
@@ -50,7 +50,7 @@ class GenerateButton < ::CWM::PushButton
   end
 end
 
-class LuckyNumberTab < ::CWM::Tab
+class LuckyNumberTab < CWM::Tab
   def initialize
     super
     self.initial = true
@@ -82,7 +82,7 @@ private
   end
 end
 
-class TrueLoveSelector < ::CWM::RadioButtons
+class TrueLoveSelector < CWM::RadioButtons
   def initialize
     super
 
@@ -122,7 +122,7 @@ class TrueLoveSelector < ::CWM::RadioButtons
   end
 end
 
-class TrueLoveTab < ::CWM::Tab
+class TrueLoveTab < CWM::Tab
   def contents
     HBox(
       true_love_selector

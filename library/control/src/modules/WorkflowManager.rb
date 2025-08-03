@@ -467,7 +467,7 @@ module Yast
       # Directory.tmpdir is automatically removed at exit
       dir = File.join(Directory.tmpdir, "installer-extension-#{src_id}")
       ::FileUtils.remove_entry(dir) if cleanup && Dir.exist?(dir)
-      ::FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
+      ::FileUtils.mkdir_p(dir)
       dir
     end
 

@@ -19,7 +19,7 @@ module CWM
       @label = label
       @icon = icon
       @open = open
-      @children = children.map { |c| [c.id, c] }.to_h
+      @children = children.to_h { |c| [c.id, c] }
     end
 
     def ui_term
@@ -51,8 +51,8 @@ module CWM
     end
 
     # An alias for {TreeItem#initialize TreeItem.new}
-    def new_item(*args, **kwargs)
-      TreeItem.new(*args, **kwargs)
+    def new_item(*, **)
+      TreeItem.new(*, **)
     end
 
     # @return [Enumerable<TreeItem>]

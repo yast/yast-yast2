@@ -6,7 +6,7 @@ module Yast2
     # Represents that the given service does not exists
     class TargetNotFound < StandardError
       def initialize(target_name)
-        super "Target unit '#{target_name}' not found"
+        super("Target unit '#{target_name}' not found")
       end
     end
 

@@ -71,8 +71,8 @@ module Yast
     # It also globally switches the default Cheetah logger to
     # {http://www.rubydoc.info/github/yast/yast-ruby-bindings/Yast%2FLogger Y2Logger}.
     # @param args see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run
-    def on_target(*args)
-      chaining_object(yast_popup: true).on_target!(*args)
+    def on_target(*)
+      chaining_object(yast_popup: true).on_target!(*)
     end
 
     # Runs with chroot; a failure becomes an exception.
@@ -96,8 +96,8 @@ module Yast
     # It also globally switches the default Cheetah logger to
     # {http://www.rubydoc.info/github/yast/yast-ruby-bindings/Yast%2FLogger Y2Logger}.
     # @param args see http://www.rubydoc.info/github/openSUSE/cheetah/Cheetah.run
-    def locally(*args)
-      chaining_object(yast_popup: true).locally!(*args)
+    def locally(*)
+      chaining_object(yast_popup: true).locally!(*)
     end
 
     # Runs without chroot; a failure becomes an exception.
@@ -234,8 +234,8 @@ module Yast
 
       Yast::Report.Error(
         format(_(
-                 "Execution of command \"%{command}\" failed.\n"\
-                 "Exit code: %{exitcode}\n"\
+                 "Execution of command \"%{command}\" failed.\n" \
+                 "Exit code: %{exitcode}\n" \
                  "Error output: %{stderr}"
                ), command: e.commands.inspect, exitcode: e.status.exitstatus, stderr: e.stderr)
       )

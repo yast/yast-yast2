@@ -15,7 +15,7 @@ module Yast2
       # @return the result of the block
       def show(message, headline: "", &block)
         feedback = new
-        feedback.start(message, headline: headline)
+        feedback.start(message, headline:)
         begin
           block.call(feedback)
         ensure

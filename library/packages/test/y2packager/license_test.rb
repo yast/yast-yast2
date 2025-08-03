@@ -16,7 +16,7 @@ require_relative "../test_helper"
 require "y2packager/license"
 
 describe Y2Packager::License do
-  subject(:license) { Y2Packager::License.new(product_name: "SLES", fetcher: fetcher) }
+  subject(:license) { Y2Packager::License.new(product_name: "SLES", fetcher:) }
 
   let(:content) { "Some license content" }
   let(:fetcher) do
@@ -37,11 +37,11 @@ describe Y2Packager::License do
       it "does not look for a license fetcher" do
         expect(Y2Packager::LicensesFetchers).to_not receive(:for)
 
-        described_class.find("SLES", content: content)
+        described_class.find("SLES", content:)
       end
 
       it "uses the content as license's text" do
-        product_license = described_class.find("SLES", content: content)
+        product_license = described_class.find("SLES", content:)
 
         expect(product_license.content_for).to eq(content)
       end
@@ -98,7 +98,7 @@ describe Y2Packager::License do
 
     let(:fetcher) { instance_double(Y2Packager::LicensesFetchers::Libzypp) }
 
-    subject(:license) { Y2Packager::License.new(product_name: "SLES", fetcher: fetcher) }
+    subject(:license) { Y2Packager::License.new(product_name: "SLES", fetcher:) }
 
     before do
       allow(fetcher).to receive(:content)

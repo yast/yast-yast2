@@ -96,7 +96,7 @@ module Y2Packager
         provides = Yast::Pkg.PkgQueryProvides("release-notes()")
         release_notes_packages = provides.map(&:first).uniq
         package_name = release_notes_packages.sort.find do |name|
-          package_list = Y2Packager::Resolvable.find(kind: :package, name: name)
+          package_list = Y2Packager::Resolvable.find(kind: :package, name:)
 
           log.debug "Evaluating #{name} provides: #{package_list}"
           package = package_list.find { |p| p.status == :selected } || package_list.find { |p| p.status == :available }
@@ -133,9 +133,9 @@ module Y2Packager
 
         Y2Packager::ReleaseNotes.new(
           product_name: product.name,
-          content:      content,
+          content:,
           user_lang:    prefs.user_lang,
-          lang:         lang,
+          lang:,
           format:       prefs.format,
           version:      release_notes_package.version
         )

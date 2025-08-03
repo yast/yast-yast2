@@ -94,10 +94,10 @@ describe Yast::NetworkInterfaces do
 
     # bsc#72164
     it "reads the ifcfg files with single quote removed" do
-      ::FileUtils.cp(single_template, single_file)
+      FileUtils.cp(single_template, single_file)
       subject.Read
       expect(subject.GetValue("single", "NAME")).to eql("single quoted name")
-      ::FileUtils.rm(single_file)
+      FileUtils.rm(single_file)
     end
   end
 
@@ -330,12 +330,12 @@ describe Yast::NetworkInterfaces do
     end
 
     around do |example|
-      ::FileUtils.cp(ifcfg_file, ifcfg_copy)
-      ::FileUtils.cp(eth0, eth0_back)
+      FileUtils.cp(ifcfg_file, ifcfg_copy)
+      FileUtils.cp(eth0, eth0_back)
       change_scr_root(data_dir, &example)
-      ::FileUtils.cp(eth0_back, eth0)
-      ::FileUtils.rm(ifcfg_copy)
-      ::FileUtils.rm(eth0_back)
+      FileUtils.cp(eth0_back, eth0)
+      FileUtils.rm(ifcfg_copy)
+      FileUtils.rm(eth0_back)
     end
 
     context "when the configuration has changed" do
@@ -343,11 +343,11 @@ describe Yast::NetworkInterfaces do
         devmap = subject.devmap("eth1")
         devmap["SOME_VALUE"] = "yes"
         subject.Write("")
-        expect(::FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(false)
+        expect(FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(false)
         devmap = subject.devmap("eth1")
         devmap["SOME_VALUE"] = nil
         subject.Write("")
-        expect(::FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(true)
+        expect(FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(true)
       end
 
       it "cleans the cache and read again the configuration after writing" do
@@ -359,7 +359,7 @@ describe Yast::NetworkInterfaces do
         expect(devmap["DHCLIENT_SET_HOSTNAME"]).to eq("yes")
         devmap["DHCLIENT_SET_HOSTNAME"] = nil
         subject.Write("")
-        expect(::FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(true)
+        expect(FileUtils.compare_file(ifcfg_copy, ifcfg_file)).to eq(true)
       end
 
       it "deletes removed interfaces" do

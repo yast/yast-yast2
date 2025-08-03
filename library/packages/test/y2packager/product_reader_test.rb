@@ -17,7 +17,7 @@ require "y2packager/product_reader"
 
 describe Y2Packager::ProductReader do
   subject { Y2Packager::ProductReader.new }
-  let(:products_hash) { YAML.load(File.read(File.join(PACKAGES_FIXTURES_PATH, "products-sles15.yml"))) } # rubocop:disable Security/YAMLLoad
+  let(:products_hash) { YAML.load_file(File.join(PACKAGES_FIXTURES_PATH, "products-sles15.yml")) }
   let(:products) do
     products_hash.map { |p| Y2Packager::Resolvable.new(p) }
   end

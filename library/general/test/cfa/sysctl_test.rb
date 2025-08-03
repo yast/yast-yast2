@@ -23,7 +23,7 @@ require_relative "../test_helper"
 require "cfa/sysctl"
 
 describe CFA::Sysctl do
-  subject(:sysctl) { described_class.new(file_handler: file_handler) }
+  subject(:sysctl) { described_class.new(file_handler:) }
 
   let(:yast_conf_path) { "sysctl-yast.conf" }
   let(:file_handler) { File }
@@ -46,8 +46,8 @@ describe CFA::Sysctl do
 
   describe "#initialize" do
     it "creates an own Augeas instance" do
-      expect(::CFA::AugeasParser).to receive(:new).with("sysctl.lns").and_call_original
-      CFA::Sysctl.new(file_handler: file_handler)
+      expect(CFA::AugeasParser).to receive(:new).with("sysctl.lns").and_call_original
+      CFA::Sysctl.new(file_handler:)
     end
   end
 
