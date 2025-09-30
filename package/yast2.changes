@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Sep 30 18:23:45 UTC 2025 - Stefan Schubert <schubi@suse.de>
+
+- Checking for TPM version. TPM2 < 1.38 will not be supported
+  (bsc#1250403).
+- 5.0.17
+
+-------------------------------------------------------------------
 Fri Jul 18 09:38:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not try installing packages into the inst-sys during
