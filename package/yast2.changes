@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 14 13:40:00 UTC 2025 - Stefan Hundhammer <shundhammer@suse.com>
+
+- save_y2logs: Sanitize confidential data in macro_inst_initial.ycp
+  (bsc#1251768)
+- 4.6.9
+
+-------------------------------------------------------------------
 Mon May  6 13:08:32 UTC 2024 - Ladislav Slezák <lslezak@suse.com>
 
 - Properly close nested progress callbacks (bsc#1223281)
