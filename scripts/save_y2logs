@@ -91,6 +91,26 @@ if [ -f /etc/install.inf ]; then
   LIST_TMP="$LIST_TMP install.inf"
 fi
 
+MACRO_INST=/var/log/YaST2/macro_inst_initial.ycp
+
+if [ -f $MACRO_INST ]; then
+    # bsc#1251768: Don't leak registration code or e-mail to the y2logs tarball
+    #
+    # UI::ChangeWidget( `id (`email),    `Value, "kilroy@example.com" ); // YInputField ...
+    # UI::ChangeWidget( `id (`reg_code), `Value, "MY-REG-CODE" );        // YInputField ...
+    #
+    # -->
+    #
+    # UI::ChangeWidget( `id (`email),	 `Value, [confidential] ); // YInputField ...
+    # UI::ChangeWidget( `id (`reg_code), `Value, [confidential] ); // YInputField ...
+    #
+    # Intentionally doing this in-place in the real /var/log/YaST2/macro_inst_initial.ycp
+
+    sed -i -E \
+        -e '/id.*(reg_code|email).*YInputField/s/(Value,\s)[^)]+(.*$)*/\1[confidential] \2/' \
+        $MACRO_INST
+fi
+
 # if storing logs at the end of installation after bootloader fail, try to store pbl log from target system
 if [ -f /mnt/var/log/pbl.log ]; then
   cp /mnt/var/log/pbl.log $TMPDIR/pbl-target.log
