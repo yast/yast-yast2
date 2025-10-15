@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 14 13:40:00 UTC 2025 - Stefan Hundhammer <shundhammer@suse.com>
+
+- save_y2logs: Sanitize confidential data in macro_inst_initial.ycp
+  (bsc#1251768)
+- 5.0.16
+
+-------------------------------------------------------------------
 Fri Jul 18 09:38:48 UTC 2025 - Ladislav Slezák <lslezak@suse.com>
 
 - Do not try installing packages into the inst-sys during
