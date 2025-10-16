@@ -3,6 +3,13 @@ Tue Sep 30 18:23:45 UTC 2025 - Stefan Schubert <schubi@suse.de>
 
 - Checking for TPM version. TPM2 < 1.38 will not be supported
   (bsc#1250403).
+- 5.0.18
+
+-------------------------------------------------------------------
+Tue Oct 14 13:40:00 UTC 2025 - Stefan Hundhammer <shundhammer@suse.com>
+
+- save_y2logs: Sanitize confidential data in macro_inst_initial.ycp
+  (bsc#1251768)
 - 5.0.17
 
 -------------------------------------------------------------------
