@@ -321,10 +321,12 @@ describe Yast::Arch do
   end
 
   describe ".has_tpm2" do
+    let(:error) { Cheetah::ExecutionFailed.new([], "", nil, nil) }
     it "returns true if /sys/class/tpm/tpm0/tpm_version_major is set correctly" do
       allow(Yast::SCR).to receive(:Read)
         .with(Yast::Path.new(".target.string"),
           "/sys/class/tpm/tpm0/tpm_version_major").and_return("2")
+      allow(Yast::Execute).to receive(:locally!).and_return("TPM2_CC_PolicyAuthorizeNV")
 
       has_tpm2 = Yast::Arch.has_tpm2
 
@@ -349,6 +351,31 @@ describe Yast::Arch do
       has_tpm2 = Yast::Arch.has_tpm2
 
       expect(has_tpm2).to eq(false)
+    end
+
+    context "correct version in /sys/class/tpm/tpm0/tpm_version_major" do
+      before do
+        allow(Yast::SCR).to receive(:Read)
+          .with(Yast::Path.new(".target.string"),
+            "/sys/class/tpm/tpm0/tpm_version_major").and_return("2")
+      end
+
+      it "return false if TPM2_CC_PolicyAuthorizeNV is not available" do
+        allow(Yast::Execute).to receive(:locally!).and_return("not found")
+
+        has_tpm2 = Yast::Arch.has_tpm2
+
+        expect(has_tpm2).to eq(false)
+      end
+
+      it "return true if TPM2_CC_PolicyAuthorizeNV is available" do
+        allow(Yast::Execute).to receive(:locally!).and_return("TPM2_CC_PolicyAuthorizeNV")
+
+        has_tpm2 = Yast::Arch.has_tpm2
+
+        expect(has_tpm2).to eq(true)
+      end
+
     end
   end
 end
