@@ -82,7 +82,7 @@ module Yast
       #    SCR.Read(path(".probe.architecture"))
       #  )
       #end
-      @_architecture = "arm"
+      @_architecture = "riscv64"
       @_architecture
     end
 
