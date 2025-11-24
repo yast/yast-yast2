@@ -77,11 +77,12 @@ module Yast
     #
     # @return [String] architecture
     def architecture
-      if @_architecture.nil?
-        @_architecture = Convert.to_string(
-          SCR.Read(path(".probe.architecture"))
-        )
-      end
+      #if @_architecture.nil?
+      #  @_architecture = Convert.to_string(
+      #    SCR.Read(path(".probe.architecture"))
+      #  )
+      #end
+      @_architecture = "arm"
       @_architecture
     end
 
