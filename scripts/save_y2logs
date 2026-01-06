@@ -118,10 +118,14 @@ if [ -f /mnt/var/log/pbl.log ]; then
 fi
 
 # installed packages
-if [ -f /var/lib/rpm/Packages -o -f /var/lib/rpm/Packages.db ] && [ "$(type -p rpm)" ]; then
-  rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}\t\t\t(%{VENDOR})\t%{DISTRIBUTION}\n' 2>/dev/null | sort >/$TMPDIR/rpm-qa
-  LIST_TMP="$LIST_TMP rpm-qa"
+if [ "$(type -p rpm)" ]; then
+  RPM_DBPATH=$(rpm --eval "%{_dbpath}")
+  if [ -f "$RPM_DBPATH"/Packages.db -o -f "$RPM_DBPATH"/Packages ]; then
+    rpm -qa --qf '%{NAME}-%{VERSION}-%{RELEASE}\t\t\t(%{VENDOR})\t%{DISTRIBUTION}\n' | sort >$TMPDIR/rpm-qa
+    LIST_TMP="$LIST_TMP rpm-qa"
+  fi
 fi
+
 
 # rename, so people can see it
 if [ -f /.packages.root ]; then
