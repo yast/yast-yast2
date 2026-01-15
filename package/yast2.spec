@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        5.0.18
+Version:        5.0.19
 
 Release:        0
 Summary:        YaST2 Main Package
@@ -57,8 +57,19 @@ BuildRequires:  rubygem(%rb_default_ruby_abi:nokogiri)
 # log.group call
 BuildRequires:  yast2-ruby-bindings >= 4.5.4
 BuildRequires:  yast2-testsuite
+
+# use the standard UI in openSUSE Tumbleweed or Leap
+%if 0%{?suse_version} == 1699 || 0%{?is_opensuse}
+Requires:       yui_backend
 # Nested items in tables
 BuildRequires:  yast2-ycp-ui-bindings >= 4.3.3
+Requires:       yast2-ycp-ui-bindings >= 4.3.3
+%else
+# use dummy UI in SLES
+BuildRequires:  yast2-ycp-ui-bindings-dummy-devel
+Requires:       yast2-ycp-ui-bindings-dummy
+%endif
+
 # for the PackageExtractor tests, just make sure they are present,
 # these should be installed in the default build anyway
 BuildRequires:  cpio
@@ -92,9 +103,6 @@ Requires:       yast2-perl-bindings
 Requires:       yast2-pkg-bindings >= 4.3.7
 # log.group
 Requires:       yast2-ruby-bindings >= 4.5.4
-# Nested items in tables
-Requires:       yast2-ycp-ui-bindings >= 4.3.3
-Requires:       yui_backend
 # scripts for collecting YAST logs
 Requires:       yast2-logs
 # for the PackageExtractor class, just make sure they are present,
