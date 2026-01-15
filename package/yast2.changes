@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan 15 08:26:47 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
+
+- Drop libyui dependency in SLES (related to bsc#1254978)
+- 5.0.19
+
+-------------------------------------------------------------------
 Tue Jan  6 13:29:03 UTC 2026 - Martin Vidner <mvidner@suse.com>
 
 - save_y2logs: Do not use the legacy /var/lib/rpm database path
