@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar 10 09:00:28 UTC 2026 - Michal Filka <mfilka@suse.com>
+
+- jsc#PED-14507
+  - Removed reference to update-desktop-files from spec file 
+  - 5.0.20
+-------------------------------------------------------------------
 Thu Jan 15 08:26:47 UTC 2026 - Ladislav Slezák <lslezak@suse.com>
 
 - Drop libyui dependency in SLES (related to bsc#1254978)
