@@ -17,7 +17,7 @@
 
 
 Name:           yast2
-Version:        5.0.19
+Version:        5.0.20
 
 Release:        0
 Summary:        YaST2 Main Package
@@ -40,7 +40,6 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:cfa)
 # for used augeas lenses
 BuildRequires:  augeas-lenses
 # for running scripts
-BuildRequires:  update-desktop-files
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:cheetah)
 # For running RSpec tests during build
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
