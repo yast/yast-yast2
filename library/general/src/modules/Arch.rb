@@ -45,8 +45,6 @@ module Yast
 
       @_has_pcmcia = nil
 
-      @_has_tpm2 = nil
-
       @_is_laptop = nil
 
       @_is_uml = nil
@@ -429,31 +427,6 @@ module Yast
       SCR.Read(path(".target.string"), "/sys/hypervisor/guest_type").strip == "PV"
     end
 
-    # Whether a TPM2 chip is available or not.
-    #
-    # @return [Boolean] true if a TPM2 chip is available; false otherwise
-    def has_tpm2
-      if @_has_tpm2.nil?
-        @_has_tpm2 = SCR.Read(path(".target.string"),
-          "/sys/class/tpm/tpm0/tpm_version_major")&.strip == "2"
-        if @_has_tpm2
-          # systemd-pcrlock is using PolicyAuthorizeNV to store the policy inside
-          # the TPM2's non volatile RAM.  This feature is supported after TPM2 1.38
-          # revision, and without it systemd-pcrlock will fail. These calls check
-          # for version > 1.38 (bsc#1250403)
-          # tpm_fde is not affected because it is using it's own tool to recognize
-          # TPM.
-          begin
-            output = Yast::Execute.locally!("tpm2_getcap", "commands", stdout: :capture)
-          rescue Cheetah::ExecutionFailed
-            @_has_tpm2 = false
-          end
-          @_has_tpm2 = output.include?("TPM2_CC_PolicyAuthorizeNV") if @_has_tpm2
-        end
-      end
-      @_has_tpm2
-    end
-
     # Convenience method to retrieve the /proc/xen/capabilities content
     #
     # @return [String]
@@ -604,7 +577,6 @@ module Yast
     publish function: :board_pegasos, type: "boolean ()"
     publish function: :board_wintel, type: "boolean ()"
     publish function: :has_pcmcia, type: "boolean ()"
-    publish function: :has_tpm2, type: "boolean ()"
     publish function: :is_laptop, type: "boolean ()"
     publish function: :is_uml, type: "boolean ()"
     publish function: :is_xen, type: "boolean ()"

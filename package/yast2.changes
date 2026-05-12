@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Tue May 12 05:48:18 UTC 2026 - José Iván López González <jlopez@suse.com>
+
+- Drop the logic for checking TPM2 availability.
+- The TPM2 check is now provided by yast2-storage-ng (related to
+  jsc#PED-10703).
+- 5.0.21
+
+-------------------------------------------------------------------
 Tue Mar 10 09:00:28 UTC 2026 - Michal Filka <mfilka@suse.com>
 
 - jsc#PED-14507
