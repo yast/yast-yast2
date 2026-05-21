@@ -36,25 +36,25 @@ describe Y2Packager::PRODUCT_SORTER do
 
   it "keeps an already sorted list unchanged" do
     products = [p1, p2, p3]
-    products.sort!(&::Y2Packager::PRODUCT_SORTER)
+    products.sort!(&Y2Packager::PRODUCT_SORTER)
     expect(products).to eq([p1, p2, p3])
   end
 
   it "sorts the products by the ordering number" do
     products = [p3, p2, p1]
-    products.sort!(&::Y2Packager::PRODUCT_SORTER)
+    products.sort!(&Y2Packager::PRODUCT_SORTER)
     expect(products).to eq([p1, p2, p3])
   end
 
   it "sorts by label if ordering is missing" do
     products = [pnil2, pnil1]
-    products.sort!(&::Y2Packager::PRODUCT_SORTER)
+    products.sort!(&Y2Packager::PRODUCT_SORTER)
     expect(products).to eq([pnil1, pnil2])
   end
 
   it "puts the products with undefined order at the end" do
     products = [pnil2, p3, pnil1, p1]
-    products.sort!(&::Y2Packager::PRODUCT_SORTER)
+    products.sort!(&Y2Packager::PRODUCT_SORTER)
     expect(products).to eq([p1, p3, pnil1, pnil2])
   end
 end

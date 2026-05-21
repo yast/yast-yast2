@@ -195,8 +195,8 @@ module CWM
         @instance = new
       end
 
-      # Make sure only .instance and .create_instance can be used to
-      # create objects
+        # Make sure only .instance and .create_instance can be used to
+        # create objects
       private :new, :allocate
     end
   end

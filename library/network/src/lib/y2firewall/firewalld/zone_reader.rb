@@ -103,7 +103,7 @@ module Y2Firewall
       #   from the parsed definition
       def initialize_zones
         zone_entries.each_with_object([]) do |(name, config), zones|
-          zone = Zone.new(name: name)
+          zone = Zone.new(name:)
           zones << zone
 
           config.each do |attribute, entries|

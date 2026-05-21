@@ -6,8 +6,8 @@ require "y2packager/release_notes"
 describe Y2Packager::ReleaseNotes do
   subject(:rn) do
     described_class.new(
-      product_name: "SLES", content: "", user_lang: user_lang, lang: "en_US",
-      format: format, version: version
+      product_name: "SLES", content: "", user_lang:, lang: "en_US",
+      format:, version:
     )
   end
 

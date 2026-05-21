@@ -726,10 +726,10 @@ module Yast
     def PrepareDialog(dialog, widgets)
       return dialog.clone if dialog.empty?
 
-      m = widgets.map do |w|
+      m = widgets.to_h do |w|
         widget_key = w.fetch("_cwm_key", "")
         [widget_key, w]
-      end.to_h
+      end
       ProcessTerm(dialog, m)
     end
 
@@ -915,7 +915,7 @@ module Yast
       options = {
         "contents"     => widgets_contents(contents),
         "widget_names" => widgets.map(&:widget_id),
-        "widget_descr" => widgets.map { |w| [w.widget_id, w.cwm_definition] }.to_h
+        "widget_descr" => widgets.to_h { |w| [w.widget_id, w.cwm_definition] }
       }
       options["caption"] = caption if caption
       options["back_button"] = back_button if back_button
@@ -942,7 +942,7 @@ module Yast
         settings["widget_names"] ||= []
         settings["widget_names"] += widgets.map(&:widget_id)
         settings["widget_descr"] ||= {}
-        settings["widget_descr"] = widgets.map { |w| [w.widget_id, w.cwm_definition] }.to_h
+        settings["widget_descr"] = widgets.to_h { |w| [w.widget_id, w.cwm_definition] }
       end
       widget_descr = Ops.get_map(settings, "widget_descr", {})
       contents = Ops.get_term(settings, "contents", VBox())
@@ -973,7 +973,7 @@ module Yast
       DisableButtons(Ops.get_list(settings, "disable_buttons", []))
 
       skip_store_for = settings["skip_store_for"] || []
-      Run(w, fallback, skip_store_for: skip_store_for)
+      Run(w, fallback, skip_store_for:)
     end
 
     # Display the dialog and run its event loop

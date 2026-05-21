@@ -25,13 +25,13 @@ module UI
     using ::Yast2::Refinements::StringManipulations
 
     # (see Yast2::Refinements::StringManipulations#plain_text)
-    def plain_text(text, **args, &block)
-      text.plain_text(**args, &block)
+    def plain_text(text, **args, &)
+      text.plain_text(**args, &)
     end
 
     # (see Yast2::Refinements::StringManipulations#wrap_text)
-    def wrap_text(text, *args, **kwa)
-      text.wrap_text(*args, **kwa)
+    def wrap_text(text, *, **kwa)
+      text.wrap_text(*, **kwa)
     end
 
     # (see Yast2::Refinements::StringManipulations#head)

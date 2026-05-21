@@ -371,9 +371,9 @@ module Yast
       ret = false
       if @display_yesno_messages
         timeout = (@timeout_yesno_messages.to_s.to_i > 0) ? @timeout_yesno_messages : 0
-        ret = Yast2::Popup.show(message, headline: headline,
+        ret = Yast2::Popup.show(message, headline:,
           buttons: { yes: yes_button_message, no: no_button_message },
-          focus: focus, timeout: timeout)
+          focus:, timeout:)
       end
 
       @yesno_messages = Builtins.add(@yesno_messages, message)
@@ -448,7 +448,7 @@ module Yast
           CommandLine.Print(message_string)
         else
           timeout = (@timeout_messages.to_s.to_i > 0) ? @timeout_messages : 0
-          Yast2::Popup.show(message_string, timeout: timeout)
+          Yast2::Popup.show(message_string, timeout:)
         end
       end
 
@@ -470,7 +470,7 @@ module Yast
           CommandLine.Print(message_string)
         else
           timeout = (@timeout_messages.to_s.to_i > 0) ? @timeout_messages : 0
-          Yast2::Popup.show(message_string, richtext: true, timeout: timeout)
+          Yast2::Popup.show(message_string, richtext: true, timeout:)
         end
       end
 
@@ -495,7 +495,7 @@ module Yast
           timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
           # this works even for big file due to show feature that switch to richtextbox
           # if text is too long, but do not interpret richtext tags.
-          Yast2::Popup.show(message_string, headline: headline_string, timeout: timeout)
+          Yast2::Popup.show(message_string, headline: headline_string, timeout:)
         end
       end
 
@@ -515,7 +515,7 @@ module Yast
           CommandLine.Print "Warning: #{warning_string}"
         else
           timeout = (@timeout_warnings.to_s.to_i > 0) ? @timeout_warnings : 0
-          Yast2::Popup.show(warning_string, headline: :warning, timeout: timeout)
+          Yast2::Popup.show(warning_string, headline: :warning, timeout:)
         end
       end
 
@@ -537,7 +537,7 @@ module Yast
           CommandLine.Print("Warning: #{warning_string}")
         else
           timeout = (@timeout_warnings.to_s.to_i > 0) ? @timeout_warnings : 0
-          Yast2::Popup.show(warning_string, headline: :warning, richtext: true, timeout: timeout)
+          Yast2::Popup.show(warning_string, headline: :warning, richtext: true, timeout:)
         end
       end
 
@@ -559,7 +559,7 @@ module Yast
           CommandLine.Print "Error: #{error_string}"
         else
           timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
-          Yast2::Popup.show(error_string, headline: :error, timeout: timeout)
+          Yast2::Popup.show(error_string, headline: :error, timeout:)
         end
       end
 
@@ -581,7 +581,7 @@ module Yast
           CommandLine.Print "Error: #{error_string}"
         else
           timeout = (@timeout_errors.to_s.to_i > 0) ? @timeout_errors : 0
-          Yast2::Popup.show(error_string, headline: :error, richtext: true, timeout: timeout)
+          Yast2::Popup.show(error_string, headline: :error, richtext: true, timeout:)
         end
       end
 

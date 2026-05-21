@@ -20,7 +20,6 @@
 
 require_relative "../test_helper"
 require "yast2/secret_attributes"
-require "pp"
 
 describe Yast2::SecretAttributes do
   # Dummy test clase

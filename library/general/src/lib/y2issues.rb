@@ -41,7 +41,7 @@ module Y2Issues
   # @return [Boolean] whether the process may continue, false means YaST is expected to abort
   # @see Y2Issues::Reporter
   def self.report(issues, warn: :ask, error: :abort)
-    Reporter.new(issues).report(warn: warn, error: error)
+    Reporter.new(issues).report(warn:, error:)
   end
 end
 

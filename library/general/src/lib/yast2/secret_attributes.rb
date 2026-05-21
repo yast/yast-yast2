@@ -68,7 +68,7 @@ module Yast2
       def secret_attr(name)
         define_method(:"#{name}") do
           attribute = instance_variable_get(:"@#{name}")
-          attribute ? attribute.value : nil
+          attribute&.value
         end
 
         define_method(:"#{name}=") do |value|

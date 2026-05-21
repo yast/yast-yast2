@@ -8,7 +8,7 @@ describe Yast::URLRecode do
   subject { Yast::URLRecode }
 
   describe "#EscapePath" do
-    let(:test_path) { "/@\#%^&/dir/\u010D\u00FD\u011B\u0161\u010D\u00FD\u00E1/file" }
+    let(:test_path) { "/@#%^&/dir/\u010D\u00FD\u011B\u0161\u010D\u00FD\u00E1/file" }
     it "returns nil if the url is nil too" do
       expect(subject.EscapePath(nil)).to eq(nil)
     end
@@ -28,7 +28,7 @@ describe Yast::URLRecode do
     end
 
     it "returns escaped special characters" do
-      expect(subject.EscapePath(" !@\#%^&*()/?+=:")).to eq(
+      expect(subject.EscapePath(" !@#%^&*()/?+=:")).to eq(
         "%20!%40%23%25%5e%26*()/%3f%2b%3d:"
       )
     end

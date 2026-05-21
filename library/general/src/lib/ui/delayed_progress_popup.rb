@@ -92,7 +92,7 @@ module Yast
     #    end
     #  end
     def self.run(delay: nil, auto_start: true, heading: nil, &block)
-      popup = new(delay: delay, auto_start: auto_start, heading: heading)
+      popup = new(delay:, auto_start:, heading:)
       block.call(popup)
     ensure
       popup&.close

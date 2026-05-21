@@ -2106,7 +2106,7 @@ module Yast
               Ops.add(
                 Ops.add(
                   Ops.add(
-                    Ops.add(masquerade_rules, (masquerade_rules != "") ? " " : ""),
+                    Ops.add(masquerade_rules, (masquerade_rules == "") ? "" : " "),
                     source_net
                   ),
                   ","

@@ -77,7 +77,7 @@ describe CWM::UIState do
       context "if the page is not longer there after redrawing" do
         before do
           pages.clear
-          pages.concat [page1]
+          pages.push page1
         end
 
         it "returns nil" do

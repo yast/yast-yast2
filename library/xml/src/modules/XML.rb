@@ -358,7 +358,7 @@ module Yast
         "map"
       elsif (!text.empty? && children.empty?) ||
           # keep cdata trick to create empty string
-          !node.children.reject(&:text?).select(&:cdata?).empty? ||
+          node.children.reject(&:text?).any?(&:cdata?) ||
           # default type is text if nothing is specified and cannot interfere
           (text.empty? && children.empty?)
         "string"

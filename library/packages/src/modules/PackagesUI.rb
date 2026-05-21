@@ -747,7 +747,7 @@ module Yast
       if result == :next && current_action != new_action
         if new_action != "summary"
           # disabling installation report dialog, inform the user how to enable it back
-          Popup.Message(_("If you want to show this report dialog again edit\n\n"\
+          Popup.Message(_("If you want to show this report dialog again edit\n\n" \
                           "System > Yast2 > GUI > PKGMGR_ACTION_AT_EXIT\n\n" \
                           "value in the YaST sysconfig editor."))
         end

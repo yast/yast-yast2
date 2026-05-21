@@ -212,8 +212,8 @@ module CWM
     # shortcut from Yast namespace to avoid including whole namespace
     # @todo kill converts in CWM module, to avoid this workaround for funrefs
     # @return [Yast::FunRef]
-    def fun_ref(*args)
-      Yast::FunRef.new(*args)
+    def fun_ref(*)
+      Yast::FunRef.new(*)
     end
 
   private

@@ -4,8 +4,8 @@ require_relative "../test_helper"
 
 require "ui/widgets"
 
-describe ::UI::Widgets::KeyboardLayoutTest do
+describe UI::Widgets::KeyboardLayoutTest do
   it "has label" do
-    expect(subject.label).to be_a(::String)
+    expect(subject.label).to be_a(String)
   end
 end

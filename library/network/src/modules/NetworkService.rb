@@ -96,7 +96,7 @@ module Yast
     def RunSystemCtl(service, action, force: false)
       raise ArgumentError, "No network service defined." if service.nil?
 
-      cmd = "/usr/bin/systemctl "\
+      cmd = "/usr/bin/systemctl " \
             "#{force ? "--force" : ""} " \
             "#{action.shellescape} " \
             "#{service.shellescape}.service"

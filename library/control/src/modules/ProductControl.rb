@@ -302,7 +302,7 @@ module Yast
       control_log_dir_rotator.prepare
       control_log_dir_rotator.copy(controlfile, "control.xml")
 
-      control_log_dir_rotator.write("README", "The first number in the filename is the merge "\
+      control_log_dir_rotator.write("README", "The first number in the filename is the merge " \
                                               "counter, the second number\nis the add-on counter.\n")
 
       @workflows = Ops.get_list(@productControl, "workflows", [])

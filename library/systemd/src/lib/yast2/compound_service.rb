@@ -51,7 +51,7 @@ module Yast2
     #
     # @return [Boolean] true if all services were correctly saved; false otherwise
     def save(keep_state: false)
-      services.each { |s| s.save(keep_state: keep_state) }
+      services.each { |s| s.save(keep_state:) }
 
       errors.empty?
     end

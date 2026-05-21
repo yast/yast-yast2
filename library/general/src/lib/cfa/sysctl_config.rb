@@ -135,7 +135,7 @@ module CFA
     end
 
     def higher_precedence_files
-      @higher_precedence_files ||= files[(yast_config_file_idx + 1)..-1]
+      @higher_precedence_files ||= files[(yast_config_file_idx + 1)..]
     end
 
     def config_paths

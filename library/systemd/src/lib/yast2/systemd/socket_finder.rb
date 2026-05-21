@@ -72,7 +72,7 @@ module Yast2
         return {} unless result.exit.zero?
 
         lines = result.stdout.lines.map(&:chomp)
-        @sockets_map = lines.each_slice(3).each_with_object({}) do |(id_str, triggers_str, _), memo|
+        @sockets_map = lines.each_slice(3).with_object({}) do |(id_str, triggers_str, _), memo|
           id = id_str[/Id=(\w+).socket/, 1]
           triggers = triggers_str[/Triggers=(\w+).service/, 1]
           memo[triggers] = id if triggers && id

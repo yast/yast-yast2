@@ -23,8 +23,8 @@ module Packages
 
     private
 
-      def fun_ref(*args)
-        Yast::FunRef.new(*args)
+      def fun_ref(*)
+        Yast::FunRef.new(*)
       end
 
       def process_start(_param1, _param2, _param3)

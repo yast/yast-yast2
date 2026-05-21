@@ -29,7 +29,7 @@ Yast.import "UI"
 describe "Yast::SlideShow" do
   before(:each) do
     Yast.y2milestone "--------- Running test ---------"
-    allow(::File).to receive(:exist?).and_return(true)
+    allow(File).to receive(:exist?).and_return(true)
   end
 
   TOTAL_PROGRESS_ID = :progressTotal

@@ -168,7 +168,7 @@ describe Yast2::FsSnapshot do
   end
 
   describe ".create_single" do
-    CREATE_SINGLE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
+    CREATE_SINGLE_SNAPSHOT = "/usr/bin/snapper --no-dbus " \
                              "--root=/ create --type single --description some-description".freeze
     OPTION_CLEANUP_NUMBER = " --cleanup number".freeze
     OPTION_IMPORTANT = " --userdata \"important=yes\"".freeze
@@ -261,7 +261,7 @@ describe Yast2::FsSnapshot do
   end
 
   describe ".create_pre" do
-    CREATE_PRE_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
+    CREATE_PRE_SNAPSHOT = "/usr/bin/snapper --no-dbus " \
                           "--root=/ create --type pre --description some-description".freeze
 
     before do
@@ -352,8 +352,8 @@ describe Yast2::FsSnapshot do
   end
 
   describe ".create_post" do
-    CREATE_POST_SNAPSHOT = "/usr/bin/snapper --no-dbus "\
-                           "--root=/ create --type post --description some-description "\
+    CREATE_POST_SNAPSHOT = "/usr/bin/snapper --no-dbus " \
+                           "--root=/ create --type post --description some-description " \
                            "--pre-num 1".freeze
 
     before do

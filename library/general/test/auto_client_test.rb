@@ -4,7 +4,7 @@ require_relative "test_helper"
 
 require "installation/auto_client"
 
-class TestAuto < ::Installation::AutoClient
+class TestAuto < Installation::AutoClient
   def import(args)
     args.empty? ? "import" : args
   end
@@ -18,18 +18,18 @@ class TestAuto < ::Installation::AutoClient
   end
 end
 
-class ExportTestAuto < ::Installation::AutoClient
+class ExportTestAuto < Installation::AutoClient
   def export
     "export"
   end
 end
 
-describe ::Installation::AutoClient do
-  subject { ::TestAuto }
+describe Installation::AutoClient do
+  subject { TestAuto }
   describe ".run" do
     it "raise ArgumentError exception if unknown first argument is passed" do
       allow(Yast::WFM).to receive(:Args).and_return(["Unknown", {}])
-      expect { ::Installation::AutoClient.run }.to raise_error(ArgumentError)
+      expect { Installation::AutoClient.run }.to raise_error(ArgumentError)
     end
 
     context "first client argument is Import" do
@@ -49,7 +49,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -73,7 +73,7 @@ describe ::Installation::AutoClient do
       end
 
       context "when #export does not receive any argument" do
-        subject { ::ExportTestAuto }
+        subject { ExportTestAuto }
 
         it "dispatch call to abstract method export with no arguments" do
           expect(subject.run).to eq "export"
@@ -81,7 +81,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -95,7 +95,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -115,7 +115,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -129,7 +129,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -143,7 +143,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -163,7 +163,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -177,7 +177,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -197,7 +197,7 @@ describe ::Installation::AutoClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::AutoClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::AutoClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -211,11 +211,11 @@ describe ::Installation::AutoClient do
       end
 
       it "just log if optional abstract method not defined" do
-        expect { ::Installation::AutoClient.run }.to_not raise_error
+        expect { Installation::AutoClient.run }.to_not raise_error
       end
 
       it "returns an empty hash if the optional abstract method is not defined" do
-        expect(::Installation::AutoClient.run).to eq({})
+        expect(Installation::AutoClient.run).to eq({})
       end
     end
   end

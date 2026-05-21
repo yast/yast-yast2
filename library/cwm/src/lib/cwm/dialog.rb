@@ -30,7 +30,7 @@ module CWM
     def initialize(*args, **kws); end
 
     # A shortcut for `.new(*args).run`
-    def self.run(*args, **kws)
+    def self.run(*, **kws)
       # Argument delegation is handled differently since ruby 2.7:
       #
       # An empty Hash argument is automatically converted and absorbed into **kws, and the delegation
@@ -41,7 +41,7 @@ module CWM
       # * Ruby 2.7 or later:  run("foo") passes new("foo")
       #
       # See https://www.ruby-lang.org/en/news/2019/12/12/separation-of-positional-and-keyword-arguments-in-ruby-3-0/
-      dialog = kws.empty? ? new(*args) : new(*args, **kws)
+      dialog = kws.empty? ? new(*) : new(*, **kws)
       dialog.run
     end
 
@@ -163,11 +163,11 @@ module CWM
       Yast::CWM.show(
         Yast::Term.new(:HBox, FakeHelp.new(help), contents),
         caption:         title,
-        back_button:     back_button,
-        abort_button:    abort_button,
-        next_button:     next_button,
-        skip_store_for:  skip_store_for,
-        disable_buttons: disable_buttons,
+        back_button:,
+        abort_button:,
+        next_button:,
+        skip_store_for:,
+        disable_buttons:,
         next_handler:    proc { next_handler },
         back_handler:    proc { back_handler },
         abort_handler:   proc { abort_handler }

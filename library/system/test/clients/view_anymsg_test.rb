@@ -55,7 +55,7 @@ describe Yast::ViewAnymsgClient do
       def combobox_items(&block)
         expect(Yast::UI).to receive(:OpenDialog) do |_opts, term|
           items = term.nested_find do |i|
-            i.is_a?(::Array) && i.first.is_a?(Yast::Term) && i.first.value == :item
+            i.is_a?(Array) && i.first.is_a?(Yast::Term) && i.first.value == :item
           end
 
           expect(items).to(be_a(Array), "Not found ComboBox items #{term.inspect}")

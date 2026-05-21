@@ -39,7 +39,7 @@ module Y2Firewall
       # Service was not found
       class NotFound < StandardError
         def initialize(name)
-          super "Service '#{name}' not found"
+          super("Service '#{name}' not found")
         end
       end
 

@@ -4,7 +4,7 @@ require_relative "test_helper"
 
 require "installation/finish_client"
 
-class TestFinish < ::Installation::FinishClient
+class TestFinish < Installation::FinishClient
   def info
     "info"
   end
@@ -14,12 +14,12 @@ class TestFinish < ::Installation::FinishClient
   end
 end
 
-describe ::Installation::FinishClient do
-  subject { ::TestFinish }
+describe Installation::FinishClient do
+  subject { TestFinish }
   describe ".run" do
     it "raise ArgumentError exception if unknown first argument is passed" do
       allow(Yast::WFM).to receive(:Args).and_return(["Unknown", {}])
-      expect { ::Installation::FinishClient.run }.to raise_error(ArgumentError)
+      expect { Installation::FinishClient.run }.to raise_error(ArgumentError)
     end
 
     context "first client argument is Info" do
@@ -32,7 +32,7 @@ describe ::Installation::FinishClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::FinishClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::FinishClient.run }.to raise_error(NotImplementedError)
       end
     end
 
@@ -46,7 +46,7 @@ describe ::Installation::FinishClient do
       end
 
       it "raise NotImplementedError exception if abstract method not defined" do
-        expect { ::Installation::FinishClient.run }.to raise_error(NotImplementedError)
+        expect { Installation::FinishClient.run }.to raise_error(NotImplementedError)
       end
     end
   end

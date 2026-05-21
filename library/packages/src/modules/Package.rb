@@ -268,7 +268,7 @@ module Yast
     # @return [Boolean] true if yes
     def InstalledAll(packages, target: nil)
       packages = deep_copy(packages)
-      which = Builtins.find(packages) { |p| !Installed(p, target: target) }
+      which = Builtins.find(packages) { |p| !Installed(p, target:) }
       which.nil?
     end
 
@@ -279,7 +279,7 @@ module Yast
     # @return [Boolean] true if yes
     def InstalledAny(packages, target: nil)
       packages = deep_copy(packages)
-      which = Builtins.find(packages) { |p| Installed(p, target: target) }
+      which = Builtins.find(packages) { |p| Installed(p, target:) }
       !which.nil?
     end
 

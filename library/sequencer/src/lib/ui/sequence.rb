@@ -120,13 +120,13 @@ module UI
     #   }
     #   abortable(input) == output # => true
     def abortable(sequence_hash)
-      sequence_hash.map do |name, destination|
+      sequence_hash.to_h do |name, destination|
         if name == START
           [name, destination]
         else
           [name, { abort: :abort }.merge(destination)]
         end
-      end.to_h
+      end
     end
 
     # Make `aliases` from `sequence_hash` assuming there is a method

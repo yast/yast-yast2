@@ -81,7 +81,7 @@ describe Yast::Wizard do
   end
 
   describe ".OpenWithLayout" do
-    let(:layout) { ::UI::Wizards::Layout.with_steps }
+    let(:layout) { UI::Wizards::Layout.with_steps }
 
     context "when the banner is enabled in the layout" do
       before do
@@ -108,7 +108,7 @@ describe Yast::Wizard do
     end
 
     context "when the layout mode is steps" do
-      let(:layout) { ::UI::Wizards::Layout.with_steps }
+      let(:layout) { UI::Wizards::Layout.with_steps }
 
       it "opens a wizard with steps" do
         expect(Yast::Wizard).to receive(:OpenNextBackStepsDialog)
@@ -118,7 +118,7 @@ describe Yast::Wizard do
     end
 
     context "when the layout mode is tree" do
-      let(:layout) { ::UI::Wizards::Layout.with_tree }
+      let(:layout) { UI::Wizards::Layout.with_tree }
 
       it "opens a wizard with tree" do
         expect(Yast::Wizard).to receive(:OpenTreeNextBackDialog)
@@ -128,7 +128,7 @@ describe Yast::Wizard do
     end
 
     context "when the layout mode is title-on-left" do
-      let(:layout) { ::UI::Wizards::Layout.with_title_on_left }
+      let(:layout) { UI::Wizards::Layout.with_title_on_left }
 
       it "opens a wizard with title on left" do
         expect(Yast::Wizard).to receive(:OpenLeftTitleNextBackDialog)
@@ -138,7 +138,7 @@ describe Yast::Wizard do
     end
 
     context "when the layout mode is title-on-top" do
-      let(:layout) { ::UI::Wizards::Layout.with_title_on_top }
+      let(:layout) { UI::Wizards::Layout.with_title_on_top }
 
       it "opens a wizard with title on top" do
         expect(Yast::Wizard).to receive(:OpenNextBackDialog)

@@ -121,7 +121,7 @@ module Yast
 
         raise(
           SuSEFirewalServiceNotFound,
-          format(_("Service with name '%{service_name}' does not exist"), service_name: service_name)
+          format(_("Service with name '%{service_name}' does not exist"), service_name:)
         )
       end
 

@@ -51,7 +51,7 @@ module Installation
         # TRANSLATORS:
         # 'attr' is an AutoYaST element
         # 'description' has already been translated in other modules.
-        format(_("Missing element '%{attr}'. %{description}"), attr: attribute, description: description)
+        format(_("Missing element '%{attr}'. %{description}"), attr: attribute, description:)
       end
     end
   end

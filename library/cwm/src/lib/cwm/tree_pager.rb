@@ -15,7 +15,7 @@ module CWM
     def initialize(page, icon: nil, open: true, children: [])
       @page = page
       super(page.widget_id, page.label,
-            icon: icon, open: open, children: children)
+            icon:, open:, children:)
     end
 
     # @return [Array<Page>] My page and all pages of descendant items
